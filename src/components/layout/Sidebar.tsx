@@ -1,0 +1,343 @@
+'use client'
+
+// ═══════════════════════════════════════════════════════════
+// CTR HR Hub — Sidebar Navigation
+// bg-ctr-primary, 모듈별 그룹핑, 권한 필터링
+// ═══════════════════════════════════════════════════════════
+
+import { useCallback, useMemo, useState } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import {
+  Users,
+  Network,
+  Clock,
+  CalendarDays,
+  Target,
+  Wallet,
+  UserPlus,
+  UserMinus,
+  GraduationCap,
+  Gift,
+  Heart,
+  Settings,
+  ChevronLeft,
+  ChevronRight,
+  Shield,
+  ListChecks,
+  BarChart3,
+  ClipboardCheck,
+  Handshake,
+  FileText,
+  UserCircle,
+  LogOut,
+  type LucideIcon,
+} from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { ko } from '@/lib/i18n/ko'
+import type { Permission, SessionUser } from '@/types'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Separator } from '@/components/ui/separator'
+
+// ─── Types ──────────────────────────────────────────────────
+
+interface NavItem {
+  label: string
+  href: string
+  icon: LucideIcon
+}
+
+interface NavGroup {
+  label: string
+  icon: LucideIcon
+  module: string
+  items: NavItem[]
+}
+
+interface SidebarProps {
+  user: SessionUser
+  onSignOut: () => void
+}
+
+// ─── Navigation Configuration ───────────────────────────────
+
+const NAV_GROUPS: NavGroup[] = [
+  {
+    label: '인사관리',
+    icon: Users,
+    module: MODULE.EMPLOYEES,
+    items: [
+      { label: '사원목록', href: '/employees', icon: Users },
+      { label: '조직도', href: '/org', icon: Network },
+      { label: '직급/직책', href: '/org/grades', icon: Shield },
+    ],
+  },
+  {
+    label: '근태관리',
+    icon: Clock,
+    module: MODULE.ATTENDANCE,
+    items: [
+      { label: '근태현황', href: '/attendance', icon: Clock },
+      { label: '근태설정', href: '/attendance/settings', icon: Settings },
+    ],
+  },
+  {
+    label: '휴가관리',
+    icon: CalendarDays,
+    module: MODULE.LEAVE,
+    items: [
+      { label: '휴가신청', href: '/leave/request', icon: CalendarDays },
+      { label: '휴가현황', href: '/leave', icon: ListChecks },
+      { label: '휴가설정', href: '/leave/settings', icon: Settings },
+    ],
+  },
+  {
+    label: '성과관리',
+    icon: Target,
+    module: MODULE.PERFORMANCE,
+    items: [
+      { label: '성과평가', href: '/performance', icon: Target },
+      { label: '목표관리', href: '/performance/goals', icon: ClipboardCheck },
+      { label: '1:1 미팅', href: '/performance/one-on-one', icon: Handshake },
+      { label: '역량평가', href: '/performance/competency', icon: BarChart3 },
+    ],
+  },
+  {
+    label: '급여관리',
+    icon: Wallet,
+    module: MODULE.PAYROLL,
+    items: [
+      { label: '급여대장', href: '/payroll', icon: Wallet },
+      { label: '급여명세서', href: '/payroll/statements', icon: FileText },
+    ],
+  },
+  {
+    label: '채용관리',
+    icon: UserPlus,
+    module: MODULE.RECRUITMENT,
+    items: [
+      { label: '채용공고', href: '/recruitment', icon: UserPlus },
+      { label: '지원자관리', href: '/recruitment/applicants', icon: Users },
+    ],
+  },
+  {
+    label: '퇴직관리',
+    icon: UserMinus,
+    module: MODULE.OFFBOARDING,
+    items: [
+      { label: '퇴직처리', href: '/offboarding', icon: UserMinus },
+      { label: '퇴직현황', href: '/offboarding/status', icon: ListChecks },
+    ],
+  },
+  {
+    label: '교육관리',
+    icon: GraduationCap,
+    module: MODULE.TRAINING,
+    items: [
+      { label: '교육과정', href: '/training', icon: GraduationCap },
+      { label: '수강현황', href: '/training/enrollments', icon: ListChecks },
+    ],
+  },
+  {
+    label: '복리후생',
+    icon: Gift,
+    module: MODULE.BENEFITS,
+    items: [
+      { label: '복리후생정책', href: '/benefits', icon: Gift },
+      { label: '신청현황', href: '/benefits/enrollments', icon: ListChecks },
+    ],
+  },
+  {
+    label: '칭찬/인정',
+    icon: Heart,
+    module: MODULE.PERFORMANCE,
+    items: [
+      { label: '칭찬보내기', href: '/performance/recognition', icon: Heart },
+      { label: '칭찬현황', href: '/performance/recognition/list', icon: ListChecks },
+    ],
+  },
+  {
+    label: '시스템설정',
+    icon: Settings,
+    module: MODULE.SETTINGS,
+    items: [
+      { label: '회사설정', href: '/settings', icon: Settings },
+      { label: '권한관리', href: '/settings/roles', icon: Shield },
+      { label: '감사로그', href: '/settings/audit-log', icon: FileText },
+    ],
+  },
+]
+
+// ─── Permission check helper ────────────────────────────────
+
+function canAccessModule(
+  user: SessionUser,
+  module: string,
+): boolean {
+  if (user.role === ROLE.SUPER_ADMIN) return true
+
+  // Settings module: HR_ADMIN+ only
+  if (module === MODULE.SETTINGS) {
+    return user.role === ROLE.HR_ADMIN
+  }
+
+  return user.permissions.some(
+    (p: Permission) => p.module === module && p.action === ACTION.VIEW,
+  )
+}
+
+// ─── Component ──────────────────────────────────────────────
+
+export function Sidebar({ user, onSignOut }: SidebarProps) {
+  const [collapsed, setCollapsed] = useState(false)
+  const pathname = usePathname()
+
+  const toggleCollapsed = useCallback(() => {
+    setCollapsed((prev) => !prev)
+  }, [])
+
+  const filteredGroups = useMemo(() => {
+    return NAV_GROUPS.filter((group) => canAccessModule(user, group.module))
+  }, [user])
+
+  const userInitial = user.name.charAt(0).toUpperCase()
+
+  return (
+    <TooltipProvider delayDuration={0}>
+      <aside
+        className={cn(
+          'flex h-screen flex-col bg-ctr-primary text-white transition-all duration-300',
+          collapsed ? 'w-16' : 'w-64',
+        )}
+      >
+        {/* ─── Logo / Brand Area ─── */}
+        <div className={cn('flex items-center gap-3 px-4 py-5', collapsed && 'justify-center px-2')}>
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10 font-bold text-white">
+            C
+          </div>
+          {!collapsed && (
+            <div className="min-w-0 flex-1">
+              <h1 className="truncate text-sm font-bold tracking-tight">CTR HR Hub</h1>
+              <p className="truncate text-[10px] text-white/60">{ko.auth.slogan}</p>
+            </div>
+          )}
+        </div>
+
+        <Separator className="bg-white/10" />
+
+        {/* ─── Navigation ─── */}
+        <ScrollArea className="flex-1 py-2">
+          <nav className="space-y-1 px-2">
+            {filteredGroups.map((group) => (
+              <div key={group.label} className="mb-3">
+                {/* Group label */}
+                {!collapsed && (
+                  <div className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-wider text-white/40">
+                    {group.label}
+                  </div>
+                )}
+
+                {/* Nav items */}
+                {group.items.map((item) => {
+                  const isActive =
+                    pathname === item.href ||
+                    (item.href !== '/' && pathname.startsWith(item.href))
+
+                  const linkContent = (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        'flex items-center gap-3 rounded-md px-2 py-2 text-sm font-medium transition-colors',
+                        'hover:bg-white/10',
+                        isActive && 'bg-white/10',
+                        collapsed && 'justify-center px-0',
+                      )}
+                    >
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      {!collapsed && <span className="truncate">{item.label}</span>}
+                    </Link>
+                  )
+
+                  if (collapsed) {
+                    return (
+                      <Tooltip key={item.href}>
+                        <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
+                        <TooltipContent side="right" className="text-xs">
+                          {item.label}
+                        </TooltipContent>
+                      </Tooltip>
+                    )
+                  }
+
+                  return linkContent
+                })}
+              </div>
+            ))}
+          </nav>
+        </ScrollArea>
+
+        <Separator className="bg-white/10" />
+
+        {/* ─── Collapse Toggle ─── */}
+        <button
+          type="button"
+          onClick={toggleCollapsed}
+          className="flex items-center justify-center py-2 hover:bg-white/10"
+          aria-label={collapsed ? '사이드바 펼치기' : '사이드바 접기'}
+        >
+          {collapsed ? (
+            <ChevronRight className="h-4 w-4" />
+          ) : (
+            <ChevronLeft className="h-4 w-4" />
+          )}
+        </button>
+
+        <Separator className="bg-white/10" />
+
+        {/* ─── User Profile Section ─── */}
+        <div
+          className={cn(
+            'flex items-center gap-3 px-3 py-3',
+            collapsed && 'flex-col gap-1 px-1',
+          )}
+        >
+          <Avatar className="h-8 w-8 shrink-0 border border-white/20">
+            <AvatarFallback className="bg-white/10 text-xs text-white">
+              {userInitial}
+            </AvatarFallback>
+          </Avatar>
+          {!collapsed && (
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-medium">{user.name}</p>
+              <p className="truncate text-[10px] text-white/60">{user.role}</p>
+            </div>
+          )}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={onSignOut}
+                className="shrink-0 rounded p-1 hover:bg-white/10"
+                aria-label={ko.auth.logout}
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="text-xs">
+              {ko.auth.logout}
+            </TooltipContent>
+          </Tooltip>
+        </div>
+      </aside>
+    </TooltipProvider>
+  )
+}
