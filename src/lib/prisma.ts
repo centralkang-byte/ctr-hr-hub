@@ -3,17 +3,31 @@
 // ═══════════════════════════════════════════════════════════
 
 import { PrismaClient } from '@/generated/prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg'
 
 const globalForPrisma = globalThis as unknown as {
   __prisma: PrismaClient | undefined
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Prisma 7 type issue with accelerateUrl
-export const prisma: PrismaClient =
-  globalForPrisma.__prisma ??
-  new (PrismaClient as any)({
+function createPrismaClient(): PrismaClient {
+  const connectionString = process.env.DATABASE_URL
+  if (!connectionString) {
+    // Return a client that will fail on actual DB calls but won't crash on import
+    // This allows the app to start even without a DB connection (e.g., for SSG/build)
+    return new PrismaClient({
+      adapter: new PrismaPg({ connectionString: 'postgresql://localhost:5432/placeholder' }),
+      log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
+    })
+  }
+  const adapter = new PrismaPg({ connectionString })
+  return new PrismaClient({
+    adapter,
     log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
   })
+}
+
+export const prisma: PrismaClient =
+  globalForPrisma.__prisma ?? createPrismaClient()
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.__prisma = prisma
