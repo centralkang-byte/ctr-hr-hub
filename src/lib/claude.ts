@@ -200,6 +200,61 @@ JSON만 응답하세요.`
   }
 }
 
+// ─── Job Description Generation ──────────────────────────
+
+interface JobDescriptionInput {
+  title: string
+  department?: string
+  grade?: string
+  category?: string
+  requirements?: string
+}
+
+interface JobDescriptionResult {
+  description: string
+  qualifications: string
+  preferred: string
+}
+
+export async function generateJobDescription(
+  input: JobDescriptionInput,
+  companyId: string,
+  employeeId: string,
+): Promise<JobDescriptionResult> {
+  const prompt = `당신은 CTR Holdings(자동차부품 글로벌 기업)의 채용 담당자입니다.
+다음 정보를 바탕으로 채용 공고 초안을 작성하세요:
+
+직무명: ${input.title}
+${input.department ? `부서: ${input.department}` : ''}
+${input.grade ? `직급: ${input.grade}` : ''}
+${input.category ? `직군: ${input.category}` : ''}
+${input.requirements ? `요구사항 키워드: ${input.requirements}` : ''}
+
+아래 JSON 형식으로 응답하세요:
+{
+  "description": "직무 설명 (3-5문장)",
+  "qualifications": "자격 요건 (bullet point 형태, \\n 구분)",
+  "preferred": "우대 사항 (bullet point 형태, \\n 구분)"
+}
+
+JSON만 응답하세요.`
+
+  const result = await callClaude({
+    feature: 'JOB_DESCRIPTION_GENERATION',
+    prompt,
+    systemPrompt: 'You are an HR specialist for CTR Holdings, a global automotive parts company. Respond in Korean.',
+    maxTokens: 1024,
+    companyId,
+    employeeId,
+  })
+
+  try {
+    return JSON.parse(result.content) as JobDescriptionResult
+  } catch {
+    throw serviceUnavailable('AI 분석 결과 파싱에 실패했습니다.')
+  }
+}
+
 // ─── Exit Interview Summary ───────────────────────────────
 
 interface ExitInterviewSummaryResult {
