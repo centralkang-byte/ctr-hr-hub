@@ -568,6 +568,47 @@ enum ExportFormat {
 }
 
 // ================================================================
+// STEP 2.5 ENUMs
+// ================================================================
+
+enum ContractType {
+  PERMANENT
+  FIXED_TERM
+  DISPATCH
+  INTERN
+  PROBATION_ONLY
+}
+
+enum ProbationStatus {
+  IN_PROGRESS
+  PASSED
+  FAILED
+  WAIVED
+}
+
+enum WorkPermitType {
+  WORK_VISA
+  WORK_PERMIT
+  RESIDENCE_PERMIT
+  I9_VERIFICATION
+  OTHER
+}
+
+enum WorkPermitStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+  PENDING_RENEWAL
+}
+
+enum PayrollFrequency {
+  WEEKLY
+  BIWEEKLY
+  SEMI_MONTHLY
+  MONTHLY
+}
+
+// ================================================================
 // 1. Organization & Auth
 // ================================================================
 
@@ -581,10 +622,11 @@ model Company {
   locale          String
   currency        String             @default("KRW")
   parentCompanyId String?            @map("parent_company_id")
-  payrollMode     CompanyPayrollMode @default(IMPORT) @map("payroll_mode")
-  isActive        Boolean            @default(true) @map("is_active")
-  createdAt       DateTime           @default(now()) @map("created_at")
-  deletedAt       DateTime?          @map("deleted_at")
+  payrollMode          CompanyPayrollMode @default(IMPORT) @map("payroll_mode")
+  payrollFrequencies   Json               @default("[\"MONTHLY\"]") @map("payroll_frequencies")
+  isActive             Boolean            @default(true) @map("is_active")
+  createdAt            DateTime           @default(now()) @map("created_at")
+  deletedAt            DateTime?          @map("deleted_at")
 
   parentCompany  Company?  @relation("CompanyParent", fields: [parentCompanyId], references: [id])
   childCompanies Company[] @relation("CompanyParent")
@@ -644,6 +686,11 @@ model Company {
   pulseResponses         PulseResponse[]
   leaveRequests          LeaveRequest[]
   attendances            Attendance[]
+
+  // STEP 2.5
+  contractHistories ContractHistory[]
+  workPermits       WorkPermit[]
+  orgSnapshots      OrgSnapshot[]
 
   @@map("companies")
 }
@@ -818,6 +865,16 @@ model Employee {
   updatedAt             DateTime       @updatedAt @map("updated_at")
   deletedAt             DateTime?      @map("deleted_at")
 
+  // STEP 2.5 — 계약 관련 필드
+  contractType             ContractType?   @map("contract_type")
+  contractNumber           Int             @default(1) @map("contract_number")
+  contractStartDate        DateTime?       @map("contract_start_date")
+  contractEndDate          DateTime?       @map("contract_end_date")
+  contractAutoConvertDate  DateTime?       @map("contract_auto_convert_date")
+  probationStartDate       DateTime?       @map("probation_start_date")
+  probationEndDate         DateTime?       @map("probation_end_date")
+  probationStatus          ProbationStatus @default(IN_PROGRESS) @map("probation_status")
+
   company      Company     @relation(fields: [companyId], references: [id])
   department   Department  @relation(fields: [departmentId], references: [id])
   jobGrade     JobGrade    @relation(fields: [jobGradeId], references: [id])
@@ -947,6 +1004,14 @@ model Employee {
   // Employee History relations
   historyApprovals EmployeeHistory[]  @relation("HistoryApprover")
   documentUploads  EmployeeDocument[] @relation("DocumentUploader")
+
+  // STEP 2.5
+  contractHistories   ContractHistory[] @relation("ContractEmployee")
+  contractsSigned     ContractHistory[] @relation("ContractSigner")
+  workPermits         WorkPermit[]      @relation("WorkPermitEmployee")
+  workPermitsCreated  WorkPermit[]      @relation("WorkPermitCreator")
+  convertedEmployees  Application[]     @relation("ApplicationConvertedEmployee")
+  orgSnapshotsCreated OrgSnapshot[]
 
   @@map("employees")
 }
@@ -1499,18 +1564,21 @@ model Applicant {
 }
 
 model Application {
-  id                 String           @id @default(uuid())
-  postingId          String           @map("posting_id")
-  applicantId        String           @map("applicant_id")
-  stage              ApplicationStage
-  aiScreeningScore   Int?             @map("ai_screening_score")
-  aiScreeningSummary String?          @map("ai_screening_summary")
-  rejectionReason    String?          @map("rejection_reason")
-  appliedAt          DateTime         @map("applied_at")
-  updatedAt          DateTime         @updatedAt @map("updated_at")
+  id                   String           @id @default(uuid())
+  postingId            String           @map("posting_id")
+  applicantId          String           @map("applicant_id")
+  stage                ApplicationStage
+  aiScreeningScore     Int?             @map("ai_screening_score")
+  aiScreeningSummary   String?          @map("ai_screening_summary")
+  rejectionReason      String?          @map("rejection_reason")
+  convertedEmployeeId  String?          @map("converted_employee_id")
+  convertedAt          DateTime?        @map("converted_at")
+  appliedAt            DateTime         @map("applied_at")
+  updatedAt            DateTime         @updatedAt @map("updated_at")
 
   posting            JobPosting          @relation(fields: [postingId], references: [id])
   applicant          Applicant           @relation(fields: [applicantId], references: [id])
+  convertedEmployee  Employee?           @relation("ApplicationConvertedEmployee", fields: [convertedEmployeeId], references: [id])
   interviewSchedules InterviewSchedule[]
 
   @@unique([postingId, applicantId])
@@ -1925,18 +1993,22 @@ model AllowanceRecord {
 // ================================================================
 
 model PayrollRun {
-  id              String        @id @default(uuid())
-  companyId       String        @map("company_id")
-  yearMonth       String        @map("year_month")
+  id              String           @id @default(uuid())
+  companyId       String           @map("company_id")
+  yearMonth       String           @map("year_month")
+  frequency       PayrollFrequency @default(MONTHLY)
+  periodStart     DateTime         @default(now()) @map("period_start")
+  periodEnd       DateTime         @default(now()) @map("period_end")
+  payDate         DateTime?        @map("pay_date")
   status          PayrollStatus
-  totalGross      Decimal?      @map("total_gross")
-  totalNet        Decimal?      @map("total_net")
-  currency        String        @default("KRW")
-  importedFileKey String?       @map("imported_file_key")
-  confirmedBy     String?       @map("confirmed_by")
-  confirmedAt     DateTime?     @map("confirmed_at")
-  createdAt       DateTime      @default(now()) @map("created_at")
-  updatedAt       DateTime      @updatedAt @map("updated_at")
+  totalGross      Decimal?         @map("total_gross")
+  totalNet        Decimal?         @map("total_net")
+  currency        String           @default("KRW")
+  importedFileKey String?          @map("imported_file_key")
+  confirmedBy     String?          @map("confirmed_by")
+  confirmedAt     DateTime?        @map("confirmed_at")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
 
   company      Company       @relation(fields: [companyId], references: [id])
   confirmer    Employee?     @relation("PayrollApprover", fields: [confirmedBy], references: [id])
@@ -2383,6 +2455,7 @@ model TenantSetting {
   defaultLocale          String   @default("ko") @map("default_locale")
   fiscalYearStartMonth   Int      @default(1) @map("fiscal_year_start_month")
   probationMonths        Int      @default(3) @map("probation_months")
+  probationRules         Json?    @map("probation_rules")
   maxOvertimeWeeklyHours Decimal  @default(52) @map("max_overtime_weekly_hours")
   timezone               String   @default("Asia/Seoul")
   createdAt              DateTime @default(now()) @map("created_at")
@@ -2546,4 +2619,76 @@ model ExportTemplate {
 
   @@unique([companyId, entityType, name])
   @@map("export_templates")
+}
+
+// ================================================================
+// STEP 2.5 — 신규 테이블
+// ================================================================
+
+model ContractHistory {
+  id                   String       @id @default(uuid())
+  employeeId           String       @map("employee_id")
+  companyId            String       @map("company_id")
+  contractNumber       Int          @map("contract_number")
+  contractType         ContractType @map("contract_type")
+  startDate            DateTime     @map("start_date")
+  endDate              DateTime?    @map("end_date")
+  probationEndDate     DateTime?    @map("probation_end_date")
+  salaryAmount         Decimal?     @map("salary_amount")
+  termsDocumentKey     String?      @map("terms_document_key")
+  signedAt             DateTime?    @map("signed_at")
+  signedBy             String?      @map("signed_by")
+  notes                String?
+  autoConvertTriggered Boolean      @default(false) @map("auto_convert_triggered")
+  createdAt            DateTime     @default(now()) @map("created_at")
+  updatedAt            DateTime     @updatedAt @map("updated_at")
+
+  employee Employee  @relation("ContractEmployee", fields: [employeeId], references: [id])
+  company  Company   @relation(fields: [companyId], references: [id])
+  signer   Employee? @relation("ContractSigner", fields: [signedBy], references: [id])
+
+  @@index([employeeId, contractNumber])
+  @@map("contract_histories")
+}
+
+model WorkPermit {
+  id               String           @id @default(uuid())
+  employeeId       String           @map("employee_id")
+  companyId        String           @map("company_id")
+  permitType       WorkPermitType   @map("permit_type")
+  permitNumber     String?          @map("permit_number")
+  issuingCountry   String           @map("issuing_country")
+  issuingAuthority String?          @map("issuing_authority")
+  issueDate        DateTime         @map("issue_date")
+  expiryDate       DateTime?        @map("expiry_date")
+  status           WorkPermitStatus @default(ACTIVE)
+  documentKey      String?          @map("document_key")
+  notes            String?
+  createdBy        String?          @map("created_by")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  deletedAt        DateTime?        @map("deleted_at")
+
+  employee Employee  @relation("WorkPermitEmployee", fields: [employeeId], references: [id])
+  company  Company   @relation(fields: [companyId], references: [id])
+  creator  Employee? @relation("WorkPermitCreator", fields: [createdBy], references: [id])
+
+  @@index([employeeId])
+  @@index([expiryDate])
+  @@map("work_permits")
+}
+
+model OrgSnapshot {
+  id           String   @id @default(uuid())
+  companyId    String   @map("company_id")
+  snapshotDate DateTime @map("snapshot_date")
+  snapshotData Json     @map("snapshot_data")
+  createdBy    String?  @map("created_by")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  company Company   @relation(fields: [companyId], references: [id])
+  creator Employee? @relation(fields: [createdBy], references: [id])
+
+  @@unique([companyId, snapshotDate])
+  @@map("org_snapshots")
 }

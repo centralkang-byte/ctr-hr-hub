@@ -217,6 +217,19 @@ export interface ApiErrorResponse {
 
 export type SortDirection = 'asc' | 'desc'
 
+// ─── Reference data option types ──────────────────────────
+
+export interface RefOption {
+  id: string
+  name: string
+}
+
+export interface DeptOption {
+  id: string
+  name: string
+  companyId: string
+}
+
 export interface ListQueryParams {
   page?: number
   limit?: number

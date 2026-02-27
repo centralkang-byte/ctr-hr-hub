@@ -20,6 +20,27 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/shared/EmptyState'
 import type { PaginationInfo, SortDirection } from '@/types'
 
+// ─── Sort icon (module-level to avoid unmount/remount on parent re-render) ───
+
+function SortIcon({
+  columnKey,
+  sortBy,
+  sortDir,
+}: {
+  columnKey: string
+  sortBy?: string
+  sortDir?: SortDirection
+}) {
+  if (sortBy !== columnKey) {
+    return <ArrowUpDown className="ml-1 inline h-3 w-3 text-muted-foreground" />
+  }
+  return sortDir === 'asc' ? (
+    <ArrowUp className="ml-1 inline h-3 w-3" />
+  ) : (
+    <ArrowDown className="ml-1 inline h-3 w-3" />
+  )
+}
+
 // ─── Types ──────────────────────────────────────────────────
 
 export interface DataTableColumn<T> {
@@ -37,9 +58,11 @@ interface DataTableProps<T> {
   sortBy?: string
   sortDir?: SortDirection
   onSort?: (key: string) => void
+  onRowClick?: (row: T, index: number) => void
   loading?: boolean
   emptyMessage?: string
   emptyDescription?: string
+  emptyAction?: { label: string; onClick: () => void }
   rowKey?: (row: T, index: number) => string
 }
 
@@ -53,9 +76,11 @@ export function DataTable<T extends Record<string, unknown>>({
   sortBy,
   sortDir,
   onSort,
+  onRowClick,
   loading = false,
   emptyMessage = '데이터가 없습니다',
   emptyDescription,
+  emptyAction,
   rowKey,
 }: DataTableProps<T>) {
   const handleSort = useCallback(
@@ -106,20 +131,8 @@ export function DataTable<T extends Record<string, unknown>>({
             </TableRow>
           </TableHeader>
         </Table>
-        <EmptyState title={emptyMessage} description={emptyDescription} />
+        <EmptyState title={emptyMessage} description={emptyDescription} action={emptyAction} />
       </div>
-    )
-  }
-
-  // ─── Sort icon ───
-  function SortIcon({ columnKey }: { columnKey: string }) {
-    if (sortBy !== columnKey) {
-      return <ArrowUpDown className="ml-1 inline h-3 w-3 text-muted-foreground" />
-    }
-    return sortDir === 'asc' ? (
-      <ArrowUp className="ml-1 inline h-3 w-3" />
-    ) : (
-      <ArrowDown className="ml-1 inline h-3 w-3" />
     )
   }
 
@@ -138,7 +151,7 @@ export function DataTable<T extends Record<string, unknown>>({
                       onClick={() => handleSort(col.key)}
                     >
                       {col.header}
-                      <SortIcon columnKey={col.key} />
+                      <SortIcon columnKey={col.key} sortBy={sortBy} sortDir={sortDir} />
                     </button>
                   ) : (
                     col.header
@@ -149,7 +162,11 @@ export function DataTable<T extends Record<string, unknown>>({
           </TableHeader>
           <TableBody>
             {data.map((row, index) => (
-              <TableRow key={rowKey ? rowKey(row, index) : index}>
+              <TableRow
+              key={rowKey ? rowKey(row, index) : index}
+              onClick={onRowClick ? () => onRowClick(row, index) : undefined}
+              className={onRowClick ? 'cursor-pointer hover:bg-muted/50' : ''}
+            >
                 {columns.map((col) => (
                   <TableCell key={col.key}>
                     {col.render

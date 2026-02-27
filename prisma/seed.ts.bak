@@ -406,13 +406,6 @@ const enumOptionData: EnumOptionDef[] = [
   { group: 'clock_method', key: 'QR', label: 'QR코드', sortOrder: 3 },
   { group: 'clock_method', key: 'FINGERPRINT', label: '지문인식', sortOrder: 4 },
   { group: 'clock_method', key: 'CARD_READER', label: '카드리더', sortOrder: 5 },
-  // MX allowance_type — STEP 2.5 (법정수당 멕시코)
-  { group: 'allowance_type', key: 'MX_PTU', label: 'PTU (이익분배)', sortOrder: 1 },
-  { group: 'allowance_type', key: 'MX_AGUINALDO', label: 'Aguinaldo (연말상여)', sortOrder: 2 },
-  { group: 'allowance_type', key: 'MX_PRIMA_VACACIONAL', label: 'Prima Vacacional (휴가수당)', sortOrder: 3 },
-  { group: 'allowance_type', key: 'MX_SUNDAY_PREMIUM', label: 'Prima Dominical (일요할증)', sortOrder: 4 },
-  // RU bonus_type — STEP 2.5 (13번째 월급 러시아)
-  { group: 'bonus_type', key: 'RU_13TH_SALARY', label: '13번째 월급 (러시아)', sortOrder: 1 },
 ]
 
 // ================================================================
@@ -482,17 +475,6 @@ const emailTemplateData: EmailTemplateDef[] = [
   { eventType: 'ATTENDANCE_ANOMALY', channel: 'IN_APP', subject: '근태 이상 알림', body: '{{employee_name}}님의 근태 이상이 감지되었습니다.', variables: ['employee_name'] },
   { eventType: 'RECOGNITION_RECEIVED', channel: 'IN_APP', subject: '인정 알림', body: '{{sender_name}}님이 {{employee_name}}님을 인정하였습니다.', variables: ['sender_name', 'employee_name'] },
   { eventType: 'TRAINING_ENROLLED', channel: 'EMAIL', subject: '교육 등록 안내', body: '{{employee_name}}님이 {{course_name}} 교육에 등록되었습니다.', variables: ['employee_name', 'course_name'] },
-  // STEP 2.5 — 계약 만료 알림
-  { eventType: 'CONTRACT_EXPIRY_30D', channel: 'EMAIL', subject: '계약 만료 30일 전 안내', body: '{{employee_name}}님의 계약이 {{days_left}}일 후 만료됩니다.\n만료일: {{end_date}}', variables: ['employee_name', 'days_left', 'end_date'] },
-  { eventType: 'CONTRACT_EXPIRY_30D', channel: 'IN_APP', subject: '계약 만료 임박', body: '{{employee_name}} 계약 만료 D-{{days_left}}', variables: ['employee_name', 'days_left'] },
-  { eventType: 'CONTRACT_EXPIRY_7D', channel: 'EMAIL', subject: '계약 만료 7일 전 긴급 안내', body: '{{employee_name}}님의 계약이 7일 후 만료됩니다. 즉시 처리가 필요합니다.', variables: ['employee_name', 'end_date'] },
-  // STEP 2.5 — 비자/취업허가 만료 알림
-  { eventType: 'WORK_PERMIT_EXPIRY_90D', channel: 'EMAIL', subject: '취업허가 만료 90일 전 안내', body: '{{employee_name}}님의 {{permit_type}} 만료 90일 전입니다.\n만료일: {{expiry_date}}', variables: ['employee_name', 'permit_type', 'expiry_date'] },
-  { eventType: 'WORK_PERMIT_EXPIRY_30D', channel: 'EMAIL', subject: '취업허가 만료 30일 전 긴급 안내', body: '{{employee_name}}님의 {{permit_type}}이 30일 후 만료됩니다. 갱신 조치가 필요합니다.', variables: ['employee_name', 'permit_type', 'expiry_date'] },
-  // STEP 2.5 — 연차 사용 촉진
-  { eventType: 'LEAVE_PROMOTION_STEP1', channel: 'EMAIL', subject: '연차 사용 촉진 1차 안내', body: '{{employee_name}}님의 미사용 연차 {{remaining_days}}일이 있습니다. 사용 계획을 제출해주세요.', variables: ['employee_name', 'remaining_days'] },
-  { eventType: 'LEAVE_PROMOTION_STEP2', channel: 'EMAIL', subject: '연차 사용 촉진 2차 안내', body: '{{employee_name}}님의 연차 사용 일정을 2주 내 제출해주세요.', variables: ['employee_name', 'remaining_days'] },
-  { eventType: 'LEAVE_PROMOTION_STEP3', channel: 'EMAIL', subject: '연차 지정 통보', body: '{{employee_name}}님의 미사용 연차에 대해 사용 일정을 지정 통보합니다.', variables: ['employee_name', 'designated_dates'] },
 ]
 
 // ================================================================

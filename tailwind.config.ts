@@ -51,17 +51,13 @@ const config: Config = {
   				'5': 'hsl(var(--chart-5))'
   			},
   			// CTR Brand Colors
-  			'ctr-primary': '#003087',
-  			'ctr-accent': '#E30613',
-  			'ctr-gray': {
-  				50: '#F9FAFB',
-  				100: '#F3F4F6',
-  				200: '#E5E7EB',
-  				300: '#D1D5DB',
-  				500: '#6B7280',
-  				700: '#374151',
-  				900: '#111827',
-  			},
+  			'ctr-primary': '#003876',
+  			'ctr-secondary': '#0068B7',
+  			'ctr-accent': '#E63312',
+  			'ctr-light': '#F5F7FA',
+  			'ctr-dark': '#1A1A1A',
+  			'ctr-success': '#10B981',
+  			'ctr-warning': '#F59E0B',
   			brand: {
   				primary: 'var(--brand-primary)',
   				secondary: 'var(--brand-secondary)',

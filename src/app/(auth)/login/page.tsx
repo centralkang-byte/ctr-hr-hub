@@ -19,34 +19,13 @@ interface TestAccount {
   label: string
   email: string
   icon: React.ReactNode
-  description: string
 }
 
 const TEST_ACCOUNTS: TestAccount[] = [
-  {
-    label: 'Super Admin',
-    email: 'superadmin@ctr.com',
-    icon: <Shield className="h-4 w-4" />,
-    description: '전체 시스템 관리자',
-  },
-  {
-    label: 'HR Admin',
-    email: 'hradmin@ctr.com',
-    icon: <Users className="h-4 w-4" />,
-    description: 'HR 관리자',
-  },
-  {
-    label: 'Manager',
-    email: 'manager@ctr.com',
-    icon: <Briefcase className="h-4 w-4" />,
-    description: '팀장',
-  },
-  {
-    label: 'Employee',
-    email: 'employee@ctr.com',
-    icon: <UserCircle className="h-4 w-4" />,
-    description: '일반 직원',
-  },
+  { label: 'Super Admin', email: 'superadmin@ctr.com', icon: <Shield className="h-4 w-4" /> },
+  { label: 'HR Admin', email: 'hradmin@ctr.com', icon: <Users className="h-4 w-4" /> },
+  { label: 'Manager', email: 'manager@ctr.com', icon: <Briefcase className="h-4 w-4" /> },
+  { label: 'Staff', email: 'employee@ctr.com', icon: <UserCircle className="h-4 w-4" /> },
 ]
 
 // ─── Component ──────────────────────────────────────────────
@@ -85,27 +64,6 @@ export default function LoginPage() {
           </p>
           <p className="text-sm text-white/60">{ko.auth.slogan}</p>
 
-          {/* Decorative elements */}
-          <div className="mt-12 space-y-4">
-            <div className="flex items-center gap-3 rounded-lg bg-white/5 p-4 text-left">
-              <Users className="h-8 w-8 shrink-0 text-white/80" />
-              <div>
-                <p className="text-sm font-medium text-white">13개 법인 통합 관리</p>
-                <p className="text-xs text-white/60">
-                  한국 본사 + 해외 12개 법인 인사 데이터 통합
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 rounded-lg bg-white/5 p-4 text-left">
-              <Shield className="h-8 w-8 shrink-0 text-white/80" />
-              <div>
-                <p className="text-sm font-medium text-white">역할 기반 접근 제어</p>
-                <p className="text-xs text-white/60">
-                  RBAC 기반 세밀한 권한 관리 + 법인별 데이터 격리
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -161,9 +119,6 @@ export default function LoginPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <p className="text-center text-xs text-muted-foreground">
-                      테스트 계정으로 로그인
-                    </p>
                     {TEST_ACCOUNTS.map((account) => (
                       <Button
                         key={account.email}
@@ -177,12 +132,7 @@ export default function LoginPage() {
                         ) : (
                           account.icon
                         )}
-                        <div className="flex flex-col items-start">
-                          <span className="text-sm font-medium">{account.label}</span>
-                          <span className="text-[10px] text-muted-foreground">
-                            {account.description}
-                          </span>
-                        </div>
+                        <span className="text-sm font-medium">{account.label}</span>
                       </Button>
                     ))}
                   </div>

@@ -254,7 +254,7 @@ WHERE eo.status = 'COMPLETED'
 GROUP BY 1, 2, 3, 4;
 
 CREATE UNIQUE INDEX uq_exit_reason
-  ON mv_exit_reason_monthly(month, company_id, resign_type, COALESCE(primary_reason, 'NONE'));
+  ON mv_exit_reason_monthly(month, company_id, resign_type, primary_reason) WHERE primary_reason IS NOT NULL;
 
 -- ================================================================
 -- MV 8: mv_compa_ratio_distribution

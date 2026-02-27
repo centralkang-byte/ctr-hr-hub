@@ -50,3 +50,36 @@ export const krLaborModule: LaborModule = {
     return Math.min(base + additional, 25)
   },
 }
+
+// 연차 사용 촉진 (근로기준법 제61조) — STEP 2.5
+export const KR_LEAVE_PROMOTION = {
+  enabled: true,
+  steps: [
+    {
+      step: 1,
+      trigger: 'ANNIVERSARY_MINUS_2M',
+      action: 'NOTIFY_EMPLOYEE',
+      message_key: 'LEAVE_PROMOTION_STEP1',
+    },
+    {
+      step: 2,
+      trigger: 'ANNIVERSARY_MINUS_1M',
+      action: 'REQUEST_SCHEDULE',
+      message_key: 'LEAVE_PROMOTION_STEP2',
+    },
+    {
+      step: 3,
+      trigger: 'ANNIVERSARY_MINUS_10D',
+      action: 'EMPLOYER_DESIGNATE',
+      message_key: 'LEAVE_PROMOTION_STEP3',
+    },
+  ],
+  // 3단계 모두 이행 시 → 미사용 연차 수당 지급 의무 면제
+  exemption_on_completion: true,
+} as const
+
+export const KR_LEAVE_PROMOTION_EVENTS = [
+  'LEAVE_PROMOTION_STEP1',
+  'LEAVE_PROMOTION_STEP2',
+  'LEAVE_PROMOTION_STEP3',
+] as const
