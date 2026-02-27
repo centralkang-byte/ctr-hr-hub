@@ -142,3 +142,110 @@ function logAiCall(input: AiLogInput): void {
       // AI logging should not break business logic
     })
 }
+
+// ─── Onboarding Checkin Summary ──────────────────────────
+
+interface CheckinData {
+  week: number
+  mood: string
+  energy: number
+  belonging: number
+  comment: string | null
+}
+
+interface OnboardingCheckinSummaryResult {
+  overall_sentiment: 'POSITIVE' | 'MIXED' | 'CONCERNING'
+  trend: 'IMPROVING' | 'STABLE' | 'DECLINING'
+  key_observations: string[]
+  recommended_actions: string[]
+}
+
+export async function onboardingCheckinSummary(
+  employeeName: string,
+  checkins: CheckinData[],
+  companyId: string,
+  employeeId: string,
+): Promise<OnboardingCheckinSummaryResult> {
+  const prompt = `다음은 ${employeeName} 신입사원의 온보딩 체크인 데이터입니다:
+
+${checkins
+  .map(
+    (c) =>
+      `${c.week}주차: mood=${c.mood}, energy=${c.energy}/5, belonging=${c.belonging}/5${c.comment ? `, comment="${c.comment}"` : ''}`,
+  )
+  .join('\n')}
+
+위 데이터를 분석하여 아래 JSON 형식으로 응답하세요:
+{
+  "overall_sentiment": "POSITIVE" | "MIXED" | "CONCERNING",
+  "trend": "IMPROVING" | "STABLE" | "DECLINING",
+  "key_observations": ["관찰 사항 1", "관찰 사항 2"],
+  "recommended_actions": ["권장 조치 1", "권장 조치 2"]
+}
+
+JSON만 응답하세요.`
+
+  const result = await callClaude({
+    feature: 'ONBOARDING_CHECKIN_SUMMARY',
+    prompt,
+    maxTokens: 1024,
+    companyId,
+    employeeId,
+  })
+
+  try {
+    return JSON.parse(result.content) as OnboardingCheckinSummaryResult
+  } catch {
+    throw serviceUnavailable('AI 분석 결과 파싱에 실패했습니다.')
+  }
+}
+
+// ─── Exit Interview Summary ───────────────────────────────
+
+interface ExitInterviewSummaryResult {
+  sentiment: 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE'
+  key_issues: string[]
+  retention_insight: string
+  action_needed: string | null
+}
+
+export async function exitInterviewSummary(
+  employeeName: string,
+  tenureMonths: number,
+  resignType: string,
+  primaryReason: string,
+  satisfactionScore: number,
+  feedbackText: string,
+  companyId: string,
+  employeeId: string,
+): Promise<ExitInterviewSummaryResult> {
+  const prompt = `다음은 ${employeeName}(재직 ${tenureMonths}개월)의 퇴직 면담 정보입니다:
+퇴직 유형: ${resignType}
+주요 퇴사 사유: ${primaryReason}
+만족도: ${satisfactionScore}/5
+의견: "${feedbackText}"
+
+위 내용을 분석하여 아래 JSON 형식으로 응답하세요:
+{
+  "sentiment": "POSITIVE" | "NEUTRAL" | "NEGATIVE",
+  "key_issues": ["핵심 이슈 1", "핵심 이슈 2"],
+  "retention_insight": "이 직원을 유지할 수 있었던 방법에 대한 인사이트",
+  "action_needed": "필요한 조직 개선 행동 또는 null"
+}
+
+JSON만 응답하세요.`
+
+  const result = await callClaude({
+    feature: 'EXIT_INTERVIEW_SUMMARY',
+    prompt,
+    maxTokens: 1024,
+    companyId,
+    employeeId,
+  })
+
+  try {
+    return JSON.parse(result.content) as ExitInterviewSummaryResult
+  } catch {
+    throw serviceUnavailable('AI 분석 결과 파싱에 실패했습니다.')
+  }
+}
