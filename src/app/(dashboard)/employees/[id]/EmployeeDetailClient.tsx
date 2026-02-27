@@ -31,6 +31,14 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
+import { Textarea } from '@/components/ui/textarea'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { apiClient } from '@/lib/api'
@@ -240,6 +248,59 @@ export function EmployeeDetailClient({
   })
   const [saving, setSaving] = useState(false)
   const [editError, setEditError] = useState<string | null>(null)
+
+  // ─── Offboarding wizard state ───
+  const [offboardingOpen, setOffboardingOpen] = useState(false)
+  const [offboardingStep, setOffboardingStep] = useState(1)
+  const [offboardingSubmitting, setOffboardingSubmitting] = useState(false)
+  const [offboardingError, setOffboardingError] = useState<string | null>(null)
+  const [offboardingData, setOffboardingData] = useState({
+    resignType: '' as '' | 'VOLUNTARY' | 'INVOLUNTARY' | 'RETIREMENT' | 'CONTRACT_END',
+    lastWorkingDate: '',
+    resignReasonCode: '',
+    resignReasonDetail: '',
+    handoverToId: '',
+  })
+
+  const RESIGN_TYPE_LABELS: Record<string, string> = {
+    VOLUNTARY: '자발적 퇴사',
+    INVOLUNTARY: '비자발적 퇴사',
+    RETIREMENT: '정년퇴직',
+    CONTRACT_END: '계약만료',
+  }
+
+  const resetOffboarding = useCallback(() => {
+    setOffboardingStep(1)
+    setOffboardingError(null)
+    setOffboardingData({
+      resignType: '',
+      lastWorkingDate: '',
+      resignReasonCode: '',
+      resignReasonDetail: '',
+      handoverToId: '',
+    })
+  }, [])
+
+  const handleOffboardingSubmit = useCallback(async () => {
+    setOffboardingSubmitting(true)
+    setOffboardingError(null)
+    try {
+      await apiClient.post(`/api/v1/employees/${employee.id}/offboarding/start`, {
+        resignType: offboardingData.resignType,
+        lastWorkingDate: new Date(offboardingData.lastWorkingDate).toISOString(),
+        ...(offboardingData.resignReasonCode ? { resignReasonCode: offboardingData.resignReasonCode } : {}),
+        ...(offboardingData.resignReasonDetail ? { resignReasonDetail: offboardingData.resignReasonDetail } : {}),
+        ...(offboardingData.handoverToId ? { handoverToId: offboardingData.handoverToId } : {}),
+      })
+      setOffboardingOpen(false)
+      resetOffboarding()
+      router.push('/offboarding')
+    } catch (err: unknown) {
+      setOffboardingError(err instanceof Error ? err.message : '퇴직 처리에 실패했습니다.')
+    } finally {
+      setOffboardingSubmitting(false)
+    }
+  }, [employee.id, offboardingData, resetOffboarding, router])
 
   // ─── Histories tab ───
   const [histories, setHistories] = useState<HistoryRow[]>([])
@@ -735,7 +796,7 @@ export function EmployeeDetailClient({
             )}
           </div>
 
-          {/* Resign button (HR_ADMIN + ACTIVE) */}
+          {/* Offboarding wizard (HR_ADMIN + ACTIVE) */}
           {isHrAdmin && employee.status === 'ACTIVE' && (
             <div className="rounded-lg border bg-card p-4">
               <h3 className="mb-2 text-sm font-semibold text-muted-foreground">퇴직 처리</h3>
@@ -744,21 +805,161 @@ export function EmployeeDetailClient({
                 size="sm"
                 className="w-full"
                 onClick={() => {
-                  if (confirm('정말 퇴직 처리하시겠습니까?')) {
-                    apiClient
-                      .put(`/api/v1/employees/${employee.id}`, {
-                        status: 'RESIGNED',
-                        resignDate: new Date().toISOString().split('T')[0],
-                      })
-                      .then(() => router.push('/employees'))
-                      .catch(() => alert('퇴직 처리에 실패했습니다.'))
-                  }
+                  resetOffboarding()
+                  setOffboardingOpen(true)
                 }}
               >
                 퇴직 처리
               </Button>
             </div>
           )}
+
+          {/* Offboarding wizard dialog */}
+          <Dialog open={offboardingOpen} onOpenChange={(open) => { setOffboardingOpen(open); if (!open) resetOffboarding() }}>
+            <DialogContent className="sm:max-w-lg">
+              <DialogHeader>
+                <DialogTitle>퇴직 처리 ({offboardingStep}/3)</DialogTitle>
+              </DialogHeader>
+
+              {offboardingError && (
+                <p className="rounded-md border border-destructive/50 bg-destructive/10 px-4 py-2 text-sm text-destructive">
+                  {offboardingError}
+                </p>
+              )}
+
+              {/* Step 1: 퇴직 유형 + 최종 근무일 */}
+              {offboardingStep === 1 && (
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <Label>퇴직 유형 <span className="text-destructive">*</span></Label>
+                    <Select
+                      value={offboardingData.resignType || '__NONE__'}
+                      onValueChange={(v) => setOffboardingData((p) => ({ ...p, resignType: v === '__NONE__' ? '' as const : v as typeof p.resignType }))}
+                    >
+                      <SelectTrigger><SelectValue placeholder="퇴직 유형 선택" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__NONE__">선택해주세요</SelectItem>
+                        <SelectItem value="VOLUNTARY">자발적 퇴사</SelectItem>
+                        <SelectItem value="INVOLUNTARY">비자발적 퇴사</SelectItem>
+                        <SelectItem value="RETIREMENT">정년퇴직</SelectItem>
+                        <SelectItem value="CONTRACT_END">계약만료</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>최종 근무일 <span className="text-destructive">*</span></Label>
+                    <Input
+                      type="date"
+                      value={offboardingData.lastWorkingDate}
+                      onChange={(e) => setOffboardingData((p) => ({ ...p, lastWorkingDate: e.target.value }))}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Step 2: 사유 + 인수자 */}
+              {offboardingStep === 2 && (
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <Label>퇴직 사유 코드</Label>
+                    <Input
+                      placeholder="예: PERSONAL, CAREER_CHANGE"
+                      value={offboardingData.resignReasonCode}
+                      onChange={(e) => setOffboardingData((p) => ({ ...p, resignReasonCode: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>퇴직 사유 상세</Label>
+                    <Textarea
+                      placeholder="퇴직 사유를 상세히 입력해주세요"
+                      rows={3}
+                      value={offboardingData.resignReasonDetail}
+                      onChange={(e) => setOffboardingData((p) => ({ ...p, resignReasonDetail: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>업무 인수자 ID (선택)</Label>
+                    <Input
+                      placeholder="인수자 UUID (선택 사항)"
+                      value={offboardingData.handoverToId}
+                      onChange={(e) => setOffboardingData((p) => ({ ...p, handoverToId: e.target.value }))}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Step 3: 확인 */}
+              {offboardingStep === 3 && (
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold">최종 확인</h4>
+                  <div className="rounded-md border bg-muted/30 p-4 space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">직원</span>
+                      <span className="font-medium">{employee.name} ({employee.employeeNo})</span>
+                    </div>
+                    <Separator />
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">퇴직 유형</span>
+                      <span className="font-medium">{RESIGN_TYPE_LABELS[offboardingData.resignType] ?? '-'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">최종 근무일</span>
+                      <span className="font-medium">{offboardingData.lastWorkingDate || '-'}</span>
+                    </div>
+                    {offboardingData.resignReasonCode && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">사유 코드</span>
+                        <span className="font-medium">{offboardingData.resignReasonCode}</span>
+                      </div>
+                    )}
+                    {offboardingData.resignReasonDetail && (
+                      <div>
+                        <span className="text-muted-foreground">사유 상세</span>
+                        <p className="mt-1 font-medium">{offboardingData.resignReasonDetail}</p>
+                      </div>
+                    )}
+                    {offboardingData.handoverToId && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">인수자 ID</span>
+                        <span className="font-mono text-xs font-medium">{offboardingData.handoverToId}</span>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-destructive">
+                    퇴직 처리를 시작하면 직원 상태가 변경되고 오프보딩 체크리스트가 생성됩니다.
+                  </p>
+                </div>
+              )}
+
+              <DialogFooter className="gap-2 sm:gap-0">
+                {offboardingStep > 1 && (
+                  <Button variant="outline" onClick={() => setOffboardingStep((s) => s - 1)} disabled={offboardingSubmitting}>
+                    이전
+                  </Button>
+                )}
+                {offboardingStep < 3 && (
+                  <Button
+                    className="bg-ctr-primary hover:bg-ctr-primary/90"
+                    disabled={
+                      offboardingStep === 1 && (!offboardingData.resignType || !offboardingData.lastWorkingDate)
+                    }
+                    onClick={() => setOffboardingStep((s) => s + 1)}
+                  >
+                    다음
+                  </Button>
+                )}
+                {offboardingStep === 3 && (
+                  <Button
+                    variant="destructive"
+                    disabled={offboardingSubmitting}
+                    onClick={handleOffboardingSubmit}
+                  >
+                    {offboardingSubmitting ? '처리 중...' : '퇴직 처리 시작'}
+                  </Button>
+                )}
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>
