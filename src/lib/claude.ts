@@ -304,3 +304,68 @@ JSON만 응답하세요.`
     throw serviceUnavailable('AI 분석 결과 파싱에 실패했습니다.')
   }
 }
+
+// ─── Resume Analysis ─────────────────────────────────────
+
+interface ResumeAnalysisInput {
+  resumeText: string
+  jobTitle: string
+  requirements?: string
+  preferred?: string
+}
+
+export interface ResumeAnalysisResult {
+  overall_score: number
+  fit_assessment: string
+  strengths: string[]
+  concerns: string[]
+  experience_match: number
+  skill_match: number
+  culture_fit_indicators: string[]
+  summary: string
+}
+
+export async function analyzeResume(
+  input: ResumeAnalysisInput,
+  companyId: string,
+  employeeId: string,
+): Promise<ResumeAnalysisResult> {
+  const prompt = `당신은 CTR Holdings(자동차부품 글로벌 기업)의 채용 전문가입니다.
+다음 이력서를 분석하여 채용 적합도를 평가하세요.
+
+직무: ${input.jobTitle}
+${input.requirements ? `자격 요건:\n${input.requirements}` : ''}
+${input.preferred ? `우대 사항:\n${input.preferred}` : ''}
+
+이력서 내용:
+${input.resumeText}
+
+아래 JSON 형식으로 응답하세요:
+{
+  "overall_score": 0-100 정수,
+  "fit_assessment": "적합도 한줄 평가",
+  "strengths": ["강점 1", "강점 2", "강점 3"],
+  "concerns": ["우려사항 1", "우려사항 2"],
+  "experience_match": 0-100 정수 (경험 매칭 점수),
+  "skill_match": 0-100 정수 (기술 매칭 점수),
+  "culture_fit_indicators": ["문화적합 지표 1", "문화적합 지표 2"],
+  "summary": "종합 평가 2-3문장"
+}
+
+JSON만 응답하세요.`
+
+  const result = await callClaude({
+    feature: 'RESUME_ANALYSIS',
+    prompt,
+    systemPrompt: 'You are a recruitment specialist for CTR Holdings, a global automotive parts company. Respond in Korean with JSON only.',
+    maxTokens: 1024,
+    companyId,
+    employeeId,
+  })
+
+  try {
+    return JSON.parse(result.content) as ResumeAnalysisResult
+  } catch {
+    throw serviceUnavailable('AI 분석 결과 파싱에 실패했습니다.')
+  }
+}
