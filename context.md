@@ -260,3 +260,134 @@ interface ContractRule {
 4. Apply `prisma/migrations/mv_analytics.sql` manually
 5. Remove `ExtendedPrismaClient` cast in contracts routes (after prisma generate is standard)
 6. Verify dev server: `npm run dev` → localhost:3000
+
+---
+
+# CTR HR Hub v3.2 — STEP 3 Session Context
+
+**Date:** 2026-02-27
+**Status:** STEP3 Complete
+**TypeScript Errors:** 0
+
+## What Was Built (STEP 3)
+
+Onboarding lifecycle, offboarding lifecycle, emotional check-in system,
+exit interviews with AI analysis, IT account deactivation, self-service profile changes.
+
+## New Lib Files (2)
+
+- `src/lib/notifications.ts` — Fire-and-forget notification helper (sendNotification)
+- `src/lib/offboarding-complete.ts` — IT account deactivation + SSO revocation helper
+
+## Updated Lib Files (2)
+
+- `src/lib/claude.ts` — Added `onboardingCheckinSummary()` and `exitInterviewSummary()` AI functions
+- `src/lib/constants.ts` — Added `CTR_VALUES` (5 core values with emoji icons)
+
+## New API Routes (24)
+
+### Onboarding (11)
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/v1/onboarding/templates` | GET/POST | 온보딩 템플릿 CRUD |
+| `/api/v1/onboarding/templates/[id]` | GET/PUT/DELETE | 템플릿 상세 |
+| `/api/v1/onboarding/templates/[id]/tasks` | GET/POST | 템플릿 태스크 관리 |
+| `/api/v1/onboarding/templates/[id]/tasks/reorder` | PUT | 태스크 순서 변경 (DnD) |
+| `/api/v1/onboarding/dashboard` | GET | 온보딩 대시보드 (진행중 목록) |
+| `/api/v1/onboarding/tasks/[id]/complete` | PUT | 태스크 완료 처리 |
+| `/api/v1/onboarding/[id]/force-complete` | PUT | 온보딩 강제 완료 |
+| `/api/v1/onboarding/me` | GET | 내 온보딩 현황 |
+| `/api/v1/onboarding/checkin` | POST | 주간 체크인 제출 |
+| `/api/v1/onboarding/checkins` | GET | 체크인 현황 (HR admin) |
+| `/api/v1/onboarding/checkins/[employeeId]` | GET | 직원별 체크인 이력 |
+
+### Offboarding (8)
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/v1/offboarding/checklists` | GET/POST | 퇴직 체크리스트 CRUD |
+| `/api/v1/offboarding/checklists/[id]` | GET/PUT/DELETE | 체크리스트 상세 |
+| `/api/v1/offboarding/checklists/[id]/tasks` | GET/POST | 체크리스트 태스크 관리 |
+| `/api/v1/offboarding/dashboard` | GET | 퇴직 대시보드 |
+| `/api/v1/offboarding/[id]/tasks/[taskId]/complete` | PUT | 퇴직 태스크 완료 + IT 비활성화 |
+| `/api/v1/offboarding/[id]/cancel` | PUT | 퇴직 취소 |
+| `/api/v1/offboarding/[id]/exit-interview` | GET/POST | 퇴직 면담 |
+| `/api/v1/offboarding/[id]/exit-interview/ai-summary` | POST | AI 퇴직 면담 분석 |
+
+### Employee (1)
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/v1/employees/[id]/offboarding/start` | POST | 퇴직 처리 시작 (3단계 위저드) |
+
+### Profile (3)
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/v1/profile/change-requests` | GET/POST | 내 정보변경 요청 |
+| `/api/v1/profile/change-requests/pending` | GET | 대기중 요청 목록 (HR admin) |
+| `/api/v1/profile/change-requests/[id]/review` | PUT | 승인/반려 |
+
+### AI (1)
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/v1/ai/onboarding-checkin-summary` | POST | 체크인 AI 요약 |
+
+### Files (1)
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/v1/files/presigned` | POST | S3 presigned upload URL 생성 |
+
+## New UI Pages & Components (20)
+
+### Onboarding Settings (2)
+- `src/app/(dashboard)/settings/onboarding/page.tsx`
+- `src/app/(dashboard)/settings/onboarding/OnboardingSettingsClient.tsx`
+
+### Onboarding Dashboard (2)
+- `src/app/(dashboard)/onboarding/page.tsx`
+- `src/app/(dashboard)/onboarding/OnboardingDashboardClient.tsx`
+
+### Employee Onboarding (2)
+- `src/app/(dashboard)/onboarding/me/page.tsx`
+- `src/app/(dashboard)/onboarding/me/OnboardingMeClient.tsx`
+
+### Check-in (4)
+- `src/app/(dashboard)/onboarding/checkin/page.tsx`
+- `src/app/(dashboard)/onboarding/checkin/CheckinFormClient.tsx`
+- `src/app/(dashboard)/onboarding/checkins/page.tsx`
+- `src/app/(dashboard)/onboarding/checkins/CheckinsAdminClient.tsx`
+
+### Offboarding Settings (2)
+- `src/app/(dashboard)/settings/offboarding/page.tsx`
+- `src/app/(dashboard)/settings/offboarding/OffboardingSettingsClient.tsx`
+
+### Offboarding Dashboard (2)
+- `src/app/(dashboard)/offboarding/page.tsx`
+- `src/app/(dashboard)/offboarding/OffboardingDashboardClient.tsx`
+
+### Offboarding Detail (2)
+- `src/app/(dashboard)/offboarding/[id]/page.tsx`
+- `src/app/(dashboard)/offboarding/[id]/OffboardingDetailClient.tsx`
+
+### Self-Service Profile (4)
+- `src/app/(dashboard)/employees/me/page.tsx`
+- `src/app/(dashboard)/employees/me/ProfileSelfServiceClient.tsx`
+- `src/app/(dashboard)/settings/profile-requests/page.tsx`
+- `src/app/(dashboard)/settings/profile-requests/ProfileRequestsClient.tsx`
+
+## Updated Files (2)
+
+- `src/components/layout/Sidebar.tsx` — Added 온보딩 nav group, updated settings sub-items
+- `src/app/(dashboard)/employees/[id]/EmployeeDetailClient.tsx` — 퇴직처리 3단계 위저드 다이얼로그
+
+## Packages Added
+
+- `recharts` — LineChart for check-in trends
+- `@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities` — Drag-and-drop for task reorder
+
+## Key Architecture Decisions
+
+- **Soft delete**: OnboardingTemplate uses `deletedAt`, OffboardingChecklist uses `isActive`
+- **Fire-and-forget notifications**: `sendNotification()` won't block API response
+- **IT deactivation**: Triggered by offboarding task completion via `deactivateItAccount()`
+- **Profile change enum values**: `CHANGE_PENDING`/`CHANGE_APPROVED`/`CHANGE_REJECTED` (Prisma enum)
+- **D-day warnings**: D-7 yellow, D-3 red pulsing in offboarding dashboard
+- **3-tab offboarding detail**: Tasks / Handover / Exit Interview

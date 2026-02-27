@@ -31,6 +31,8 @@ import {
   FileText,
   UserCircle,
   LogOut,
+  Smile,
+  UserCheck,
   type LucideIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -76,6 +78,7 @@ const NAV_GROUPS: NavGroup[] = [
     module: MODULE.EMPLOYEES,
     items: [
       { label: '사원목록', href: '/employees', icon: Users },
+      { label: '내 프로필', href: '/employees/me', icon: UserCircle },
       { label: '조직도', href: '/org', icon: Network },
       { label: '직급/직책', href: '/org/grades', icon: Shield },
     ],
@@ -129,12 +132,22 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
+    label: '온보딩',
+    icon: UserCheck,
+    module: MODULE.ONBOARDING,
+    items: [
+      { label: '온보딩 대시보드', href: '/onboarding', icon: UserCheck },
+      { label: '내 온보딩', href: '/onboarding/me', icon: UserCircle },
+      { label: '체크인', href: '/onboarding/checkin', icon: Smile },
+      { label: '체크인 현황', href: '/onboarding/checkins', icon: ListChecks },
+    ],
+  },
+  {
     label: '퇴직관리',
     icon: UserMinus,
     module: MODULE.OFFBOARDING,
     items: [
-      { label: '퇴직처리', href: '/offboarding', icon: UserMinus },
-      { label: '퇴직현황', href: '/offboarding/status', icon: ListChecks },
+      { label: '퇴직 대시보드', href: '/offboarding', icon: UserMinus },
     ],
   },
   {
@@ -171,6 +184,9 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: '회사설정', href: '/settings', icon: Settings },
       { label: '권한관리', href: '/settings/roles', icon: Shield },
+      { label: '온보딩 설정', href: '/settings/onboarding', icon: UserCheck },
+      { label: '퇴직 체크리스트', href: '/settings/offboarding', icon: UserMinus },
+      { label: '정보변경 요청', href: '/settings/profile-requests', icon: ClipboardCheck },
       { label: '감사로그', href: '/settings/audit-log', icon: FileText },
     ],
   },
