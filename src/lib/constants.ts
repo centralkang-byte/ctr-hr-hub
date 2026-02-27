@@ -169,3 +169,7 @@ export const CACHE_TTL = {
   SESSION: 3600,          // 1 hour
   PERMISSIONS: 600,       // 10 min
 } as const
+
+// ─── CTR Values (simple string array, STEP3 spec) ─────────
+export const CTR_VALUES = ['CHALLENGE', 'TRUST', 'RESPONSIBILITY', 'RESPECT'] as const
+export type CtrValue = (typeof CTR_VALUES)[number]

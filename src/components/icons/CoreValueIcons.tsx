@@ -167,3 +167,9 @@ export function RespectIcon({
     </svg>
   )
 }
+
+// Aliases with Ctr prefix (STEP3 spec)
+export const CtrChallengeIcon = ChallengeIcon
+export const CtrTrustIcon = TrustIcon
+export const CtrResponsibilityIcon = ResponsibilityIcon
+export const CtrRespectIcon = RespectIcon
