@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { notFound, badRequest } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
+import { deactivateItAccount } from '@/lib/offboarding-complete'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 
@@ -62,7 +63,7 @@ export const PUT = withPermission(
           where: { id },
           data: { status: 'COMPLETED', completedAt: new Date() },
         })
-        // NOTE: IT account deactivation will be added in Task 12
+        await deactivateItAccount(tx, offboarding.employeeId)
       }
     })
 
