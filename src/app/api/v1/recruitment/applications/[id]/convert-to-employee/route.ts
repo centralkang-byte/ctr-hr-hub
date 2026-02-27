@@ -34,8 +34,6 @@ export const POST = withPermission(
   ) => {
     const { id } = await context.params
 
-    const companyFilter = user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }
-
     // stage가 HIRED이고 아직 convertedEmployeeId가 없는 지원서
     const application = await prisma.application.findFirst({
       where: {

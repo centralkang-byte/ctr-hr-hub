@@ -91,7 +91,7 @@ export async function callClaude(
     }
 
     return result
-  } catch (error) {
+  } catch (_error) {
     const latencyMs = Date.now() - startTime
 
     if (input.companyId) {

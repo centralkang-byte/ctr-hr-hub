@@ -78,7 +78,7 @@ const ACTIVE_FILTER_OPTIONS: { value: ActiveFilter; label: string }[] = [
 
 // ─── Component ───────────────────────────────────────────
 
-export function CompetencyListClient({ user }: { user: SessionUser }) {
+export function CompetencyListClient(_props: { user: SessionUser }) {
   // ─── State ───
   const [competencies, setCompetencies] = useState<CompetencyLocal[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | undefined>()

@@ -218,9 +218,7 @@ function CustomTooltip({
 
 // ─── Main Component ─────────────────────────────────────────
 
-export function RecruitmentDashboardClient({
-  user,
-}: {
+export function RecruitmentDashboardClient(_props: {
   user: SessionUser
 }) {
   const router = useRouter()

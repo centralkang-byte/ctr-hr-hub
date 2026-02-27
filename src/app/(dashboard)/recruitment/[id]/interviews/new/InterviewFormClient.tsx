@@ -91,7 +91,6 @@ const INITIAL_FORM: FormState = {
 // ─── Component ──────────────────────────────────────────────
 
 export function InterviewFormClient({
-  user,
   postingId,
 }: {
   user: SessionUser
