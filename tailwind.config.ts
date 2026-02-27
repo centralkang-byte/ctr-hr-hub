@@ -53,6 +53,8 @@ const config: Config = {
   			// CTR Brand Colors
   			'ctr-primary': '#003876',
   			'ctr-secondary': '#0068B7',
+  			'ctr-sidebar': '#D0E8F8',
+  			'ctr-sidebar-text': '#1E3A5F',
   			'ctr-accent': '#E63312',
   			'ctr-light': '#F5F7FA',
   			'ctr-dark': '#1A1A1A',

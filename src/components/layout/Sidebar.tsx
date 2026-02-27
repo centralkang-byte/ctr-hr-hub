@@ -113,8 +113,10 @@ const NAV_GROUPS: NavGroup[] = [
     icon: Target,
     module: MODULE.PERFORMANCE,
     items: [
-      { label: '성과평가', href: '/performance', icon: Target },
+      { label: '성과 대시보드', href: '/performance', icon: Target },
       { label: '목표관리', href: '/performance/goals', icon: ClipboardCheck },
+      { label: '팀 목표', href: '/performance/team-goals', icon: Users },
+      { label: '성과 결과', href: '/performance/results', icon: BarChart3 },
       { label: '1:1 미팅', href: '/performance/one-on-one', icon: Handshake },
       { label: '역량평가', href: '/performance/competency', icon: BarChart3 },
     ],
@@ -207,6 +209,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: '온보딩 설정', href: '/settings/onboarding', icon: UserCheck },
       { label: '퇴직 체크리스트', href: '/settings/offboarding', icon: UserMinus },
       { label: '정보변경 요청', href: '/settings/profile-requests', icon: ClipboardCheck },
+      { label: '평가 사이클', href: '/settings/performance-cycles', icon: Target },
       { label: '역량 라이브러리', href: '/settings/competencies', icon: Target },
       { label: '감사로그', href: '/settings/audit-log', icon: FileText },
     ],
@@ -251,24 +254,24 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
     <TooltipProvider delayDuration={0}>
       <aside
         className={cn(
-          'flex h-screen flex-col bg-ctr-primary text-white transition-all duration-300',
+          'flex h-screen flex-col bg-ctr-sidebar text-ctr-sidebar-text transition-all duration-300',
           collapsed ? 'w-16' : 'w-64',
         )}
       >
         {/* ─── Logo / Brand Area ─── */}
         <div className={cn('flex items-center gap-3 px-4 py-5', collapsed && 'justify-center px-2')}>
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10 font-bold text-white">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-ctr-primary/15 font-bold text-ctr-primary">
             C
           </div>
           {!collapsed && (
             <div className="min-w-0 flex-1">
-              <h1 className="truncate text-sm font-bold tracking-tight">CTR HR Hub</h1>
-              <p className="truncate text-[10px] text-white/60">{ko.auth.slogan}</p>
+              <h1 className="truncate text-sm font-bold tracking-tight text-ctr-primary">CTR HR Hub</h1>
+              <p className="truncate text-[10px] text-ctr-sidebar-text/60">{ko.auth.slogan}</p>
             </div>
           )}
         </div>
 
-        <Separator className="bg-white/10" />
+        <Separator className="bg-ctr-primary/15" />
 
         {/* ─── Navigation ─── */}
         <ScrollArea className="flex-1 py-2">
@@ -277,7 +280,7 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
               <div key={group.label} className="mb-3">
                 {/* Group label */}
                 {!collapsed && (
-                  <div className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-wider text-white/40">
+                  <div className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-wider text-ctr-sidebar-text/40">
                     {group.label}
                   </div>
                 )}
@@ -294,8 +297,8 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
                       href={item.href}
                       className={cn(
                         'flex items-center gap-3 rounded-md px-2 py-2 text-sm font-medium transition-colors',
-                        'hover:bg-white/10',
-                        isActive && 'bg-white/10',
+                        'hover:bg-ctr-primary/15',
+                        isActive && 'bg-ctr-primary/10',
                         collapsed && 'justify-center px-0',
                       )}
                     >
@@ -322,13 +325,13 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
           </nav>
         </ScrollArea>
 
-        <Separator className="bg-white/10" />
+        <Separator className="bg-ctr-primary/15" />
 
         {/* ─── Collapse Toggle ─── */}
         <button
           type="button"
           onClick={toggleCollapsed}
-          className="flex items-center justify-center py-2 hover:bg-white/10"
+          className="flex items-center justify-center py-2 hover:bg-ctr-primary/15"
           aria-label={collapsed ? '사이드바 펼치기' : '사이드바 접기'}
         >
           {collapsed ? (
@@ -338,7 +341,7 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
           )}
         </button>
 
-        <Separator className="bg-white/10" />
+        <Separator className="bg-ctr-primary/15" />
 
         {/* ─── User Profile Section ─── */}
         <div
@@ -347,15 +350,15 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
             collapsed && 'flex-col gap-1 px-1',
           )}
         >
-          <Avatar className="h-8 w-8 shrink-0 border border-white/20">
-            <AvatarFallback className="bg-white/10 text-xs text-white">
+          <Avatar className="h-8 w-8 shrink-0 border border-ctr-primary/20">
+            <AvatarFallback className="bg-ctr-primary/15 text-xs text-ctr-primary">
               {userInitial}
             </AvatarFallback>
           </Avatar>
           {!collapsed && (
             <div className="min-w-0 flex-1">
               <p className="truncate text-xs font-medium">{user.name}</p>
-              <p className="truncate text-[10px] text-white/60">{user.role}</p>
+              <p className="truncate text-[10px] text-ctr-sidebar-text/50">{user.role}</p>
             </div>
           )}
           <Tooltip>
@@ -363,7 +366,7 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
               <button
                 type="button"
                 onClick={onSignOut}
-                className="shrink-0 rounded p-1 hover:bg-white/10"
+                className="shrink-0 rounded p-1 hover:bg-ctr-primary/15"
                 aria-label={ko.auth.logout}
               >
                 <LogOut className="h-4 w-4" />
