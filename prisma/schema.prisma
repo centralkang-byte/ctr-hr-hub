@@ -136,6 +136,9 @@ enum DisciplinaryCategory {
   QUALITY
   CONDUCT
   POLICY_VIOLATION
+  MISCONDUCT
+  HARASSMENT
+  FRAUD
   OTHER
 }
 
@@ -154,7 +157,35 @@ enum RewardType {
   LONG_SERVICE
   INNOVATION
   SAFETY_AWARD
+  CTR_VALUE_AWARD
   OTHER
+}
+
+enum WorkMode {
+  OFFICE
+  REMOTE
+  HYBRID
+}
+
+enum InterviewType {
+  PHONE
+  VIDEO
+  ONSITE
+  PANEL
+}
+
+enum InterviewRound {
+  FIRST
+  SECOND
+  FINAL
+}
+
+enum DisciplinaryStatus {
+  DISCIPLINE_ACTIVE
+  DISCIPLINE_EXPIRED
+  DISCIPLINE_OVERTURNED
+
+  @@map("DisciplinaryStatus")
 }
 
 enum OnboardingTargetType {
@@ -272,6 +303,7 @@ enum ApplicationStage {
   SCREENING
   INTERVIEW_1
   INTERVIEW_2
+  FINAL
   OFFER
   HIRED
   REJECTED
@@ -418,6 +450,8 @@ enum AiFeature {
   ANALYTICS_INSIGHT
   ONBOARDING_CHECKIN_SUMMARY
   EXIT_INTERVIEW_SUMMARY
+  JOB_DESCRIPTION_GENERATION
+  RESUME_ANALYSIS
 }
 
 enum TrainingCategory {
@@ -734,8 +768,9 @@ model JobGrade {
   employees          Employee[]
   salaryBands        SalaryBand[]
   jobPostings        JobPosting[]
-  fromGradeHistories EmployeeHistory[] @relation("HistoryFromGrade")
-  toGradeHistories   EmployeeHistory[] @relation("HistoryToGrade")
+  fromGradeHistories    EmployeeHistory[]    @relation("HistoryFromGrade")
+  toGradeHistories      EmployeeHistory[]    @relation("HistoryToGrade")
+  disciplinaryDemotions DisciplinaryAction[] @relation("DisciplinaryDemotionGrade")
 
   @@map("job_grades")
 }
@@ -916,8 +951,9 @@ model Employee {
   leaveApprovals        LeaveRequest[]         @relation("LeaveApprover")
 
   // Recruitment
-  jobPostingsCreated   JobPosting[]          @relation("JobPostingCreator")
-  interviewSchedules   InterviewSchedule[]
+  jobPostingsCreated      JobPosting[]          @relation("JobPostingCreator")
+  jobPostingsAsRecruiter  JobPosting[]          @relation("JobPostingRecruiter")
+  interviewSchedules      InterviewSchedule[]
   interviewEvaluations InterviewEvaluation[]
 
   // Performance
@@ -1233,14 +1269,22 @@ model DisciplinaryAction {
   suspensionEnd    DateTime?            @map("suspension_end")
   appealStatus     AppealStatus         @default(NONE) @map("appeal_status")
   appealDate       DateTime?            @map("appeal_date")
-  appealResult     String?              @map("appeal_result")
+  appealResult          String?              @map("appeal_result")
+  status                DisciplinaryStatus   @default(DISCIPLINE_ACTIVE)
+  validMonths           Int?                 @map("valid_months")
+  expiresAt             DateTime?            @map("expires_at")
+  appealText            String?              @map("appeal_text")
+  demotionGradeId       String?              @map("demotion_grade_id")
+  salaryReductionRate   Decimal?             @map("salary_reduction_rate")
+  salaryReductionMonths Int?                 @map("salary_reduction_months")
   issuedBy         String               @map("issued_by")
   createdAt        DateTime             @default(now()) @map("created_at")
   deletedAt        DateTime?            @map("deleted_at")
 
-  employee Employee @relation("DisciplinaryEmployee", fields: [employeeId], references: [id])
-  company  Company  @relation(fields: [companyId], references: [id])
-  issuer   Employee @relation("DisciplinaryIssuer", fields: [issuedBy], references: [id])
+  employee      Employee  @relation("DisciplinaryEmployee", fields: [employeeId], references: [id])
+  company       Company   @relation(fields: [companyId], references: [id])
+  issuer        Employee  @relation("DisciplinaryIssuer", fields: [issuedBy], references: [id])
+  demotionGrade JobGrade? @relation("DisciplinaryDemotionGrade", fields: [demotionGradeId], references: [id])
 
   @@map("disciplinary_actions")
 }
@@ -1255,8 +1299,10 @@ model RewardRecord {
   amount      Decimal?
   awardedDate DateTime   @map("awarded_date")
   awardedBy   String     @map("awarded_by")
-  documentKey String?    @map("document_key")
-  createdAt   DateTime   @default(now()) @map("created_at")
+  documentKey  String?    @map("document_key")
+  ctrValue     String?    @map("ctr_value")
+  serviceYears Int?       @map("service_years")
+  createdAt    DateTime   @default(now()) @map("created_at")
 
   employee Employee @relation("RewardEmployee", fields: [employeeId], references: [id])
   company  Company  @relation(fields: [companyId], references: [id])
@@ -1397,6 +1443,7 @@ model Attendance {
   clockIn          DateTime?        @map("clock_in")
   clockOut         DateTime?        @map("clock_out")
   clockInMethod    ClockMethod?     @map("clock_in_method")
+  clockOutMethod   ClockMethod?     @map("clock_out_method")
   clockInLat       Decimal?         @map("clock_in_lat")
   clockInLng       Decimal?         @map("clock_in_lng")
   terminalId       String?          @map("terminal_id")
@@ -1423,6 +1470,7 @@ model AttendanceTerminal {
   terminalType    TerminalType @map("terminal_type")
   locationName    String       @map("location_name")
   ipAddress       String?      @map("ip_address")
+  apiSecret       String       @map("api_secret")
   isActive        Boolean      @default(true) @map("is_active")
   lastHeartbeatAt DateTime?    @map("last_heartbeat_at")
   createdAt       DateTime     @default(now()) @map("created_at")
@@ -1446,6 +1494,7 @@ model LeavePolicy {
   carryOverAllowed Boolean   @default(false) @map("carry_over_allowed")
   maxCarryOverDays Decimal?  @map("max_carry_over_days")
   minTenureMonths  Int       @default(0) @map("min_tenure_months")
+  minUnit          String    @default("FULL_DAY") @map("min_unit")
   isActive         Boolean   @default(true) @map("is_active")
   createdAt        DateTime  @default(now()) @map("created_at")
   deletedAt        DateTime? @map("deleted_at")
@@ -1483,6 +1532,7 @@ model LeaveRequest {
   startDate       DateTime           @map("start_date")
   endDate         DateTime           @map("end_date")
   days            Decimal
+  halfDayType     String?            @map("half_day_type")
   reason          String?
   status          LeaveRequestStatus
   approvedBy      String?            @map("approved_by")
@@ -1532,6 +1582,13 @@ model JobPosting {
   location       String?
   salaryRangeMin Decimal?       @map("salary_range_min")
   salaryRangeMax Decimal?       @map("salary_range_max")
+  preferred             String?
+  headcount             Int            @default(1)
+  workMode              WorkMode?      @map("work_mode")
+  recruiterId           String?        @map("recruiter_id")
+  deadlineDate          DateTime?      @map("deadline_date")
+  salaryHidden          Boolean        @default(false) @map("salary_hidden")
+  requiredCompetencies  Json?          @map("required_competencies")
   status         PostingStatus
   postedAt       DateTime?      @map("posted_at")
   closedAt       DateTime?      @map("closed_at")
@@ -1544,6 +1601,7 @@ model JobPosting {
   jobGrade     JobGrade?     @relation(fields: [jobGradeId], references: [id])
   jobCategory  JobCategory?  @relation(fields: [jobCategoryId], references: [id])
   creator      Employee      @relation("JobPostingCreator", fields: [createdBy], references: [id])
+  recruiter    Employee?     @relation("JobPostingRecruiter", fields: [recruiterId], references: [id])
   applications Application[]
 
   @@map("job_postings")
@@ -1555,8 +1613,10 @@ model Applicant {
   email     String          @unique
   phone     String?
   resumeKey String?         @map("resume_key")
-  source    ApplicantSource
-  createdAt DateTime        @default(now()) @map("created_at")
+  source       ApplicantSource
+  portfolioUrl String?  @map("portfolio_url")
+  memo         String?
+  createdAt    DateTime @default(now()) @map("created_at")
 
   applications Application[]
 
@@ -1573,6 +1633,9 @@ model Application {
   rejectionReason      String?          @map("rejection_reason")
   convertedEmployeeId  String?          @map("converted_employee_id")
   convertedAt          DateTime?        @map("converted_at")
+  offeredSalary        Decimal?         @map("offered_salary")
+  offeredDate          DateTime?        @map("offered_date")
+  expectedStartDate    DateTime?        @map("expected_start_date")
   appliedAt            DateTime         @map("applied_at")
   updatedAt            DateTime         @updatedAt @map("updated_at")
 
@@ -1593,6 +1656,8 @@ model InterviewSchedule {
   durationMinutes Int             @default(60) @map("duration_minutes")
   location        String?
   meetingLink     String?         @map("meeting_link")
+  interviewType   InterviewType?  @map("interview_type")
+  round           InterviewRound?
   status          InterviewStatus
   createdAt       DateTime        @default(now()) @map("created_at")
 
