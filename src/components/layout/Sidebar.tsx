@@ -13,6 +13,8 @@ import {
   Network,
   Clock,
   CalendarDays,
+  CalendarCheck,
+  CalendarClock,
   Target,
   Wallet,
   UserPlus,
@@ -33,6 +35,9 @@ import {
   LogOut,
   Smile,
   UserCheck,
+  Monitor,
+  Gavel,
+  Award,
   type LucideIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -88,8 +93,9 @@ const NAV_GROUPS: NavGroup[] = [
     icon: Clock,
     module: MODULE.ATTENDANCE,
     items: [
-      { label: '근태현황', href: '/attendance', icon: Clock },
-      { label: '근태설정', href: '/attendance/settings', icon: Settings },
+      { label: '내 근태', href: '/attendance', icon: Clock },
+      { label: '팀 근태', href: '/attendance/team', icon: Users },
+      { label: '전체 근태', href: '/attendance/admin', icon: BarChart3 },
     ],
   },
   {
@@ -97,9 +103,9 @@ const NAV_GROUPS: NavGroup[] = [
     icon: CalendarDays,
     module: MODULE.LEAVE,
     items: [
-      { label: '휴가신청', href: '/leave/request', icon: CalendarDays },
-      { label: '휴가현황', href: '/leave', icon: ListChecks },
-      { label: '휴가설정', href: '/leave/settings', icon: Settings },
+      { label: '내 휴가', href: '/leave', icon: CalendarDays },
+      { label: '팀 휴가', href: '/leave/team', icon: Users },
+      { label: '휴가 관리', href: '/leave/admin', icon: BarChart3 },
     ],
   },
   {
@@ -128,7 +134,16 @@ const NAV_GROUPS: NavGroup[] = [
     module: MODULE.RECRUITMENT,
     items: [
       { label: '채용공고', href: '/recruitment', icon: UserPlus },
-      { label: '지원자관리', href: '/recruitment/applicants', icon: Users },
+      { label: '채용 대시보드', href: '/recruitment/dashboard', icon: BarChart3 },
+    ],
+  },
+  {
+    label: '징계·포상',
+    icon: Gavel,
+    module: MODULE.DISCIPLINE,
+    items: [
+      { label: '징계관리', href: '/discipline', icon: Gavel },
+      { label: '포상관리', href: '/discipline/rewards', icon: Award },
     ],
   },
   {
@@ -184,9 +199,15 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: '회사설정', href: '/settings', icon: Settings },
       { label: '권한관리', href: '/settings/roles', icon: Shield },
+      { label: '근무스케줄', href: '/settings/work-schedules', icon: CalendarClock },
+      { label: '공휴일', href: '/settings/holidays', icon: CalendarCheck },
+      { label: '단말기', href: '/settings/terminals', icon: Monitor },
+      { label: '휴가정책', href: '/settings/leave-policies', icon: CalendarDays },
+      { label: '교대근무', href: '/settings/shift-roster', icon: Clock },
       { label: '온보딩 설정', href: '/settings/onboarding', icon: UserCheck },
       { label: '퇴직 체크리스트', href: '/settings/offboarding', icon: UserMinus },
       { label: '정보변경 요청', href: '/settings/profile-requests', icon: ClipboardCheck },
+      { label: '역량 라이브러리', href: '/settings/competencies', icon: Target },
       { label: '감사로그', href: '/settings/audit-log', icon: FileText },
     ],
   },
