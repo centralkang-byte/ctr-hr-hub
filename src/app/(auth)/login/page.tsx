@@ -22,10 +22,10 @@ interface TestAccount {
 }
 
 const TEST_ACCOUNTS: TestAccount[] = [
-  { label: 'Super Admin', email: 'admin@ctr.co.kr', icon: <Shield className="h-4 w-4" /> },
-  { label: 'HR Admin', email: 'hr@ctr.co.kr', icon: <Users className="h-4 w-4" /> },
-  { label: 'Manager', email: 'manager@ctr.co.kr', icon: <Briefcase className="h-4 w-4" /> },
-  { label: 'Staff', email: 'employee@ctr.co.kr', icon: <UserCircle className="h-4 w-4" /> },
+  { label: 'Super Admin (시스템관리자)', email: 'admin@ctr.co.kr', icon: <Shield className="h-4 w-4" /> },
+  { label: 'HR Admin (인사담당자)', email: 'hr@ctr.co.kr', icon: <Users className="h-4 w-4" /> },
+  { label: 'Team Leader (팀장)', email: 'manager@ctr.co.kr', icon: <Briefcase className="h-4 w-4" /> },
+  { label: 'Staff (직원)', email: 'employee@ctr.co.kr', icon: <UserCircle className="h-4 w-4" /> },
 ]
 
 // ─── Component ──────────────────────────────────────────────
@@ -46,7 +46,7 @@ export default function LoginPage() {
     })
   }, [])
 
-  const isDev = process.env.NODE_ENV === 'development'
+  const showTestAccounts = process.env.NEXT_PUBLIC_SHOW_TEST_ACCOUNTS === 'true'
 
   return (
     <div className="flex min-h-screen">
@@ -108,13 +108,13 @@ export default function LoginPage() {
                 {ko.auth.loginWithM365}
               </Button>
 
-              {/* Dev Mode Section */}
-              {isDev && (
+              {/* Test Accounts Section */}
+              {showTestAccounts && (
                 <>
                   <div className="relative">
                     <Separator />
                     <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-xs text-muted-foreground">
-                      개발 모드
+                      테스트 계정
                     </span>
                   </div>
 

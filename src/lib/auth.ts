@@ -82,8 +82,8 @@ export const authOptions: NextAuthOptions = {
       clientSecret: env.AZURE_AD_CLIENT_SECRET,
       tenantId: env.AZURE_AD_TENANT_ID,
     }),
-    // ─── Dev-only: password-free login via test email ───
-    ...(process.env.NODE_ENV === 'development'
+    // ─── Test accounts: enabled via NEXT_PUBLIC_SHOW_TEST_ACCOUNTS env ───
+    ...(process.env.NEXT_PUBLIC_SHOW_TEST_ACCOUNTS === 'true'
       ? [
           CredentialsProvider({
             id: 'credentials',
