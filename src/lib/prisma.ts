@@ -19,7 +19,13 @@ function createPrismaClient(): PrismaClient {
       log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
     })
   }
-  const adapter = new PrismaPg({ connectionString })
+  const isSupabase =
+    connectionString.includes('supabase.co') || connectionString.includes('supabase.com')
+  const ssl =
+    isSupabase || process.env.NODE_ENV === 'production'
+      ? { rejectUnauthorized: false }
+      : undefined
+  const adapter = new PrismaPg({ connectionString, ssl })
   return new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
