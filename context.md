@@ -819,3 +819,78 @@ Attrition Risk 6요인 모델, 대시보드(도넛/레이더/히트맵/추이 �
 - Hard delete: SuccessionPlan, SuccessionCandidate (cascade)
 - Decimal→Number 직렬화: amount, durationHours, score
 - Employee 필드: name, employeeNo (not firstName/lastName)
+
+---
+
+# CTR HR Hub v3.2 — STEP 8-1 Session Context
+
+**Date:** 2026-02-28
+**Status:** STEP 8-1 Complete
+**TypeScript Errors:** 0
+
+## What Was Built (STEP 8-1)
+
+Settings 모듈 — 관리자 전용 UI로 법인별 커스터마이징 기능 11개 섹션 구현.
+
+## New Lib Files (1)
+
+| File | Purpose |
+|------|---------|
+| `src/lib/schemas/settings.ts` | Zod: 22개 스키마 (company, branding, terms, enums, custom-fields, workflows, email-templates, evaluation-scale, modules, export-templates, dashboard-layout) |
+
+## New API Routes (18)
+
+### Foundation API (TenantSetting 직접 수정, 6개)
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/v1/settings/company` | GET/PUT | 회사설정 (coreValues, fiscal, probation, overtime, timezone, locale) |
+| `/api/v1/settings/branding` | GET/PUT | 브랜딩 (colors + logo/favicon URLs) |
+| `/api/v1/settings/branding/upload` | POST | S3 presigned URL 생성 |
+| `/api/v1/settings/evaluation-scale` | GET/PUT | 평가 척도 (rating scale + grade labels) |
+| `/api/v1/settings/modules` | GET/PUT | 모듈 ON/OFF (enabledModules array) |
+| `/api/v1/settings/dashboard-layout` | GET/PUT | 대시보드 레이아웃 (JSON) |
+
+### CRUD API (독립 모델, 12개)
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/v1/settings/terms` | GET/POST | 용어 오버라이드 목록 + upsert |
+| `/api/v1/settings/terms/[id]` | PUT/DELETE | 용어 수정/삭제 |
+| `/api/v1/settings/enums` | GET/POST | ENUM 옵션 목록 + 생성 |
+| `/api/v1/settings/enums/[id]` | PUT/DELETE | ENUM 옵션 수정/삭제 (시스템 보호) |
+| `/api/v1/settings/custom-fields` | GET/POST | 커스텀 필드 목록 + 생성 |
+| `/api/v1/settings/custom-fields/[id]` | GET/PUT/DELETE | 커스텀 필드 상세/수정/소프트삭제 |
+| `/api/v1/settings/workflows` | GET/POST | 워크플로 목록 + 트랜잭션 생성 |
+| `/api/v1/settings/workflows/[id]` | GET/PUT/DELETE | 워크플로 상세/트랜잭션수정/소프트삭제 |
+| `/api/v1/settings/email-templates` | GET/POST | 이메일 템플릿 목록 + 생성 |
+| `/api/v1/settings/email-templates/[id]` | GET/PUT/DELETE | 이메일 템플릿 상세/수정/삭제 (시스템 보호) |
+| `/api/v1/settings/export-templates` | GET/POST | 내보내기 템플릿 목록 + 생성 |
+| `/api/v1/settings/export-templates/[id]` | GET/PUT/DELETE | 내보내기 템플릿 상세/수정/소프트삭제 |
+
+## New UI Pages & Components (22)
+
+| # | Section | page.tsx | Client |
+|---|---------|----------|--------|
+| 1 | 회사설정 | `settings/page.tsx` | `CompanySettingsClient.tsx` |
+| 2 | 브랜딩 | `settings/branding/page.tsx` | `BrandingClient.tsx` |
+| 3 | 용어 | `settings/terms/page.tsx` | `TermsClient.tsx` |
+| 4 | ENUM | `settings/enums/page.tsx` | `EnumManagementClient.tsx` |
+| 5 | 커스텀필드 | `settings/custom-fields/page.tsx` | `CustomFieldsClient.tsx` |
+| 6 | 워크플로 | `settings/workflows/page.tsx` | `WorkflowsClient.tsx` |
+| 7 | 이메일 | `settings/email-templates/page.tsx` | `EmailTemplatesClient.tsx` |
+| 8 | 평가척도 | `settings/evaluation-scale/page.tsx` | `EvaluationScaleClient.tsx` |
+| 9 | 모듈 | `settings/modules/page.tsx` | `ModuleToggleClient.tsx` |
+| 10 | 내보내기 | `settings/export-templates/page.tsx` | `ExportTemplatesClient.tsx` |
+| 11 | 대시보드 | `settings/dashboard-widgets/page.tsx` | `DashboardWidgetsClient.tsx` |
+
+## Updated Files (1)
+
+- `src/components/layout/Sidebar.tsx` — 10개 신규 설정 메뉴 추가 (Palette, Languages, List, FormInput, GitBranch, Mail, Gauge, ToggleLeft, Download, LayoutGrid 아이콘)
+
+## Key Patterns
+
+- TenantSetting PUT 후 `invalidateTenantSettingsCache(companyId)` 호출
+- WorkflowRule: `prisma.$transaction` (deleteMany steps → createMany steps)
+- S3 presigned URL: `buildS3Key` + `getPresignedUploadUrl`
+- Soft delete: CustomField, WorkflowRule, ExportTemplate (deletedAt)
+- Hard delete: TermOverride, EmailTemplate
+- 시스템 보호: TenantEnumOption.isSystem, EmailTemplate.isSystem → 수정/삭제 차단
