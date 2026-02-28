@@ -499,12 +499,66 @@ Attrition Risk 6요인 모델, 대시보드(도넛/레이더/히트맵/추이 �
 | Tenure | 15% | hireDate |
 | Compensation | 25% | compa-ratio |
 | Performance | 20% | EMS block + compa |
-| Manager | 15% | placeholder |
-| Engagement | 15% | placeholder |
-| Attendance | 10% | placeholder |
+| Manager | 15% | managerId 존재 여부 |
+| Engagement | 15% | PulseResponse (Mood 매핑 + 미응답 패널티) |
+| Attendance | 10% | Attendance (지각률/결근/초과근무 번아웃) |
 
 ### Risk Levels
 - LOW: <40, MEDIUM: 40-59, HIGH: 60-79, CRITICAL: 80+
+
+---
+
+# CTR HR Hub v3.2 — STEP 6B-1 Gap Fill Session Context
+
+**Date:** 2026-02-28
+**Status:** STEP 6B-1 100% Complete (Gap Fill)
+**TypeScript Errors:** 0
+
+## What Was Done (STEP 6B-1 Gap Fill)
+
+기존 STEP 6B-1 (85% 완료)의 미완성 부분 4가지를 채워 100% 완성:
+1. AI 연봉 추천 — stub → 실제 Claude API 호출
+2. Attrition AI 보정 — HIGH/CRITICAL 직원 AI 평가
+3. Engagement/Attendance 요인 — 하드코딩 → 실데이터 연동
+4. UI 에러 처리 + AI 결과 표시 패널
+
+## Updated Files (7)
+
+| File | Changes |
+|------|---------|
+| `src/lib/claude.ts` | `compensationRecommendation()` + `attritionRiskAssessment()` 2개 AI 함수 추가 |
+| `src/lib/attrition.ts` | `calculateEngagementFactor()`: PulseResponse Mood 매핑 (GREAT=10~BAD=85) + 미응답 패널티 +20, `calculateAttendanceFactor()`: 지각률/결근/초과근무(60h+ 번아웃) |
+| `src/app/api/v1/compensation/simulation/ai-recommend/route.ts` | Mock stub → employee/comp/salaryBand/EMS 조회 후 `compensationRecommendation()` 실제 호출 |
+| `src/app/api/v1/attrition/employees/[id]/route.ts` | `?includeAi=true` 쿼리 파라미터 → HIGH/CRITICAL만 `attritionRiskAssessment()` 호출, `aiAssessment` 필드 추가 |
+| `src/components/compensation/SimulationTab.tsx` | AI 추천 결과 패널 (reasoning + riskFactors + alternativeActions), toast 에러 처리 |
+| `src/components/compensation/HistoryTab.tsx` | toast 에러 처리 (// ignore → useToast) |
+| `src/components/compensation/HighRiskList.tsx` | "AI 분석" 버튼 → on-demand AI 로드, risk_drivers/contextual_risks/retention_actions/confidence 표시 |
+
+## AI Functions Added
+
+### compensationRecommendation()
+- Input: employeeName, department, grade, emsBlock, compaRatio, currentSalary, currency, tenureMonths, budgetConstraint?, companyAvgRaise?
+- Output: `{ recommendedPct, reasoning, riskFactors[], alternativeActions[] }`
+- AiFeature: `COMPENSATION_RECOMMENDATION`
+
+### attritionRiskAssessment()
+- Input: employeeName, department, grade, tenureMonths, factorScores, totalScore, compaRatio, emsBlock
+- Output: `{ adjusted_score, adjusted_level, risk_drivers[], contextual_risks[], retention_actions[], confidence }`
+- AiFeature: `ATTRITION_RISK_ASSESSMENT`
+- 비용 절감: HIGH/CRITICAL 직원만 호출, includeAi=true 시에만
+
+## Engagement Factor Logic
+- PulseResponse 최근 6개월 조회
+- Mood → risk 매핑: GREAT=10, GOOD=25, NEUTRAL=40, STRUGGLING=65, BAD=85
+- 연속 2회 미응답 → +20 가산
+- 데이터 없으면 기본값 50
+
+## Attendance Factor Logic
+- Attendance 최근 6개월 조회
+- 지각률 > 15% → +30, > 8% → +15
+- 결근 5일+ → +25, 2일+ → +10
+- 월 초과근무 60h+ → +25 (번아웃 위험), 40h+ → +15
+- 데이터 없으면 기본값 30
 
 ---
 
@@ -697,3 +751,71 @@ Attrition Risk 6요인 모델, 대시보드(도넛/레이더/히트맵/추이 �
 - 성능 최적화 (페이지네이션, 인덱스, 캐싱)
 - FCM/SES 알림 채널 실제 연동 (현재 IN_APP만)
 - 국제화 (i18n) 확장 (현재 한국어만)
+
+---
+
+## STEP 6B-2 Session — 복리후생 + L&D + Succession Planning
+
+**Date:** 2026-02-28
+**Status:** Complete
+**TypeScript Errors:** 0 (7 pre-existing cache-life.d2.ts duplicates excluded)
+
+### 신규 파일 (34개)
+
+#### Zod Schemas (3)
+- `src/lib/schemas/benefits.ts` — BenefitPolicy + Enrollment CRUD schemas
+- `src/lib/schemas/training.ts` — TrainingCourse + Enrollment CRUD schemas
+- `src/lib/schemas/succession.ts` — SuccessionPlan + Candidate CRUD schemas
+
+#### API Routes — Benefits (4)
+- `src/app/api/v1/benefits/policies/route.ts` — GET (목록+필터), POST (생성)
+- `src/app/api/v1/benefits/policies/[id]/route.ts` — GET, PUT, DELETE (soft)
+- `src/app/api/v1/benefits/enrollments/route.ts` — GET (목록), POST (신청)
+- `src/app/api/v1/benefits/enrollments/[id]/route.ts` — PUT (상태변경)
+
+#### API Routes — Training (5)
+- `src/app/api/v1/training/courses/route.ts` — GET, POST
+- `src/app/api/v1/training/courses/[id]/route.ts` — GET, PUT, DELETE (soft)
+- `src/app/api/v1/training/enrollments/route.ts` — GET, POST (일괄 등록)
+- `src/app/api/v1/training/enrollments/[id]/route.ts` — PUT (상태전환)
+- `src/app/api/v1/training/dashboard/route.ts` — GET (KPI)
+
+#### API Routes — Succession (5)
+- `src/app/api/v1/succession/plans/route.ts` — GET, POST
+- `src/app/api/v1/succession/plans/[id]/route.ts` — GET (상세+후보), PUT, DELETE
+- `src/app/api/v1/succession/plans/[id]/candidates/route.ts` — GET, POST
+- `src/app/api/v1/succession/candidates/[id]/route.ts` — PUT, DELETE
+- `src/app/api/v1/succession/dashboard/route.ts` — GET (KPI)
+
+#### UI — Benefits (4)
+- `src/app/(dashboard)/benefits/page.tsx` — 서버 래퍼
+- `src/app/(dashboard)/benefits/BenefitsClient.tsx` — 2탭: 정책관리/신청현황
+- `src/components/benefits/BenefitPoliciesTab.tsx` — 정책 CRUD DataTable + Dialog
+- `src/components/benefits/BenefitEnrollmentsTab.tsx` — 신청 목록 + 상태 뱃지
+
+#### UI — Training (6)
+- `src/app/(dashboard)/training/page.tsx` — 서버 래퍼
+- `src/app/(dashboard)/training/TrainingClient.tsx` — 2탭: 교육과정/수강현황
+- `src/components/training/CoursesTab.tsx` — 과정 CRUD DataTable + Dialog
+- `src/components/training/EnrollmentsTab.tsx` — 수강 목록 + 상태전환
+- `src/app/(dashboard)/training/enrollments/page.tsx` — 수강현황 별도 페이지
+- `src/app/(dashboard)/training/enrollments/TrainingEnrollmentsClient.tsx`
+
+#### UI — Succession (6)
+- `src/app/(dashboard)/succession/page.tsx` — 서버 래퍼
+- `src/app/(dashboard)/succession/SuccessionClient.tsx` — 2탭: 핵심직책/대시보드
+- `src/components/succession/PlansTab.tsx` — 핵심직책 DataTable + 생성 Dialog
+- `src/components/succession/PlanDetailDialog.tsx` — 직책 상세 + 후보 관리
+- `src/components/succession/SuccessionDashboard.tsx` — KPI + PieChart
+- `src/components/succession/CandidateCard.tsx` — 후보자 카드
+
+### 수정 파일 (1)
+- `src/components/layout/Sidebar.tsx` — Crown 아이콘 + 후계자 관리 메뉴 추가
+
+### 패턴 준수
+- 모든 API: withPermission + perm(MODULE.X, ACTION.Y) + company scope
+- 모든 API: logAudit (fire-and-forget) + extractRequestMeta
+- Soft delete: BenefitPolicy, TrainingCourse (deletedAt)
+- Hard delete: SuccessionPlan, SuccessionCandidate (cascade)
+- Decimal→Number 직렬화: amount, durationHours, score
+- Employee 필드: name, employeeNo (not firstName/lastName)

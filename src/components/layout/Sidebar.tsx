@@ -45,6 +45,7 @@ import {
   Sparkles,
   LayoutDashboard,
   Bell,
+  Crown,
   type LucideIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -215,6 +216,14 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: '복리후생정책', href: '/benefits', icon: Gift },
       { label: '신청현황', href: '/benefits/enrollments', icon: ListChecks },
+    ],
+  },
+  {
+    label: '후계자 관리',
+    icon: Crown,
+    module: MODULE.SUCCESSION,
+    items: [
+      { label: '핵심직책', href: '/succession', icon: Crown },
     ],
   },
   {
