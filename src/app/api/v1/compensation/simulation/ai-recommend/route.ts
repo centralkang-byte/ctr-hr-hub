@@ -1,19 +1,19 @@
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — Compensation AI Recommendation (Stub)
+// CTR HR Hub — Compensation AI Recommendation
 // ═══════════════════════════════════════════════════════════
 
 import { type NextRequest } from 'next/server'
+import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest } from '@/lib/errors'
+import { badRequest, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { aiRecommendSchema } from '@/lib/schemas/compensation'
+import { compensationRecommendation } from '@/lib/claude'
 import type { SessionUser } from '@/types'
 
 // ─── POST /api/v1/compensation/simulation/ai-recommend ───
-// Stub: returns mock AI recommendation data.
-// TODO: Replace with real AI call using compensationRecommendation from @/lib/claude.ts
 
 export const POST = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
@@ -26,26 +26,80 @@ export const POST = withPermission(
     const { cycleId, employeeId, budgetConstraint, companyAvgRaise } =
       parsed.data
 
-    // ── Stub: Mock AI response ──────────────────────────────
-    // In production, this would call:
-    //   import { compensationRecommendation } from '@/lib/claude'
-    //   const result = await compensationRecommendation({ ... })
-    const mockResult = {
-      recommendedPct: 4.5,
-      reasoning:
-        '해당 직원은 EMS 블록 3B(고성과)에 해당하며, 현재 Compa-Ratio가 0.92로 시장 대비 낮은 수준입니다. ' +
-        '인재 유지를 위해 평균 이상의 인상률을 권장합니다.',
-      riskFactors: [
-        '현재 보상 수준이 시장 중위값 대비 8% 낮음',
-        '동일 직급 내 보상 형평성 주의 필요',
-        '최근 6개월 내 이직 제안을 받은 이력 있음',
-      ],
-      alternativeActions: [
-        '기본급 인상 대신 성과 보너스 지급 고려',
-        '직무 전환 또는 승진을 통한 보상 조정',
-        '복리후생 패키지 강화 (교육비, 건강검진 등)',
-      ],
+    // ── Fetch employee data ──────────────────────────────────
+    const employee = await prisma.employee.findUnique({
+      where: { id: employeeId },
+      select: {
+        id: true,
+        name: true,
+        hireDate: true,
+        department: { select: { name: true } },
+        jobGrade: { select: { name: true } },
+        jobGradeId: true,
+        jobCategoryId: true,
+        companyId: true,
+      },
+    })
+
+    if (!employee) {
+      throw notFound('직원을 찾을 수 없습니다.')
     }
+
+    // ── Latest compensation ──────────────────────────────────
+    const latestComp = await prisma.compensationHistory.findFirst({
+      where: { employeeId },
+      orderBy: { effectiveDate: 'desc' },
+      select: { newBaseSalary: true, currency: true },
+    })
+
+    const currentSalary = latestComp ? Number(latestComp.newBaseSalary) : 0
+    const currency = latestComp?.currency ?? 'KRW'
+
+    // ── Compa-Ratio ──────────────────────────────────────────
+    const salaryBand = await prisma.salaryBand.findFirst({
+      where: {
+        companyId: employee.companyId,
+        jobGradeId: employee.jobGradeId,
+        ...(employee.jobCategoryId ? { jobCategoryId: employee.jobCategoryId } : {}),
+        deletedAt: null,
+      },
+      orderBy: { effectiveFrom: 'desc' },
+      select: { midSalary: true },
+    })
+
+    const midSalary = salaryBand ? Number(salaryBand.midSalary) : 0
+    const compaRatio = midSalary > 0 ? currentSalary / midSalary : 1.0
+
+    // ── Latest EMS block ─────────────────────────────────────
+    const latestEval = await prisma.performanceEvaluation.findFirst({
+      where: { employeeId, status: 'SUBMITTED' },
+      orderBy: { createdAt: 'desc' },
+      select: { emsBlock: true },
+    })
+
+    // ── Tenure ───────────────────────────────────────────────
+    const now = new Date()
+    const tenureMonths =
+      (now.getFullYear() - employee.hireDate.getFullYear()) * 12 +
+      (now.getMonth() - employee.hireDate.getMonth())
+
+    // ── Call AI ──────────────────────────────────────────────
+    const result = await compensationRecommendation(
+      {
+        employeeName: employee.name,
+        department: employee.department?.name ?? '-',
+        grade: employee.jobGrade?.name ?? '-',
+        emsBlock: latestEval?.emsBlock ?? null,
+        compaRatio,
+        currentSalary,
+        currency,
+        tenureMonths,
+        budgetConstraint,
+        companyAvgRaise,
+      },
+      user.companyId,
+      employeeId,
+    )
 
     // ── Audit log ───────────────────────────────────────────
     const { ip, userAgent } = extractRequestMeta(req.headers)
@@ -60,7 +114,7 @@ export const POST = withPermission(
       userAgent,
     })
 
-    return apiSuccess(mockResult)
+    return apiSuccess(result)
   },
   perm(MODULE.COMPENSATION, ACTION.VIEW),
 )

@@ -369,3 +369,157 @@ JSON만 응답하세요.`
     throw serviceUnavailable('AI 분석 결과 파싱에 실패했습니다.')
   }
 }
+
+// ─── Compensation Recommendation ─────────────────────────
+
+interface CompensationRecommendationInput {
+  employeeName: string
+  department: string
+  grade: string
+  emsBlock: string | null
+  compaRatio: number
+  currentSalary: number
+  currency: string
+  tenureMonths: number
+  budgetConstraint?: number
+  companyAvgRaise?: number
+}
+
+export interface CompensationRecommendationResult {
+  recommendedPct: number
+  reasoning: string
+  riskFactors: string[]
+  alternativeActions: string[]
+}
+
+export async function compensationRecommendation(
+  input: CompensationRecommendationInput,
+  companyId: string,
+  employeeId: string,
+): Promise<CompensationRecommendationResult> {
+  const prompt = `당신은 CTR Holdings(자동차부품 글로벌 기업)의 보상 전문가입니다.
+다음 직원의 연봉 인상률을 추천하세요:
+
+직원명: ${input.employeeName}
+부서: ${input.department}
+직급: ${input.grade}
+EMS 블록: ${input.emsBlock ?? '미평가'}
+Compa-Ratio: ${input.compaRatio.toFixed(2)}
+현재 연봉: ${input.currentSalary.toLocaleString()} ${input.currency}
+재직 기간: ${input.tenureMonths}개월
+${input.budgetConstraint ? `예산 제약: ${input.budgetConstraint}%` : ''}
+${input.companyAvgRaise ? `회사 평균 인상률: ${input.companyAvgRaise}%` : ''}
+
+Compa-Ratio 해석:
+- 0.80 미만: 심각한 저보상
+- 0.80-0.90: 낮은 보상
+- 0.90-1.00: 시장 수준 이하
+- 1.00-1.10: 적정 수준
+- 1.10 초과: 시장 이상
+
+EMS 블록 해석 (1-9):
+- 7-9: 고성과 (인재 유지 중요)
+- 4-6: 중간 성과
+- 1-3: 개선 필요
+
+아래 JSON 형식으로 응답하세요:
+{
+  "recommendedPct": 인상률(소수점 1자리),
+  "reasoning": "추천 근거 설명 (2-3문장)",
+  "riskFactors": ["위험 요인 1", "위험 요인 2"],
+  "alternativeActions": ["대안 1", "대안 2"]
+}
+
+JSON만 응답하세요.`
+
+  const result = await callClaude({
+    feature: 'COMPENSATION_RECOMMENDATION',
+    prompt,
+    systemPrompt: 'You are a compensation specialist for CTR Holdings, a global automotive parts company. Respond in Korean with JSON only.',
+    maxTokens: 1024,
+    companyId,
+    employeeId,
+  })
+
+  try {
+    return JSON.parse(result.content) as CompensationRecommendationResult
+  } catch {
+    throw serviceUnavailable('AI 분석 결과 파싱에 실패했습니다.')
+  }
+}
+
+// ─── Attrition Risk Assessment ───────────────────────────
+
+interface AttritionRiskAssessmentInput {
+  employeeName: string
+  department: string
+  grade: string
+  tenureMonths: number
+  factorScores: Record<string, number>
+  totalScore: number
+  compaRatio: number
+  emsBlock: string | null
+}
+
+export interface AttritionRiskAssessmentResult {
+  adjusted_score: number
+  adjusted_level: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+  risk_drivers: string[]
+  contextual_risks: string[]
+  retention_actions: string[]
+  confidence: 'HIGH' | 'MEDIUM' | 'LOW'
+}
+
+export async function attritionRiskAssessment(
+  input: AttritionRiskAssessmentInput,
+  companyId: string,
+  employeeId: string,
+): Promise<AttritionRiskAssessmentResult> {
+  const factorLines = Object.entries(input.factorScores)
+    .map(([key, val]) => `- ${key}: ${val}/100`)
+    .join('\n')
+
+  const prompt = `당신은 CTR Holdings의 인재 유지 전문가입니다.
+다음 직원의 이탈 위험을 AI 관점에서 재평가하세요:
+
+직원명: ${input.employeeName}
+부서: ${input.department}
+직급: ${input.grade}
+재직 기간: ${input.tenureMonths}개월
+Compa-Ratio: ${input.compaRatio.toFixed(2)}
+EMS 블록: ${input.emsBlock ?? '미평가'}
+
+6요인 위험 점수 (0-100, 높을수록 위험):
+${factorLines}
+
+규칙 기반 총점: ${input.totalScore}/100
+
+위 데이터를 종합적으로 분석하여, 규칙 기반 점수를 보정하고 맥락적 위험 요소와 리텐션 조치를 제안하세요.
+
+아래 JSON 형식으로 응답하세요:
+{
+  "adjusted_score": 보정된 점수(0-100 정수),
+  "adjusted_level": "LOW" | "MEDIUM" | "HIGH" | "CRITICAL",
+  "risk_drivers": ["핵심 이탈 동인 1", "핵심 이탈 동인 2"],
+  "contextual_risks": ["맥락적 위험 1", "맥락적 위험 2"],
+  "retention_actions": ["리텐션 액션 1", "리텐션 액션 2", "리텐션 액션 3"],
+  "confidence": "HIGH" | "MEDIUM" | "LOW"
+}
+
+JSON만 응답하세요.`
+
+  const result = await callClaude({
+    feature: 'ATTRITION_RISK_ASSESSMENT',
+    prompt,
+    systemPrompt: 'You are a talent retention specialist for CTR Holdings, a global automotive parts company. Respond in Korean with JSON only.',
+    maxTokens: 1024,
+    companyId,
+    employeeId,
+  })
+
+  try {
+    return JSON.parse(result.content) as AttritionRiskAssessmentResult
+  } catch {
+    throw serviceUnavailable('AI 분석 결과 파싱에 실패했습니다.')
+  }
+}

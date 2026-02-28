@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import { Sparkles, AlertTriangle } from 'lucide-react'
+import { Sparkles, AlertTriangle, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { DataTable } from '@/components/shared/DataTable'
@@ -9,6 +9,7 @@ import type { DataTableColumn } from '@/components/shared/DataTable'
 import CompaRatioBadge from '@/components/compensation/CompaRatioBadge'
 import { formatCurrency, calculateBudgetSummary } from '@/lib/compensation'
 import { apiClient } from '@/lib/api'
+import { useToast } from '@/hooks/use-toast'
 import type { PaginationInfo } from '@/types'
 
 // ─── Types ───────────────────────────────────────────────
@@ -29,6 +30,13 @@ type SimulationRow = {
   newSalary: number
 }
 
+interface AiRecommendation {
+  recommendedPct: number
+  reasoning: string
+  riskFactors: string[]
+  alternativeActions: string[]
+}
+
 interface SimulationTabProps {
   cycleId: string
   onPrepareConfirm: (
@@ -46,11 +54,13 @@ interface SimulationTabProps {
 // ─── Component ───────────────────────────────────────────
 
 export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationTabProps) {
+  const { toast } = useToast()
   const [rows, setRows] = useState<SimulationRow[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | null>(null)
   const [loading, setLoading] = useState(false)
   const [departmentFilter, setDepartmentFilter] = useState('')
   const [aiLoadingId, setAiLoadingId] = useState<string | null>(null)
+  const [aiResult, setAiResult] = useState<{ employeeId: string; data: AiRecommendation } | null>(null)
 
   const fetchSimulation = useCallback(
     async (page = 1) => {
@@ -73,12 +83,12 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
         )
         setPagination(res.pagination ?? null)
       } catch {
-        // ignore
+        toast({ title: '시뮬레이션 로드 실패', description: '데이터를 불러올 수 없습니다.', variant: 'destructive' })
       } finally {
         setLoading(false)
       }
     },
-    [cycleId, departmentFilter],
+    [cycleId, departmentFilter, toast],
   )
 
   useEffect(() => {
@@ -106,13 +116,14 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
   const handleAiRecommend = async (employeeId: string) => {
     setAiLoadingId(employeeId)
     try {
-      const res = await apiClient.post<{ recommendedPct: number; reasoning: string }>(
+      const res = await apiClient.post<AiRecommendation>(
         '/api/v1/compensation/simulation/ai-recommend',
         { cycleId, employeeId },
       )
       handlePctChange(employeeId, res.data.recommendedPct)
+      setAiResult({ employeeId, data: res.data })
     } catch {
-      // ignore
+      toast({ title: 'AI 추천 실패', description: 'AI 서비스를 사용할 수 없습니다. 잠시 후 다시 시도해주세요.', variant: 'destructive' })
     } finally {
       setAiLoadingId(null)
     }
@@ -226,7 +237,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
           disabled={aiLoadingId === row.id}
           className="text-indigo-600 hover:text-indigo-700"
         >
-          <Sparkles className="h-4 w-4" />
+          <Sparkles className={`h-4 w-4 ${aiLoadingId === row.id ? 'animate-pulse' : ''}`} />
         </Button>
       ),
     },
@@ -257,6 +268,54 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
           <p className="text-3xl font-bold text-blue-600">{budget.avgIncreasePct}%</p>
         </div>
       </div>
+
+      {/* ─── AI 추천 결과 패널 ─── */}
+      {aiResult && (
+        <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="h-4 w-4 text-indigo-600" />
+              <h4 className="text-sm font-semibold text-indigo-900">
+                AI 추천 결과 — {rows.find((r) => r.id === aiResult.employeeId)?.name ?? ''}
+              </h4>
+              <Badge className="bg-indigo-100 text-indigo-700 border-indigo-300 text-xs">
+                {aiResult.data.recommendedPct}%
+              </Badge>
+            </div>
+            <button onClick={() => setAiResult(null)} className="text-indigo-400 hover:text-indigo-600">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          <p className="text-sm text-indigo-800 mb-3">{aiResult.data.reasoning}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {aiResult.data.riskFactors.length > 0 && (
+              <div>
+                <p className="text-xs font-medium text-indigo-700 mb-1">위험 요인</p>
+                <ul className="space-y-1">
+                  {aiResult.data.riskFactors.map((f, i) => (
+                    <li key={i} className="text-xs text-indigo-600 flex items-start gap-1">
+                      <AlertTriangle className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {aiResult.data.alternativeActions.length > 0 && (
+              <div>
+                <p className="text-xs font-medium text-indigo-700 mb-1">대안</p>
+                <ul className="space-y-1">
+                  {aiResult.data.alternativeActions.map((a, i) => (
+                    <li key={i} className="text-xs text-indigo-600">
+                      {i + 1}. {a}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ─── DataTable ─── */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm">

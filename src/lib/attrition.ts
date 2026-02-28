@@ -165,14 +165,116 @@ async function calculateManagerFactor(employeeId: string): Promise<number> {
   return 30
 }
 
-async function calculateEngagementFactor(_employeeId: string): Promise<number> {
-  // Future: integrate PulseResponse data
-  return 40
+async function calculateEngagementFactor(employeeId: string): Promise<number> {
+  const sixMonthsAgo = new Date()
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
+
+  const responses = await prisma.pulseResponse.findMany({
+    where: {
+      respondentId: employeeId,
+      submittedAt: { gte: sixMonthsAgo },
+    },
+    orderBy: { submittedAt: 'desc' },
+    select: { answerValue: true, submittedAt: true },
+  })
+
+  if (responses.length === 0) return 50 // no data — neutral
+
+  // Map Mood values to risk scores
+  const MOOD_RISK: Record<string, number> = {
+    GREAT: 10,
+    GOOD: 25,
+    NEUTRAL: 40,
+    STRUGGLING: 65,
+    BAD: 85,
+  }
+
+  // Average sentiment risk from responses
+  let totalMoodRisk = 0
+  let moodCount = 0
+
+  for (const r of responses) {
+    const risk = MOOD_RISK[r.answerValue]
+    if (risk !== undefined) {
+      totalMoodRisk += risk
+      moodCount++
+    }
+  }
+
+  let score = moodCount > 0 ? Math.round(totalMoodRisk / moodCount) : 50
+
+  // Check for consecutive non-responses by looking at recent surveys
+  const recentSurveys = await prisma.pulseSurvey.findMany({
+    where: {
+      closeAt: { gte: sixMonthsAgo },
+      status: 'PULSE_CLOSED',
+    },
+    orderBy: { closeAt: 'desc' },
+    take: 5,
+    select: { id: true },
+  })
+
+  if (recentSurveys.length >= 2) {
+    const lastTwoSurveyIds = recentSurveys.slice(0, 2).map((s) => s.id)
+    const responsesInLast2 = await prisma.pulseResponse.count({
+      where: {
+        respondentId: employeeId,
+        surveyId: { in: lastTwoSurveyIds },
+      },
+    })
+    if (responsesInLast2 === 0) {
+      score = Math.min(100, score + 20) // consecutive non-response penalty
+    }
+  }
+
+  return score
 }
 
-async function calculateAttendanceFactor(_employeeId: string): Promise<number> {
-  // Future: integrate attendance patterns
-  return 30
+async function calculateAttendanceFactor(employeeId: string): Promise<number> {
+  const sixMonthsAgo = new Date()
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
+
+  const attendances = await prisma.attendance.findMany({
+    where: {
+      employeeId,
+      workDate: { gte: sixMonthsAgo },
+    },
+    select: {
+      status: true,
+      overtimeMinutes: true,
+      workDate: true,
+    },
+  })
+
+  if (attendances.length === 0) return 30 // no data — keep default
+
+  const totalDays = attendances.length
+  const lateDays = attendances.filter((a) => a.status === 'LATE').length
+  const absentDays = attendances.filter((a) => a.status === 'ABSENT').length
+
+  let score = 20 // baseline
+
+  // Late rate impact
+  const lateRate = totalDays > 0 ? lateDays / totalDays : 0
+  if (lateRate > 0.15) score += 30
+  else if (lateRate > 0.08) score += 15
+
+  // Absent days impact
+  if (absentDays >= 5) score += 25
+  else if (absentDays >= 2) score += 10
+
+  // Burnout risk: excessive overtime (60h+ per month)
+  const totalOvertimeMinutes = attendances.reduce(
+    (sum, a) => sum + (a.overtimeMinutes ?? 0),
+    0,
+  )
+  const monthsSpan = Math.max(1, Math.ceil(totalDays / 22)) // approximate months
+  const avgMonthlyOvertimeHours = totalOvertimeMinutes / 60 / monthsSpan
+
+  if (avgMonthlyOvertimeHours >= 60) score += 25 // severe burnout risk
+  else if (avgMonthlyOvertimeHours >= 40) score += 15
+
+  return Math.min(100, score)
 }
 
 // ─── Risk Level Classification ───────────────────────────

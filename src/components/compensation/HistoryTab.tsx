@@ -16,6 +16,7 @@ import type { DataTableColumn } from '@/components/shared/DataTable'
 import { COMPA_RATIO_CONFIG, formatCurrency } from '@/lib/compensation'
 import type { CompaRatioBand } from '@/lib/compensation'
 import { apiClient } from '@/lib/api'
+import { useToast } from '@/hooks/use-toast'
 import type { PaginationInfo } from '@/types'
 
 // ─── Types ───────────────────────────────────────────────
@@ -55,6 +56,7 @@ const CHANGE_TYPE_LABELS: Record<string, string> = {
 // ─── Component ───────────────────────────────────────────
 
 export default function HistoryTab() {
+  const { toast } = useToast()
   const [history, setHistory] = useState<HistoryRow[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | null>(null)
   const [loading, setLoading] = useState(false)
@@ -70,11 +72,11 @@ export default function HistoryTab() {
       setHistory(res.data)
       setPagination(res.pagination)
     } catch {
-      // ignore
+      toast({ title: '이력 로드 실패', description: '연봉 변경 이력을 불러올 수 없습니다.', variant: 'destructive' })
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [toast])
 
   const fetchAnalysis = useCallback(async () => {
     try {
@@ -83,9 +85,9 @@ export default function HistoryTab() {
       )
       setDistribution(res.data.distribution ?? [])
     } catch {
-      // ignore
+      toast({ title: '분석 로드 실패', description: 'Compa-Ratio 분포를 불러올 수 없습니다.', variant: 'destructive' })
     }
-  }, [])
+  }, [toast])
 
   useEffect(() => {
     fetchHistory()

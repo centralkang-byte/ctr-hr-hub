@@ -1,8 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronUp, Sparkles, Loader2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { useToast } from '@/hooks/use-toast'
+import { apiClient } from '@/lib/api'
 import AttritionRadarChart from './AttritionRadarChart'
 
 interface Factor {
@@ -10,6 +13,15 @@ interface Factor {
   weight: number
   value: number
   description: string
+}
+
+interface AiAssessment {
+  adjusted_score: number
+  adjusted_level: string
+  risk_drivers: string[]
+  contextual_risks: string[]
+  retention_actions: string[]
+  confidence: string
 }
 
 interface HighRiskEmployee {
@@ -21,6 +33,7 @@ interface HighRiskEmployee {
   riskLevel: string
   factors: Factor[]
   retentionActions?: string[]
+  aiAssessment?: AiAssessment | null
 }
 
 interface HighRiskListProps {
@@ -41,8 +54,35 @@ const RISK_LABELS: Record<string, string> = {
   LOW: '낮음',
 }
 
+const CONFIDENCE_LABELS: Record<string, string> = {
+  HIGH: '높음',
+  MEDIUM: '보통',
+  LOW: '낮음',
+}
+
 export default function HighRiskList({ employees }: HighRiskListProps) {
+  const { toast } = useToast()
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [aiData, setAiData] = useState<Record<string, AiAssessment>>({})
+  const [aiLoadingId, setAiLoadingId] = useState<string | null>(null)
+
+  const handleLoadAi = async (employeeId: string) => {
+    if (aiData[employeeId]) return // already loaded
+    setAiLoadingId(employeeId)
+    try {
+      const res = await apiClient.get<{ aiAssessment: AiAssessment }>(
+        `/api/v1/attrition/employees/${employeeId}`,
+        { includeAi: 'true' },
+      )
+      if (res.data.aiAssessment) {
+        setAiData((prev) => ({ ...prev, [employeeId]: res.data.aiAssessment }))
+      }
+    } catch {
+      toast({ title: 'AI 분석 실패', description: 'AI 평가를 불러올 수 없습니다.', variant: 'destructive' })
+    } finally {
+      setAiLoadingId(null)
+    }
+  }
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
@@ -55,6 +95,7 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
           const topFactors = [...emp.factors]
             .sort((a, b) => b.value - a.value)
             .slice(0, 3)
+          const ai = emp.aiAssessment ?? aiData[emp.employeeId] ?? null
 
           return (
             <div key={emp.employeeId}>
@@ -108,27 +149,112 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                       <AttritionRadarChart factors={emp.factors} />
                     </div>
                     <div>
-                      <h4 className="text-sm font-medium text-slate-700 mb-2">
-                        권장 리텐션 액션
-                      </h4>
-                      {emp.retentionActions && emp.retentionActions.length > 0 ? (
-                        <ul className="space-y-2">
-                          {emp.retentionActions.map((action, i) => (
-                            <li
-                              key={i}
-                              className="flex items-start gap-2 text-sm text-slate-600"
-                            >
-                              <span className="inline-block w-5 h-5 rounded bg-blue-100 text-blue-700 text-xs font-medium text-center leading-5 flex-shrink-0">
-                                {i + 1}
-                              </span>
-                              {action}
-                            </li>
-                          ))}
-                        </ul>
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-sm font-medium text-slate-700">
+                          AI 인사이트
+                        </h4>
+                        {!ai && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleLoadAi(emp.employeeId)}
+                            disabled={aiLoadingId === emp.employeeId}
+                            className="text-indigo-600 hover:text-indigo-700 text-xs"
+                          >
+                            {aiLoadingId === emp.employeeId ? (
+                              <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                            ) : (
+                              <Sparkles className="h-3 w-3 mr-1" />
+                            )}
+                            AI 분석
+                          </Button>
+                        )}
+                      </div>
+
+                      {ai ? (
+                        <div className="space-y-3">
+                          {/* AI adjusted score */}
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-slate-500">AI 보정 점수:</span>
+                            <span className="text-sm font-bold">{ai.adjusted_score}</span>
+                            <Badge className={`text-xs ${RISK_BADGE_CLASSES[ai.adjusted_level] ?? ''}`}>
+                              {RISK_LABELS[ai.adjusted_level] ?? ai.adjusted_level}
+                            </Badge>
+                            <span className="text-xs text-slate-400">
+                              신뢰도: {CONFIDENCE_LABELS[ai.confidence] ?? ai.confidence}
+                            </span>
+                          </div>
+
+                          {/* Risk drivers */}
+                          {ai.risk_drivers.length > 0 && (
+                            <div>
+                              <p className="text-xs font-medium text-slate-600 mb-1">핵심 이탈 동인</p>
+                              <ul className="space-y-1">
+                                {ai.risk_drivers.map((d, i) => (
+                                  <li key={i} className="text-xs text-orange-700 bg-orange-50 px-2 py-1 rounded">
+                                    {d}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                          {/* Contextual risks */}
+                          {ai.contextual_risks.length > 0 && (
+                            <div>
+                              <p className="text-xs font-medium text-slate-600 mb-1">맥락적 위험</p>
+                              <ul className="space-y-1">
+                                {ai.contextual_risks.map((r, i) => (
+                                  <li key={i} className="text-xs text-slate-600">
+                                    · {r}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                          {/* Retention actions */}
+                          {ai.retention_actions.length > 0 && (
+                            <div>
+                              <p className="text-xs font-medium text-slate-600 mb-1">리텐션 액션</p>
+                              <ul className="space-y-1">
+                                {ai.retention_actions.map((action, i) => (
+                                  <li
+                                    key={i}
+                                    className="flex items-start gap-2 text-sm text-slate-600"
+                                  >
+                                    <span className="inline-block w-5 h-5 rounded bg-blue-100 text-blue-700 text-xs font-medium text-center leading-5 flex-shrink-0">
+                                      {i + 1}
+                                    </span>
+                                    {action}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
                       ) : (
-                        <p className="text-sm text-slate-400">
-                          AI 분석 데이터가 없습니다.
-                        </p>
+                        <div>
+                          {emp.retentionActions && emp.retentionActions.length > 0 ? (
+                            <ul className="space-y-2">
+                              {emp.retentionActions.map((action, i) => (
+                                <li
+                                  key={i}
+                                  className="flex items-start gap-2 text-sm text-slate-600"
+                                >
+                                  <span className="inline-block w-5 h-5 rounded bg-blue-100 text-blue-700 text-xs font-medium text-center leading-5 flex-shrink-0">
+                                    {i + 1}
+                                  </span>
+                                  {action}
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="text-sm text-slate-400">
+                              AI 분석 버튼을 클릭하여 인사이트를 확인하세요.
+                            </p>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>
