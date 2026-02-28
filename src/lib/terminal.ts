@@ -1,17 +1,61 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Terminal (Attendance Device) Integration
+// DB-based per-terminal authentication
 // ═══════════════════════════════════════════════════════════
 
+import crypto from 'crypto'
 import { prisma } from '@/lib/prisma'
 import { env } from '@/lib/env'
 import { unauthorized } from '@/lib/errors'
 
-// ─── Verify Terminal API Secret ──────────────────────────
+// ─── Types ────────────────────────────────────────────────
 
-export function verifyTerminalSecret(secret: string): void {
-  if (!env.TERMINAL_API_SECRET || secret !== env.TERMINAL_API_SECRET) {
+interface VerifiedTerminal {
+  id: string
+  companyId: string
+  terminalCode: string
+  terminalType: string
+  locationName: string
+}
+
+// ─── Generate Terminal Secret ─────────────────────────────
+
+export function generateTerminalSecret(): string {
+  return `tsec_${crypto.randomUUID().replace(/-/g, '')}`
+}
+
+// ─── Verify Terminal (DB-based) ───────────────────────────
+
+export async function verifyTerminal(
+  headers: Headers,
+): Promise<VerifiedTerminal> {
+  const terminalId = headers.get('X-Terminal-ID')
+  const terminalSecret = headers.get('X-Terminal-Secret')
+
+  if (!terminalId || !terminalSecret) {
+    throw unauthorized('단말기 인증 헤더가 누락되었습니다.')
+  }
+
+  const terminal = await prisma.attendanceTerminal.findFirst({
+    where: {
+      id: terminalId,
+      apiSecret: terminalSecret,
+      isActive: true,
+    },
+    select: {
+      id: true,
+      companyId: true,
+      terminalCode: true,
+      terminalType: true,
+      locationName: true,
+    },
+  })
+
+  if (!terminal) {
     throw unauthorized('잘못된 단말기 인증 정보입니다.')
   }
+
+  return terminal
 }
 
 // ─── Update Terminal Heartbeat ───────────────────────────

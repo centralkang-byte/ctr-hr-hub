@@ -5,6 +5,7 @@
 import type { NextAuthOptions, Session } from 'next-auth'
 import type { JWT } from 'next-auth/jwt'
 import AzureADProvider from 'next-auth/providers/azure-ad'
+import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from '@/lib/prisma'
 import { env } from '@/lib/env'
 import type { Permission, SessionUser } from '@/types'
@@ -81,6 +82,27 @@ export const authOptions: NextAuthOptions = {
       clientSecret: env.AZURE_AD_CLIENT_SECRET,
       tenantId: env.AZURE_AD_TENANT_ID,
     }),
+    // ─── Dev-only: password-free login via test email ───
+    ...(process.env.NODE_ENV === 'development'
+      ? [
+          CredentialsProvider({
+            id: 'credentials',
+            name: 'Dev Login',
+            credentials: { email: { label: 'Email', type: 'email' } },
+            async authorize(credentials) {
+              if (!credentials?.email) return null
+              const sso = await prisma.ssoIdentity.findFirst({
+                where: { email: credentials.email },
+                include: { employee: true },
+              })
+              if (!sso?.employee) return null
+              const emp = sso.employee
+              if (emp.status === 'RESIGNED' || emp.status === 'TERMINATED') return null
+              return { id: emp.id, email: credentials.email, name: emp.name }
+            },
+          }),
+        ]
+      : []),
   ],
 
   session: {

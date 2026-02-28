@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import type { LaborModule, WorkHoursValidation } from '@/lib/labor/index'
+import type { LaborConfig } from '@/lib/labor/types'
 
 export const euLaborModule: LaborModule = {
   countryCode: 'PL',
@@ -31,4 +32,26 @@ export const euLaborModule: LaborModule = {
     // Poland: 20 days (<10 years), 26 days (10+ years)
     return yearsOfService >= 10 ? 26 : 20
   },
+}
+
+export const laborConfig: LaborConfig = {
+  country_code: 'EU',
+  standard_hours_weekly: 40,
+  standard_hours_daily: 8,
+  overtime_threshold_weekly: 40,
+  max_overtime_weekly: 8,
+  overtime_rates: [
+    { label: 'Weekday OT', multiplier: 1.5, condition: 'WEEKDAY_OT' },
+    { label: 'Weekend OT', multiplier: 2.0, condition: 'WEEKEND' },
+  ],
+  leave_types: [
+    { type: 'ANNUAL', days_per_year: 20, accrual_rule: 'TENURE_BASED', paid: true },
+    { type: 'SICK', days_per_year: null, accrual_rule: 'FRONT_LOADED', paid: true },
+  ],
+  mandatory_break: [
+    { threshold_minutes: 360, break_minutes: 15 },
+  ],
+  night_shift: { start_hour: 22, end_hour: 6 },
+  probation_months: 3,
+  severance: null,
 }

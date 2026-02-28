@@ -88,7 +88,7 @@ export default function NewCycleClient({ user }: { user: SessionUser }) {
       {/* Form */}
       <form
         
-        onSubmit={handleSubmit(onSubmit as any)}
+        onSubmit={handleSubmit(onSubmit as Parameters<typeof handleSubmit>[0])}
         className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm space-y-6"
       >
         {error && (

@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import type { LaborModule, WorkHoursValidation } from '@/lib/labor/index'
+import type { LaborConfig } from '@/lib/labor/types'
 
 const MAX_WEEKLY_HOURS = 52        // 주 52시간 (기본 40 + 연장 12)
 const STANDARD_WEEKLY_HOURS = 40
@@ -48,6 +49,40 @@ export const krLaborModule: LaborModule = {
     const base = 15
     const additional = Math.floor((yearsOfService - 1) / 2)
     return Math.min(base + additional, 25)
+  },
+}
+
+export const laborConfig: LaborConfig = {
+  country_code: 'KR',
+  standard_hours_weekly: 40,
+  standard_hours_daily: 8,
+  overtime_threshold_weekly: 40,
+  max_overtime_weekly: 12,
+  overtime_rates: [
+    { label: '연장근로 (평일)', multiplier: 1.5, condition: 'WEEKDAY_OT' },
+    { label: '휴일근로', multiplier: 1.5, condition: 'WEEKEND' },
+    { label: '공휴일근로', multiplier: 2.0, condition: 'HOLIDAY' },
+    { label: '야간근로 가산', multiplier: 0.5, condition: 'NIGHT' },
+  ],
+  leave_types: [
+    { type: 'ANNUAL', days_per_year: 15, accrual_rule: 'TENURE_BASED', paid: true },
+    { type: 'SICK', days_per_year: null, accrual_rule: 'FRONT_LOADED', paid: false },
+    { type: 'MATERNITY', days_per_year: 90, accrual_rule: 'FRONT_LOADED', paid: true },
+    { type: 'PATERNITY', days_per_year: 10, accrual_rule: 'FRONT_LOADED', paid: true },
+    { type: 'FAMILY_CARE', days_per_year: 10, accrual_rule: 'FRONT_LOADED', paid: false },
+    { type: 'WEDDING', days_per_year: 5, accrual_rule: 'FRONT_LOADED', paid: true },
+    { type: 'BEREAVEMENT', days_per_year: 5, accrual_rule: 'FRONT_LOADED', paid: true },
+    { type: 'MENSTRUAL', days_per_year: 12, accrual_rule: 'MONTHLY_ACCRUAL', paid: false },
+  ],
+  mandatory_break: [
+    { threshold_minutes: 240, break_minutes: 30 },
+    { threshold_minutes: 480, break_minutes: 60 },
+  ],
+  night_shift: { start_hour: 22, end_hour: 6 },
+  probation_months: 3,
+  severance: {
+    description: '1년 이상 근무 시 30일분 평균임금',
+    calculate: (tenureYears, monthlyAvgSalary) => tenureYears * monthlyAvgSalary,
   },
 }
 

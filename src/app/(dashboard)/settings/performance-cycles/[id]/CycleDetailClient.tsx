@@ -266,7 +266,7 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
       {editing ? (
         <form
           
-          onSubmit={handleSubmit(onSave as any)}
+          onSubmit={handleSubmit(onSave as Parameters<typeof handleSubmit>[0])}
           className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm space-y-6"
         >
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

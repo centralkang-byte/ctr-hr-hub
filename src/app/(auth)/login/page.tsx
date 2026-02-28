@@ -22,10 +22,10 @@ interface TestAccount {
 }
 
 const TEST_ACCOUNTS: TestAccount[] = [
-  { label: 'Super Admin', email: 'superadmin@ctr.com', icon: <Shield className="h-4 w-4" /> },
-  { label: 'HR Admin', email: 'hradmin@ctr.com', icon: <Users className="h-4 w-4" /> },
-  { label: 'Manager', email: 'manager@ctr.com', icon: <Briefcase className="h-4 w-4" /> },
-  { label: 'Staff', email: 'employee@ctr.com', icon: <UserCircle className="h-4 w-4" /> },
+  { label: 'Super Admin', email: 'admin@ctr.co.kr', icon: <Shield className="h-4 w-4" /> },
+  { label: 'HR Admin', email: 'hr@ctr.co.kr', icon: <Users className="h-4 w-4" /> },
+  { label: 'Manager', email: 'manager@ctr.co.kr', icon: <Briefcase className="h-4 w-4" /> },
+  { label: 'Staff', email: 'employee@ctr.co.kr', icon: <UserCircle className="h-4 w-4" /> },
 ]
 
 // ─── Component ──────────────────────────────────────────────
