@@ -894,3 +894,77 @@ Settings 모듈 — 관리자 전용 UI로 법인별 커스터마이징 기능 1
 - Soft delete: CustomField, WorkflowRule, ExportTemplate (deletedAt)
 - Hard delete: TermOverride, EmailTemplate
 - 시스템 보호: TenantEnumOption.isSystem, EmailTemplate.isSystem → 수정/삭제 차단
+
+---
+
+# STEP 8-2 Session: Task-Centric Home + Manager Hub + HR Chatbot RAG + Command Palette
+
+**Date:** 2026-03-01
+**Status:** Complete
+**TypeScript Errors:** 0 (new code)
+
+## What Was Built
+
+4대 사용자 경험 고도화 기능: PendingActions 통합, Manager Hub, HR Chatbot RAG, Command Palette 실제 검색.
+
+## Stats
+
+| Category | Count |
+|----------|-------|
+| 신규 Lib (스키마+유틸) | 7 |
+| 신규 API route | 14 |
+| 신규 UI (page.tsx + Client) | 5 |
+| 수정 (Home 4종 + Chatbot + CommandPalette + Sidebar) | 7 |
+| **합계** | **33** |
+
+## New Files
+
+### Lib (7)
+- `src/lib/schemas/pending-actions.ts` — pendingActionsQuerySchema
+- `src/lib/schemas/hr-chat.ts` — session, message, feedback, document schemas
+- `src/lib/schemas/manager-hub.ts` — summary, alerts, performance schemas
+- `src/lib/schemas/command-search.ts` — commandSearchSchema
+- `src/lib/embedding.ts` — OpenAI text-embedding-3-small + chunkText
+- `src/lib/vector-search.ts` — pgvector search/insert/delete (raw SQL)
+- `src/lib/pending-actions.ts` — 9+ model virtual aggregation
+
+### API Routes (14)
+- `api/v1/home/pending-actions/route.ts` — GET
+- `api/v1/home/summary/route.ts` — GET (role-based KPIs)
+- `api/v1/manager-hub/summary/route.ts` — GET (KPI 4개)
+- `api/v1/manager-hub/pending-approvals/route.ts` — GET
+- `api/v1/manager-hub/team-health/route.ts` — GET (5차원 radar)
+- `api/v1/manager-hub/alerts/route.ts` — GET (초과근무/번아웃)
+- `api/v1/manager-hub/performance/route.ts` — GET (등급분포+MBO)
+- `api/v1/hr-chat/sessions/route.ts` — GET/POST
+- `api/v1/hr-chat/sessions/[id]/messages/route.ts` — GET/POST (RAG pipeline)
+- `api/v1/hr-chat/messages/[id]/feedback/route.ts` — PUT
+- `api/v1/hr-chat/messages/[id]/escalate/route.ts` — POST
+- `api/v1/hr-documents/route.ts` — GET/POST (chunking+embedding)
+- `api/v1/hr-documents/[id]/route.ts` — PUT/DELETE
+- `api/v1/search/command/route.ts` — GET
+
+### UI (5 new)
+- `src/components/home/PendingActionsPanel.tsx` — 우선순위 카드리스트
+- `src/app/(dashboard)/manager-hub/page.tsx` — SSR
+- `src/components/manager-hub/ManagerInsightsHub.tsx` — KPI+Radar+Alerts+Performance
+- `src/app/(dashboard)/settings/hr-documents/page.tsx` — SSR
+- `src/components/hr-chatbot/HrDocumentManager.tsx` — DataTable+Upload+Delete
+
+### Modified (7)
+- `EmployeeHome.tsx` — PendingActionsPanel + API summary
+- `ManagerHome.tsx` — PendingActionsPanel + API summary
+- `HrAdminHome.tsx` — PendingActionsPanel + API summary
+- `ExecutiveHome.tsx` — PendingActionsPanel + API summary
+- `HrChatbot.tsx` — RAG API, sessions, sources, confidence, escalation
+- `CommandPalette.tsx` — Cmd+O, API search, fuzzy menu, recent localStorage
+- `Sidebar.tsx` — 매니저 허브 + HR 문서 관리 메뉴
+
+## Key Patterns
+
+- PendingAction: No new DB table — 9+ model virtual aggregation with priority sorting
+- RAG: generateEmbedding → searchSimilarChunks → callClaude → confidence parse
+- Vector: `prisma.$queryRaw`/`$executeRaw` with pgvector `<=>` operator
+- Chunking: 500 token / 100 overlap sentence-based
+- apiClient.get/post returns `ApiResponse<T>` → access `.data`
+- Command Palette: Cmd+O, fuzzyMatch client-side, localStorage recent (max 5)

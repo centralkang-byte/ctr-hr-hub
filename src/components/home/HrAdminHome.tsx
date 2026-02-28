@@ -5,6 +5,7 @@
 // HR 관리자 / 슈퍼관리자 대시보드
 // ═══════════════════════════════════════════════════════════
 
+import { useState, useEffect } from 'react'
 import {
   Users,
   Briefcase,
@@ -18,6 +19,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { AiGeneratedBadge } from '@/components/shared/AiGeneratedBadge'
+import { PendingActionsPanel } from './PendingActionsPanel'
+import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 
 // ─── Props ────────────────────────────────────────────────
@@ -26,9 +29,28 @@ interface HrAdminHomeProps {
   user: SessionUser
 }
 
+interface HrAdminSummary {
+  role: string
+  totalEmployees: number
+  newHires: number
+  terminations: number
+  turnoverRate: number
+  openPositions: number
+  pendingLeaves: number
+}
+
 // ─── Component ────────────────────────────────────────────
 
 export function HrAdminHome({ user }: HrAdminHomeProps) {
+  const [summary, setSummary] = useState<HrAdminSummary | null>(null)
+
+  useEffect(() => {
+    apiClient
+      .get<HrAdminSummary>('/api/v1/home/summary')
+      .then((res) => setSummary(res.data))
+      .catch(() => {})
+  }, [])
+
   return (
     <div className="space-y-6">
       {/* Greeting */}
@@ -41,6 +63,9 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
         </p>
       </div>
 
+      {/* Pending Actions */}
+      <PendingActionsPanel user={user} />
+
       {/* KPI Cards Row */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
@@ -48,7 +73,9 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-ctr-gray-500">전사 인원</p>
-                <p className="text-2xl font-bold text-ctr-gray-900">1,247</p>
+                <p className="text-2xl font-bold text-ctr-gray-900">
+                  {summary?.totalEmployees?.toLocaleString() ?? '-'}
+                </p>
               </div>
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50">
                 <Users className="h-5 w-5 text-ctr-primary" />
@@ -56,7 +83,7 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
             </div>
             <div className="mt-2 flex items-center text-xs text-green-600">
               <TrendingUp className="mr-1 h-3 w-3" />
-              +12 이번 달
+              +{summary?.newHires ?? 0} 이번 달
             </div>
           </CardContent>
         </Card>
@@ -66,13 +93,15 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-ctr-gray-500">신규 입사</p>
-                <p className="text-2xl font-bold text-green-600">18</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {summary?.newHires ?? '-'}
+                </p>
               </div>
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-50">
                 <ArrowUpRight className="h-5 w-5 text-green-600" />
               </div>
             </div>
-            <p className="mt-2 text-xs text-ctr-gray-500">이번 분기</p>
+            <p className="mt-2 text-xs text-ctr-gray-500">최근 30일</p>
           </CardContent>
         </Card>
 
@@ -81,13 +110,15 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-ctr-gray-500">퇴사자</p>
-                <p className="text-2xl font-bold text-ctr-accent">5</p>
+                <p className="text-2xl font-bold text-ctr-accent">
+                  {summary?.terminations ?? '-'}
+                </p>
               </div>
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-50">
                 <TrendingDown className="h-5 w-5 text-ctr-accent" />
               </div>
             </div>
-            <p className="mt-2 text-xs text-ctr-gray-500">이번 분기</p>
+            <p className="mt-2 text-xs text-ctr-gray-500">최근 30일</p>
           </CardContent>
         </Card>
 
@@ -96,13 +127,17 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-ctr-gray-500">이직률</p>
-                <p className="text-2xl font-bold text-ctr-gray-900">3.2%</p>
+                <p className="text-2xl font-bold text-ctr-gray-900">
+                  {summary?.turnoverRate ?? '-'}%
+                </p>
               </div>
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-50">
                 <AlertTriangle className="h-5 w-5 text-yellow-600" />
               </div>
             </div>
-            <p className="mt-2 text-xs text-green-600">전월 대비 -0.3%p</p>
+            <p className="mt-2 text-xs text-ctr-gray-500">
+              대기 휴가: {summary?.pendingLeaves ?? 0}건
+            </p>
           </CardContent>
         </Card>
       </div>

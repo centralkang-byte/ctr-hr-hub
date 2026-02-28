@@ -5,6 +5,7 @@
 // 관리자 역할 대시보드
 // ═══════════════════════════════════════════════════════════
 
+import { useState, useEffect } from 'react'
 import {
   Users,
   CalendarDays,
@@ -15,6 +16,8 @@ import {
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { PendingActionsPanel } from './PendingActionsPanel'
+import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 
 // ─── Props ────────────────────────────────────────────────
@@ -23,9 +26,26 @@ interface ManagerHomeProps {
   user: SessionUser
 }
 
+interface ManagerSummary {
+  role: string
+  totalEmployees: number
+  teamCount: number
+  pendingLeaves: number
+  scheduledOneOnOnes: number
+}
+
 // ─── Component ────────────────────────────────────────────
 
 export function ManagerHome({ user }: ManagerHomeProps) {
+  const [summary, setSummary] = useState<ManagerSummary | null>(null)
+
+  useEffect(() => {
+    apiClient
+      .get<ManagerSummary>('/api/v1/home/summary')
+      .then((res) => setSummary(res.data))
+      .catch(() => {})
+  }, [])
+
   return (
     <div className="space-y-6">
       {/* Greeting */}
@@ -37,6 +57,9 @@ export function ManagerHome({ user }: ManagerHomeProps) {
           팀 현황을 한눈에 확인하세요.
         </p>
       </div>
+
+      {/* Pending Actions */}
+      <PendingActionsPanel user={user} />
 
       {/* Dashboard Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -197,7 +220,9 @@ export function ManagerHome({ user }: ManagerHomeProps) {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-ctr-gray-500">전체 팀원</span>
-                <span className="text-lg font-bold text-ctr-primary">11명</span>
+                <span className="text-lg font-bold text-ctr-primary">
+                  {summary?.teamCount ?? '-'}명
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-ctr-gray-500">신규 입사</span>

@@ -229,6 +229,14 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
+    label: '매니저 허브',
+    icon: BarChart3,
+    module: MODULE.EMPLOYEES,
+    items: [
+      { label: '팀 인사이트', href: '/manager-hub', icon: BarChart3 },
+    ],
+  },
+  {
     label: '후계자 관리',
     icon: Crown,
     module: MODULE.SUCCESSION,
@@ -275,6 +283,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: '모듈 ON/OFF', href: '/settings/modules', icon: ToggleLeft },
       { label: '내보내기', href: '/settings/export-templates', icon: Download },
       { label: '대시보드 위젯', href: '/settings/dashboard-widgets', icon: LayoutGrid },
+      { label: 'HR 문서 관리', href: '/settings/hr-documents', icon: FileText },
       { label: '감사로그', href: '/settings/audit-log', icon: FileText },
     ],
   },

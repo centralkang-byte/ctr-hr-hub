@@ -5,6 +5,7 @@
 // 직원 역할 대시보드 (Task-centric)
 // ═══════════════════════════════════════════════════════════
 
+import { useState, useEffect } from 'react'
 import {
   Clock,
   CalendarDays,
@@ -18,6 +19,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { PendingActionsPanel } from './PendingActionsPanel'
+import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 
 // ─── Props ────────────────────────────────────────────────
@@ -26,9 +29,29 @@ interface EmployeeHomeProps {
   user: SessionUser
 }
 
+interface EmployeeSummary {
+  role: string
+  totalEmployees: number
+  leaveBalance: { policy: string; remaining: number; used: number; total: number }[]
+  attendanceThisMonth: number
+}
+
 // ─── Component ────────────────────────────────────────────
 
 export function EmployeeHome({ user }: EmployeeHomeProps) {
+  const [summary, setSummary] = useState<EmployeeSummary | null>(null)
+
+  useEffect(() => {
+    apiClient
+      .get<EmployeeSummary>('/api/v1/home/summary')
+      .then((res) => setSummary(res.data))
+      .catch(() => {})
+  }, [])
+
+  const annualLeave = summary?.leaveBalance?.find(
+    (lb) => lb.policy.includes('연차') || lb.policy.includes('Annual'),
+  )
+
   return (
     <div className="space-y-6">
       {/* Greeting */}
@@ -40,6 +63,9 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
           오늘도 좋은 하루 되세요.
         </p>
       </div>
+
+      {/* Pending Actions */}
+      <PendingActionsPanel user={user} />
 
       {/* Dashboard Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -83,21 +109,25 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-ctr-gray-500">연차</span>
-                <span className="text-lg font-bold text-ctr-primary">12일</span>
+                <span className="text-lg font-bold text-ctr-primary">
+                  {annualLeave ? `${annualLeave.remaining}일` : '-'}
+                </span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-ctr-gray-500">반차</span>
-                <span className="text-lg font-bold text-ctr-primary">24회</span>
-              </div>
-              <div className="h-2 w-full rounded-full bg-ctr-gray-100">
-                <div
-                  className="h-2 rounded-full bg-ctr-primary"
-                  style={{ width: '80%' }}
-                />
-              </div>
-              <p className="text-xs text-ctr-gray-500">
-                15일 중 12일 남음
-              </p>
+              {annualLeave && (
+                <>
+                  <div className="h-2 w-full rounded-full bg-ctr-gray-100">
+                    <div
+                      className="h-2 rounded-full bg-ctr-primary"
+                      style={{
+                        width: `${annualLeave.total > 0 ? (annualLeave.remaining / annualLeave.total) * 100 : 0}%`,
+                      }}
+                    />
+                  </div>
+                  <p className="text-xs text-ctr-gray-500">
+                    {annualLeave.total}일 중 {annualLeave.remaining}일 남음
+                  </p>
+                </>
+              )}
             </div>
           </CardContent>
         </Card>

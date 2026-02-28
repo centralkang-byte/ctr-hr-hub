@@ -1,8 +1,8 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — HrChatbot (v3.2)
-// 플로팅 HR 챗봇 (Shell — API 연동은 후속 STEP)
+// CTR HR Hub — HrChatbot (v4.0)
+// RAG 파이프라인 연동, 세션관리, 출처표시, 에스컬레이션
 // ═══════════════════════════════════════════════════════════
 
 import {
@@ -21,10 +21,14 @@ import {
   ThumbsDown,
   UserCircle,
   RotateCcw,
+  AlertTriangle,
+  ChevronDown,
+  Loader2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
+import { apiClient } from '@/lib/api'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -33,32 +37,46 @@ interface ChatMessage {
   role: 'user' | 'assistant'
   content: string
   sources?: ChatSource[]
-  feedback?: 'up' | 'down' | null
+  confidenceScore?: number | null
+  escalated?: boolean
+  feedback?: 'POSITIVE' | 'NEGATIVE' | null
   createdAt: Date
+  needsEscalation?: boolean
 }
 
 interface ChatSource {
   title: string
   reference: string
+  chunkId?: string
+}
+
+interface ChatSession {
+  id: string
+  title: string | null
+  updatedAt: string
+  _count?: { messages: number }
 }
 
 // ─── Component ──────────────────────────────────────────────
 
 export function HrChatbot() {
   const [isOpen, setIsOpen] = useState(false)
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: 'welcome',
-      role: 'assistant',
-      content:
-        '안녕하세요! CTR HR 챗봇입니다. 근태, 휴가, 급여, 인사 정책 등에 대해 질문해 주세요.',
-      createdAt: new Date(),
-    },
-  ])
+  const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [sessions, setSessions] = useState<ChatSession[]>([])
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
+  const [showSessions, setShowSessions] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+
+  const welcomeMessage: ChatMessage = {
+    id: 'welcome',
+    role: 'assistant',
+    content:
+      '안녕하세요! CTR HR 챗봇입니다. 근태, 휴가, 급여, 인사 정책 등에 대해 질문해 주세요.',
+    createdAt: new Date(),
+  }
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -74,15 +92,80 @@ export function HrChatbot() {
     }
   }, [isOpen])
 
+  // Load sessions when opened
+  useEffect(() => {
+    if (isOpen) {
+      apiClient
+        .get<ChatSession[]>('/api/v1/hr-chat/sessions')
+        .then((res) => setSessions(res.data))
+        .catch(() => {})
+    }
+  }, [isOpen])
+
   const toggleOpen = useCallback(() => {
     setIsOpen((prev) => !prev)
   }, [])
 
+  const createNewSession = useCallback(async () => {
+    try {
+      const res = await apiClient.post<ChatSession>(
+        '/api/v1/hr-chat/sessions',
+        { title: '새 대화' },
+      )
+      setCurrentSessionId(res.data.id)
+      setMessages([welcomeMessage])
+      setSessions((prev) => [res.data, ...prev])
+      setShowSessions(false)
+    } catch {
+      // fallback: local-only
+      setMessages([welcomeMessage])
+      setCurrentSessionId(null)
+    }
+  }, [])
+
+  const loadSession = useCallback(async (sessionId: string) => {
+    try {
+      const res = await apiClient.get<ChatMessage[]>(
+        `/api/v1/hr-chat/sessions/${sessionId}/messages`,
+      )
+      const msgs = res.data
+      setCurrentSessionId(sessionId)
+      setMessages(
+        msgs.length > 0
+          ? msgs.map((m) => ({
+              ...m,
+              createdAt: new Date(m.createdAt),
+              feedback: m.feedback ?? null,
+            }))
+          : [welcomeMessage],
+      )
+      setShowSessions(false)
+    } catch {
+      // silently fail
+    }
+  }, [])
+
   const handleSubmit = useCallback(
-    (e: FormEvent) => {
+    async (e: FormEvent) => {
       e.preventDefault()
       const trimmed = input.trim()
       if (!trimmed || isLoading) return
+
+      // Ensure we have a session
+      let sessionId = currentSessionId
+      if (!sessionId) {
+        try {
+          const sessionRes = await apiClient.post<ChatSession>(
+            '/api/v1/hr-chat/sessions',
+            { title: trimmed.slice(0, 50) },
+          )
+          sessionId = sessionRes.data.id
+          setCurrentSessionId(sessionId)
+          setSessions((prev) => [sessionRes.data, ...prev])
+        } catch {
+          return
+        }
+      }
 
       const userMsg: ChatMessage = {
         id: `user-${Date.now()}`,
@@ -90,29 +173,54 @@ export function HrChatbot() {
         content: trimmed,
         createdAt: new Date(),
       }
-
       setMessages((prev) => [...prev, userMsg])
       setInput('')
       setIsLoading(true)
 
-      // Stub: simulate AI response after 1s
-      setTimeout(() => {
+      try {
+        const res = await apiClient.post<{
+          userMessage: ChatMessage
+          assistantMessage: ChatMessage
+          needsEscalation?: boolean
+        }>(`/api/v1/hr-chat/sessions/${sessionId}/messages`, {
+          content: trimmed,
+        })
+        const result = res.data
+
         const aiMsg: ChatMessage = {
-          id: `ai-${Date.now()}`,
-          role: 'assistant',
-          content:
-            '죄송합니다, 현재 AI 응답 기능이 준비 중입니다. 곧 연동될 예정입니다.',
-          sources: [
-            { title: '취업규칙', reference: '제15조' },
-          ],
-          feedback: null,
-          createdAt: new Date(),
+          ...result.assistantMessage,
+          createdAt: new Date(result.assistantMessage.createdAt),
+          feedback: result.assistantMessage.feedback ?? null,
+          needsEscalation: result.needsEscalation,
         }
-        setMessages((prev) => [...prev, aiMsg])
+
+        // Replace the temp user message and add AI response
+        setMessages((prev) => {
+          const filtered = prev.filter((m) => m.id !== userMsg.id)
+          return [
+            ...filtered,
+            {
+              ...result.userMessage,
+              createdAt: new Date(result.userMessage.createdAt),
+            },
+            aiMsg,
+          ]
+        })
+      } catch {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `err-${Date.now()}`,
+            role: 'assistant',
+            content: '죄송합니다. 응답을 생성하는 중 오류가 발생했습니다.',
+            createdAt: new Date(),
+          },
+        ])
+      } finally {
         setIsLoading(false)
-      }, 1000)
+      }
     },
-    [input, isLoading],
+    [input, isLoading, currentSessionId],
   )
 
   const handleKeyDown = useCallback(
@@ -126,29 +234,44 @@ export function HrChatbot() {
   )
 
   const handleFeedback = useCallback(
-    (messageId: string, feedback: 'up' | 'down') => {
+    async (messageId: string, feedback: 'POSITIVE' | 'NEGATIVE') => {
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === messageId ? { ...msg, feedback } : msg,
         ),
       )
-      // Stub: send feedback to API in later steps
+      try {
+        await apiClient.put(`/api/v1/hr-chat/messages/${messageId}/feedback`, {
+          feedback,
+        })
+      } catch {
+        // silently fail
+      }
     },
     [],
   )
 
-  const handleNewChat = useCallback(() => {
-    setMessages([
-      {
-        id: 'welcome',
-        role: 'assistant',
-        content:
-          '안녕하세요! CTR HR 챗봇입니다. 근태, 휴가, 급여, 인사 정책 등에 대해 질문해 주세요.',
-        createdAt: new Date(),
-      },
-    ])
-    setInput('')
+  const handleEscalate = useCallback(async (messageId: string) => {
+    try {
+      await apiClient.post(
+        `/api/v1/hr-chat/messages/${messageId}/escalate`,
+        {},
+      )
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === messageId
+            ? { ...msg, escalated: true, needsEscalation: false }
+            : msg,
+        ),
+      )
+    } catch {
+      // silently fail
+    }
   }, [])
+
+  const handleNewChat = useCallback(() => {
+    createNewSession()
+  }, [createNewSession])
 
   return (
     <>
@@ -172,9 +295,7 @@ export function HrChatbot() {
         <div
           className={cn(
             'fixed z-50 flex flex-col overflow-hidden rounded-lg border bg-background shadow-xl',
-            // Desktop: fixed size bottom-right
             'bottom-6 right-6 h-[500px] w-[360px]',
-            // Mobile: fullscreen
             'max-md:inset-0 max-md:bottom-0 max-md:right-0 max-md:h-full max-md:w-full max-md:rounded-none',
           )}
         >
@@ -182,7 +303,40 @@ export function HrChatbot() {
           <div className="flex items-center justify-between border-b bg-ctr-primary px-4 py-3 text-white">
             <div className="flex items-center gap-2">
               <MessageSquare className="h-5 w-5" />
-              <h2 className="text-sm font-semibold">HR 챗봇</h2>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowSessions((p) => !p)}
+                  className="flex items-center gap-1 text-sm font-semibold hover:opacity-80"
+                >
+                  HR 챗봇
+                  <ChevronDown className="h-3 w-3" />
+                </button>
+                {showSessions && (
+                  <div className="absolute left-0 top-full z-10 mt-1 w-56 rounded-lg border bg-white shadow-lg">
+                    <div className="max-h-48 overflow-y-auto p-1">
+                      {sessions.map((s) => (
+                        <button
+                          key={s.id}
+                          type="button"
+                          onClick={() => loadSession(s.id)}
+                          className={cn(
+                            'w-full rounded px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-100',
+                            s.id === currentSessionId && 'bg-blue-50 font-medium',
+                          )}
+                        >
+                          {s.title ?? '대화'}
+                        </button>
+                      ))}
+                      {sessions.length === 0 && (
+                        <p className="px-3 py-2 text-xs text-gray-500">
+                          대화 내역이 없습니다.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="flex items-center gap-1">
               <button
@@ -238,28 +392,53 @@ export function HrChatbot() {
                     </div>
 
                     {/* Source citations */}
-                    {msg.sources && msg.sources.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {msg.sources.map((src, i) => (
-                          <span
-                            key={i}
-                            className="inline-flex items-center gap-1 rounded bg-blue-50 px-1.5 py-0.5 text-xs text-blue-700"
-                          >
-                            {src.title} {src.reference}
-                          </span>
-                        ))}
+                    {msg.sources &&
+                      Array.isArray(msg.sources) &&
+                      msg.sources.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {msg.sources.map((src, i) => (
+                            <span
+                              key={i}
+                              className="inline-flex items-center gap-1 rounded bg-blue-50 px-1.5 py-0.5 text-xs text-blue-700"
+                            >
+                              {src.title} {src.reference}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                    {/* Low confidence warning */}
+                    {msg.needsEscalation && !msg.escalated && (
+                      <div className="rounded bg-amber-50 px-2 py-1.5">
+                        <div className="flex items-center gap-1 text-xs text-amber-700">
+                          <AlertTriangle className="h-3 w-3" />
+                          정확도가 낮을 수 있습니다.
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleEscalate(msg.id)}
+                          className="mt-1 text-xs font-medium text-amber-800 underline hover:text-amber-900"
+                        >
+                          담당자에게 문의
+                        </button>
                       </div>
                     )}
 
-                    {/* Feedback buttons (AI messages only) */}
+                    {msg.escalated && (
+                      <div className="rounded bg-green-50 px-2 py-1 text-xs text-green-700">
+                        HR 담당자에게 전달되었습니다.
+                      </div>
+                    )}
+
+                    {/* Feedback buttons */}
                     {msg.role === 'assistant' && msg.id !== 'welcome' && (
                       <div className="flex items-center gap-1">
                         <button
                           type="button"
-                          onClick={() => handleFeedback(msg.id, 'up')}
+                          onClick={() => handleFeedback(msg.id, 'POSITIVE')}
                           className={cn(
                             'rounded p-0.5 hover:bg-gray-200',
-                            msg.feedback === 'up' && 'text-green-600',
+                            msg.feedback === 'POSITIVE' && 'text-green-600',
                           )}
                           aria-label="도움이 되었어요"
                         >
@@ -267,10 +446,10 @@ export function HrChatbot() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => handleFeedback(msg.id, 'down')}
+                          onClick={() => handleFeedback(msg.id, 'NEGATIVE')}
                           className={cn(
                             'rounded p-0.5 hover:bg-gray-200',
-                            msg.feedback === 'down' && 'text-red-600',
+                            msg.feedback === 'NEGATIVE' && 'text-red-600',
                           )}
                           aria-label="도움이 안 되었어요"
                         >
@@ -294,27 +473,12 @@ export function HrChatbot() {
                     <MessageSquare className="h-3.5 w-3.5" />
                   </div>
                   <div className="rounded-lg bg-gray-100 px-3 py-2">
-                    <div className="flex gap-1">
-                      <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:0ms]" />
-                      <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:150ms]" />
-                      <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:300ms]" />
-                    </div>
+                    <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
                   </div>
                 </div>
               )}
             </div>
           </ScrollArea>
-
-          {/* ─── Escalation Button ─── */}
-          <div className="border-t px-4 py-2">
-            <button
-              type="button"
-              className="w-full text-center text-xs text-muted-foreground hover:text-foreground hover:underline"
-            >
-              <UserCircle className="mr-1 inline h-3 w-3" />
-              담당자에게 문의
-            </button>
-          </div>
 
           {/* ─── Input ─── */}
           <form

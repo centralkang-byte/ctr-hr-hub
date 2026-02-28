@@ -5,6 +5,7 @@
 // 경영진 대시보드
 // ═══════════════════════════════════════════════════════════
 
+import { useState, useEffect } from 'react'
 import {
   Users,
   TrendingDown,
@@ -16,6 +17,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { AiGeneratedBadge } from '@/components/shared/AiGeneratedBadge'
+import { PendingActionsPanel } from './PendingActionsPanel'
+import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 
 // ─── Props ────────────────────────────────────────────────
@@ -24,9 +27,28 @@ interface ExecutiveHomeProps {
   user: SessionUser
 }
 
+interface ExecSummary {
+  role: string
+  totalEmployees: number
+  newHires: number
+  terminations: number
+  turnoverRate: number
+  openPositions: number
+  pendingLeaves: number
+}
+
 // ─── Component ────────────────────────────────────────────
 
 export function ExecutiveHome({ user }: ExecutiveHomeProps) {
+  const [summary, setSummary] = useState<ExecSummary | null>(null)
+
+  useEffect(() => {
+    apiClient
+      .get<ExecSummary>('/api/v1/home/summary')
+      .then((res) => setSummary(res.data))
+      .catch(() => {})
+  }, [])
+
   return (
     <div className="space-y-6">
       {/* Greeting */}
@@ -39,6 +61,9 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
         </p>
       </div>
 
+      {/* Pending Actions */}
+      <PendingActionsPanel user={user} />
+
       {/* 핵심 KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* 전체 인원 */}
@@ -47,7 +72,9 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-ctr-gray-500">전체 인원</p>
-                <p className="text-3xl font-bold text-ctr-gray-900">1,247</p>
+                <p className="text-3xl font-bold text-ctr-gray-900">
+                  {summary?.totalEmployees?.toLocaleString() ?? '-'}
+                </p>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50">
                 <Users className="h-6 w-6 text-ctr-primary" />
@@ -65,7 +92,9 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-ctr-gray-500">이직률</p>
-                <p className="text-3xl font-bold text-ctr-gray-900">3.2%</p>
+                <p className="text-3xl font-bold text-ctr-gray-900">
+                  {summary?.turnoverRate ?? '-'}%
+                </p>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-50">
                 <TrendingDown className="h-6 w-6 text-ctr-accent" />
