@@ -391,3 +391,309 @@ exit interviews with AI analysis, IT account deactivation, self-service profile 
 - **Profile change enum values**: `CHANGE_PENDING`/`CHANGE_APPROVED`/`CHANGE_REJECTED` (Prisma enum)
 - **D-day warnings**: D-7 yellow, D-3 red pulsing in offboarding dashboard
 - **3-tab offboarding detail**: Tasks / Handover / Exit Interview
+
+---
+
+# CTR HR Hub v3.2 — STEP 6B-1 Session Context
+
+**Date:** 2026-02-28
+**Status:** STEP 6B-1 Complete
+**TypeScript Errors:** 0
+
+## What Was Built (STEP 6B-1)
+
+연봉·보상 관리 체계 + 이탈 위험 분석 모듈.
+급여 밴드 CRUD, 3×3 연봉 인상 매트릭스, 시뮬레이션/확정/이력, Compa-Ratio 분석,
+Attrition Risk 6요인 모델, 대시보드(도넛/레이더/히트맵/추이 차트).
+
+## New/Updated Prisma Schema
+
+- `AiFeature` enum: `COMPENSATION_RECOMMENDATION`, `ATTRITION_RISK_ASSESSMENT` 추가
+
+## New Lib Files (4)
+
+| File | Purpose |
+|------|---------|
+| `src/lib/schemas/compensation.ts` | Zod: salaryBand, matrix, simulation, confirm, history, analysis |
+| `src/lib/schemas/attrition.ts` | Zod: dashboard, employee, trend, recalculate |
+| `src/lib/compensation.ts` | compaRatio 계산, 밴드 분류, 매트릭스 추천, 예산 요약, 통화 포맷 |
+| `src/lib/attrition.ts` | 6요인 모델 (근속15%/보상25%/성과20%/매니저15%/참여15%/근태10%) |
+
+## New API Routes (12)
+
+### Compensation (7)
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/v1/compensation/salary-bands` | GET/POST | 급여 밴드 목록(페이지네이션) + 생성 |
+| `/api/v1/compensation/salary-bands/[id]` | GET/PUT/DELETE | 급여 밴드 상세/수정/삭제 |
+| `/api/v1/compensation/matrix` | GET/POST | 3×3 매트릭스 조회 + 일괄 upsert |
+| `/api/v1/compensation/matrix/copy` | POST | 이전 사이클 매트릭스 복사 |
+| `/api/v1/compensation/simulation` | GET | 시뮬레이션 데이터 (compa + 추천) |
+| `/api/v1/compensation/simulation/ai-recommend` | POST | AI 개별 추천 |
+| `/api/v1/compensation/confirm` | POST | 연봉 조정 확정 ($transaction) |
+| `/api/v1/compensation/history` | GET | 변경 이력 (필터/페이지네이션) |
+| `/api/v1/compensation/analysis` | GET | Compa-Ratio 분포 분석 |
+
+### Attrition Risk (5)
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/v1/attrition/dashboard` | GET | KPI + 분포 + 고위험 목록 |
+| `/api/v1/attrition/employees/[id]` | GET | 직원별 6요인 상세 |
+| `/api/v1/attrition/department-heatmap` | GET | 부서별 히트맵 |
+| `/api/v1/attrition/trend` | GET | 월별 추이 (12개월) |
+| `/api/v1/attrition/recalculate` | POST | 수동 재계산 (HR_ADMIN) |
+
+## New UI Pages & Components (18)
+
+### Compensation Pages (2)
+- `src/app/(dashboard)/compensation/page.tsx` — 서버 컴포넌트
+- `src/app/(dashboard)/compensation/CompensationClient.tsx` — 3탭 (시뮬레이션/확정/이력분석)
+
+### Compensation Components (5)
+- `src/components/compensation/SimulationTab.tsx` — DataTable + 인라인 편집 + AI 추천 + 예산 요약
+- `src/components/compensation/ConfirmTab.tsx` — 리뷰 + AlertDialog 확정
+- `src/components/compensation/HistoryTab.tsx` — 이력 테이블 + Compa-Ratio BarChart
+- `src/components/compensation/CompaRatioBadge.tsx` — 5색 Compa 뱃지
+
+### Attrition Pages (2)
+- `src/app/(dashboard)/analytics/attrition/page.tsx` — 서버 컴포넌트
+- `src/app/(dashboard)/analytics/attrition/AttritionRiskClient.tsx` — 대시보드
+
+### Attrition Components (6)
+- `src/components/compensation/AttritionKpiCards.tsx` — KPI 카드 4개
+- `src/components/compensation/AttritionDonutChart.tsx` — PieChart (분포)
+- `src/components/compensation/AttritionRadarChart.tsx` — RadarChart (6요인)
+- `src/components/compensation/DepartmentHeatmap.tsx` — 부서별 색상 그리드
+- `src/components/compensation/AttritionTrendChart.tsx` — LineChart (월별 추이)
+- `src/components/compensation/HighRiskList.tsx` — 확장 가능 고위험 목록
+
+### Settings Pages (4)
+- `src/app/(dashboard)/settings/salary-bands/page.tsx` — 서버 컴포넌트
+- `src/app/(dashboard)/settings/salary-bands/SalaryBandsClient.tsx` — 급여 밴드 CRUD
+- `src/app/(dashboard)/settings/salary-matrix/page.tsx` — 서버 컴포넌트
+- `src/app/(dashboard)/settings/salary-matrix/SalaryMatrixClient.tsx` — 3×3 그리드 편집
+
+## Updated Files (1)
+
+- `src/components/layout/Sidebar.tsx` — 연봉/보상(Banknote), 분석/이탈위험(AlertTriangle), 설정/급여밴드·인상매트릭스 추가
+
+## Key Technical Details
+
+### Compa-Ratio 5색 밴드
+| Band | Range | Color |
+|------|-------|-------|
+| VERY_LOW | <0.80 | 🔴 Red |
+| LOW | 0.80-0.95 | 🟡 Amber |
+| AT_RANGE | 0.95-1.05 | 🟢 Green |
+| HIGH | 1.05-1.20 | 🔵 Blue |
+| VERY_HIGH | >1.20 | 🟣 Purple |
+
+### EMS 9-Block → Performance Group
+- High: blocks 7,8,9 (3A, 3B, 3C)
+- Mid: blocks 4,5,6 (2A, 2B, 2C)
+- Low: blocks 1,2,3 (1A, 1B, 1C)
+
+### Attrition Risk 6요인 가중치
+| Factor | Weight | Data Source |
+|--------|--------|-------------|
+| Tenure | 15% | hireDate |
+| Compensation | 25% | compa-ratio |
+| Performance | 20% | EMS block + compa |
+| Manager | 15% | placeholder |
+| Engagement | 15% | placeholder |
+| Attendance | 10% | placeholder |
+
+### Risk Levels
+- LOW: <40, MEDIUM: 40-59, HIGH: 60-79, CRITICAL: 80+
+
+---
+
+# CTR HR Hub v3.2 — STEP 7-1 Session Context
+
+**Date:** 2026-02-28
+**Status:** STEP 7-1 Complete
+**TypeScript Errors:** 0
+
+## What Was Built (STEP 7-1)
+
+급여처리 모듈 — 6단계 상태머신(DRAFT→CALCULATING→REVIEW→APPROVED→PAID→CANCELLED),
+한국 4대보험 자동공제, 초과근무 계산, AI 이상감지, 직원 급여명세서, 퇴직금 정산.
+
+## Schema Changes
+
+### Enum Changes
+- `PayrollStatus`: PAYROLL_DRAFT/IMPORTED/PAYROLL_CONFIRMED/PAID → **DRAFT/CALCULATING/REVIEW/APPROVED/PAID/CANCELLED**
+- `PayrollRunType` (new): MONTHLY, BONUS, SEVERANCE, SPECIAL
+- `AiFeature`: + PAYROLL_ANOMALY_CHECK
+
+### Model Changes
+- `PayrollRun`: + name, runType, approvedBy/At, paidAt, totalDeductions, headcount
+- `PayrollItem`: + grossPay, allowances, currency, isManuallyAdjusted, adjustmentReason
+
+## New Lib Files (6)
+
+| File | Purpose |
+|------|---------|
+| `src/lib/payroll/types.ts` | PayrollItemDetail, PayrollAnomaly, SeveranceDetail 타입 |
+| `src/lib/payroll/kr-tax.ts` | 4대보험 (국민연금4.5%/건강3.545%/장기요양12.81%/고용0.9%) + 8구간 소득세 |
+| `src/lib/payroll/calculator.ts` | 직원별 급여 상세 계산 (기본급+초과근무+수당-공제) |
+| `src/lib/payroll/batch.ts` | 일괄 계산 (DRAFT→CALCULATING→REVIEW, concurrency 10) |
+| `src/lib/payroll/severance.ts` | 퇴직금 = 3개월 평균임금 × 재직연수 |
+| `src/lib/payroll/ai-anomaly.ts` | AI 급여 이상감지 (Claude API) |
+| `src/lib/payroll/pdf.ts` | 급여명세서 HTML 생성 |
+| `src/lib/payroll/index.ts` | Barrel export |
+| `src/lib/schemas/payroll.ts` | Zod: payrollRunCreate/List, itemAdjust, severance, anomaly |
+
+## New API Routes (10)
+
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/v1/payroll/runs` | GET/POST | 급여 실행 목록 + 생성(DRAFT) |
+| `/api/v1/payroll/runs/[id]` | GET | 급여 실행 상세 (items 포함) |
+| `/api/v1/payroll/runs/[id]/calculate` | POST | DRAFT→REVIEW 계산 실행 |
+| `/api/v1/payroll/runs/[id]/approve` | PUT | REVIEW→APPROVED 승인 |
+| `/api/v1/payroll/runs/[id]/paid` | PUT | APPROVED→PAID 지급완료 |
+| `/api/v1/payroll/runs/[id]/review` | GET | 검토 데이터 + 이상항목 플래그 |
+| `/api/v1/payroll/runs/[id]/items/[itemId]` | PUT | 수동 조정 |
+| `/api/v1/payroll/me` | GET | 내 급여명세서 목록 (PAID만) |
+| `/api/v1/payroll/me/[runId]/pdf` | GET | 급여명세서 다운로드 |
+| `/api/v1/ai/payroll-anomaly` | POST | AI 이상감지 |
+| `/api/v1/payroll/severance/[employeeId]` | POST | 퇴직금 계산 |
+
+## New UI Pages & Components (14)
+
+### Pages (7)
+| File | Description |
+|------|-------------|
+| `(dashboard)/payroll/page.tsx` + `PayrollClient.tsx` | 급여 실행 목록 (필터+DataTable+생성) |
+| `(dashboard)/payroll/[runId]/review/page.tsx` + `PayrollReviewClient.tsx` | 급여 검토 (KPI+DataTable+액션+AI) |
+| `(dashboard)/payroll/me/page.tsx` + `PayrollMeClient.tsx` | 내 급여명세서 목록 |
+| `(dashboard)/payroll/me/[runId]/page.tsx` + `PayStubDetailClient.tsx` | 명세서 상세 (비율바+지급/공제) |
+
+### Components (7)
+| File | Description |
+|------|-------------|
+| `components/payroll/PayrollStatusBadge.tsx` | 6단계 상태 색상 뱃지 |
+| `components/payroll/PayrollKpiCards.tsx` | 4개 KPI 카드 (인원/총지급/공제/실지급) |
+| `components/payroll/PayrollCreateDialog.tsx` | 생성 폼 Dialog |
+| `components/payroll/PayrollAdjustDialog.tsx` | 수동 조정 폼 |
+| `components/payroll/AnomalyPanel.tsx` | AI 이상감지 결과 패널 |
+| `components/payroll/PayStubBreakdown.tsx` | 지급/공제 항목 상세 뷰 + 비율 바 |
+| `components/payroll/SeveranceCalculator.tsx` | 퇴직금 계산 폼 + 3개월 평균임금 테이블 |
+
+## Updated Files (1)
+- `src/components/layout/Sidebar.tsx` — 급여관리 href 변경: `/payroll` (급여 정산), `/payroll/me` (내 급여명세서)
+
+## Key Technical Details
+
+### 4대보험 비율 (2025)
+| 항목 | 근로자 부담 |
+|------|------------|
+| 국민연금 | 4.5% (상한 590만원) |
+| 건강보험 | 3.545% |
+| 장기요양 | 건강보험 × 12.81% |
+| 고용보험 | 0.9% |
+| 소득세 | 8구간 누진 (6%~45%) |
+| 지방소득세 | 소득세 × 10% |
+
+### 통상시급 = 월급여 / 209시간
+
+### 이상항목 기준
+- 초과근무 > 월 60시간 → WARNING
+- 전월 대비 급여 차이 > 20% → ERROR
+- 신규 입사자 (일할 계산) → INFO
+
+### 퇴직금 공식
+퇴직금 = 3개월 평균임금 × (재직일수/365) — 1년 미만 비해당
+
+---
+
+# CTR HR Hub v3.2 — STEP 7-3 Session Context
+
+**Date:** 2026-02-28
+**Status:** STEP 7-3 Complete
+**TypeScript Errors:** 0
+
+## What Was Built (STEP 7-3)
+
+알림 시스템 구축 + 전체 QA.
+알림 API (목록/읽음/전체읽음/미읽음수), 알림 트리거 설정 CRUD,
+헤더 벨 아이콘 Popover 드롭다운, 전체 알림 페이지, 알림 트리거 설정 페이지.
+
+## New Lib Files (2)
+
+| File | Purpose |
+|------|---------|
+| `src/lib/date-utils.ts` | 상대 시간 포맷 (방금 전 / N분 전 / N시간 전 / N일 전 / yyyy-MM-dd) |
+| `src/lib/schemas/notification.ts` | Zod: notificationListSchema, notificationTriggerCreate/UpdateSchema |
+
+## New API Routes (8)
+
+### Notifications (4)
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/v1/notifications` | GET | 내 알림 목록 (페이지네이션+필터) |
+| `/api/v1/notifications/[id]/read` | PUT | 단건 읽음 처리 |
+| `/api/v1/notifications/read-all` | PUT | 전체 읽음 처리 |
+| `/api/v1/notifications/unread-count` | GET | 미읽음 수 (헤더 뱃지용) |
+
+### Settings (4)
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/v1/settings/notification-triggers` | GET | 트리거 목록 (SETTINGS:VIEW) |
+| `/api/v1/settings/notification-triggers` | POST | 트리거 생성 (SETTINGS:CREATE) |
+| `/api/v1/settings/notification-triggers/[id]` | PUT | 트리거 수정 (SETTINGS:UPDATE) |
+| `/api/v1/settings/notification-triggers/[id]` | DELETE | 트리거 삭제 (SETTINGS:DELETE) |
+
+## New UI Pages & Components (7)
+
+| File | Description |
+|------|-------------|
+| `src/components/layout/NotificationBell.tsx` | 헤더 벨 아이콘 + Popover 드롭다운 (미읽음 뱃지, 최근 20개, 모두 읽기, 딥링크) |
+| `(dashboard)/notifications/page.tsx` | 알림 페이지 서버 컴포넌트 |
+| `(dashboard)/notifications/NotificationsClient.tsx` | 알림 페이지 클라이언트 (필터 탭, 읽음/미읽음, 페이지네이션) |
+| `(dashboard)/settings/notifications/page.tsx` | 알림 트리거 설정 서버 컴포넌트 |
+| `(dashboard)/settings/notifications/NotificationTriggersClient.tsx` | 알림 트리거 CRUD (DataTable, Switch 토글, Dialog) |
+
+## Updated Files (3)
+
+- `src/components/layout/Header.tsx` — stub Bell 버튼을 `<NotificationBell />` 컴포넌트로 교체
+- `src/components/layout/Sidebar.tsx` — 시스템설정에 '알림 설정' 메뉴 추가, Bell 아이콘 import
+- `context.md` — STEP 7-3 세션 추가
+
+## Project Totals (After STEP 7-3)
+
+| Metric | Count |
+|--------|-------|
+| API route files | ~151 |
+| Dashboard pages | ~73 |
+| TypeScript/TSX source files | ~439 |
+| Prisma models | 87 |
+| Prisma enums | 70+ |
+
+## QA Checklist Results
+
+### B-A. 빌드 + 타입 검증
+- `npx tsc --noEmit` = 0 errors
+- 미사용 import/변수 정리 완료
+
+### B-B. 인증 + 권한
+- 알림 API: getServerSession 기반 인증, employeeId 필터로 본인 알림만 접근
+- 알림 트리거 API: withPermission(SETTINGS module) 래퍼 적용
+- 읽음 처리: employeeId 일치 검증 후 처리
+
+### B-C. 다법인 데이터 격리
+- Notification: employeeId 기반 격리 (자동)
+- NotificationTrigger: companyId 필터 + OR null (글로벌 트리거)
+
+### B-D. 감사 로그
+- 알림 트리거 CRUD에 logAudit 호출 추가 (create/update/delete)
+
+### Phase 2 기술부채
+- AI 기능 통합 테스트 (19개 AiFeature)
+- Materialized View 8개 자동 갱신 검증
+- E2E 플로우 테스트 (채용→입사→온보딩→성과→보상→퇴직)
+- 반응형 UI 검증 (모바일/태블릿)
+- 성능 최적화 (페이지네이션, 인덱스, 캐싱)
+- FCM/SES 알림 채널 실제 연동 (현재 IN_APP만)
+- 국제화 (i18n) 확장 (현재 한국어만)

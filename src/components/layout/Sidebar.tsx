@@ -38,6 +38,13 @@ import {
   Monitor,
   Gavel,
   Award,
+  Banknote,
+  AlertTriangle,
+  TrendingDown,
+  Briefcase,
+  Sparkles,
+  LayoutDashboard,
+  Bell,
   type LucideIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -122,12 +129,37 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
+    label: '연봉/보상',
+    icon: Banknote,
+    module: MODULE.COMPENSATION,
+    items: [
+      { label: '연봉 조정', href: '/compensation', icon: Banknote },
+    ],
+  },
+  {
+    label: '분석',
+    icon: BarChart3,
+    module: MODULE.ANALYTICS,
+    items: [
+      { label: '전사 개요', href: '/analytics', icon: LayoutDashboard },
+      { label: '인력 분석', href: '/analytics/workforce', icon: Users },
+      { label: '이직 분석', href: '/analytics/turnover', icon: TrendingDown },
+      { label: '성과 분석', href: '/analytics/performance', icon: Target },
+      { label: '근태 분석', href: '/analytics/attendance', icon: Clock },
+      { label: '채용 분석', href: '/analytics/recruitment', icon: Briefcase },
+      { label: '보상 분석', href: '/analytics/compensation', icon: Banknote },
+      { label: '팀 건강', href: '/analytics/team-health', icon: Heart },
+      { label: '이탈 위험', href: '/analytics/attrition', icon: AlertTriangle },
+      { label: 'AI 보고서', href: '/analytics/report', icon: Sparkles },
+    ],
+  },
+  {
     label: '급여관리',
     icon: Wallet,
     module: MODULE.PAYROLL,
     items: [
-      { label: '급여대장', href: '/payroll', icon: Wallet },
-      { label: '급여명세서', href: '/payroll/statements', icon: FileText },
+      { label: '급여 정산', href: '/payroll', icon: Wallet },
+      { label: '내 급여명세서', href: '/payroll/me', icon: FileText },
     ],
   },
   {
@@ -211,6 +243,9 @@ const NAV_GROUPS: NavGroup[] = [
       { label: '정보변경 요청', href: '/settings/profile-requests', icon: ClipboardCheck },
       { label: '평가 사이클', href: '/settings/performance-cycles', icon: Target },
       { label: '역량 라이브러리', href: '/settings/competencies', icon: Target },
+      { label: '급여 밴드', href: '/settings/salary-bands', icon: Banknote },
+      { label: '인상 매트릭스', href: '/settings/salary-matrix', icon: Banknote },
+      { label: '알림 설정', href: '/settings/notifications', icon: Bell },
       { label: '감사로그', href: '/settings/audit-log', icon: FileText },
     ],
   },

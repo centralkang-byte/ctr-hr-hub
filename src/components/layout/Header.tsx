@@ -8,8 +8,8 @@
 import { useCallback } from 'react'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
-import { Bell, User, Settings, LogOut } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { User, Settings, LogOut } from 'lucide-react'
+import { NotificationBell } from '@/components/layout/NotificationBell'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -52,6 +52,7 @@ const BREADCRUMB_MAP: Record<string, string> = {
   benefits: ko.menu.benefits,
   training: ko.menu.training,
   settings: ko.menu.settings,
+  notifications: '알림',
 }
 
 function getBreadcrumbs(pathname: string): string[] {
@@ -103,10 +104,7 @@ export function Header({ user, companies }: HeaderProps) {
         />
 
         {/* Notification Bell */}
-        <Button variant="ghost" size="icon" className="relative" aria-label="알림">
-          <Bell className="h-5 w-5 text-ctr-gray-500" />
-          {/* Notification badge (stub) */}
-        </Button>
+        <NotificationBell />
 
         {/* User Dropdown */}
         <DropdownMenu>
