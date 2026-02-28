@@ -2,30 +2,51 @@
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Login Page
-// 좌: CTR 브랜딩 / 우: 로그인 폼 (M365 SSO + Dev 모드)
+// 좌: CTR 브랜딩 / 우: 로그인 폼 (M365 SSO + 테스트 계정)
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useState } from 'react'
 import { signIn } from 'next-auth/react'
-import { Shield, Users, UserCircle, Briefcase, Loader2 } from 'lucide-react'
+import { ChevronRight, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { ko } from '@/lib/i18n/ko'
 
-// ─── Dev mode test accounts ─────────────────────────────────
+// ─── Test accounts ───────────────────────────────────────
 
 interface TestAccount {
-  label: string
+  name: string
+  role: string
+  roleBadgeClass: string
   email: string
-  icon: React.ReactNode
 }
 
 const TEST_ACCOUNTS: TestAccount[] = [
-  { label: 'Super Admin (시스템관리자)', email: 'admin@ctr.co.kr', icon: <Shield className="h-4 w-4" /> },
-  { label: 'HR Admin (인사담당자)', email: 'hr@ctr.co.kr', icon: <Users className="h-4 w-4" /> },
-  { label: 'Team Leader (팀장)', email: 'manager@ctr.co.kr', icon: <Briefcase className="h-4 w-4" /> },
-  { label: 'Staff (직원)', email: 'employee@ctr.co.kr', icon: <UserCircle className="h-4 w-4" /> },
+  {
+    name: '이시스템',
+    role: '시스템 관리자',
+    roleBadgeClass: 'bg-purple-100 text-purple-700',
+    email: 'admin@ctr.co.kr',
+  },
+  {
+    name: '김인사',
+    role: 'HR 담당자',
+    roleBadgeClass: 'bg-blue-100 text-blue-700',
+    email: 'hr@ctr.co.kr',
+  },
+  {
+    name: '박매니저',
+    role: '팀장',
+    roleBadgeClass: 'bg-amber-100 text-amber-700',
+    email: 'manager@ctr.co.kr',
+  },
+  {
+    name: '최사원',
+    role: '직원',
+    roleBadgeClass: 'bg-gray-100 text-gray-600',
+    email: 'employee@ctr.co.kr',
+  },
 ]
 
 // ─── Component ──────────────────────────────────────────────
@@ -40,36 +61,26 @@ export default function LoginPage() {
 
   const handleDevLogin = useCallback((email: string) => {
     setLoadingId(email)
-    void signIn('credentials', {
-      email,
-      callbackUrl: '/',
-    })
+    void signIn('credentials', { email, callbackUrl: '/' })
   }, [])
-
-  const showTestAccounts = process.env.NEXT_PUBLIC_SHOW_TEST_ACCOUNTS === 'true'
 
   return (
     <div className="flex min-h-screen">
       {/* ─── Left: CTR Branding ─── */}
       <div className="hidden flex-1 flex-col items-center justify-center bg-ctr-primary p-12 lg:flex">
         <div className="max-w-md text-center">
-          {/* Logo */}
           <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-2xl bg-white/10">
             <span className="text-3xl font-bold text-white">CTR</span>
           </div>
-
           <h1 className="mb-4 text-3xl font-bold text-white">CTR HR Hub</h1>
-          <p className="mb-2 text-lg text-white/80">
-            통합 인사관리 시스템
-          </p>
+          <p className="mb-2 text-lg text-white/80">통합 인사관리 시스템</p>
           <p className="text-sm text-white/60">{ko.auth.slogan}</p>
-
         </div>
       </div>
 
       {/* ─── Right: Login Form ─── */}
-      <div className="flex flex-1 flex-col items-center justify-center bg-white p-8">
-        <div className="w-full max-w-sm">
+      <div className="flex flex-1 flex-col items-center justify-center overflow-y-auto bg-white p-8">
+        <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="mb-8 text-center lg:hidden">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-ctr-primary">
@@ -83,7 +94,7 @@ export default function LoginPage() {
               <CardTitle className="text-xl">{ko.auth.login}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* M365 SSO Button */}
+              {/* ── M365 SSO Button ── */}
               <Button
                 onClick={handleM365Login}
                 disabled={loadingId !== null}
@@ -108,39 +119,56 @@ export default function LoginPage() {
                 {ko.auth.loginWithM365}
               </Button>
 
-              {/* Test Accounts Section */}
-              {showTestAccounts && (
-                <>
-                  <div className="relative">
-                    <Separator />
-                    <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-xs text-muted-foreground">
-                      테스트 계정
-                    </span>
-                  </div>
+              {/* ── Test Accounts ── */}
+              <div className="relative py-1">
+                <Separator />
+                <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-xs text-muted-foreground whitespace-nowrap">
+                  테스트 계정으로 빠른 로그인
+                </span>
+              </div>
 
-                  <div className="space-y-2">
-                    {TEST_ACCOUNTS.map((account) => (
-                      <Button
-                        key={account.email}
-                        variant="outline"
-                        className="w-full justify-start gap-3"
-                        disabled={loadingId !== null}
-                        onClick={() => handleDevLogin(account.email)}
-                      >
-                        {loadingId === account.email ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          account.icon
-                        )}
-                        <span className="text-sm font-medium">{account.label}</span>
-                      </Button>
-                    ))}
-                  </div>
-                </>
-              )}
+              <div className="space-y-2">
+                {TEST_ACCOUNTS.map((account) => {
+                  const isLoading = loadingId === account.email
+                  return (
+                    <button
+                      key={account.email}
+                      onClick={() => handleDevLogin(account.email)}
+                      disabled={loadingId !== null}
+                      className="group w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-left transition-colors hover:border-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-semibold text-gray-900">
+                              {account.name}
+                            </span>
+                            <span
+                              className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${account.roleBadgeClass}`}
+                            >
+                              {account.role}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-muted-foreground">{account.email}</p>
+                        </div>
+                        <div className="flex items-center gap-0.5 text-xs text-muted-foreground transition-colors group-hover:text-gray-700">
+                          {isLoading ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <>
+                              <span>클릭으로 입력</span>
+                              <ChevronRight className="h-3.5 w-3.5" />
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
 
-              {/* Footer notice */}
-              <p className="mt-4 text-center text-[10px] text-muted-foreground">
+              {/* Footer */}
+              <p className="text-center text-[10px] text-muted-foreground">
                 {ko.auth.notRegistered}
               </p>
             </CardContent>

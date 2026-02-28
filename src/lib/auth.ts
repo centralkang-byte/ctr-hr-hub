@@ -82,27 +82,23 @@ export const authOptions: NextAuthOptions = {
       clientSecret: env.AZURE_AD_CLIENT_SECRET,
       tenantId: env.AZURE_AD_TENANT_ID,
     }),
-    // ─── Test accounts: enabled via NEXT_PUBLIC_SHOW_TEST_ACCOUNTS env ───
-    ...(process.env.NEXT_PUBLIC_SHOW_TEST_ACCOUNTS === 'true'
-      ? [
-          CredentialsProvider({
-            id: 'credentials',
-            name: 'Dev Login',
-            credentials: { email: { label: 'Email', type: 'email' } },
-            async authorize(credentials) {
-              if (!credentials?.email) return null
-              const sso = await prisma.ssoIdentity.findFirst({
-                where: { email: credentials.email },
-                include: { employee: true },
-              })
-              if (!sso?.employee) return null
-              const emp = sso.employee
-              if (emp.status === 'RESIGNED' || emp.status === 'TERMINATED') return null
-              return { id: emp.id, email: credentials.email, name: emp.name }
-            },
-          }),
-        ]
-      : []),
+    // ─── Test accounts: email-only login (checks DB; works only for seeded accounts) ───
+    CredentialsProvider({
+      id: 'credentials',
+      name: 'Test Login',
+      credentials: { email: { label: 'Email', type: 'email' } },
+      async authorize(credentials) {
+        if (!credentials?.email) return null
+        const sso = await prisma.ssoIdentity.findFirst({
+          where: { email: credentials.email },
+          include: { employee: true },
+        })
+        if (!sso?.employee) return null
+        const emp = sso.employee
+        if (emp.status === 'RESIGNED' || emp.status === 'TERMINATED') return null
+        return { id: emp.id, email: credentials.email, name: emp.name }
+      },
+    }),
   ],
 
   session: {
