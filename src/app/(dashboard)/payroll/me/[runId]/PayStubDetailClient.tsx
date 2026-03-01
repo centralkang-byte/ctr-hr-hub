@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { ArrowLeft, Download, FileText } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import PayStubBreakdown from '@/components/payroll/PayStubBreakdown'
@@ -32,6 +33,8 @@ interface PayStubDetailClientProps {
 
 export default function PayStubDetailClient({ user, runId }: PayStubDetailClientProps) {
   const router = useRouter()
+  const t = useTranslations('payStubDetail')
+  const tCommon = useTranslations('common')
   const [items, setItems] = useState<PayslipItem[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -81,10 +84,10 @@ export default function PayStubDetailClient({ user, runId }: PayStubDetailClient
       <div className="p-6">
         <Button variant="ghost" onClick={() => router.push('/payroll/me')}>
           <ArrowLeft className="h-4 w-4 mr-1" />
-          돌아가기
+          {tCommon('back')}
         </Button>
         <div className="text-center py-16 text-slate-500">
-          급여명세서를 찾을 수 없습니다.
+          {t('notFound')}
         </div>
       </div>
     )
@@ -101,7 +104,7 @@ export default function PayStubDetailClient({ user, runId }: PayStubDetailClient
           <div>
             <div className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-blue-600" />
-              <h1 className="text-2xl font-bold text-slate-900">{item.run.yearMonth} 급여명세서</h1>
+              <h1 className="text-2xl font-bold text-slate-900">{t('titleWithMonth', { month: item.run.yearMonth })}</h1>
             </div>
             <p className="text-sm text-slate-500 mt-0.5">{item.run.name}</p>
           </div>
@@ -112,7 +115,7 @@ export default function PayStubDetailClient({ user, runId }: PayStubDetailClient
           className="gap-1"
         >
           <Download className="h-4 w-4" />
-          PDF 다운로드
+          {t('downloadPdf')}
         </Button>
       </div>
 
@@ -120,13 +123,13 @@ export default function PayStubDetailClient({ user, runId }: PayStubDetailClient
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
           <div>
-            <p className="text-slate-500">급여 기간</p>
+            <p className="text-slate-500">{t('payPeriod')}</p>
             <p className="font-medium">
               {item.run.periodStart.split('T')[0]} ~ {item.run.periodEnd.split('T')[0]}
             </p>
           </div>
           <div>
-            <p className="text-slate-500">지급일</p>
+            <p className="text-slate-500">{t('payDate')}</p>
             <p className="font-medium">
               {item.run.paidAt?.split('T')[0] ?? item.run.payDate?.split('T')[0] ?? '-'}
             </p>

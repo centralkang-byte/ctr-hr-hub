@@ -7,13 +7,13 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
+import { useTranslations } from 'next-intl'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Plus, Pencil, Trash2, Loader2 } from 'lucide-react'
 
 import type { SessionUser, PaginationInfo } from '@/types'
 import { apiClient } from '@/lib/api'
-import { ko } from '@/lib/i18n/ko'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { Button } from '@/components/ui/button'
@@ -79,33 +79,33 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>
 
-// ─── Min unit label map ─────────────────────────────────
-
-const minUnitLabels: Record<string, string> = {
-  FULL_DAY: ko.leave.fullDay,
-  HALF_DAY: ko.leave.halfDay,
-  QUARTER_DAY: ko.leave.quarterDay,
-}
-
-// ─── Leave type label map ───────────────────────────────
-
-const leaveTypeLabels: Record<string, string> = {
-  ANNUAL: ko.leave.annual,
-  SICK: ko.leave.sick,
-  MATERNITY: ko.leave.maternity,
-  PATERNITY: ko.leave.paternity,
-  BEREAVEMENT: ko.leave.bereavement,
-  SPECIAL: ko.leave.special,
-  COMPENSATORY: ko.leave.compensatory,
-  FAMILY_CARE: ko.leave.familyCare,
-  WEDDING: ko.leave.wedding,
-  MENSTRUAL: ko.leave.menstrual,
-}
-
 // ─── Component ───────────────────────────────────────────
 
 export function LeavePolicySettingsClient({ user }: { user: SessionUser }) {
   void user // reserved for permission checks
+
+  const t = useTranslations('leave')
+  const tc = useTranslations('common')
+
+  // ─── Translated label maps ───
+  const minUnitLabels: Record<string, string> = {
+    FULL_DAY: t('fullDay'),
+    HALF_DAY: t('halfDay'),
+    QUARTER_DAY: t('quarterDay'),
+  }
+
+  const leaveTypeLabels: Record<string, string> = {
+    ANNUAL: t('annual'),
+    SICK: t('sick'),
+    MATERNITY: t('maternity'),
+    PATERNITY: t('paternity'),
+    BEREAVEMENT: t('bereavement'),
+    SPECIAL: t('special'),
+    COMPENSATORY: t('compensatory'),
+    FAMILY_CARE: t('familyCare'),
+    WEDDING: t('wedding'),
+    MENSTRUAL: t('menstrual'),
+  }
 
   // ─── State ───
   const [policies, setPolicies] = useState<LeavePolicyLocal[]>([])
@@ -235,11 +235,11 @@ export function LeavePolicySettingsClient({ user }: { user: SessionUser }) {
   const columns: DataTableColumn<LeavePolicyLocal>[] = [
     {
       key: 'name',
-      header: '정책명',
+      header: t('policyName'),
     },
     {
       key: 'leaveType',
-      header: '휴가 유형',
+      header: t('leaveType'),
       render: (row: LeavePolicyLocal) => (
         <Badge variant="outline">
           {leaveTypeLabels[row.leaveType] ?? row.leaveType}
@@ -248,38 +248,38 @@ export function LeavePolicySettingsClient({ user }: { user: SessionUser }) {
     },
     {
       key: 'defaultDays',
-      header: '기본 부여일',
-      render: (row: LeavePolicyLocal) => `${row.defaultDays}일`,
+      header: t('defaultDays'),
+      render: (row: LeavePolicyLocal) => t('defaultDaysSuffix', { days: row.defaultDays }),
     },
     {
       key: 'isPaid',
-      header: ko.leave.isPaid,
+      header: t('isPaid'),
       render: (row: LeavePolicyLocal) =>
         row.isPaid ? (
-          <Badge className="bg-green-100 text-green-800 hover:bg-green-100">유급</Badge>
+          <Badge className="bg-green-100 text-green-800 hover:bg-green-100">{t('paid')}</Badge>
         ) : (
-          <Badge variant="secondary">무급</Badge>
+          <Badge variant="secondary">{t('unpaid')}</Badge>
         ),
     },
     {
       key: 'carryOverAllowed',
-      header: ko.leave.carryOver,
+      header: t('carryOver'),
       render: (row: LeavePolicyLocal) =>
         row.carryOverAllowed ? (
-          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">허용</Badge>
+          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">{t('carryOverAllowed')}</Badge>
         ) : (
-          <Badge variant="secondary">불가</Badge>
+          <Badge variant="secondary">{t('carryOverNotAllowed')}</Badge>
         ),
     },
     {
       key: 'minUnit',
-      header: ko.leave.minUnit,
+      header: t('minUnit'),
       render: (row: LeavePolicyLocal) =>
         minUnitLabels[row.minUnit] ?? row.minUnit,
     },
     {
       key: 'actions',
-      header: ko.common.actions,
+      header: tc('actions'),
       render: (row: LeavePolicyLocal) => (
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" onClick={() => openEdit(row)}>
@@ -301,12 +301,12 @@ export function LeavePolicySettingsClient({ user }: { user: SessionUser }) {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={ko.leave.policySettings}
-        description="휴가 정책을 등록하고 관리합니다."
+        title={t('policySettings')}
+        description={t('policyDescription')}
         actions={
           <Button onClick={openCreate}>
             <Plus className="mr-1 h-4 w-4" />
-            {ko.common.create}
+            {tc('create')}
           </Button>
         }
       />
@@ -318,7 +318,7 @@ export function LeavePolicySettingsClient({ user }: { user: SessionUser }) {
         loading={loading}
         pagination={pagination}
         onPageChange={setPage}
-        emptyMessage={ko.common.noData}
+        emptyMessage={tc('noData')}
         rowKey={(row) => (row as unknown as LeavePolicyLocal).id}
       />
 
@@ -327,14 +327,12 @@ export function LeavePolicySettingsClient({ user }: { user: SessionUser }) {
         <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>
             <DialogTitle>
-              {editing
-                ? `${ko.leave.policy} ${ko.common.edit}`
-                : `${ko.leave.policy} ${ko.common.create}`}
+              {editing ? t('policyEdit') : t('policyCreate')}
             </DialogTitle>
             <DialogDescription>
               {editing
-                ? '휴가 정책 정보를 수정합니다.'
-                : '새 휴가 정책을 등록합니다.'}
+                ? t('editPolicyDescription')
+                : t('createPolicyDescription')}
             </DialogDescription>
           </DialogHeader>
 
@@ -342,10 +340,10 @@ export function LeavePolicySettingsClient({ user }: { user: SessionUser }) {
           <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
             {/* name */}
             <div className="space-y-2">
-              <Label htmlFor="policy-name">정책명</Label>
+              <Label htmlFor="policy-name">{t('policyName')}</Label>
               <Input
                 id="policy-name"
-                placeholder="예: 연차휴가"
+                placeholder={t('exampleAnnual')}
                 {...register('name')}
               />
               {errors.name && (
@@ -357,10 +355,10 @@ export function LeavePolicySettingsClient({ user }: { user: SessionUser }) {
 
             {/* leaveType */}
             <div className="space-y-2">
-              <Label htmlFor="policy-leaveType">휴가 유형</Label>
+              <Label htmlFor="policy-leaveType">{t('leaveType')}</Label>
               <Input
                 id="policy-leaveType"
-                placeholder="예: ANNUAL, SICK"
+                placeholder={t('exampleLeaveType')}
                 {...register('leaveType')}
               />
               {errors.leaveType && (
@@ -372,7 +370,7 @@ export function LeavePolicySettingsClient({ user }: { user: SessionUser }) {
 
             {/* defaultDays */}
             <div className="space-y-2">
-              <Label htmlFor="policy-defaultDays">기본 부여일</Label>
+              <Label htmlFor="policy-defaultDays">{t('defaultDays')}</Label>
               <Input
                 id="policy-defaultDays"
                 type="number"
@@ -404,7 +402,7 @@ export function LeavePolicySettingsClient({ user }: { user: SessionUser }) {
                     htmlFor="policy-isPaid"
                     className="cursor-pointer"
                   >
-                    {ko.leave.isPaid}
+                    {t('isPaid')}
                   </Label>
                 </div>
               )}
@@ -427,7 +425,7 @@ export function LeavePolicySettingsClient({ user }: { user: SessionUser }) {
                     htmlFor="policy-carryOver"
                     className="cursor-pointer"
                   >
-                    {ko.leave.carryOver}
+                    {t('carryOver')}
                   </Label>
                 </div>
               )}
@@ -437,7 +435,7 @@ export function LeavePolicySettingsClient({ user }: { user: SessionUser }) {
             {carryOverAllowed && (
               <div className="space-y-2">
                 <Label htmlFor="policy-maxCarryOver">
-                  {ko.leave.maxCarryOver}
+                  {t('maxCarryOver')}
                 </Label>
                 <Input
                   id="policy-maxCarryOver"
@@ -456,12 +454,12 @@ export function LeavePolicySettingsClient({ user }: { user: SessionUser }) {
 
             {/* minTenureMonths */}
             <div className="space-y-2">
-              <Label htmlFor="policy-minTenure">최소 근속 개월수</Label>
+              <Label htmlFor="policy-minTenure">{t('minTenureMonths')}</Label>
               <Input
                 id="policy-minTenure"
                 type="number"
                 min={0}
-                placeholder="선택 사항"
+                placeholder={tc('optional')}
                 {...register('minTenureMonths')}
               />
               {errors.minTenureMonths && (
@@ -473,7 +471,7 @@ export function LeavePolicySettingsClient({ user }: { user: SessionUser }) {
 
             {/* minUnit */}
             <div className="space-y-2">
-              <Label>{ko.leave.minUnit}</Label>
+              <Label>{t('minUnit')}</Label>
               <Controller
                 control={control}
                 name="minUnit"
@@ -483,17 +481,17 @@ export function LeavePolicySettingsClient({ user }: { user: SessionUser }) {
                     onValueChange={field.onChange}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder={ko.common.selectPlaceholder} />
+                      <SelectValue placeholder={tc('selectPlaceholder')} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="FULL_DAY">
-                        {ko.leave.fullDay}
+                        {t('fullDay')}
                       </SelectItem>
                       <SelectItem value="HALF_DAY">
-                        {ko.leave.halfDay}
+                        {t('halfDay')}
                       </SelectItem>
                       <SelectItem value="QUARTER_DAY">
-                        {ko.leave.quarterDay}
+                        {t('quarterDay')}
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -512,13 +510,13 @@ export function LeavePolicySettingsClient({ user }: { user: SessionUser }) {
                 variant="outline"
                 onClick={() => setDialogOpen(false)}
               >
-                {ko.common.cancel}
+                {tc('cancel')}
               </Button>
               <Button type="submit" disabled={saving}>
                 {saving && (
                   <Loader2 className="mr-1 h-4 w-4 animate-spin" />
                 )}
-                {ko.common.save}
+                {tc('save')}
               </Button>
             </DialogFooter>
           </form>
@@ -532,14 +530,13 @@ export function LeavePolicySettingsClient({ user }: { user: SessionUser }) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>휴가 정책 삭제</AlertDialogTitle>
+            <AlertDialogTitle>{t('deletePolicy')}</AlertDialogTitle>
             <AlertDialogDescription>
-              &quot;{deleteTarget?.name}&quot;을(를) 삭제하시겠습니까? 이 작업은
-              되돌릴 수 없습니다.
+              {t('deletePolicyConfirm', { name: deleteTarget?.name ?? '' })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{ko.common.cancel}</AlertDialogCancel>
+            <AlertDialogCancel>{tc('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               disabled={deleting}
@@ -548,7 +545,7 @@ export function LeavePolicySettingsClient({ user }: { user: SessionUser }) {
               {deleting && (
                 <Loader2 className="mr-1 h-4 w-4 animate-spin" />
               )}
-              {ko.common.delete}
+              {tc('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

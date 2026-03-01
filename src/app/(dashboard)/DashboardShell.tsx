@@ -17,6 +17,7 @@ interface CompanyOption {
   id: string
   name: string
   nameEn: string | null
+  countryCode?: string | null
 }
 
 interface DashboardShellProps {

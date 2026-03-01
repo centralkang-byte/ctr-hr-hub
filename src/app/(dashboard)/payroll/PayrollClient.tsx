@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Wallet } from 'lucide-react'
 import { DataTable } from '@/components/shared/DataTable'
 import type { DataTableColumn } from '@/components/shared/DataTable'
@@ -17,13 +18,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { PaginationInfo, SessionUser } from '@/types'
-
-const RUN_TYPE_LABELS: Record<string, string> = {
-  MONTHLY: '월급',
-  BONUS: '상여금',
-  SEVERANCE: '퇴직금',
-  SPECIAL: '특별',
-}
 
 interface PayrollRunRow {
   [key: string]: unknown
@@ -47,6 +41,9 @@ interface PayrollClientProps {
 
 export default function PayrollClient({ user }: PayrollClientProps) {
   const router = useRouter()
+  const t = useTranslations('payrollPage')
+  const tCommon = useTranslations('common')
+
   const [runs, setRuns] = useState<PayrollRunRow[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | null>(null)
   const [loading, setLoading] = useState(false)
@@ -76,35 +73,35 @@ export default function PayrollClient({ user }: PayrollClientProps) {
   }, [fetchRuns])
 
   const columns: DataTableColumn<PayrollRunRow>[] = [
-    { key: 'name', header: '실행명' },
+    { key: 'name', header: t('runName') },
     {
       key: 'runType',
-      header: '유형',
+      header: tCommon('type'),
       render: (row) => (
         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-700">
-          {RUN_TYPE_LABELS[row.runType] ?? row.runType}
+          {t(`runType.${row.runType}`, { defaultValue: row.runType })}
         </span>
       ),
     },
-    { key: 'yearMonth', header: '급여기간' },
+    { key: 'yearMonth', header: t('payPeriod') },
     {
       key: 'headcount',
-      header: '대상인원',
-      render: (row) => `${row.headcount}명`,
+      header: t('headcount'),
+      render: (row) => t('headcountValue', { count: row.headcount }),
     },
     {
       key: 'totalGross',
-      header: '총지급액',
+      header: t('totalGross'),
       render: (row) => formatCurrency(Number(row.totalGross ?? 0)),
     },
     {
       key: 'totalNet',
-      header: '총실지급액',
+      header: t('totalNet'),
       render: (row) => formatCurrency(Number(row.totalNet ?? 0)),
     },
     {
       key: 'status',
-      header: '상태',
+      header: tCommon('status'),
       render: (row) => <PayrollStatusBadge status={row.status} />,
     },
     {
@@ -119,7 +116,7 @@ export default function PayrollClient({ user }: PayrollClientProps) {
           }}
           className="text-blue-600 hover:text-blue-800 text-xs font-medium"
         >
-          상세
+          {tCommon('detail')}
         </button>
       ),
     },
@@ -131,7 +128,7 @@ export default function PayrollClient({ user }: PayrollClientProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Wallet className="h-6 w-6 text-blue-600" />
-          <h1 className="text-2xl font-bold text-slate-900">급여 정산</h1>
+          <h1 className="text-2xl font-bold text-slate-900">{t('title')}</h1>
         </div>
         <PayrollCreateDialog onCreated={() => fetchRuns()} />
       </div>
@@ -140,16 +137,16 @@ export default function PayrollClient({ user }: PayrollClientProps) {
       <div className="flex items-center gap-3">
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-40">
-            <SelectValue placeholder="전체 상태" />
+            <SelectValue placeholder={t('allStatus')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">전체</SelectItem>
-            <SelectItem value="DRAFT">초안</SelectItem>
-            <SelectItem value="CALCULATING">계산중</SelectItem>
-            <SelectItem value="REVIEW">검토</SelectItem>
-            <SelectItem value="APPROVED">승인</SelectItem>
-            <SelectItem value="PAID">지급완료</SelectItem>
-            <SelectItem value="CANCELLED">취소</SelectItem>
+            <SelectItem value="">{tCommon('all')}</SelectItem>
+            <SelectItem value="DRAFT">{t('status.draft')}</SelectItem>
+            <SelectItem value="CALCULATING">{t('status.calculating')}</SelectItem>
+            <SelectItem value="REVIEW">{t('status.review')}</SelectItem>
+            <SelectItem value="APPROVED">{t('status.approved')}</SelectItem>
+            <SelectItem value="PAID">{t('status.paid')}</SelectItem>
+            <SelectItem value="CANCELLED">{t('status.cancelled')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -161,7 +158,7 @@ export default function PayrollClient({ user }: PayrollClientProps) {
         pagination={pagination ?? undefined}
         onPageChange={(page) => fetchRuns(page)}
         loading={loading}
-        emptyMessage="급여 실행 내역이 없습니다."
+        emptyMessage={t('emptyMessage')}
         onRowClick={(row) => router.push(`/payroll/${row.id}/review`)}
       />
     </div>

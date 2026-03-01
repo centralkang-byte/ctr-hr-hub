@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Calculator, CheckCircle2, BarChart3 } from 'lucide-react'
 import SimulationTab from '@/components/compensation/SimulationTab'
@@ -15,6 +16,9 @@ interface CycleOption {
 }
 
 export default function CompensationClient() {
+  const t = useTranslations('compensation')
+  const tMenu = useTranslations('menu')
+
   const [cycles, setCycles] = useState<CycleOption[]>([])
   const [selectedCycleId, setSelectedCycleId] = useState<string>('')
   const [activeTab, setActiveTab] = useState('simulation')
@@ -59,11 +63,11 @@ export default function CompensationClient() {
       {/* ─── 페이지 헤더 ─── */}
       <div className="flex items-center justify-between">
         <div>
-          <nav className="text-xs text-slate-400 mb-1">설정 / 보상</nav>
-          <h1 className="text-2xl font-bold text-slate-900">연봉 조정</h1>
+          <nav className="text-xs text-slate-400 mb-1">{tMenu('settings')} / {tMenu('compensation')}</nav>
+          <h1 className="text-2xl font-bold text-slate-900">{t('salaryAdjustment')}</h1>
         </div>
         <div className="flex items-center gap-3">
-          <label className="text-sm text-slate-600">평가 사이클:</label>
+          <label className="text-sm text-slate-600">{t('evaluationCycle')}:</label>
           <select
             className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
             value={selectedCycleId}
@@ -74,7 +78,7 @@ export default function CompensationClient() {
                 {c.name} ({c.year})
               </option>
             ))}
-            {cycles.length === 0 && <option value="">사이클 없음</option>}
+            {cycles.length === 0 && <option value="">{t('noCycle')}</option>}
           </select>
         </div>
       </div>
@@ -84,11 +88,11 @@ export default function CompensationClient() {
         <TabsList className="mb-4">
           <TabsTrigger value="simulation">
             <Calculator className="mr-1.5 h-4 w-4" />
-            시뮬레이션
+            {t('simulation')}
           </TabsTrigger>
           <TabsTrigger value="confirm">
             <CheckCircle2 className="mr-1.5 h-4 w-4" />
-            확정
+            {t('confirm')}
             {pendingAdjustments.length > 0 && (
               <span className="ml-1.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700">
                 {pendingAdjustments.length}
@@ -97,7 +101,7 @@ export default function CompensationClient() {
           </TabsTrigger>
           <TabsTrigger value="history">
             <BarChart3 className="mr-1.5 h-4 w-4" />
-            이력/분석
+            {t('historyAnalysis')}
           </TabsTrigger>
         </TabsList>
 

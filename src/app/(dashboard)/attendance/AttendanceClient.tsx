@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { CheckCircle2, Clock, LogIn, LogOut } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -13,7 +14,6 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
-import { ko } from '@/lib/i18n/ko'
 import type { SessionUser } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -53,8 +53,6 @@ type ClockState = 'NOT_CLOCKED_IN' | 'WORKING' | 'COMPLETED'
 
 // ─── Constants ──────────────────────────────────────────────
 
-const DAY_LABELS = ['월', '화', '수', '목', '금', '토', '일']
-
 const STATUS_COLORS: Record<string, string> = {
   NORMAL: 'bg-ctr-success text-white',
   LATE: 'bg-ctr-warning text-white',
@@ -62,22 +60,6 @@ const STATUS_COLORS: Record<string, string> = {
   ABSENT: 'bg-ctr-accent text-white',
   ON_LEAVE: 'bg-purple-500 text-white',
   HOLIDAY: 'bg-blue-400 text-white',
-}
-
-const STATUS_LABELS: Record<string, string> = {
-  NORMAL: ko.attendance.normal,
-  LATE: ko.attendance.late,
-  EARLY_OUT: ko.attendance.earlyOut,
-  ABSENT: ko.attendance.absent,
-  ON_LEAVE: ko.attendance.onLeave,
-  HOLIDAY: ko.attendance.holiday,
-}
-
-const WORK_TYPE_LABELS: Record<string, string> = {
-  NORMAL: ko.attendance.regular,
-  REMOTE: ko.attendance.remote,
-  FIELD: ko.attendance.field,
-  BUSINESS_TRIP: ko.attendance.businessTrip,
 }
 
 const WORK_TYPE_COLORS: Record<string, string> = {
@@ -126,6 +108,30 @@ function getClockState(record: AttendanceRecord | null): ClockState {
 
 export function AttendanceClient({ user }: { user: SessionUser }) {
   void user
+
+  const t = useTranslations('attendance')
+  const tc = useTranslations('common')
+
+  const DAY_LABELS = [
+    t('dayMon'), t('dayTue'), t('dayWed'), t('dayThu'),
+    t('dayFri'), t('daySat'), t('daySun'),
+  ]
+
+  const STATUS_LABELS: Record<string, string> = {
+    NORMAL: t('normal'),
+    LATE: t('late'),
+    EARLY_OUT: t('earlyOut'),
+    ABSENT: t('absent'),
+    ON_LEAVE: t('onLeave'),
+    HOLIDAY: t('holiday'),
+  }
+
+  const WORK_TYPE_LABELS: Record<string, string> = {
+    NORMAL: t('regular'),
+    REMOTE: t('remote'),
+    FIELD: t('field'),
+    BUSINESS_TRIP: t('businessTrip'),
+  }
 
   const [today, setToday] = useState<AttendanceRecord | null>(null)
   const [weekly, setWeekly] = useState<WeeklySummary | null>(null)
@@ -231,8 +237,8 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
   return (
     <div className="space-y-6 p-6">
       <PageHeader
-        title={ko.attendance.myAttendance}
-        description={ko.attendance.todaySummary}
+        title={t('myAttendance')}
+        description={t('todaySummary')}
       />
 
       {/* ─── Section 1: Today Card ─── */}
@@ -240,7 +246,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
             <Clock className="h-5 w-5 text-ctr-primary" />
-            {ko.attendance.todaySummary}
+            {t('todaySummary')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -248,10 +254,10 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
             <div className="flex flex-col items-center gap-4 py-8">
               <div className="text-center">
                 <p className="text-lg font-medium text-muted-foreground">
-                  {ko.attendance.notClockedIn}
+                  {t('notClockedIn')}
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  출근 버튼을 눌러 근무를 시작하세요
+                  {t('clockInPrompt')}
                 </p>
               </div>
               <Button
@@ -261,7 +267,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
                 disabled={clockLoading}
               >
                 <LogIn className="mr-2 h-5 w-5" />
-                {clockLoading ? ko.common.loading : ko.attendance.clockIn}
+                {clockLoading ? tc('loading') : t('clockIn')}
               </Button>
             </div>
           )}
@@ -269,13 +275,13 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
           {clockState === 'WORKING' && (
             <div className="flex flex-col items-center gap-4 py-6">
               <Badge className="bg-ctr-success text-white px-3 py-1 text-sm">
-                {ko.attendance.currentlyWorking}
+                {t('currentlyWorking')}
               </Badge>
               <p className="font-mono text-4xl font-bold text-ctr-primary tabular-nums">
                 {formatElapsedTime(elapsed)}
               </p>
               <p className="text-sm text-muted-foreground">
-                {ko.attendance.clockIn}: {formatTime(today?.clockIn ?? null)}
+                {t('clockIn')}: {formatTime(today?.clockIn ?? null)}
               </p>
               <Button
                 size="lg"
@@ -285,7 +291,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
                 disabled={clockLoading}
               >
                 <LogOut className="mr-2 h-5 w-5" />
-                {clockLoading ? ko.common.loading : ko.attendance.clockOut}
+                {clockLoading ? tc('loading') : t('clockOut')}
               </Button>
             </div>
           )}
@@ -294,22 +300,22 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
             <div className="flex flex-col items-center gap-4 py-6">
               <div className="flex items-center gap-2 text-ctr-success">
                 <CheckCircle2 className="h-6 w-6" />
-                <span className="text-lg font-semibold">근무 완료</span>
+                <span className="text-lg font-semibold">{t('workCompleted')}</span>
               </div>
               <p className="text-2xl font-bold text-foreground">
                 {formatMinutesToHM(today?.totalMinutes)}
               </p>
               <div className="flex gap-6 text-sm text-muted-foreground">
                 <span>
-                  {ko.attendance.clockIn}: {formatTime(today?.clockIn ?? null)}
+                  {t('clockIn')}: {formatTime(today?.clockIn ?? null)}
                 </span>
                 <span>
-                  {ko.attendance.clockOut}: {formatTime(today?.clockOut ?? null)}
+                  {t('clockOut')}: {formatTime(today?.clockOut ?? null)}
                 </span>
               </div>
               {(today?.overtimeMinutes ?? 0) > 0 && (
                 <p className="text-sm text-ctr-warning">
-                  {ko.attendance.overtimeHours}: {formatMinutesToHM(today?.overtimeMinutes)}
+                  {t('overtimeHours')}: {formatMinutesToHM(today?.overtimeMinutes)}
                 </p>
               )}
             </div>
@@ -320,7 +326,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
       {/* ─── Section 2: Weekly Summary ─── */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">{ko.attendance.weeklySummary}</CardTitle>
+          <CardTitle className="text-base">{t('weeklySummary')}</CardTitle>
         </CardHeader>
         <CardContent>
           {weekly ? (
@@ -360,13 +366,13 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
               {/* Totals row */}
               <div className="mt-4 flex justify-between border-t pt-3">
                 <div className="text-sm">
-                  <span className="text-muted-foreground">{ko.attendance.workHours}: </span>
+                  <span className="text-muted-foreground">{t('workHours')}: </span>
                   <span className="font-semibold">
                     {formatMinutesToHM(weekly.totalMinutes)}
                   </span>
                 </div>
                 <div className="text-sm">
-                  <span className="text-muted-foreground">{ko.attendance.overtimeHours}: </span>
+                  <span className="text-muted-foreground">{t('overtimeHours')}: </span>
                   <span className="font-semibold text-ctr-warning">
                     {formatMinutesToHM(weekly.totalOvertimeMinutes)}
                   </span>
@@ -375,7 +381,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
             </div>
           ) : (
             <p className="py-4 text-center text-sm text-muted-foreground">
-              {ko.common.noData}
+              {tc('noData')}
             </p>
           )}
         </CardContent>
@@ -387,7 +393,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
           <CardContent className="flex flex-wrap items-center gap-3 pt-6">
             {/* Attendance status badge */}
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">{ko.attendance.status}:</span>
+              <span className="text-sm text-muted-foreground">{t('status')}:</span>
               <Badge className={STATUS_COLORS[today.status] ?? 'bg-gray-200 text-gray-700'}>
                 {STATUS_LABELS[today.status] ?? today.status}
               </Badge>
@@ -395,7 +401,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
 
             {/* Work type badge */}
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">{ko.attendance.workType}:</span>
+              <span className="text-sm text-muted-foreground">{t('workType')}:</span>
               <Badge className={WORK_TYPE_COLORS[today.workType] ?? 'bg-gray-100 text-gray-700'}>
                 {WORK_TYPE_LABELS[today.workType] ?? today.workType}
               </Badge>

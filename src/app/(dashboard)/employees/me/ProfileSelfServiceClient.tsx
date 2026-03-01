@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Pencil } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -63,25 +64,7 @@ interface ProfileSelfServiceClientProps {
 
 type EditableField = 'phone' | 'emergencyContact' | 'emergencyContactPhone'
 
-const EDITABLE_FIELDS: { key: EditableField; label: string }[] = [
-  { key: 'phone', label: '전화번호' },
-  { key: 'emergencyContact', label: '비상연락처 이름' },
-  { key: 'emergencyContactPhone', label: '비상연락처 전화' },
-]
-
-const FIELD_LABELS: Record<string, string> = {
-  phone: '전화번호',
-  emergencyContact: '비상연락처 이름',
-  emergencyContactPhone: '비상연락처 전화',
-}
-
 type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline'
-
-const STATUS_MAP: Record<string, { label: string; variant: BadgeVariant }> = {
-  CHANGE_PENDING: { label: '대기', variant: 'outline' },
-  CHANGE_APPROVED: { label: '승인', variant: 'default' },
-  CHANGE_REJECTED: { label: '반려', variant: 'destructive' },
-}
 
 // ─── Helpers ────────────────────────────────────────────────
 
@@ -108,6 +91,27 @@ function formatDateTime(dateStr: string | null): string {
 // ─── Component ──────────────────────────────────────────────
 
 export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps) {
+  const t = useTranslations('employee')
+  const tc = useTranslations('common')
+
+  const EDITABLE_FIELDS: { key: EditableField; label: string }[] = [
+    { key: 'phone', label: t('phone') },
+    { key: 'emergencyContact', label: t('emergencyContactName') },
+    { key: 'emergencyContactPhone', label: t('emergencyContactPhone') },
+  ]
+
+  const FIELD_LABELS: Record<string, string> = {
+    phone: t('phone'),
+    emergencyContact: t('emergencyContactName'),
+    emergencyContactPhone: t('emergencyContactPhone'),
+  }
+
+  const STATUS_MAP: Record<string, { label: string; variant: BadgeVariant }> = {
+    CHANGE_PENDING: { label: t('changePending'), variant: 'outline' },
+    CHANGE_APPROVED: { label: t('changeApproved'), variant: 'default' },
+    CHANGE_REJECTED: { label: t('changeRejected'), variant: 'destructive' },
+  }
+
   const [profile, setProfile] = useState<EmployeeProfile | null>(null)
   const [requests, setRequests] = useState<ChangeRequest[]>([])
   const [loading, setLoading] = useState(true)
@@ -154,7 +158,7 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
 
   async function handleSubmit() {
     if (!editField || !newValue.trim()) {
-      setErrorMsg('새 값을 입력해주세요.')
+      setErrorMsg(t('enterNewValue'))
       return
     }
 
@@ -169,7 +173,7 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
       await fetchData()
     } catch (err) {
       setErrorMsg(
-        err instanceof Error ? err.message : '요청 중 오류가 발생했습니다.',
+        err instanceof Error ? err.message : t('changeRequestError'),
       )
     } finally {
       setSubmitting(false)
@@ -181,7 +185,7 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
   if (loading) {
     return (
       <div className="space-y-6">
-        <PageHeader title="내 프로필" description="프로필 조회 및 수정 요청" />
+        <PageHeader title={t('myProfile')} description={t('myProfileDescription')} />
         <div className="grid gap-4 md:grid-cols-2">
           {[1, 2].map((i) => (
             <Skeleton key={i} className="h-48" />
@@ -194,8 +198,8 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
   if (!profile) {
     return (
       <div className="space-y-6">
-        <PageHeader title="내 프로필" />
-        <EmptyState title="프로필 정보를 불러올 수 없습니다." />
+        <PageHeader title={t('myProfile')} />
+        <EmptyState title={t('profileLoadError')} />
       </div>
     )
   }
@@ -206,34 +210,34 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
   return (
     <div className="space-y-6">
       <PageHeader
-        title="내 프로필"
-        description="프로필 조회 및 수정 요청"
+        title={t('myProfile')}
+        description={t('myProfileDescription')}
       />
 
       {/* ─── Profile Info (read-only) ─── */}
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">기본 정보</CardTitle>
+            <CardTitle className="text-lg">{t('basicInfo')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <InfoRow label="이름" value={profile.name} />
+            <InfoRow label={t('name')} value={profile.name} />
             {profile.nameEn && (
-              <InfoRow label="영문 이름" value={profile.nameEn} />
+              <InfoRow label={t('nameEn')} value={profile.nameEn} />
             )}
-            <InfoRow label="사번" value={profile.employeeNo} />
-            <InfoRow label="이메일" value={profile.email} />
-            <InfoRow label="부서" value={profile.department?.name ?? '-'} />
-            <InfoRow label="직급" value={profile.jobGrade?.name ?? '-'} />
-            <InfoRow label="직종" value={profile.jobCategory?.name ?? '-'} />
-            <InfoRow label="입사일" value={formatDate(profile.hireDate)} />
+            <InfoRow label={t('employeeCode')} value={profile.employeeNo} />
+            <InfoRow label={t('email')} value={profile.email} />
+            <InfoRow label={t('department')} value={profile.department?.name ?? '-'} />
+            <InfoRow label={t('jobGrade')} value={profile.jobGrade?.name ?? '-'} />
+            <InfoRow label={t('jobCategory')} value={profile.jobCategory?.name ?? '-'} />
+            <InfoRow label={t('hireDate')} value={formatDate(profile.hireDate)} />
           </CardContent>
         </Card>
 
         {/* ─── Editable Fields ─── */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">수정 가능 항목</CardTitle>
+            <CardTitle className="text-lg">{t('editableFields')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {EDITABLE_FIELDS.map(({ key, label }) => (
@@ -253,7 +257,7 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
                   onClick={() => openEditDialog(key)}
                 >
                   <Pencil className="mr-1 h-3 w-3" />
-                  수정 요청
+                  {t('changeRequest')}
                 </Button>
               </div>
             ))}
@@ -264,12 +268,12 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
       {/* ─── Request History ─── */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">변경 요청 이력</CardTitle>
+          <CardTitle className="text-lg">{t('changeRequestHistory')}</CardTitle>
         </CardHeader>
         <CardContent>
           {requests.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted-foreground">
-              변경 요청 이력이 없습니다.
+              {t('noChangeRequests')}
             </p>
           ) : (
             <div className="space-y-3">
@@ -288,11 +292,11 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
                         {FIELD_LABELS[r.fieldName] ?? r.fieldName}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {r.oldValue ?? '(없음)'} → {r.newValue}
+                        {r.oldValue ?? `(${t('noValue')})`} → {r.newValue}
                       </p>
                       {r.rejectionReason && (
                         <p className="text-xs text-destructive">
-                          반려 사유: {r.rejectionReason}
+                          {t('rejectionReason')}: {r.rejectionReason}
                         </p>
                       )}
                     </div>
@@ -313,20 +317,20 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
-              {editField ? FIELD_LABELS[editField] : ''} 수정 요청
+              {editField ? FIELD_LABELS[editField] : ''} {t('changeRequest')}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
-              <Label className="text-muted-foreground">현재 값</Label>
+              <Label className="text-muted-foreground">{t('currentValue')}</Label>
               <Input value={currentFieldValue} readOnly className="mt-1 bg-muted" />
             </div>
             <div>
-              <Label>새 값</Label>
+              <Label>{t('newValueLabel')}</Label>
               <Input
                 value={newValue}
                 onChange={(e) => setNewValue(e.target.value)}
-                placeholder="변경할 값을 입력하세요"
+                placeholder={t('enterNewValuePlaceholder')}
                 className="mt-1"
               />
             </div>
@@ -340,10 +344,10 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
               onClick={() => setDialogOpen(false)}
               disabled={submitting}
             >
-              취소
+              {tc('cancel')}
             </Button>
             <Button onClick={handleSubmit} disabled={submitting}>
-              {submitting ? '요청 중...' : '수정 요청'}
+              {submitting ? t('requesting') : t('changeRequest')}
             </Button>
           </DialogFooter>
         </DialogContent>

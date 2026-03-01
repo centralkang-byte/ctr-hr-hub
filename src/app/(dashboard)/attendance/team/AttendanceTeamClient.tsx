@@ -6,13 +6,13 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { apiClient } from '@/lib/api'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable } from '@/components/shared/DataTable'
 import type { DataTableColumn } from '@/components/shared/DataTable'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ko } from '@/lib/i18n/ko'
 import type { SessionUser } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -39,14 +39,7 @@ interface TeamAttendanceData {
   members: TeamMember[]
 }
 
-// ─── Status label map ───────────────────────────────────────
-
-const STATUS_LABELS: Record<string, string> = {
-  NORMAL: ko.attendance.normal,
-  LATE: ko.attendance.late,
-  EARLY_OUT: ko.attendance.earlyOut,
-  ABSENT: ko.attendance.absent,
-}
+// ─── Status variant map ─────────────────────────────────────
 
 const STATUS_VARIANTS: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
   NORMAL: 'default',
@@ -66,6 +59,17 @@ function formatTime(t: string | null | undefined): string {
 
 export function AttendanceTeamClient({ user }: { user: SessionUser }) {
   void user
+
+  const t = useTranslations('attendance')
+  const tc = useTranslations('common')
+  const te = useTranslations('employee')
+
+  const STATUS_LABELS: Record<string, string> = {
+    NORMAL: t('normal'),
+    LATE: t('late'),
+    EARLY_OUT: t('earlyOut'),
+    ABSENT: t('absent'),
+  }
 
   const [data, setData] = useState<TeamAttendanceData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -96,26 +100,26 @@ export function AttendanceTeamClient({ user }: { user: SessionUser }) {
   // ─── Table columns ───
 
   const columns: DataTableColumn<TeamMember>[] = [
-    { key: 'name', header: ko.employee.name },
-    { key: 'employeeNo', header: ko.employee.employeeCode },
-    { key: 'position', header: ko.employee.position },
+    { key: 'name', header: te('name') },
+    { key: 'employeeNo', header: te('employeeCode') },
+    { key: 'position', header: te('position') },
     {
       key: 'clockIn',
-      header: ko.attendance.clockIn,
+      header: t('clockIn'),
       render: (row) => formatTime(row.attendance?.clockIn),
     },
     {
       key: 'clockOut',
-      header: ko.attendance.clockOut,
+      header: t('clockOut'),
       render: (row) => formatTime(row.attendance?.clockOut),
     },
     {
       key: 'status',
-      header: ko.attendance.status,
+      header: t('status'),
       render: (row) => {
         if (!row.attendance) {
           return (
-            <Badge variant="destructive">{ko.attendance.notClockedIn}</Badge>
+            <Badge variant="destructive">{t('notClockedIn')}</Badge>
           )
         }
         const status = row.attendance.status
@@ -128,7 +132,7 @@ export function AttendanceTeamClient({ user }: { user: SessionUser }) {
     },
     {
       key: 'workType',
-      header: ko.attendance.workType,
+      header: t('workType'),
       render: (row) => row.attendance?.workType ?? '—',
     },
   ]
@@ -137,14 +141,14 @@ export function AttendanceTeamClient({ user }: { user: SessionUser }) {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={ko.attendance.teamAttendance} />
+      <PageHeader title={t('teamAttendance')} />
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              {ko.attendance.clockIn}
+              {t('clockIn')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -155,7 +159,7 @@ export function AttendanceTeamClient({ user }: { user: SessionUser }) {
         <Card className="bg-amber-50">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              {ko.attendance.notClockedIn}
+              {t('notClockedIn')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -166,7 +170,7 @@ export function AttendanceTeamClient({ user }: { user: SessionUser }) {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              {ko.attendance.late}
+              {t('late')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -181,7 +185,7 @@ export function AttendanceTeamClient({ user }: { user: SessionUser }) {
         data={members as unknown as Record<string, unknown>[]}
         loading={loading}
         rowKey={(row) => (row as unknown as TeamMember).employeeId}
-        emptyMessage={ko.common.noData}
+        emptyMessage={tc('noData')}
       />
     </div>
   )

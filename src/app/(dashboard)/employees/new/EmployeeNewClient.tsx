@@ -7,6 +7,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Check, ChevronLeft, ChevronRight, User, Briefcase, Building2, ClipboardCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -65,21 +66,7 @@ interface EmployeeNewClientProps {
   jobCategories: RefOption[]
 }
 
-// ─── Step config ────────────────────────────────────────────
-
-const STEPS = [
-  { label: '기본정보', icon: User },
-  { label: '고용정보', icon: Briefcase },
-  { label: '배정', icon: Building2 },
-  { label: '확인', icon: ClipboardCheck },
-]
-
-const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
-  FULL_TIME: '정규직',
-  CONTRACT: '계약직',
-  DISPATCH: '파견직',
-  INTERN: '인턴',
-}
+// ─── Constants ──────────────────────────────────────────────
 
 const INITIAL_DATA: WizardData = {
   name: '',
@@ -100,28 +87,6 @@ const INITIAL_DATA: WizardData = {
   jobCategoryId: '',
   managerId: '',
   managerName: '',
-}
-
-// ─── Validation per step ────────────────────────────────────
-
-function validateStep(step: number, data: WizardData): string | null {
-  if (step === 0) {
-    if (!data.name.trim()) return '이름은 필수입니다.'
-    if (!data.email.trim()) return '이메일은 필수입니다.'
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) return '유효한 이메일 주소를 입력하세요.'
-  }
-  if (step === 1) {
-    if (!data.employeeNo.trim()) return '사번은 필수입니다.'
-    if (!data.employmentType) return '고용형태를 선택하세요.'
-    if (!data.hireDate) return '입사일을 선택하세요.'
-  }
-  if (step === 2) {
-    if (!data.companyId) return '법인을 선택하세요.'
-    if (!data.departmentId) return '부서를 선택하세요.'
-    if (!data.jobGradeId) return '직급을 선택하세요.'
-    if (!data.jobCategoryId) return '직군을 선택하세요.'
-  }
-  return null
 }
 
 // ─── Field helpers ───────────────────────────────────────────
@@ -156,11 +121,29 @@ export function EmployeeNewClient({
   jobCategories,
 }: EmployeeNewClientProps) {
   const router = useRouter()
+  const t = useTranslations('employee')
+  const tc = useTranslations('common')
+
+  // ─── Translated label maps ───
+  const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
+    FULL_TIME: t('fullTime'),
+    CONTRACT: t('contract'),
+    DISPATCH: t('dispatch'),
+    INTERN: t('intern'),
+  }
+
+  const STEPS = [
+    { label: t('basicInfo'), icon: User },
+    { label: t('employmentInfo'), icon: Briefcase },
+    { label: t('assignment'), icon: Building2 },
+    { label: tc('confirm'), icon: ClipboardCheck },
+  ]
+
   const [step, setStep] = useState(0)
   const [data, setData] = useState<WizardData>({
     ...INITIAL_DATA,
     companyId: user.companyId,
-    nationality: '한국',
+    nationality: t('defaultNationality'),
   })
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -173,6 +156,27 @@ export function EmployeeNewClient({
 
   // Filtered departments by selected company
   const filteredDepts = departments.filter((d) => d.companyId === data.companyId)
+
+  // ─── Validation per step ───
+  function validateStep(stepNum: number, wizardData: WizardData): string | null {
+    if (stepNum === 0) {
+      if (!wizardData.name.trim()) return t('validationNameRequired')
+      if (!wizardData.email.trim()) return t('validationEmailRequired')
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(wizardData.email)) return t('validationEmailInvalid')
+    }
+    if (stepNum === 1) {
+      if (!wizardData.employeeNo.trim()) return t('validationEmployeeNoRequired')
+      if (!wizardData.employmentType) return t('validationEmploymentTypeRequired')
+      if (!wizardData.hireDate) return t('validationHireDateRequired')
+    }
+    if (stepNum === 2) {
+      if (!wizardData.companyId) return t('validationCompanyRequired')
+      if (!wizardData.departmentId) return t('validationDepartmentRequired')
+      if (!wizardData.jobGradeId) return t('validationJobGradeRequired')
+      if (!wizardData.jobCategoryId) return t('validationJobCategoryRequired')
+    }
+    return null
+  }
 
   // ─── Field update helper ───
   const set = useCallback((key: keyof WizardData, value: string) => {
@@ -247,51 +251,51 @@ export function EmployeeNewClient({
       const res = await apiClient.post<{ id: string }>('/api/v1/employees', payload)
       router.push(`/employees/${res.data.id}`)
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : '직원 등록에 실패했습니다.'
+      const msg = err instanceof Error ? err.message : t('createFailed')
       setError(msg)
     } finally {
       setSubmitting(false)
     }
-  }, [data, router])
+  }, [data, router, t])
 
   // ─── Render steps ───
 
   const renderStep1 = () => (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      <Field label="이름 (한글)" required>
+      <Field label={t('nameKorean')} required>
         <Input value={data.name} onChange={(e) => set('name', e.target.value)} placeholder="홍길동" />
       </Field>
-      <Field label="영문명">
+      <Field label={t('nameEn')}>
         <Input value={data.nameEn} onChange={(e) => set('nameEn', e.target.value)} placeholder="Gildong Hong" />
       </Field>
-      <Field label="이메일" required>
+      <Field label={t('email')} required>
         <Input type="email" value={data.email} onChange={(e) => set('email', e.target.value)} placeholder="hong@company.com" />
       </Field>
-      <Field label="전화번호">
+      <Field label={t('phone')}>
         <Input value={data.phone} onChange={(e) => set('phone', e.target.value)} placeholder="010-0000-0000" />
       </Field>
-      <Field label="생년월일">
+      <Field label={t('birthDate')}>
         <Input type="date" value={data.birthDate} onChange={(e) => set('birthDate', e.target.value)} />
       </Field>
-      <Field label="성별">
+      <Field label={t('gender')}>
         <Select value={data.gender || '__NONE__'} onValueChange={(v) => set('gender', v === '__NONE__' ? '' : v)}>
           <SelectTrigger>
-            <SelectValue placeholder="선택" />
+            <SelectValue placeholder={tc('selectPlaceholder')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="__NONE__">선택 안함</SelectItem>
-            <SelectItem value="M">남</SelectItem>
-            <SelectItem value="F">여</SelectItem>
+            <SelectItem value="__NONE__">{t('noSelection')}</SelectItem>
+            <SelectItem value="M">{t('male')}</SelectItem>
+            <SelectItem value="F">{t('female')}</SelectItem>
           </SelectContent>
         </Select>
       </Field>
-      <Field label="국적">
-        <Input value={data.nationality} onChange={(e) => set('nationality', e.target.value)} placeholder="한국" />
+      <Field label={t('nationality')}>
+        <Input value={data.nationality} onChange={(e) => set('nationality', e.target.value)} placeholder={t('defaultNationality')} />
       </Field>
-      <Field label="비상연락처 이름">
-        <Input value={data.emergencyContact} onChange={(e) => set('emergencyContact', e.target.value)} placeholder="비상연락처 이름" />
+      <Field label={t('emergencyContactName')}>
+        <Input value={data.emergencyContact} onChange={(e) => set('emergencyContact', e.target.value)} placeholder={t('emergencyContactName')} />
       </Field>
-      <Field label="비상연락처 전화">
+      <Field label={t('emergencyContactPhone')}>
         <Input value={data.emergencyContactPhone} onChange={(e) => set('emergencyContactPhone', e.target.value)} placeholder="010-0000-0000" />
       </Field>
     </div>
@@ -299,7 +303,7 @@ export function EmployeeNewClient({
 
   const renderStep2 = () => (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      <Field label="사번" required>
+      <Field label={t('employeeCode')} required>
         <div className="flex gap-2">
           <Input
             value={data.employeeNo}
@@ -318,24 +322,24 @@ export function EmployeeNewClient({
               set('employeeNo', `EMP-${year}-${seq}`)
             }}
           >
-            자동생성
+            {t('autoGenerate')}
           </Button>
         </div>
       </Field>
-      <Field label="고용형태" required>
+      <Field label={t('employmentType')} required>
         <Select value={data.employmentType || '__NONE__'} onValueChange={(v) => set('employmentType', v === '__NONE__' ? '' : v)}>
           <SelectTrigger>
-            <SelectValue placeholder="선택" />
+            <SelectValue placeholder={tc('selectPlaceholder')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="__NONE__">선택</SelectItem>
+            <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
             {Object.entries(EMPLOYMENT_TYPE_LABELS).map(([k, v]) => (
               <SelectItem key={k} value={k}>{v}</SelectItem>
             ))}
           </SelectContent>
         </Select>
       </Field>
-      <Field label="입사일" required>
+      <Field label={t('hireDate')} required>
         <Input type="date" value={data.hireDate} onChange={(e) => set('hireDate', e.target.value)} />
       </Field>
     </div>
@@ -343,7 +347,7 @@ export function EmployeeNewClient({
 
   const renderStep3 = () => (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      <Field label="법인" required>
+      <Field label={t('companyEntity')} required>
         <Select
           value={data.companyId || '__NONE__'}
           onValueChange={(v) => {
@@ -352,53 +356,53 @@ export function EmployeeNewClient({
           }}
         >
           <SelectTrigger>
-            <SelectValue placeholder="법인 선택" />
+            <SelectValue placeholder={t('selectCompany')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="__NONE__">선택</SelectItem>
+            <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
             {companies.map((c) => (
               <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
             ))}
           </SelectContent>
         </Select>
       </Field>
-      <Field label="부서" required>
+      <Field label={t('department')} required>
         <Select
           value={data.departmentId || '__NONE__'}
           onValueChange={(v) => set('departmentId', v === '__NONE__' ? '' : v)}
           disabled={!data.companyId}
         >
           <SelectTrigger>
-            <SelectValue placeholder="부서 선택" />
+            <SelectValue placeholder={t('selectDepartment')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="__NONE__">선택</SelectItem>
+            <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
             {filteredDepts.map((d) => (
               <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
             ))}
           </SelectContent>
         </Select>
       </Field>
-      <Field label="직급" required>
+      <Field label={t('jobGrade')} required>
         <Select value={data.jobGradeId || '__NONE__'} onValueChange={(v) => set('jobGradeId', v === '__NONE__' ? '' : v)}>
           <SelectTrigger>
-            <SelectValue placeholder="직급 선택" />
+            <SelectValue placeholder={t('selectJobGrade')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="__NONE__">선택</SelectItem>
+            <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
             {jobGrades.map((g) => (
               <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>
             ))}
           </SelectContent>
         </Select>
       </Field>
-      <Field label="직군" required>
+      <Field label={t('jobCategory')} required>
         <Select value={data.jobCategoryId || '__NONE__'} onValueChange={(v) => set('jobCategoryId', v === '__NONE__' ? '' : v)}>
           <SelectTrigger>
-            <SelectValue placeholder="직군 선택" />
+            <SelectValue placeholder={t('selectJobCategory')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="__NONE__">선택</SelectItem>
+            <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
             {jobCategories.map((c) => (
               <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
             ))}
@@ -406,7 +410,7 @@ export function EmployeeNewClient({
         </Select>
       </Field>
       <div className="sm:col-span-2">
-        <Field label="매니저 (선택)">
+        <Field label={t('managerOptional')}>
           <div className="relative">
             <Input
               value={data.managerId ? data.managerName : managerQuery}
@@ -417,7 +421,7 @@ export function EmployeeNewClient({
                 }
                 setManagerQuery(e.target.value)
               }}
-              placeholder="매니저 이름 검색..."
+              placeholder={t('managerSearchPlaceholder')}
             />
             {data.managerId && (
               <Button
@@ -431,13 +435,13 @@ export function EmployeeNewClient({
                   setManagerQuery('')
                 }}
               >
-                변경
+                {t('change')}
               </Button>
             )}
             {!data.managerId && managerResults.length > 0 && (
               <div className="absolute z-50 mt-1 w-full rounded-md border bg-background shadow-lg">
                 {managerSearching && (
-                  <p className="px-3 py-2 text-sm text-muted-foreground">검색 중...</p>
+                  <p className="px-3 py-2 text-sm text-muted-foreground">{t('searching')}</p>
                 )}
                 {managerResults.map((emp) => (
                   <button
@@ -473,26 +477,26 @@ export function EmployeeNewClient({
     const grade = jobGrades.find((g) => g.id === data.jobGradeId)
     const category = jobCategories.find((c) => c.id === data.jobCategoryId)
 
-    const GENDER_LABELS: Record<string, string> = { M: '남', F: '여' }
+    const GENDER_LABELS: Record<string, string> = { M: t('male'), F: t('female') }
 
     const rows: [string, string][] = [
-      ['이름', data.name],
-      ['영문명', data.nameEn || '-'],
-      ['생년월일', data.birthDate || '-'],
-      ['성별', (data.gender && GENDER_LABELS[data.gender]) || '-'],
-      ['국적', data.nationality || '-'],
-      ['이메일', data.email],
-      ['전화번호', data.phone || '-'],
-      ['비상연락처', data.emergencyContact || '-'],
-      ['비상연락처 전화', data.emergencyContactPhone || '-'],
-      ['사번', data.employeeNo],
-      ['고용형태', EMPLOYMENT_TYPE_LABELS[data.employmentType] ?? data.employmentType],
-      ['입사일', data.hireDate],
-      ['법인', company?.name ?? '-'],
-      ['부서', dept?.name ?? '-'],
-      ['직급', grade?.name ?? '-'],
-      ['직군', category?.name ?? '-'],
-      ['매니저', data.managerName || '-'],
+      [t('name'), data.name],
+      [t('nameEn'), data.nameEn || '-'],
+      [t('birthDate'), data.birthDate || '-'],
+      [t('gender'), (data.gender && GENDER_LABELS[data.gender]) || '-'],
+      [t('nationality'), data.nationality || '-'],
+      [t('email'), data.email],
+      [t('phone'), data.phone || '-'],
+      [t('emergencyContactName'), data.emergencyContact || '-'],
+      [t('emergencyContactPhone'), data.emergencyContactPhone || '-'],
+      [t('employeeCode'), data.employeeNo],
+      [t('employmentType'), EMPLOYMENT_TYPE_LABELS[data.employmentType] ?? data.employmentType],
+      [t('hireDate'), data.hireDate],
+      [t('companyEntity'), company?.name ?? '-'],
+      [t('department'), dept?.name ?? '-'],
+      [t('jobGrade'), grade?.name ?? '-'],
+      [t('jobCategory'), category?.name ?? '-'],
+      [t('manager'), data.managerName || '-'],
     ]
 
     return (
@@ -512,8 +516,8 @@ export function EmployeeNewClient({
   return (
     <div className="mx-auto max-w-2xl space-y-6 p-6">
       <PageHeader
-        title="직원 등록"
-        description="새 직원을 등록합니다. 4단계로 정보를 입력하세요."
+        title={t('newEmployee')}
+        description={t('newEmployeeDescription')}
       />
 
       {/* ─── Step indicator ─── */}
@@ -588,12 +592,12 @@ export function EmployeeNewClient({
           onClick={step === 0 ? () => router.push('/employees') : goBack}
         >
           <ChevronLeft className="mr-1 h-4 w-4" />
-          {step === 0 ? '취소' : '이전'}
+          {step === 0 ? tc('cancel') : tc('prev')}
         </Button>
 
         {step < STEPS.length - 1 ? (
           <Button onClick={goNext} className="bg-ctr-primary hover:bg-ctr-primary/90">
-            다음
+            {tc('next')}
             <ChevronRight className="ml-1 h-4 w-4" />
           </Button>
         ) : (
@@ -602,7 +606,7 @@ export function EmployeeNewClient({
             disabled={submitting}
             className="bg-ctr-primary hover:bg-ctr-primary/90"
           >
-            {submitting ? '등록 중...' : '직원 등록'}
+            {submitting ? t('creating') : t('newEmployee')}
             <Check className="ml-1 h-4 w-4" />
           </Button>
         )}

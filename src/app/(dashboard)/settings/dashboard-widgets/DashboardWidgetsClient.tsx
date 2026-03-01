@@ -7,6 +7,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { Loader2, Save, LayoutDashboard } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import type { SessionUser } from '@/types'
 import { apiClient } from '@/lib/api'
@@ -26,26 +27,28 @@ interface DashboardLayout {
   widgets: WidgetConfig[]
 }
 
-const ALL_WIDGETS = [
-  { key: 'headcount_summary', label: '인원 현황', description: '전체/부서별 인원 요약' },
-  { key: 'attendance_today', label: '오늘의 근태', description: '출근/결근/지각 현황' },
-  { key: 'leave_calendar', label: '휴가 캘린더', description: '팀 휴가 일정' },
-  { key: 'pending_approvals', label: '대기 중 승인', description: '미처리 승인 건수' },
-  { key: 'birthday_anniversary', label: '생일/기념일', description: '이번 주 생일/입사 기념일' },
-  { key: 'new_hires', label: '신규 입사자', description: '최근 입사자 목록' },
-  { key: 'turnover_rate', label: '이직률', description: '월별 이직률 추이' },
-  { key: 'performance_cycle', label: '평가 현황', description: '현재 평가 사이클 진행률' },
-  { key: 'training_progress', label: '교육 현황', description: '교육 참여율, 이수율' },
-  { key: 'announcements', label: '공지사항', description: '최근 공지 및 알림' },
-  { key: 'quick_links', label: '빠른 링크', description: '자주 사용하는 메뉴 바로가기' },
-  { key: 'ai_insights', label: 'AI 인사이트', description: 'AI 기반 HR 인사이트' },
-]
-
 export function DashboardWidgetsClient({ user: _user }: { user: SessionUser }) {
+  const t = useTranslations('settings')
+  const tc = useTranslations('common')
   const { toast } = useToast()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [widgets, setWidgets] = useState<WidgetConfig[]>([])
+
+  const ALL_WIDGETS = [
+    { key: 'headcount_summary', label: t('widgetHeadcountSummary'), description: t('widgetHeadcountSummaryDesc') },
+    { key: 'attendance_today', label: t('widgetAttendanceToday'), description: t('widgetAttendanceTodayDesc') },
+    { key: 'leave_calendar', label: t('widgetLeaveCalendar'), description: t('widgetLeaveCalendarDesc') },
+    { key: 'pending_approvals', label: t('widgetPendingApprovals'), description: t('widgetPendingApprovalsDesc') },
+    { key: 'birthday_anniversary', label: t('widgetBirthdayAnniversary'), description: t('widgetBirthdayAnniversaryDesc') },
+    { key: 'new_hires', label: t('widgetNewHires'), description: t('widgetNewHiresDesc') },
+    { key: 'turnover_rate', label: t('widgetTurnoverRate'), description: t('widgetTurnoverRateDesc') },
+    { key: 'performance_cycle', label: t('widgetPerformanceCycle'), description: t('widgetPerformanceCycleDesc') },
+    { key: 'training_progress', label: t('widgetTrainingProgress'), description: t('widgetTrainingProgressDesc') },
+    { key: 'announcements', label: t('widgetAnnouncements'), description: t('widgetAnnouncementsDesc') },
+    { key: 'quick_links', label: t('widgetQuickLinks'), description: t('widgetQuickLinksDesc') },
+    { key: 'ai_insights', label: t('widgetAiInsights'), description: t('widgetAiInsightsDesc') },
+  ]
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -58,10 +61,11 @@ export function DashboardWidgetsClient({ user: _user }: { user: SessionUser }) {
         setWidgets(ALL_WIDGETS.map((w, i) => ({ key: w.key, enabled: true, order: i })))
       }
     } catch {
-      toast({ title: '오류', description: '대시보드 설정을 불러올 수 없습니다.', variant: 'destructive' })
+      toast({ title: tc('error'), description: t('dashboardLoadError'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toast])
 
   useEffect(() => { fetchData() }, [fetchData])
@@ -86,9 +90,9 @@ export function DashboardWidgetsClient({ user: _user }: { user: SessionUser }) {
       await apiClient.put('/api/v1/settings/dashboard-layout', {
         dashboardLayout: { widgets },
       })
-      toast({ title: '성공', description: '대시보드 설정이 저장되었습니다.' })
+      toast({ title: tc('success'), description: t('dashboardSaved') })
     } catch {
-      toast({ title: '오류', description: '저장 중 오류가 발생했습니다.', variant: 'destructive' })
+      toast({ title: tc('error'), description: t('saveError'), variant: 'destructive' })
     } finally {
       setSaving(false)
     }
@@ -105,8 +109,8 @@ export function DashboardWidgetsClient({ user: _user }: { user: SessionUser }) {
   return (
     <div className="space-y-6 p-6">
       <PageHeader
-        title="대시보드 위젯"
-        description="대시보드에 표시할 위젯을 선택합니다."
+        title={t('dashboardWidgets')}
+        description={t('dashboardWidgetsDesc')}
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -138,7 +142,7 @@ export function DashboardWidgetsClient({ user: _user }: { user: SessionUser }) {
       <div className="flex justify-end">
         <Button onClick={handleSave} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          저장
+          {tc('save')}
         </Button>
       </div>
     </div>

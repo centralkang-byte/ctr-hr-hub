@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { format, differenceInDays } from 'date-fns'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -32,14 +33,6 @@ interface Props {
   permissions: Permission[]
 }
 
-const CONTRACT_TYPE_LABELS: Record<string, string> = {
-  PERMANENT: '정규직',
-  FIXED_TERM: '계약직',
-  DISPATCH: '파견직',
-  INTERN: '인턴',
-  PROBATION_ONLY: '수습',
-}
-
 const CONTRACT_TYPE_COLORS: Record<string, string> = {
   PERMANENT: 'bg-blue-100 text-blue-800',
   FIXED_TERM: 'bg-yellow-100 text-yellow-800',
@@ -49,6 +42,17 @@ const CONTRACT_TYPE_COLORS: Record<string, string> = {
 }
 
 export default function ContractsClient({ employeeId, permissions }: Props) {
+  const t = useTranslations('employee')
+  const tc = useTranslations('common')
+
+  const CONTRACT_TYPE_LABELS: Record<string, string> = {
+    PERMANENT: t('contractPermanent'),
+    FIXED_TERM: t('contractFixedTerm'),
+    DISPATCH: t('dispatch'),
+    INTERN: t('intern'),
+    PROBATION_ONLY: t('contractProbation'),
+  }
+
   const [contracts, setContracts] = useState<ContractHistory[]>([])
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
@@ -100,21 +104,21 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">계약 이력</h2>
+        <h2 className="text-lg font-semibold">{t('contractHistory')}</h2>
         {canWrite && (
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button size="sm" className="bg-ctr-primary hover:bg-ctr-primary/90">
-                + 신규 계약
+                + {t('newContract')}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>신규 계약 등록</DialogTitle>
+                <DialogTitle>{t('newContractRegistration')}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <div className="space-y-1">
-                  <Label>계약 유형</Label>
+                  <Label>{t('contractType')}</Label>
                   <Select
                     value={form.contractType}
                     onValueChange={(v) => setForm((f) => ({ ...f, contractType: v }))}
@@ -131,7 +135,7 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <Label>계약 시작일</Label>
+                    <Label>{t('contractStartDate')}</Label>
                     <Input
                       type="date"
                       value={form.startDate}
@@ -139,7 +143,7 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label>계약 종료일 (선택)</Label>
+                    <Label>{t('contractEndDateOptional')}</Label>
                     <Input
                       type="date"
                       value={form.endDate}
@@ -148,7 +152,7 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <Label>연봉 (원, 선택)</Label>
+                  <Label>{t('salaryAmountOptional')}</Label>
                   <Input
                     type="number"
                     placeholder="0"
@@ -157,7 +161,7 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label>메모</Label>
+                  <Label>{tc('memo')}</Label>
                   <Textarea
                     value={form.notes}
                     onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
@@ -165,7 +169,7 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
                   />
                 </div>
                 <Button onClick={handleSubmit} className="w-full bg-ctr-primary">
-                  등록
+                  {tc('create')}
                 </Button>
               </div>
             </DialogContent>
@@ -174,18 +178,18 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
       </div>
 
       {loading ? (
-        <p className="text-sm text-gray-500">로딩 중...</p>
+        <p className="text-sm text-gray-500">{tc('loading')}</p>
       ) : (
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>차수</TableHead>
-              <TableHead>유형</TableHead>
-              <TableHead>시작일</TableHead>
-              <TableHead>종료일</TableHead>
-              <TableHead>수습종료일</TableHead>
-              <TableHead>서명일</TableHead>
-              <TableHead>비고</TableHead>
+              <TableHead>{t('contractSequence')}</TableHead>
+              <TableHead>{tc('type')}</TableHead>
+              <TableHead>{tc('startDate')}</TableHead>
+              <TableHead>{tc('endDate')}</TableHead>
+              <TableHead>{t('probationEndDate')}</TableHead>
+              <TableHead>{t('signedDate')}</TableHead>
+              <TableHead>{tc('note')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -194,7 +198,7 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
                 key={c.id}
                 className={isExpiringSoon(c.endDate) ? 'bg-yellow-50' : ''}
               >
-                <TableCell>{c.contractNumber}차</TableCell>
+                <TableCell>{c.contractNumber}{t('contractSequenceSuffix')}</TableCell>
                 <TableCell>
                   <span
                     className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${CONTRACT_TYPE_COLORS[c.contractType] ?? 'bg-gray-100 text-gray-800'}`}
@@ -209,7 +213,7 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
                       {format(new Date(c.endDate), 'yyyy-MM-dd')}
                     </span>
                   ) : (
-                    <span className="text-gray-400">무기한</span>
+                    <span className="text-gray-400">{t('indefinite')}</span>
                   )}
                 </TableCell>
                 <TableCell>
@@ -226,7 +230,7 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
             {contracts.length === 0 && (
               <TableRow>
                 <TableCell colSpan={7} className="text-center text-gray-400">
-                  계약 이력이 없습니다
+                  {t('noContractHistory')}
                 </TableCell>
               </TableRow>
             )}

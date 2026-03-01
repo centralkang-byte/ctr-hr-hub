@@ -7,13 +7,13 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
+import { useTranslations } from 'next-intl'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Plus, Pencil, Trash2, Loader2 } from 'lucide-react'
 
 import type { SessionUser, PaginationInfo, RefOption } from '@/types'
 import { apiClient } from '@/lib/api'
-import { ko } from '@/lib/i18n/ko'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { Button } from '@/components/ui/button'
@@ -97,14 +97,6 @@ const CURRENCY_LABELS: Record<string, string> = {
   VND: 'VND (₫)',
 }
 
-const COMPA_LEGEND = [
-  { label: 'Compa < 0.80', color: 'bg-red-500', desc: '시장 대비 매우 낮음' },
-  { label: '0.80 ~ 0.90', color: 'bg-orange-400', desc: '시장 대비 낮음' },
-  { label: '0.90 ~ 1.10', color: 'bg-emerald-500', desc: '적정 범위' },
-  { label: '1.10 ~ 1.20', color: 'bg-blue-400', desc: '시장 대비 높음' },
-  { label: 'Compa > 1.20', color: 'bg-purple-500', desc: '시장 대비 매우 높음' },
-]
-
 // ─── Number formatter ────────────────────────────────────
 
 function formatSalary(value: number, currency: string): string {
@@ -122,6 +114,10 @@ function formatSalary(value: number, currency: string): string {
 // ─── Component ───────────────────────────────────────────
 
 export function SalaryBandsClient({ user }: { user: SessionUser }) {
+  const t = useTranslations('salary')
+  const tc = useTranslations('common')
+  const te = useTranslations('employee')
+
   // ─── State ───
   const [bands, setBands] = useState<SalaryBandLocal[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | undefined>()
@@ -142,6 +138,14 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
   const [deleting, setDeleting] = useState(false)
 
   const { toast } = useToast()
+
+  const COMPA_LEGEND = [
+    { label: 'Compa < 0.80', color: 'bg-red-500', desc: t('compaVeryLow') },
+    { label: '0.80 ~ 0.90', color: 'bg-orange-400', desc: t('compaLow') },
+    { label: '0.90 ~ 1.10', color: 'bg-emerald-500', desc: t('compaFair') },
+    { label: '1.10 ~ 1.20', color: 'bg-blue-400', desc: t('compaHigh') },
+    { label: 'Compa > 1.20', color: 'bg-purple-500', desc: t('compaVeryHigh') },
+  ]
 
   // ─── Form ───
   const {
@@ -202,14 +206,14 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
       setBands([])
       setPagination(undefined)
       toast({
-        title: '오류',
-        description: '급여 밴드 목록을 불러오는 데 실패했습니다.',
+        title: tc('error'),
+        description: t('loadFailed'),
         variant: 'destructive',
       })
     } finally {
       setLoading(false)
     }
-  }, [page, filterGradeId, filterCategoryId, toast])
+  }, [page, filterGradeId, filterCategoryId, toast, t, tc])
 
   useEffect(() => {
     void fetchBands()
@@ -260,17 +264,17 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
       }
       if (editing) {
         await apiClient.put(`/api/v1/compensation/salary-bands/${editing.id}`, payload)
-        toast({ title: '성공', description: '급여 밴드가 수정되었습니다.' })
+        toast({ title: tc('success'), description: t('bandUpdated') })
       } else {
         await apiClient.post('/api/v1/compensation/salary-bands', payload)
-        toast({ title: '성공', description: '급여 밴드가 등록되었습니다.' })
+        toast({ title: tc('success'), description: t('bandCreated') })
       }
       setDialogOpen(false)
       fetchBands()
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : '저장 중 오류가 발생했습니다.'
-      toast({ title: '오류', description: message, variant: 'destructive' })
+        err instanceof Error ? err.message : t('saveFailed')
+      toast({ title: tc('error'), description: message, variant: 'destructive' })
     } finally {
       setSaving(false)
     }
@@ -283,12 +287,12 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
     try {
       await apiClient.delete(`/api/v1/compensation/salary-bands/${deleteTarget.id}`)
       setDeleteTarget(null)
-      toast({ title: '성공', description: '급여 밴드가 삭제되었습니다.' })
+      toast({ title: tc('success'), description: t('bandDeleted') })
       fetchBands()
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : '삭제 중 오류가 발생했습니다.'
-      toast({ title: '오류', description: message, variant: 'destructive' })
+        err instanceof Error ? err.message : t('deleteFailed')
+      toast({ title: tc('error'), description: message, variant: 'destructive' })
     } finally {
       setDeleting(false)
     }
@@ -298,17 +302,17 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
   const columns: DataTableColumn<SalaryBandLocal>[] = [
     {
       key: 'jobGrade',
-      header: ko.employee.jobGrade,
+      header: te('jobGrade'),
       render: (row: SalaryBandLocal) => row.jobGrade?.name ?? '-',
     },
     {
       key: 'jobCategory',
-      header: ko.employee.jobCategory,
+      header: te('jobCategory'),
       render: (row: SalaryBandLocal) => row.jobCategory?.name ?? '-',
     },
     {
       key: 'minSalary',
-      header: '최소',
+      header: t('minSalary'),
       render: (row: SalaryBandLocal) => (
         <span className="font-mono text-sm">
           {formatSalary(row.minSalary, row.currency)}
@@ -317,7 +321,7 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
     },
     {
       key: 'midSalary',
-      header: '중간값',
+      header: t('midSalary'),
       render: (row: SalaryBandLocal) => (
         <span className="font-mono text-sm font-semibold">
           {formatSalary(row.midSalary, row.currency)}
@@ -326,7 +330,7 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
     },
     {
       key: 'maxSalary',
-      header: '최대',
+      header: t('maxSalary'),
       render: (row: SalaryBandLocal) => (
         <span className="font-mono text-sm">
           {formatSalary(row.maxSalary, row.currency)}
@@ -335,7 +339,7 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
     },
     {
       key: 'currency',
-      header: '통화',
+      header: t('currency'),
       render: (row: SalaryBandLocal) => (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
           {row.currency}
@@ -344,7 +348,7 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
     },
     {
       key: 'effectiveFrom',
-      header: '적용시작',
+      header: t('effectiveFrom'),
       render: (row: SalaryBandLocal) => {
         const d = new Date(row.effectiveFrom)
         return d.toLocaleDateString('ko-KR', {
@@ -356,7 +360,7 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
     },
     {
       key: 'actions',
-      header: ko.common.actions,
+      header: tc('actions'),
       render: (row: SalaryBandLocal) => (
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" onClick={() => openEdit(row)}>
@@ -378,12 +382,12 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="급여 밴드 관리"
-        description="직급/직군별 급여 범위(밴드)를 설정하고 관리합니다."
+        title={t('salaryBands')}
+        description={t('salaryBandsDescription')}
         actions={
           <Button onClick={openCreate}>
             <Plus className="mr-1 h-4 w-4" />
-            급여 밴드 추가
+            {t('addBand')}
           </Button>
         }
       />
@@ -391,16 +395,16 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
       {/* ─── Filters ─── */}
       <div className="flex items-center gap-3 flex-wrap">
         <div className="flex items-center gap-2">
-          <Label className="text-sm whitespace-nowrap">{ko.employee.jobGrade}</Label>
+          <Label className="text-sm whitespace-nowrap">{te('jobGrade')}</Label>
           <Select
             value={filterGradeId}
             onValueChange={(v) => setFilterGradeId(v === '__all__' ? '' : v)}
           >
             <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder={ko.common.all} />
+              <SelectValue placeholder={tc('all')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__all__">{ko.common.all}</SelectItem>
+              <SelectItem value="__all__">{tc('all')}</SelectItem>
               {jobGrades.map((g) => (
                 <SelectItem key={g.id} value={g.id}>
                   {g.name}
@@ -411,16 +415,16 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <Label className="text-sm whitespace-nowrap">{ko.employee.jobCategory}</Label>
+          <Label className="text-sm whitespace-nowrap">{te('jobCategory')}</Label>
           <Select
             value={filterCategoryId}
             onValueChange={(v) => setFilterCategoryId(v === '__all__' ? '' : v)}
           >
             <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder={ko.common.all} />
+              <SelectValue placeholder={tc('all')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__all__">{ko.common.all}</SelectItem>
+              <SelectItem value="__all__">{tc('all')}</SelectItem>
               {jobCategories.map((c) => (
                 <SelectItem key={c.id} value={c.id}>
                   {c.name}
@@ -438,15 +442,15 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
         loading={loading}
         pagination={pagination}
         onPageChange={setPage}
-        emptyMessage="등록된 급여 밴드가 없습니다."
-        emptyDescription="급여 밴드를 추가하여 직급별 급여 범위를 관리하세요."
+        emptyMessage={t('noBands')}
+        emptyDescription={t('noBandsDescription')}
         rowKey={(row) => (row as unknown as SalaryBandLocal).id}
       />
 
       {/* ─── Compa-Ratio Legend ─── */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
         <h3 className="text-sm font-semibold text-slate-700 mb-3">
-          Compa-Ratio 범위 기준
+          {t('compaRatioLegend')}
         </h3>
         <div className="flex flex-wrap gap-4">
           {COMPA_LEGEND.map((item) => (
@@ -467,12 +471,12 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
         <DialogContent className="sm:max-w-[540px]">
           <DialogHeader>
             <DialogTitle>
-              {editing ? '급여 밴드 수정' : '급여 밴드 추가'}
+              {editing ? t('editBand') : t('addBand')}
             </DialogTitle>
             <DialogDescription>
               {editing
-                ? '급여 밴드 정보를 수정합니다.'
-                : '새로운 급여 밴드를 등록합니다.'}
+                ? t('editBandDescription')
+                : t('addBandDescription')}
             </DialogDescription>
           </DialogHeader>
 
@@ -480,7 +484,7 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
           <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
             {/* jobGradeId */}
             <div className="space-y-2">
-              <Label>{ko.employee.jobGrade} *</Label>
+              <Label>{te('jobGrade')} *</Label>
               <Controller
                 control={control}
                 name="jobGradeId"
@@ -490,7 +494,7 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
                     onValueChange={field.onChange}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="직급 선택" />
+                      <SelectValue placeholder={t('selectGrade')} />
                     </SelectTrigger>
                     <SelectContent>
                       {jobGrades.map((g) => (
@@ -511,7 +515,7 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
 
             {/* jobCategoryId */}
             <div className="space-y-2">
-              <Label>{ko.employee.jobCategory}</Label>
+              <Label>{te('jobCategory')}</Label>
               <Controller
                 control={control}
                 name="jobCategoryId"
@@ -521,10 +525,10 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
                     onValueChange={(v) => field.onChange(v === '__none__' ? '' : v)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="직군 선택 (선택사항)" />
+                      <SelectValue placeholder={t('selectCategory')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="__none__">선택 안 함</SelectItem>
+                      <SelectItem value="__none__">{t('noSelection')}</SelectItem>
                       {jobCategories.map((c) => (
                         <SelectItem key={c.id} value={c.id}>
                           {c.name}
@@ -538,7 +542,7 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
 
             {/* currency */}
             <div className="space-y-2">
-              <Label>통화 *</Label>
+              <Label>{t('currency')} *</Label>
               <Controller
                 control={control}
                 name="currency"
@@ -548,7 +552,7 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
                     onValueChange={field.onChange}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="통화 선택" />
+                      <SelectValue placeholder={t('selectCurrency')} />
                     </SelectTrigger>
                     <SelectContent>
                       {CURRENCIES.map((c) => (
@@ -570,7 +574,7 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
             {/* Salary fields */}
             <div className="grid grid-cols-3 gap-3">
               <div className="space-y-2">
-                <Label htmlFor="minSalary">최소 급여 *</Label>
+                <Label htmlFor="minSalary">{t('minSalaryLabel')} *</Label>
                 <Input
                   id="minSalary"
                   type="number"
@@ -584,7 +588,7 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="midSalary">중간값 *</Label>
+                <Label htmlFor="midSalary">{t('midSalaryLabel')} *</Label>
                 <Input
                   id="midSalary"
                   type="number"
@@ -598,7 +602,7 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="maxSalary">최대 급여 *</Label>
+                <Label htmlFor="maxSalary">{t('maxSalaryLabel')} *</Label>
                 <Input
                   id="maxSalary"
                   type="number"
@@ -615,7 +619,7 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
 
             {/* effectiveFrom */}
             <div className="space-y-2">
-              <Label htmlFor="effectiveFrom">적용 시작일 *</Label>
+              <Label htmlFor="effectiveFrom">{t('effectiveFromLabel')} *</Label>
               <Input
                 id="effectiveFrom"
                 type="date"
@@ -634,13 +638,13 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
                 variant="outline"
                 onClick={() => setDialogOpen(false)}
               >
-                {ko.common.cancel}
+                {tc('cancel')}
               </Button>
               <Button type="submit" disabled={saving}>
                 {saving && (
                   <Loader2 className="mr-1 h-4 w-4 animate-spin" />
                 )}
-                {ko.common.save}
+                {tc('save')}
               </Button>
             </DialogFooter>
           </form>
@@ -654,17 +658,17 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>급여 밴드 삭제</AlertDialogTitle>
+            <AlertDialogTitle>{t('deleteBand')}</AlertDialogTitle>
             <AlertDialogDescription>
               {deleteTarget?.jobGrade?.name ?? ''}{' '}
               {deleteTarget?.jobCategory?.name
                 ? `/ ${deleteTarget.jobCategory.name}`
                 : ''}{' '}
-              급여 밴드를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+              {t('deleteBandConfirm')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{ko.common.cancel}</AlertDialogCancel>
+            <AlertDialogCancel>{tc('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               disabled={deleting}
@@ -673,7 +677,7 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
               {deleting && (
                 <Loader2 className="mr-1 h-4 w-4 animate-spin" />
               )}
-              {ko.common.delete}
+              {tc('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

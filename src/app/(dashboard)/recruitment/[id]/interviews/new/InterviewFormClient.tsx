@@ -7,6 +7,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { ArrowLeft, Loader2, Search } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { PageHeader } from '@/components/shared/PageHeader'
@@ -40,28 +41,15 @@ interface EmployeeOption {
 
 // ─── Constants ──────────────────────────────────────────────
 
-const INTERVIEW_TYPE_OPTIONS = [
-  { value: 'PHONE', label: '전화' },
-  { value: 'VIDEO', label: '화상' },
-  { value: 'ONSITE', label: '대면' },
-  { value: 'PANEL', label: '패널' },
-]
-
-const ROUND_OPTIONS = [
-  { value: 'FIRST', label: '1차' },
-  { value: 'SECOND', label: '2차' },
-  { value: 'FINAL', label: '최종' },
-]
-
-const STAGE_LABELS: Record<string, string> = {
-  APPLIED: '지원',
-  SCREENING: '서류심사',
-  INTERVIEW_1: '1차면접',
-  INTERVIEW_2: '2차면접',
-  FINAL: '최종',
-  OFFER: '오퍼',
-  HIRED: '합격',
-  REJECTED: '불합격',
+const STAGE_KEYS: Record<string, string> = {
+  APPLIED: 'stageShortAPPLIED',
+  SCREENING: 'stageShortSCREENING',
+  INTERVIEW_1: 'stageShortINTERVIEW_1',
+  INTERVIEW_2: 'stageShortINTERVIEW_2',
+  FINAL: 'stageShortFINAL',
+  OFFER: 'stageShortOFFER',
+  HIRED: 'stageShortHIRED',
+  REJECTED: 'stageShortREJECTED',
 }
 
 // ─── Form State ─────────────────────────────────────────────
@@ -97,8 +85,23 @@ export function InterviewFormClient({
   postingId: string
 }) {
   const router = useRouter()
+  const t = useTranslations('recruitment')
   const [form, setForm] = useState<FormState>(INITIAL_FORM)
   const [submitting, setSubmitting] = useState(false)
+
+  // ─── Options (use t() for labels) ─────────────────────
+  const INTERVIEW_TYPE_OPTIONS = [
+    { value: 'PHONE', label: t('typePHONE') },
+    { value: 'VIDEO', label: t('typeVIDEO') },
+    { value: 'ONSITE', label: t('typeONSITE') },
+    { value: 'PANEL', label: t('typePANEL') },
+  ]
+
+  const ROUND_OPTIONS = [
+    { value: 'FIRST', label: t('roundFIRST') },
+    { value: 'SECOND', label: t('roundSECOND') },
+    { value: 'FINAL', label: t('roundFINAL') },
+  ]
 
   // Applicant options
   const [applicants, setApplicants] = useState<ApplicantOption[]>([])
@@ -229,8 +232,8 @@ export function InterviewFormClient({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <PageHeader
-        title="면접 등록"
-        description="새로운 면접 일정을 등록합니다"
+        title={t('interviewFormTitle')}
+        description={t('interviewFormDescription')}
         actions={
           <Button
             variant="outline"
@@ -240,7 +243,7 @@ export function InterviewFormClient({
             style={{ borderRadius: 8 }}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            목록으로
+            {t('backToList')}
           </Button>
         }
       />
@@ -258,7 +261,7 @@ export function InterviewFormClient({
           {/* Applicant Select */}
           <div>
             <Label style={{ fontSize: 14, color: '#333', fontWeight: 600 }}>
-              지원자 선택 *
+              {t('selectApplicant')}
             </Label>
             <Select
               value={form.applicationId}
@@ -268,14 +271,14 @@ export function InterviewFormClient({
               <SelectTrigger style={{ marginTop: 6, borderRadius: 8 }}>
                 <SelectValue
                   placeholder={
-                    loadingApplicants ? '불러오는 중...' : '지원자를 선택하세요'
+                    loadingApplicants ? t('loadingApplicants') : t('selectApplicantPlaceholder')
                   }
                 />
               </SelectTrigger>
               <SelectContent>
                 {applicants.map((a) => (
                   <SelectItem key={a.applicationId} value={a.applicationId}>
-                    {a.applicantName} ({STAGE_LABELS[a.stage] ?? a.stage})
+                    {a.applicantName} ({STAGE_KEYS[a.stage] ? t(STAGE_KEYS[a.stage]) : a.stage})
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -285,7 +288,7 @@ export function InterviewFormClient({
           {/* Interviewer Search */}
           <div style={{ position: 'relative' }}>
             <Label style={{ fontSize: 14, color: '#333', fontWeight: 600 }}>
-              면접관 *
+              {t('interviewerFormLabel')}
             </Label>
             {selectedEmployeeName ? (
               <div
@@ -318,7 +321,7 @@ export function InterviewFormClient({
                   }}
                   style={{ borderRadius: 8 }}
                 >
-                  변경
+                  {t('changeButton')}
                 </Button>
               </div>
             ) : (
@@ -341,7 +344,7 @@ export function InterviewFormClient({
                       setShowEmployeeDropdown(true)
                     }}
                     onFocus={() => setShowEmployeeDropdown(true)}
-                    placeholder="직원 이름으로 검색"
+                    placeholder={t('searchEmployeePlaceholder')}
                     style={{ paddingLeft: 34, borderRadius: 8 }}
                   />
                 </div>
@@ -371,7 +374,7 @@ export function InterviewFormClient({
                           fontSize: 13,
                         }}
                       >
-                        검색 중...
+                        {t('searching')}
                       </div>
                     ) : employees.length === 0 ? (
                       <div
@@ -382,7 +385,7 @@ export function InterviewFormClient({
                           fontSize: 13,
                         }}
                       >
-                        검색 결과 없음
+                        {t('noSearchResults')}
                       </div>
                     ) : (
                       employees.map((emp) => (
@@ -427,7 +430,7 @@ export function InterviewFormClient({
           {/* Scheduled At */}
           <div>
             <Label style={{ fontSize: 14, color: '#333', fontWeight: 600 }}>
-              면접 일시 *
+              {t('scheduledAtLabel')}
             </Label>
             <Input
               type="datetime-local"
@@ -440,7 +443,7 @@ export function InterviewFormClient({
           {/* Duration */}
           <div>
             <Label style={{ fontSize: 14, color: '#333', fontWeight: 600 }}>
-              소요시간 (분)
+              {t('durationLabel')}
             </Label>
             <Input
               type="number"
@@ -458,7 +461,7 @@ export function InterviewFormClient({
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div>
               <Label style={{ fontSize: 14, color: '#333', fontWeight: 600 }}>
-                면접 유형
+                {t('interviewTypeLabel')}
               </Label>
               <Select
                 value={form.interviewType}
@@ -478,7 +481,7 @@ export function InterviewFormClient({
             </div>
             <div>
               <Label style={{ fontSize: 14, color: '#333', fontWeight: 600 }}>
-                라운드
+                {t('roundLabel')}
               </Label>
               <Select
                 value={form.round}
@@ -501,12 +504,12 @@ export function InterviewFormClient({
           {/* Location */}
           <div>
             <Label style={{ fontSize: 14, color: '#333', fontWeight: 600 }}>
-              장소
+              {t('locationFormLabel')}
             </Label>
             <Input
               value={form.location}
               onChange={(e) => updateField('location', e.target.value)}
-              placeholder="면접 장소 (예: 본사 3층 회의실)"
+              placeholder={t('locationFormPlaceholder')}
               style={{ marginTop: 6, borderRadius: 8 }}
             />
           </div>
@@ -514,7 +517,7 @@ export function InterviewFormClient({
           {/* Meeting Link */}
           <div>
             <Label style={{ fontSize: 14, color: '#333', fontWeight: 600 }}>
-              미팅 링크
+              {t('meetingLinkLabel')}
             </Label>
             <Input
               value={form.meetingLink}
@@ -541,7 +544,7 @@ export function InterviewFormClient({
               }
               style={{ borderRadius: 8 }}
             >
-              취소
+              {t('cancelButton')}
             </Button>
             <Button
               onClick={handleSubmit}
@@ -555,7 +558,7 @@ export function InterviewFormClient({
               {submitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              면접 등록
+              {t('submitInterview')}
             </Button>
           </div>
         </div>

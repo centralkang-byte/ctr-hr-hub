@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   ChevronDown,
   ChevronRight,
@@ -19,13 +20,6 @@ import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 
 // ─── Status config ────────────────────────────────────────
-
-const STATUS_LABELS: Record<string, string> = {
-  DRAFT: '작성중',
-  PENDING_APPROVAL: '승인대기',
-  APPROVED: '승인',
-  REJECTED: '반려',
-}
 
 const STATUS_STYLES: Record<string, string> = {
   DRAFT: 'bg-gray-100 text-gray-700',
@@ -74,27 +68,12 @@ interface TeamMemberGoals {
   avgProgress: number
 }
 
-// ─── Helper: overall status for a member ──────────────────
-
-function getMemberOverallStatus(goals: TeamGoal[]): string {
-  if (goals.length === 0) return '목표 없음'
-  const statuses = goals.map((g) => g.status)
-  if (statuses.every((s) => s === 'APPROVED')) return '전체 승인'
-  if (statuses.some((s) => s === 'PENDING_APPROVAL')) return '승인대기 있음'
-  if (statuses.some((s) => s === 'REJECTED')) return '반려 있음'
-  return '작성중'
-}
-
-function getMemberStatusStyle(label: string): string {
-  if (label === '전체 승인') return 'text-green-700'
-  if (label === '승인대기 있음') return 'text-yellow-700'
-  if (label === '반려 있음') return 'text-red-700'
-  return 'text-gray-500'
-}
-
 // ─── Component ────────────────────────────────────────────
 
 export default function TeamGoalsClient({ user }: { user: SessionUser }) {
+  const t = useTranslations('performance')
+  const tc = useTranslations('common')
+
   const [cycles, setCycles] = useState<CycleOption[]>([])
   const [selectedCycleId, setSelectedCycleId] = useState<string>('')
   const [members, setMembers] = useState<TeamMemberGoals[]>([])
@@ -105,6 +84,24 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
   const [revisionGoalId, setRevisionGoalId] = useState<string | null>(null)
   const [revisionComment, setRevisionComment] = useState('')
   const [actionLoading, setActionLoading] = useState<string | null>(null)
+
+  // ─── Helper: overall status for a member ──────────────
+
+  function getMemberOverallStatus(goals: TeamGoal[]): string {
+    if (goals.length === 0) return t('noGoalsStatus')
+    const statuses = goals.map((g) => g.status)
+    if (statuses.every((s) => s === 'APPROVED')) return t('allApproved')
+    if (statuses.some((s) => s === 'PENDING_APPROVAL')) return t('hasPendingApproval')
+    if (statuses.some((s) => s === 'REJECTED')) return t('hasRejected')
+    return t('drafting')
+  }
+
+  function getMemberStatusStyle(label: string): string {
+    if (label === t('allApproved')) return 'text-green-700'
+    if (label === t('hasPendingApproval')) return 'text-yellow-700'
+    if (label === t('hasRejected')) return 'text-red-700'
+    return 'text-gray-500'
+  }
 
   // ─── Fetch cycles ─────────────────────────────────────
 
@@ -120,11 +117,11 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
           setSelectedCycleId(res.data[0].id)
         }
       } catch {
-        console.error('사이클 목록 로드 실패')
+        console.error(t('cycleListLoadFailed'))
       }
     }
     fetchCycles()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ─── Fetch team goals ─────────────────────────────────
 
@@ -137,12 +134,12 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
       )
       setMembers(res.data)
     } catch {
-      console.error('팀 목표 로드 실패')
+      console.error(t('teamLoadFailed'))
       setMembers([])
     } finally {
       setLoading(false)
     }
-  }, [selectedCycleId])
+  }, [selectedCycleId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     fetchTeamGoals()
@@ -165,13 +162,13 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
   // ─── Approve goal ─────────────────────────────────────
 
   async function handleApprove(goalId: string) {
-    if (!confirm('이 목표를 승인하시겠습니까?')) return
+    if (!confirm(t('confirmApprove'))) return
     setActionLoading(goalId)
     try {
       await apiClient.put(`/api/v1/performance/goals/${goalId}/approve`)
       await fetchTeamGoals()
     } catch {
-      alert('승인에 실패했습니다.')
+      alert(t('approveFailed'))
     } finally {
       setActionLoading(null)
     }
@@ -181,7 +178,7 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
 
   async function handleRequestRevision(goalId: string) {
     if (!revisionComment.trim()) {
-      alert('수정 요청 사유를 입력해주세요.')
+      alert(t('enterRevisionReason'))
       return
     }
     setActionLoading(goalId)
@@ -193,7 +190,7 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
       setRevisionComment('')
       await fetchTeamGoals()
     } catch {
-      alert('수정 요청에 실패했습니다.')
+      alert(t('revisionRequestFailed'))
     } finally {
       setActionLoading(null)
     }
@@ -207,7 +204,7 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Users className="h-7 w-7 text-ctr-primary" />
-          <h1 className="text-2xl font-bold text-gray-900">팀 목표 관리</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t('teamGoalManagement')}</h1>
         </div>
 
         {/* Cycle selector */}
@@ -228,7 +225,7 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
       {loading && (
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-ctr-secondary" />
-          <span className="ml-3 text-gray-500">로딩 중...</span>
+          <span className="ml-3 text-gray-500">{t('loadingText')}</span>
         </div>
       )}
 
@@ -236,7 +233,7 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
       {!loading && members.length === 0 && (
         <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 py-20 text-center">
           <Users className="mx-auto h-12 w-12 text-gray-300" />
-          <p className="mt-4 text-gray-500">직속 팀원이 없거나 등록된 목표가 없습니다.</p>
+          <p className="mt-4 text-gray-500">{t('noTeamMembersOrGoals')}</p>
         </div>
       )}
 
@@ -286,13 +283,13 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
                 {/* Stats */}
                 <div className="flex shrink-0 items-center gap-6 text-sm">
                   <div className="text-center">
-                    <div className="text-xs text-gray-400">목표 수</div>
+                    <div className="text-xs text-gray-400">{t('goalCountLabel')}</div>
                     <div className="font-medium text-gray-700">
                       {member.goals.length}
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-xs text-gray-400">가중치 합계</div>
+                    <div className="text-xs text-gray-400">{t('weightSumLabel')}</div>
                     <div
                       className={`font-medium ${
                         member.totalWeight === 100
@@ -304,13 +301,13 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-xs text-gray-400">평균 달성률</div>
+                    <div className="text-xs text-gray-400">{t('avgAchievementLabel')}</div>
                     <div className="font-medium text-gray-700">
                       {member.avgProgress}%
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-xs text-gray-400">상태</div>
+                    <div className="text-xs text-gray-400">{t('statusLabel')}</div>
                     <div
                       className={`font-medium ${getMemberStatusStyle(overallStatus)}`}
                     >
@@ -319,7 +316,7 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
                   </div>
                   {pendingCount > 0 && (
                     <span className="rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-700">
-                      승인대기 {pendingCount}건
+                      {t('pendingApprovalCount', { count: pendingCount })}
                     </span>
                   )}
                 </div>
@@ -330,7 +327,7 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
                 <div className="border-t border-gray-100 bg-gray-50/50 px-6 py-4">
                   {member.goals.length === 0 ? (
                     <p className="py-4 text-center text-sm text-gray-400">
-                      등록된 목표가 없습니다.
+                      {t('noGoalsRegistered')}
                     </p>
                   ) : (
                     <div className="space-y-3">
@@ -358,7 +355,7 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
                                       STATUS_STYLES[goal.status] ?? 'bg-gray-100 text-gray-600'
                                     }`}
                                   >
-                                    {STATUS_LABELS[goal.status] ?? goal.status}
+                                    {t(`goalStatusLabels.${goal.status}` as Parameters<typeof t>[0])}
                                   </span>
                                 </div>
                                 {goal.description && (
@@ -367,10 +364,10 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
                                   </p>
                                 )}
                                 <div className="mt-2 flex items-center gap-4 text-xs text-gray-400">
-                                  <span>가중치: {goal.weight}%</span>
-                                  <span>달성률: {latestProgress}%</span>
+                                  <span>{t('weightColLabel')}: {goal.weight}%</span>
+                                  <span>{t('achievementColLabel')}: {latestProgress}%</span>
                                   {goal.achievementScore != null && (
-                                    <span>평가 점수: {goal.achievementScore}</span>
+                                    <span>{t('evalScore')}: {goal.achievementScore}</span>
                                   )}
                                 </div>
 
@@ -399,7 +396,7 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
                                     ) : (
                                       <CheckCircle2 className="h-3.5 w-3.5" />
                                     )}
-                                    승인
+                                    {t('approveButton')}
                                   </button>
                                   <button
                                     type="button"
@@ -416,7 +413,7 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
                                     className="inline-flex items-center gap-1 rounded-lg bg-orange-500 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-orange-600 disabled:opacity-50"
                                   >
                                     <MessageSquareWarning className="h-3.5 w-3.5" />
-                                    수정요청
+                                    {t('requestRevisionButton')}
                                   </button>
                                 </div>
                               )}
@@ -428,7 +425,7 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
                                 <textarea
                                   value={revisionComment}
                                   onChange={(e) => setRevisionComment(e.target.value)}
-                                  placeholder="수정 요청 사유를 입력해주세요..."
+                                  placeholder={t('revisionPlaceholder')}
                                   rows={3}
                                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
                                 />
@@ -441,7 +438,7 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
                                     }}
                                     className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50"
                                   >
-                                    취소
+                                    {tc('cancel')}
                                   </button>
                                   <button
                                     type="button"
@@ -452,7 +449,7 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
                                     {isThisLoading && (
                                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
                                     )}
-                                    수정요청 보내기
+                                    {t('sendRevisionRequest')}
                                   </button>
                                 </div>
                               </div>

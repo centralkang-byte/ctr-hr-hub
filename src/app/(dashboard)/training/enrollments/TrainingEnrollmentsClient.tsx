@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { DataTable } from '@/components/shared/DataTable'
@@ -22,21 +23,23 @@ type EnrollmentRow = {
   [key: string]: unknown
 }
 
-const STATUS_BADGE: Record<string, { label: string; className: string }> = {
-  ENROLLED: { label: '등록', className: 'bg-blue-50 text-blue-700 border-blue-200' },
-  IN_PROGRESS: { label: '진행중', className: 'bg-amber-50 text-amber-700 border-amber-200' },
-  ENROLLMENT_COMPLETED: { label: '완료', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  DROPPED: { label: '탈락', className: 'bg-red-50 text-red-700 border-red-200' },
-}
-
 // ─── Component ───────────────────────────────────────────
 
 export default function TrainingEnrollmentsClient() {
+  const t = useTranslations('training')
+  const tc = useTranslations('common')
   const { toast } = useToast()
   const [enrollments, setEnrollments] = useState<EnrollmentRow[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | null>(null)
   const [loading, setLoading] = useState(false)
   const [statusFilter, setStatusFilter] = useState('')
+
+  const STATUS_BADGE: Record<string, { label: string; className: string }> = {
+    ENROLLED: { label: t('enrolled'), className: 'bg-blue-50 text-blue-700 border-blue-200' },
+    IN_PROGRESS: { label: t('inProgress'), className: 'bg-amber-50 text-amber-700 border-amber-200' },
+    ENROLLMENT_COMPLETED: { label: t('completed'), className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+    DROPPED: { label: t('dropped'), className: 'bg-red-50 text-red-700 border-red-200' },
+  }
 
   const fetchEnrollments = useCallback(async (page = 1) => {
     setLoading(true)
@@ -48,11 +51,11 @@ export default function TrainingEnrollmentsClient() {
       setEnrollments(res.data ?? [])
       setPagination(res.pagination ?? null)
     } catch {
-      toast({ title: '수강현황 로드 실패', variant: 'destructive' })
+      toast({ title: t('loadFailed'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
-  }, [toast, statusFilter])
+  }, [toast, statusFilter, t])
 
   useEffect(() => {
     fetchEnrollments()
@@ -64,17 +67,17 @@ export default function TrainingEnrollmentsClient() {
         status: newStatus,
         ...(newStatus === 'ENROLLMENT_COMPLETED' ? { completedAt: new Date().toISOString() } : {}),
       })
-      toast({ title: '상태가 변경되었습니다.' })
+      toast({ title: t('statusChanged') })
       fetchEnrollments()
     } catch {
-      toast({ title: '상태 변경 실패', variant: 'destructive' })
+      toast({ title: t('statusChangeFailed'), variant: 'destructive' })
     }
   }
 
   const columns: DataTableColumn<EnrollmentRow>[] = [
     {
       key: 'employee',
-      header: '직원',
+      header: t('employee'),
       render: (row) => (
         <div>
           <p className="text-sm font-medium">{row.employee.name}</p>
@@ -84,29 +87,29 @@ export default function TrainingEnrollmentsClient() {
     },
     {
       key: 'course',
-      header: '교육과정',
+      header: t('courses'),
       render: (row) => (
         <div className="flex items-center gap-2">
           <span>{row.course.title}</span>
           {row.course.isMandatory && (
-            <Badge className="bg-red-50 text-red-700 border-red-200 text-[10px]">필수</Badge>
+            <Badge className="bg-red-50 text-red-700 border-red-200 text-[10px]">{t('mandatoryBadge')}</Badge>
           )}
         </div>
       ),
     },
     {
       key: 'enrolledAt',
-      header: '등록일',
+      header: t('enrolledDate'),
       render: (row) => new Date(row.enrolledAt).toLocaleDateString('ko-KR'),
     },
     {
       key: 'completedAt',
-      header: '완료일',
+      header: t('completedDate'),
       render: (row) => (row.completedAt ? new Date(row.completedAt).toLocaleDateString('ko-KR') : '-'),
     },
     {
       key: 'status',
-      header: '상태',
+      header: tc('status'),
       render: (row) => {
         const badge = STATUS_BADGE[row.status]
         return badge ? (
@@ -118,8 +121,8 @@ export default function TrainingEnrollmentsClient() {
     },
     {
       key: 'score',
-      header: '점수',
-      render: (row) => (row.score !== null ? `${row.score}점` : '-'),
+      header: t('score'),
+      render: (row) => (row.score !== null ? t('scoreUnit', { score: row.score }) : '-'),
     },
     {
       key: 'actions',
@@ -130,7 +133,7 @@ export default function TrainingEnrollmentsClient() {
           <div className="flex gap-1">
             {row.status === 'ENROLLED' && (
               <Button variant="ghost" size="sm" onClick={() => handleStatusChange(row, 'IN_PROGRESS')}>
-                진행중
+                {t('inProgress')}
               </Button>
             )}
             <Button
@@ -139,7 +142,7 @@ export default function TrainingEnrollmentsClient() {
               className="text-emerald-600"
               onClick={() => handleStatusChange(row, 'ENROLLMENT_COMPLETED')}
             >
-              완료
+              {t('completed')}
             </Button>
             <Button
               variant="ghost"
@@ -147,7 +150,7 @@ export default function TrainingEnrollmentsClient() {
               className="text-red-500"
               onClick={() => handleStatusChange(row, 'DROPPED')}
             >
-              탈락
+              {t('dropped')}
             </Button>
           </div>
         )
@@ -159,8 +162,8 @@ export default function TrainingEnrollmentsClient() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <nav className="text-xs text-slate-400 mb-1">교육관리 / 수강현황</nav>
-          <h1 className="text-2xl font-bold text-slate-900">수강현황</h1>
+          <nav className="text-xs text-slate-400 mb-1">{t('enrollmentBreadcrumb')}</nav>
+          <h1 className="text-2xl font-bold text-slate-900">{t('enrollmentList')}</h1>
         </div>
         <div className="flex items-center gap-3">
           <select
@@ -168,11 +171,11 @@ export default function TrainingEnrollmentsClient() {
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
-            <option value="">전체 상태</option>
-            <option value="ENROLLED">등록</option>
-            <option value="IN_PROGRESS">진행중</option>
-            <option value="ENROLLMENT_COMPLETED">완료</option>
-            <option value="DROPPED">탈락</option>
+            <option value="">{t('allStatus')}</option>
+            <option value="ENROLLED">{t('enrolled')}</option>
+            <option value="IN_PROGRESS">{t('inProgress')}</option>
+            <option value="ENROLLMENT_COMPLETED">{t('completed')}</option>
+            <option value="DROPPED">{t('dropped')}</option>
           </select>
         </div>
       </div>
@@ -183,7 +186,7 @@ export default function TrainingEnrollmentsClient() {
         pagination={pagination ?? undefined}
         onPageChange={fetchEnrollments}
         loading={loading}
-        emptyMessage="수강 기록이 없습니다."
+        emptyMessage={t('noEnrollments')}
         rowKey={(row) => row.id}
       />
     </div>

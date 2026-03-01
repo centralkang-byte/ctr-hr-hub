@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Plus, Pencil, Trash2, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import type { SessionUser, PaginationInfo } from '@/types'
 import { apiClient } from '@/lib/api'
@@ -37,17 +38,20 @@ interface TermOverrideLocal {
   createdAt: string
 }
 
-const formSchema = z.object({
-  termKey: z.string().min(1, '용어 키는 필수입니다'),
-  labelKo: z.string().min(1, '한국어 라벨은 필수입니다'),
-  labelEn: z.string().optional(),
-  labelLocal: z.string().optional(),
-})
-
-type FormData = z.infer<typeof formSchema>
-
 export function TermsClient({ user: _user }: { user: SessionUser }) {
+  const t = useTranslations('settings')
+  const tc = useTranslations('common')
   const { toast } = useToast()
+
+  const formSchema = z.object({
+    termKey: z.string().min(1, t('termKeyRequired')),
+    labelKo: z.string().min(1, t('koreanRequired')),
+    labelEn: z.string().optional(),
+    labelLocal: z.string().optional(),
+  })
+
+  type FormData = z.infer<typeof formSchema>
+
   const [items, setItems] = useState<TermOverrideLocal[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -68,11 +72,11 @@ export function TermsClient({ user: _user }: { user: SessionUser }) {
       setItems(res.data)
       setPagination(res.pagination)
     } catch {
-      toast({ title: '오류', description: '용어 목록을 불러올 수 없습니다.', variant: 'destructive' })
+      toast({ title: tc('error'), description: t('termLoadError'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
-  }, [page, toast])
+  }, [page, toast, t, tc])
 
   useEffect(() => { fetchItems() }, [fetchItems])
 
@@ -96,11 +100,11 @@ export function TermsClient({ user: _user }: { user: SessionUser }) {
       } else {
         await apiClient.post('/api/v1/settings/terms', data)
       }
-      toast({ title: '성공', description: '용어가 저장되었습니다.' })
+      toast({ title: tc('success'), description: t('termSaved') })
       setDialogOpen(false)
       fetchItems()
     } catch {
-      toast({ title: '오류', description: '저장 중 오류가 발생했습니다.', variant: 'destructive' })
+      toast({ title: tc('error'), description: t('saveError'), variant: 'destructive' })
     } finally {
       setSaving(false)
     }
@@ -110,21 +114,21 @@ export function TermsClient({ user: _user }: { user: SessionUser }) {
     if (!deleteTarget) return
     try {
       await apiClient.delete(`/api/v1/settings/terms/${deleteTarget.id}`)
-      toast({ title: '성공', description: '용어가 삭제되었습니다.' })
+      toast({ title: tc('success'), description: t('termDeleted') })
       setDeleteTarget(null)
       fetchItems()
     } catch {
-      toast({ title: '오류', description: '삭제 중 오류가 발생했습니다.', variant: 'destructive' })
+      toast({ title: tc('error'), description: t('deleteError'), variant: 'destructive' })
     }
   }
 
   const columns: DataTableColumn<TermOverrideLocal>[] = [
-    { key: 'termKey', header: '용어 키', render: (row) => <span className="font-mono text-sm">{row.termKey}</span> },
-    { key: 'labelKo', header: '한국어' },
-    { key: 'labelEn', header: '영어', render: (row) => row.labelEn ?? '-' },
-    { key: 'labelLocal', header: '현지어', render: (row) => row.labelLocal ?? '-' },
+    { key: 'termKey', header: t('termKey'), render: (row) => <span className="font-mono text-sm">{row.termKey}</span> },
+    { key: 'labelKo', header: t('korean') },
+    { key: 'labelEn', header: t('english'), render: (row) => row.labelEn ?? '-' },
+    { key: 'labelLocal', header: t('localLang'), render: (row) => row.labelLocal ?? '-' },
     {
-      key: 'actions', header: '관리',
+      key: 'actions', header: t('manage'),
       render: (row) => (
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" onClick={() => openEdit(row)}><Pencil className="h-4 w-4" /></Button>
@@ -137,10 +141,10 @@ export function TermsClient({ user: _user }: { user: SessionUser }) {
   return (
     <div className="space-y-6 p-6">
       <PageHeader
-        title="용어 설정"
-        description="시스템 용어를 법인에 맞게 커스터마이징합니다."
+        title={t('termsTitle')}
+        description={t('termsDesc')}
         actions={
-          <Button onClick={openCreate}><Plus className="mr-1 h-4 w-4" /> 용어 추가</Button>
+          <Button onClick={openCreate}><Plus className="mr-1 h-4 w-4" /> {t('addTerm')}</Button>
         }
       />
 
@@ -150,7 +154,7 @@ export function TermsClient({ user: _user }: { user: SessionUser }) {
         loading={loading}
         pagination={pagination}
         onPageChange={setPage}
-        emptyMessage="등록된 용어 오버라이드가 없습니다."
+        emptyMessage={t('noTerms')}
         rowKey={(row) => row.id}
       />
 
@@ -158,33 +162,33 @@ export function TermsClient({ user: _user }: { user: SessionUser }) {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editing ? '용어 수정' : '용어 추가'}</DialogTitle>
-            <DialogDescription>시스템 용어를 커스터마이징합니다.</DialogDescription>
+            <DialogTitle>{editing ? t('editTerm') : t('addTerm')}</DialogTitle>
+            <DialogDescription>{t('termDialogDesc')}</DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label>용어 키</Label>
-              <Input {...register('termKey')} placeholder="employee, department 등" disabled={!!editing} />
+              <Label>{t('termKey')}</Label>
+              <Input {...register('termKey')} placeholder={t('termKeyPlaceholder')} disabled={!!editing} />
               {errors.termKey && <p className="text-xs text-destructive">{errors.termKey.message}</p>}
             </div>
             <div className="space-y-2">
-              <Label>한국어</Label>
-              <Input {...register('labelKo')} placeholder="사원, 부서 등" />
+              <Label>{t('korean')}</Label>
+              <Input {...register('labelKo')} placeholder={t('koreanPlaceholder')} />
               {errors.labelKo && <p className="text-xs text-destructive">{errors.labelKo.message}</p>}
             </div>
             <div className="space-y-2">
-              <Label>영어</Label>
-              <Input {...register('labelEn')} placeholder="Employee, Department 등" />
+              <Label>{t('english')}</Label>
+              <Input {...register('labelEn')} placeholder={t('englishPlaceholder')} />
             </div>
             <div className="space-y-2">
-              <Label>현지어</Label>
-              <Input {...register('labelLocal')} placeholder="현지 언어 라벨" />
+              <Label>{t('localLang')}</Label>
+              <Input {...register('labelLocal')} placeholder={t('localLangPlaceholder')} />
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>취소</Button>
+              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>{tc('cancel')}</Button>
               <Button type="submit" disabled={saving}>
                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {editing ? '수정' : '추가'}
+                {editing ? tc('edit') : tc('add')}
               </Button>
             </DialogFooter>
           </form>
@@ -195,14 +199,14 @@ export function TermsClient({ user: _user }: { user: SessionUser }) {
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>용어 삭제</AlertDialogTitle>
+            <AlertDialogTitle>{t('termDeleteTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              &quot;{deleteTarget?.termKey}&quot; 용어 오버라이드를 삭제하시겠습니까?
+              &quot;{deleteTarget?.termKey}&quot; {t('termDeleteConfirm', { key: '' })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">삭제</AlertDialogAction>
+            <AlertDialogCancel>{tc('cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{tc('delete')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

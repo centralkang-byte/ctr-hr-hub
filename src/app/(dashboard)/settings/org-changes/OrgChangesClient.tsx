@@ -6,6 +6,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Plus, ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -39,15 +40,6 @@ type HistoryRow = {
   approver: { id: string; name: string } | null
 }
 
-const CHANGE_TYPE_LABELS: Record<OrgChangeType, string> = {
-  CREATE: '부서 생성',
-  MERGE: '부서 통합',
-  SPLIT: '부서 분리',
-  RENAME: '명칭 변경',
-  CLOSE: '부서 폐지',
-  RESTRUCTURE: '일괄 개편',
-}
-
 const CHANGE_TYPE_COLORS: Record<OrgChangeType, string> = {
   CREATE: 'bg-green-100 text-green-800',
   MERGE: 'bg-blue-100 text-blue-800',
@@ -62,11 +54,17 @@ const CHANGE_TYPE_COLORS: Record<OrgChangeType, string> = {
 function JsonDiffViewer({
   from,
   to,
+  noChangeDataLabel,
+  beforeLabel,
+  afterLabel,
 }: {
   from: Record<string, unknown> | null
   to: Record<string, unknown> | null
+  noChangeDataLabel: string
+  beforeLabel: string
+  afterLabel: string
 }) {
-  if (!from && !to) return <p className="text-xs text-ctr-gray-500">변경 데이터 없음</p>
+  if (!from && !to) return <p className="text-xs text-ctr-gray-500">{noChangeDataLabel}</p>
 
   const allKeys = Array.from(
     new Set([...Object.keys(from ?? {}), ...Object.keys(to ?? {})]),
@@ -100,7 +98,23 @@ function JsonDiffViewer({
 
 // ─── Expandable history row ─────────────────────────────────
 
-function ExpandableRow({ row }: { row: HistoryRow }) {
+function ExpandableRow({
+  row,
+  changeTypeLabels,
+  noChangeDataLabel,
+  beforeAfterLabel,
+  fieldLabel,
+  beforeLabel,
+  afterLabel,
+}: {
+  row: HistoryRow
+  changeTypeLabels: Record<OrgChangeType, string>
+  noChangeDataLabel: string
+  beforeAfterLabel: string
+  fieldLabel: string
+  beforeLabel: string
+  afterLabel: string
+}) {
   const [expanded, setExpanded] = useState(false)
 
   return (
@@ -111,7 +125,7 @@ function ExpandableRow({ row }: { row: HistoryRow }) {
         </td>
         <td className="px-4 py-3">
           <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${CHANGE_TYPE_COLORS[row.changeType]}`}>
-            {CHANGE_TYPE_LABELS[row.changeType]}
+            {changeTypeLabels[row.changeType]}
           </span>
         </td>
         <td className="px-4 py-3 text-sm text-ctr-gray-700">
@@ -129,14 +143,20 @@ function ExpandableRow({ row }: { row: HistoryRow }) {
           <td colSpan={5} className="px-6 py-3">
             <div className="space-y-2">
               <p className="text-xs font-semibold text-ctr-gray-500 uppercase tracking-wide">
-                변경 전/후 비교
+                {beforeAfterLabel}
               </p>
               <div className="grid grid-cols-3 gap-2 text-xs text-ctr-gray-500 font-mono px-2">
-                <span className="w-32">필드</span>
-                <span className="w-40">변경 전</span>
-                <span>변경 후</span>
+                <span className="w-32">{fieldLabel}</span>
+                <span className="w-40">{beforeLabel}</span>
+                <span>{afterLabel}</span>
               </div>
-              <JsonDiffViewer from={row.fromData} to={row.toData} />
+              <JsonDiffViewer
+                from={row.fromData}
+                to={row.toData}
+                noChangeDataLabel={noChangeDataLabel}
+                beforeLabel={beforeLabel}
+                afterLabel={afterLabel}
+              />
             </div>
           </td>
         </tr>
@@ -187,6 +207,18 @@ const INITIAL_FORM: FormState = {
 }
 
 function ChangeDialog({ open, onClose, departments, companyId, onSuccess }: ChangeDialogProps) {
+  const t = useTranslations('orgChanges')
+  const tc = useTranslations('common')
+
+  const CHANGE_TYPE_LABELS: Record<OrgChangeType, string> = {
+    CREATE: t('createDept'),
+    MERGE: t('mergeDept'),
+    SPLIT: t('splitDept'),
+    RENAME: t('renameDept'),
+    CLOSE: t('closeDept'),
+    RESTRUCTURE: t('restructure'),
+  }
+
   const [form, setForm] = useState<FormState>(INITIAL_FORM)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -256,7 +288,7 @@ function ChangeDialog({ open, onClose, departments, companyId, onSuccess }: Chan
       onClose()
       setForm(INITIAL_FORM)
     } catch {
-      setError('조직개편 처리 중 오류가 발생했습니다.')
+      setError(t('processingError'))
     } finally {
       setSubmitting(false)
     }
@@ -266,28 +298,28 @@ function ChangeDialog({ open, onClose, departments, companyId, onSuccess }: Chan
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>조직개편 실행</DialogTitle>
+          <DialogTitle>{t('executeDialog')}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
           {/* Change type selector */}
           <div className="space-y-1.5">
-            <Label>변경 유형</Label>
+            <Label>{t('changeType')}</Label>
             <div className="flex flex-wrap gap-2">
               {(Object.keys(CHANGE_TYPE_LABELS) as OrgChangeType[])
-                .filter((t) => t !== 'RESTRUCTURE')
-                .map((t) => (
+                .filter((tp) => tp !== 'RESTRUCTURE')
+                .map((tp) => (
                   <button
-                    key={t}
+                    key={tp}
                     type="button"
-                    onClick={() => set('changeType', t)}
+                    onClick={() => set('changeType', tp)}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                      form.changeType === t
+                      form.changeType === tp
                         ? 'border-ctr-primary bg-ctr-primary text-white'
                         : 'border-ctr-gray-300 text-ctr-gray-700 hover:border-ctr-primary'
                     }`}
                   >
-                    {CHANGE_TYPE_LABELS[t]}
+                    {CHANGE_TYPE_LABELS[tp]}
                   </button>
                 ))}
             </div>
@@ -295,7 +327,7 @@ function ChangeDialog({ open, onClose, departments, companyId, onSuccess }: Chan
 
           {/* Effective date */}
           <div className="space-y-1.5">
-            <Label>시행일</Label>
+            <Label>{t('effectiveDate')}</Label>
             <Input
               type="date"
               value={form.effectiveDate}
@@ -307,24 +339,24 @@ function ChangeDialog({ open, onClose, departments, companyId, onSuccess }: Chan
           {form.changeType === 'CREATE' && (
             <>
               <div className="space-y-1.5">
-                <Label>부서명</Label>
+                <Label>{t('deptName')}</Label>
                 <Input
                   value={form.newDeptName}
                   onChange={(e) => set('newDeptName', e.target.value)}
-                  placeholder="예: 글로벌사업팀"
+                  placeholder={t('exampleDeptName')}
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label>코드</Label>
+                  <Label>{t('code')}</Label>
                   <Input
                     value={form.newDeptCode}
                     onChange={(e) => set('newDeptCode', e.target.value)}
-                    placeholder="예: GLOBAL"
+                    placeholder={t('exampleDeptCode')}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>레벨</Label>
+                  <Label>{t('level')}</Label>
                   <Input
                     type="number"
                     min={1}
@@ -335,13 +367,13 @@ function ChangeDialog({ open, onClose, departments, companyId, onSuccess }: Chan
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label>상위 부서 (선택)</Label>
+                <Label>{t('parentDeptOptional')}</Label>
                 <select
                   value={form.parentDeptId}
                   onChange={(e) => set('parentDeptId', e.target.value)}
                   className="w-full text-sm border border-ctr-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ctr-primary"
                 >
-                  <option value="">없음 (최상위)</option>
+                  <option value="">{t('noParent')}</option>
                   {departments.map((d) => (
                     <option key={d.id} value={d.id}>{d.name}</option>
                   ))}
@@ -352,13 +384,13 @@ function ChangeDialog({ open, onClose, departments, companyId, onSuccess }: Chan
 
           {(form.changeType === 'RENAME' || form.changeType === 'CLOSE' || form.changeType === 'SPLIT') && (
             <div className="space-y-1.5">
-              <Label>대상 부서</Label>
+              <Label>{t('targetDept')}</Label>
               <select
                 value={form.targetDeptId}
                 onChange={(e) => set('targetDeptId', e.target.value)}
                 className="w-full text-sm border border-ctr-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ctr-primary"
               >
-                <option value="">선택하세요</option>
+                <option value="">{tc('selectPlaceholder')}</option>
                 {departments.map((d) => (
                   <option key={d.id} value={d.id}>{d.name}</option>
                 ))}
@@ -368,11 +400,11 @@ function ChangeDialog({ open, onClose, departments, companyId, onSuccess }: Chan
 
           {form.changeType === 'RENAME' && (
             <div className="space-y-1.5">
-              <Label>새 부서명</Label>
+              <Label>{t('newDeptName')}</Label>
               <Input
                 value={form.newName}
                 onChange={(e) => set('newName', e.target.value)}
-                placeholder="변경할 부서명 입력"
+                placeholder={t('newDeptNamePlaceholder')}
               />
             </div>
           )}
@@ -380,19 +412,19 @@ function ChangeDialog({ open, onClose, departments, companyId, onSuccess }: Chan
           {form.changeType === 'SPLIT' && (
             <>
               <div className="space-y-1.5">
-                <Label>신설 부서명</Label>
+                <Label>{t('newDeptForSplit')}</Label>
                 <Input
                   value={form.newDeptName}
                   onChange={(e) => set('newDeptName', e.target.value)}
-                  placeholder="신설 부서명"
+                  placeholder={t('newDeptForSplitPlaceholder')}
                 />
               </div>
               <div className="space-y-1.5">
-                <Label>신설 부서 코드</Label>
+                <Label>{t('newDeptCodeForSplit')}</Label>
                 <Input
                   value={form.newDeptCode}
                   onChange={(e) => set('newDeptCode', e.target.value)}
-                  placeholder="예: NEW_DEPT"
+                  placeholder={t('newDeptCodePlaceholder')}
                 />
               </div>
             </>
@@ -401,7 +433,7 @@ function ChangeDialog({ open, onClose, departments, companyId, onSuccess }: Chan
           {form.changeType === 'MERGE' && (
             <>
               <div className="space-y-1.5">
-                <Label>통합할 부서 (다중 선택)</Label>
+                <Label>{t('mergeSourceDepts')}</Label>
                 <select
                   multiple
                   size={4}
@@ -418,16 +450,16 @@ function ChangeDialog({ open, onClose, departments, companyId, onSuccess }: Chan
                     <option key={d.id} value={d.id}>{d.name}</option>
                   ))}
                 </select>
-                <p className="text-xs text-ctr-gray-500">Ctrl/Cmd 클릭으로 복수 선택</p>
+                <p className="text-xs text-ctr-gray-500">{t('multiSelectHint')}</p>
               </div>
               <div className="space-y-1.5">
-                <Label>통합 대상 부서 (남길 부서)</Label>
+                <Label>{t('mergeTargetDept')}</Label>
                 <select
                   value={form.mergeToDeptId}
                   onChange={(e) => set('mergeToDeptId', e.target.value)}
                   className="w-full text-sm border border-ctr-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ctr-primary"
                 >
-                  <option value="">선택하세요</option>
+                  <option value="">{tc('selectPlaceholder')}</option>
                   {departments.map((d) => (
                     <option key={d.id} value={d.id}>{d.name}</option>
                   ))}
@@ -438,11 +470,11 @@ function ChangeDialog({ open, onClose, departments, companyId, onSuccess }: Chan
 
           {/* Reason */}
           <div className="space-y-1.5">
-            <Label>변경 사유 (선택)</Label>
+            <Label>{t('reasonOptional')}</Label>
             <Input
               value={form.reason}
               onChange={(e) => set('reason', e.target.value)}
-              placeholder="변경 사유를 입력하세요"
+              placeholder={t('reasonPlaceholder')}
             />
           </div>
 
@@ -453,14 +485,14 @@ function ChangeDialog({ open, onClose, departments, companyId, onSuccess }: Chan
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={submitting}>
-            취소
+            {tc('cancel')}
           </Button>
           <Button
             onClick={handleSubmit}
             disabled={submitting}
             className="bg-ctr-primary hover:bg-ctr-primary/90 text-white"
           >
-            {submitting ? '처리 중...' : '실행'}
+            {submitting ? t('processing') : t('execute')}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -477,6 +509,18 @@ interface OrgChangesClientProps {
 }
 
 export function OrgChangesClient({ user, companies, departments }: OrgChangesClientProps) {
+  const t = useTranslations('orgChanges')
+  const tc = useTranslations('common')
+
+  const CHANGE_TYPE_LABELS: Record<OrgChangeType, string> = {
+    CREATE: t('createDept'),
+    MERGE: t('mergeDept'),
+    SPLIT: t('splitDept'),
+    RENAME: t('renameDept'),
+    CLOSE: t('closeDept'),
+    RESTRUCTURE: t('restructure'),
+  }
+
   const isSuperAdmin = user.role === ROLE.SUPER_ADMIN
 
   const [history, setHistory] = useState<HistoryRow[]>([])
@@ -552,15 +596,15 @@ export function OrgChangesClient({ user, companies, departments }: OrgChangesCli
   return (
     <div className="flex flex-col gap-6 p-6">
       <PageHeader
-        title="조직개편 관리"
-        description="부서 생성·통합·분리·폐지·명칭 변경 이력을 관리합니다."
+        title={t('title')}
+        description={t('description')}
         actions={
           <Button
             onClick={() => setShowDialog(true)}
             className="bg-ctr-primary hover:bg-ctr-primary/90 text-white"
           >
             <Plus className="h-4 w-4 mr-1.5" />
-            조직개편 실행
+            {t('execute')}
           </Button>
         }
       />
@@ -573,7 +617,7 @@ export function OrgChangesClient({ user, companies, departments }: OrgChangesCli
             onChange={(e) => setFilterCompanyId(e.target.value)}
             className="text-sm border border-ctr-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-ctr-primary"
           >
-            <option value="">전체 법인</option>
+            <option value="">{t('allCompanies')}</option>
             {companies.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
@@ -585,7 +629,7 @@ export function OrgChangesClient({ user, companies, departments }: OrgChangesCli
           onChange={(e) => setFilterType(e.target.value as OrgChangeType | '')}
           className="text-sm border border-ctr-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-ctr-primary"
         >
-          <option value="">전체 유형</option>
+          <option value="">{t('allTypes')}</option>
           {(Object.entries(CHANGE_TYPE_LABELS) as [OrgChangeType, string][]).map(([key, label]) => (
             <option key={key} value={key}>{label}</option>
           ))}
@@ -601,19 +645,19 @@ export function OrgChangesClient({ user, companies, departments }: OrgChangesCli
                 className="px-4 py-3 text-left text-xs font-semibold text-ctr-gray-500 uppercase tracking-wide cursor-pointer hover:text-ctr-gray-900"
                 onClick={() => handleSort('effectiveDate')}
               >
-                시행일
+                {t('effectiveDate')}
                 {sortBy === 'effectiveDate' && (
                   <span className="ml-1">{sortDir === 'asc' ? '↑' : '↓'}</span>
                 )}
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-ctr-gray-500 uppercase tracking-wide">
-                변경 유형
+                {t('changeType')}
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-ctr-gray-500 uppercase tracking-wide">
-                변경 사유
+                {t('reason')}
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-ctr-gray-500 uppercase tracking-wide">
-                승인자
+                {t('approver')}
               </th>
               <th className="px-4 py-3 w-8" />
             </tr>
@@ -632,11 +676,22 @@ export function OrgChangesClient({ user, companies, departments }: OrgChangesCli
             ) : history.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-4 py-12 text-center text-sm text-ctr-gray-500">
-                  조직개편 이력이 없습니다.
+                  {t('noHistory')}
                 </td>
               </tr>
             ) : (
-              history.map((row) => <ExpandableRow key={row.id} row={row} />)
+              history.map((row) => (
+                <ExpandableRow
+                  key={row.id}
+                  row={row}
+                  changeTypeLabels={CHANGE_TYPE_LABELS}
+                  noChangeDataLabel={t('noChangeData')}
+                  beforeAfterLabel={t('beforeAfterCompare')}
+                  fieldLabel={t('field')}
+                  beforeLabel={t('before')}
+                  afterLabel={t('after')}
+                />
+              ))
             )}
           </tbody>
         </table>
@@ -645,7 +700,7 @@ export function OrgChangesClient({ user, companies, departments }: OrgChangesCli
         {pagination.totalPages > 1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-ctr-gray-200">
             <p className="text-xs text-ctr-gray-500">
-              전체 {pagination.total}건
+              {t('totalCount', { total: pagination.total })}
             </p>
             <div className="flex gap-1">
               <Button
@@ -654,7 +709,7 @@ export function OrgChangesClient({ user, companies, departments }: OrgChangesCli
                 disabled={pagination.page <= 1}
                 onClick={() => loadHistory(pagination.page - 1)}
               >
-                이전
+                {tc('prev')}
               </Button>
               <span className="px-3 py-1 text-sm text-ctr-gray-700">
                 {pagination.page} / {pagination.totalPages}
@@ -665,7 +720,7 @@ export function OrgChangesClient({ user, companies, departments }: OrgChangesCli
                 disabled={pagination.page >= pagination.totalPages}
                 onClick={() => loadHistory(pagination.page + 1)}
               >
-                다음
+                {tc('next')}
               </Button>
             </div>
           </div>

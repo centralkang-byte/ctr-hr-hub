@@ -6,11 +6,11 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Loader2, Copy, Save } from 'lucide-react'
 
 import type { SessionUser } from '@/types'
 import { apiClient } from '@/lib/api'
-import { ko } from '@/lib/i18n/ko'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -53,26 +53,6 @@ interface MatrixEntry {
 
 // Performance axis (rows): High=3, Mid=2, Low=1
 // Compa axis (columns): Below(C)=<0.9, At(B)=0.9~1.1, Above(A)=>1.1
-const ROWS = [
-  {
-    key: 'high',
-    label: '성과 High',
-    sublabel: '(블록 7,8,9)',
-    perfLevel: '3',
-  },
-  {
-    key: 'mid',
-    label: '성과 Mid',
-    sublabel: '(블록 4,5,6)',
-    perfLevel: '2',
-  },
-  {
-    key: 'low',
-    label: '성과 Low',
-    sublabel: '(블록 1,2,3)',
-    perfLevel: '1',
-  },
-] as const
 
 const COLS = [
   {
@@ -102,9 +82,10 @@ function getEmsBlock(
 // Build default empty entries for all 9 cells
 function buildDefaultEntries(): Record<string, MatrixEntry> {
   const entries: Record<string, MatrixEntry> = {}
-  for (const row of ROWS) {
+  const perfLevels = ['3', '2', '1']
+  for (const perfLevel of perfLevels) {
     for (const col of COLS) {
-      const block = getEmsBlock(row.perfLevel, col.compaLevel)
+      const block = getEmsBlock(perfLevel, col.compaLevel)
       entries[block] = {
         emsBlock: block,
         minIncreasePct: 0,
@@ -119,6 +100,30 @@ function buildDefaultEntries(): Record<string, MatrixEntry> {
 // ─── Component ───────────────────────────────────────────
 
 export function SalaryMatrixClient({ user }: { user: SessionUser }) {
+  const t = useTranslations('salary')
+  const tc = useTranslations('common')
+
+  const ROWS = [
+    {
+      key: 'high',
+      label: t('perfHigh'),
+      sublabel: t('perfHighBlocks'),
+      perfLevel: '3',
+    },
+    {
+      key: 'mid',
+      label: t('perfMid'),
+      sublabel: t('perfMidBlocks'),
+      perfLevel: '2',
+    },
+    {
+      key: 'low',
+      label: t('perfLow'),
+      sublabel: t('perfLowBlocks'),
+      perfLevel: '1',
+    },
+  ] as const
+
   // ─── State ───
   const [cycles, setCycles] = useState<PerformanceCycle[]>([])
   const [selectedCycleId, setSelectedCycleId] = useState<string>('')
@@ -148,8 +153,8 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
         }
       } catch {
         toast({
-          title: '오류',
-          description: '평가 주기 목록을 불러오는 데 실패했습니다.',
+          title: tc('error'),
+          description: t('cycleLoadFailed'),
           variant: 'destructive',
         })
       }
@@ -215,8 +220,8 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
   const handleSave = async () => {
     if (!selectedCycleId) {
       toast({
-        title: '오류',
-        description: '평가 주기를 선택하세요.',
+        title: tc('error'),
+        description: t('selectCycle'),
         variant: 'destructive',
       })
       return
@@ -229,8 +234,8 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
         entry.recommendedIncreasePct > entry.maxIncreasePct
       ) {
         toast({
-          title: '유효성 오류',
-          description: `블록 ${entry.emsBlock}: 최소 <= 권장 <= 최대 순서여야 합니다.`,
+          title: t('validationError'),
+          description: t('validationMinMaxOrder', { block: entry.emsBlock }),
           variant: 'destructive',
         })
         return
@@ -243,11 +248,11 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
         cycleId: selectedCycleId,
         entries: Object.values(entries),
       })
-      toast({ title: '성공', description: '연봉 인상 매트릭스가 저장되었습니다.' })
+      toast({ title: tc('success'), description: t('matrixSaved') })
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : '저장 중 오류가 발생했습니다.'
-      toast({ title: '오류', description: message, variant: 'destructive' })
+        err instanceof Error ? err.message : t('saveFailed')
+      toast({ title: tc('error'), description: message, variant: 'destructive' })
     } finally {
       setSaving(false)
     }
@@ -258,8 +263,8 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
     if (!sourceCycleId || !selectedCycleId) return
     if (sourceCycleId === selectedCycleId) {
       toast({
-        title: '오류',
-        description: '같은 주기는 복사할 수 없습니다.',
+        title: tc('error'),
+        description: t('copySameCycleError'),
         variant: 'destructive',
       })
       return
@@ -271,15 +276,15 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
         targetCycleId: selectedCycleId,
       })
       toast({
-        title: '성공',
-        description: '이전 주기의 매트릭스를 복사했습니다.',
+        title: tc('success'),
+        description: t('copySuccess'),
       })
       setCopyDialogOpen(false)
       fetchMatrix()
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : '복사 중 오류가 발생했습니다.'
-      toast({ title: '오류', description: message, variant: 'destructive' })
+        err instanceof Error ? err.message : t('copyFailed')
+      toast({ title: tc('error'), description: message, variant: 'destructive' })
     } finally {
       setCopying(false)
     }
@@ -294,8 +299,8 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="연봉 인상 매트릭스"
-        description="성과 등급과 Compa-Ratio 기준으로 연봉 인상률 범위를 설정합니다."
+        title={t('matrixTitle')}
+        description={t('matrixDescription')}
         actions={
           <div className="flex items-center gap-2">
             {/* Cycle selector */}
@@ -304,7 +309,7 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
               onValueChange={setSelectedCycleId}
             >
               <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="평가 주기 선택" />
+                <SelectValue placeholder={t('selectCyclePlaceholder')} />
               </SelectTrigger>
               <SelectContent>
                 {cycles.map((c) => (
@@ -324,7 +329,7 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
               disabled={!selectedCycleId}
             >
               <Copy className="mr-1 h-4 w-4" />
-              이전 연도 복사
+              {t('copyPreviousYear')}
             </Button>
           </div>
         }
@@ -338,7 +343,7 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
       ) : !selectedCycleId ? (
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 text-center">
           <p className="text-sm text-muted-foreground">
-            평가 주기가 없습니다. 먼저 성과 관리에서 평가 주기를 생성하세요.
+            {t('noCycles')}
           </p>
         </div>
       ) : (
@@ -350,7 +355,7 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
                 <thead>
                   <tr>
                     <th className="w-[160px] p-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider border-b border-slate-200">
-                      성과 / Compa-Ratio
+                      {t('perfCompaHeader')}
                     </th>
                     {COLS.map((col) => (
                       <th
@@ -395,7 +400,7 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
                               {/* Min */}
                               <div className="flex items-center gap-2">
                                 <Label className="text-xs text-slate-500 w-10 shrink-0">
-                                  최소
+                                  {t('matrixMin')}
                                 </Label>
                                 <div className="relative flex-1">
                                   <Input
@@ -422,7 +427,7 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
                               {/* Recommended */}
                               <div className="flex items-center gap-2">
                                 <Label className="text-xs text-blue-600 font-semibold w-10 shrink-0">
-                                  권장
+                                  {t('matrixRecommended')}
                                 </Label>
                                 <div className="relative flex-1">
                                   <Input
@@ -451,7 +456,7 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
                               {/* Max */}
                               <div className="flex items-center gap-2">
                                 <Label className="text-xs text-slate-500 w-10 shrink-0">
-                                  최대
+                                  {t('matrixMax')}
                                 </Label>
                                 <div className="relative flex-1">
                                   <Input
@@ -488,7 +493,7 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
             {/* ─── EMS Block Reference ─── */}
             <div className="mt-4 pt-4 border-t border-slate-100">
               <p className="text-xs text-slate-400 mb-2">
-                EMS 블록 매핑 참조
+                {t('emsBlockRef')}
               </p>
               <div className="grid grid-cols-3 gap-2 text-xs text-slate-500">
                 {ROWS.map((row) => (
@@ -522,7 +527,7 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
               ) : (
                 <Save className="mr-1 h-4 w-4" />
               )}
-              {ko.common.save}
+              {tc('save')}
             </Button>
           </div>
         </>
@@ -532,22 +537,21 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
       <Dialog open={copyDialogOpen} onOpenChange={setCopyDialogOpen}>
         <DialogContent className="sm:max-w-[420px]">
           <DialogHeader>
-            <DialogTitle>이전 연도 매트릭스 복사</DialogTitle>
+            <DialogTitle>{t('copyDialogTitle')}</DialogTitle>
             <DialogDescription>
-              이전 평가 주기의 인상 매트릭스를 현재 주기로 복사합니다.
-              기존 데이터가 있을 경우 덮어쓰기됩니다.
+              {t('copyDialogDescription')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label>복사 원본 주기</Label>
+              <Label>{t('sourceCycle')}</Label>
               <Select
                 value={sourceCycleId}
                 onValueChange={setSourceCycleId}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="원본 주기 선택" />
+                  <SelectValue placeholder={t('sourceCyclePlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
                   {cycles
@@ -562,7 +566,7 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
             </div>
 
             <div className="space-y-2">
-              <Label>대상 주기</Label>
+              <Label>{t('targetCycle')}</Label>
               <div className="px-3 py-2 bg-slate-50 rounded-lg text-sm text-slate-700 border border-slate-200">
                 {cycles.find((c) => c.id === selectedCycleId)
                   ? getCycleName(
@@ -579,7 +583,7 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
               variant="outline"
               onClick={() => setCopyDialogOpen(false)}
             >
-              {ko.common.cancel}
+              {tc('cancel')}
             </Button>
             <Button
               onClick={handleCopy}
@@ -588,7 +592,7 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
               {copying && (
                 <Loader2 className="mr-1 h-4 w-4 animate-spin" />
               )}
-              복사 실행
+              {t('executeCopy')}
             </Button>
           </DialogFooter>
         </DialogContent>

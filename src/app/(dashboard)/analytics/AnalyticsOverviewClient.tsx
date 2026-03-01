@@ -7,6 +7,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import {
   Users,
@@ -28,27 +29,27 @@ import { AnalyticsPageLayout } from '@/components/analytics/AnalyticsPageLayout'
 import { AnalyticsKpiCard } from '@/components/analytics/AnalyticsKpiCard'
 import type { OverviewKpi } from '@/lib/analytics/types'
 
-// ─── Sub-dashboard navigation config ────────────────────
-
-const SUB_DASHBOARDS = [
-  { href: '/analytics/workforce', icon: Users, title: '인력 분석', description: '부서별 인원, 고용형태, 직급 분포' },
-  { href: '/analytics/turnover', icon: TrendingDown, title: '이직 분석', description: '월별 퇴사 트렌드, 사유, 부서별 이직률' },
-  { href: '/analytics/performance', icon: Target, title: '성과 분석', description: 'EMS 9-block 분포, 부서별 비교' },
-  { href: '/analytics/attendance', icon: Clock, title: '근태 분석', description: '주별 근무시간, 초과근무, 52시간 위험' },
-  { href: '/analytics/recruitment', icon: Briefcase, title: '채용 분석', description: '채용 퍼널, 전환율, AI 스크리닝' },
-  { href: '/analytics/compensation', icon: Banknote, title: '보상 분석', description: 'Compa-ratio 분포, 급여 밴드 적합도' },
-  { href: '/analytics/team-health', icon: Heart, title: '팀 건강', description: '부서별 종합 점수, 번아웃 위험' },
-  { href: '/analytics/report', icon: FileText, title: 'AI 보고서', description: 'AI 경영진 보고서 자동 생성' },
-]
-
 // ─── Component ──────────────────────────────────────────
 
 export default function AnalyticsOverviewClient() {
   const searchParams = useSearchParams()
   const companyId = searchParams.get('company_id') ?? undefined
+  const t = useTranslations('analytics')
 
   const [kpi, setKpi] = useState<OverviewKpi | null>(null)
   const [loading, setLoading] = useState(true)
+
+  // ─── Sub-dashboard navigation config ────────────────────
+  const SUB_DASHBOARDS = [
+    { href: '/analytics/workforce', icon: Users, title: t('subDashboards.workforce'), description: t('subDashboards.workforceDesc') },
+    { href: '/analytics/turnover', icon: TrendingDown, title: t('subDashboards.turnover'), description: t('subDashboards.turnoverDesc') },
+    { href: '/analytics/performance', icon: Target, title: t('subDashboards.performance'), description: t('subDashboards.performanceDesc') },
+    { href: '/analytics/attendance', icon: Clock, title: t('subDashboards.attendance'), description: t('subDashboards.attendanceDesc') },
+    { href: '/analytics/recruitment', icon: Briefcase, title: t('subDashboards.recruitment'), description: t('subDashboards.recruitmentDesc') },
+    { href: '/analytics/compensation', icon: Banknote, title: t('subDashboards.compensation'), description: t('subDashboards.compensationDesc') },
+    { href: '/analytics/team-health', icon: Heart, title: t('subDashboards.teamHealth'), description: t('subDashboards.teamHealthDesc') },
+    { href: '/analytics/report', icon: FileText, title: t('subDashboards.report'), description: t('subDashboards.reportDesc') },
+  ]
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -71,7 +72,7 @@ export default function AnalyticsOverviewClient() {
   return (
     <AnalyticsPageLayout
       title="HR Analytics"
-      description="전사 인사 데이터 분석 대시보드"
+      description={t('hrAnalyticsDescription')}
     >
       {/* KPI Cards */}
       {loading ? (
@@ -82,52 +83,52 @@ export default function AnalyticsOverviewClient() {
         <>
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
             <AnalyticsKpiCard
-              label="전체 인원"
+              label={t('totalEmployees')}
               value={kpi.totalHeadcount.toLocaleString()}
               icon={Users}
-              suffix="명"
+              suffix={t('personSuffix')}
               color="info"
             />
             <AnalyticsKpiCard
-              label="신규 입사 (30일)"
+              label={t('newHires30d')}
               value={kpi.newHires30d}
               icon={UserPlus}
-              suffix="명"
+              suffix={t('personSuffix')}
               color="success"
             />
             <AnalyticsKpiCard
-              label="퇴사자 (30일)"
+              label={t('resignations30d')}
               value={kpi.resignations30d}
               icon={UserMinus}
-              suffix="명"
+              suffix={t('personSuffix')}
               color="danger"
             />
             <AnalyticsKpiCard
-              label="이직률 (연환산)"
+              label={t('turnoverRateAnnualized')}
               value={kpi.turnoverRateAnnualized}
               icon={TrendingDown}
               suffix="%"
               color={kpi.turnoverRateAnnualized > 15 ? 'danger' : 'warning'}
             />
             <AnalyticsKpiCard
-              label="월평균 초과근무"
+              label={t('avgOvertimeMonthly')}
               value={kpi.avgOvertimeHours}
               icon={Clock}
-              suffix="시간"
+              suffix={t('hoursSuffix')}
               color={kpi.avgOvertimeHours > 10 ? 'warning' : 'default'}
             />
             <AnalyticsKpiCard
-              label="번아웃 위험"
+              label={t('burnoutRiskCount')}
               value={kpi.burnoutRiskCount}
               icon={AlertTriangle}
-              suffix="명"
+              suffix={t('personSuffix')}
               color={kpi.burnoutRiskCount > 0 ? 'danger' : 'success'}
             />
           </div>
 
           {/* Sub-dashboard Navigation */}
           <div>
-            <h2 className="mb-4 text-lg font-semibold text-slate-900">상세 분석</h2>
+            <h2 className="mb-4 text-lg font-semibold text-slate-900">{t('detailedAnalysis')}</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {SUB_DASHBOARDS.map((item) => (
                 <Link
@@ -150,7 +151,7 @@ export default function AnalyticsOverviewClient() {
         </>
       ) : (
         <div className="py-20 text-center text-sm text-slate-500">
-          데이터를 불러오지 못했습니다.
+          {t('dataLoadFailed')}
         </div>
       )}
     </AnalyticsPageLayout>

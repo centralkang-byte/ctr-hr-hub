@@ -7,13 +7,13 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
+import { useTranslations } from 'next-intl'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Plus, Pencil, Trash2, Loader2 } from 'lucide-react'
 
 import type { SessionUser, PaginationInfo } from '@/types'
 import { apiClient } from '@/lib/api'
-import { ko } from '@/lib/i18n/ko'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { Button } from '@/components/ui/button'
@@ -61,12 +61,6 @@ interface WorkScheduleLocal {
 
 // ─── Label / color maps ─────────────────────────────────
 
-const SCHEDULE_TYPE_LABELS: Record<string, string> = {
-  FIXED: ko.shift.fixed,
-  FLEXIBLE: ko.shift.flexible,
-  SHIFT: ko.shift.shiftWork,
-}
-
 const SCHEDULE_TYPE_COLORS: Record<string, string> = {
   FIXED: 'bg-blue-100 text-blue-800',
   FLEXIBLE: 'bg-green-100 text-green-800',
@@ -99,6 +93,16 @@ type FormData = z.infer<typeof formSchema>
 
 export function WorkScheduleSettingsClient({ user }: { user: SessionUser }) {
   void user // reserved for permission checks
+
+  const t = useTranslations('shift')
+  const tc = useTranslations('common')
+
+  // ─── Translated label maps ───
+  const SCHEDULE_TYPE_LABELS: Record<string, string> = {
+    FIXED: t('fixed'),
+    FLEXIBLE: t('flexible'),
+    SHIFT: t('shiftWork'),
+  }
 
   // ── State ──
   const [schedules, setSchedules] = useState<WorkScheduleLocal[]>([])
@@ -211,11 +215,11 @@ export function WorkScheduleSettingsClient({ user }: { user: SessionUser }) {
   const columns: DataTableColumn<Row>[] = [
     {
       key: 'name',
-      header: ko.shift.scheduleName,
+      header: t('scheduleName'),
     },
     {
       key: 'scheduleType',
-      header: ko.shift.scheduleType,
+      header: t('scheduleType'),
       render: (r) => {
         const row = r as unknown as WorkScheduleLocal
         return (
@@ -230,15 +234,15 @@ export function WorkScheduleSettingsClient({ user }: { user: SessionUser }) {
     },
     {
       key: 'weeklyHours',
-      header: ko.shift.weeklyHours,
+      header: t('weeklyHours'),
       render: (r) => {
         const row = r as unknown as WorkScheduleLocal
-        return <span>{row.weeklyHours}시간</span>
+        return <span>{t('hoursSuffix', { hours: row.weeklyHours })}</span>
       },
     },
     {
       key: 'actions',
-      header: ko.common.actions,
+      header: tc('actions'),
       render: (r) => {
         const row = r as unknown as WorkScheduleLocal
         return (
@@ -274,12 +278,12 @@ export function WorkScheduleSettingsClient({ user }: { user: SessionUser }) {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={ko.shift.title}
-        description="근무 스케줄을 등록하고 관리합니다."
+        title={t('title')}
+        description={t('description')}
         actions={
           <Button onClick={openCreate}>
             <Plus className="mr-1 h-4 w-4" />
-            {ko.common.create}
+            {tc('create')}
           </Button>
         }
       />
@@ -290,9 +294,9 @@ export function WorkScheduleSettingsClient({ user }: { user: SessionUser }) {
         pagination={pagination}
         onPageChange={setPage}
         loading={loading}
-        emptyMessage="등록된 근무 스케줄이 없습니다"
-        emptyDescription="새 스케줄을 등록하여 근무 시간 관리를 시작하세요."
-        emptyAction={{ label: '스케줄 등록', onClick: openCreate }}
+        emptyMessage={t('noSchedules')}
+        emptyDescription={t('noSchedulesDesc')}
+        emptyAction={{ label: t('registerSchedule'), onClick: openCreate }}
         rowKey={(row) => (row as unknown as WorkScheduleLocal).id}
       />
 
@@ -301,19 +305,19 @@ export function WorkScheduleSettingsClient({ user }: { user: SessionUser }) {
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>
-              {editing ? '근무 스케줄 수정' : '근무 스케줄 등록'}
+              {editing ? t('editTitle') : t('createTitle')}
             </DialogTitle>
             <DialogDescription>
-              근무 스케줄 정보를 입력하세요.
+              {t('formDescription')}
             </DialogDescription>
           </DialogHeader>
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="ws-name">{ko.shift.scheduleName}</Label>
+              <Label htmlFor="ws-name">{t('scheduleName')}</Label>
               <Input
                 id="ws-name"
-                placeholder="예: 일반 근무"
+                placeholder={t('exampleSchedule')}
                 {...register('name')}
               />
               {errors.name && (
@@ -324,19 +328,19 @@ export function WorkScheduleSettingsClient({ user }: { user: SessionUser }) {
             </div>
 
             <div className="space-y-2">
-              <Label>{ko.shift.scheduleType}</Label>
+              <Label>{t('scheduleType')}</Label>
               <Controller
                 control={control}
                 name="scheduleType"
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger>
-                      <SelectValue placeholder="유형 선택" />
+                      <SelectValue placeholder={t('selectType')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="FIXED">{ko.shift.fixed}</SelectItem>
-                      <SelectItem value="FLEXIBLE">{ko.shift.flexible}</SelectItem>
-                      <SelectItem value="SHIFT">{ko.shift.shiftWork}</SelectItem>
+                      <SelectItem value="FIXED">{t('fixed')}</SelectItem>
+                      <SelectItem value="FLEXIBLE">{t('flexible')}</SelectItem>
+                      <SelectItem value="SHIFT">{t('shiftWork')}</SelectItem>
                     </SelectContent>
                   </Select>
                 )}
@@ -344,7 +348,7 @@ export function WorkScheduleSettingsClient({ user }: { user: SessionUser }) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="ws-hours">{ko.shift.weeklyHours}</Label>
+              <Label htmlFor="ws-hours">{t('weeklyHours')}</Label>
               <Input
                 id="ws-hours"
                 type="number"
@@ -365,11 +369,11 @@ export function WorkScheduleSettingsClient({ user }: { user: SessionUser }) {
                 variant="outline"
                 onClick={() => setDialogOpen(false)}
               >
-                {ko.common.cancel}
+                {tc('cancel')}
               </Button>
               <Button type="submit" disabled={saving}>
                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {editing ? ko.common.edit : ko.common.create}
+                {editing ? tc('edit') : tc('create')}
               </Button>
             </DialogFooter>
           </form>
@@ -385,15 +389,14 @@ export function WorkScheduleSettingsClient({ user }: { user: SessionUser }) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>스케줄 삭제</AlertDialogTitle>
+            <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              &quot;{deleteTarget?.name}&quot; 스케줄을 삭제하시겠습니까?
-              이 작업은 되돌릴 수 없습니다.
+              {t('deleteConfirm', { name: deleteTarget?.name ?? '' })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={deleting}>
-              {ko.common.cancel}
+              {tc('cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
@@ -401,7 +404,7 @@ export function WorkScheduleSettingsClient({ user }: { user: SessionUser }) {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {ko.common.delete}
+              {tc('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

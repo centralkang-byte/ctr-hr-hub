@@ -7,13 +7,13 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
+import { useTranslations } from 'next-intl'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Plus, Pencil, Trash2, RefreshCw, Copy, Loader2 } from 'lucide-react'
 
 import type { SessionUser, PaginationInfo } from '@/types'
 import { apiClient } from '@/lib/api'
-import { ko } from '@/lib/i18n/ko'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { Button } from '@/components/ui/button'
@@ -71,19 +71,21 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>
 
-// ─── Terminal type label map ─────────────────────────────
-
-const typeLabels: Record<string, string> = {
-  BIOMETRIC: ko.terminal.biometric,
-  CARD: ko.terminal.card,
-  QR: ko.terminal.qr,
-  FACE: ko.terminal.face,
-}
-
 // ─── Component ───────────────────────────────────────────
 
 export function TerminalSettingsClient({ user }: { user: SessionUser }) {
   void user
+
+  const t = useTranslations('terminal')
+  const tc = useTranslations('common')
+
+  // ─── Translated label maps ───
+  const typeLabels: Record<string, string> = {
+    BIOMETRIC: t('biometric'),
+    CARD: t('card'),
+    QR: t('qr'),
+    FACE: t('face'),
+  }
 
   // ─── State ───
   const [terminals, setTerminals] = useState<TerminalLocal[]>([])
@@ -145,9 +147,9 @@ export function TerminalSettingsClient({ user }: { user: SessionUser }) {
   }, [fetchTerminals])
 
   // ─── Online status helper ───
-  const isOnline = (t: TerminalLocal): boolean => {
-    if (!t.lastHeartbeatAt) return false
-    return Date.now() - new Date(t.lastHeartbeatAt).getTime() < 180_000
+  const isOnline = (terminal: TerminalLocal): boolean => {
+    if (!terminal.lastHeartbeatAt) return false
+    return Date.now() - new Date(terminal.lastHeartbeatAt).getTime() < 180_000
   }
 
   // ─── Open dialogs ───
@@ -245,39 +247,39 @@ export function TerminalSettingsClient({ user }: { user: SessionUser }) {
   const columns: DataTableColumn<TerminalLocal>[] = [
     {
       key: 'terminalCode',
-      header: ko.terminal.terminalCode,
+      header: t('terminalCode'),
     },
     {
       key: 'terminalType',
-      header: ko.terminal.terminalType,
+      header: t('terminalType'),
       render: (row: TerminalLocal) => (
         <Badge variant="outline">{typeLabels[row.terminalType] ?? row.terminalType}</Badge>
       ),
     },
     {
       key: 'locationName',
-      header: ko.terminal.locationName,
+      header: t('locationName'),
     },
     {
       key: 'ipAddress',
-      header: ko.terminal.ipAddress,
+      header: t('ipAddress'),
       render: (row: TerminalLocal) => (
         <span className="text-muted-foreground">{row.ipAddress ?? '\u2014'}</span>
       ),
     },
     {
       key: 'status',
-      header: ko.terminal.isActive,
+      header: t('isActive'),
       render: (row: TerminalLocal) =>
         isOnline(row) ? (
-          <Badge className="bg-emerald-100 text-emerald-700">{ko.terminal.online}</Badge>
+          <Badge className="bg-emerald-100 text-emerald-700">{t('online')}</Badge>
         ) : (
-          <Badge variant="secondary">{ko.terminal.offline}</Badge>
+          <Badge variant="secondary">{t('offline')}</Badge>
         ),
     },
     {
       key: 'actions',
-      header: ko.common.actions,
+      header: tc('actions'),
       render: (row: TerminalLocal) => (
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" onClick={() => openEdit(row)}>
@@ -298,12 +300,12 @@ export function TerminalSettingsClient({ user }: { user: SessionUser }) {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={ko.terminal.settings}
-        description="출퇴근 단말기를 등록하고 관리합니다."
+        title={t('settings')}
+        description={t('description')}
         actions={
           <Button onClick={openCreate}>
             <Plus className="mr-1 h-4 w-4" />
-            {ko.common.create}
+            {tc('create')}
           </Button>
         }
       />
@@ -315,7 +317,7 @@ export function TerminalSettingsClient({ user }: { user: SessionUser }) {
         loading={loading}
         pagination={pagination}
         onPageChange={setPage}
-        emptyMessage={ko.common.noData}
+        emptyMessage={tc('noData')}
         rowKey={(row) => (row as unknown as TerminalLocal).id}
       />
 
@@ -324,24 +326,22 @@ export function TerminalSettingsClient({ user }: { user: SessionUser }) {
         <DialogContent className="sm:max-w-[480px]">
           <DialogHeader>
             <DialogTitle>
-              {editing
-                ? `${ko.terminal.title} ${ko.common.edit}`
-                : `${ko.terminal.title} ${ko.common.create}`}
+              {editing ? t('terminalEdit') : t('terminalCreate')}
             </DialogTitle>
             <DialogDescription>
               {editing
-                ? '단말기 정보를 수정합니다.'
-                : '새 단말기를 등록합니다.'}
+                ? t('editDescription')
+                : t('createDescription')}
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* terminalCode */}
             <div className="space-y-2">
-              <Label htmlFor="terminal-code">{ko.terminal.terminalCode}</Label>
+              <Label htmlFor="terminal-code">{t('terminalCode')}</Label>
               <Input
                 id="terminal-code"
-                placeholder="예: TERM-001"
+                placeholder={t('exampleCode')}
                 disabled={!!editing}
                 {...register('terminalCode')}
               />
@@ -354,20 +354,20 @@ export function TerminalSettingsClient({ user }: { user: SessionUser }) {
 
             {/* terminalType */}
             <div className="space-y-2">
-              <Label>{ko.terminal.terminalType}</Label>
+              <Label>{t('terminalType')}</Label>
               <Controller
                 control={control}
                 name="terminalType"
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger>
-                      <SelectValue placeholder={ko.common.selectPlaceholder} />
+                      <SelectValue placeholder={tc('selectPlaceholder')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="BIOMETRIC">{ko.terminal.biometric}</SelectItem>
-                      <SelectItem value="CARD">{ko.terminal.card}</SelectItem>
-                      <SelectItem value="QR">{ko.terminal.qr}</SelectItem>
-                      <SelectItem value="FACE">{ko.terminal.face}</SelectItem>
+                      <SelectItem value="BIOMETRIC">{t('biometric')}</SelectItem>
+                      <SelectItem value="CARD">{t('card')}</SelectItem>
+                      <SelectItem value="QR">{t('qr')}</SelectItem>
+                      <SelectItem value="FACE">{t('face')}</SelectItem>
                     </SelectContent>
                   </Select>
                 )}
@@ -381,10 +381,10 @@ export function TerminalSettingsClient({ user }: { user: SessionUser }) {
 
             {/* locationName */}
             <div className="space-y-2">
-              <Label htmlFor="terminal-location">{ko.terminal.locationName}</Label>
+              <Label htmlFor="terminal-location">{t('locationName')}</Label>
               <Input
                 id="terminal-location"
-                placeholder="예: 본사 1층 로비"
+                placeholder={t('exampleLocation')}
                 {...register('locationName')}
               />
               {errors.locationName && (
@@ -397,12 +397,12 @@ export function TerminalSettingsClient({ user }: { user: SessionUser }) {
             {/* ipAddress (optional) */}
             <div className="space-y-2">
               <Label htmlFor="terminal-ip">
-                {ko.terminal.ipAddress}{' '}
-                <span className="text-muted-foreground text-xs">({ko.common.optional})</span>
+                {t('ipAddress')}{' '}
+                <span className="text-muted-foreground text-xs">({tc('optional')})</span>
               </Label>
               <Input
                 id="terminal-ip"
-                placeholder="예: 192.168.1.100"
+                placeholder={t('exampleIp')}
                 {...register('ipAddress')}
               />
             </div>
@@ -413,13 +413,13 @@ export function TerminalSettingsClient({ user }: { user: SessionUser }) {
                 variant="outline"
                 onClick={() => setDialogOpen(false)}
               >
-                {ko.common.cancel}
+                {tc('cancel')}
               </Button>
               <Button type="submit" disabled={saving}>
                 {saving && (
                   <Loader2 className="mr-1 h-4 w-4 animate-spin" />
                 )}
-                {ko.common.save}
+                {tc('save')}
               </Button>
             </DialogFooter>
           </form>
@@ -439,9 +439,9 @@ export function TerminalSettingsClient({ user }: { user: SessionUser }) {
       >
         <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>
-            <DialogTitle>{ko.terminal.apiSecret}</DialogTitle>
+            <DialogTitle>{t('apiSecret')}</DialogTitle>
             <DialogDescription>
-              이 시크릿 키는 한 번만 표시됩니다. 안전한 곳에 복사해두세요.
+              {t('secretDescription')}
             </DialogDescription>
           </DialogHeader>
 
@@ -454,7 +454,7 @@ export function TerminalSettingsClient({ user }: { user: SessionUser }) {
                 </p>
               </div>
               <div className="space-y-2">
-                <Label className="text-muted-foreground text-xs">{ko.terminal.apiSecret}</Label>
+                <Label className="text-muted-foreground text-xs">{t('apiSecret')}</Label>
                 <div className="flex items-center gap-2">
                   <p className="flex-1 rounded-md bg-muted px-3 py-2 font-mono text-sm break-all">
                     {secretInfo.apiSecret}
@@ -464,7 +464,7 @@ export function TerminalSettingsClient({ user }: { user: SessionUser }) {
                   </Button>
                 </div>
                 {copied && (
-                  <p className="text-sm text-emerald-600">복사되었습니다!</p>
+                  <p className="text-sm text-emerald-600">{t('secretCopied')}</p>
                 )}
               </div>
             </div>
@@ -478,7 +478,7 @@ export function TerminalSettingsClient({ user }: { user: SessionUser }) {
                 setCopied(false)
               }}
             >
-              {ko.common.confirm}
+              {tc('confirm')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -491,15 +491,13 @@ export function TerminalSettingsClient({ user }: { user: SessionUser }) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{ko.terminal.regenerateSecret}</AlertDialogTitle>
+            <AlertDialogTitle>{t('regenerateSecret')}</AlertDialogTitle>
             <AlertDialogDescription>
-              시크릿 키를 재발급하면 기존 키는 즉시 무효화됩니다.
-              &quot;{regenTarget?.terminalCode}&quot; 단말기의 시크릿 키를
-              재발급하시겠습니까?
+              {t('regenerateConfirm', { code: regenTarget?.terminalCode ?? '' })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{ko.common.cancel}</AlertDialogCancel>
+            <AlertDialogCancel>{tc('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmRegenerate}
               disabled={regenerating}
@@ -507,7 +505,7 @@ export function TerminalSettingsClient({ user }: { user: SessionUser }) {
               {regenerating && (
                 <Loader2 className="mr-1 h-4 w-4 animate-spin" />
               )}
-              {ko.terminal.regenerateSecret}
+              {t('regenerateSecret')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -520,14 +518,13 @@ export function TerminalSettingsClient({ user }: { user: SessionUser }) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>단말기 삭제</AlertDialogTitle>
+            <AlertDialogTitle>{t('deleteTerminal')}</AlertDialogTitle>
             <AlertDialogDescription>
-              &quot;{deleteTarget?.terminalCode}&quot; 단말기를 삭제하시겠습니까?
-              이 작업은 되돌릴 수 없습니다.
+              {t('deleteTerminalConfirm', { code: deleteTarget?.terminalCode ?? '' })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{ko.common.cancel}</AlertDialogCancel>
+            <AlertDialogCancel>{tc('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               disabled={deleting}
@@ -536,7 +533,7 @@ export function TerminalSettingsClient({ user }: { user: SessionUser }) {
               {deleting && (
                 <Loader2 className="mr-1 h-4 w-4 animate-spin" />
               )}
-              {ko.common.delete}
+              {tc('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

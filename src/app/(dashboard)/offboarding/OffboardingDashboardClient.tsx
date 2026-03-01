@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   AlertTriangle,
   CheckCircle2,
@@ -86,26 +87,12 @@ interface OffboardingDashboardClientProps {
 
 // ─── Constants ──────────────────────────────────────────────
 
-const STATUS_LABELS: Record<string, string> = {
-  IN_PROGRESS: '진행 중',
-  COMPLETED: '완료',
-  CANCELLED: '취소',
-}
-
 type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline'
 
 const STATUS_VARIANTS: Record<string, BadgeVariant> = {
   IN_PROGRESS: 'default',
   COMPLETED: 'secondary',
   CANCELLED: 'destructive',
-}
-
-const RESIGN_TYPE_LABELS: Record<string, string> = {
-  VOLUNTARY: '자발적퇴사',
-  INVOLUNTARY: '비자발적퇴사',
-  RETIREMENT: '정년퇴직',
-  CONTRACT_END: '계약만료',
-  MUTUAL_AGREEMENT: '합의퇴사',
 }
 
 const RESIGN_TYPE_VARIANTS: Record<string, BadgeVariant> = {
@@ -124,26 +111,43 @@ const ASSIGNEE_COLORS: Record<string, string> = {
   FINANCE: 'bg-orange-100 text-orange-700',
 }
 
-const ASSIGNEE_LABELS: Record<string, string> = {
-  EMPLOYEE: '직원',
-  MANAGER: '매니저',
-  HR: 'HR',
-  IT: 'IT',
-  FINANCE: '재무',
-}
-
-const TASK_STATUS_LABELS: Record<string, string> = {
-  PENDING: '대기',
-  DONE: '완료',
-  SKIPPED: '건너뜀',
-  BLOCKED: '차단',
-}
-
 const LIMIT_OPTIONS = [10, 20, 50]
 
 // ─── Component ──────────────────────────────────────────────
 
 export function OffboardingDashboardClient({ user }: OffboardingDashboardClientProps) {
+  const t = useTranslations('offboarding')
+  const tCommon = useTranslations('common')
+
+  const STATUS_LABELS: Record<string, string> = {
+    IN_PROGRESS: t('inProgress'),
+    COMPLETED: t('completed'),
+    CANCELLED: t('cancelled'),
+  }
+
+  const RESIGN_TYPE_LABELS: Record<string, string> = {
+    VOLUNTARY: t('resignVoluntary'),
+    INVOLUNTARY: t('resignInvoluntary'),
+    RETIREMENT: t('resignRetirement'),
+    CONTRACT_END: t('resignContractEnd'),
+    MUTUAL_AGREEMENT: t('resignMutualAgreement'),
+  }
+
+  const ASSIGNEE_LABELS: Record<string, string> = {
+    EMPLOYEE: t('assigneeEmployee'),
+    MANAGER: t('assigneeManager'),
+    HR: t('assigneeHr'),
+    IT: t('assigneeIt'),
+    FINANCE: t('assigneeFinance'),
+  }
+
+  const TASK_STATUS_LABELS: Record<string, string> = {
+    PENDING: t('taskStatusPending'),
+    DONE: t('taskStatusDone'),
+    SKIPPED: t('taskStatusSkipped'),
+    BLOCKED: t('taskStatusBlocked'),
+  }
+
   // ─── State ───
   const [tab, setTab] = useState<'IN_PROGRESS' | 'COMPLETED'>('IN_PROGRESS')
   const [page, setPage] = useState(1)
@@ -271,14 +275,14 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
   )
 
   // ─── Table columns (header) ───
-  const headerCols = ['', '직원명', '퇴직유형', '최종근무일', '진행률', '상태', '경고']
+  const headerCols = ['', t('employeeName'), t('resignTypeLabel'), t('lastWorkingDateLabel'), t('progressLabel'), t('statusLabel'), t('warningLabel')]
   if (isHrAdmin && tab === 'IN_PROGRESS') headerCols.push('')
 
   return (
     <div className="space-y-6 p-6">
       <PageHeader
-        title="퇴직처리 현황"
-        description="퇴직 진행 현황을 모니터링하고 태스크를 관리합니다."
+        title={t('dashboardTitle')}
+        description={t('dashboardDescription')}
       />
 
       {/* ─── Tab Filter ─── */}
@@ -292,8 +296,8 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
           }}
         >
           <TabsList>
-            <TabsTrigger value="IN_PROGRESS">진행 중</TabsTrigger>
-            <TabsTrigger value="COMPLETED">완료</TabsTrigger>
+            <TabsTrigger value="IN_PROGRESS">{t('inProgress')}</TabsTrigger>
+            <TabsTrigger value="COMPLETED">{t('completed')}</TabsTrigger>
           </TabsList>
         </Tabs>
 
@@ -310,7 +314,7 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
           <SelectContent>
             {LIMIT_OPTIONS.map((n) => (
               <SelectItem key={n} value={String(n)}>
-                {n}건
+                {t('itemsPerPage', { n })}
               </SelectItem>
             ))}
           </SelectContent>
@@ -344,8 +348,8 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
       ) : data.length === 0 ? (
         <div className="rounded-md border p-8">
           <EmptyState
-            title="퇴직처리 데이터가 없습니다"
-            description="현재 조건에 해당하는 퇴직 처리 기록이 없습니다."
+            title={t('noOffboardingData')}
+            description={t('noOffboardingDataDesc')}
           />
         </div>
       ) : (
@@ -355,7 +359,7 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
               <TableHeader>
                 <TableRow>
                   {headerCols.map((h) => (
-                    <TableHead key={h} className={h === '진행률' ? 'w-48' : ''}>
+                    <TableHead key={h} className={h === t('progressLabel') ? 'w-48' : ''}>
                       {h}
                     </TableHead>
                   ))}
@@ -435,7 +439,7 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
                         {row.isD3 ? (
                           <Badge variant="destructive">
                             <AlertTriangle className="mr-1 h-3 w-3" />
-                            긴급
+                            {t('urgent')}
                           </Badge>
                         ) : row.isD7 ? (
                           <Badge
@@ -443,14 +447,14 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
                             className="border-yellow-500 text-yellow-700"
                           >
                             <AlertTriangle className="mr-1 h-3 w-3" />
-                            주의
+                            {t('caution')}
                           </Badge>
                         ) : (
                           <Badge
                             variant="outline"
                             className="border-green-500 text-green-700"
                           >
-                            정상
+                            {t('normalStatus')}
                           </Badge>
                         )}
                       </TableCell>
@@ -462,7 +466,7 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
                             className="text-xs text-red-600 border-red-300 hover:bg-red-50"
                             onClick={() => setCancelTarget(row)}
                           >
-                            퇴직 취소
+                            {t('cancelOffboarding')}
                           </Button>
                         </TableCell>
                       )}
@@ -477,64 +481,64 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
                         >
                           <div className="p-4">
                             <h4 className="text-sm font-semibold mb-3">
-                              태스크 목록 ({row.checklist.name})
+                              {t('taskListTitle')} ({row.checklist.name})
                             </h4>
                             <Table>
                               <TableHeader>
                                 <TableRow>
-                                  <TableHead>태스크</TableHead>
-                                  <TableHead>담당</TableHead>
-                                  <TableHead>필수</TableHead>
-                                  <TableHead>상태</TableHead>
+                                  <TableHead>{t('taskLabel')}</TableHead>
+                                  <TableHead>{t('assigneeLabel')}</TableHead>
+                                  <TableHead>{t('requiredLabel')}</TableHead>
+                                  <TableHead>{t('statusLabel')}</TableHead>
                                   {tab === 'IN_PROGRESS' && <TableHead className="w-24" />}
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
-                                {row.offboardingTasks.map((t) => (
-                                  <TableRow key={t.id}>
+                                {row.offboardingTasks.map((tsk) => (
+                                  <TableRow key={tsk.id}>
                                     <TableCell className="text-sm">
-                                      {t.task.title}
+                                      {tsk.task.title}
                                     </TableCell>
                                     <TableCell>
                                       <span
-                                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ASSIGNEE_COLORS[t.task.assigneeType] ?? 'bg-gray-100 text-gray-700'}`}
+                                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ASSIGNEE_COLORS[tsk.task.assigneeType] ?? 'bg-gray-100 text-gray-700'}`}
                                       >
-                                        {ASSIGNEE_LABELS[t.task.assigneeType] ??
-                                          t.task.assigneeType}
+                                        {ASSIGNEE_LABELS[tsk.task.assigneeType] ??
+                                          tsk.task.assigneeType}
                                       </span>
                                     </TableCell>
                                     <TableCell>
                                       <span className="text-xs">
-                                        {t.task.isRequired ? '필수' : '선택'}
+                                        {tsk.task.isRequired ? t('requiredTask') : t('optionalTask')}
                                       </span>
                                     </TableCell>
                                     <TableCell>
-                                      {t.status === 'DONE' ? (
+                                      {tsk.status === 'DONE' ? (
                                         <Badge variant="secondary">
                                           <CheckCircle2 className="mr-1 h-3 w-3" />
-                                          {TASK_STATUS_LABELS[t.status]}
+                                          {TASK_STATUS_LABELS[tsk.status]}
                                         </Badge>
                                       ) : (
                                         <Badge variant="outline">
-                                          {TASK_STATUS_LABELS[t.status] ?? t.status}
+                                          {TASK_STATUS_LABELS[tsk.status] ?? tsk.status}
                                         </Badge>
                                       )}
                                     </TableCell>
                                     {tab === 'IN_PROGRESS' && (
                                       <TableCell>
-                                        {t.status === 'PENDING' && (
+                                        {tsk.status === 'PENDING' && (
                                           <Button
                                             size="sm"
                                             variant="outline"
                                             className="text-xs"
-                                            disabled={taskLoading === t.id}
+                                            disabled={taskLoading === tsk.id}
                                             onClick={() =>
-                                              handleTaskComplete(row.id, t.id)
+                                              handleTaskComplete(row.id, tsk.id)
                                             }
                                           >
-                                            {taskLoading === t.id
-                                              ? '처리 중...'
-                                              : '완료'}
+                                            {taskLoading === tsk.id
+                                              ? t('processing')
+                                              : t('completeBtn')}
                                           </Button>
                                         )}
                                       </TableCell>
@@ -557,7 +561,7 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
           {totalPages > 1 && (
             <div className="flex items-center justify-between px-2">
               <p className="text-sm text-muted-foreground">
-                전체 {pagination?.total.toLocaleString()}건
+                {t('totalItems', { total: pagination?.total.toLocaleString() ?? '0' })}
               </p>
               <div className="flex items-center gap-2">
                 <Button
@@ -566,7 +570,7 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
                   disabled={page <= 1}
                   onClick={() => setPage((p) => p - 1)}
                 >
-                  이전
+                  {tCommon('prev')}
                 </Button>
                 <span className="text-sm">
                   {page} / {totalPages}
@@ -577,7 +581,7 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
                   disabled={page >= totalPages}
                   onClick={() => setPage((p) => p + 1)}
                 >
-                  다음
+                  {tCommon('next')}
                 </Button>
               </div>
             </div>
@@ -594,22 +598,21 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>퇴직 처리 취소</DialogTitle>
+            <DialogTitle>{t('cancelOffboardingTitle')}</DialogTitle>
             <DialogDescription>
-              {cancelTarget?.employee.name}님의 퇴직 처리를 취소합니다.
-              직원 상태가 &quot;재직&quot;으로 복원됩니다.
+              {t('cancelOffboardingDesc', { name: cancelTarget?.employee.name ?? '' })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCancelTarget(null)}>
-              닫기
+              {tCommon('close')}
             </Button>
             <Button
               onClick={handleCancel}
               disabled={cancelLoading}
               className="bg-ctr-accent hover:bg-ctr-accent/90 text-white"
             >
-              {cancelLoading ? '처리 중...' : '퇴직 취소 확인'}
+              {cancelLoading ? t('processing') : t('cancelOffboardingConfirm')}
             </Button>
           </DialogFooter>
         </DialogContent>

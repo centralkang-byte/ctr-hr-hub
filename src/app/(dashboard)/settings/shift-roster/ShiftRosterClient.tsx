@@ -6,11 +6,11 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { AlertTriangle, Loader2 } from 'lucide-react'
 
 import type { SessionUser } from '@/types'
 import { apiClient } from '@/lib/api'
-import { ko } from '@/lib/i18n/ko'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -64,22 +64,14 @@ function getShiftColor(type: string): string {
   }
 }
 
-function getShiftLabel(type: string, group: string | null): string {
-  switch (type) {
-    case 'FIXED':
-      return '고'
-    case 'FLEXIBLE':
-      return '유'
-    case 'SHIFT':
-      return group ? group.charAt(0) : '교'
-    default:
-      return '—'
-  }
-}
-
 // ─── Component ──────────────────────────────────────────
 
 export function ShiftRosterClient({ user }: { user: SessionUser }) {
+  const t = useTranslations('shift')
+  const tc = useTranslations('common')
+  const ta = useTranslations('attendance')
+  const te = useTranslations('employee')
+
   const now = new Date()
   const [year, setYear] = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth() + 1)
@@ -87,6 +79,20 @@ export function ShiftRosterClient({ user }: { user: SessionUser }) {
   const [warnings, setWarnings] = useState<Warning[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // ─── Helper for shift label ───
+  const getShiftLabel = (type: string, group: string | null): string => {
+    switch (type) {
+      case 'FIXED':
+        return t('fixedShort')
+      case 'FLEXIBLE':
+        return t('flexibleShort')
+      case 'SHIFT':
+        return group ? group.charAt(0) : t('shiftShort')
+      default:
+        return '—'
+    }
+  }
 
   // ─── 연도 옵션 (현재 연도 ± 2) ──────────────────────────
   const yearOptions = Array.from({ length: 5 }, (_, i) => now.getFullYear() - 2 + i)
@@ -102,11 +108,11 @@ export function ShiftRosterClient({ user }: { user: SessionUser }) {
       )
       setRosterData(res.data)
     } catch (err) {
-      setError(err instanceof Error ? err.message : ko.common.error)
+      setError(err instanceof Error ? err.message : tc('error'))
     } finally {
       setLoading(false)
     }
-  }, [year, month])
+  }, [year, month, tc])
 
   // ─── 경고 조회 ─────────────────────────────────────────
   const fetchWarnings = useCallback(async () => {
@@ -131,8 +137,8 @@ export function ShiftRosterClient({ user }: { user: SessionUser }) {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={ko.shift.roster}
-        description="월간 근무 배정 현황을 확인합니다."
+        title={t('roster')}
+        description={t('rosterDescription')}
       />
 
       {/* ─── 월 선택기 ─────────────────────────────────────── */}
@@ -147,7 +153,7 @@ export function ShiftRosterClient({ user }: { user: SessionUser }) {
           <SelectContent>
             {yearOptions.map((y) => (
               <SelectItem key={y} value={String(y)}>
-                {y}년
+                {t('yearSuffix', { year: y })}
               </SelectItem>
             ))}
           </SelectContent>
@@ -163,7 +169,7 @@ export function ShiftRosterClient({ user }: { user: SessionUser }) {
           <SelectContent>
             {monthOptions.map((m) => (
               <SelectItem key={m} value={String(m)}>
-                {m}월
+                {t('monthSuffix', { month: m })}
               </SelectItem>
             ))}
           </SelectContent>
@@ -176,7 +182,7 @@ export function ShiftRosterClient({ user }: { user: SessionUser }) {
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-sm text-orange-800">
               <AlertTriangle className="h-4 w-4" />
-              {ko.attendance.overtimeCritical} ({warnings.length}건)
+              {ta('overtimeCritical')} ({t('warningCount', { count: warnings.length })})
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
@@ -195,21 +201,21 @@ export function ShiftRosterClient({ user }: { user: SessionUser }) {
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-1">
           <span className="inline-block h-5 w-7 rounded bg-blue-100 text-center text-xs leading-5 text-blue-800">
-            고
+            {t('fixedShort')}
           </span>
-          <span className="text-xs text-muted-foreground">{ko.shift.fixed}</span>
+          <span className="text-xs text-muted-foreground">{t('fixed')}</span>
         </div>
         <div className="flex items-center gap-1">
           <span className="inline-block h-5 w-7 rounded bg-green-100 text-center text-xs leading-5 text-green-800">
-            유
+            {t('flexibleShort')}
           </span>
-          <span className="text-xs text-muted-foreground">{ko.shift.flexible}</span>
+          <span className="text-xs text-muted-foreground">{t('flexible')}</span>
         </div>
         <div className="flex items-center gap-1">
           <span className="inline-block h-5 w-7 rounded bg-purple-100 text-center text-xs leading-5 text-purple-800">
-            교
+            {t('shiftShort')}
           </span>
-          <span className="text-xs text-muted-foreground">{ko.shift.shiftWork}</span>
+          <span className="text-xs text-muted-foreground">{t('shiftWork')}</span>
         </div>
       </div>
 
@@ -217,7 +223,7 @@ export function ShiftRosterClient({ user }: { user: SessionUser }) {
       {loading && (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          <span className="ml-2 text-sm text-muted-foreground">{ko.common.loading}</span>
+          <span className="ml-2 text-sm text-muted-foreground">{tc('loading')}</span>
         </div>
       )}
 
@@ -229,7 +235,7 @@ export function ShiftRosterClient({ user }: { user: SessionUser }) {
 
       {!loading && !error && roster.length === 0 && (
         <div className="py-12 text-center text-sm text-muted-foreground">
-          {ko.common.noData}
+          {tc('noData')}
         </div>
       )}
 
@@ -240,7 +246,7 @@ export function ShiftRosterClient({ user }: { user: SessionUser }) {
             <thead>
               <tr className="bg-gray-50">
                 <th className="sticky left-0 z-10 bg-gray-50 px-4 py-2 text-left font-medium">
-                  {ko.employee.name}
+                  {te('name')}
                 </th>
                 {days.map((day) => {
                   const d = new Date(day)

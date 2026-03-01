@@ -6,48 +6,11 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Search, Plus, ChevronLeft, ChevronRight, Gavel, Filter } from 'lucide-react'
 import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-
-// ─── Label Maps ──────────────────────────────────────────
-
-const DISCIPLINARY_TYPE_LABELS: Record<string, string> = {
-  VERBAL_WARNING: '구두경고',
-  WRITTEN_WARNING: '서면경고',
-  REPRIMAND: '견책',
-  SUSPENSION: '정직',
-  PAY_CUT: '감봉',
-  DEMOTION: '강등',
-  TERMINATION: '해고',
-}
-
-const DISCIPLINARY_CATEGORY_LABELS: Record<string, string> = {
-  ATTENDANCE: '근태',
-  SAFETY: '안전',
-  QUALITY: '품질',
-  CONDUCT: '행동',
-  POLICY_VIOLATION: '정책위반',
-  MISCONDUCT: '비위',
-  HARASSMENT: '괴롭힘',
-  FRAUD: '사기',
-  OTHER: '기타',
-}
-
-const STATUS_LABELS: Record<string, string> = {
-  DISCIPLINE_ACTIVE: '활성',
-  DISCIPLINE_EXPIRED: '만료',
-  DISCIPLINE_OVERTURNED: '번복',
-}
-
-const APPEAL_LABELS: Record<string, string> = {
-  NONE: '없음',
-  FILED: '접수',
-  UNDER_REVIEW: '검토중',
-  UPHELD: '유지',
-  OVERTURNED: '번복',
-}
 
 // ─── Badge Styles ────────────────────────────────────────
 
@@ -95,6 +58,9 @@ const LIMIT = 20
 
 export default function DisciplineListClient({ user }: Props) {
   const router = useRouter()
+  const t = useTranslations('disciplinePage')
+  const tCommon = useTranslations('common')
+
   const [data, setData] = useState<DisciplinaryRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
@@ -138,6 +104,8 @@ export default function DisciplineListClient({ user }: Props) {
 
   void user // used for permission checks in server page
 
+  const CATEGORY_KEYS = ['ATTENDANCE', 'SAFETY', 'QUALITY', 'CONDUCT', 'POLICY_VIOLATION', 'MISCONDUCT', 'HARASSMENT', 'FRAUD', 'OTHER'] as const
+
   return (
     <div className="min-h-screen bg-[#FAFAFA] p-6">
       {/* Header */}
@@ -148,9 +116,9 @@ export default function DisciplineListClient({ user }: Props) {
           </div>
           <div>
             <h1 className="text-xl font-bold text-[#333]" style={{ letterSpacing: '-0.02em' }}>
-              징계관리
+              {t('title')}
             </h1>
-            <p className="text-sm text-[#999]">총 {total}건</p>
+            <p className="text-sm text-[#999]">{tCommon('total')} {total}{tCommon('items')}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -158,14 +126,14 @@ export default function DisciplineListClient({ user }: Props) {
             onClick={() => router.push('/discipline/rewards')}
             className="px-4 py-2 text-sm font-medium border border-[#E8E8E8] text-[#333] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150"
           >
-            포상관리
+            {t('rewardsManagement')}
           </button>
           <button
             onClick={() => router.push('/discipline/new')}
             className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg transition-colors duration-150"
           >
             <Plus className="w-4 h-4" />
-            징계 등록
+            {t('registerDiscipline')}
           </button>
         </div>
       </div>
@@ -177,7 +145,7 @@ export default function DisciplineListClient({ user }: Props) {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
             <input
               type="text"
-              placeholder="사원명 또는 설명으로 검색..."
+              placeholder={t('searchPlaceholder')}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="w-full pl-10 pr-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] transition-colors"
@@ -190,19 +158,19 @@ export default function DisciplineListClient({ user }: Props) {
               onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
               className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] bg-white"
             >
-              <option value="">상태 전체</option>
-              <option value="DISCIPLINE_ACTIVE">활성</option>
-              <option value="DISCIPLINE_EXPIRED">만료</option>
-              <option value="DISCIPLINE_OVERTURNED">번복</option>
+              <option value="">{t('statusAll')}</option>
+              <option value="DISCIPLINE_ACTIVE">{t('statusLabels.DISCIPLINE_ACTIVE')}</option>
+              <option value="DISCIPLINE_EXPIRED">{t('statusLabels.DISCIPLINE_EXPIRED')}</option>
+              <option value="DISCIPLINE_OVERTURNED">{t('statusLabels.DISCIPLINE_OVERTURNED')}</option>
             </select>
             <select
               value={categoryFilter}
               onChange={(e) => { setCategoryFilter(e.target.value); setPage(1) }}
               className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] bg-white"
             >
-              <option value="">분류 전체</option>
-              {Object.entries(DISCIPLINARY_CATEGORY_LABELS).map(([key, label]) => (
-                <option key={key} value={key}>{label}</option>
+              <option value="">{t('categoryAll')}</option>
+              {CATEGORY_KEYS.map((key) => (
+                <option key={key} value={key}>{t(`categoryLabels.${key}`)}</option>
               ))}
             </select>
           </div>
@@ -214,13 +182,13 @@ export default function DisciplineListClient({ user }: Props) {
         <table className="w-full">
           <thead>
             <tr className="border-b border-[#E8E8E8]">
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">사원명</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">사번</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">징계유형</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">징계분류</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">사건일자</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">상태</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">이의신청</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('employeeName')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('employeeNo')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('disciplineType')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('disciplineCategory')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('incidentDate')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{tCommon('status')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('appeal')}</th>
             </tr>
           </thead>
           <tbody>
@@ -229,14 +197,14 @@ export default function DisciplineListClient({ user }: Props) {
                 <td colSpan={7} className="px-4 py-12 text-center text-sm text-[#999]">
                   <div className="flex items-center justify-center gap-2">
                     <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#00C853] rounded-full animate-spin" />
-                    데이터를 불러오는 중...
+                    {t('loadingData')}
                   </div>
                 </td>
               </tr>
             ) : data.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-4 py-12 text-center text-sm text-[#999]">
-                  등록된 징계 기록이 없습니다.
+                  {t('emptyMessage')}
                 </td>
               </tr>
             ) : (
@@ -253,22 +221,22 @@ export default function DisciplineListClient({ user }: Props) {
                     {row.employee.employeeNo}
                   </td>
                   <td className="px-4 py-3 text-sm text-[#333]">
-                    {DISCIPLINARY_TYPE_LABELS[row.actionType] ?? row.actionType}
+                    {t(`typeLabels.${row.actionType}`, { defaultValue: row.actionType })}
                   </td>
                   <td className="px-4 py-3 text-sm text-[#333]">
-                    {DISCIPLINARY_CATEGORY_LABELS[row.category] ?? row.category}
+                    {t(`categoryLabels.${row.category}`, { defaultValue: row.category })}
                   </td>
                   <td className="px-4 py-3 text-sm text-[#666]">
                     {format(new Date(row.incidentDate), 'yyyy-MM-dd')}
                   </td>
                   <td className="px-4 py-3">
                     <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${STATUS_BADGE_STYLES[row.status] ?? 'bg-[#F5F5F5] text-[#999]'}`}>
-                      {STATUS_LABELS[row.status] ?? row.status}
+                      {t(`statusLabels.${row.status}`, { defaultValue: row.status })}
                     </span>
                   </td>
                   <td className="px-4 py-3">
                     <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${APPEAL_BADGE_STYLES[row.appealStatus] ?? 'bg-[#F5F5F5] text-[#999]'}`}>
-                      {APPEAL_LABELS[row.appealStatus] ?? row.appealStatus}
+                      {t(`appealLabels.${row.appealStatus}`, { defaultValue: row.appealStatus })}
                     </span>
                   </td>
                 </tr>
@@ -281,7 +249,7 @@ export default function DisciplineListClient({ user }: Props) {
         {totalPages > 1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-[#E8E8E8]">
             <p className="text-xs text-[#999]">
-              {total}건 중 {(page - 1) * LIMIT + 1}-{Math.min(page * LIMIT, total)}건
+              {t('paginationInfo', { total, start: (page - 1) * LIMIT + 1, end: Math.min(page * LIMIT, total) })}
             </p>
             <div className="flex items-center gap-1">
               <button

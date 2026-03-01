@@ -7,6 +7,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Loader2 } from 'lucide-react'
 import {
   BarChart, Bar, PieChart, Pie, Cell, LineChart, Line,
@@ -24,6 +25,7 @@ const COLORS = ['#2563EB', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4'
 export default function TurnoverClient() {
   const searchParams = useSearchParams()
   const companyId = searchParams.get('company_id') ?? undefined
+  const t = useTranslations('analytics.turnoverPage')
 
   const [data, setData] = useState<TurnoverData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -46,7 +48,7 @@ export default function TurnoverClient() {
 
   if (loading) {
     return (
-      <AnalyticsPageLayout title="이직 분석">
+      <AnalyticsPageLayout title={t('title')}>
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
         </div>
@@ -56,17 +58,17 @@ export default function TurnoverClient() {
 
   if (!data) {
     return (
-      <AnalyticsPageLayout title="이직 분석">
+      <AnalyticsPageLayout title={t('title')}>
         <EmptyChart />
       </AnalyticsPageLayout>
     )
   }
 
   return (
-    <AnalyticsPageLayout title="이직 분석" description="월별 퇴사 트렌드, 사유 분석, 부서별 이직률">
+    <AnalyticsPageLayout title={t('title')} description={t('description')}>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* 월별 퇴사 트렌드 + 이직률 */}
-        <ChartCard title="월별 퇴사 트렌드" className="lg:col-span-2">
+        <ChartCard title={t('monthlyTrend')} className="lg:col-span-2">
           {data.monthlyTrend.length > 0 ? (
             <ResponsiveContainer width="100%" height={350}>
               <ComposedChart data={data.monthlyTrend}>
@@ -76,8 +78,8 @@ export default function TurnoverClient() {
                 <YAxis yAxisId="right" orientation="right" unit="%" />
                 <Tooltip />
                 <Legend />
-                <Bar yAxisId="left" dataKey="resignations" fill="#EF4444" radius={[4, 4, 0, 0]} name="퇴사자" />
-                <Line yAxisId="right" dataKey="turnover_rate" stroke="#6366F1" strokeWidth={2} dot={{ r: 3 }} name="이직률(%)" />
+                <Bar yAxisId="left" dataKey="resignations" fill="#EF4444" radius={[4, 4, 0, 0]} name={t('resignees')} />
+                <Line yAxisId="right" dataKey="turnover_rate" stroke="#6366F1" strokeWidth={2} dot={{ r: 3 }} name={t('turnoverRatePercent')} />
               </ComposedChart>
             </ResponsiveContainer>
           ) : (
@@ -86,7 +88,7 @@ export default function TurnoverClient() {
         </ChartCard>
 
         {/* 퇴사 사유 분포 */}
-        <ChartCard title="퇴사 사유 분포">
+        <ChartCard title={t('reasonDistribution')}>
           {data.byReason.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
@@ -113,7 +115,7 @@ export default function TurnoverClient() {
         </ChartCard>
 
         {/* 부서별 이직률 */}
-        <ChartCard title="부서별 이직률">
+        <ChartCard title={t('byDepartment')}>
           {data.byDepartment.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={data.byDepartment} layout="vertical" margin={{ left: 80 }}>
@@ -121,7 +123,7 @@ export default function TurnoverClient() {
                 <XAxis type="number" unit="%" />
                 <YAxis type="category" dataKey="department_name" width={70} tick={{ fontSize: 12 }} />
                 <Tooltip />
-                <Bar dataKey="turnover_rate" fill="#F59E0B" radius={[0, 4, 4, 0]} name="이직률(%)" />
+                <Bar dataKey="turnover_rate" fill="#F59E0B" radius={[0, 4, 4, 0]} name={t('turnoverRatePercent')} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
@@ -130,7 +132,7 @@ export default function TurnoverClient() {
         </ChartCard>
 
         {/* 자발적/비자발적 비율 */}
-        <ChartCard title="퇴직 유형 분포" className="lg:col-span-2">
+        <ChartCard title={t('resignTypeDistribution')} className="lg:col-span-2">
           {data.byResignType.length > 0 ? (
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={data.byResignType} layout="vertical" margin={{ left: 100 }}>
@@ -138,7 +140,7 @@ export default function TurnoverClient() {
                 <XAxis type="number" />
                 <YAxis type="category" dataKey="resign_type" width={90} tick={{ fontSize: 12 }} />
                 <Tooltip />
-                <Bar dataKey="count" fill="#8B5CF6" radius={[0, 4, 4, 0]} name="건수" />
+                <Bar dataKey="count" fill="#8B5CF6" radius={[0, 4, 4, 0]} name={t('count')} />
               </BarChart>
             </ResponsiveContainer>
           ) : (

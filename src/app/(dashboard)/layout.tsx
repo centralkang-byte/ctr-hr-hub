@@ -14,6 +14,8 @@ import { Header } from '@/components/layout/Header'
 import { BrandProvider } from '@/components/shared/BrandProvider'
 import { CommandPalette } from '@/components/command-palette/CommandPalette'
 import { HrChatbot } from '@/components/hr-chatbot/HrChatbot'
+import { PwaInstallBanner } from '@/components/shared/PwaInstallBanner'
+import { ServiceWorkerRegistrar } from '@/components/shared/ServiceWorkerRegistrar'
 import { DashboardShell } from './DashboardShell'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -22,6 +24,7 @@ interface CompanyOption {
   id: string
   name: string
   nameEn: string | null
+  countryCode?: string | null
 }
 
 // ─── Layout ─────────────────────────────────────────────────
@@ -49,13 +52,13 @@ export default async function DashboardLayout({
     if (canSeeAll) {
       companies = await prisma.company.findMany({
         where: { deletedAt: null },
-        select: { id: true, name: true, nameEn: true },
+        select: { id: true, name: true, nameEn: true, countryCode: true },
         orderBy: { name: 'asc' },
       })
     } else {
       const ownCompany = await prisma.company.findUnique({
         where: { id: user.companyId },
-        select: { id: true, name: true, nameEn: true },
+        select: { id: true, name: true, nameEn: true, countryCode: true },
       })
       if (ownCompany) {
         companies = [ownCompany]
@@ -74,6 +77,8 @@ export default async function DashboardLayout({
       </div>
       <CommandPalette />
       <HrChatbot />
+      <PwaInstallBanner />
+      <ServiceWorkerRegistrar />
     </BrandProvider>
   )
 }

@@ -968,3 +968,331 @@ Settings 모듈 — 관리자 전용 UI로 법인별 커스터마이징 기능 1
 - Chunking: 500 token / 100 overlap sentence-based
 - apiClient.get/post returns `ApiResponse<T>` → access `.data`
 - Command Palette: Cmd+O, fuzzyMatch client-side, localStorage recent (max 5)
+
+---
+
+# CTR HR Hub v3.2 — STEP 8-3 Session Context
+
+**Date:** 2026-03-01
+**Status:** STEP 8-3 Complete
+**TypeScript Errors:** 0
+
+## What Was Built (STEP 8-3)
+
+Microsoft Teams Hub 연동 — 3-Channel 알림(IN_APP/EMAIL/TEAMS), Adaptive Card 승인,
+Teams Bot(휴가/급여/근태 조회), 주간 HR 다이제스트, Graph API 클라이언트, 이메일 stub.
+
+## Schema Changes
+
+### Enum Changes
+- `NotificationChannel`: + `TEAMS` 추가 (IN_APP/EMAIL/PUSH/TEAMS)
+
+### New Models (2)
+| Model | Table | Purpose |
+|-------|-------|---------|
+| TeamsIntegration | teams_integrations | 법인별 Teams 연동 설정 (tenant/team/channel/bot/digest) |
+| TeamsCardAction | teams_card_actions | Adaptive Card 액션 추적 (승인/반려 이력) |
+
+### Relation Updates
+- Company: + `teamsIntegration`, `teamsCardActions`
+- Employee: + `teamsCardActions` (TeamsCardRecipient)
+- Notification: + `teamsCardActions`
+
+## Stats
+
+| Category | Count |
+|----------|-------|
+| 신규 Lib (Graph+Cards+Bot+Actions+Digest+Schema+Email) | 8 |
+| 신규 API route | 8 |
+| 신규 UI (page + 5 components) | 6 |
+| 수정 (schema, env, notifications, constants, types, sidebar, trigger UI, schemas, .env) | 9 |
+| Bot manifest | 1 |
+| **합계** | **32** |
+
+## New Lib Files (8)
+
+| File | Purpose |
+|------|---------|
+| `src/lib/microsoft-graph.ts` | Graph API client: token cache, sendTeamsMessage, postToChannel, getUserPresence, testConnection, listChannels |
+| `src/lib/adaptive-cards.ts` | 7종 Adaptive Card JSON 빌더 (LeaveApproval, PerfEvalReminder, AttritionRisk, OnboardingTask, ChatbotEscalation, WeeklyDigest, Recognition) |
+| `src/lib/teams-bot.ts` | Bot Activity 파싱, 시그니처/HMAC 검증, 4개 명령 라우팅 (leave/paystub/attendance/help) |
+| `src/lib/teams-actions.ts` | Adaptive Card 액션 실행: 휴가승인(잔여일 차감), 온보딩완료, 챗봇에스컬레이션 |
+| `src/lib/teams-digest.ts` | 주간 다이제스트 데이터 집계 (신규입사/휴가/평가/이탈위험/승인대기) |
+| `src/lib/schemas/teams.ts` | Zod: teamsConfig, cardAction, botActivity, digestConfig, teamsRecognition |
+| `src/lib/email.ts` | AWS SES 이메일 발송 stub (dev=console.log, prod=placeholder) |
+| `src/lib/notifications.ts` | **리팩터**: 멀티채널 디스패처 (trigger channels 조회 → IN_APP/EMAIL/TEAMS 분기 발송) |
+
+## New API Routes (8)
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/api/v1/teams/webhook` | HMAC 검증 | Adaptive Card 액션 콜백 |
+| POST | `/api/v1/teams/bot` | Bot 시그니처 | Bot Framework Activity 수신 |
+| GET/PUT | `/api/v1/teams/config` | SETTINGS | TeamsIntegration 조회/수정 |
+| POST | `/api/v1/teams/config/test` | SETTINGS | Graph API 연결 테스트 |
+| POST | `/api/v1/teams/config/disconnect` | SETTINGS | Teams 연결 해제 |
+| GET | `/api/v1/teams/channels` | SETTINGS | Teams 팀/채널 목록 조회 |
+| GET/POST | `/api/v1/teams/digest` | SETTINGS | 다이제스트 미리보기/수동 전송 |
+| POST | `/api/v1/teams/recognition` | Bot 시그니처 | Teams→Recognition 생성 |
+
+## New UI Pages & Components (6)
+
+| File | Description |
+|------|-------------|
+| `(dashboard)/settings/teams/page.tsx` | SSR 래퍼 (HR_ADMIN 권한 체크) |
+| `src/components/teams/TeamsSettingsPage.tsx` | 메인 설정: 4탭 (연결/채널/봇/다이제스트) |
+| `src/components/teams/TeamsConnectionStatus.tsx` | 연결 상태 뱃지 + 테스트 + 연결 해제 |
+| `src/components/teams/TeamsChannelSelector.tsx` | Teams/채널 선택 드롭다운 (Graph API) |
+| `src/components/teams/AdaptiveCardPreview.tsx` | Adaptive Card HTML 근사 렌더러 |
+| `src/components/teams/DigestPreview.tsx` | 주간 다이제스트 미리보기 + 수동 전송 |
+
+## Modified Files (9)
+
+| File | Changes |
+|------|---------|
+| `prisma/schema.prisma` | TEAMS enum + TeamsIntegration + TeamsCardAction + Company/Employee/Notification 릴레이션 |
+| `src/lib/env.ts` | TEAMS_BOT_ID, TEAMS_BOT_PASSWORD, TEAMS_APP_ID, TEAMS_WEBHOOK_SECRET |
+| `src/lib/notifications.ts` | 멀티채널 디스패처 (trigger channels → IN_APP/EMAIL/TEAMS 분기) |
+| `src/lib/constants.ts` | MODULE.TEAMS 추가 |
+| `src/lib/schemas/notification.ts` | channels enum에 'TEAMS' 추가 |
+| `src/types/index.ts` | TeamsIntegration, TeamsCardAction 타입 export |
+| `src/components/layout/Sidebar.tsx` | Teams 연동 메뉴 추가 (MessageSquare 아이콘) |
+| `NotificationTriggersClient.tsx` | CHANNEL_OPTIONS에 Teams 추가, 뱃지 렌더링 |
+| `.env.example` | Teams 환경변수 문서화 |
+
+## Other Files (1)
+
+| File | Description |
+|------|-------------|
+| `public/teams-manifest.json` | Bot Framework 매니페스트 (sideloading용): bot commands, permissions |
+
+## Adaptive Card 템플릿 (7종)
+
+| Type | 용도 | 액션버튼 |
+|------|------|---------|
+| LEAVE_APPROVAL | 휴가 승인 요청 | 승인 / 반려 |
+| PERF_EVAL_REMINDER | 평가 기한 알림 | HR Hub에서 열기 |
+| CHATBOT_ESCALATION | 챗봇 에스컬레이션 | 담당자 배정 |
+| ATTRITION_RISK_ALERT | 이탈 위험 경고 | 상세 보기 |
+| ONBOARDING_TASK_DUE | 온보딩 태스크 기한 | 완료하기 |
+| WEEKLY_DIGEST | 주간 HR 요약 | 대시보드 열기 |
+| RECOGNITION | 동료 칭찬 | - |
+
+## Key Integration Points
+
+1. **sendNotification() 자동 확장**: 기존 모든 sendNotification() 호출 — trigger channels에 TEAMS 설정 시 자동 Teams 발송. 호출부 변경 불필요.
+2. **SsoIdentity → Employee 매핑**: Bot이 Teams AAD objectId를 SsoIdentity.providerAccountId로 조회.
+3. **Graph API**: raw fetch + Bearer token (SDK 미사용), client_credentials flow로 앱 전용 토큰 발급.
+4. **Email stub**: AWS SES placeholder — dev 환경 console.log, prod 환경 TODO.
+
+## Verification Results
+
+- `npx prisma migrate dev` — Migration 성공 (20260301032546_teams_integration)
+- `npx tsc --noEmit` — 0 errors
+- `npm run dev` — 컴파일 성공, 서버 정상 동작
+
+## Project Totals (After STEP 8-3)
+
+| Metric | Count |
+|--------|-------|
+| API route files | ~173 |
+| Dashboard pages | ~80 |
+| TypeScript/TSX source files | ~480 |
+| Prisma models | 89 |
+| Prisma enums | 71+ |
+
+---
+
+# CTR HR Hub v3.2 — STEP 8-4 Session Context
+
+**Date:** 2026-03-01
+**Status:** STEP 8-4 Complete
+**TypeScript Errors:** 0
+
+## What Was Built (STEP 8-4)
+
+Calendar 연동 + Cron Scheduler + Mobile PWA.
+1. **Outlook 캘린더 연동** — Graph API FreeBusy, 슬롯 조회/선택, Teams 미팅 자동 생성
+2. **Cron Scheduler** — 연차 촉진(3단계), 월별 조직도 스냅샷, 평가 미이행 리마인더
+3. **Mobile PWA** — manifest.json, Service Worker, 오프라인 지원, Web Push, 설치 배너
+
+## Schema Changes
+
+### InterviewSchedule 필드 추가
+- `calendarEventId` String? — Graph Calendar 이벤트 ID
+- `teamsAutoScheduled` Boolean @default(false) — Teams 자동 스케줄링 여부
+
+### New Models (2)
+| Model | Table | Purpose |
+|-------|-------|---------|
+| LeavePromotionLog | leave_promotion_logs | 연차 사용 촉진 로그 (employeeId, year, step, remainingDays) |
+| PushSubscription | push_subscriptions | Web Push 구독 (endpoint, p256dh, auth) |
+
+### Employee Relation 추가
+- `leavePromotionLogs LeavePromotionLog[]`
+- `pushSubscriptions PushSubscription[]`
+
+## Stats
+
+| Category | Count |
+|----------|-------|
+| 신규 Lib | 4 (calendar-scheduler, web-push, cron-auth, org-snapshot-builder) |
+| 수정 Lib | 1 (env.ts) |
+| 신규 API route | 7 |
+| 신규 UI component | 3 (InterviewCalendarScheduler, PwaInstallBanner, ServiceWorkerRegistrar) |
+| 수정 UI | 2 (InterviewListClient, OrgClient) |
+| PWA Static | 3 (manifest.json, sw.js, offline page) |
+| 수정 Config | 3 (layout.tsx, next.config.mjs, .env.example) |
+| 수정 Types | 1 (types/index.ts) |
+| **합계** | **25** |
+
+## New Lib Files (4)
+
+| File | Purpose |
+|------|---------|
+| `src/lib/calendar-scheduler.ts` | Graph Calendar API: getFreeBusy, findCommonSlots, createCalendarEvent, updateCalendarEvent, cancelCalendarEvent, getNextBusinessDays |
+| `src/lib/web-push.ts` | Web Push VAPID 래퍼: sendWebPush() |
+| `src/lib/cron-auth.ts` | Cron 인증: verifyCronSecret(req) — x-cron-secret 헤더 검증 |
+| `src/lib/org-snapshot-builder.ts` | 스냅샷 데이터 구성 + upsert 공유 함수 (cron + manual) |
+
+## New API Routes (7)
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/api/v1/recruitment/interviews/[id]/calendar/available-slots` | RECRUITMENT:VIEW | 면접관 빈시간 조회 |
+| POST | `/api/v1/recruitment/interviews/[id]/calendar` | RECRUITMENT:UPDATE | 캘린더 이벤트 생성 |
+| PUT | `/api/v1/recruitment/interviews/[id]/calendar` | RECRUITMENT:UPDATE | 캘린더 이벤트 변경 |
+| DELETE | `/api/v1/recruitment/interviews/[id]/calendar` | RECRUITMENT:UPDATE | 캘린더 이벤트 취소 |
+| POST | `/api/v1/cron/leave-promotion` | x-cron-secret | 연차 촉진 (KR, step 1/2/3) |
+| POST | `/api/v1/cron/org-snapshot` | x-cron-secret | 월별 조직도 스냅샷 |
+| POST | `/api/v1/cron/eval-reminder` | x-cron-secret | 평가 미이행 리마인더 |
+| POST/DELETE | `/api/v1/push/subscribe` | 로그인 사용자 | Push 구독 등록/해제 |
+| GET | `/api/v1/push/vapid-key` | 로그인 사용자 | VAPID public key |
+
+## New UI Components (3)
+
+| File | Description |
+|------|-------------|
+| `src/components/recruitment/InterviewCalendarScheduler.tsx` | 캘린더 스케줄링 Dialog: 슬롯 조회→선택→예약, 기존 이벤트 관리(변경/취소), Teams 링크 표시 |
+| `src/components/shared/PwaInstallBanner.tsx` | PWA 설치 유도 배너 (모바일 only, beforeinstallprompt) |
+| `src/components/shared/ServiceWorkerRegistrar.tsx` | SW 등록 + Push 구독 |
+
+## Modified UI (2)
+
+| File | Changes |
+|------|---------|
+| `InterviewListClient.tsx` | 캘린더 컬럼 추가 (InterviewCalendarScheduler), calendarEventId/teamsAutoScheduled 타입 |
+| `OrgClient.tsx` | DatePicker(월 단위) 추가, 스냅샷 조회 모드, buildSnapshotTree, 스냅샷 배너 |
+
+## PWA Files (3)
+
+| File | Description |
+|------|-------------|
+| `public/manifest.json` | PWA manifest (name, icons, theme_color: #2563EB) |
+| `public/sw.js` | Service Worker: cache-first(static), network-first(API), push handler, notification click |
+| `src/app/offline/page.tsx` | 오프라인 폴백 페이지 |
+
+## Config Changes
+
+- `src/app/layout.tsx` — manifest, themeColor, appleWebApp metadata 추가
+- `src/app/(dashboard)/layout.tsx` — PwaInstallBanner, ServiceWorkerRegistrar 추가
+- `next.config.mjs` — SW/manifest 헤더 설정
+- `src/lib/env.ts` — CRON_SECRET, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, WEB_PUSH_EMAIL
+- `src/types/index.ts` — LeavePromotionLog, PushSubscription export
+- `.env.example` — CRON_SECRET, VAPID_* 환경변수 문서화
+
+## NPM Dependencies Added
+- `web-push` + `@types/web-push`
+
+## Key Patterns
+
+- **Cron 인증**: `verifyCronSecret(req)` — `x-cron-secret` 헤더 vs `env.CRON_SECRET`
+- **Leave promotion idempotency**: `@@unique([employeeId, year, step])` — duplicate create → catch ignore
+- **Org snapshot reuse**: `buildOrgSnapshot()` 공유 함수 (cron route + manual snapshots route)
+- **Calendar scheduling**: Graph API `getSchedule` → `findCommonSlots()` → `createEvent` with `isOnlineMeeting: true`
+- **PWA**: 수동 구현 (no next-pwa), network-first for API, cache-first for static
+
+## Project Totals (After STEP 8-4)
+
+| Metric | Count |
+|--------|-------|
+| API route files | ~182 |
+| Dashboard pages | ~82 |
+| TypeScript/TSX source files | ~495 |
+| Prisma models | 91 |
+| Prisma enums | 71+ |
+
+---
+
+# STEP 9-1: i18n 국제화 (7개 언어) Session Context
+
+**Date:** 2026-03-01
+**Status:** Complete
+**TypeScript Errors:** 0
+
+## What Was Built
+
+Complete internationalization (i18n) system for CTR HR Hub using `next-intl`, supporting 7 languages across 6 global subsidiaries.
+
+### Language Coverage
+
+| 법인 | Main | Sub | 설명 |
+|------|------|-----|------|
+| CTR-KR | ko | en | 한국 본사 → 한국어 기본 |
+| CTR-CN | en | zh | 중국 → 영어 기본, 중국어 보조 |
+| CTR-RU | en | ru | 러시아 → 영어 기본, 러시아어 보조 |
+| CTR-US | en | — | 미국 → 영어만 |
+| CTR-VN | en | vi | 베트남 → 영어 기본, 베트남어 보조 |
+| CTR-MX | en | es | 멕시코 → 영어 기본, 스페인어 보조 |
+
+## Architecture
+
+- **Library:** `next-intl` (cookie-based, no URL path routing)
+- **Locale Resolution:** Cookie `NEXT_LOCALE` → Company.locale → `en` fallback
+- **Full Translations:** ko, en (~2500 keys each, 20+ namespaces)
+- **Stub Translations:** zh, ru, vi, es, pt (English fallback)
+
+## Files Created (14 new)
+
+| File | Description |
+|------|-------------|
+| `messages/ko.json` | 한국어 번역 (~2500키) |
+| `messages/en.json` | 영어 번역 (~2500키) |
+| `messages/zh.json` | 중국어 stub (en 복사) |
+| `messages/ru.json` | 러시아어 stub (en 복사) |
+| `messages/vi.json` | 베트남어 stub (en 복사) |
+| `messages/es.json` | 스페인어 stub (en 복사) |
+| `messages/pt.json` | 포르투갈어 stub (en 복사) |
+| `src/i18n/config.ts` | 로케일 설정, 타입, 이름/플래그 |
+| `src/i18n/request.ts` | getRequestConfig (쿠키 기반) |
+| `src/app/api/v1/locale/route.ts` | POST: NEXT_LOCALE 쿠키 설정 |
+| `src/lib/i18n/formatters.ts` | formatCurrency/Date/Number |
+| `src/lib/i18n/locale-config.ts` | getCompanyLocales 헬퍼 |
+| `src/components/layout/LanguageSwitcher.tsx` | 언어 전환 UI |
+
+## Files Modified (~97)
+
+- `next.config.mjs` — createNextIntlPlugin 래핑
+- `src/app/layout.tsx` — NextIntlClientProvider + 동적 lang
+- `src/app/(dashboard)/layout.tsx` — countryCode 전달
+- `src/app/(dashboard)/DashboardShell.tsx` — countryCode 전달
+- `src/components/layout/Sidebar.tsx` — label → labelKey + t() 호출
+- `src/components/layout/Header.tsx` — 번역 + LanguageSwitcher 추가
+- `src/lib/i18n/ko.ts` — @deprecated 표시
+- **~88 Client.tsx 페이지** — 하드코딩 한국어 → useTranslations() 호출
+
+## Translation Namespaces (20+)
+
+common, auth, menu, employee, attendance, leave, terminal, holiday, shift, performance, recruitment, salary, benefits, training, discipline, onboarding, offboarding, org, payroll, analytics, notification, succession, settings, ai, error, format, orgChanges, contractRules, profileRequests, compensation, payrollPage, payrollMe, payStubDetail, payrollReview, disciplinePage, disciplineDetail, disciplineForm, rewardsPage, rewardDetail, rewardForm
+
+## Key Patterns
+
+- **Cookie-based locale:** `NEXT_LOCALE` cookie, 365-day max-age, SameSite=Lax
+- **Company locale mapping:** `getCompanyLocales(countryCode)` → main/sub language pair
+- **Translation pattern:** `const t = useTranslations('namespace')` → `t('key')`
+- **Status label maps:** Moved inside component functions to access `t()` hooks
+- **LanguageSwitcher:** Toggle for 2 langs, dropdown for 3+, hidden for 1
+
+## NPM Dependencies Added
+
+- `next-intl`

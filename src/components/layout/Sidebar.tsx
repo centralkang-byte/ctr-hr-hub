@@ -8,6 +8,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import {
   Users,
   Network,
@@ -52,6 +53,7 @@ import {
   FormInput,
   GitBranch,
   Mail,
+  MessageSquare,
   Gauge,
   ToggleLeft,
   Download,
@@ -60,7 +62,6 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
-import { ko } from '@/lib/i18n/ko'
 import type { Permission, SessionUser } from '@/types'
 import {
   Tooltip,
@@ -75,13 +76,13 @@ import { Separator } from '@/components/ui/separator'
 // ─── Types ──────────────────────────────────────────────────
 
 interface NavItem {
-  label: string
+  labelKey: string
   href: string
   icon: LucideIcon
 }
 
 interface NavGroup {
-  label: string
+  labelKey: string
   icon: LucideIcon
   module: string
   items: NavItem[]
@@ -96,195 +97,196 @@ interface SidebarProps {
 
 const NAV_GROUPS: NavGroup[] = [
   {
-    label: '인사관리',
+    labelKey: 'hrManagement',
     icon: Users,
     module: MODULE.EMPLOYEES,
     items: [
-      { label: '사원목록', href: '/employees', icon: Users },
-      { label: '내 프로필', href: '/employees/me', icon: UserCircle },
-      { label: '조직도', href: '/org', icon: Network },
-      { label: '직급/직책', href: '/org/grades', icon: Shield },
+      { labelKey: 'employeeList', href: '/employees', icon: Users },
+      { labelKey: 'myProfile', href: '/employees/me', icon: UserCircle },
+      { labelKey: 'orgChart', href: '/org', icon: Network },
+      { labelKey: 'grades', href: '/org/grades', icon: Shield },
     ],
   },
   {
-    label: '근태관리',
+    labelKey: 'attendanceManagement',
     icon: Clock,
     module: MODULE.ATTENDANCE,
     items: [
-      { label: '내 근태', href: '/attendance', icon: Clock },
-      { label: '팀 근태', href: '/attendance/team', icon: Users },
-      { label: '전체 근태', href: '/attendance/admin', icon: BarChart3 },
+      { labelKey: 'myAttendance', href: '/attendance', icon: Clock },
+      { labelKey: 'teamAttendance', href: '/attendance/team', icon: Users },
+      { labelKey: 'allAttendance', href: '/attendance/admin', icon: BarChart3 },
     ],
   },
   {
-    label: '휴가관리',
+    labelKey: 'leaveManagement',
     icon: CalendarDays,
     module: MODULE.LEAVE,
     items: [
-      { label: '내 휴가', href: '/leave', icon: CalendarDays },
-      { label: '팀 휴가', href: '/leave/team', icon: Users },
-      { label: '휴가 관리', href: '/leave/admin', icon: BarChart3 },
+      { labelKey: 'myLeave', href: '/leave', icon: CalendarDays },
+      { labelKey: 'teamLeave', href: '/leave/team', icon: Users },
+      { labelKey: 'leaveAdmin', href: '/leave/admin', icon: BarChart3 },
     ],
   },
   {
-    label: '성과관리',
+    labelKey: 'performanceManagement',
     icon: Target,
     module: MODULE.PERFORMANCE,
     items: [
-      { label: '성과 대시보드', href: '/performance', icon: Target },
-      { label: '목표관리', href: '/performance/goals', icon: ClipboardCheck },
-      { label: '팀 목표', href: '/performance/team-goals', icon: Users },
-      { label: '성과 결과', href: '/performance/results', icon: BarChart3 },
-      { label: '1:1 미팅', href: '/performance/one-on-one', icon: Handshake },
-      { label: '역량평가', href: '/performance/competency', icon: BarChart3 },
+      { labelKey: 'performanceDashboard', href: '/performance', icon: Target },
+      { labelKey: 'goalManagement', href: '/performance/goals', icon: ClipboardCheck },
+      { labelKey: 'teamGoals', href: '/performance/team-goals', icon: Users },
+      { labelKey: 'performanceResults', href: '/performance/results', icon: BarChart3 },
+      { labelKey: 'oneOnOne', href: '/performance/one-on-one', icon: Handshake },
+      { labelKey: 'competencyEval', href: '/performance/competency', icon: BarChart3 },
     ],
   },
   {
-    label: '연봉/보상',
+    labelKey: 'compensationSalary',
     icon: Banknote,
     module: MODULE.COMPENSATION,
     items: [
-      { label: '연봉 조정', href: '/compensation', icon: Banknote },
+      { labelKey: 'salaryAdjustment', href: '/compensation', icon: Banknote },
     ],
   },
   {
-    label: '분석',
+    labelKey: 'analyticsSection',
     icon: BarChart3,
     module: MODULE.ANALYTICS,
     items: [
-      { label: '전사 개요', href: '/analytics', icon: LayoutDashboard },
-      { label: '인력 분석', href: '/analytics/workforce', icon: Users },
-      { label: '이직 분석', href: '/analytics/turnover', icon: TrendingDown },
-      { label: '성과 분석', href: '/analytics/performance', icon: Target },
-      { label: '근태 분석', href: '/analytics/attendance', icon: Clock },
-      { label: '채용 분석', href: '/analytics/recruitment', icon: Briefcase },
-      { label: '보상 분석', href: '/analytics/compensation', icon: Banknote },
-      { label: '팀 건강', href: '/analytics/team-health', icon: Heart },
-      { label: '이탈 위험', href: '/analytics/attrition', icon: AlertTriangle },
-      { label: 'AI 보고서', href: '/analytics/report', icon: Sparkles },
+      { labelKey: 'companyOverview', href: '/analytics', icon: LayoutDashboard },
+      { labelKey: 'workforceAnalysis', href: '/analytics/workforce', icon: Users },
+      { labelKey: 'turnoverAnalysis', href: '/analytics/turnover', icon: TrendingDown },
+      { labelKey: 'performanceAnalysis', href: '/analytics/performance', icon: Target },
+      { labelKey: 'attendanceAnalysis', href: '/analytics/attendance', icon: Clock },
+      { labelKey: 'recruitmentAnalysis', href: '/analytics/recruitment', icon: Briefcase },
+      { labelKey: 'compensationAnalysis', href: '/analytics/compensation', icon: Banknote },
+      { labelKey: 'teamHealth', href: '/analytics/team-health', icon: Heart },
+      { labelKey: 'attritionRisk', href: '/analytics/attrition', icon: AlertTriangle },
+      { labelKey: 'aiReport', href: '/analytics/report', icon: Sparkles },
     ],
   },
   {
-    label: '급여관리',
+    labelKey: 'payrollManagement',
     icon: Wallet,
     module: MODULE.PAYROLL,
     items: [
-      { label: '급여 정산', href: '/payroll', icon: Wallet },
-      { label: '내 급여명세서', href: '/payroll/me', icon: FileText },
+      { labelKey: 'payrollProcessing', href: '/payroll', icon: Wallet },
+      { labelKey: 'myPayStub', href: '/payroll/me', icon: FileText },
     ],
   },
   {
-    label: '채용관리',
+    labelKey: 'recruitmentManagement',
     icon: UserPlus,
     module: MODULE.RECRUITMENT,
     items: [
-      { label: '채용공고', href: '/recruitment', icon: UserPlus },
-      { label: '채용 대시보드', href: '/recruitment/dashboard', icon: BarChart3 },
+      { labelKey: 'jobPostings', href: '/recruitment', icon: UserPlus },
+      { labelKey: 'recruitmentDashboard', href: '/recruitment/dashboard', icon: BarChart3 },
     ],
   },
   {
-    label: '징계·포상',
+    labelKey: 'disciplineRewards',
     icon: Gavel,
     module: MODULE.DISCIPLINE,
     items: [
-      { label: '징계관리', href: '/discipline', icon: Gavel },
-      { label: '포상관리', href: '/discipline/rewards', icon: Award },
+      { labelKey: 'disciplineManagement', href: '/discipline', icon: Gavel },
+      { labelKey: 'rewardManagement', href: '/discipline/rewards', icon: Award },
     ],
   },
   {
-    label: '온보딩',
+    labelKey: 'onboarding',
     icon: UserCheck,
     module: MODULE.ONBOARDING,
     items: [
-      { label: '온보딩 대시보드', href: '/onboarding', icon: UserCheck },
-      { label: '내 온보딩', href: '/onboarding/me', icon: UserCircle },
-      { label: '체크인', href: '/onboarding/checkin', icon: Smile },
-      { label: '체크인 현황', href: '/onboarding/checkins', icon: ListChecks },
+      { labelKey: 'onboardingDashboard', href: '/onboarding', icon: UserCheck },
+      { labelKey: 'myOnboarding', href: '/onboarding/me', icon: UserCircle },
+      { labelKey: 'checkin', href: '/onboarding/checkin', icon: Smile },
+      { labelKey: 'checkinStatus', href: '/onboarding/checkins', icon: ListChecks },
     ],
   },
   {
-    label: '퇴직관리',
+    labelKey: 'offboarding',
     icon: UserMinus,
     module: MODULE.OFFBOARDING,
     items: [
-      { label: '퇴직 대시보드', href: '/offboarding', icon: UserMinus },
+      { labelKey: 'offboardingDashboard', href: '/offboarding', icon: UserMinus },
     ],
   },
   {
-    label: '교육관리',
+    labelKey: 'trainingManagement',
     icon: GraduationCap,
     module: MODULE.TRAINING,
     items: [
-      { label: '교육과정', href: '/training', icon: GraduationCap },
-      { label: '수강현황', href: '/training/enrollments', icon: ListChecks },
+      { labelKey: 'courses', href: '/training', icon: GraduationCap },
+      { labelKey: 'enrollmentStatus', href: '/training/enrollments', icon: ListChecks },
     ],
   },
   {
-    label: '복리후생',
+    labelKey: 'benefitsWelfare',
     icon: Gift,
     module: MODULE.BENEFITS,
     items: [
-      { label: '복리후생정책', href: '/benefits', icon: Gift },
-      { label: '신청현황', href: '/benefits/enrollments', icon: ListChecks },
+      { labelKey: 'benefitsPolicy', href: '/benefits', icon: Gift },
+      { labelKey: 'enrollmentApplications', href: '/benefits/enrollments', icon: ListChecks },
     ],
   },
   {
-    label: '매니저 허브',
+    labelKey: 'managerHub',
     icon: BarChart3,
     module: MODULE.EMPLOYEES,
     items: [
-      { label: '팀 인사이트', href: '/manager-hub', icon: BarChart3 },
+      { labelKey: 'teamInsights', href: '/manager-hub', icon: BarChart3 },
     ],
   },
   {
-    label: '후계자 관리',
+    labelKey: 'successionPlanning',
     icon: Crown,
     module: MODULE.SUCCESSION,
     items: [
-      { label: '핵심직책', href: '/succession', icon: Crown },
+      { labelKey: 'keyPositions', href: '/succession', icon: Crown },
     ],
   },
   {
-    label: '칭찬/인정',
+    labelKey: 'recognition',
     icon: Heart,
     module: MODULE.PERFORMANCE,
     items: [
-      { label: '칭찬보내기', href: '/performance/recognition', icon: Heart },
-      { label: '칭찬현황', href: '/performance/recognition/list', icon: ListChecks },
+      { labelKey: 'sendRecognition', href: '/performance/recognition', icon: Heart },
+      { labelKey: 'recognitionStatus', href: '/performance/recognition/list', icon: ListChecks },
     ],
   },
   {
-    label: '시스템설정',
+    labelKey: 'systemSettings',
     icon: Settings,
     module: MODULE.SETTINGS,
     items: [
-      { label: '회사설정', href: '/settings', icon: Settings },
-      { label: '권한관리', href: '/settings/roles', icon: Shield },
-      { label: '근무스케줄', href: '/settings/work-schedules', icon: CalendarClock },
-      { label: '공휴일', href: '/settings/holidays', icon: CalendarCheck },
-      { label: '단말기', href: '/settings/terminals', icon: Monitor },
-      { label: '휴가정책', href: '/settings/leave-policies', icon: CalendarDays },
-      { label: '교대근무', href: '/settings/shift-roster', icon: Clock },
-      { label: '온보딩 설정', href: '/settings/onboarding', icon: UserCheck },
-      { label: '퇴직 체크리스트', href: '/settings/offboarding', icon: UserMinus },
-      { label: '정보변경 요청', href: '/settings/profile-requests', icon: ClipboardCheck },
-      { label: '평가 사이클', href: '/settings/performance-cycles', icon: Target },
-      { label: '역량 라이브러리', href: '/settings/competencies', icon: Target },
-      { label: '급여 밴드', href: '/settings/salary-bands', icon: Banknote },
-      { label: '인상 매트릭스', href: '/settings/salary-matrix', icon: Banknote },
-      { label: '알림 설정', href: '/settings/notifications', icon: Bell },
-      { label: '브랜딩', href: '/settings/branding', icon: Palette },
-      { label: '용어 설정', href: '/settings/terms', icon: Languages },
-      { label: 'ENUM 관리', href: '/settings/enums', icon: List },
-      { label: '커스텀 필드', href: '/settings/custom-fields', icon: FormInput },
-      { label: '워크플로', href: '/settings/workflows', icon: GitBranch },
-      { label: '이메일 템플릿', href: '/settings/email-templates', icon: Mail },
-      { label: '평가 척도', href: '/settings/evaluation-scale', icon: Gauge },
-      { label: '모듈 ON/OFF', href: '/settings/modules', icon: ToggleLeft },
-      { label: '내보내기', href: '/settings/export-templates', icon: Download },
-      { label: '대시보드 위젯', href: '/settings/dashboard-widgets', icon: LayoutGrid },
-      { label: 'HR 문서 관리', href: '/settings/hr-documents', icon: FileText },
-      { label: '감사로그', href: '/settings/audit-log', icon: FileText },
+      { labelKey: 'companySettings', href: '/settings', icon: Settings },
+      { labelKey: 'roleManagement', href: '/settings/roles', icon: Shield },
+      { labelKey: 'workSchedule', href: '/settings/work-schedules', icon: CalendarClock },
+      { labelKey: 'holidays', href: '/settings/holidays', icon: CalendarCheck },
+      { labelKey: 'terminals', href: '/settings/terminals', icon: Monitor },
+      { labelKey: 'leavePolicy', href: '/settings/leave-policies', icon: CalendarDays },
+      { labelKey: 'shiftRoster', href: '/settings/shift-roster', icon: Clock },
+      { labelKey: 'onboardingSettings', href: '/settings/onboarding', icon: UserCheck },
+      { labelKey: 'offboardingChecklist', href: '/settings/offboarding', icon: UserMinus },
+      { labelKey: 'profileRequests', href: '/settings/profile-requests', icon: ClipboardCheck },
+      { labelKey: 'performanceCycles', href: '/settings/performance-cycles', icon: Target },
+      { labelKey: 'competencyLibrary', href: '/settings/competencies', icon: Target },
+      { labelKey: 'salaryBands', href: '/settings/salary-bands', icon: Banknote },
+      { labelKey: 'raiseMatrix', href: '/settings/salary-matrix', icon: Banknote },
+      { labelKey: 'notificationSettings', href: '/settings/notifications', icon: Bell },
+      { labelKey: 'branding', href: '/settings/branding', icon: Palette },
+      { labelKey: 'termSettings', href: '/settings/terms', icon: Languages },
+      { labelKey: 'enumManagement', href: '/settings/enums', icon: List },
+      { labelKey: 'customFields', href: '/settings/custom-fields', icon: FormInput },
+      { labelKey: 'workflows', href: '/settings/workflows', icon: GitBranch },
+      { labelKey: 'emailTemplates', href: '/settings/email-templates', icon: Mail },
+      { labelKey: 'evaluationScale', href: '/settings/evaluation-scale', icon: Gauge },
+      { labelKey: 'moduleOnOff', href: '/settings/modules', icon: ToggleLeft },
+      { labelKey: 'exportTemplates', href: '/settings/export-templates', icon: Download },
+      { labelKey: 'dashboardWidgets', href: '/settings/dashboard-widgets', icon: LayoutGrid },
+      { labelKey: 'hrDocuments', href: '/settings/hr-documents', icon: FileText },
+      { labelKey: 'teamsIntegration', href: '/settings/teams', icon: MessageSquare },
+      { labelKey: 'auditLog', href: '/settings/audit-log', icon: FileText },
     ],
   },
 ]
@@ -312,6 +314,8 @@ function canAccessModule(
 export function Sidebar({ user, onSignOut }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false)
   const pathname = usePathname()
+  const t = useTranslations('menu')
+  const tAuth = useTranslations('auth')
 
   const toggleCollapsed = useCallback(() => {
     setCollapsed((prev) => !prev)
@@ -339,7 +343,7 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
           {!collapsed && (
             <div className="min-w-0 flex-1">
               <h1 className="truncate text-sm font-bold tracking-tight text-ctr-primary">CTR HR Hub</h1>
-              <p className="truncate text-[10px] text-ctr-sidebar-text/60">{ko.auth.slogan}</p>
+              <p className="truncate text-[10px] text-ctr-sidebar-text/60">{tAuth('slogan')}</p>
             </div>
           )}
         </div>
@@ -350,11 +354,11 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
         <ScrollArea className="flex-1 py-2">
           <nav className="space-y-1 px-2">
             {filteredGroups.map((group) => (
-              <div key={group.label} className="mb-3">
+              <div key={group.labelKey} className="mb-3">
                 {/* Group label */}
                 {!collapsed && (
                   <div className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-wider text-ctr-sidebar-text/40">
-                    {group.label}
+                    {t(group.labelKey)}
                   </div>
                 )}
 
@@ -363,6 +367,8 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
                   const isActive =
                     pathname === item.href ||
                     (item.href !== '/' && pathname.startsWith(item.href))
+
+                  const label = t(item.labelKey)
 
                   const linkContent = (
                     <Link
@@ -376,7 +382,7 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
                       )}
                     >
                       <item.icon className="h-4 w-4 shrink-0" />
-                      {!collapsed && <span className="truncate">{item.label}</span>}
+                      {!collapsed && <span className="truncate">{label}</span>}
                     </Link>
                   )
 
@@ -385,7 +391,7 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
                       <Tooltip key={item.href}>
                         <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
                         <TooltipContent side="right" className="text-xs">
-                          {item.label}
+                          {label}
                         </TooltipContent>
                       </Tooltip>
                     )
@@ -405,7 +411,7 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
           type="button"
           onClick={toggleCollapsed}
           className="flex items-center justify-center py-2 hover:bg-ctr-primary/15"
-          aria-label={collapsed ? '사이드바 펼치기' : '사이드바 접기'}
+          aria-label={collapsed ? t('sidebar.expand') : t('sidebar.collapse')}
         >
           {collapsed ? (
             <ChevronRight className="h-4 w-4" />
@@ -440,13 +446,13 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
                 type="button"
                 onClick={onSignOut}
                 className="shrink-0 rounded p-1 hover:bg-ctr-primary/15"
-                aria-label={ko.auth.logout}
+                aria-label={tAuth('logout')}
               >
                 <LogOut className="h-4 w-4" />
               </button>
             </TooltipTrigger>
             <TooltipContent side="right" className="text-xs">
-              {ko.auth.logout}
+              {tAuth('logout')}
             </TooltipContent>
           </Tooltip>
         </div>

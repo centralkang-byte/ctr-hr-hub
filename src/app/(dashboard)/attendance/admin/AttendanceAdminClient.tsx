@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { apiClient } from '@/lib/api'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable } from '@/components/shared/DataTable'
@@ -30,7 +31,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { ko } from '@/lib/i18n/ko'
 import type { SessionUser } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -68,14 +68,7 @@ interface CorrectionForm {
   note: string
 }
 
-// ─── Status label map ───────────────────────────────────────
-
-const STATUS_LABELS: Record<string, string> = {
-  NORMAL: ko.attendance.normal,
-  LATE: ko.attendance.late,
-  EARLY_OUT: ko.attendance.earlyOut,
-  ABSENT: ko.attendance.absent,
-}
+// ─── Status variant map ─────────────────────────────────────
 
 const STATUS_VARIANTS: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
   NORMAL: 'default',
@@ -107,6 +100,17 @@ const INITIAL_CORRECTION: CorrectionForm = {
 
 export function AttendanceAdminClient({ user }: { user: SessionUser }) {
   void user
+
+  const t = useTranslations('attendance')
+  const tc = useTranslations('common')
+  const te = useTranslations('employee')
+
+  const STATUS_LABELS: Record<string, string> = {
+    NORMAL: t('normal'),
+    LATE: t('late'),
+    EARLY_OUT: t('earlyOut'),
+    ABSENT: t('absent'),
+  }
 
   const [data, setData] = useState<AdminAttendanceData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -185,27 +189,27 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
   const columns: DataTableColumn<AnomalyRecord>[] = [
     {
       key: 'employeeName',
-      header: ko.employee.name,
+      header: te('name'),
       render: (row) => row.employee?.name ?? '—',
     },
     {
       key: 'employeeNo',
-      header: ko.employee.employeeCode,
+      header: te('employeeCode'),
       render: (row) => row.employee?.employeeNo ?? '—',
     },
     {
       key: 'clockIn',
-      header: ko.attendance.clockIn,
+      header: t('clockIn'),
       render: (row) => formatTime(row.clockIn),
     },
     {
       key: 'clockOut',
-      header: ko.attendance.clockOut,
+      header: t('clockOut'),
       render: (row) => formatTime(row.clockOut),
     },
     {
       key: 'status',
-      header: ko.attendance.status,
+      header: t('status'),
       render: (row) => (
         <Badge variant={STATUS_VARIANTS[row.status] ?? 'outline'}>
           {STATUS_LABELS[row.status] ?? row.status}
@@ -214,7 +218,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
     },
     {
       key: 'workType',
-      header: ko.attendance.workType,
+      header: t('workType'),
     },
   ]
 
@@ -222,14 +226,14 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={ko.attendance.adminAttendance} />
+      <PageHeader title={t('adminAttendance')} />
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              전체 인원
+              {t('totalEmployees')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -240,7 +244,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              {ko.attendance.clockIn}
+              {t('clockIn')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -256,7 +260,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              {ko.attendance.late}
+              {t('late')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -269,7 +273,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              {ko.attendance.absent}
+              {t('absent')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -284,7 +288,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
-            {ko.attendance.workHours} (평균)
+            {t('averageWorkHours')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -301,7 +305,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
         loading={loading}
         rowKey={(row) => (row as unknown as AnomalyRecord).id}
         onRowClick={(row) => handleRowClick(row as unknown as AnomalyRecord)}
-        emptyMessage={ko.common.noData}
+        emptyMessage={tc('noData')}
       />
 
       {/* Correction dialog */}
@@ -309,13 +313,13 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {ko.attendance.correction} — {selectedAnomaly?.employee?.name ?? ''}
+              {t('correction')} — {selectedAnomaly?.employee?.name ?? ''}
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="correction-clockIn">{ko.attendance.clockIn}</Label>
+              <Label htmlFor="correction-clockIn">{t('clockIn')}</Label>
               <Input
                 id="correction-clockIn"
                 type="datetime-local"
@@ -325,7 +329,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="correction-clockOut">{ko.attendance.clockOut}</Label>
+              <Label htmlFor="correction-clockOut">{t('clockOut')}</Label>
               <Input
                 id="correction-clockOut"
                 type="datetime-local"
@@ -335,50 +339,50 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
             </div>
 
             <div className="space-y-2">
-              <Label>{ko.attendance.status}</Label>
+              <Label>{t('status')}</Label>
               <Select
                 value={correction.status}
                 onValueChange={(v) => setCorrection((prev) => ({ ...prev, status: v }))}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={ko.common.selectPlaceholder} />
+                  <SelectValue placeholder={tc('selectPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="NORMAL">{ko.attendance.normal}</SelectItem>
-                  <SelectItem value="LATE">{ko.attendance.late}</SelectItem>
-                  <SelectItem value="EARLY_OUT">{ko.attendance.earlyOut}</SelectItem>
-                  <SelectItem value="ABSENT">{ko.attendance.absent}</SelectItem>
+                  <SelectItem value="NORMAL">{t('normal')}</SelectItem>
+                  <SelectItem value="LATE">{t('late')}</SelectItem>
+                  <SelectItem value="EARLY_OUT">{t('earlyOut')}</SelectItem>
+                  <SelectItem value="ABSENT">{t('absent')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label>{ko.attendance.workType}</Label>
+              <Label>{t('workType')}</Label>
               <Select
                 value={correction.workType}
                 onValueChange={(v) => setCorrection((prev) => ({ ...prev, workType: v }))}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={ko.common.selectPlaceholder} />
+                  <SelectValue placeholder={tc('selectPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="REGULAR">{ko.attendance.regular}</SelectItem>
-                  <SelectItem value="REMOTE">{ko.attendance.remote}</SelectItem>
-                  <SelectItem value="FIELD">{ko.attendance.field}</SelectItem>
-                  <SelectItem value="BUSINESS_TRIP">{ko.attendance.businessTrip}</SelectItem>
+                  <SelectItem value="REGULAR">{t('regular')}</SelectItem>
+                  <SelectItem value="REMOTE">{t('remote')}</SelectItem>
+                  <SelectItem value="FIELD">{t('field')}</SelectItem>
+                  <SelectItem value="BUSINESS_TRIP">{t('businessTrip')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="correction-note">
-                {ko.attendance.correctionReason} <span className="text-red-500">*</span>
+                {t('correctionReason')} <span className="text-red-500">*</span>
               </Label>
               <Textarea
                 id="correction-note"
                 value={correction.note}
                 onChange={(e) => setCorrection((prev) => ({ ...prev, note: e.target.value }))}
-                placeholder={ko.attendance.correctionReason}
+                placeholder={t('correctionReason')}
                 rows={3}
               />
             </div>
@@ -386,13 +390,13 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
 
           <DialogFooter>
             <Button variant="outline" onClick={handleCloseDialog} disabled={submitting}>
-              {ko.common.cancel}
+              {tc('cancel')}
             </Button>
             <Button
               onClick={handleSubmitCorrection}
               disabled={submitting || !correction.note.trim()}
             >
-              {submitting ? ko.common.loading : ko.common.save}
+              {submitting ? tc('loading') : tc('save')}
             </Button>
           </DialogFooter>
         </DialogContent>

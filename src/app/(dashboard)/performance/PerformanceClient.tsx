@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import {
   Target,
   TrendingUp,
@@ -51,15 +52,6 @@ interface TeamMemberGoals {
 
 // ─── Status config ────────────────────────────────────────
 
-const CYCLE_STATUS_LABELS: Record<string, string> = {
-  PLANNING: '계획',
-  GOAL_SETTING: '목표설정',
-  IN_PROGRESS: '진행중',
-  EVALUATION: '평가',
-  CALIBRATION: '보정',
-  COMPLETED: '완료',
-}
-
 const CYCLE_STATUS_STYLES: Record<string, string> = {
   PLANNING: 'bg-gray-100 text-gray-700',
   GOAL_SETTING: 'bg-blue-100 text-blue-700',
@@ -67,13 +59,6 @@ const CYCLE_STATUS_STYLES: Record<string, string> = {
   EVALUATION: 'bg-yellow-100 text-yellow-700',
   CALIBRATION: 'bg-purple-100 text-purple-700',
   COMPLETED: 'bg-gray-200 text-gray-600',
-}
-
-const GOAL_STATUS_LABELS: Record<string, string> = {
-  DRAFT: '작성중',
-  PENDING_APPROVAL: '승인대기',
-  APPROVED: '승인',
-  REJECTED: '반려',
 }
 
 // ─── Helpers ──────────────────────────────────────────────
@@ -87,25 +72,10 @@ function formatDate(dateStr: string | null): string {
   })
 }
 
-function getNextDeadline(cycle: CycleInfo | null): string {
-  if (!cycle) return '-'
-  const now = new Date()
-  const deadlines = [
-    { label: '목표 마감', date: cycle.goalDeadline },
-    { label: '평가 마감', date: cycle.evalDeadline },
-    { label: '사이클 종료', date: cycle.endDate },
-  ]
-  for (const dl of deadlines) {
-    if (dl.date && new Date(dl.date) > now) {
-      return `${dl.label}: ${formatDate(dl.date)}`
-    }
-  }
-  return '마감 없음'
-}
-
 // ─── Component ────────────────────────────────────────────
 
 export default function PerformanceClient({ user }: { user: SessionUser }) {
+  const t = useTranslations('performance')
   const [cycles, setCycles] = useState<CycleInfo[]>([])
   const [activeCycle, setActiveCycle] = useState<CycleInfo | null>(null)
   const [goals, setGoals] = useState<GoalItem[]>([])
@@ -114,6 +84,23 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
 
   const isManager = user.role === 'MANAGER'
   const isAdmin = user.role === 'HR_ADMIN' || user.role === 'SUPER_ADMIN'
+
+  // ─── Helper: next deadline ────────────────────────────
+  function getNextDeadline(cycle: CycleInfo | null): string {
+    if (!cycle) return '-'
+    const now = new Date()
+    const deadlines = [
+      { label: t('goalDeadline'), date: cycle.goalDeadline },
+      { label: t('evalDeadline'), date: cycle.evalDeadline },
+      { label: t('cycleEnd'), date: cycle.endDate },
+    ]
+    for (const dl of deadlines) {
+      if (dl.date && new Date(dl.date) > now) {
+        return `${dl.label}: ${formatDate(dl.date)}`
+      }
+    }
+    return t('noDeadline')
+  }
 
   // ─── Fetch cycles ─────────────────────────────────────
 
@@ -132,11 +119,11 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
           res.data[0] ?? null
         setActiveCycle(active)
       } catch {
-        console.error('사이클 로드 실패')
+        console.error(t('cycleLoadFailed'))
       }
     }
     fetchCycles()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ─── Fetch goals / team data ──────────────────────────
 
@@ -161,11 +148,11 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
       )
       setGoals(goalsRes.data)
     } catch {
-      console.error('데이터 로드 실패')
+      console.error(t('dataLoadFailed'))
     } finally {
       setLoading(false)
     }
-  }, [activeCycle, isManager])
+  }, [activeCycle, isManager]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     fetchData()
@@ -212,7 +199,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">성과관리</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
             {activeCycle && (
               <div className="mt-2 flex items-center gap-3">
                 <span className="text-sm text-gray-500">{activeCycle.name}</span>
@@ -221,7 +208,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                     CYCLE_STATUS_STYLES[activeCycle.status] ?? 'bg-gray-100 text-gray-700'
                   }`}
                 >
-                  {CYCLE_STATUS_LABELS[activeCycle.status] ?? activeCycle.status}
+                  {t(`cycleStatusLabels.${activeCycle.status}` as Parameters<typeof t>[0])}
                 </span>
               </div>
             )}
@@ -237,11 +224,11 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                 <Calendar className="h-5 w-5 text-ctr-secondary" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">현재 사이클</p>
+                <p className="text-sm text-gray-500">{t('currentCycle')}</p>
                 <p className="text-lg font-semibold text-gray-900">
                   {activeCycle
-                    ? (CYCLE_STATUS_LABELS[activeCycle.status] ?? activeCycle.status)
-                    : '없음'}
+                    ? t(`cycleStatusLabels.${activeCycle.status}` as Parameters<typeof t>[0])
+                    : t('noCycle')}
                 </p>
               </div>
             </div>
@@ -255,10 +242,10 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
               </div>
               <div>
                 <p className="text-sm text-gray-500">
-                  {isManager ? '팀 목표 수' : '내 목표 수'}
+                  {isManager ? t('teamGoalCount') : t('myGoalCount')}
                 </p>
                 <p className="text-lg font-semibold text-gray-900">
-                  {isManager ? teamGoalCount : myGoalCount}개
+                  {t('goalCountUnit', { count: isManager ? teamGoalCount : myGoalCount })}
                 </p>
               </div>
             </div>
@@ -271,7 +258,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                 <TrendingUp className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">평균 달성률</p>
+                <p className="text-sm text-gray-500">{t('avgAchievement')}</p>
                 <p className="text-lg font-semibold text-gray-900">
                   {isManager ? teamAvgProgress : avgProgress}%
                 </p>
@@ -286,7 +273,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                 <ClipboardList className="h-5 w-5 text-orange-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">다음 마감</p>
+                <p className="text-sm text-gray-500">{t('nextDeadline')}</p>
                 <p className="text-sm font-semibold text-gray-900">
                   {getNextDeadline(activeCycle)}
                 </p>
@@ -305,17 +292,17 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
             {!isManager && !isAdmin && (
               <section className="mb-8">
                 <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-gray-900">내 목표</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">{t('myGoals')}</h2>
                   <Link
                     href="/performance/goals"
                     className="flex items-center gap-1 text-sm font-medium text-ctr-secondary hover:underline"
                   >
-                    전체보기 <ChevronRight className="h-4 w-4" />
+                    {t('viewAll')} <ChevronRight className="h-4 w-4" />
                   </Link>
                 </div>
                 {goals.length === 0 ? (
                   <div className="rounded-lg border border-gray-200 bg-white p-8 text-center text-gray-500">
-                    설정된 목표가 없습니다.
+                    {t('noGoals')}
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -342,11 +329,11 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                                         : 'bg-gray-100 text-gray-700'
                                 }`}
                               >
-                                {GOAL_STATUS_LABELS[goal.status] ?? goal.status}
+                                {t(`goalStatusLabels.${goal.status}` as Parameters<typeof t>[0])}
                               </span>
                             </div>
                             <span className="text-sm text-gray-500">
-                              비중 {goal.weight}%
+                              {t('weightLabel', { weight: goal.weight })}
                             </span>
                           </div>
                           <div className="flex items-center gap-3">
@@ -374,18 +361,18 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-lg font-semibold text-gray-900">
                     <Users className="mr-2 inline-block h-5 w-5" />
-                    팀 현황
+                    {t('teamStatus')}
                   </h2>
                   <Link
                     href="/performance/goals"
                     className="flex items-center gap-1 text-sm font-medium text-ctr-secondary hover:underline"
                   >
-                    팀 목표 관리 <ChevronRight className="h-4 w-4" />
+                    {t('manageTeamGoals')} <ChevronRight className="h-4 w-4" />
                   </Link>
                 </div>
                 {teamData.length === 0 ? (
                   <div className="rounded-lg border border-gray-200 bg-white p-8 text-center text-gray-500">
-                    팀원이 없거나 목표가 없습니다.
+                    {t('noTeamMembers')}
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -405,7 +392,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                             </p>
                           </div>
                           <span className="text-sm font-semibold text-ctr-secondary">
-                            {member.goals.length}개 목표
+                            {t('goalCountWithUnit', { count: member.goals.length })}
                           </span>
                         </div>
                         <div className="flex items-center gap-3">
@@ -430,7 +417,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                 {goals.length > 0 && (
                   <div className="mt-6">
                     <h3 className="mb-3 text-base font-semibold text-gray-900">
-                      내 목표
+                      {t('myGoals')}
                     </h3>
                     <div className="space-y-3">
                       {goals.map((goal) => {
@@ -469,25 +456,25 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-lg font-semibold text-gray-900">
                     <BarChart3 className="mr-2 inline-block h-5 w-5" />
-                    전사 현황
+                    {t('companyOverview')}
                   </h2>
                   <Link
                     href="/settings/performance-cycles"
                     className="flex items-center gap-1 text-sm font-medium text-ctr-secondary hover:underline"
                   >
                     <Settings className="h-4 w-4" />
-                    사이클 관리 <ChevronRight className="h-4 w-4" />
+                    {t('manageCycles')} <ChevronRight className="h-4 w-4" />
                   </Link>
                 </div>
 
                 {/* Active cycles */}
                 <div className="mb-6">
                   <h3 className="mb-3 text-sm font-semibold text-gray-700">
-                    활성 사이클
+                    {t('activeCycles')}
                   </h3>
                   {cycles.length === 0 ? (
                     <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">
-                      등록된 사이클이 없습니다.
+                      {t('noCycles')}
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
@@ -505,7 +492,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                                 CYCLE_STATUS_STYLES[cycle.status] ?? 'bg-gray-100 text-gray-700'
                               }`}
                             >
-                              {CYCLE_STATUS_LABELS[cycle.status] ?? cycle.status}
+                              {t(`cycleStatusLabels.${cycle.status}` as Parameters<typeof t>[0])}
                             </span>
                           </div>
                           <p className="text-xs text-gray-500">
@@ -520,7 +507,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                 {/* Submission rate */}
                 <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
                   <h3 className="mb-3 text-sm font-semibold text-gray-700">
-                    전체 목표 제출률
+                    {t('overallSubmissionRate')}
                   </h3>
                   <div className="flex items-center gap-4">
                     <div className="h-3 flex-1 rounded-full bg-gray-200">
@@ -534,7 +521,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                     </span>
                   </div>
                   <p className="mt-2 text-xs text-gray-500">
-                    제출/승인: {submittedGoals}건 / 전체: {totalGoals}건
+                    {t('submissionStats', { submitted: submittedGoals, total: totalGoals })}
                   </p>
                 </div>
 
@@ -543,13 +530,13 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                   <div className="mt-6">
                     <div className="mb-3 flex items-center justify-between">
                       <h3 className="text-base font-semibold text-gray-900">
-                        내 목표
+                        {t('myGoals')}
                       </h3>
                       <Link
                         href="/performance/goals"
                         className="flex items-center gap-1 text-sm font-medium text-ctr-secondary hover:underline"
                       >
-                        전체보기 <ChevronRight className="h-4 w-4" />
+                        {t('viewAll')} <ChevronRight className="h-4 w-4" />
                       </Link>
                     </div>
                     <div className="space-y-3">

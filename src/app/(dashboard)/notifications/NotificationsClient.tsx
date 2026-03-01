@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { CheckCheck, Loader2 } from 'lucide-react'
 
 import type { SessionUser, PaginationInfo } from '@/types'
@@ -26,26 +27,28 @@ interface NotificationItem {
   createdAt: string
 }
 
-// ─── Filter tabs ────────────────────────────────────────────
-
-const TRIGGER_TABS = [
-  { label: '전체', value: '' },
-  { label: '승인', value: 'approval' },
-  { label: '성과', value: 'performance' },
-  { label: '근태', value: 'attendance' },
-  { label: '채용', value: 'recruitment' },
-  { label: '시스템', value: 'system' },
-] as const
-
-const READ_FILTERS = [
-  { label: '전체', value: '' },
-  { label: '미읽음', value: 'false' },
-  { label: '읽음', value: 'true' },
-] as const
-
 // ─── Component ──────────────────────────────────────────────
 
 export function NotificationsClient({ user }: { user: SessionUser }) {
+  const t = useTranslations('notification')
+  const tc = useTranslations('common')
+
+  // ─── Filter tabs ────────────────────────────────────────────
+  const TRIGGER_TABS = [
+    { label: t('triggerAll'), value: '' },
+    { label: t('triggerApproval'), value: 'approval' },
+    { label: t('triggerPerformance'), value: 'performance' },
+    { label: t('triggerAttendance'), value: 'attendance' },
+    { label: t('triggerRecruitment'), value: 'recruitment' },
+    { label: t('triggerSystem'), value: 'system' },
+  ] as const
+
+  const READ_FILTERS = [
+    { label: t('triggerAll'), value: '' },
+    { label: t('unread'), value: 'false' },
+    { label: t('read'), value: 'true' },
+  ] as const
+
   const [notifications, setNotifications] = useState<NotificationItem[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | undefined>()
   const [page, setPage] = useState(1)
@@ -118,8 +121,8 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="알림"
-        description="모든 알림을 확인하고 관리합니다."
+        title={t('title')}
+        description={t('description')}
         actions={
           <Button
             variant="outline"
@@ -133,7 +136,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
             ) : (
               <CheckCheck className="h-4 w-4" />
             )}
-            전체 읽기
+            {t('markAllRead')}
           </Button>
         }
       />
@@ -185,7 +188,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
           </div>
         ) : notifications.length === 0 ? (
           <div className="py-16 text-center text-sm text-muted-foreground">
-            알림이 없습니다.
+            {t('noNotifications')}
           </div>
         ) : (
           <div className="divide-y divide-slate-100">
@@ -232,7 +235,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
                         className="text-xs text-blue-600 hover:text-blue-700"
                         onClick={() => handleMarkRead(item.id)}
                       >
-                        읽음 처리
+                        {t('markAsRead')}
                       </button>
                     )}
                     {item.link && (
@@ -240,7 +243,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
                         href={item.link}
                         className="text-xs text-blue-600 hover:text-blue-700"
                       >
-                        바로가기
+                        {t('goToLink')}
                       </a>
                     )}
                   </div>
@@ -260,7 +263,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
             disabled={page <= 1}
             onClick={() => setPage((p) => p - 1)}
           >
-            이전
+            {tc('prev')}
           </Button>
           <span className="text-sm text-muted-foreground">
             {page} / {totalPages}
@@ -271,7 +274,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
             disabled={page >= totalPages}
             onClick={() => setPage((p) => p + 1)}
           >
-            다음
+            {tc('next')}
           </Button>
         </div>
       )}

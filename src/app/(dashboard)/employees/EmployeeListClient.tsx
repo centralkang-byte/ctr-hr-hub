@@ -7,6 +7,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -45,20 +46,6 @@ interface EmployeeListClientProps {
 
 // ─── Display constants ───────────────────────────────────────
 
-const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
-  FULL_TIME: '정규직',
-  CONTRACT: '계약직',
-  DISPATCH: '파견직',
-  INTERN: '인턴',
-}
-
-const STATUS_LABELS: Record<string, string> = {
-  ACTIVE: '재직',
-  ON_LEAVE: '휴직',
-  RESIGNED: '퇴직',
-  TERMINATED: '해고',
-}
-
 type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline'
 
 const STATUS_VARIANTS: Record<string, BadgeVariant> = {
@@ -75,6 +62,23 @@ const SENTINEL_ALL = '__ALL__'
 
 export function EmployeeListClient({ user }: EmployeeListClientProps) {
   const router = useRouter()
+  const t = useTranslations('employee')
+  const tc = useTranslations('common')
+
+  // ─── Translated label maps ───
+  const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
+    FULL_TIME: t('fullTime'),
+    CONTRACT: t('contract'),
+    DISPATCH: t('dispatch'),
+    INTERN: t('intern'),
+  }
+
+  const STATUS_LABELS: Record<string, string> = {
+    ACTIVE: t('statusActive'),
+    ON_LEAVE: t('statusOnLeave'),
+    RESIGNED: t('statusResigned'),
+    TERMINATED: t('statusTerminated'),
+  }
 
   // ─── Filter state ───
   const [search, setSearch] = useState('')
@@ -161,12 +165,12 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
   const columns = useMemo<DataTableColumn<EmployeeRow>[]>(() => [
     {
       key: 'employeeNo',
-      header: '사번',
+      header: t('employeeCode'),
       render: (row) => <span className="font-mono text-sm">{row.employeeNo}</span>,
     },
     {
       key: 'name',
-      header: '이름',
+      header: t('name'),
       sortable: true,
       render: (row) => (
         <div>
@@ -177,50 +181,50 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
     },
     {
       key: 'department',
-      header: '부서',
+      header: t('department'),
       sortable: true,
       render: (row) => row.department?.name ?? '-',
     },
     {
       key: 'jobGrade',
-      header: '직급',
+      header: t('jobGrade'),
       render: (row) => row.jobGrade?.name ?? '-',
     },
     {
       key: 'jobCategory',
-      header: '직군',
+      header: t('jobCategory'),
       render: (row) => row.jobCategory?.name ?? '-',
     },
     {
       key: 'hireDate',
-      header: '입사일',
+      header: t('hireDate'),
       sortable: true,
       render: (row) =>
         row.hireDate ? new Date(row.hireDate).toLocaleDateString('ko-KR') : '-',
     },
     {
       key: 'employmentType',
-      header: '고용형태',
+      header: t('employmentType'),
       render: (row) => EMPLOYMENT_TYPE_LABELS[row.employmentType] ?? row.employmentType,
     },
     {
       key: 'status',
-      header: '상태',
+      header: t('status'),
       render: (row) => (
         <Badge variant={STATUS_VARIANTS[row.status] ?? 'outline'}>
           {STATUS_LABELS[row.status] ?? row.status}
         </Badge>
       ),
     },
-  ], [])
+  ], [t, EMPLOYMENT_TYPE_LABELS, STATUS_LABELS])
 
   const isHrAdmin = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
 
   return (
     <div className="space-y-6 p-6">
       <PageHeader
-        title="직원 관리"
-        description="소속 직원을 조회하고 관리합니다."
+        title={t('title')}
+        description={t('listDescription')}
         actions={
           isHrAdmin ? (
             <Button
@@ -228,7 +232,7 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
               className="bg-ctr-primary hover:bg-ctr-primary/90"
             >
               <Plus className="mr-2 h-4 w-4" />
-              직원 등록
+              {t('newEmployee')}
             </Button>
           ) : undefined
         }
@@ -237,7 +241,7 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
       {/* ─── Filters ─── */}
       <div className="flex flex-wrap gap-3">
         <Input
-          placeholder="이름, 사번, 이메일 검색..."
+          placeholder={t('searchEmployee')}
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
           className="w-64"
@@ -251,10 +255,10 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
           }}
         >
           <SelectTrigger className="w-40">
-            <SelectValue placeholder="부서 전체" />
+            <SelectValue placeholder={t('departmentAll')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={SENTINEL_ALL}>부서 전체</SelectItem>
+            <SelectItem value={SENTINEL_ALL}>{t('departmentAll')}</SelectItem>
             {departments.map((d) => (
               <SelectItem key={d.id} value={d.id}>
                 {d.name}
@@ -271,10 +275,10 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
           }}
         >
           <SelectTrigger className="w-36">
-            <SelectValue placeholder="고용형태" />
+            <SelectValue placeholder={t('employmentType')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={SENTINEL_ALL}>고용형태 전체</SelectItem>
+            <SelectItem value={SENTINEL_ALL}>{t('employmentTypeAll')}</SelectItem>
             {Object.entries(EMPLOYMENT_TYPE_LABELS).map(([k, v]) => (
               <SelectItem key={k} value={k}>
                 {v}
@@ -291,10 +295,10 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
           }}
         >
           <SelectTrigger className="w-32">
-            <SelectValue placeholder="상태" />
+            <SelectValue placeholder={tc('status')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={SENTINEL_ALL}>상태 전체</SelectItem>
+            <SelectItem value={SENTINEL_ALL}>{t('statusAll')}</SelectItem>
             {Object.entries(STATUS_LABELS).map(([k, v]) => (
               <SelectItem key={k} value={k}>
                 {v}
@@ -316,7 +320,7 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
           <SelectContent>
             {LIMIT_OPTIONS.map((n) => (
               <SelectItem key={n} value={String(n)}>
-                {n}건
+                {n}{tc('items')}
               </SelectItem>
             ))}
           </SelectContent>
@@ -334,13 +338,13 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
         onSort={handleSort}
         onRowClick={handleRowClick}
         loading={loading}
-        emptyMessage="등록된 직원이 없습니다"
+        emptyMessage={t('emptyMessage')}
         emptyDescription={
-          isHrAdmin ? '직원 등록 버튼을 눌러 첫 직원을 추가하세요.' : undefined
+          isHrAdmin ? t('emptyDescription') : undefined
         }
         emptyAction={
           isHrAdmin
-            ? { label: '직원 등록', onClick: () => router.push('/employees/new') }
+            ? { label: t('newEmployee'), onClick: () => router.push('/employees/new') }
             : undefined
         }
         rowKey={(row) => row.id}

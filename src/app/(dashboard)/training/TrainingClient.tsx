@@ -1,12 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { GraduationCap, ListChecks } from 'lucide-react'
 import CoursesTab from '@/components/training/CoursesTab'
 import EnrollmentsTab from '@/components/training/EnrollmentsTab'
 
 export default function TrainingClient() {
+  const t = useTranslations('training')
   const [activeTab, setActiveTab] = useState('courses')
 
   return (
@@ -14,8 +16,8 @@ export default function TrainingClient() {
       {/* ─── 페이지 헤더 ─── */}
       <div className="flex items-center justify-between">
         <div>
-          <nav className="text-xs text-slate-400 mb-1">인사관리 / 교육</nav>
-          <h1 className="text-2xl font-bold text-slate-900">교육관리</h1>
+          <nav className="text-xs text-slate-400 mb-1">{t('breadcrumb')}</nav>
+          <h1 className="text-2xl font-bold text-slate-900">{t('pageTitle')}</h1>
         </div>
       </div>
 
@@ -24,11 +26,11 @@ export default function TrainingClient() {
         <TabsList className="mb-4">
           <TabsTrigger value="courses">
             <GraduationCap className="mr-1.5 h-4 w-4" />
-            교육과정
+            {t('courses')}
           </TabsTrigger>
           <TabsTrigger value="enrollments">
             <ListChecks className="mr-1.5 h-4 w-4" />
-            수강현황
+            {t('enrollmentList')}
           </TabsTrigger>
         </TabsList>
 

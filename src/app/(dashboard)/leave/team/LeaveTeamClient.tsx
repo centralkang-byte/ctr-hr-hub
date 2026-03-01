@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Check, X } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -22,7 +23,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
-import { ko } from '@/lib/i18n/ko'
 import type { SessionUser } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -56,26 +56,6 @@ const STATUS_BADGE: Record<string, string> = {
   CANCELLED: 'bg-gray-400 text-white',
 }
 
-const STATUS_LABEL: Record<string, string> = {
-  PENDING: ko.leave.pending,
-  APPROVED: ko.leave.approved,
-  REJECTED: ko.leave.rejected,
-  CANCELLED: ko.leave.cancelled,
-}
-
-const LEAVE_TYPE_LABEL: Record<string, string> = {
-  ANNUAL: ko.leave.annual,
-  SICK: ko.leave.sick,
-  MATERNITY: ko.leave.maternity,
-  PATERNITY: ko.leave.paternity,
-  BEREAVEMENT: ko.leave.bereavement,
-  SPECIAL: ko.leave.special,
-  COMPENSATORY: ko.leave.compensatory,
-  FAMILY_CARE: ko.leave.familyCare,
-  WEDDING: ko.leave.wedding,
-  MENSTRUAL: ko.leave.menstrual,
-}
-
 // ─── Helpers ────────────────────────────────────────────────
 
 function formatDate(d: string): string {
@@ -96,6 +76,29 @@ function getCurrentMonth(): string {
 
 export function LeaveTeamClient({ user }: { user: SessionUser }) {
   void user
+
+  const t = useTranslations('leave')
+  const tc = useTranslations('common')
+
+  const STATUS_LABEL: Record<string, string> = {
+    PENDING: t('pending'),
+    APPROVED: t('approved'),
+    REJECTED: t('rejected'),
+    CANCELLED: t('cancelled'),
+  }
+
+  const LEAVE_TYPE_LABEL: Record<string, string> = {
+    ANNUAL: t('annual'),
+    SICK: t('sick'),
+    MATERNITY: t('maternity'),
+    PATERNITY: t('paternity'),
+    BEREAVEMENT: t('bereavement'),
+    SPECIAL: t('special'),
+    COMPENSATORY: t('compensatory'),
+    FAMILY_CARE: t('familyCare'),
+    WEDDING: t('wedding'),
+    MENSTRUAL: t('menstrual'),
+  }
 
   const [month, setMonth] = useState(getCurrentMonth)
   const [data, setData] = useState<TeamLeaveData | null>(null)
@@ -186,14 +189,14 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
   return (
     <div className="space-y-6 p-6">
       <PageHeader
-        title={ko.leave.teamCalendar}
-        description={hasPending ? '승인 대기 요청이 있습니다' : undefined}
+        title={t('teamCalendar')}
+        description={hasPending ? t('hasPendingRequests') : undefined}
       />
 
       {/* ─── Month Selector ─── */}
       <div className="flex items-center gap-3">
         <Label htmlFor="month-selector" className="text-sm font-medium">
-          월 선택
+          {tc('selectMonth')}
         </Label>
         <input
           id="month-selector"
@@ -208,7 +211,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
       {members.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center text-sm text-muted-foreground">
-            {ko.common.noData}
+            {tc('noData')}
           </CardContent>
         </Card>
       ) : (
@@ -220,7 +223,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
             <CardContent>
               {member.requests.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  이번 달 휴가 신청 없음
+                  {t('noRequestsThisMonth')}
                 </p>
               ) : (
                 <div className="space-y-3">
@@ -258,7 +261,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                           </div>
                           <span className="text-xs text-muted-foreground">
                             {req.days}
-                            {ko.leave.days}
+                            {t('days')}
                           </span>
                         </div>
 
@@ -272,7 +275,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                               disabled={isLoading}
                             >
                               <Check className="mr-1 h-4 w-4" />
-                              {ko.leave.approve}
+                              {t('approve')}
                             </Button>
                             <Button
                               size="sm"
@@ -282,7 +285,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                               disabled={isLoading}
                             >
                               <X className="mr-1 h-4 w-4" />
-                              {ko.leave.reject}
+                              {t('reject')}
                             </Button>
                           </div>
                         )}
@@ -300,15 +303,15 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
       <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{ko.leave.reject}</DialogTitle>
+            <DialogTitle>{t('reject')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
-            <Label htmlFor="rejection-reason">{ko.leave.rejectionReason}</Label>
+            <Label htmlFor="rejection-reason">{t('rejectionReason')}</Label>
             <Textarea
               id="rejection-reason"
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
-              placeholder="반려 사유를 입력하세요"
+              placeholder={t('rejectionReasonPlaceholder')}
               rows={3}
             />
           </div>
@@ -317,7 +320,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
               variant="outline"
               onClick={() => setRejectDialogOpen(false)}
             >
-              {ko.common.cancel}
+              {tc('cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -327,8 +330,8 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
               }
             >
               {actionLoading === rejectTargetId
-                ? ko.common.loading
-                : ko.leave.reject}
+                ? tc('loading')
+                : t('reject')}
             </Button>
           </DialogFooter>
         </DialogContent>

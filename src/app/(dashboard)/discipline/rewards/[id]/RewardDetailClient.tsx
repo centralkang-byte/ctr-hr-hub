@@ -6,23 +6,13 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { ChevronLeft, Award, User, Calendar } from 'lucide-react'
 import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 
-// ─── Label Maps ──────────────────────────────────────────
-
-const REWARD_TYPE_LABELS: Record<string, string> = {
-  COMMENDATION: '표창',
-  BONUS_AWARD: '포상금',
-  PROMOTION_RECOMMENDATION: '승진추천',
-  LONG_SERVICE: '장기근속',
-  INNOVATION: '혁신상',
-  SAFETY_AWARD: '안전상',
-  CTR_VALUE_AWARD: 'CTR 핵심가치상',
-  OTHER: '기타',
-}
+// ─── Badge Styles ────────────────────────────────────────
 
 const REWARD_TYPE_BADGE_STYLES: Record<string, string> = {
   COMMENDATION: 'bg-[#E8F5E9] text-[#2E7D32]',
@@ -33,13 +23,6 @@ const REWARD_TYPE_BADGE_STYLES: Record<string, string> = {
   SAFETY_AWARD: 'bg-[#E3F2FD] text-[#2196F3]',
   PROMOTION_RECOMMENDATION: 'bg-[#E8F5E9] text-[#2E7D32]',
   OTHER: 'bg-[#F5F5F5] text-[#999]',
-}
-
-const CTR_VALUE_LABELS: Record<string, string> = {
-  CHALLENGE: '도전',
-  TRUST: '신뢰',
-  RESPONSIBILITY: '책임',
-  RESPECT: '존중',
 }
 
 const CTR_VALUE_BADGE_STYLES: Record<string, string> = {
@@ -81,6 +64,10 @@ interface Props {
 
 export default function RewardDetailClient({ user, id }: Props) {
   const router = useRouter()
+  const t = useTranslations('rewardDetail')
+  const tRewards = useTranslations('rewardsPage')
+  const tCommon = useTranslations('common')
+
   const [data, setData] = useState<RewardDetail | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -105,7 +92,7 @@ export default function RewardDetailClient({ user, id }: Props) {
       <div className="min-h-screen bg-[#FAFAFA] p-6 flex items-center justify-center">
         <div className="flex items-center gap-2 text-sm text-[#999]">
           <div className="w-5 h-5 border-2 border-[#E8E8E8] border-t-[#00C853] rounded-full animate-spin" />
-          데이터를 불러오는 중...
+          {tRewards('loadingData')}
         </div>
       </div>
     )
@@ -115,7 +102,7 @@ export default function RewardDetailClient({ user, id }: Props) {
     return (
       <div className="min-h-screen bg-[#FAFAFA] p-6">
         <div className="text-center text-sm text-[#999] py-12">
-          포상 기록을 찾을 수 없습니다.
+          {t('notFound')}
         </div>
       </div>
     )
@@ -137,15 +124,15 @@ export default function RewardDetailClient({ user, id }: Props) {
           </div>
           <div>
             <h1 className="text-xl font-bold text-[#333]" style={{ letterSpacing: '-0.02em' }}>
-              포상 상세
+              {t('title')}
             </h1>
             <div className="flex items-center gap-2 mt-0.5">
               <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${REWARD_TYPE_BADGE_STYLES[data.rewardType] ?? 'bg-[#F5F5F5] text-[#999]'}`}>
-                {REWARD_TYPE_LABELS[data.rewardType] ?? data.rewardType}
+                {tRewards(`rewardTypeLabels.${data.rewardType}`, { defaultValue: data.rewardType })}
               </span>
               {data.rewardType === 'CTR_VALUE_AWARD' && data.ctrValue && (
                 <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${CTR_VALUE_BADGE_STYLES[data.ctrValue] ?? 'bg-[#F5F5F5] text-[#999]'}`}>
-                  {CTR_VALUE_LABELS[data.ctrValue] ?? data.ctrValue}
+                  {tRewards(`ctrValueLabels.${data.ctrValue}`, { defaultValue: data.ctrValue })}
                 </span>
               )}
             </div>
@@ -160,29 +147,29 @@ export default function RewardDetailClient({ user, id }: Props) {
           {/* Reward Info */}
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
             <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-              포상 정보
+              {t('rewardInfo')}
             </h2>
             <div className="grid grid-cols-2 gap-y-4 gap-x-6">
-              <InfoItem label="포상명" value={data.title} />
-              <InfoItem label="포상유형" value={REWARD_TYPE_LABELS[data.rewardType] ?? data.rewardType} />
-              <InfoItem label="대상 사원" value={data.employee.name} />
-              <InfoItem label="부서" value={data.employee.department?.name ?? '-'} />
-              <InfoItem label="직급" value={data.employee.jobGrade?.name ?? '-'} />
+              <InfoItem label={tRewards('rewardName')} value={data.title} />
+              <InfoItem label={tRewards('rewardType')} value={tRewards(`rewardTypeLabels.${data.rewardType}`, { defaultValue: data.rewardType })} />
+              <InfoItem label={t('targetEmployee')} value={data.employee.name} />
+              <InfoItem label={tCommon('department')} value={data.employee.department?.name ?? '-'} />
+              <InfoItem label={tCommon('grade')} value={data.employee.jobGrade?.name ?? '-'} />
               <InfoItem
-                label="수여일"
+                label={tRewards('awardedDate')}
                 value={format(new Date(data.awardedDate), 'yyyy-MM-dd')}
               />
               <InfoItem
-                label="금액"
+                label={tCommon('amount')}
                 value={
                   data.amount !== null && data.amount !== undefined
-                    ? `${Number(data.amount).toLocaleString()}원`
+                    ? tRewards('amountValue', { amount: Number(data.amount).toLocaleString() })
                     : '-'
                 }
               />
-              {data.issuer && <InfoItem label="수여자" value={data.issuer.name} />}
+              {data.issuer && <InfoItem label={t('awardedBy')} value={data.issuer.name} />}
               {data.serviceYears !== null && data.serviceYears !== undefined && (
-                <InfoItem label="근속 연수" value={`${data.serviceYears}년`} />
+                <InfoItem label={t('serviceYears')} value={t('serviceYearsValue', { years: data.serviceYears })} />
               )}
             </div>
 
@@ -190,9 +177,9 @@ export default function RewardDetailClient({ user, id }: Props) {
             {data.rewardType === 'CTR_VALUE_AWARD' && data.ctrValue && (
               <div className="mt-4 p-4 bg-[#F3E5F5] rounded-lg">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-[#7B1FA2]">CTR 핵심가치:</span>
+                  <span className="text-sm font-medium text-[#7B1FA2]">{t('ctrCoreValue')}:</span>
                   <span className={`px-2 py-1 text-xs font-medium rounded ${CTR_VALUE_BADGE_STYLES[data.ctrValue] ?? ''}`}>
-                    {CTR_VALUE_LABELS[data.ctrValue] ?? data.ctrValue}
+                    {tRewards(`ctrValueLabels.${data.ctrValue}`, { defaultValue: data.ctrValue })}
                   </span>
                 </div>
               </div>
@@ -203,7 +190,7 @@ export default function RewardDetailClient({ user, id }: Props) {
           {data.description && (
             <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
               <h2 className="text-base font-bold text-[#333] mb-3" style={{ letterSpacing: '-0.02em' }}>
-                포상 사유
+                {t('reason')}
               </h2>
               <p className="text-sm text-[#333] leading-relaxed whitespace-pre-wrap">
                 {data.description}
@@ -227,11 +214,11 @@ export default function RewardDetailClient({ user, id }: Props) {
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[#999]">부서</span>
+                <span className="text-[#999]">{tCommon('department')}</span>
                 <span className="text-[#333]">{data.employee.department?.name ?? '-'}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[#999]">직급</span>
+                <span className="text-[#999]">{tCommon('grade')}</span>
                 <span className="text-[#333]">{data.employee.jobGrade?.name ?? '-'}</span>
               </div>
             </div>
@@ -241,15 +228,15 @@ export default function RewardDetailClient({ user, id }: Props) {
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
             <h3 className="text-base font-bold text-[#333] mb-4 flex items-center gap-2" style={{ letterSpacing: '-0.02em' }}>
               <Calendar className="w-4 h-4 text-[#666]" />
-              일자 정보
+              {t('dateInfo')}
             </h3>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[#999]">수여일</span>
+                <span className="text-[#999]">{tRewards('awardedDate')}</span>
                 <span className="text-[#333]">{format(new Date(data.awardedDate), 'yyyy-MM-dd')}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[#999]">등록일</span>
+                <span className="text-[#999]">{t('registeredDate')}</span>
                 <span className="text-[#333]">{format(new Date(data.createdAt), 'yyyy-MM-dd')}</span>
               </div>
             </div>

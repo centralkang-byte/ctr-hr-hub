@@ -6,32 +6,13 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { ChevronLeft, Award } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-
-// ─── Options ─────────────────────────────────────────────
-
-const REWARD_TYPE_OPTIONS = [
-  { value: 'COMMENDATION', label: '표창' },
-  { value: 'BONUS_AWARD', label: '포상금' },
-  { value: 'PROMOTION_RECOMMENDATION', label: '승진추천' },
-  { value: 'LONG_SERVICE', label: '장기근속' },
-  { value: 'INNOVATION', label: '혁신상' },
-  { value: 'SAFETY_AWARD', label: '안전상' },
-  { value: 'CTR_VALUE_AWARD', label: 'CTR 핵심가치상' },
-  { value: 'OTHER', label: '기타' },
-]
-
-const CTR_VALUE_OPTIONS = [
-  { value: 'CHALLENGE', label: '도전 (CHALLENGE)' },
-  { value: 'TRUST', label: '신뢰 (TRUST)' },
-  { value: 'RESPONSIBILITY', label: '책임 (RESPONSIBILITY)' },
-  { value: 'RESPECT', label: '존중 (RESPECT)' },
-]
 
 // ─── Schema ──────────────────────────────────────────────
 
@@ -60,10 +41,18 @@ interface Props {
   user: SessionUser
 }
 
+const REWARD_TYPE_KEYS = ['COMMENDATION', 'BONUS_AWARD', 'PROMOTION_RECOMMENDATION', 'LONG_SERVICE', 'INNOVATION', 'SAFETY_AWARD', 'CTR_VALUE_AWARD', 'OTHER'] as const
+
+const CTR_VALUE_KEYS = ['CHALLENGE', 'TRUST', 'RESPONSIBILITY', 'RESPECT'] as const
+
 // ─── Component ───────────────────────────────────────────
 
 export default function RewardFormClient({ user }: Props) {
   const router = useRouter()
+  const t = useTranslations('rewardForm')
+  const tRewards = useTranslations('rewardsPage')
+  const tCommon = useTranslations('common')
+
   const [employees, setEmployees] = useState<EmployeeOption[]>([])
   const [submitting, setSubmitting] = useState(false)
 
@@ -136,7 +125,7 @@ export default function RewardFormClient({ user }: Props) {
             <Award className="w-5 h-5 text-[#00C853]" />
           </div>
           <h1 className="text-xl font-bold text-[#333]" style={{ letterSpacing: '-0.02em' }}>
-            포상 등록
+            {t('title')}
           </h1>
         </div>
       </div>
@@ -146,17 +135,17 @@ export default function RewardFormClient({ user }: Props) {
       <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6 max-w-3xl">
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
           <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-            포상 정보
+            {t('rewardInfo')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Employee */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">대상 사원 *</label>
+              <label className="block text-sm font-medium text-[#333] mb-1">{t('targetEmployee')} *</label>
               <select
                 {...register('employeeId')}
                 className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] bg-white"
               >
-                <option value="">사원 선택</option>
+                <option value="">{t('selectEmployee')}</option>
                 {employees.map((emp) => (
                   <option key={emp.id} value={emp.id}>
                     {emp.name} ({emp.employeeNo})
@@ -170,14 +159,14 @@ export default function RewardFormClient({ user }: Props) {
 
             {/* Reward Type */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">포상유형 *</label>
+              <label className="block text-sm font-medium text-[#333] mb-1">{tRewards('rewardType')} *</label>
               <select
                 {...register('rewardType')}
                 className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] bg-white"
               >
-                <option value="">유형 선택</option>
-                {REWARD_TYPE_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                <option value="">{t('selectType')}</option>
+                {REWARD_TYPE_KEYS.map((key) => (
+                  <option key={key} value={key}>{tRewards(`rewardTypeLabels.${key}`)}</option>
                 ))}
               </select>
               {errors.rewardType && (
@@ -187,11 +176,11 @@ export default function RewardFormClient({ user }: Props) {
 
             {/* Title */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-[#333] mb-1">포상명 *</label>
+              <label className="block text-sm font-medium text-[#333] mb-1">{tRewards('rewardName')} *</label>
               <input
                 type="text"
                 {...register('title')}
-                placeholder="포상 명칭을 입력해주세요."
+                placeholder={t('rewardNamePlaceholder')}
                 className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3]"
               />
               {errors.title && (
@@ -201,7 +190,7 @@ export default function RewardFormClient({ user }: Props) {
 
             {/* Amount */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">금액 (원)</label>
+              <label className="block text-sm font-medium text-[#333] mb-1">{t('amountLabel')}</label>
               <input
                 type="number"
                 min={0}
@@ -213,7 +202,7 @@ export default function RewardFormClient({ user }: Props) {
 
             {/* Awarded Date */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">수여일 *</label>
+              <label className="block text-sm font-medium text-[#333] mb-1">{tRewards('awardedDate')} *</label>
               <input
                 type="date"
                 {...register('awardedDate')}
@@ -227,11 +216,11 @@ export default function RewardFormClient({ user }: Props) {
 
           {/* Description */}
           <div className="mt-4">
-            <label className="block text-sm font-medium text-[#333] mb-1">설명</label>
+            <label className="block text-sm font-medium text-[#333] mb-1">{tCommon('description')}</label>
             <textarea
               {...register('description')}
               rows={3}
-              placeholder="포상 사유를 입력해주세요."
+              placeholder={t('descriptionPlaceholder')}
               className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] resize-none"
             />
           </div>
@@ -241,21 +230,21 @@ export default function RewardFormClient({ user }: Props) {
         {rewardType === 'CTR_VALUE_AWARD' && (
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
             <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-              CTR 핵심가치 선택
+              {t('ctrValueSelection')}
             </h2>
             <div className="grid grid-cols-2 gap-3">
-              {CTR_VALUE_OPTIONS.map((opt) => (
+              {CTR_VALUE_KEYS.map((key) => (
                 <label
-                  key={opt.value}
+                  key={key}
                   className="flex items-center gap-3 p-3 border border-[#E8E8E8] rounded-lg cursor-pointer hover:bg-[#FAFAFA] transition-colors"
                 >
                   <input
                     type="radio"
-                    value={opt.value}
+                    value={key}
                     {...register('ctrValue')}
                     className="w-4 h-4 text-[#00C853] focus:ring-[#00C853]"
                   />
-                  <span className="text-sm text-[#333]">{opt.label}</span>
+                  <span className="text-sm text-[#333]">{t(`ctrValueOptions.${key}`)}</span>
                 </label>
               ))}
             </div>
@@ -266,15 +255,15 @@ export default function RewardFormClient({ user }: Props) {
         {rewardType === 'LONG_SERVICE' && (
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
             <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-              장기근속 정보
+              {t('longServiceInfo')}
             </h2>
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">근속 연수</label>
+              <label className="block text-sm font-medium text-[#333] mb-1">{t('serviceYearsLabel')}</label>
               <input
                 type="number"
                 min={0}
                 {...register('serviceYears')}
-                placeholder="예: 10"
+                placeholder={t('serviceYearsPlaceholder')}
                 className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3]"
               />
             </div>
@@ -288,14 +277,14 @@ export default function RewardFormClient({ user }: Props) {
             disabled={submitting}
             className="px-6 py-2.5 text-sm font-medium bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {submitting ? '등록 중...' : '포상 등록'}
+            {submitting ? t('submitting') : t('submitButton')}
           </button>
           <button
             type="button"
             onClick={() => router.back()}
             className="px-6 py-2.5 text-sm font-medium border border-[#E8E8E8] text-[#333] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150"
           >
-            취소
+            {tCommon('cancel')}
           </button>
         </div>
       </form>

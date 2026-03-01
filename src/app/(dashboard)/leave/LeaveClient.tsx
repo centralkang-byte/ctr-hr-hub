@@ -10,10 +10,10 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Plus, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import type { SessionUser, PaginationInfo } from '@/types'
 import { apiClient } from '@/lib/api'
-import { ko } from '@/lib/i18n/ko'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { Button } from '@/components/ui/button'
@@ -68,19 +68,6 @@ interface LeavePolicyLocal {
   leaveType: string
 }
 
-// ─── Form schema ────────────────────────────────────────────
-
-const requestSchema = z.object({
-  policyId: z.string().min(1, '휴가 유형을 선택해주세요'),
-  startDate: z.string().min(1, '시작일을 입력해주세요'),
-  endDate: z.string().min(1, '종료일을 입력해주세요'),
-  days: z.coerce.number().min(0.25).max(365),
-  halfDayType: z.enum(['AM', 'PM']).optional(),
-  reason: z.string().min(1, '사유를 입력해주세요').max(1000),
-})
-
-type RequestFormData = z.infer<typeof requestSchema>
-
 // ─── Status badge styles ────────────────────────────────────
 
 const statusBadgeClass: Record<string, string> = {
@@ -90,17 +77,33 @@ const statusBadgeClass: Record<string, string> = {
   CANCELLED: 'bg-gray-100 text-gray-800',
 }
 
-const statusLabel: Record<string, string> = {
-  PENDING: ko.leave.pending,
-  APPROVED: ko.leave.approved,
-  REJECTED: ko.leave.rejected,
-  CANCELLED: ko.leave.cancelled,
-}
-
 // ─── Component ──────────────────────────────────────────────
 
 export function LeaveClient({ user }: { user: SessionUser }) {
   void user
+
+  const t = useTranslations('leave')
+  const tc = useTranslations('common')
+  const te = useTranslations('employee')
+
+  // ─── Form schema (needs t for validation messages) ───
+  const requestSchema = z.object({
+    policyId: z.string().min(1, t('selectLeaveType')),
+    startDate: z.string().min(1, t('enterStartDate')),
+    endDate: z.string().min(1, t('enterEndDate')),
+    days: z.coerce.number().min(0.25).max(365),
+    halfDayType: z.enum(['AM', 'PM']).optional(),
+    reason: z.string().min(1, t('enterReason')).max(1000),
+  })
+
+  type RequestFormData = z.infer<typeof requestSchema>
+
+  const statusLabel: Record<string, string> = {
+    PENDING: t('pending'),
+    APPROVED: t('approved'),
+    REJECTED: t('rejected'),
+    CANCELLED: t('cancelled'),
+  }
 
   // ─── State ───
   const [balances, setBalances] = useState<LeaveBalanceLocal[]>([])
@@ -255,29 +258,29 @@ export function LeaveClient({ user }: { user: SessionUser }) {
   const columns: DataTableColumn<LeaveRequestLocal>[] = [
     {
       key: 'leaveType',
-      header: ko.leave.policy,
+      header: t('policy'),
       render: (row: LeaveRequestLocal) => (
         <Badge variant="outline">{row.policy?.name ?? '-'}</Badge>
       ),
     },
     {
       key: 'startDate',
-      header: ko.leave.startDate,
+      header: t('startDate'),
       render: (row: LeaveRequestLocal) => formatDate(row.startDate),
     },
     {
       key: 'endDate',
-      header: ko.leave.endDate,
+      header: t('endDate'),
       render: (row: LeaveRequestLocal) => formatDate(row.endDate),
     },
     {
       key: 'days',
-      header: ko.leave.days,
-      render: (row: LeaveRequestLocal) => `${row.days}일`,
+      header: t('days'),
+      render: (row: LeaveRequestLocal) => `${row.days}${t('dayUnit')}`,
     },
     {
       key: 'status',
-      header: ko.employee.status,
+      header: te('status'),
       render: (row: LeaveRequestLocal) => (
         <Badge className={statusBadgeClass[row.status] ?? 'bg-gray-100 text-gray-800'}>
           {statusLabel[row.status] ?? row.status}
@@ -286,7 +289,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
     },
     {
       key: 'reason',
-      header: ko.leave.reason,
+      header: t('reason'),
       render: (row: LeaveRequestLocal) => (
         <span className="max-w-[200px] truncate block" title={row.reason}>
           {row.reason.length > 30 ? `${row.reason.slice(0, 30)}...` : row.reason}
@@ -295,7 +298,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
     },
     {
       key: 'actions',
-      header: ko.common.actions,
+      header: tc('actions'),
       render: (row: LeaveRequestLocal) => {
         if (row.status !== 'PENDING' && row.status !== 'APPROVED') return null
         return (
@@ -308,7 +311,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
             {cancellingId === row.id && (
               <Loader2 className="mr-1 h-3 w-3 animate-spin" />
             )}
-            {ko.common.cancel}
+            {tc('cancel')}
           </Button>
         )
       },
@@ -319,12 +322,12 @@ export function LeaveClient({ user }: { user: SessionUser }) {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={ko.leave.title}
-        description={ko.leave.balance}
+        title={t('title')}
+        description={t('balance')}
         actions={
           <Button onClick={openRequestDialog}>
             <Plus className="mr-1 h-4 w-4" />
-            {ko.leave.request}
+            {t('request')}
           </Button>
         }
       />
@@ -353,36 +356,36 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                 >
                   {remaining}
                   <span className="ml-1 text-sm font-normal text-muted-foreground">
-                    {ko.leave.fullDay}
+                    {t('fullDay')}
                   </span>
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {ko.leave.grantedDays} {b.grantedDays}{ko.leave.fullDay} / {ko.leave.usedDays}{' '}
-                  {b.usedDays}{ko.leave.fullDay} / {ko.leave.pendingDays} {b.pendingDays}
-                  {ko.leave.fullDay}
+                  {t('grantedDays')} {b.grantedDays}{t('fullDay')} / {t('usedDays')}{' '}
+                  {b.usedDays}{t('fullDay')} / {t('pendingDays')} {b.pendingDays}
+                  {t('fullDay')}
                 </p>
               </CardContent>
             </Card>
           )
         })}
         {balances.length === 0 && !loading && (
-          <p className="py-4 text-sm text-muted-foreground">{ko.common.noData}</p>
+          <p className="py-4 text-sm text-muted-foreground">{tc('noData')}</p>
         )}
       </div>
 
       {/* ─── Section 3: Status filter + Request History ─── */}
       <div className="flex items-center gap-3">
-        <Label>{ko.common.filter}</Label>
+        <Label>{tc('filter')}</Label>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[160px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">{ko.common.all}</SelectItem>
-            <SelectItem value="PENDING">{ko.leave.pending}</SelectItem>
-            <SelectItem value="APPROVED">{ko.leave.approved}</SelectItem>
-            <SelectItem value="REJECTED">{ko.leave.rejected}</SelectItem>
-            <SelectItem value="CANCELLED">{ko.leave.cancelled}</SelectItem>
+            <SelectItem value="ALL">{tc('all')}</SelectItem>
+            <SelectItem value="PENDING">{t('pending')}</SelectItem>
+            <SelectItem value="APPROVED">{t('approved')}</SelectItem>
+            <SelectItem value="REJECTED">{t('rejected')}</SelectItem>
+            <SelectItem value="CANCELLED">{t('cancelled')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -393,7 +396,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
         loading={loading}
         pagination={pagination}
         onPageChange={setPage}
-        emptyMessage={ko.common.noData}
+        emptyMessage={tc('noData')}
         rowKey={(row) => (row as unknown as LeaveRequestLocal).id}
       />
 
@@ -401,9 +404,9 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>
-            <DialogTitle>{ko.leave.request}</DialogTitle>
+            <DialogTitle>{t('request')}</DialogTitle>
             <DialogDescription>
-              휴가를 신청합니다. 필수 항목을 모두 입력해주세요.
+              {t('requestDescription')}
             </DialogDescription>
           </DialogHeader>
 
@@ -411,14 +414,14 @@ export function LeaveClient({ user }: { user: SessionUser }) {
           <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
             {/* policyId */}
             <div className="space-y-2">
-              <Label htmlFor="leave-policy">{ko.leave.policy}</Label>
+              <Label htmlFor="leave-policy">{t('policy')}</Label>
               <Controller
                 control={control}
                 name="policyId"
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger id="leave-policy">
-                      <SelectValue placeholder={ko.common.selectPlaceholder} />
+                      <SelectValue placeholder={tc('selectPlaceholder')} />
                     </SelectTrigger>
                     <SelectContent>
                       {policies.map((p) => (
@@ -437,7 +440,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
 
             {/* startDate */}
             <div className="space-y-2">
-              <Label htmlFor="leave-start">{ko.leave.startDate}</Label>
+              <Label htmlFor="leave-start">{t('startDate')}</Label>
               <Input id="leave-start" type="date" {...register('startDate')} />
               {errors.startDate && (
                 <p className="text-sm text-destructive">{errors.startDate.message}</p>
@@ -446,7 +449,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
 
             {/* endDate */}
             <div className="space-y-2">
-              <Label htmlFor="leave-end">{ko.leave.endDate}</Label>
+              <Label htmlFor="leave-end">{t('endDate')}</Label>
               <Input id="leave-end" type="date" {...register('endDate')} />
               {errors.endDate && (
                 <p className="text-sm text-destructive">{errors.endDate.message}</p>
@@ -455,7 +458,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
 
             {/* days */}
             <div className="space-y-2">
-              <Label htmlFor="leave-days">{ko.leave.days}</Label>
+              <Label htmlFor="leave-days">{t('days')}</Label>
               <Input
                 id="leave-days"
                 type="number"
@@ -471,7 +474,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
             {/* halfDayType — only when days is 0.5 */}
             {watchedDays === 0.5 && (
               <div className="space-y-2">
-                <Label htmlFor="leave-half">{ko.leave.halfDay}</Label>
+                <Label htmlFor="leave-half">{t('halfDay')}</Label>
                 <Controller
                   control={control}
                   name="halfDayType"
@@ -481,11 +484,11 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                       onValueChange={(v) => field.onChange(v || undefined)}
                     >
                       <SelectTrigger id="leave-half">
-                        <SelectValue placeholder={ko.common.selectPlaceholder} />
+                        <SelectValue placeholder={tc('selectPlaceholder')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="AM">{ko.leave.halfDayAM}</SelectItem>
-                        <SelectItem value="PM">{ko.leave.halfDayPM}</SelectItem>
+                        <SelectItem value="AM">{t('halfDayAM')}</SelectItem>
+                        <SelectItem value="PM">{t('halfDayPM')}</SelectItem>
                       </SelectContent>
                     </Select>
                   )}
@@ -495,12 +498,12 @@ export function LeaveClient({ user }: { user: SessionUser }) {
 
             {/* reason */}
             <div className="space-y-2">
-              <Label htmlFor="leave-reason">{ko.leave.reason}</Label>
+              <Label htmlFor="leave-reason">{t('reason')}</Label>
               <Textarea
                 id="leave-reason"
                 rows={3}
                 maxLength={1000}
-                placeholder="휴가 사유를 입력해주세요"
+                placeholder={t('reasonPlaceholder')}
                 {...register('reason')}
               />
               {errors.reason && (
@@ -514,11 +517,11 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                 variant="outline"
                 onClick={() => setDialogOpen(false)}
               >
-                {ko.common.cancel}
+                {tc('cancel')}
               </Button>
               <Button type="submit" disabled={saving}>
                 {saving && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
-                {ko.leave.request}
+                {t('request')}
               </Button>
             </DialogFooter>
           </form>

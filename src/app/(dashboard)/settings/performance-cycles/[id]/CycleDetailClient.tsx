@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -26,14 +27,6 @@ interface PerformanceCycle {
   }
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  DRAFT: '초안',
-  ACTIVE: '진행중',
-  EVAL_OPEN: '평가중',
-  CALIBRATION: '캘리브레이션',
-  CLOSED: '확정',
-}
-
 const STATUS_STYLES: Record<string, string> = {
   DRAFT: 'bg-gray-100 text-gray-700',
   ACTIVE: 'bg-blue-100 text-blue-700',
@@ -42,33 +35,12 @@ const STATUS_STYLES: Record<string, string> = {
   CLOSED: 'bg-green-100 text-green-700',
 }
 
-const HALF_LABELS: Record<string, string> = {
-  H1: '상반기',
-  H2: '하반기',
-  ANNUAL: '연간',
-}
-
-const NEXT_ACTION: Record<string, string> = {
-  DRAFT: '목표설정 시작',
-  ACTIVE: '평가 시작',
-  EVAL_OPEN: '캘리브레이션 시작',
-  CALIBRATION: '결과 확정',
-}
-
-const editSchema = z.object({
-  name: z.string().min(1, '이름을 입력하세요').max(100),
-  goalStart: z.string().min(1, '시작일을 입력하세요'),
-  goalEnd: z.string().min(1, '종료일을 입력하세요'),
-  evalStart: z.string().min(1, '시작일을 입력하세요'),
-  evalEnd: z.string().min(1, '종료일을 입력하세요'),
-})
-
-type EditFormValues = z.input<typeof editSchema>
-
 export default function CycleDetailClient({ user }: { user: SessionUser }) {
   void user
   const router = useRouter()
   const pathname = usePathname()
+  const t = useTranslations('performance')
+  const tc = useTranslations('common')
   const cycleId = pathname.split('/').pop() ?? ''
 
   const [cycle, setCycle] = useState<PerformanceCycle | null>(null)
@@ -78,6 +50,16 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
   const [advancing, setAdvancing] = useState(false)
   const [confirmAdvance, setConfirmAdvance] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const editSchema = z.object({
+    name: z.string().min(1, t('validationEnterName')).max(100),
+    goalStart: z.string().min(1, t('validationEnterStartDate')),
+    goalEnd: z.string().min(1, t('validationEnterEndDate')),
+    evalStart: z.string().min(1, t('validationEnterStartDate')),
+    evalEnd: z.string().min(1, t('validationEnterEndDate')),
+  })
+
+  type EditFormValues = z.input<typeof editSchema>
 
   const {
     register,
@@ -148,7 +130,7 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
       setEditing(false)
       await fetchCycle()
     } catch (err) {
-      setError(err instanceof Error ? err.message : '저장에 실패했습니다')
+      setError(err instanceof Error ? err.message : t('saveFailed'))
     } finally {
       setSaving(false)
     }
@@ -162,7 +144,7 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
       setConfirmAdvance(false)
       await fetchCycle()
     } catch (err) {
-      setError(err instanceof Error ? err.message : '상태 변경에 실패했습니다')
+      setError(err instanceof Error ? err.message : t('statusChangeFailed'))
     } finally {
       setAdvancing(false)
     }
@@ -171,7 +153,7 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-gray-400">불러오는 중...</p>
+        <p className="text-gray-400">{t('fetchingData')}</p>
       </div>
     )
   }
@@ -179,19 +161,21 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
   if (!cycle) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
-        <p className="text-gray-400">사이클을 찾을 수 없습니다</p>
+        <p className="text-gray-400">{t('cycleNotFound')}</p>
         <button
           onClick={() => router.push('/settings/performance-cycles')}
           className="text-sm text-ctr-secondary hover:underline"
         >
-          목록으로 돌아가기
+          {t('backToList')}
         </button>
       </div>
     )
   }
 
   const isDraft = cycle.status === 'DRAFT'
-  const nextAction = NEXT_ACTION[cycle.status]
+  const nextAction = t.has(`nextActionLabels.${cycle.status}` as Parameters<typeof t.has>[0])
+    ? t(`nextActionLabels.${cycle.status}` as Parameters<typeof t>[0])
+    : null
 
   return (
     <div className="space-y-6">
@@ -207,7 +191,7 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
           <div>
             <h1 className="text-2xl font-bold text-ctr-primary">{cycle.name}</h1>
             <p className="text-sm text-gray-500 mt-0.5">
-              {cycle.year}년 {HALF_LABELS[cycle.half] ?? cycle.half}
+              {t('yearUnit', { year: cycle.year })} {t(`halfLabels.${cycle.half}` as Parameters<typeof t>[0])}
             </p>
           </div>
         </div>
@@ -217,7 +201,7 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
               onClick={() => setEditing(true)}
               className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
             >
-              수정
+              {t('editCycle')}
             </button>
           )}
           {nextAction && (
@@ -242,21 +226,21 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
       {confirmAdvance && nextAction && (
         <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-4 flex items-center justify-between">
           <p className="text-sm text-yellow-800">
-            <strong>&quot;{nextAction}&quot;</strong> 단계로 진행하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+            {t('confirmAdvance', { action: nextAction })}
           </p>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setConfirmAdvance(false)}
               className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
             >
-              취소
+              {tc('cancel')}
             </button>
             <button
               onClick={handleAdvance}
               disabled={advancing}
               className="rounded-lg bg-ctr-accent px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
             >
-              {advancing ? '처리 중...' : '확인'}
+              {advancing ? t('processing') : tc('confirm')}
             </button>
           </div>
         </div>
@@ -265,13 +249,13 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
       {/* Detail / Edit Form */}
       {editing ? (
         <form
-          
+
           onSubmit={handleSubmit(onSave as Parameters<typeof handleSubmit>[0])}
           className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm space-y-6"
         >
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">이름</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('nameColumn')}</label>
               <input
                 {...register('name')}
                 type="text"
@@ -280,7 +264,7 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
               {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">목표설정 시작일</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('goalSettingStart')}</label>
               <input
                 {...register('goalStart')}
                 type="date"
@@ -289,7 +273,7 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
               {errors.goalStart && <p className="mt-1 text-xs text-red-500">{errors.goalStart.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">목표설정 종료일</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('goalSettingEnd')}</label>
               <input
                 {...register('goalEnd')}
                 type="date"
@@ -298,7 +282,7 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
               {errors.goalEnd && <p className="mt-1 text-xs text-red-500">{errors.goalEnd.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">평가 시작일</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('evalStart')}</label>
               <input
                 {...register('evalStart')}
                 type="date"
@@ -307,7 +291,7 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
               {errors.evalStart && <p className="mt-1 text-xs text-red-500">{errors.evalStart.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">평가 종료일</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('evalEnd')}</label>
               <input
                 {...register('evalEnd')}
                 type="date"
@@ -322,7 +306,7 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
               onClick={() => { setEditing(false); setError(null) }}
               className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
             >
-              취소
+              {tc('cancel')}
             </button>
             <button
               type="submit"
@@ -330,7 +314,7 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
               className="inline-flex items-center gap-2 rounded-lg bg-ctr-primary px-4 py-2 text-sm font-medium text-white hover:bg-ctr-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Save className="h-4 w-4" />
-              {saving ? '저장 중...' : '저장'}
+              {saving ? t('saving') : tc('save')}
             </button>
           </div>
         </form>
@@ -338,33 +322,33 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {/* 상태 */}
           <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <p className="text-xs font-medium text-gray-500 mb-1">상태</p>
+            <p className="text-xs font-medium text-gray-500 mb-1">{t('statusColumn')}</p>
             <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[cycle.status] ?? 'bg-gray-100 text-gray-700'}`}>
-              {STATUS_LABELS[cycle.status] ?? cycle.status}
+              {t(`cycleStatusLabels.${cycle.status}` as Parameters<typeof t>[0])}
             </span>
           </div>
 
           {/* 유형 */}
           <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <p className="text-xs font-medium text-gray-500 mb-1">유형</p>
-            <p className="text-sm font-semibold text-gray-900">{HALF_LABELS[cycle.half] ?? cycle.half}</p>
+            <p className="text-xs font-medium text-gray-500 mb-1">{t('typeColumn')}</p>
+            <p className="text-sm font-semibold text-gray-900">{t(`halfLabels.${cycle.half}` as Parameters<typeof t>[0])}</p>
           </div>
 
           {/* 목표 수 */}
           <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <p className="text-xs font-medium text-gray-500 mb-1">목표 수</p>
+            <p className="text-xs font-medium text-gray-500 mb-1">{t('goalCount')}</p>
             <p className="text-2xl font-bold text-ctr-primary">{cycle._count?.goals ?? 0}</p>
           </div>
 
           {/* 평가 수 */}
           <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <p className="text-xs font-medium text-gray-500 mb-1">평가 수</p>
+            <p className="text-xs font-medium text-gray-500 mb-1">{t('evalCount')}</p>
             <p className="text-2xl font-bold text-ctr-primary">{cycle._count?.evaluations ?? 0}</p>
           </div>
 
           {/* 목표설정기간 */}
           <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm md:col-span-2">
-            <p className="text-xs font-medium text-gray-500 mb-1">목표설정기간</p>
+            <p className="text-xs font-medium text-gray-500 mb-1">{t('goalSettingPeriod')}</p>
             <p className="text-sm font-semibold text-gray-900">
               {formatDateDisplay(cycle.goalStart)} ~ {formatDateDisplay(cycle.goalEnd)}
             </p>
@@ -372,7 +356,7 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
 
           {/* 평가기간 */}
           <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm md:col-span-2">
-            <p className="text-xs font-medium text-gray-500 mb-1">평가기간</p>
+            <p className="text-xs font-medium text-gray-500 mb-1">{t('evaluationPeriodColumn')}</p>
             <p className="text-sm font-semibold text-gray-900">
               {formatDateDisplay(cycle.evalStart)} ~ {formatDateDisplay(cycle.evalEnd)}
             </p>

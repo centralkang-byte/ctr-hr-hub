@@ -7,6 +7,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Loader2 } from 'lucide-react'
 import {
   BarChart, Bar,
@@ -34,6 +35,8 @@ const EMS_COLORS: Record<string, string> = {
 export default function PerformanceClient() {
   const searchParams = useSearchParams()
   const companyId = searchParams.get('company_id') ?? undefined
+  const t = useTranslations('analytics.performancePage')
+  const ta = useTranslations('analytics')
 
   const [data, setData] = useState<PerformanceData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -56,7 +59,7 @@ export default function PerformanceClient() {
 
   if (loading) {
     return (
-      <AnalyticsPageLayout title="성과 분석">
+      <AnalyticsPageLayout title={t('title')}>
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
         </div>
@@ -66,7 +69,7 @@ export default function PerformanceClient() {
 
   if (!data) {
     return (
-      <AnalyticsPageLayout title="성과 분석">
+      <AnalyticsPageLayout title={t('title')}>
         <EmptyChart />
       </AnalyticsPageLayout>
     )
@@ -80,10 +83,10 @@ export default function PerformanceClient() {
   }))
 
   return (
-    <AnalyticsPageLayout title="성과 분석" description="EMS 9-block 분포, 부서별 성과 점수 비교">
+    <AnalyticsPageLayout title={t('title')} description={t('description')}>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* EMS 9-block 히트맵 */}
-        <ChartCard title="EMS 9-Block 분포" description="성과 vs 역량 그리드" className="lg:col-span-2">
+        <ChartCard title={t('emsDistribution')} description={t('emsDescription')} className="lg:col-span-2">
           {emsData.length > 0 ? (
             <div className="grid grid-cols-3 gap-2">
               {/* Row 3 (High performance) */}
@@ -99,7 +102,7 @@ export default function PerformanceClient() {
                     <span className="mt-1 text-2xl font-bold" style={{ color: EMS_COLORS[block] }}>
                       {item?.employee_count ?? 0}
                     </span>
-                    <span className="text-xs text-slate-400">명</span>
+                    <span className="text-xs text-slate-400">{ta('personSuffix')}</span>
                   </div>
                 )
               })}
@@ -116,7 +119,7 @@ export default function PerformanceClient() {
                     <span className="mt-1 text-2xl font-bold" style={{ color: EMS_COLORS[block] }}>
                       {item?.employee_count ?? 0}
                     </span>
-                    <span className="text-xs text-slate-400">명</span>
+                    <span className="text-xs text-slate-400">{ta('personSuffix')}</span>
                   </div>
                 )
               })}
@@ -133,18 +136,18 @@ export default function PerformanceClient() {
                     <span className="mt-1 text-2xl font-bold" style={{ color: EMS_COLORS[block] }}>
                       {item?.employee_count ?? 0}
                     </span>
-                    <span className="text-xs text-slate-400">명</span>
+                    <span className="text-xs text-slate-400">{ta('personSuffix')}</span>
                   </div>
                 )
               })}
             </div>
           ) : (
-            <EmptyChart message="성과평가 데이터가 없습니다." />
+            <EmptyChart message={t('noPerformanceData')} />
           )}
         </ChartCard>
 
         {/* 부서별 평균 성과점수 */}
-        <ChartCard title="부서별 평균 성과 점수" className="lg:col-span-2">
+        <ChartCard title={t('avgScoreByDept')} className="lg:col-span-2">
           {data.byDepartment.length > 0 ? (
             <ResponsiveContainer width="100%" height={350}>
               <BarChart data={data.byDepartment}>
@@ -152,7 +155,7 @@ export default function PerformanceClient() {
                 <XAxis dataKey="department_name" tick={{ fontSize: 12 }} />
                 <YAxis domain={[0, 5]} />
                 <Tooltip />
-                <Bar dataKey="avg_score" fill="#6366F1" radius={[4, 4, 0, 0]} name="평균 점수" />
+                <Bar dataKey="avg_score" fill="#6366F1" radius={[4, 4, 0, 0]} name={t('avgScore')} />
               </BarChart>
             </ResponsiveContainer>
           ) : (

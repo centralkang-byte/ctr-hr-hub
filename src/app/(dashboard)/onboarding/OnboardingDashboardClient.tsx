@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { AlertTriangle, CheckCircle2, Clock } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -66,11 +67,6 @@ interface OnboardingDashboardClientProps {
 
 // ─── Constants ──────────────────────────────────────────────
 
-const STATUS_LABELS: Record<string, string> = {
-  IN_PROGRESS: '진행 중',
-  COMPLETED: '완료',
-}
-
 type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline'
 
 const STATUS_VARIANTS: Record<string, BadgeVariant> = {
@@ -78,18 +74,14 @@ const STATUS_VARIANTS: Record<string, BadgeVariant> = {
   COMPLETED: 'secondary',
 }
 
-const FILTER_OPTIONS = [
-  { value: '__ALL__', label: '전체' },
-  { value: 'IN_PROGRESS', label: '진행 중' },
-  { value: 'COMPLETED', label: '완료' },
-  { value: 'DELAYED', label: '지연' },
-]
-
 const LIMIT_OPTIONS = [10, 20, 50]
 
 // ─── Component ──────────────────────────────────────────────
 
 export function OnboardingDashboardClient({ user }: OnboardingDashboardClientProps) {
+  const t = useTranslations('onboarding')
+  const tCommon = useTranslations('common')
+
   // ─── State ───
   const [filter, setFilter] = useState('__ALL__')
   const [page, setPage] = useState(1)
@@ -104,6 +96,18 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
   const [forceLoading, setForceLoading] = useState(false)
 
   const isHrAdmin = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
+
+  const STATUS_LABELS: Record<string, string> = {
+    IN_PROGRESS: t('inProgress'),
+    COMPLETED: t('completed'),
+  }
+
+  const FILTER_OPTIONS = [
+    { value: '__ALL__', label: t('filterAll') },
+    { value: 'IN_PROGRESS', label: t('filterInProgress') },
+    { value: 'COMPLETED', label: t('filterCompleted') },
+    { value: 'DELAYED', label: t('filterDelayed') },
+  ]
 
   // ─── Fetch ───
   const fetchData = useCallback(() => {
@@ -187,8 +191,8 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
   return (
     <div className="space-y-6 p-6">
       <PageHeader
-        title="온보딩 현황"
-        description="신규 입사자 온보딩 진행 현황을 확인합니다."
+        title={t('dashboardTitle')}
+        description={t('dashboardDescription')}
       />
 
       {/* ─── Filters ─── */}
@@ -201,7 +205,7 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
           }}
         >
           <SelectTrigger className="w-36">
-            <SelectValue placeholder="상태 필터" />
+            <SelectValue placeholder={t('statusFilter')} />
           </SelectTrigger>
           <SelectContent>
             {FILTER_OPTIONS.map((opt) => (
@@ -225,7 +229,7 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
           <SelectContent>
             {LIMIT_OPTIONS.map((n) => (
               <SelectItem key={n} value={String(n)}>
-                {n}건
+                {t('itemsPerPage', { n })}
               </SelectItem>
             ))}
           </SelectContent>
@@ -238,7 +242,7 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
           <Table>
             <TableHeader>
               <TableRow>
-                {['직원명', '입사일', '버디', '템플릿', '진행률', '상태', '지연', ''].map(
+                {[t('employeeName'), t('hireDate'), t('buddy'), t('templateLabel'), t('progress'), t('statusLabel'), t('delayed'), ''].map(
                   (h) => (
                     <TableHead key={h}>{h}</TableHead>
                   ),
@@ -261,8 +265,8 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
       ) : data.length === 0 ? (
         <div className="rounded-md border p-8">
           <EmptyState
-            title="온보딩 데이터가 없습니다"
-            description="현재 조건에 해당하는 온보딩 기록이 없습니다."
+            title={t('noOnboardingData')}
+            description={t('noOnboardingDataDesc')}
           />
         </div>
       ) : (
@@ -271,13 +275,13 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>직원명</TableHead>
-                  <TableHead>입사일</TableHead>
-                  <TableHead>버디</TableHead>
-                  <TableHead>템플릿</TableHead>
-                  <TableHead className="w-48">진행률</TableHead>
-                  <TableHead>상태</TableHead>
-                  <TableHead>지연</TableHead>
+                  <TableHead>{t('employeeName')}</TableHead>
+                  <TableHead>{t('hireDate')}</TableHead>
+                  <TableHead>{t('buddy')}</TableHead>
+                  <TableHead>{t('templateLabel')}</TableHead>
+                  <TableHead className="w-48">{t('progress')}</TableHead>
+                  <TableHead>{t('statusLabel')}</TableHead>
+                  <TableHead>{t('delayed')}</TableHead>
                   {isHrAdmin && <TableHead className="w-24" />}
                 </TableRow>
               </TableHeader>
@@ -322,14 +326,14 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
                       {row.isDelayed ? (
                         <Badge variant="destructive">
                           <AlertTriangle className="mr-1 h-3 w-3" />
-                          지연
+                          {t('delayed')}
                         </Badge>
                       ) : (
                         <Badge
                           variant="outline"
                           className="border-green-500 text-green-700"
                         >
-                          정상
+                          {t('normal')}
                         </Badge>
                       )}
                     </TableCell>
@@ -342,7 +346,7 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
                             className="text-xs"
                             onClick={() => setForceTarget(row)}
                           >
-                            강제 완료
+                            {t('forceComplete')}
                           </Button>
                         )}
                       </TableCell>
@@ -357,7 +361,7 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
           {totalPages > 1 && (
             <div className="flex items-center justify-between px-2">
               <p className="text-sm text-muted-foreground">
-                전체 {pagination?.total.toLocaleString()}건
+                {t('totalItems', { total: pagination?.total.toLocaleString() ?? '0' })}
               </p>
               <div className="flex items-center gap-2">
                 <Button
@@ -366,7 +370,7 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
                   disabled={page <= 1}
                   onClick={() => setPage((p) => p - 1)}
                 >
-                  이전
+                  {tCommon('prev')}
                 </Button>
                 <span className="text-sm">
                   {page} / {totalPages}
@@ -377,7 +381,7 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
                   disabled={page >= totalPages}
                   onClick={() => setPage((p) => p + 1)}
                 >
-                  다음
+                  {tCommon('next')}
                 </Button>
               </div>
             </div>
@@ -397,10 +401,9 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>온보딩 강제 완료</DialogTitle>
+            <DialogTitle>{t('forceCompleteTitle')}</DialogTitle>
             <DialogDescription>
-              {forceTarget?.employee.name}님의 온보딩을 강제로 완료합니다.
-              미완료 태스크는 SKIPPED 처리됩니다.
+              {t('forceCompleteDesc', { name: forceTarget?.employee.name ?? '' })}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
@@ -408,11 +411,11 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
               htmlFor="force-reason"
               className="text-sm font-medium mb-2 block"
             >
-              강제 완료 사유 *
+              {t('forceCompleteReason')}
             </label>
             <Textarea
               id="force-reason"
-              placeholder="강제 완료 사유를 입력해주세요..."
+              placeholder={t('forceCompleteReasonPlaceholder')}
               value={forceReason}
               onChange={(e) => setForceReason(e.target.value)}
               rows={3}
@@ -426,14 +429,14 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
                 setForceReason('')
               }}
             >
-              취소
+              {tCommon('cancel')}
             </Button>
             <Button
               onClick={handleForceComplete}
               disabled={!forceReason.trim() || forceLoading}
               className="bg-ctr-accent hover:bg-ctr-accent/90 text-white"
             >
-              {forceLoading ? '처리 중...' : '강제 완료'}
+              {forceLoading ? t('processing') : t('forceCompleteConfirm')}
             </Button>
           </DialogFooter>
         </DialogContent>

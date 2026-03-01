@@ -1,12 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Crown, BarChart3 } from 'lucide-react'
 import PlansTab from '@/components/succession/PlansTab'
 import SuccessionDashboard from '@/components/succession/SuccessionDashboard'
 
 export default function SuccessionClient() {
+  const t = useTranslations('succession')
   const [activeTab, setActiveTab] = useState('plans')
 
   return (
@@ -14,8 +16,8 @@ export default function SuccessionClient() {
       {/* ─── 페이지 헤더 ─── */}
       <div className="flex items-center justify-between">
         <div>
-          <nav className="text-xs text-slate-400 mb-1">인사관리 / 후계자 관리</nav>
-          <h1 className="text-2xl font-bold text-slate-900">후계자 관리</h1>
+          <nav className="text-xs text-slate-400 mb-1">{t('breadcrumb')}</nav>
+          <h1 className="text-2xl font-bold text-slate-900">{t('title')}</h1>
         </div>
       </div>
 
@@ -24,11 +26,11 @@ export default function SuccessionClient() {
         <TabsList className="mb-4">
           <TabsTrigger value="plans">
             <Crown className="mr-1.5 h-4 w-4" />
-            핵심직책
+            {t('keyPosition')}
           </TabsTrigger>
           <TabsTrigger value="dashboard">
             <BarChart3 className="mr-1.5 h-4 w-4" />
-            대시보드
+            {t('dashboard')}
           </TabsTrigger>
         </TabsList>
 

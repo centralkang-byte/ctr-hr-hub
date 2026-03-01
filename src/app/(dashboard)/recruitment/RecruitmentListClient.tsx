@@ -6,6 +6,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Search, Plus, ChevronLeft, ChevronRight, Briefcase, Filter } from 'lucide-react'
 import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
@@ -13,11 +14,11 @@ import type { SessionUser } from '@/types'
 
 // ─── Label Maps ──────────────────────────────────────────
 
-const STATUS_LABELS: Record<string, string> = {
-  DRAFT: '초안',
-  OPEN: '진행중',
-  CLOSED: '마감',
-  CANCELLED: '취소',
+const STATUS_KEYS: Record<string, string> = {
+  DRAFT: 'statusDRAFT',
+  OPEN: 'statusOPEN',
+  CLOSED: 'statusCLOSED',
+  CANCELLED: 'statusCANCELLED',
 }
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
@@ -27,11 +28,11 @@ const STATUS_BADGE_STYLES: Record<string, string> = {
   CANCELLED: 'bg-[#FFEBEE] text-[#C62828]',
 }
 
-const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
-  FULL_TIME: '정규직',
-  CONTRACT: '계약직',
-  DISPATCH: '파견직',
-  INTERN: '인턴',
+const EMPLOYMENT_TYPE_KEYS: Record<string, string> = {
+  FULL_TIME: 'typeFULL_TIME',
+  CONTRACT: 'typeCONTRACT',
+  DISPATCH: 'typeDISPATCH',
+  INTERN: 'typeINTERN',
 }
 
 // ─── Types ───────────────────────────────────────────────
@@ -59,6 +60,7 @@ const LIMIT = 20
 
 export default function RecruitmentListClient({ user }: Props) {
   const router = useRouter()
+  const t = useTranslations('recruitment')
   const [data, setData] = useState<PostingRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
@@ -110,9 +112,9 @@ export default function RecruitmentListClient({ user }: Props) {
           </div>
           <div>
             <h1 className="text-xl font-bold text-[#333]" style={{ letterSpacing: '-0.02em' }}>
-              채용공고
+              {t('postings')}
             </h1>
-            <p className="text-sm text-[#999]">총 {total}건</p>
+            <p className="text-sm text-[#999]">{t('totalCount', { count: total })}</p>
           </div>
         </div>
         <button
@@ -120,7 +122,7 @@ export default function RecruitmentListClient({ user }: Props) {
           className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg transition-colors duration-150"
         >
           <Plus className="w-4 h-4" />
-          공고 등록
+          {t('registerPosting')}
         </button>
       </div>
 
@@ -131,7 +133,7 @@ export default function RecruitmentListClient({ user }: Props) {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
             <input
               type="text"
-              placeholder="공고 제목으로 검색..."
+              placeholder={t('searchByTitle')}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="w-full pl-10 pr-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] transition-colors"
@@ -144,11 +146,11 @@ export default function RecruitmentListClient({ user }: Props) {
               onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
               className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] bg-white"
             >
-              <option value="">상태 전체</option>
-              <option value="DRAFT">초안</option>
-              <option value="OPEN">진행중</option>
-              <option value="CLOSED">마감</option>
-              <option value="CANCELLED">취소</option>
+              <option value="">{t('statusAll')}</option>
+              <option value="DRAFT">{t('statusDRAFT')}</option>
+              <option value="OPEN">{t('statusOPEN')}</option>
+              <option value="CLOSED">{t('statusCLOSED')}</option>
+              <option value="CANCELLED">{t('statusCANCELLED')}</option>
             </select>
           </div>
         </div>
@@ -159,14 +161,14 @@ export default function RecruitmentListClient({ user }: Props) {
         <table className="w-full">
           <thead>
             <tr className="border-b border-[#E8E8E8]">
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">공고제목</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">부서</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">직급</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">고용형태</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">채용인원</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">지원자수</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">상태</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">등록일</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('postingTitleCol')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('department')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('jobGrade')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('employmentType')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('headcountColumn')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('applicantCountCol')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('statusCol')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('registeredDate')}</th>
             </tr>
           </thead>
           <tbody>
@@ -175,14 +177,14 @@ export default function RecruitmentListClient({ user }: Props) {
                 <td colSpan={8} className="px-4 py-12 text-center text-sm text-[#999]">
                   <div className="flex items-center justify-center gap-2">
                     <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#00C853] rounded-full animate-spin" />
-                    데이터를 불러오는 중...
+                    {t('loadingData')}
                   </div>
                 </td>
               </tr>
             ) : data.length === 0 ? (
               <tr>
                 <td colSpan={8} className="px-4 py-12 text-center text-sm text-[#999]">
-                  등록된 채용 공고가 없습니다.
+                  {t('noPostings')}
                 </td>
               </tr>
             ) : (
@@ -202,7 +204,7 @@ export default function RecruitmentListClient({ user }: Props) {
                     {row.jobGrade?.name ?? '-'}
                   </td>
                   <td className="px-4 py-3 text-sm text-[#333]">
-                    {EMPLOYMENT_TYPE_LABELS[row.employmentType] ?? row.employmentType}
+                    {EMPLOYMENT_TYPE_KEYS[row.employmentType] ? t(EMPLOYMENT_TYPE_KEYS[row.employmentType]) : row.employmentType}
                   </td>
                   <td className="px-4 py-3 text-sm text-[#333] text-center">
                     {row.headcount}
@@ -212,7 +214,7 @@ export default function RecruitmentListClient({ user }: Props) {
                   </td>
                   <td className="px-4 py-3">
                     <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${STATUS_BADGE_STYLES[row.status] ?? 'bg-[#F5F5F5] text-[#999]'}`}>
-                      {STATUS_LABELS[row.status] ?? row.status}
+                      {STATUS_KEYS[row.status] ? t(STATUS_KEYS[row.status]) : row.status}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-sm text-[#666]">
@@ -228,7 +230,7 @@ export default function RecruitmentListClient({ user }: Props) {
         {totalPages > 1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-[#E8E8E8]">
             <p className="text-xs text-[#999]">
-              {total}건 중 {(page - 1) * LIMIT + 1}-{Math.min(page * LIMIT, total)}건
+              {t('paginationInfo', { total, from: (page - 1) * LIMIT + 1, to: Math.min(page * LIMIT, total) })}
             </p>
             <div className="flex items-center gap-1">
               <button

@@ -7,6 +7,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { Loader2, Save, Upload } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import type { SessionUser } from '@/types'
 import { apiClient } from '@/lib/api'
@@ -26,6 +27,8 @@ interface BrandingData {
 }
 
 export function BrandingClient({ user: _user }: { user: SessionUser }) {
+  const t = useTranslations('settings')
+  const tc = useTranslations('common')
   const { toast } = useToast()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -43,11 +46,11 @@ export function BrandingClient({ user: _user }: { user: SessionUser }) {
       const res = await apiClient.get<BrandingData>('/api/v1/settings/branding')
       setData(res.data)
     } catch {
-      toast({ title: '오류', description: '브랜딩 설정을 불러올 수 없습니다.', variant: 'destructive' })
+      toast({ title: tc('error'), description: t('brandingLoadError'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
-  }, [toast])
+  }, [toast, t, tc])
 
   useEffect(() => { fetchBranding() }, [fetchBranding])
 
@@ -74,9 +77,9 @@ export function BrandingClient({ user: _user }: { user: SessionUser }) {
 
         const field = type === 'logo' ? 'logoUrl' : 'faviconUrl'
         setData((prev) => ({ ...prev, [field]: publicUrl }))
-        toast({ title: '성공', description: `${type === 'logo' ? '로고' : '파비콘'}가 업로드되었습니다.` })
+        toast({ title: tc('success'), description: type === 'logo' ? t('logoUploaded') : t('faviconUploaded') })
       } catch {
-        toast({ title: '오류', description: '업로드 중 오류가 발생했습니다.', variant: 'destructive' })
+        toast({ title: tc('error'), description: t('uploadError'), variant: 'destructive' })
       }
     }
     input.click()
@@ -86,9 +89,9 @@ export function BrandingClient({ user: _user }: { user: SessionUser }) {
     setSaving(true)
     try {
       await apiClient.put('/api/v1/settings/branding', data)
-      toast({ title: '성공', description: '브랜딩 설정이 저장되었습니다.' })
+      toast({ title: tc('success'), description: t('brandingSaved') })
     } catch {
-      toast({ title: '오류', description: '저장 중 오류가 발생했습니다.', variant: 'destructive' })
+      toast({ title: tc('error'), description: t('saveError'), variant: 'destructive' })
     } finally {
       setSaving(false)
     }
@@ -102,42 +105,48 @@ export function BrandingClient({ user: _user }: { user: SessionUser }) {
     )
   }
 
+  const COLOR_FIELDS = [
+    { key: 'primaryColor' as const, label: t('primaryColor') },
+    { key: 'secondaryColor' as const, label: t('secondaryColor') },
+    { key: 'accentColor' as const, label: t('accentColor') },
+  ]
+
   return (
     <div className="space-y-6 p-6">
-      <PageHeader title="브랜딩" description="로고, 파비콘, 브랜드 색상을 관리합니다." />
+      <PageHeader title={t('branding')} description={t('brandingDesc')} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* 로고 & 파비콘 */}
         <Card>
-          <CardHeader><CardTitle className="text-lg">로고 & 파비콘</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-lg">{t('logoAndFavicon')}</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>로고</Label>
+              <Label>{t('logo')}</Label>
               <div className="flex items-center gap-3">
                 {data.logoUrl ? (
-                  <img src={data.logoUrl} alt="로고" className="h-12 w-auto rounded border object-contain" />
+                  <img src={data.logoUrl} alt={t('logo')} className="h-12 w-auto rounded border object-contain" />
                 ) : (
                   <div className="flex h-12 w-24 items-center justify-center rounded border border-dashed text-xs text-muted-foreground">
-                    없음
+                    {t('none')}
                   </div>
                 )}
                 <Button type="button" variant="outline" size="sm" onClick={() => handleUpload('logo')}>
-                  <Upload className="mr-1 h-4 w-4" /> 업로드
+                  <Upload className="mr-1 h-4 w-4" /> {tc('upload')}
                 </Button>
               </div>
             </div>
             <div className="space-y-2">
-              <Label>파비콘</Label>
+              <Label>{t('favicon')}</Label>
               <div className="flex items-center gap-3">
                 {data.faviconUrl ? (
-                  <img src={data.faviconUrl} alt="파비콘" className="h-8 w-8 rounded border object-contain" />
+                  <img src={data.faviconUrl} alt={t('favicon')} className="h-8 w-8 rounded border object-contain" />
                 ) : (
                   <div className="flex h-8 w-8 items-center justify-center rounded border border-dashed text-xs text-muted-foreground">
-                    없음
+                    {t('none')}
                   </div>
                 )}
                 <Button type="button" variant="outline" size="sm" onClick={() => handleUpload('favicon')}>
-                  <Upload className="mr-1 h-4 w-4" /> 업로드
+                  <Upload className="mr-1 h-4 w-4" /> {tc('upload')}
                 </Button>
               </div>
             </div>
@@ -146,13 +155,9 @@ export function BrandingClient({ user: _user }: { user: SessionUser }) {
 
         {/* 색상 */}
         <Card>
-          <CardHeader><CardTitle className="text-lg">브랜드 색상</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-lg">{t('brandColors')}</CardTitle></CardHeader>
           <CardContent className="space-y-4">
-            {[
-              { key: 'primaryColor' as const, label: '주색상 (Primary)' },
-              { key: 'secondaryColor' as const, label: '보조색상 (Secondary)' },
-              { key: 'accentColor' as const, label: '강조색상 (Accent)' },
-            ].map(({ key, label }) => (
+            {COLOR_FIELDS.map(({ key, label }) => (
               <div key={key} className="space-y-2">
                 <Label>{label}</Label>
                 <div className="flex items-center gap-3">
@@ -178,14 +183,14 @@ export function BrandingClient({ user: _user }: { user: SessionUser }) {
 
       {/* 미리보기 */}
       <Card>
-        <CardHeader><CardTitle className="text-lg">미리보기</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-lg">{tc('preview')}</CardTitle></CardHeader>
         <CardContent>
           <div className="flex items-center gap-4 rounded-lg border p-4">
             <div className="h-10 w-10 rounded" style={{ backgroundColor: data.primaryColor }} />
             <div className="h-10 w-10 rounded" style={{ backgroundColor: data.secondaryColor }} />
             <div className="h-10 w-10 rounded" style={{ backgroundColor: data.accentColor }} />
             <span className="text-sm font-medium" style={{ color: data.primaryColor }}>
-              CTR HR Hub 미리보기
+              {t('brandingPreviewText')}
             </span>
           </div>
         </CardContent>
@@ -194,7 +199,7 @@ export function BrandingClient({ user: _user }: { user: SessionUser }) {
       <div className="flex justify-end">
         <Button onClick={handleSave} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          저장
+          {tc('save')}
         </Button>
       </div>
     </div>

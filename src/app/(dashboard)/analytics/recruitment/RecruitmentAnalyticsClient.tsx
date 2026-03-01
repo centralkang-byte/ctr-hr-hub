@@ -7,6 +7,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Loader2 } from 'lucide-react'
 import {
   BarChart, Bar,
@@ -19,17 +20,19 @@ import { EmptyChart } from '@/components/analytics/EmptyChart'
 import type { RecruitmentData } from '@/lib/analytics/types'
 
 const STAGE_ORDER = ['APPLIED', 'SCREENING', 'INTERVIEW', 'OFFER', 'HIRED']
-const STAGE_LABELS: Record<string, string> = {
-  APPLIED: '지원',
-  SCREENING: '서류심사',
-  INTERVIEW: '면접',
-  OFFER: '합격',
-  HIRED: '입사',
-}
 
 export default function RecruitmentAnalyticsClient() {
   const searchParams = useSearchParams()
   const companyId = searchParams.get('company_id') ?? undefined
+  const t = useTranslations('analytics.recruitmentPage')
+
+  const STAGE_LABELS: Record<string, string> = {
+    APPLIED: t('stages.APPLIED'),
+    SCREENING: t('stages.SCREENING'),
+    INTERVIEW: t('stages.INTERVIEW'),
+    OFFER: t('stages.OFFER'),
+    HIRED: t('stages.HIRED'),
+  }
 
   const [data, setData] = useState<RecruitmentData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -52,7 +55,7 @@ export default function RecruitmentAnalyticsClient() {
 
   if (loading) {
     return (
-      <AnalyticsPageLayout title="채용 분석">
+      <AnalyticsPageLayout title={t('title')}>
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
         </div>
@@ -62,7 +65,7 @@ export default function RecruitmentAnalyticsClient() {
 
   if (!data) {
     return (
-      <AnalyticsPageLayout title="채용 분석">
+      <AnalyticsPageLayout title={t('title')}>
         <EmptyChart />
       </AnalyticsPageLayout>
     )
@@ -88,10 +91,10 @@ export default function RecruitmentAnalyticsClient() {
   }
 
   return (
-    <AnalyticsPageLayout title="채용 분석" description="채용 퍼널, 단계별 전환율">
+    <AnalyticsPageLayout title={t('title')} description={t('description')}>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* 채용 퍼널 */}
-        <ChartCard title="채용 퍼널" description="지원 → 서류 → 면접 → 합격 → 입사" className="lg:col-span-2">
+        <ChartCard title={t('funnel')} description={t('funnelDescription')} className="lg:col-span-2">
           {sortedFunnel.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={sortedFunnel} layout="vertical" margin={{ left: 80 }}>
@@ -99,22 +102,22 @@ export default function RecruitmentAnalyticsClient() {
                 <XAxis type="number" />
                 <YAxis type="category" dataKey="stage_label" width={70} tick={{ fontSize: 12 }} />
                 <Tooltip />
-                <Bar dataKey="candidate_count" fill="#2563EB" radius={[0, 4, 4, 0]} name="인원" />
+                <Bar dataKey="candidate_count" fill="#2563EB" radius={[0, 4, 4, 0]} name={t('headcount')} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <EmptyChart message="채용 데이터가 없습니다." />
+            <EmptyChart message={t('noRecruitmentData')} />
           )}
         </ChartCard>
 
         {/* 공고별 전환율 테이블 */}
-        <ChartCard title="공고별 전환 현황" className="lg:col-span-2">
+        <ChartCard title={t('conversionByPosting')} className="lg:col-span-2">
           {postingMap.size > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-100 bg-slate-50">
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">공고</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">{t('posting')}</th>
                     {STAGE_ORDER.map((s) => (
                       <th key={s} className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">
                         {STAGE_LABELS[s] ?? s}

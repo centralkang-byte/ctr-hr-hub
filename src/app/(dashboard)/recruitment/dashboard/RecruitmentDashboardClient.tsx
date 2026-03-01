@@ -7,6 +7,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { format } from 'date-fns'
 import {
   UserPlus,
@@ -59,15 +60,15 @@ interface DashboardData {
 
 // ─── Constants ──────────────────────────────────────────────
 
-const STAGE_LABELS: Record<string, string> = {
-  APPLIED: '지원',
-  SCREENING: '서류심사',
-  INTERVIEW_1: '1차면접',
-  INTERVIEW_2: '2차면접',
-  FINAL: '최종',
-  OFFER: '오퍼',
-  HIRED: '합격',
-  REJECTED: '불합격',
+const STAGE_LABEL_KEYS: Record<string, string> = {
+  APPLIED: 'stageShortAPPLIED',
+  SCREENING: 'stageShortSCREENING',
+  INTERVIEW_1: 'stageShortINTERVIEW_1',
+  INTERVIEW_2: 'stageShortINTERVIEW_2',
+  FINAL: 'stageShortFINAL',
+  OFFER: 'stageShortOFFER',
+  HIRED: 'stageShortHIRED',
+  REJECTED: 'stageShortREJECTED',
 }
 
 const STAGE_COLORS: Record<string, string> = {
@@ -80,40 +81,6 @@ const STAGE_COLORS: Record<string, string> = {
   HIRED: '#00C853',
   REJECTED: '#F44336',
 }
-
-interface KpiCardConfig {
-  label: string
-  icon: LucideIcon
-  color: string
-  format: (kpis: DashboardKpis) => string
-}
-
-const KPI_CARDS: KpiCardConfig[] = [
-  {
-    label: '진행중 공고',
-    icon: UserPlus,
-    color: '#2196F3',
-    format: (k) => String(k.activePostings),
-  },
-  {
-    label: '총 지원자',
-    icon: Users,
-    color: '#00C853',
-    format: (k) => String(k.totalApplicants),
-  },
-  {
-    label: '평균 채용기간',
-    icon: Clock,
-    color: '#FF9800',
-    format: (k) => (k.avgTimeToHire != null ? `${k.avgTimeToHire}일` : '-'),
-  },
-  {
-    label: '합격률',
-    icon: Target,
-    color: '#00C853',
-    format: (k) => `${k.hireRate}%`,
-  },
-]
 
 // ─── KPI Card Component ─────────────────────────────────────
 
@@ -189,10 +156,12 @@ interface TooltipPayloadEntry {
 function CustomTooltip({
   active,
   payload,
+  t,
 }: {
   active?: boolean
   payload?: TooltipPayloadEntry[]
   label?: string
+  t: (key: string, values?: Record<string, string | number>) => string
 }) {
   if (!active || !payload || payload.length === 0) return null
   const data = payload[0]
@@ -210,7 +179,7 @@ function CustomTooltip({
         {data.payload.stageName}
       </p>
       <p style={{ fontSize: 12, color: '#666', marginTop: 2 }}>
-        {data.value}명
+        {t('countPeople', { count: data.value })}
       </p>
     </div>
   )
@@ -222,6 +191,7 @@ export function RecruitmentDashboardClient(_props: {
   user: SessionUser
 }) {
   const router = useRouter()
+  const t = useTranslations('recruitment')
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -270,15 +240,43 @@ export function RecruitmentDashboardClient(_props: {
           fontSize: 14,
         }}
       >
-        데이터를 불러올 수 없습니다.
+        {t('cannotLoadData')}
       </div>
     )
   }
 
+  // KPI cards config (inside component to access t())
+  const KPI_CARDS: { label: string; icon: LucideIcon; color: string; format: (kpis: DashboardKpis) => string }[] = [
+    {
+      label: t('activePostingsKpi'),
+      icon: UserPlus,
+      color: '#2196F3',
+      format: (k) => String(k.activePostings),
+    },
+    {
+      label: t('totalApplicantsKpi'),
+      icon: Users,
+      color: '#00C853',
+      format: (k) => String(k.totalApplicants),
+    },
+    {
+      label: t('avgTimeToHire'),
+      icon: Clock,
+      color: '#FF9800',
+      format: (k) => (k.avgTimeToHire != null ? t('avgTimeToHireDays', { days: k.avgTimeToHire }) : '-'),
+    },
+    {
+      label: t('hireRate'),
+      icon: Target,
+      color: '#00C853',
+      format: (k) => t('hireRatePercent', { rate: k.hireRate }),
+    },
+  ]
+
   // Prepare funnel chart data
   const funnelData = data.funnel.map((item) => ({
     stage: item.stage,
-    stageName: STAGE_LABELS[item.stage] ?? item.stage,
+    stageName: STAGE_LABEL_KEYS[item.stage] ? t(STAGE_LABEL_KEYS[item.stage]) : item.stage,
     count: item.count,
     fill: STAGE_COLORS[item.stage] ?? '#999',
   }))
@@ -286,8 +284,8 @@ export function RecruitmentDashboardClient(_props: {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <PageHeader
-        title="채용 대시보드"
-        description="채용 현황 및 통계"
+        title={t('dashboardTitle')}
+        description={t('dashboardDescription')}
       />
 
       {/* KPI Cards */}
@@ -327,7 +325,7 @@ export function RecruitmentDashboardClient(_props: {
             letterSpacing: '-0.02em',
           }}
         >
-          채용 퍼널
+          {t('recruitmentFunnel')}
         </h2>
         <div style={{ width: '100%', height: 360 }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -349,7 +347,7 @@ export function RecruitmentDashboardClient(_props: {
                 tick={{ fontSize: 13, fill: '#333' }}
               />
               <Tooltip
-                content={<CustomTooltip />}
+                content={<CustomTooltip t={t} />}
                 cursor={{ fill: '#FAFAFA' }}
               />
               <Bar
@@ -390,7 +388,7 @@ export function RecruitmentDashboardClient(_props: {
             letterSpacing: '-0.02em',
           }}
         >
-          최근 공고
+          {t('recentPostings')}
         </h2>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
@@ -410,7 +408,7 @@ export function RecruitmentDashboardClient(_props: {
                   letterSpacing: '0.05em',
                 }}
               >
-                공고 제목
+                {t('postingTitleColumn')}
               </th>
               <th
                 style={{
@@ -423,7 +421,7 @@ export function RecruitmentDashboardClient(_props: {
                   letterSpacing: '0.05em',
                 }}
               >
-                지원자수
+                {t('applicantCountColumn')}
               </th>
               <th
                 style={{
@@ -436,7 +434,7 @@ export function RecruitmentDashboardClient(_props: {
                   letterSpacing: '0.05em',
                 }}
               >
-                게시일
+                {t('publishedDateColumn')}
               </th>
             </tr>
           </thead>
@@ -452,7 +450,7 @@ export function RecruitmentDashboardClient(_props: {
                     fontSize: 14,
                   }}
                 >
-                  최근 공고가 없습니다
+                  {t('noRecentPostings')}
                 </td>
               </tr>
             ) : (
@@ -501,7 +499,7 @@ export function RecruitmentDashboardClient(_props: {
                         color: '#2196F3',
                       }}
                     >
-                      {posting.applicantCount}명
+                      {t('countPeople', { count: posting.applicantCount })}
                     </span>
                   </td>
                   <td

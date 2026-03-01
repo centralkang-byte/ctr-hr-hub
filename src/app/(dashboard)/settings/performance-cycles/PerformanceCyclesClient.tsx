@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { apiClient } from '@/lib/api'
 import { format } from 'date-fns'
 import { Plus, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -23,14 +24,6 @@ interface PerformanceCycle {
   }
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  DRAFT: '초안',
-  ACTIVE: '진행중',
-  EVAL_OPEN: '평가중',
-  CALIBRATION: '캘리브레이션',
-  CLOSED: '확정',
-}
-
 const STATUS_STYLES: Record<string, string> = {
   DRAFT: 'bg-gray-100 text-gray-700',
   ACTIVE: 'bg-blue-100 text-blue-700',
@@ -39,15 +32,10 @@ const STATUS_STYLES: Record<string, string> = {
   CLOSED: 'bg-green-100 text-green-700',
 }
 
-const HALF_LABELS: Record<string, string> = {
-  H1: '상반기',
-  H2: '하반기',
-  ANNUAL: '연간',
-}
-
 export default function PerformanceCyclesClient({ user }: { user: SessionUser }) {
   void user
   const router = useRouter()
+  const t = useTranslations('performance')
   const [cycles, setCycles] = useState<PerformanceCycle[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
@@ -87,13 +75,13 @@ export default function PerformanceCyclesClient({ user }: { user: SessionUser })
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-ctr-primary">평가 사이클 관리</h1>
+        <h1 className="text-2xl font-bold text-ctr-primary">{t('cycleManagement')}</h1>
         <button
           onClick={() => router.push('/settings/performance-cycles/new')}
           className="inline-flex items-center gap-2 rounded-lg bg-ctr-primary px-4 py-2 text-sm font-medium text-white hover:bg-ctr-secondary transition-colors"
         >
           <Plus className="h-4 w-4" />
-          새 사이클
+          {t('newCycleButton')}
         </button>
       </div>
 
@@ -104,9 +92,9 @@ export default function PerformanceCyclesClient({ user }: { user: SessionUser })
           onChange={(e) => { setYear(e.target.value); setPage(1) }}
           className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
         >
-          <option value="">전체 연도</option>
+          <option value="">{t('allYears')}</option>
           {[2024, 2025, 2026, 2027].map((y) => (
-            <option key={y} value={y}>{y}년</option>
+            <option key={y} value={y}>{t('yearUnit', { year: y })}</option>
           ))}
         </select>
         <select
@@ -114,9 +102,9 @@ export default function PerformanceCyclesClient({ user }: { user: SessionUser })
           onChange={(e) => { setStatus(e.target.value); setPage(1) }}
           className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
         >
-          <option value="">전체 상태</option>
-          {Object.entries(STATUS_LABELS).map(([key, label]) => (
-            <option key={key} value={key}>{label}</option>
+          <option value="">{t('allStatuses')}</option>
+          {['DRAFT', 'ACTIVE', 'EVAL_OPEN', 'CALIBRATION', 'CLOSED'].map((key) => (
+            <option key={key} value={key}>{t(`cycleStatusLabels.${key}` as Parameters<typeof t>[0])}</option>
           ))}
         </select>
       </div>
@@ -126,27 +114,27 @@ export default function PerformanceCyclesClient({ user }: { user: SessionUser })
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-200 bg-gray-50">
-              <th className="px-4 py-3 text-left font-medium text-gray-600">이름</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-600">연도</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-600">유형</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-600">상태</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-600">목표설정기간</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-600">평가기간</th>
-              <th className="px-4 py-3 text-center font-medium text-gray-600">목표수</th>
-              <th className="px-4 py-3 text-center font-medium text-gray-600">평가수</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600">{t('nameColumn')}</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600">{t('yearColumn')}</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600">{t('typeColumn')}</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600">{t('statusColumn')}</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600">{t('goalSettingPeriod')}</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600">{t('evaluationPeriodColumn')}</th>
+              <th className="px-4 py-3 text-center font-medium text-gray-600">{t('goalCount')}</th>
+              <th className="px-4 py-3 text-center font-medium text-gray-600">{t('evalCount')}</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
                 <td colSpan={8} className="px-4 py-12 text-center text-gray-400">
-                  불러오는 중...
+                  {t('fetchingData')}
                 </td>
               </tr>
             ) : cycles.length === 0 ? (
               <tr>
                 <td colSpan={8} className="px-4 py-12 text-center text-gray-400">
-                  등록된 사이클이 없습니다
+                  {t('noCyclesRegistered')}
                 </td>
               </tr>
             ) : (
@@ -157,11 +145,11 @@ export default function PerformanceCyclesClient({ user }: { user: SessionUser })
                   className="border-b border-gray-100 hover:bg-ctr-light cursor-pointer transition-colors"
                 >
                   <td className="px-4 py-3 font-medium text-gray-900">{cycle.name}</td>
-                  <td className="px-4 py-3 text-gray-600">{cycle.year}년</td>
-                  <td className="px-4 py-3 text-gray-600">{HALF_LABELS[cycle.half] ?? cycle.half}</td>
+                  <td className="px-4 py-3 text-gray-600">{t('yearUnit', { year: cycle.year })}</td>
+                  <td className="px-4 py-3 text-gray-600">{t(`halfLabels.${cycle.half}` as Parameters<typeof t>[0])}</td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[cycle.status] ?? 'bg-gray-100 text-gray-700'}`}>
-                      {STATUS_LABELS[cycle.status] ?? cycle.status}
+                      {t(`cycleStatusLabels.${cycle.status}` as Parameters<typeof t>[0])}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-gray-600">
@@ -192,7 +180,7 @@ export default function PerformanceCyclesClient({ user }: { user: SessionUser })
             className="inline-flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <ChevronLeft className="h-4 w-4" />
-            이전
+            {t('previousPage')}
           </button>
           <span className="text-sm text-gray-600">
             {page} / {totalPages}
@@ -202,7 +190,7 @@ export default function PerformanceCyclesClient({ user }: { user: SessionUser })
             disabled={page >= totalPages}
             className="inline-flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            다음
+            {t('nextPage')}
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>

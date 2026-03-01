@@ -10,6 +10,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Plus, Pencil, Trash2, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import type { SessionUser, PaginationInfo } from '@/types'
 import { apiClient } from '@/lib/api'
@@ -53,28 +54,32 @@ interface TriggerLocal {
   createdAt: string
 }
 
-// ─── Form schema ────────────────────────────────────────────
-
-const formSchema = z.object({
-  eventType: z.string().min(1, '이벤트 타입은 필수입니다'),
-  template: z.string().min(1, '템플릿은 필수입니다'),
-  channels: z
-    .array(z.string())
-    .min(1, '최소 1개 채널을 선택하세요'),
-  isActive: z.boolean().default(true),
-})
-
-type FormData = z.infer<typeof formSchema>
-
-const CHANNEL_OPTIONS = [
-  { value: 'IN_APP', label: '인앱' },
-  { value: 'EMAIL', label: '이메일' },
-  { value: 'PUSH', label: '푸시' },
-] as const
-
 // ─── Component ──────────────────────────────────────────────
 
-export function NotificationTriggersClient({ user }: { user: SessionUser }) {
+export function NotificationTriggersClient({ user: _user }: { user: SessionUser }) {
+  const t = useTranslations('settings')
+  const tc = useTranslations('common')
+
+  const CHANNEL_OPTIONS = [
+    { value: 'IN_APP', label: t('channelInApp') },
+    { value: 'EMAIL', label: t('channelEmail') },
+    { value: 'PUSH', label: t('channelPush') },
+    { value: 'TEAMS', label: t('channelTeams') },
+  ] as const
+
+  // ─── Form schema ────────────────────────────────────────────
+
+  const formSchema = z.object({
+    eventType: z.string().min(1, t('eventTypeRequired2')),
+    template: z.string().min(1, t('templateRequired')),
+    channels: z
+      .array(z.string())
+      .min(1, t('minOneChannel')),
+    isActive: z.boolean().default(true),
+  })
+
+  type FormData = z.infer<typeof formSchema>
+
   const [triggers, setTriggers] = useState<TriggerLocal[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | undefined>()
   const [page, setPage] = useState(1)
@@ -167,8 +172,8 @@ export function NotificationTriggersClient({ user }: { user: SessionUser }) {
         { isActive: !row.isActive },
       )
       setTriggers((prev) =>
-        prev.map((t) =>
-          t.id === row.id ? { ...t, isActive: !t.isActive } : t,
+        prev.map((tr) =>
+          tr.id === row.id ? { ...tr, isActive: !tr.isActive } : tr,
         ),
       )
     } catch {
@@ -191,15 +196,21 @@ export function NotificationTriggersClient({ user }: { user: SessionUser }) {
     }
   }
 
+  // ─── Channel label helper ───
+  const getChannelLabel = (ch: string) => {
+    const found = CHANNEL_OPTIONS.find((o) => o.value === ch)
+    return found ? found.label : ch
+  }
+
   // ─── Columns ───
   const columns: DataTableColumn<TriggerLocal>[] = [
     {
       key: 'eventType',
-      header: '이벤트 타입',
+      header: t('eventTypeTrigger'),
     },
     {
       key: 'template',
-      header: '템플릿',
+      header: t('templateLabel'),
       render: (row: TriggerLocal) => (
         <span className="max-w-[200px] truncate block text-sm text-slate-600">
           {row.template}
@@ -208,12 +219,12 @@ export function NotificationTriggersClient({ user }: { user: SessionUser }) {
     },
     {
       key: 'channels',
-      header: '채널',
+      header: t('channel'),
       render: (row: TriggerLocal) => (
         <div className="flex gap-1">
           {(row.channels as string[]).map((ch) => (
             <Badge key={ch} variant="outline" className="text-xs">
-              {ch === 'IN_APP' ? '인앱' : ch === 'EMAIL' ? '이메일' : '푸시'}
+              {getChannelLabel(ch)}
             </Badge>
           ))}
         </div>
@@ -221,7 +232,7 @@ export function NotificationTriggersClient({ user }: { user: SessionUser }) {
     },
     {
       key: 'isActive',
-      header: '활성',
+      header: t('active'),
       render: (row: TriggerLocal) => (
         <Switch
           checked={row.isActive}
@@ -231,7 +242,7 @@ export function NotificationTriggersClient({ user }: { user: SessionUser }) {
     },
     {
       key: 'actions',
-      header: '액션',
+      header: t('manage'),
       render: (row: TriggerLocal) => (
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" onClick={() => openEdit(row)}>
@@ -253,12 +264,12 @@ export function NotificationTriggersClient({ user }: { user: SessionUser }) {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="알림 설정"
-        description="알림 트리거를 설정하고 관리합니다."
+        title={t('notificationsTitle')}
+        description={t('notificationsDesc')}
         actions={
           <Button onClick={openCreate}>
             <Plus className="mr-1 h-4 w-4" />
-            트리거 추가
+            {t('addTrigger')}
           </Button>
         }
       />
@@ -270,7 +281,7 @@ export function NotificationTriggersClient({ user }: { user: SessionUser }) {
         loading={loading}
         pagination={pagination}
         onPageChange={setPage}
-        emptyMessage="등록된 알림 트리거가 없습니다."
+        emptyMessage={t('noTriggers')}
         rowKey={(row) => (row as unknown as TriggerLocal).id}
       />
 
@@ -279,12 +290,12 @@ export function NotificationTriggersClient({ user }: { user: SessionUser }) {
         <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>
             <DialogTitle>
-              {editing ? '알림 트리거 수정' : '알림 트리거 추가'}
+              {editing ? t('editTriggerTitle') : t('addTriggerTitle')}
             </DialogTitle>
             <DialogDescription>
               {editing
-                ? '알림 트리거 정보를 수정합니다.'
-                : '새 알림 트리거를 등록합니다.'}
+                ? t('editTriggerDesc')
+                : t('addTriggerDesc')}
             </DialogDescription>
           </DialogHeader>
 
@@ -292,10 +303,10 @@ export function NotificationTriggersClient({ user }: { user: SessionUser }) {
           <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
             {/* eventType */}
             <div className="space-y-2">
-              <Label htmlFor="trigger-event-type">이벤트 타입</Label>
+              <Label htmlFor="trigger-event-type">{t('eventTypeTrigger')}</Label>
               <Input
                 id="trigger-event-type"
-                placeholder="예: leave.approved"
+                placeholder={t('eventTypePlaceholder')}
                 {...register('eventType')}
               />
               {errors.eventType && (
@@ -307,10 +318,10 @@ export function NotificationTriggersClient({ user }: { user: SessionUser }) {
 
             {/* template */}
             <div className="space-y-2">
-              <Label htmlFor="trigger-template">템플릿</Label>
+              <Label htmlFor="trigger-template">{t('templateLabel')}</Label>
               <Textarea
                 id="trigger-template"
-                placeholder="알림 메시지 템플릿을 입력하세요..."
+                placeholder={t('templatePlaceholder')}
                 rows={4}
                 {...register('template')}
               />
@@ -323,7 +334,7 @@ export function NotificationTriggersClient({ user }: { user: SessionUser }) {
 
             {/* channels */}
             <div className="space-y-2">
-              <Label>채널</Label>
+              <Label>{t('channel')}</Label>
               <Controller
                 control={control}
                 name="channels"
@@ -372,7 +383,7 @@ export function NotificationTriggersClient({ user }: { user: SessionUser }) {
                     onCheckedChange={field.onChange}
                   />
                   <Label htmlFor="trigger-active" className="cursor-pointer">
-                    활성화
+                    {t('activate')}
                   </Label>
                 </div>
               )}
@@ -384,13 +395,13 @@ export function NotificationTriggersClient({ user }: { user: SessionUser }) {
                 variant="outline"
                 onClick={() => setDialogOpen(false)}
               >
-                취소
+                {tc('cancel')}
               </Button>
               <Button type="submit" disabled={saving}>
                 {saving && (
                   <Loader2 className="mr-1 h-4 w-4 animate-spin" />
                 )}
-                저장
+                {tc('save')}
               </Button>
             </DialogFooter>
           </form>
@@ -404,14 +415,13 @@ export function NotificationTriggersClient({ user }: { user: SessionUser }) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>알림 트리거 삭제</AlertDialogTitle>
+            <AlertDialogTitle>{t('triggerDeleteTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              &quot;{deleteTarget?.eventType}&quot; 트리거를 삭제하시겠습니까?
-              이 작업은 되돌릴 수 없습니다.
+              &quot;{deleteTarget?.eventType}&quot; {t('triggerDeleteConfirm', { eventType: '' })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogCancel>{tc('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               disabled={deleting}
@@ -420,7 +430,7 @@ export function NotificationTriggersClient({ user }: { user: SessionUser }) {
               {deleting && (
                 <Loader2 className="mr-1 h-4 w-4 animate-spin" />
               )}
-              삭제
+              {tc('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

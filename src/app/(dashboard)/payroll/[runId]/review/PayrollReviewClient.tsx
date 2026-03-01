@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import {
   ArrowLeft,
   Play,
@@ -73,6 +74,8 @@ interface PayrollReviewClientProps {
 
 export default function PayrollReviewClient({ user, runId }: PayrollReviewClientProps) {
   const router = useRouter()
+  const t = useTranslations('payrollReview')
+  const tCommon = useTranslations('common')
   const [data, setData] = useState<ReviewData | null>(null)
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
@@ -141,7 +144,6 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
   const { run, summary } = data
   const status = run.status
 
-  // 이상항목 맵
   const anomalyMap = new Map<string, PayrollAnomaly[]>()
   for (const a of summary.anomalies) {
     const list = anomalyMap.get(a.employeeId) ?? []
@@ -152,7 +154,7 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
   const columns: DataTableColumn<PayrollItemRow>[] = [
     {
       key: 'employee',
-      header: '직원',
+      header: t('employee'),
       render: (row) => (
         <div>
           <p className="font-medium text-slate-900">{row.employee.name}</p>
@@ -162,27 +164,27 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
     },
     {
       key: 'department',
-      header: '부서',
+      header: tCommon('department'),
       render: (row) => row.employee.department.name,
     },
     {
       key: 'baseSalary',
-      header: '기본급',
+      header: t('baseSalary'),
       render: (row) => formatCurrency(Number(row.baseSalary)),
     },
     {
       key: 'overtimePay',
-      header: '초과근무',
+      header: t('overtimePay'),
       render: (row) => formatCurrency(Number(row.overtimePay)),
     },
     {
       key: 'allowances',
-      header: '수당',
+      header: t('allowances'),
       render: (row) => formatCurrency(Number(row.allowances)),
     },
     {
       key: 'grossPay',
-      header: '총지급',
+      header: t('totalGross'),
       render: (row) => (
         <span className="font-medium text-emerald-600">
           {formatCurrency(Number(row.grossPay))}
@@ -191,7 +193,7 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
     },
     {
       key: 'deductions',
-      header: '공제',
+      header: t('deductionsCol'),
       render: (row) => (
         <span className="text-red-600">
           -{formatCurrency(Number(row.deductions))}
@@ -200,7 +202,7 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
     },
     {
       key: 'netPay',
-      header: '실지급',
+      header: t('netPayCol'),
       render: (row) => (
         <span className="font-bold text-slate-900">
           {formatCurrency(Number(row.netPay))}
@@ -217,10 +219,10 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
 
         return (
           <div className="flex items-center gap-1">
-            {hasError && <AlertTriangle className="h-4 w-4 text-red-500" aria-label="이상 항목" />}
-            {hasWarning && <AlertTriangle className="h-4 w-4 text-amber-500" aria-label="경고" />}
+            {hasError && <AlertTriangle className="h-4 w-4 text-red-500" aria-label={t('anomaly')} />}
+            {hasWarning && <AlertTriangle className="h-4 w-4 text-amber-500" aria-label={t('warning')} />}
             {row.isManuallyAdjusted && (
-              <Pencil className="h-3.5 w-3.5 text-blue-500" aria-label="수동 조정됨" />
+              <Pencil className="h-3.5 w-3.5 text-blue-500" aria-label={t('manuallyAdjusted')} />
             )}
             {status === 'REVIEW' && (
               <button
@@ -266,7 +268,7 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               <Play className="h-4 w-4 mr-1" />
-              계산 실행
+              {t('runCalculation')}
             </Button>
           )}
           {status === 'REVIEW' && (
@@ -276,7 +278,7 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
               className="bg-emerald-600 hover:bg-emerald-700 text-white"
             >
               <CheckCircle2 className="h-4 w-4 mr-1" />
-              승인
+              {tCommon('approve')}
             </Button>
           )}
           {status === 'APPROVED' && (
@@ -286,7 +288,7 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
               className="bg-indigo-600 hover:bg-indigo-700 text-white"
             >
               <CreditCard className="h-4 w-4 mr-1" />
-              지급완료
+              {t('markPaid')}
             </Button>
           )}
         </div>
@@ -309,13 +311,13 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
         <div className="p-4 border-b border-slate-200">
           <h2 className="text-sm font-semibold text-slate-900">
-            급여 항목 ({run.payrollItems.length}명)
+            {t('payrollItems', { count: run.payrollItems.length })}
           </h2>
         </div>
         <DataTable<PayrollItemRow>
           columns={columns}
           data={run.payrollItems}
-          emptyMessage="계산된 급여 항목이 없습니다."
+          emptyMessage={t('emptyItems')}
         />
       </div>
 

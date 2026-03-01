@@ -7,6 +7,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Loader2 } from 'lucide-react'
 import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
@@ -20,18 +21,19 @@ import { EmptyChart } from '@/components/analytics/EmptyChart'
 import { BurnoutBadge } from '@/components/analytics/BurnoutBadge'
 import type { TeamHealthData, TeamHealthRow } from '@/lib/analytics/types'
 
-function buildRadarData(team: TeamHealthRow) {
-  return [
-    { metric: '성과', value: (team.avg_performance_score ?? 0) * 20 },
-    { metric: '근태', value: Math.max(0, 100 - (team.avg_late_count_4w ?? 0) * 20) },
-    { metric: '휴가', value: Math.min(100, (team.avg_unused_leave_days ?? 0) * 4) },
-    { metric: '1:1', value: team.one_on_one_coverage_pct ?? 0 },
-  ]
-}
-
 export default function TeamHealthClient() {
   const searchParams = useSearchParams()
   const companyId = searchParams.get('company_id') ?? undefined
+  const t = useTranslations('analytics.teamHealthPage')
+
+  function buildRadarData(team: TeamHealthRow) {
+    return [
+      { metric: t('radarPerformance'), value: (team.avg_performance_score ?? 0) * 20 },
+      { metric: t('radarAttendance'), value: Math.max(0, 100 - (team.avg_late_count_4w ?? 0) * 20) },
+      { metric: t('radarLeave'), value: Math.min(100, (team.avg_unused_leave_days ?? 0) * 4) },
+      { metric: t('radarOneOnOne'), value: team.one_on_one_coverage_pct ?? 0 },
+    ]
+  }
 
   const [data, setData] = useState<TeamHealthData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -58,7 +60,7 @@ export default function TeamHealthClient() {
 
   if (loading) {
     return (
-      <AnalyticsPageLayout title="팀 건강 분석">
+      <AnalyticsPageLayout title={t('title')}>
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
         </div>
@@ -68,22 +70,22 @@ export default function TeamHealthClient() {
 
   if (!data) {
     return (
-      <AnalyticsPageLayout title="팀 건강 분석">
+      <AnalyticsPageLayout title={t('title')}>
         <EmptyChart />
       </AnalyticsPageLayout>
     )
   }
 
-  const coverageData = data.teams.map((t) => ({
-    department_name: t.department_name,
-    coverage: t.one_on_one_coverage_pct ?? 0,
+  const coverageData = data.teams.map((tm) => ({
+    department_name: tm.department_name,
+    coverage: tm.one_on_one_coverage_pct ?? 0,
   }))
 
   return (
-    <AnalyticsPageLayout title="팀 건강 분석" description="부서별 종합 점수, 번아웃 위험 현황">
+    <AnalyticsPageLayout title={t('title')} description={t('description')}>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Radar Chart for selected team */}
-        <ChartCard title={selectedTeam ? `${selectedTeam.department_name} 종합 지표` : '부서 종합 지표'}>
+        <ChartCard title={selectedTeam ? t('deptCompositeMetrics', { dept: selectedTeam.department_name }) : t('compositeMetrics')}>
           {selectedTeam ? (
             <ResponsiveContainer width="100%" height={300}>
               <RadarChart data={buildRadarData(selectedTeam)}>
@@ -99,7 +101,7 @@ export default function TeamHealthClient() {
         </ChartCard>
 
         {/* 1:1 미팅 커버리지 */}
-        <ChartCard title="1:1 미팅 커버리지">
+        <ChartCard title={t('oneOnOneCoverage')}>
           {coverageData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={coverageData} layout="vertical" margin={{ left: 80 }}>
@@ -107,7 +109,7 @@ export default function TeamHealthClient() {
                 <XAxis type="number" domain={[0, 100]} unit="%" />
                 <YAxis type="category" dataKey="department_name" width={70} tick={{ fontSize: 12 }} />
                 <Tooltip />
-                <Bar dataKey="coverage" fill="#10B981" radius={[0, 4, 4, 0]} name="1:1 커버리지(%)" />
+                <Bar dataKey="coverage" fill="#10B981" radius={[0, 4, 4, 0]} name={t('coveragePercent')} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
@@ -116,35 +118,35 @@ export default function TeamHealthClient() {
         </ChartCard>
 
         {/* 부서 건강지표 테이블 */}
-        <ChartCard title="부서 건강지표" className="lg:col-span-2">
+        <ChartCard title={t('deptHealthMetrics')} className="lg:col-span-2">
           {data.teams.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-100 bg-slate-50">
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">부서</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">인원</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">성과점수</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">지각(4주)</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">초과근무(4주)</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">미사용 휴가</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">1:1 커버리지</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">{t('department')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('headcount')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('performanceScore')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('late4w')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('overtime4w')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('unusedLeave')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('oneOnOneCoverageCol')}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {data.teams.map((t) => (
+                  {data.teams.map((tm) => (
                     <tr
-                      key={t.department_id}
-                      className={`cursor-pointer border-b border-slate-100 hover:bg-slate-50 ${selectedTeam?.department_id === t.department_id ? 'bg-blue-50' : ''}`}
-                      onClick={() => setSelectedTeam(t)}
+                      key={tm.department_id}
+                      className={`cursor-pointer border-b border-slate-100 hover:bg-slate-50 ${selectedTeam?.department_id === tm.department_id ? 'bg-blue-50' : ''}`}
+                      onClick={() => setSelectedTeam(tm)}
                     >
-                      <td className="px-4 py-3 font-medium text-slate-700">{t.department_name}</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{t.team_size}</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{t.avg_performance_score ?? '-'}</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{t.avg_late_count_4w ?? '-'}</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{t.avg_overtime_hours_4w ?? '-'}h</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{t.avg_unused_leave_days ?? '-'}일</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{t.one_on_one_coverage_pct ?? 0}%</td>
+                      <td className="px-4 py-3 font-medium text-slate-700">{tm.department_name}</td>
+                      <td className="px-4 py-3 text-center text-slate-600">{tm.team_size}</td>
+                      <td className="px-4 py-3 text-center text-slate-600">{tm.avg_performance_score ?? '-'}</td>
+                      <td className="px-4 py-3 text-center text-slate-600">{tm.avg_late_count_4w ?? '-'}</td>
+                      <td className="px-4 py-3 text-center text-slate-600">{tm.avg_overtime_hours_4w ?? '-'}{t('hSuffix')}</td>
+                      <td className="px-4 py-3 text-center text-slate-600">{tm.avg_unused_leave_days ?? '-'}{t('daySuffix')}</td>
+                      <td className="px-4 py-3 text-center text-slate-600">{tm.one_on_one_coverage_pct ?? 0}%</td>
                     </tr>
                   ))}
                 </tbody>
@@ -156,18 +158,18 @@ export default function TeamHealthClient() {
         </ChartCard>
 
         {/* 번아웃 위험 목록 */}
-        <ChartCard title="번아웃 위험 목록" className="lg:col-span-2">
+        <ChartCard title={t('burnoutRiskList')} className="lg:col-span-2">
           {data.burnoutList.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-100 bg-slate-50">
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">이름</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">부서</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">수준</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">고강도 주(4주)</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">미사용 휴가</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">1:1 경과일</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">{t('employeeName')}</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">{t('departmentCol')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('level')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('highIntensityWeeks')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('unusedLeaveCol')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('daysSinceOneOnOne')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -178,9 +180,9 @@ export default function TeamHealthClient() {
                       <td className="px-4 py-3 text-center">
                         <BurnoutBadge isCritical={b.is_burnout_critical} />
                       </td>
-                      <td className="px-4 py-3 text-center text-slate-600">{b.consecutive_high_weeks}주</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{b.unused_days}일</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{b.days_since_last_one_on_one}일</td>
+                      <td className="px-4 py-3 text-center text-slate-600">{b.consecutive_high_weeks}{t('weekSuffix')}</td>
+                      <td className="px-4 py-3 text-center text-slate-600">{b.unused_days}{t('daySuffix')}</td>
+                      <td className="px-4 py-3 text-center text-slate-600">{b.days_since_last_one_on_one}{t('daySuffix')}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -188,7 +190,7 @@ export default function TeamHealthClient() {
             </div>
           ) : (
             <div className="py-8 text-center text-sm text-emerald-600">
-              번아웃 위험 인원이 없습니다.
+              {t('noBurnoutRisk')}
             </div>
           )}
         </ChartCard>

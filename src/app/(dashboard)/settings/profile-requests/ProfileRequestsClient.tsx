@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Check, X } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -41,22 +42,6 @@ interface ProfileRequestsClientProps {
   user: SessionUser
 }
 
-// ─── Constants ──────────────────────────────────────────────
-
-const FIELD_LABELS: Record<string, string> = {
-  phone: '전화번호',
-  emergencyContact: '비상연락처 이름',
-  emergencyContactPhone: '비상연락처 전화',
-}
-
-type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline'
-
-const STATUS_MAP: Record<string, { label: string; variant: BadgeVariant }> = {
-  CHANGE_PENDING: { label: '대기', variant: 'outline' },
-  CHANGE_APPROVED: { label: '승인', variant: 'default' },
-  CHANGE_REJECTED: { label: '반려', variant: 'destructive' },
-}
-
 // ─── Helpers ────────────────────────────────────────────────
 
 function formatDate(dateStr: string | null): string {
@@ -71,6 +56,24 @@ function formatDate(dateStr: string | null): string {
 // ─── Component ──────────────────────────────────────────────
 
 export function ProfileRequestsClient({ user: _user }: ProfileRequestsClientProps) {
+  const t = useTranslations('profileRequests')
+  const tc = useTranslations('common')
+
+  // ─── Translated label maps ───
+  const FIELD_LABELS: Record<string, string> = {
+    phone: t('phone'),
+    emergencyContact: t('emergencyContact'),
+    emergencyContactPhone: t('emergencyContactPhone'),
+  }
+
+  type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline'
+
+  const STATUS_MAP: Record<string, { label: string; variant: BadgeVariant }> = {
+    CHANGE_PENDING: { label: t('statusPending'), variant: 'outline' },
+    CHANGE_APPROVED: { label: t('statusApproved'), variant: 'default' },
+    CHANGE_REJECTED: { label: t('statusRejected'), variant: 'destructive' },
+  }
+
   const [data, setData] = useState<PendingRequest[]>([])
   const [loading, setLoading] = useState(true)
   const [processing, setProcessing] = useState(false)
@@ -130,7 +133,7 @@ export function ProfileRequestsClient({ user: _user }: ProfileRequestsClientProp
   async function handleReject() {
     if (!rejectTarget) return
     if (!rejectReason.trim()) {
-      setRejectError('반려 사유를 입력해주세요.')
+      setRejectError(t('rejectReasonRequired'))
       return
     }
 
@@ -148,7 +151,7 @@ export function ProfileRequestsClient({ user: _user }: ProfileRequestsClientProp
       await fetchPending()
     } catch (err) {
       setRejectError(
-        err instanceof Error ? err.message : '처리 중 오류가 발생했습니다.',
+        err instanceof Error ? err.message : t('processingError'),
       )
     } finally {
       setProcessing(false)
@@ -160,7 +163,7 @@ export function ProfileRequestsClient({ user: _user }: ProfileRequestsClientProp
   const columns: DataTableColumn<PendingRequest>[] = [
     {
       key: 'employeeName',
-      header: '직원명',
+      header: t('employeeName'),
       render: (row) => (
         <span className="font-medium">
           {row.employee.name}{' '}
@@ -172,15 +175,15 @@ export function ProfileRequestsClient({ user: _user }: ProfileRequestsClientProp
     },
     {
       key: 'fieldName',
-      header: '필드',
+      header: t('fieldName'),
       render: (row) => FIELD_LABELS[row.fieldName] ?? row.fieldName,
     },
     {
       key: 'values',
-      header: '현재값 → 새값',
+      header: t('valuesChange'),
       render: (row) => (
         <span className="text-sm">
-          {row.oldValue ?? '(없음)'}{' '}
+          {row.oldValue ?? t('noValue')}{' '}
           <span className="text-muted-foreground">→</span>{' '}
           <span className="font-medium">{row.newValue}</span>
         </span>
@@ -188,12 +191,12 @@ export function ProfileRequestsClient({ user: _user }: ProfileRequestsClientProp
     },
     {
       key: 'createdAt',
-      header: '요청일',
+      header: t('requestDate'),
       render: (row) => formatDate(row.createdAt),
     },
     {
       key: 'status',
-      header: '상태',
+      header: t('statusLabel'),
       render: (row) => {
         const st = STATUS_MAP[row.status] ?? {
           label: row.status,
@@ -204,7 +207,7 @@ export function ProfileRequestsClient({ user: _user }: ProfileRequestsClientProp
     },
     {
       key: 'actions',
-      header: '액션',
+      header: t('actionLabel'),
       render: (row) =>
         row.status === 'CHANGE_PENDING' ? (
           <div className="flex gap-1">
@@ -215,7 +218,7 @@ export function ProfileRequestsClient({ user: _user }: ProfileRequestsClientProp
               onClick={() => handleApprove(row)}
             >
               <Check className="mr-1 h-3 w-3" />
-              승인
+              {t('approveBtn')}
             </Button>
             <Button
               size="sm"
@@ -224,7 +227,7 @@ export function ProfileRequestsClient({ user: _user }: ProfileRequestsClientProp
               onClick={() => openRejectDialog(row)}
             >
               <X className="mr-1 h-3 w-3" />
-              반려
+              {t('rejectBtn')}
             </Button>
           </div>
         ) : null,
@@ -236,8 +239,8 @@ export function ProfileRequestsClient({ user: _user }: ProfileRequestsClientProp
   return (
     <div className="space-y-6">
       <PageHeader
-        title="프로필 변경 요청 관리"
-        description="직원들의 프로필 수정 요청을 승인 또는 반려합니다."
+        title={t('title')}
+        description={t('description')}
       />
 
       {loading ? (
@@ -250,30 +253,30 @@ export function ProfileRequestsClient({ user: _user }: ProfileRequestsClientProp
       <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>변경 요청 반려</DialogTitle>
+            <DialogTitle>{t('rejectDialog')}</DialogTitle>
           </DialogHeader>
           {rejectTarget && (
             <div className="space-y-4 py-2">
               <div className="text-sm">
                 <p>
-                  <span className="text-muted-foreground">직원:</span>{' '}
+                  <span className="text-muted-foreground">{t('employee')}:</span>{' '}
                   {rejectTarget.employee.name}
                 </p>
                 <p>
-                  <span className="text-muted-foreground">필드:</span>{' '}
+                  <span className="text-muted-foreground">{t('fieldName')}:</span>{' '}
                   {FIELD_LABELS[rejectTarget.fieldName] ?? rejectTarget.fieldName}
                 </p>
                 <p>
-                  <span className="text-muted-foreground">변경 내용:</span>{' '}
-                  {rejectTarget.oldValue ?? '(없음)'} → {rejectTarget.newValue}
+                  <span className="text-muted-foreground">{t('changeContent')}:</span>{' '}
+                  {rejectTarget.oldValue ?? t('noValue')} → {rejectTarget.newValue}
                 </p>
               </div>
               <div>
-                <Label>반려 사유</Label>
+                <Label>{t('rejectReason')}</Label>
                 <Textarea
                   value={rejectReason}
                   onChange={(e) => setRejectReason(e.target.value)}
-                  placeholder="반려 사유를 입력하세요"
+                  placeholder={t('rejectReasonPlaceholder')}
                   className="mt-1"
                   rows={3}
                 />
@@ -289,14 +292,14 @@ export function ProfileRequestsClient({ user: _user }: ProfileRequestsClientProp
               onClick={() => setRejectDialogOpen(false)}
               disabled={processing}
             >
-              취소
+              {tc('cancel')}
             </Button>
             <Button
               variant="destructive"
               onClick={handleReject}
               disabled={processing}
             >
-              {processing ? '처리 중...' : '반려'}
+              {processing ? tc('loading') : t('rejectBtn')}
             </Button>
           </DialogFooter>
         </DialogContent>

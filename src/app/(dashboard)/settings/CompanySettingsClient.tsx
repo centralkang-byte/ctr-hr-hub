@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Loader2, Plus, Trash2, Save } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import type { SessionUser } from '@/types'
 import { apiClient } from '@/lib/api'
@@ -71,18 +72,20 @@ const LOCALES = [
   { value: 'es', label: 'Español' },
 ]
 
-const MONTHS = Array.from({ length: 12 }, (_, i) => ({
-  value: String(i + 1),
-  label: `${i + 1}월`,
-}))
-
 // ─── Component ──────────────────────────────────────────
 
 export function CompanySettingsClient({ user: _user }: { user: SessionUser }) {
+  const t = useTranslations('settings')
+  const tc = useTranslations('common')
   const { toast } = useToast()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [coreValues, setCoreValues] = useState<CoreValue[]>([])
+
+  const MONTHS = Array.from({ length: 12 }, (_, i) => ({
+    value: String(i + 1),
+    label: t('monthUnit', { month: i + 1 }),
+  }))
 
   const {
     register,
@@ -109,11 +112,11 @@ export function CompanySettingsClient({ user: _user }: { user: SessionUser }) {
       })
       setCoreValues(data.coreValues as CoreValue[] ?? [])
     } catch {
-      toast({ title: '오류', description: '설정을 불러올 수 없습니다.', variant: 'destructive' })
+      toast({ title: tc('error'), description: t('settingsLoadError'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
-  }, [reset, toast])
+  }, [reset, toast, t, tc])
 
   useEffect(() => { fetchSettings() }, [fetchSettings])
 
@@ -124,9 +127,9 @@ export function CompanySettingsClient({ user: _user }: { user: SessionUser }) {
         ...formData,
         coreValues,
       })
-      toast({ title: '성공', description: '회사설정이 저장되었습니다.' })
+      toast({ title: tc('success'), description: t('settingsSaved') })
     } catch {
-      toast({ title: '오류', description: '저장 중 오류가 발생했습니다.', variant: 'destructive' })
+      toast({ title: tc('error'), description: t('saveError'), variant: 'destructive' })
     } finally {
       setSaving(false)
     }
@@ -154,17 +157,17 @@ export function CompanySettingsClient({ user: _user }: { user: SessionUser }) {
 
   return (
     <div className="space-y-6 p-6">
-      <PageHeader title="회사설정" description="법인 기본 설정을 관리합니다." />
+      <PageHeader title={t('companySettings')} description={t('companySettingsDesc')} />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* 기본 설정 */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">기본 설정</CardTitle>
+            <CardTitle className="text-lg">{t('basicSettings')}</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="fiscalYearStartMonth">회계연도 시작월</Label>
+              <Label htmlFor="fiscalYearStartMonth">{t('fiscalYearStartMonth')}</Label>
               <Select
                 value={String(watch('fiscalYearStartMonth') ?? '1')}
                 onValueChange={(v) => setValue('fiscalYearStartMonth', Number(v))}
@@ -180,19 +183,19 @@ export function CompanySettingsClient({ user: _user }: { user: SessionUser }) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="probationMonths">수습기간 (개월)</Label>
+              <Label htmlFor="probationMonths">{t('probationMonths')}</Label>
               <Input type="number" {...register('probationMonths')} />
               {errors.probationMonths && <p className="text-xs text-destructive">{errors.probationMonths.message}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="maxOvertimeWeeklyHours">주간 최대 근무시간</Label>
+              <Label htmlFor="maxOvertimeWeeklyHours">{t('maxOvertimeWeeklyHours')}</Label>
               <Input type="number" step="0.5" {...register('maxOvertimeWeeklyHours')} />
               {errors.maxOvertimeWeeklyHours && <p className="text-xs text-destructive">{errors.maxOvertimeWeeklyHours.message}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="timezone">타임존</Label>
+              <Label htmlFor="timezone">{t('timezone')}</Label>
               <Select
                 value={watch('timezone') ?? 'Asia/Seoul'}
                 onValueChange={(v) => setValue('timezone', v)}
@@ -207,7 +210,7 @@ export function CompanySettingsClient({ user: _user }: { user: SessionUser }) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="defaultLocale">기본 언어</Label>
+              <Label htmlFor="defaultLocale">{t('defaultLocale')}</Label>
               <Select
                 value={watch('defaultLocale') ?? 'ko'}
                 onValueChange={(v) => setValue('defaultLocale', v)}
@@ -227,9 +230,9 @@ export function CompanySettingsClient({ user: _user }: { user: SessionUser }) {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">핵심가치</CardTitle>
+              <CardTitle className="text-lg">{t('coreValues')}</CardTitle>
               <Button type="button" variant="outline" size="sm" onClick={addCoreValue}>
-                <Plus className="mr-1 h-4 w-4" /> 추가
+                <Plus className="mr-1 h-4 w-4" /> {tc('add')}
               </Button>
             </div>
           </CardHeader>
@@ -237,13 +240,13 @@ export function CompanySettingsClient({ user: _user }: { user: SessionUser }) {
             {coreValues.map((cv, i) => (
               <div key={i} className="flex items-center gap-3">
                 <Input
-                  placeholder="키 (영문)"
+                  placeholder={t('coreValueKeyPlaceholder')}
                   value={cv.key}
                   onChange={(e) => updateCoreValue(i, 'key', e.target.value)}
                   className="w-32"
                 />
                 <Input
-                  placeholder="라벨"
+                  placeholder={t('coreValueLabelPlaceholder')}
                   value={cv.label}
                   onChange={(e) => updateCoreValue(i, 'label', e.target.value)}
                   className="flex-1"
@@ -260,7 +263,7 @@ export function CompanySettingsClient({ user: _user }: { user: SessionUser }) {
               </div>
             ))}
             {coreValues.length === 0 && (
-              <p className="text-sm text-muted-foreground">등록된 핵심가치가 없습니다.</p>
+              <p className="text-sm text-muted-foreground">{t('noCoreValues')}</p>
             )}
           </CardContent>
         </Card>
@@ -268,7 +271,7 @@ export function CompanySettingsClient({ user: _user }: { user: SessionUser }) {
         <div className="flex justify-end">
           <Button type="submit" disabled={saving}>
             {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-            저장
+            {tc('save')}
           </Button>
         </div>
       </form>

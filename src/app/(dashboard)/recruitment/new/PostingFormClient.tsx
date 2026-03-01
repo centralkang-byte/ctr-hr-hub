@@ -6,52 +6,13 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { ChevronLeft, Briefcase, Sparkles, Loader2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-
-// ─── Options ─────────────────────────────────────────────
-
-const EMPLOYMENT_TYPE_OPTIONS = [
-  { value: 'FULL_TIME', label: '정규직' },
-  { value: 'CONTRACT', label: '계약직' },
-  { value: 'DISPATCH', label: '파견직' },
-  { value: 'INTERN', label: '인턴' },
-]
-
-const WORK_MODE_OPTIONS = [
-  { value: '', label: '선택 안함' },
-  { value: 'OFFICE', label: '사무실' },
-  { value: 'REMOTE', label: '재택' },
-  { value: 'HYBRID', label: '혼합' },
-]
-
-// ─── Schema ──────────────────────────────────────────────
-
-const formSchema = z.object({
-  title: z.string().min(1, '공고 제목을 입력해주세요.'),
-  description: z.string().min(1, '직무 설명을 입력해주세요.'),
-  requirements: z.string().optional(),
-  preferred: z.string().optional(),
-  employmentType: z.string().min(1, '고용형태를 선택해주세요.'),
-  departmentId: z.string().optional(),
-  jobGradeId: z.string().optional(),
-  jobCategoryId: z.string().optional(),
-  workMode: z.string().optional(),
-  headcount: z.coerce.number().int().min(1).default(1),
-  location: z.string().optional(),
-  salaryRangeMin: z.coerce.number().optional().or(z.literal('')),
-  salaryRangeMax: z.coerce.number().optional().or(z.literal('')),
-  salaryHidden: z.boolean().optional(),
-  deadlineDate: z.string().optional(),
-  recruiterId: z.string().optional(),
-  requiredCompetencies: z.string().optional(),
-})
-
-type FormData = z.input<typeof formSchema>
 
 // ─── Reference Types ─────────────────────────────────────
 
@@ -74,6 +35,46 @@ interface Props {
 
 export default function PostingFormClient({ user }: Props) {
   const router = useRouter()
+  const t = useTranslations('recruitment')
+
+  // ─── Options (use t() for labels) ─────────────────────
+  const EMPLOYMENT_TYPE_OPTIONS = [
+    { value: 'FULL_TIME', label: t('typeFULL_TIME') },
+    { value: 'CONTRACT', label: t('typeCONTRACT') },
+    { value: 'DISPATCH', label: t('typeDISPATCH') },
+    { value: 'INTERN', label: t('typeINTERN') },
+  ]
+
+  const WORK_MODE_OPTIONS = [
+    { value: '', label: t('noSelect') },
+    { value: 'OFFICE', label: t('modeOFFICE') },
+    { value: 'REMOTE', label: t('modeREMOTE') },
+    { value: 'HYBRID', label: t('modeHYBRID') },
+  ]
+
+  // ─── Schema ──────────────────────────────────────────
+  const formSchema = z.object({
+    title: z.string().min(1, t('validationTitle')),
+    description: z.string().min(1, t('validationDescription')),
+    requirements: z.string().optional(),
+    preferred: z.string().optional(),
+    employmentType: z.string().min(1, t('validationEmploymentType')),
+    departmentId: z.string().optional(),
+    jobGradeId: z.string().optional(),
+    jobCategoryId: z.string().optional(),
+    workMode: z.string().optional(),
+    headcount: z.coerce.number().int().min(1).default(1),
+    location: z.string().optional(),
+    salaryRangeMin: z.coerce.number().optional().or(z.literal('')),
+    salaryRangeMax: z.coerce.number().optional().or(z.literal('')),
+    salaryHidden: z.boolean().optional(),
+    deadlineDate: z.string().optional(),
+    recruiterId: z.string().optional(),
+    requiredCompetencies: z.string().optional(),
+  })
+
+  type FormData = z.input<typeof formSchema>
+
   const [submitting, setSubmitting] = useState(false)
   const [aiLoading, setAiLoading] = useState(false)
   const [departments, setDepartments] = useState<RefOption[]>([])
@@ -218,7 +219,7 @@ export default function PostingFormClient({ user }: Props) {
             <Briefcase className="w-5 h-5 text-[#2196F3]" />
           </div>
           <h1 className="text-xl font-bold text-[#333]" style={{ letterSpacing: '-0.02em' }}>
-            채용공고 등록
+            {t('registerPostingTitle')}
           </h1>
         </div>
       </div>
@@ -228,19 +229,19 @@ export default function PostingFormClient({ user }: Props) {
         {/* 기본정보 */}
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6 mb-6">
           <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-            기본정보
+            {t('basicInfo')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
-              <label className={labelClass}>공고 제목 *</label>
-              <input {...register('title')} className={inputClass} placeholder="예: 자동차부품 품질관리 엔지니어" />
+              <label className={labelClass}>{t('postingTitleLabel')}</label>
+              <input {...register('title')} className={inputClass} placeholder={t('postingTitlePlaceholder')} />
               {errors.title && <p className={errorClass}>{errors.title.message}</p>}
             </div>
 
             <div>
-              <label className={labelClass}>부서</label>
+              <label className={labelClass}>{t('departmentLabel')}</label>
               <select {...register('departmentId')} className={inputClass}>
-                <option value="">선택 안함</option>
+                <option value="">{t('noSelect')}</option>
                 {departments.map((d) => (
                   <option key={d.id} value={d.id}>{d.name}</option>
                 ))}
@@ -248,9 +249,9 @@ export default function PostingFormClient({ user }: Props) {
             </div>
 
             <div>
-              <label className={labelClass}>직급</label>
+              <label className={labelClass}>{t('jobGradeLabel')}</label>
               <select {...register('jobGradeId')} className={inputClass}>
-                <option value="">선택 안함</option>
+                <option value="">{t('noSelect')}</option>
                 {grades.map((g) => (
                   <option key={g.id} value={g.id}>{g.name}</option>
                 ))}
@@ -258,9 +259,9 @@ export default function PostingFormClient({ user }: Props) {
             </div>
 
             <div>
-              <label className={labelClass}>직군</label>
+              <label className={labelClass}>{t('jobCategoryLabel')}</label>
               <select {...register('jobCategoryId')} className={inputClass}>
-                <option value="">선택 안함</option>
+                <option value="">{t('noSelect')}</option>
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
@@ -268,7 +269,7 @@ export default function PostingFormClient({ user }: Props) {
             </div>
 
             <div>
-              <label className={labelClass}>고용형태 *</label>
+              <label className={labelClass}>{t('employmentTypeLabel')}</label>
               <select {...register('employmentType')} className={inputClass}>
                 {EMPLOYMENT_TYPE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -278,7 +279,7 @@ export default function PostingFormClient({ user }: Props) {
             </div>
 
             <div>
-              <label className={labelClass}>근무형태</label>
+              <label className={labelClass}>{t('workModeLabel')}</label>
               <select {...register('workMode')} className={inputClass}>
                 {WORK_MODE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -287,13 +288,13 @@ export default function PostingFormClient({ user }: Props) {
             </div>
 
             <div>
-              <label className={labelClass}>채용인원</label>
+              <label className={labelClass}>{t('headcountLabel')}</label>
               <input {...register('headcount')} type="number" min={1} className={inputClass} />
             </div>
 
             <div>
-              <label className={labelClass}>근무지</label>
-              <input {...register('location')} className={inputClass} placeholder="예: 서울 강남구" />
+              <label className={labelClass}>{t('locationLabel')}</label>
+              <input {...register('location')} className={inputClass} placeholder={t('locationPlaceholder')} />
             </div>
           </div>
         </div>
@@ -302,7 +303,7 @@ export default function PostingFormClient({ user }: Props) {
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-bold text-[#333]" style={{ letterSpacing: '-0.02em' }}>
-              공고내용
+              {t('postingContent')}
             </h2>
             <button
               type="button"
@@ -315,39 +316,39 @@ export default function PostingFormClient({ user }: Props) {
               ) : (
                 <Sparkles className="w-4 h-4" />
               )}
-              AI 초안 생성
+              {t('aiDraftGenerate')}
             </button>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label className={labelClass}>직무 설명 *</label>
+              <label className={labelClass}>{t('descriptionLabel')}</label>
               <textarea
                 {...register('description')}
                 rows={5}
                 className={inputClass}
-                placeholder="직무에 대한 상세 설명을 입력하세요."
+                placeholder={t('descriptionPlaceholder')}
               />
               {errors.description && <p className={errorClass}>{errors.description.message}</p>}
             </div>
 
             <div>
-              <label className={labelClass}>자격 요건</label>
+              <label className={labelClass}>{t('requirementsLabel')}</label>
               <textarea
                 {...register('requirements')}
                 rows={4}
                 className={inputClass}
-                placeholder="필수 자격 요건을 입력하세요."
+                placeholder={t('requirementsPlaceholder')}
               />
             </div>
 
             <div>
-              <label className={labelClass}>우대 사항</label>
+              <label className={labelClass}>{t('preferredLabel')}</label>
               <textarea
                 {...register('preferred')}
                 rows={4}
                 className={inputClass}
-                placeholder="우대 사항을 입력하세요."
+                placeholder={t('preferredPlaceholder')}
               />
             </div>
           </div>
@@ -356,21 +357,21 @@ export default function PostingFormClient({ user }: Props) {
         {/* 급여 */}
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6 mb-6">
           <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-            급여
+            {t('salarySection')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className={labelClass}>급여 하한 (원)</label>
+              <label className={labelClass}>{t('salaryMinLabel')}</label>
               <input {...register('salaryRangeMin')} type="number" className={inputClass} placeholder="0" />
             </div>
             <div>
-              <label className={labelClass}>급여 상한 (원)</label>
+              <label className={labelClass}>{t('salaryMaxLabel')}</label>
               <input {...register('salaryRangeMax')} type="number" className={inputClass} placeholder="0" />
             </div>
             <div className="md:col-span-2">
               <label className="flex items-center gap-2 text-sm text-[#333]">
                 <input {...register('salaryHidden')} type="checkbox" className="rounded border-[#E8E8E8]" />
-                급여 비공개
+                {t('salaryHiddenLabel')}
               </label>
             </div>
           </div>
@@ -379,28 +380,28 @@ export default function PostingFormClient({ user }: Props) {
         {/* 채용정보 */}
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6 mb-6">
           <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-            채용정보
+            {t('recruitmentInfo')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className={labelClass}>마감일</label>
+              <label className={labelClass}>{t('deadlineDateLabel')}</label>
               <input {...register('deadlineDate')} type="date" className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>채용담당자</label>
+              <label className={labelClass}>{t('recruiterLabel')}</label>
               <select {...register('recruiterId')} className={inputClass}>
-                <option value="">선택 안함</option>
+                <option value="">{t('noSelect')}</option>
                 {employees.map((e) => (
                   <option key={e.id} value={e.id}>{e.name} ({e.employeeNo})</option>
                 ))}
               </select>
             </div>
             <div className="md:col-span-2">
-              <label className={labelClass}>필요 역량 (쉼표 구분)</label>
+              <label className={labelClass}>{t('competenciesLabel')}</label>
               <input
                 {...register('requiredCompetencies')}
                 className={inputClass}
-                placeholder="예: 품질관리, IATF16949, 자동차부품, 영어"
+                placeholder={t('competenciesPlaceholder')}
               />
             </div>
           </div>
@@ -413,14 +414,14 @@ export default function PostingFormClient({ user }: Props) {
             onClick={() => router.back()}
             className="px-6 py-2.5 text-sm font-medium border border-[#E8E8E8] text-[#333] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150"
           >
-            취소
+            {t('cancelButton')}
           </button>
           <button
             type="submit"
             disabled={submitting}
             className="px-6 py-2.5 text-sm font-medium bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
           >
-            {submitting ? '저장 중...' : '공고 등록'}
+            {submitting ? t('saving') : t('registerButton')}
           </button>
         </div>
       </form>

@@ -7,6 +7,7 @@
 
 import { useState, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Sparkles, Loader2, FileText, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { apiClient } from '@/lib/api'
@@ -18,6 +19,7 @@ export default function ExecutiveReportClient() {
   const searchParams = useSearchParams()
   const companyId = searchParams.get('company_id') ?? undefined
   const { toast } = useToast()
+  const t = useTranslations('analytics.executiveReportPage')
 
   const [report, setReport] = useState<ExecutiveReport | null>(null)
   const [loading, setLoading] = useState(false)
@@ -29,18 +31,18 @@ export default function ExecutiveReportClient() {
         company_id: companyId,
       })
       setReport(res.data)
-      toast({ title: '보고서가 생성되었습니다.' })
+      toast({ title: t('reportGenerated') })
     } catch {
-      toast({ title: '보고서 생성에 실패했습니다.', variant: 'destructive' })
+      toast({ title: t('reportFailed'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
-  }, [companyId, toast])
+  }, [companyId, toast, t])
 
   return (
     <AnalyticsPageLayout
-      title="AI 경영진 보고서"
-      description="AI가 전체 HR 데이터를 분석하여 경영진용 요약 보고서를 생성합니다."
+      title={t('title')}
+      description={t('description')}
       actions={
         <Button onClick={generateReport} disabled={loading}>
           {loading ? (
@@ -48,7 +50,7 @@ export default function ExecutiveReportClient() {
           ) : (
             <Sparkles className="mr-2 h-4 w-4" />
           )}
-          보고서 생성
+          {t('generateButton')}
         </Button>
       }
     >
@@ -101,10 +103,10 @@ export default function ExecutiveReportClient() {
         <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 py-20">
           <Sparkles className="mb-4 h-12 w-12 text-slate-300" />
           <p className="text-sm font-medium text-slate-500">
-            &quot;보고서 생성&quot; 버튼을 클릭하여 AI 경영진 보고서를 생성하세요.
+            {t('promptMessage')}
           </p>
           <p className="mt-1 text-xs text-slate-400">
-            전체 HR 데이터를 분석하여 인력현황, 이직동향, 성과분석, 근태이슈 등을 요약합니다.
+            {t('promptDescription')}
           </p>
         </div>
       )}

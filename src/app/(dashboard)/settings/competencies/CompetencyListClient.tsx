@@ -7,13 +7,13 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
+import { useTranslations } from 'next-intl'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Target, Plus, Pencil, Trash2, Loader2, Search, Check, X } from 'lucide-react'
 
 import type { SessionUser, PaginationInfo } from '@/types'
 import { apiClient } from '@/lib/api'
-import { ko } from '@/lib/i18n/ko'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { Button } from '@/components/ui/button'
@@ -54,31 +54,33 @@ interface CompetencyLocal {
   company: { id: string; name: string } | null
 }
 
-// ─── Form schema ─────────────────────────────────────────
-
-const formSchema = z.object({
-  name: z.string().min(1, '역량명은 필수입니다.'),
-  category: z.string().min(1, '카테고리는 필수입니다.'),
-  description: z.string().optional(),
-  behavioralIndicatorsText: z.string().optional(),
-  isActive: z.boolean().default(true),
-})
-
-type FormData = z.infer<typeof formSchema>
-
 // ─── Active filter options ───────────────────────────────
 
 type ActiveFilter = 'all' | 'active' | 'inactive'
 
-const ACTIVE_FILTER_OPTIONS: { value: ActiveFilter; label: string }[] = [
-  { value: 'all', label: '전체' },
-  { value: 'active', label: '활성' },
-  { value: 'inactive', label: '비활성' },
-]
-
 // ─── Component ───────────────────────────────────────────
 
 export function CompetencyListClient(_props: { user: SessionUser }) {
+  const t = useTranslations('performance')
+  const tc = useTranslations('common')
+
+  // ─── Form schema (uses t for validation messages) ───
+  const formSchema = z.object({
+    name: z.string().min(1, t('competencyNameRequired')),
+    category: z.string().min(1, t('categoryRequired')),
+    description: z.string().optional(),
+    behavioralIndicatorsText: z.string().optional(),
+    isActive: z.boolean().default(true),
+  })
+
+  type FormData = z.infer<typeof formSchema>
+
+  const ACTIVE_FILTER_OPTIONS: { value: ActiveFilter; label: string }[] = [
+    { value: 'all', label: t('filterAll') },
+    { value: 'active', label: t('filterActive') },
+    { value: 'inactive', label: t('filterInactive') },
+  ]
+
   // ─── State ───
   const [competencies, setCompetencies] = useState<CompetencyLocal[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | undefined>()
@@ -236,7 +238,7 @@ export function CompetencyListClient(_props: { user: SessionUser }) {
   const columns: DataTableColumn<CompetencyLocal>[] = [
     {
       key: 'name',
-      header: '역량명',
+      header: t('competencyNameCol'),
       render: (row: CompetencyLocal) => (
         <div className="flex items-center gap-2">
           <Target className="h-4 w-4 text-muted-foreground" />
@@ -246,14 +248,14 @@ export function CompetencyListClient(_props: { user: SessionUser }) {
     },
     {
       key: 'category',
-      header: '카테고리',
+      header: t('categoryColLabel'),
       render: (row: CompetencyLocal) => (
         <Badge variant="outline">{row.category}</Badge>
       ),
     },
     {
       key: 'description',
-      header: '설명',
+      header: t('descriptionColumn'),
       render: (row: CompetencyLocal) => (
         <span className="text-sm text-muted-foreground line-clamp-1">
           {row.description ?? '-'}
@@ -262,7 +264,7 @@ export function CompetencyListClient(_props: { user: SessionUser }) {
     },
     {
       key: 'isActive',
-      header: '활성상태',
+      header: t('activeStatusColumn'),
       render: (row: CompetencyLocal) =>
         row.isActive ? (
           <Badge
@@ -273,7 +275,7 @@ export function CompetencyListClient(_props: { user: SessionUser }) {
             }}
           >
             <Check className="mr-1 h-3 w-3" />
-            활성
+            {t('activeLabel')}
           </Badge>
         ) : (
           <Badge
@@ -285,13 +287,13 @@ export function CompetencyListClient(_props: { user: SessionUser }) {
             }}
           >
             <X className="mr-1 h-3 w-3" />
-            비활성
+            {t('inactiveLabel')}
           </Badge>
         ),
     },
     {
       key: 'behavioralIndicators',
-      header: '행동지표',
+      header: t('behavioralIndicatorsCol'),
       render: (row: CompetencyLocal) => {
         const indicators = Array.isArray(row.behavioralIndicators)
           ? row.behavioralIndicators
@@ -322,7 +324,7 @@ export function CompetencyListClient(_props: { user: SessionUser }) {
     },
     {
       key: 'actions',
-      header: ko.common.actions,
+      header: tc('actions'),
       render: (row: CompetencyLocal) => (
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" onClick={() => openEdit(row)}>
@@ -344,8 +346,8 @@ export function CompetencyListClient(_props: { user: SessionUser }) {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="역량 라이브러리"
-        description="조직의 역량 항목을 등록하고 관리합니다."
+        title={t('competencyLibraryTitle')}
+        description={t('competencyLibraryDescription')}
         actions={
           <Button
             onClick={openCreate}
@@ -353,7 +355,7 @@ export function CompetencyListClient(_props: { user: SessionUser }) {
             className="hover:opacity-90"
           >
             <Plus className="mr-1 h-4 w-4" />
-            역량 추가
+            {t('addCompetency')}
           </Button>
         }
       />
@@ -370,7 +372,7 @@ export function CompetencyListClient(_props: { user: SessionUser }) {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="역량명, 카테고리 검색"
+            placeholder={t('searchCompetencyPlaceholder')}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={handleSearchKeyDown}
@@ -378,7 +380,7 @@ export function CompetencyListClient(_props: { user: SessionUser }) {
           />
         </div>
         <Button variant="outline" size="sm" onClick={handleSearch}>
-          {ko.common.search}
+          {tc('search')}
         </Button>
 
         {/* Active filter */}
@@ -415,7 +417,7 @@ export function CompetencyListClient(_props: { user: SessionUser }) {
           loading={loading}
           pagination={pagination}
           onPageChange={setPage}
-          emptyMessage="등록된 역량이 없습니다."
+          emptyMessage={t('noCompetencies')}
           rowKey={(row) => (row as unknown as CompetencyLocal).id}
         />
       </div>
@@ -426,12 +428,12 @@ export function CompetencyListClient(_props: { user: SessionUser }) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Target className="h-5 w-5" />
-              {editing ? '역량 수정' : '역량 추가'}
+              {editing ? t('editCompetency') : t('addCompetencyTitle')}
             </DialogTitle>
             <DialogDescription>
               {editing
-                ? '역량 정보를 수정합니다.'
-                : '새 역량을 등록합니다.'}
+                ? t('editCompetencyDesc')
+                : t('addCompetencyDesc')}
             </DialogDescription>
           </DialogHeader>
 
@@ -442,10 +444,10 @@ export function CompetencyListClient(_props: { user: SessionUser }) {
           >
             {/* name */}
             <div className="space-y-2">
-              <Label htmlFor="comp-name">역량명 *</Label>
+              <Label htmlFor="comp-name">{t('competencyNameInputLabel')}</Label>
               <Input
                 id="comp-name"
-                placeholder="예: 리더십"
+                placeholder={t('competencyNamePlaceholder')}
                 {...register('name')}
               />
               {errors.name && (
@@ -457,10 +459,10 @@ export function CompetencyListClient(_props: { user: SessionUser }) {
 
             {/* category */}
             <div className="space-y-2">
-              <Label htmlFor="comp-category">카테고리 *</Label>
+              <Label htmlFor="comp-category">{t('categoryInputLabel')}</Label>
               <Input
                 id="comp-category"
-                placeholder="예: 공통역량, 직무역량, 리더십역량"
+                placeholder={t('categoryPlaceholder')}
                 {...register('category')}
               />
               {errors.category && (
@@ -472,24 +474,22 @@ export function CompetencyListClient(_props: { user: SessionUser }) {
 
             {/* description */}
             <div className="space-y-2">
-              <Label htmlFor="comp-desc">설명</Label>
+              <Label htmlFor="comp-desc">{t('descriptionInputLabel')}</Label>
               <textarea
                 id="comp-desc"
                 className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                placeholder="역량에 대한 설명을 입력하세요."
+                placeholder={t('descriptionInputPlaceholder')}
                 {...register('description')}
               />
             </div>
 
             {/* behavioral indicators */}
             <div className="space-y-2">
-              <Label htmlFor="comp-indicators">행동지표 (줄바꿈으로 구분)</Label>
+              <Label htmlFor="comp-indicators">{t('behavioralIndicatorsLabel')}</Label>
               <textarea
                 id="comp-indicators"
                 className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                placeholder={
-                  '예:\n팀원에게 명확한 비전을 제시한다\n변화를 주도적으로 이끈다\n갈등 상황에서 조정 역할을 수행한다'
-                }
+                placeholder={t('behavioralIndicatorsPlaceholder')}
                 {...register('behavioralIndicatorsText')}
               />
             </div>
@@ -508,7 +508,7 @@ export function CompetencyListClient(_props: { user: SessionUser }) {
                     }
                   />
                   <Label htmlFor="comp-active" className="cursor-pointer">
-                    활성 상태
+                    {t('activeState')}
                   </Label>
                 </div>
               )}
@@ -520,7 +520,7 @@ export function CompetencyListClient(_props: { user: SessionUser }) {
                 variant="outline"
                 onClick={() => setDialogOpen(false)}
               >
-                {ko.common.cancel}
+                {tc('cancel')}
               </Button>
               <Button
                 type="submit"
@@ -531,7 +531,7 @@ export function CompetencyListClient(_props: { user: SessionUser }) {
                 {saving && (
                   <Loader2 className="mr-1 h-4 w-4 animate-spin" />
                 )}
-                {ko.common.save}
+                {tc('save')}
               </Button>
             </DialogFooter>
           </form>
@@ -545,14 +545,13 @@ export function CompetencyListClient(_props: { user: SessionUser }) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>역량 삭제</AlertDialogTitle>
+            <AlertDialogTitle>{t('deleteCompetency')}</AlertDialogTitle>
             <AlertDialogDescription>
-              &quot;{deleteTarget?.name}&quot;을(를) 삭제하시겠습니까? 이
-              작업은 되돌릴 수 없습니다.
+              {t('deleteCompetencyConfirm', { name: deleteTarget?.name ?? '' })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{ko.common.cancel}</AlertDialogCancel>
+            <AlertDialogCancel>{tc('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               disabled={deleting}
@@ -561,7 +560,7 @@ export function CompetencyListClient(_props: { user: SessionUser }) {
               {deleting && (
                 <Loader2 className="mr-1 h-4 w-4 animate-spin" />
               )}
-              {ko.common.delete}
+              {tc('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

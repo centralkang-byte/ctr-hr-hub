@@ -7,6 +7,7 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import {
   ArrowUpDown,
   Building2,
@@ -115,20 +116,6 @@ interface EmployeeDetailClientProps {
 
 // ─── Constants ──────────────────────────────────────────────
 
-const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
-  FULL_TIME: '정규직',
-  CONTRACT: '계약직',
-  DISPATCH: '파견직',
-  INTERN: '인턴',
-}
-
-const STATUS_LABELS: Record<string, string> = {
-  ACTIVE: '재직',
-  ON_LEAVE: '휴직',
-  RESIGNED: '퇴직',
-  TERMINATED: '해고',
-}
-
 type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline'
 const STATUS_VARIANTS: Record<string, BadgeVariant> = {
   ACTIVE: 'default',
@@ -144,15 +131,6 @@ const HISTORY_TYPE_ICONS: Record<string, string> = {
   DEMOTION: '⬇️',
   RESIGN: '🔴',
   TRANSFER_CROSS_COMPANY: '🌐',
-}
-
-const DOC_TYPE_LABELS: Record<string, string> = {
-  CONTRACT: '계약서',
-  ID_CARD: '신분증',
-  CERTIFICATE: '증명서',
-  RESUME: '이력서',
-  HANDOVER: '인수인계',
-  OTHER: '기타',
 }
 
 const SENSITIVE_DOC_TYPES = ['CONTRACT', 'ID_CARD']
@@ -224,7 +202,33 @@ export function EmployeeDetailClient({
   jobCategories,
 }: EmployeeDetailClientProps) {
   const router = useRouter()
+  const t = useTranslations('employee')
+  const tc = useTranslations('common')
   const isHrAdmin = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
+
+  // ─── Translated label maps ───
+  const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
+    FULL_TIME: t('fullTime'),
+    CONTRACT: t('contract'),
+    DISPATCH: t('dispatch'),
+    INTERN: t('intern'),
+  }
+
+  const STATUS_LABELS: Record<string, string> = {
+    ACTIVE: t('statusActive'),
+    ON_LEAVE: t('statusOnLeave'),
+    RESIGNED: t('statusResigned'),
+    TERMINATED: t('statusTerminated'),
+  }
+
+  const DOC_TYPE_LABELS: Record<string, string> = {
+    CONTRACT: t('docContract'),
+    ID_CARD: t('docIdCard'),
+    CERTIFICATE: t('docCertificate'),
+    RESUME: t('docResume'),
+    HANDOVER: t('docHandover'),
+    OTHER: t('docOther'),
+  }
 
   const [employee, setEmployee] = useState(initialEmployee)
   const [editing, setEditing] = useState(false)
@@ -263,10 +267,10 @@ export function EmployeeDetailClient({
   })
 
   const RESIGN_TYPE_LABELS: Record<string, string> = {
-    VOLUNTARY: '자발적 퇴사',
-    INVOLUNTARY: '비자발적 퇴사',
-    RETIREMENT: '정년퇴직',
-    CONTRACT_END: '계약만료',
+    VOLUNTARY: t('resignVoluntary'),
+    INVOLUNTARY: t('resignInvoluntary'),
+    RETIREMENT: t('resignRetirement'),
+    CONTRACT_END: t('resignContractEnd'),
   }
 
   const resetOffboarding = useCallback(() => {
@@ -296,11 +300,11 @@ export function EmployeeDetailClient({
       resetOffboarding()
       router.push('/offboarding')
     } catch (err: unknown) {
-      setOffboardingError(err instanceof Error ? err.message : '퇴직 처리에 실패했습니다.')
+      setOffboardingError(err instanceof Error ? err.message : t('offboardingFailed'))
     } finally {
       setOffboardingSubmitting(false)
     }
-  }, [employee.id, offboardingData, resetOffboarding, router])
+  }, [employee.id, offboardingData, resetOffboarding, router, t])
 
   // ─── Histories tab ───
   const [histories, setHistories] = useState<HistoryRow[]>([])
@@ -366,11 +370,11 @@ export function EmployeeDetailClient({
       setEmployee((prev) => ({ ...prev, ...res.data }))
       setEditing(false)
     } catch (err: unknown) {
-      setEditError(err instanceof Error ? err.message : '저장에 실패했습니다.')
+      setEditError(err instanceof Error ? err.message : t('saveFailed'))
     } finally {
       setSaving(false)
     }
-  }, [editData, employee.id])
+  }, [editData, employee.id, t])
 
   // ─── Filtered depts by company ───
   const filteredDepts = useMemo(
@@ -392,81 +396,81 @@ export function EmployeeDetailClient({
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {/* Personal */}
             <div className="space-y-1.5">
-              <Label>이름 (한글) <span className="text-destructive">*</span></Label>
+              <Label>{t('nameKorean')} <span className="text-destructive">*</span></Label>
               <Input value={editData.name} onChange={(e) => setEditData((p) => ({ ...p, name: e.target.value }))} />
             </div>
             <div className="space-y-1.5">
-              <Label>영문명</Label>
+              <Label>{t('nameEn')}</Label>
               <Input value={editData.nameEn} onChange={(e) => setEditData((p) => ({ ...p, nameEn: e.target.value }))} />
             </div>
             <div className="space-y-1.5">
-              <Label>이메일 <span className="text-destructive">*</span></Label>
+              <Label>{t('email')} <span className="text-destructive">*</span></Label>
               <Input type="email" value={editData.email} onChange={(e) => setEditData((p) => ({ ...p, email: e.target.value }))} />
             </div>
             <div className="space-y-1.5">
-              <Label>전화번호</Label>
+              <Label>{t('phone')}</Label>
               <Input value={editData.phone} onChange={(e) => setEditData((p) => ({ ...p, phone: e.target.value }))} />
             </div>
             <div className="space-y-1.5">
-              <Label>생년월일</Label>
+              <Label>{t('birthDate')}</Label>
               <Input type="date" value={editData.birthDate} onChange={(e) => setEditData((p) => ({ ...p, birthDate: e.target.value }))} />
             </div>
             <div className="space-y-1.5">
-              <Label>성별</Label>
+              <Label>{t('gender')}</Label>
               <Select value={editData.gender || '__NONE__'} onValueChange={(v) => setEditData((p) => ({ ...p, gender: v === '__NONE__' ? '' : v }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="__NONE__">선택 안함</SelectItem>
-                  <SelectItem value="M">남</SelectItem>
-                  <SelectItem value="F">여</SelectItem>
+                  <SelectItem value="__NONE__">{t('noSelection')}</SelectItem>
+                  <SelectItem value="M">{t('male')}</SelectItem>
+                  <SelectItem value="F">{t('female')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label>국적</Label>
+              <Label>{t('nationality')}</Label>
               <Input value={editData.nationality} onChange={(e) => setEditData((p) => ({ ...p, nationality: e.target.value }))} />
             </div>
             <div className="space-y-1.5">
-              <Label>비상연락처</Label>
+              <Label>{t('emergencyContactName')}</Label>
               <Input value={editData.emergencyContact} onChange={(e) => setEditData((p) => ({ ...p, emergencyContact: e.target.value }))} />
             </div>
             <div className="space-y-1.5">
-              <Label>비상연락처 전화</Label>
+              <Label>{t('emergencyContactPhone')}</Label>
               <Input value={editData.emergencyContactPhone} onChange={(e) => setEditData((p) => ({ ...p, emergencyContactPhone: e.target.value }))} />
             </div>
             {/* Employment */}
             <div className="space-y-1.5">
-              <Label>부서</Label>
+              <Label>{t('department')}</Label>
               <Select value={editData.departmentId || '__NONE__'} onValueChange={(v) => setEditData((p) => ({ ...p, departmentId: v === '__NONE__' ? '' : v }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="__NONE__">선택</SelectItem>
+                  <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
                   {filteredDepts.map((d) => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label>직급</Label>
+              <Label>{t('jobGrade')}</Label>
               <Select value={editData.jobGradeId || '__NONE__'} onValueChange={(v) => setEditData((p) => ({ ...p, jobGradeId: v === '__NONE__' ? '' : v }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="__NONE__">선택</SelectItem>
+                  <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
                   {jobGrades.map((g) => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label>직군</Label>
+              <Label>{t('jobCategory')}</Label>
               <Select value={editData.jobCategoryId || '__NONE__'} onValueChange={(v) => setEditData((p) => ({ ...p, jobCategoryId: v === '__NONE__' ? '' : v }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="__NONE__">선택</SelectItem>
+                  <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
                   {jobCategories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label>고용형태</Label>
+              <Label>{t('employmentType')}</Label>
               <Select value={editData.employmentType} onValueChange={(v) => setEditData((p) => ({ ...p, employmentType: v }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -475,7 +479,7 @@ export function EmployeeDetailClient({
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label>상태</Label>
+              <Label>{tc('status')}</Label>
               <Select value={editData.status} onValueChange={(v) => setEditData((p) => ({ ...p, status: v }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -487,11 +491,11 @@ export function EmployeeDetailClient({
           <div className="flex gap-2 pt-2">
             <Button onClick={handleSave} disabled={saving} className="bg-ctr-primary hover:bg-ctr-primary/90">
               <Check className="mr-1 h-4 w-4" />
-              {saving ? '저장 중...' : '저장'}
+              {saving ? t('saving') : tc('save')}
             </Button>
             <Button variant="outline" onClick={() => { setEditing(false); setEditError(null) }}>
               <X className="mr-1 h-4 w-4" />
-              취소
+              {tc('cancel')}
             </Button>
           </div>
         </div>
@@ -501,32 +505,32 @@ export function EmployeeDetailClient({
     return (
       <div className="space-y-6">
         <div>
-          <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide">개인정보</h3>
+          <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide">{t('personalInfo')}</h3>
           <dl className="grid grid-cols-1 gap-0 divide-y sm:grid-cols-2 sm:divide-y-0">
-            <InfoRow label="이름 (한글)" value={employee.name} />
-            <InfoRow label="영문명" value={employee.nameEn} />
-            <InfoRow label="생년월일" value={formatDate(employee.birthDate)} />
-            <InfoRow label="성별" value={employee.gender === 'M' ? '남' : employee.gender === 'F' ? '여' : '-'} />
-            <InfoRow label="국적" value={employee.nationality} />
-            <InfoRow label="이메일" value={employee.email} />
-            <InfoRow label="전화번호" value={employee.phone} />
-            <InfoRow label="비상연락처" value={employee.emergencyContact} />
-            <InfoRow label="비상연락처 전화" value={employee.emergencyContactPhone} />
+            <InfoRow label={t('nameKorean')} value={employee.name} />
+            <InfoRow label={t('nameEn')} value={employee.nameEn} />
+            <InfoRow label={t('birthDate')} value={formatDate(employee.birthDate)} />
+            <InfoRow label={t('gender')} value={employee.gender === 'M' ? t('male') : employee.gender === 'F' ? t('female') : '-'} />
+            <InfoRow label={t('nationality')} value={employee.nationality} />
+            <InfoRow label={t('email')} value={employee.email} />
+            <InfoRow label={t('phone')} value={employee.phone} />
+            <InfoRow label={t('emergencyContactName')} value={employee.emergencyContact} />
+            <InfoRow label={t('emergencyContactPhone')} value={employee.emergencyContactPhone} />
           </dl>
         </div>
         <Separator />
         <div>
-          <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide">고용정보</h3>
+          <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide">{t('employmentInfo')}</h3>
           <dl className="grid grid-cols-1 gap-0 divide-y sm:grid-cols-2 sm:divide-y-0">
-            <InfoRow label="사번" value={<span className="font-mono">{employee.employeeNo}</span>} />
-            <InfoRow label="법인" value={employee.company?.name} />
-            <InfoRow label="부서" value={employee.department?.name} />
-            <InfoRow label="직급" value={employee.jobGrade?.name} />
-            <InfoRow label="직군" value={employee.jobCategory?.name} />
-            <InfoRow label="고용형태" value={EMPLOYMENT_TYPE_LABELS[employee.employmentType] ?? employee.employmentType} />
-            <InfoRow label="상태" value={<Badge variant={STATUS_VARIANTS[employee.status] ?? 'outline'}>{STATUS_LABELS[employee.status] ?? employee.status}</Badge>} />
-            <InfoRow label="입사일" value={formatDate(employee.hireDate)} />
-            <InfoRow label="퇴직일" value={formatDate(employee.resignDate)} />
+            <InfoRow label={t('employeeCode')} value={<span className="font-mono">{employee.employeeNo}</span>} />
+            <InfoRow label={t('companyEntity')} value={employee.company?.name} />
+            <InfoRow label={t('department')} value={employee.department?.name} />
+            <InfoRow label={t('jobGrade')} value={employee.jobGrade?.name} />
+            <InfoRow label={t('jobCategory')} value={employee.jobCategory?.name} />
+            <InfoRow label={t('employmentType')} value={EMPLOYMENT_TYPE_LABELS[employee.employmentType] ?? employee.employmentType} />
+            <InfoRow label={tc('status')} value={<Badge variant={STATUS_VARIANTS[employee.status] ?? 'outline'}>{STATUS_LABELS[employee.status] ?? employee.status}</Badge>} />
+            <InfoRow label={t('hireDate')} value={formatDate(employee.hireDate)} />
+            <InfoRow label={t('resignDate')} value={formatDate(employee.resignDate)} />
           </dl>
         </div>
       </div>
@@ -538,7 +542,7 @@ export function EmployeeDetailClient({
   const historyColumns = useMemo<DataTableColumn<HistoryRow>[]>(() => [
     {
       key: 'changeType',
-      header: '유형',
+      header: tc('type'),
       render: (row) => (
         <span className="flex items-center gap-1.5">
           <span>{HISTORY_TYPE_ICONS[row.changeType] ?? '📋'}</span>
@@ -548,7 +552,7 @@ export function EmployeeDetailClient({
     },
     {
       key: 'detail',
-      header: '내용',
+      header: t('historyDetail'),
       render: (row) => {
         const parts: string[] = []
         if (row.fromDept && row.toDept) parts.push(`${row.fromDept.name} → ${row.toDept.name}`)
@@ -559,44 +563,44 @@ export function EmployeeDetailClient({
     },
     {
       key: 'approver',
-      header: '승인자',
+      header: t('approver'),
       render: (row) => <span className="text-sm">{row.approver?.name ?? '-'}</span>,
     },
     {
       key: 'createdAt',
-      header: '일자',
+      header: tc('date'),
       sortable: true,
       render: (row) => <span className="text-sm">{formatDate(row.createdAt)}</span>,
     },
-  ], [])
+  ], [t, tc])
 
   // ─── Tab 3: 문서 ────────────────────────────────────────────
 
   const docColumns = useMemo<DataTableColumn<DocumentRow>[]>(() => [
     {
       key: 'docType',
-      header: '유형',
+      header: tc('type'),
       render: (row) => (
         <span className="flex items-center gap-1">
           {DOC_TYPE_LABELS[row.docType] ?? row.docType}
           {SENSITIVE_DOC_TYPES.includes(row.docType) && (
-            <Badge variant="outline" className="ml-1 text-xs">민감</Badge>
+            <Badge variant="outline" className="ml-1 text-xs">{t('sensitive')}</Badge>
           )}
         </span>
       ),
     },
-    { key: 'title', header: '제목', render: (row) => <span className="text-sm font-medium">{row.title}</span> },
+    { key: 'title', header: t('docTitle'), render: (row) => <span className="text-sm font-medium">{row.title}</span> },
     {
       key: 'uploader',
-      header: '업로더',
+      header: t('uploader'),
       render: (row) => <span className="text-sm">{row.uploader?.name ?? '-'}</span>,
     },
     {
       key: 'fileSize',
-      header: '크기',
+      header: t('fileSize'),
       render: (row) => <span className="text-sm">{formatFileSize(row.fileSize)}</span>,
     },
-    { key: 'createdAt', header: '업로드일', render: (row) => <span className="text-sm">{formatDate(row.createdAt)}</span> },
+    { key: 'createdAt', header: t('uploadDate'), render: (row) => <span className="text-sm">{formatDate(row.createdAt)}</span> },
     {
       key: 'download',
       header: '',
@@ -610,11 +614,11 @@ export function EmployeeDetailClient({
             window.open(`/api/v1/employees/${initialEmployee.id}/documents/${row.id}/download`, '_blank')
           }}
         >
-          다운로드
+          {tc('download')}
         </Button>
       ),
     },
-  ], [isHrAdmin, initialEmployee.id])
+  ], [isHrAdmin, initialEmployee.id, t, tc, DOC_TYPE_LABELS])
 
   // ─── Render ─────────────────────────────────────────────────
 
@@ -659,24 +663,24 @@ export function EmployeeDetailClient({
             <TabsList className="mb-4">
               <TabsTrigger value="basic">
                 <User className="mr-1.5 h-4 w-4" />
-                기본정보
+                {t('basicInfo')}
               </TabsTrigger>
               <TabsTrigger value="histories">
                 <ArrowUpDown className="mr-1.5 h-4 w-4" />
-                인사이력
+                {t('hrHistory')}
               </TabsTrigger>
               <TabsTrigger value="documents">
                 <FileText className="mr-1.5 h-4 w-4" />
-                문서
+                {t('documents')}
               </TabsTrigger>
               <TabsTrigger value="discipline">
                 <Trophy className="mr-1.5 h-4 w-4" />
-                징계·상벌
+                {t('discipline')}
               </TabsTrigger>
               {isHrAdmin && (
                 <TabsTrigger value="compensation">
                   <Building2 className="mr-1.5 h-4 w-4" />
-                  연봉이력
+                  {t('compensationHistory')}
                 </TabsTrigger>
               )}
             </TabsList>
@@ -688,7 +692,7 @@ export function EmployeeDetailClient({
                   <div className="mb-4 flex justify-end">
                     <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
                       <Pencil className="mr-1 h-4 w-4" />
-                      인라인 편집
+                      {t('inlineEdit')}
                     </Button>
                   </div>
                 )}
@@ -699,14 +703,14 @@ export function EmployeeDetailClient({
             {/* Tab 2: 인사이력 */}
             <TabsContent value="histories" className="mt-0">
               <div className="rounded-lg border bg-card p-6">
-                <h2 className="mb-4 text-lg font-semibold">인사이력</h2>
+                <h2 className="mb-4 text-lg font-semibold">{t('hrHistory')}</h2>
                 <DataTable<HistoryRow>
                   columns={historyColumns}
                   data={histories}
                   pagination={historiesPag ?? undefined}
                   onPageChange={loadHistories}
                   loading={historiesLoading}
-                  emptyMessage="인사이력이 없습니다"
+                  emptyMessage={t('noHrHistory')}
                   rowKey={(row) => row.id}
                 />
               </div>
@@ -716,11 +720,11 @@ export function EmployeeDetailClient({
             <TabsContent value="documents" className="mt-0">
               <div className="rounded-lg border bg-card p-6">
                 <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-lg font-semibold">문서</h2>
+                  <h2 className="text-lg font-semibold">{t('documents')}</h2>
                   {isHrAdmin && (
                     <Button size="sm" className="bg-ctr-primary hover:bg-ctr-primary/90">
                       <FileText className="mr-1 h-4 w-4" />
-                      문서 업로드
+                      {t('uploadDocument')}
                     </Button>
                   )}
                 </div>
@@ -728,7 +732,7 @@ export function EmployeeDetailClient({
                   columns={docColumns}
                   data={documents}
                   loading={documentsLoading}
-                  emptyMessage="등록된 문서가 없습니다"
+                  emptyMessage={t('noDocuments')}
                   rowKey={(row) => row.id}
                 />
               </div>
@@ -737,10 +741,10 @@ export function EmployeeDetailClient({
             {/* Tab 4: 징계·상벌 */}
             <TabsContent value="discipline" className="mt-0">
               <div className="rounded-lg border bg-card p-6">
-                <h2 className="mb-4 text-lg font-semibold">징계·상벌</h2>
+                <h2 className="mb-4 text-lg font-semibold">{t('discipline')}</h2>
                 <EmptyState
-                  title="징계·상벌 이력이 없습니다"
-                  description="STEP 5에서 징계·포상 기능이 추가될 예정입니다."
+                  title={t('noDiscipline')}
+                  description={t('disciplineComingSoon')}
                 />
               </div>
             </TabsContent>
@@ -749,10 +753,10 @@ export function EmployeeDetailClient({
             {isHrAdmin && (
               <TabsContent value="compensation" className="mt-0">
                 <div className="rounded-lg border bg-card p-6">
-                  <h2 className="mb-4 text-lg font-semibold">연봉이력</h2>
+                  <h2 className="mb-4 text-lg font-semibold">{t('compensationHistory')}</h2>
                   <EmptyState
-                    title="연봉이력이 없습니다"
-                    description="STEP 6에서 연봉·보상 기능이 추가될 예정입니다."
+                    title={t('noCompensationHistory')}
+                    description={t('compensationComingSoon')}
                   />
                 </div>
               </TabsContent>
@@ -765,7 +769,7 @@ export function EmployeeDetailClient({
           {/* Manager card */}
           {employee.manager && (
             <div className="rounded-lg border bg-card p-4">
-              <h3 className="mb-3 text-sm font-semibold text-muted-foreground">매니저</h3>
+              <h3 className="mb-3 text-sm font-semibold text-muted-foreground">{t('manager')}</h3>
               <button
                 type="button"
                 className="flex w-full items-center gap-3 rounded-md p-2 text-left hover:bg-muted/50 transition-colors"
@@ -784,14 +788,14 @@ export function EmployeeDetailClient({
 
           {/* Tenure */}
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="mb-2 text-sm font-semibold text-muted-foreground">재직 기간</h3>
+            <h3 className="mb-2 text-sm font-semibold text-muted-foreground">{t('tenure')}</h3>
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium">{calcTenure(employee.hireDate)}</span>
             </div>
             {employee.hireDate && (
               <p className="mt-1 text-xs text-muted-foreground">
-                입사일: {formatDate(employee.hireDate)}
+                {t('hireDate')}: {formatDate(employee.hireDate)}
               </p>
             )}
           </div>
@@ -799,7 +803,7 @@ export function EmployeeDetailClient({
           {/* Offboarding wizard (HR_ADMIN + ACTIVE) */}
           {isHrAdmin && employee.status === 'ACTIVE' && (
             <div className="rounded-lg border bg-card p-4">
-              <h3 className="mb-2 text-sm font-semibold text-muted-foreground">퇴직 처리</h3>
+              <h3 className="mb-2 text-sm font-semibold text-muted-foreground">{t('offboarding')}</h3>
               <Button
                 variant="destructive"
                 size="sm"
@@ -809,7 +813,7 @@ export function EmployeeDetailClient({
                   setOffboardingOpen(true)
                 }}
               >
-                퇴직 처리
+                {t('offboarding')}
               </Button>
             </div>
           )}
@@ -818,7 +822,7 @@ export function EmployeeDetailClient({
           <Dialog open={offboardingOpen} onOpenChange={(open) => { setOffboardingOpen(open); if (!open) resetOffboarding() }}>
             <DialogContent className="sm:max-w-lg">
               <DialogHeader>
-                <DialogTitle>퇴직 처리 ({offboardingStep}/3)</DialogTitle>
+                <DialogTitle>{t('offboarding')} ({offboardingStep}/3)</DialogTitle>
               </DialogHeader>
 
               {offboardingError && (
@@ -831,23 +835,23 @@ export function EmployeeDetailClient({
               {offboardingStep === 1 && (
                 <div className="space-y-4">
                   <div className="space-y-1.5">
-                    <Label>퇴직 유형 <span className="text-destructive">*</span></Label>
+                    <Label>{t('resignType')} <span className="text-destructive">*</span></Label>
                     <Select
                       value={offboardingData.resignType || '__NONE__'}
                       onValueChange={(v) => setOffboardingData((p) => ({ ...p, resignType: v === '__NONE__' ? '' as const : v as typeof p.resignType }))}
                     >
-                      <SelectTrigger><SelectValue placeholder="퇴직 유형 선택" /></SelectTrigger>
+                      <SelectTrigger><SelectValue placeholder={t('selectResignType')} /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="__NONE__">선택해주세요</SelectItem>
-                        <SelectItem value="VOLUNTARY">자발적 퇴사</SelectItem>
-                        <SelectItem value="INVOLUNTARY">비자발적 퇴사</SelectItem>
-                        <SelectItem value="RETIREMENT">정년퇴직</SelectItem>
-                        <SelectItem value="CONTRACT_END">계약만료</SelectItem>
+                        <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
+                        <SelectItem value="VOLUNTARY">{t('resignVoluntary')}</SelectItem>
+                        <SelectItem value="INVOLUNTARY">{t('resignInvoluntary')}</SelectItem>
+                        <SelectItem value="RETIREMENT">{t('resignRetirement')}</SelectItem>
+                        <SelectItem value="CONTRACT_END">{t('resignContractEnd')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-1.5">
-                    <Label>최종 근무일 <span className="text-destructive">*</span></Label>
+                    <Label>{t('lastWorkingDate')} <span className="text-destructive">*</span></Label>
                     <Input
                       type="date"
                       value={offboardingData.lastWorkingDate}
@@ -861,26 +865,26 @@ export function EmployeeDetailClient({
               {offboardingStep === 2 && (
                 <div className="space-y-4">
                   <div className="space-y-1.5">
-                    <Label>퇴직 사유 코드</Label>
+                    <Label>{t('resignReasonCode')}</Label>
                     <Input
-                      placeholder="예: PERSONAL, CAREER_CHANGE"
+                      placeholder={t('resignReasonCodePlaceholder')}
                       value={offboardingData.resignReasonCode}
                       onChange={(e) => setOffboardingData((p) => ({ ...p, resignReasonCode: e.target.value }))}
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label>퇴직 사유 상세</Label>
+                    <Label>{t('resignReasonDetail')}</Label>
                     <Textarea
-                      placeholder="퇴직 사유를 상세히 입력해주세요"
+                      placeholder={t('resignReasonDetailPlaceholder')}
                       rows={3}
                       value={offboardingData.resignReasonDetail}
                       onChange={(e) => setOffboardingData((p) => ({ ...p, resignReasonDetail: e.target.value }))}
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label>업무 인수자 ID (선택)</Label>
+                    <Label>{t('handoverToId')}</Label>
                     <Input
-                      placeholder="인수자 UUID (선택 사항)"
+                      placeholder={t('handoverToIdPlaceholder')}
                       value={offboardingData.handoverToId}
                       onChange={(e) => setOffboardingData((p) => ({ ...p, handoverToId: e.target.value }))}
                     />
@@ -891,42 +895,42 @@ export function EmployeeDetailClient({
               {/* Step 3: 확인 */}
               {offboardingStep === 3 && (
                 <div className="space-y-3">
-                  <h4 className="text-sm font-semibold">최종 확인</h4>
+                  <h4 className="text-sm font-semibold">{t('finalConfirmation')}</h4>
                   <div className="rounded-md border bg-muted/30 p-4 space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">직원</span>
+                      <span className="text-muted-foreground">{t('employeeLabel')}</span>
                       <span className="font-medium">{employee.name} ({employee.employeeNo})</span>
                     </div>
                     <Separator />
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">퇴직 유형</span>
+                      <span className="text-muted-foreground">{t('resignType')}</span>
                       <span className="font-medium">{RESIGN_TYPE_LABELS[offboardingData.resignType] ?? '-'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">최종 근무일</span>
+                      <span className="text-muted-foreground">{t('lastWorkingDate')}</span>
                       <span className="font-medium">{offboardingData.lastWorkingDate || '-'}</span>
                     </div>
                     {offboardingData.resignReasonCode && (
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">사유 코드</span>
+                        <span className="text-muted-foreground">{t('resignReasonCode')}</span>
                         <span className="font-medium">{offboardingData.resignReasonCode}</span>
                       </div>
                     )}
                     {offboardingData.resignReasonDetail && (
                       <div>
-                        <span className="text-muted-foreground">사유 상세</span>
+                        <span className="text-muted-foreground">{t('resignReasonDetail')}</span>
                         <p className="mt-1 font-medium">{offboardingData.resignReasonDetail}</p>
                       </div>
                     )}
                     {offboardingData.handoverToId && (
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">인수자 ID</span>
+                        <span className="text-muted-foreground">{t('handoverToId')}</span>
                         <span className="font-mono text-xs font-medium">{offboardingData.handoverToId}</span>
                       </div>
                     )}
                   </div>
                   <p className="text-xs text-destructive">
-                    퇴직 처리를 시작하면 직원 상태가 변경되고 오프보딩 체크리스트가 생성됩니다.
+                    {t('offboardingWarning')}
                   </p>
                 </div>
               )}
@@ -934,7 +938,7 @@ export function EmployeeDetailClient({
               <DialogFooter className="gap-2 sm:gap-0">
                 {offboardingStep > 1 && (
                   <Button variant="outline" onClick={() => setOffboardingStep((s) => s - 1)} disabled={offboardingSubmitting}>
-                    이전
+                    {tc('prev')}
                   </Button>
                 )}
                 {offboardingStep < 3 && (
@@ -945,7 +949,7 @@ export function EmployeeDetailClient({
                     }
                     onClick={() => setOffboardingStep((s) => s + 1)}
                   >
-                    다음
+                    {tc('next')}
                   </Button>
                 )}
                 {offboardingStep === 3 && (
@@ -954,7 +958,7 @@ export function EmployeeDetailClient({
                     disabled={offboardingSubmitting}
                     onClick={handleOffboardingSubmit}
                   >
-                    {offboardingSubmitting ? '처리 중...' : '퇴직 처리 시작'}
+                    {offboardingSubmitting ? t('processing') : t('startOffboarding')}
                   </Button>
                 )}
               </DialogFooter>

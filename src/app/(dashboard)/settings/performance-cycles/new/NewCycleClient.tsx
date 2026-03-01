@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -9,29 +10,25 @@ import { apiClient } from '@/lib/api'
 import { ArrowLeft, Save } from 'lucide-react'
 import type { SessionUser } from '@/types'
 
-const HALF_LABELS: Record<string, string> = {
-  H1: '상반기',
-  H2: '하반기',
-  ANNUAL: '연간',
-}
-
-const formSchema = z.object({
-  name: z.string().min(1, '이름을 입력하세요').max(100),
-  year: z.coerce.number().int().min(2020).max(2100),
-  half: z.enum(['H1', 'H2', 'ANNUAL']),
-  goalStart: z.string().min(1, '시작일을 입력하세요'),
-  goalEnd: z.string().min(1, '종료일을 입력하세요'),
-  evalStart: z.string().min(1, '시작일을 입력하세요'),
-  evalEnd: z.string().min(1, '종료일을 입력하세요'),
-})
-
-type FormValues = z.input<typeof formSchema>
-
 export default function NewCycleClient({ user }: { user: SessionUser }) {
   void user
   const router = useRouter()
+  const t = useTranslations('performance')
+  const tc = useTranslations('common')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const formSchema = z.object({
+    name: z.string().min(1, t('validationEnterName')).max(100),
+    year: z.coerce.number().int().min(2020).max(2100),
+    half: z.enum(['H1', 'H2', 'ANNUAL']),
+    goalStart: z.string().min(1, t('validationEnterStartDate')),
+    goalEnd: z.string().min(1, t('validationEnterEndDate')),
+    evalStart: z.string().min(1, t('validationEnterStartDate')),
+    evalEnd: z.string().min(1, t('validationEnterEndDate')),
+  })
+
+  type FormValues = z.input<typeof formSchema>
 
   const {
     register,
@@ -66,7 +63,7 @@ export default function NewCycleClient({ user }: { user: SessionUser }) {
       })
       router.push('/settings/performance-cycles')
     } catch (err) {
-      setError(err instanceof Error ? err.message : '사이클 생성에 실패했습니다')
+      setError(err instanceof Error ? err.message : t('cycleCreationFailed'))
     } finally {
       setSubmitting(false)
     }
@@ -82,12 +79,12 @@ export default function NewCycleClient({ user }: { user: SessionUser }) {
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <h1 className="text-2xl font-bold text-ctr-primary">새 평가 사이클</h1>
+        <h1 className="text-2xl font-bold text-ctr-primary">{t('newEvaluationCycle')}</h1>
       </div>
 
       {/* Form */}
       <form
-        
+
         onSubmit={handleSubmit(onSubmit as Parameters<typeof handleSubmit>[0])}
         className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm space-y-6"
       >
@@ -100,11 +97,11 @@ export default function NewCycleClient({ user }: { user: SessionUser }) {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {/* 이름 */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">이름</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('nameColumn')}</label>
             <input
               {...register('name')}
               type="text"
-              placeholder="예: 2026년 상반기 평가"
+              placeholder={t('namePlaceholder')}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
             />
             {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
@@ -112,7 +109,7 @@ export default function NewCycleClient({ user }: { user: SessionUser }) {
 
           {/* 연도 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">연도</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('yearLabel')}</label>
             <input
               {...register('year')}
               type="number"
@@ -125,13 +122,13 @@ export default function NewCycleClient({ user }: { user: SessionUser }) {
 
           {/* 유형 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">유형</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('typeLabel')}</label>
             <select
               {...register('half')}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
             >
-              {Object.entries(HALF_LABELS).map(([key, label]) => (
-                <option key={key} value={key}>{label}</option>
+              {(['H1', 'H2', 'ANNUAL'] as const).map((key) => (
+                <option key={key} value={key}>{t(`halfLabels.${key}`)}</option>
               ))}
             </select>
             {errors.half && <p className="mt-1 text-xs text-red-500">{errors.half.message}</p>}
@@ -139,7 +136,7 @@ export default function NewCycleClient({ user }: { user: SessionUser }) {
 
           {/* 목표설정 시작일 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">목표설정 시작일</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('goalSettingStart')}</label>
             <input
               {...register('goalStart')}
               type="date"
@@ -150,7 +147,7 @@ export default function NewCycleClient({ user }: { user: SessionUser }) {
 
           {/* 목표설정 종료일 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">목표설정 종료일</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('goalSettingEnd')}</label>
             <input
               {...register('goalEnd')}
               type="date"
@@ -161,7 +158,7 @@ export default function NewCycleClient({ user }: { user: SessionUser }) {
 
           {/* 평가 시작일 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">평가 시작일</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('evalStart')}</label>
             <input
               {...register('evalStart')}
               type="date"
@@ -172,7 +169,7 @@ export default function NewCycleClient({ user }: { user: SessionUser }) {
 
           {/* 평가 종료일 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">평가 종료일</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('evalEnd')}</label>
             <input
               {...register('evalEnd')}
               type="date"
@@ -189,7 +186,7 @@ export default function NewCycleClient({ user }: { user: SessionUser }) {
             onClick={() => router.back()}
             className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
           >
-            취소
+            {tc('cancel')}
           </button>
           <button
             type="submit"
@@ -197,7 +194,7 @@ export default function NewCycleClient({ user }: { user: SessionUser }) {
             className="inline-flex items-center gap-2 rounded-lg bg-ctr-primary px-4 py-2 text-sm font-medium text-white hover:bg-ctr-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="h-4 w-4" />
-            {submitting ? '저장 중...' : '저장'}
+            {submitting ? t('saving') : tc('save')}
           </button>
         </div>
       </form>

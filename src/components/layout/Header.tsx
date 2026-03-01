@@ -2,14 +2,16 @@
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Header
-// 브레드크럼 + CompanySelector + 알림 + 사용자 메뉴
+// 브레드크럼 + CompanySelector + 언어전환 + 알림 + 사용자 메뉴
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback } from 'react'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
+import { useTranslations } from 'next-intl'
 import { User, Settings, LogOut } from 'lucide-react'
 import { NotificationBell } from '@/components/layout/NotificationBell'
+import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -18,7 +20,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { ko } from '@/lib/i18n/ko'
 import type { SessionUser } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -27,6 +28,7 @@ interface CompanyOption {
   id: string
   name: string
   nameEn: string | null
+  countryCode?: string | null
 }
 
 interface HeaderProps {
@@ -36,38 +38,44 @@ interface HeaderProps {
 
 // ─── Breadcrumb helper ──────────────────────────────────────
 
-const BREADCRUMB_MAP: Record<string, string> = {
-  employees: ko.menu.employees,
-  org: ko.menu.org,
-  attendance: ko.menu.attendance,
-  leave: ko.menu.leave,
-  recruitment: ko.menu.recruitment,
-  performance: ko.menu.performance,
-  payroll: ko.menu.payroll,
-  compensation: ko.menu.compensation,
-  analytics: ko.menu.analytics,
-  onboarding: ko.menu.onboarding,
-  offboarding: ko.menu.offboarding,
-  discipline: ko.menu.discipline,
-  benefits: ko.menu.benefits,
-  training: ko.menu.training,
-  settings: ko.menu.settings,
-  notifications: '알림',
-}
-
-function getBreadcrumbs(pathname: string): string[] {
-  const segments = pathname.split('/').filter(Boolean)
-  return segments
-    .map((seg) => BREADCRUMB_MAP[seg] ?? seg)
-    .slice(0, 3)
+const BREADCRUMB_KEYS: Record<string, string> = {
+  employees: 'employees',
+  org: 'org',
+  attendance: 'attendance',
+  leave: 'leave',
+  recruitment: 'recruitment',
+  performance: 'performance',
+  payroll: 'payroll',
+  compensation: 'compensation',
+  analytics: 'analytics',
+  onboarding: 'onboarding',
+  offboarding: 'offboarding',
+  discipline: 'discipline',
+  benefits: 'benefits',
+  training: 'training',
+  settings: 'settings',
+  notifications: 'notifications',
 }
 
 // ─── Component ──────────────────────────────────────────────
 
 export function Header({ user, companies }: HeaderProps) {
   const pathname = usePathname()
-  const breadcrumbs = getBreadcrumbs(pathname)
+  const t = useTranslations('menu')
+  const tAuth = useTranslations('auth')
   const userInitial = user.name.charAt(0).toUpperCase()
+
+  const currentCompany = companies.find((c) => c.id === user.companyId)
+  const countryCode = currentCompany?.countryCode ?? 'KR'
+
+  const breadcrumbs = pathname
+    .split('/')
+    .filter(Boolean)
+    .map((seg) => {
+      const key = BREADCRUMB_KEYS[seg]
+      return key ? t(key) : seg
+    })
+    .slice(0, 3)
 
   const handleSignOut = useCallback(() => {
     void signOut({ callbackUrl: '/login' })
@@ -77,7 +85,7 @@ export function Header({ user, companies }: HeaderProps) {
     <header className="flex h-14 shrink-0 items-center justify-between border-b bg-white px-6">
       {/* ─── Left: Breadcrumb ─── */}
       <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
-        <span className="font-medium text-foreground">{ko.menu.home}</span>
+        <span className="font-medium text-foreground">{t('home')}</span>
         {breadcrumbs.map((crumb, idx) => (
           <span key={idx} className="flex items-center gap-1.5">
             <span className="text-muted-foreground/50">/</span>
@@ -96,12 +104,15 @@ export function Header({ user, companies }: HeaderProps) {
 
       {/* ─── Right: Actions ─── */}
       <div className="flex items-center gap-3">
-        {/* Company Selector — lazy import to avoid SSR issues */}
+        {/* Company Selector */}
         <CompanySelectorWrapper
           companies={companies}
           currentCompanyId={user.companyId}
           userRole={user.role}
         />
+
+        {/* Language Switcher */}
+        <LanguageSwitcher countryCode={countryCode} />
 
         {/* Notification Bell */}
         <NotificationBell />
@@ -126,16 +137,16 @@ export function Header({ user, companies }: HeaderProps) {
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem className="gap-2">
               <User className="h-4 w-4" />
-              <span>내 프로필</span>
+              <span>{tAuth('myProfile')}</span>
             </DropdownMenuItem>
             <DropdownMenuItem className="gap-2">
               <Settings className="h-4 w-4" />
-              <span>설정</span>
+              <span>{t('settings')}</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2 text-destructive" onClick={handleSignOut}>
               <LogOut className="h-4 w-4" />
-              <span>{ko.auth.logout}</span>
+              <span>{tAuth('logout')}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -145,7 +156,6 @@ export function Header({ user, companies }: HeaderProps) {
 }
 
 // ─── CompanySelector Wrapper ────────────────────────────────
-// Inline wrapper to pass props without dynamic import complexity
 
 import { CompanySelector } from '@/components/shared/CompanySelector'
 

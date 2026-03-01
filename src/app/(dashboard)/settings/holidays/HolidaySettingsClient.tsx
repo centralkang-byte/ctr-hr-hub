@@ -7,13 +7,13 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
+import { useTranslations } from 'next-intl'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Plus, Pencil, Trash2, Loader2 } from 'lucide-react'
 
 import type { SessionUser, PaginationInfo } from '@/types'
 import { apiClient } from '@/lib/api'
-import { ko } from '@/lib/i18n/ko'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { Button } from '@/components/ui/button'
@@ -77,6 +77,9 @@ const yearOptions = Array.from({ length: currentYear - 2024 + 2 }, (_, i) => 202
 // ─── Component ───────────────────────────────────────────
 
 export function HolidaySettingsClient({ user }: { user: SessionUser }) {
+  const t = useTranslations('holiday')
+  const tc = useTranslations('common')
+
   // ─── State ───
   const [holidays, setHolidays] = useState<HolidayLocal[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | undefined>()
@@ -184,11 +187,11 @@ export function HolidaySettingsClient({ user }: { user: SessionUser }) {
   const columns: DataTableColumn<HolidayLocal>[] = [
     {
       key: 'name',
-      header: ko.holiday.name,
+      header: t('name'),
     },
     {
       key: 'date',
-      header: ko.holiday.date,
+      header: t('date'),
       render: (row: HolidayLocal) => {
         const d = new Date(row.date)
         return d.toLocaleDateString('ko-KR', {
@@ -201,13 +204,13 @@ export function HolidaySettingsClient({ user }: { user: SessionUser }) {
     },
     {
       key: 'isSubstitute',
-      header: ko.holiday.isSubstitute,
+      header: t('isSubstitute'),
       render: (row: HolidayLocal) =>
-        row.isSubstitute ? <Badge variant="outline">대체공휴일</Badge> : null,
+        row.isSubstitute ? <Badge variant="outline">{t('isSubstitute')}</Badge> : null,
     },
     {
       key: 'actions',
-      header: ko.common.actions,
+      header: tc('actions'),
       render: (row: HolidayLocal) => (
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" onClick={() => openEdit(row)}>
@@ -229,19 +232,19 @@ export function HolidaySettingsClient({ user }: { user: SessionUser }) {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={ko.holiday.settings}
-        description="회사 공휴일을 등록하고 관리합니다."
+        title={t('settings')}
+        description={t('description')}
         actions={
           <Button onClick={openCreate}>
             <Plus className="mr-1 h-4 w-4" />
-            {ko.common.create}
+            {tc('create')}
           </Button>
         }
       />
 
       {/* ─── Year filter ─── */}
       <div className="flex items-center gap-3">
-        <Label>{ko.holiday.year}</Label>
+        <Label>{t('year')}</Label>
         <Select
           value={String(selectedYear)}
           onValueChange={(v) => setSelectedYear(Number(v))}
@@ -252,7 +255,7 @@ export function HolidaySettingsClient({ user }: { user: SessionUser }) {
           <SelectContent>
             {yearOptions.map((y) => (
               <SelectItem key={y} value={String(y)}>
-                {y}년
+                {t('yearSuffix', { year: y })}
               </SelectItem>
             ))}
           </SelectContent>
@@ -266,7 +269,7 @@ export function HolidaySettingsClient({ user }: { user: SessionUser }) {
         loading={loading}
         pagination={pagination}
         onPageChange={setPage}
-        emptyMessage={ko.holiday.noHolidays}
+        emptyMessage={t('noHolidays')}
         rowKey={(row) => (row as unknown as HolidayLocal).id}
       />
 
@@ -275,14 +278,12 @@ export function HolidaySettingsClient({ user }: { user: SessionUser }) {
         <DialogContent className="sm:max-w-[480px]">
           <DialogHeader>
             <DialogTitle>
-              {editing
-                ? `${ko.holiday.name} ${ko.common.edit}`
-                : `${ko.holiday.name} ${ko.common.create}`}
+              {editing ? t('holidayEdit') : t('holidayCreate')}
             </DialogTitle>
             <DialogDescription>
               {editing
-                ? '공휴일 정보를 수정합니다.'
-                : '새 공휴일을 등록합니다.'}
+                ? t('editDescription')
+                : t('createDescription')}
             </DialogDescription>
           </DialogHeader>
 
@@ -290,10 +291,10 @@ export function HolidaySettingsClient({ user }: { user: SessionUser }) {
           <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
             {/* name */}
             <div className="space-y-2">
-              <Label htmlFor="holiday-name">{ko.holiday.name}</Label>
+              <Label htmlFor="holiday-name">{t('name')}</Label>
               <Input
                 id="holiday-name"
-                placeholder="예: 설날"
+                placeholder={t('exampleHoliday')}
                 {...register('name')}
               />
               {errors.name && (
@@ -305,7 +306,7 @@ export function HolidaySettingsClient({ user }: { user: SessionUser }) {
 
             {/* date */}
             <div className="space-y-2">
-              <Label htmlFor="holiday-date">{ko.holiday.date}</Label>
+              <Label htmlFor="holiday-date">{t('date')}</Label>
               <Input
                 id="holiday-date"
                 type="date"
@@ -335,7 +336,7 @@ export function HolidaySettingsClient({ user }: { user: SessionUser }) {
                     htmlFor="holiday-substitute"
                     className="cursor-pointer"
                   >
-                    {ko.holiday.isSubstitute}
+                    {t('isSubstitute')}
                   </Label>
                 </div>
               )}
@@ -347,13 +348,13 @@ export function HolidaySettingsClient({ user }: { user: SessionUser }) {
                 variant="outline"
                 onClick={() => setDialogOpen(false)}
               >
-                {ko.common.cancel}
+                {tc('cancel')}
               </Button>
               <Button type="submit" disabled={saving}>
                 {saving && (
                   <Loader2 className="mr-1 h-4 w-4 animate-spin" />
                 )}
-                {ko.common.save}
+                {tc('save')}
               </Button>
             </DialogFooter>
           </form>
@@ -367,14 +368,13 @@ export function HolidaySettingsClient({ user }: { user: SessionUser }) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>공휴일 삭제</AlertDialogTitle>
+            <AlertDialogTitle>{t('deleteHoliday')}</AlertDialogTitle>
             <AlertDialogDescription>
-              &quot;{deleteTarget?.name}&quot;을(를) 삭제하시겠습니까? 이 작업은
-              되돌릴 수 없습니다.
+              {t('deleteConfirm', { name: deleteTarget?.name ?? '' })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{ko.common.cancel}</AlertDialogCancel>
+            <AlertDialogCancel>{tc('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               disabled={deleting}
@@ -383,7 +383,7 @@ export function HolidaySettingsClient({ user }: { user: SessionUser }) {
               {deleting && (
                 <Loader2 className="mr-1 h-4 w-4 animate-spin" />
               )}
-              {ko.common.delete}
+              {tc('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

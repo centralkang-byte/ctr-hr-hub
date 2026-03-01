@@ -6,6 +6,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import {
   ChevronLeft, Briefcase, Edit3, Globe, Lock,
   Calendar, MapPin, Users, User, Tag,
@@ -16,11 +17,11 @@ import type { SessionUser } from '@/types'
 
 // ─── Label Maps ──────────────────────────────────────────
 
-const STATUS_LABELS: Record<string, string> = {
-  DRAFT: '초안',
-  OPEN: '진행중',
-  CLOSED: '마감',
-  CANCELLED: '취소',
+const STATUS_KEYS: Record<string, string> = {
+  DRAFT: 'statusDRAFT',
+  OPEN: 'statusOPEN',
+  CLOSED: 'statusCLOSED',
+  CANCELLED: 'statusCANCELLED',
 }
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
@@ -30,17 +31,17 @@ const STATUS_BADGE_STYLES: Record<string, string> = {
   CANCELLED: 'bg-[#FFEBEE] text-[#C62828]',
 }
 
-const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
-  FULL_TIME: '정규직',
-  CONTRACT: '계약직',
-  DISPATCH: '파견직',
-  INTERN: '인턴',
+const EMPLOYMENT_TYPE_KEYS: Record<string, string> = {
+  FULL_TIME: 'typeFULL_TIME',
+  CONTRACT: 'typeCONTRACT',
+  DISPATCH: 'typeDISPATCH',
+  INTERN: 'typeINTERN',
 }
 
-const WORK_MODE_LABELS: Record<string, string> = {
-  OFFICE: '사무실',
-  REMOTE: '재택',
-  HYBRID: '혼합',
+const WORK_MODE_KEYS: Record<string, string> = {
+  OFFICE: 'modeOFFICE',
+  REMOTE: 'modeREMOTE',
+  HYBRID: 'modeHYBRID',
 }
 
 // ─── Types ───────────────────────────────────────────────
@@ -81,6 +82,7 @@ interface Props {
 
 export default function PostingDetailClient({ user, id }: Props) {
   const router = useRouter()
+  const t = useTranslations('recruitment')
   const [data, setData] = useState<PostingDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
@@ -130,7 +132,7 @@ export default function PostingDetailClient({ user, id }: Props) {
       <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
         <div className="flex items-center gap-2 text-sm text-[#999]">
           <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#00C853] rounded-full animate-spin" />
-          데이터를 불러오는 중...
+          {t('loadingData')}
         </div>
       </div>
     )
@@ -139,18 +141,18 @@ export default function PostingDetailClient({ user, id }: Props) {
   if (!data) {
     return (
       <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
-        <p className="text-sm text-[#999]">채용 공고를 찾을 수 없습니다.</p>
+        <p className="text-sm text-[#999]">{t('notFound')}</p>
       </div>
     )
   }
 
   const formatSalary = (min: number | null, max: number | null) => {
-    if (data.salaryHidden) return '비공개'
+    if (data.salaryHidden) return t('salaryHidden')
     if (!min && !max) return '-'
     const fmt = (n: number) => n.toLocaleString('ko-KR')
-    if (min && max) return `${fmt(min)} ~ ${fmt(max)} 원`
-    if (min) return `${fmt(min)} 원 이상`
-    if (max) return `${fmt(max)} 원 이하`
+    if (min && max) return t('salaryRangeFormat', { min: fmt(min), max: fmt(max) })
+    if (min) return t('salaryAbove', { amount: fmt(min) })
+    if (max) return t('salaryBelow', { amount: fmt(max) })
     return '-'
   }
 
@@ -187,7 +189,7 @@ export default function PostingDetailClient({ user, id }: Props) {
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[#E8E8E8] text-[#333] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150"
               >
                 <Edit3 className="w-4 h-4" />
-                수정
+                {t('editButton')}
               </button>
               <button
                 onClick={handlePublish}
@@ -195,7 +197,7 @@ export default function PostingDetailClient({ user, id }: Props) {
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
               >
                 <Globe className="w-4 h-4" />
-                게시하기
+                {t('publishButton')}
               </button>
             </>
           )}
@@ -207,7 +209,7 @@ export default function PostingDetailClient({ user, id }: Props) {
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#FF9800] hover:bg-[#F57C00] text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
               >
                 <Lock className="w-4 h-4" />
-                마감하기
+                {t('closePostingButton')}
               </button>
             </>
           )}
@@ -221,7 +223,7 @@ export default function PostingDetailClient({ user, id }: Props) {
           {/* Description */}
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
             <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-              직무 설명
+              {t('descriptionSection')}
             </h2>
             <p className="text-sm text-[#333] leading-relaxed whitespace-pre-wrap">
               {data.description}
@@ -232,7 +234,7 @@ export default function PostingDetailClient({ user, id }: Props) {
           {data.requirements && (
             <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
               <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-                자격 요건
+                {t('requirementsSection')}
               </h2>
               <p className="text-sm text-[#333] leading-relaxed whitespace-pre-wrap">
                 {data.requirements}
@@ -244,7 +246,7 @@ export default function PostingDetailClient({ user, id }: Props) {
           {data.preferred && (
             <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
               <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-                우대 사항
+                {t('preferredSection')}
               </h2>
               <p className="text-sm text-[#333] leading-relaxed whitespace-pre-wrap">
                 {data.preferred}
@@ -255,14 +257,14 @@ export default function PostingDetailClient({ user, id }: Props) {
           {/* Application Summary */}
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
             <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-              지원 현황
+              {t('applicationStatus')}
             </h2>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 px-4 py-3 bg-[#E3F2FD] rounded-lg">
                 <Users className="w-5 h-5 text-[#2196F3]" />
                 <div>
                   <p className="text-2xl font-bold text-[#2196F3]">{data._count.applications}</p>
-                  <p className="text-xs text-[#666]">총 지원자</p>
+                  <p className="text-xs text-[#666]">{t('totalApplicantLabel')}</p>
                 </div>
               </div>
             </div>
@@ -274,13 +276,13 @@ export default function PostingDetailClient({ user, id }: Props) {
           {/* Status Card */}
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
             <h3 className="text-sm font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-              공고 정보
+              {t('postingInfo')}
             </h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-[#999]">상태</span>
+                <span className="text-xs text-[#999]">{t('statusLabel')}</span>
                 <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${STATUS_BADGE_STYLES[data.status] ?? 'bg-[#F5F5F5] text-[#999]'}`}>
-                  {STATUS_LABELS[data.status] ?? data.status}
+                  {STATUS_KEYS[data.status] ? t(STATUS_KEYS[data.status]) : data.status}
                 </span>
               </div>
 
@@ -288,59 +290,59 @@ export default function PostingDetailClient({ user, id }: Props) {
 
               <InfoRow
                 icon={<Briefcase className="w-4 h-4 text-[#999]" />}
-                label="부서"
+                label={t('department')}
                 value={data.department?.name ?? '-'}
               />
               <InfoRow
                 icon={<Tag className="w-4 h-4 text-[#999]" />}
-                label="직급"
+                label={t('jobGrade')}
                 value={data.jobGrade?.name ?? '-'}
               />
               <InfoRow
                 icon={<Tag className="w-4 h-4 text-[#999]" />}
-                label="직군"
+                label={t('jobCategory')}
                 value={data.jobCategory?.name ?? '-'}
               />
               <InfoRow
                 icon={<Briefcase className="w-4 h-4 text-[#999]" />}
-                label="고용형태"
-                value={EMPLOYMENT_TYPE_LABELS[data.employmentType] ?? data.employmentType}
+                label={t('employmentType')}
+                value={EMPLOYMENT_TYPE_KEYS[data.employmentType] ? t(EMPLOYMENT_TYPE_KEYS[data.employmentType]) : data.employmentType}
               />
               {data.workMode && (
                 <InfoRow
                   icon={<MapPin className="w-4 h-4 text-[#999]" />}
-                  label="근무형태"
-                  value={WORK_MODE_LABELS[data.workMode] ?? data.workMode}
+                  label={t('workMode')}
+                  value={WORK_MODE_KEYS[data.workMode] ? t(WORK_MODE_KEYS[data.workMode]) : data.workMode}
                 />
               )}
               <InfoRow
                 icon={<Users className="w-4 h-4 text-[#999]" />}
-                label="채용인원"
-                value={`${data.headcount}명`}
+                label={t('headcountColumn')}
+                value={t('headcountWithUnit', { count: data.headcount })}
               />
               <InfoRow
                 icon={<Tag className="w-4 h-4 text-[#999]" />}
-                label="급여"
+                label={t('salaryLabel')}
                 value={formatSalary(data.salaryRangeMin, data.salaryRangeMax)}
               />
               {data.deadlineDate && (
                 <InfoRow
                   icon={<Calendar className="w-4 h-4 text-[#999]" />}
-                  label="마감일"
+                  label={t('deadlineDate')}
                   value={format(new Date(data.deadlineDate), 'yyyy-MM-dd')}
                 />
               )}
               {data.recruiter && (
                 <InfoRow
                   icon={<User className="w-4 h-4 text-[#999]" />}
-                  label="채용담당자"
+                  label={t('recruiterInfo')}
                   value={data.recruiter.name}
                 />
               )}
               {data.location && (
                 <InfoRow
                   icon={<MapPin className="w-4 h-4 text-[#999]" />}
-                  label="근무지"
+                  label={t('workLocation')}
                   value={data.location}
                 />
               )}
@@ -351,7 +353,7 @@ export default function PostingDetailClient({ user, id }: Props) {
           {data.requiredCompetencies && Array.isArray(data.requiredCompetencies) && data.requiredCompetencies.length > 0 && (
             <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
               <h3 className="text-sm font-bold text-[#333] mb-3" style={{ letterSpacing: '-0.02em' }}>
-                필요 역량
+                {t('requiredCompetencies')}
               </h3>
               <div className="flex flex-wrap gap-2">
                 {data.requiredCompetencies.map((comp, idx) => (
@@ -369,22 +371,22 @@ export default function PostingDetailClient({ user, id }: Props) {
           {/* Timeline */}
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
             <h3 className="text-sm font-bold text-[#333] mb-3" style={{ letterSpacing: '-0.02em' }}>
-              타임라인
+              {t('timelineSection')}
             </h3>
             <div className="space-y-2">
               <TimelineItem
-                label="등록일"
+                label={t('createdDate')}
                 date={data.createdAt}
               />
               {data.postedAt && (
                 <TimelineItem
-                  label="게시일"
+                  label={t('postedDate')}
                   date={data.postedAt}
                 />
               )}
               {data.closedAt && (
                 <TimelineItem
-                  label="마감일"
+                  label={t('closedDate')}
                   date={data.closedAt}
                 />
               )}

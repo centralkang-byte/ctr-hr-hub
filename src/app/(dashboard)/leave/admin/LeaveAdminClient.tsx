@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -28,7 +29,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
-import { ko } from '@/lib/i18n/ko'
 import type { SessionUser } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -82,6 +82,9 @@ function getBarColor(usageRate: number): string {
 
 export function LeaveAdminClient({ user }: { user: SessionUser }) {
   void user
+
+  const t = useTranslations('leave')
+  const tc = useTranslations('common')
 
   const currentYear = new Date().getFullYear()
 
@@ -204,15 +207,15 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
   return (
     <div className="space-y-6 p-6">
       <PageHeader
-        title="휴가 관리 (관리자)"
+        title={t('adminTitle')}
         actions={
-          <Button onClick={openBulkDialog}>{ko.leave.bulkGrant}</Button>
+          <Button onClick={openBulkDialog}>{t('bulkGrant')}</Button>
         }
       />
 
       {/* ─── Year Selector ─── */}
       <div className="flex items-center gap-3">
-        <Label className="text-sm font-medium">연도</Label>
+        <Label className="text-sm font-medium">{tc('year')}</Label>
         <Select value={year} onValueChange={setYear}>
           <SelectTrigger className="w-32">
             <SelectValue />
@@ -220,7 +223,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
           <SelectContent>
             {getYearOptions().map((y) => (
               <SelectItem key={y} value={String(y)}>
-                {y}년
+                {y}{t('yearSuffix')}
               </SelectItem>
             ))}
           </SelectContent>
@@ -232,14 +235,14 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              {ko.leave.pending}
+              {t('pending')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
               <span className="text-2xl font-bold">{stats.pending}</span>
               {stats.pending > 0 && (
-                <Badge className="bg-ctr-warning text-white">처리 필요</Badge>
+                <Badge className="bg-ctr-warning text-white">{t('actionRequired')}</Badge>
               )}
             </div>
           </CardContent>
@@ -248,7 +251,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              {ko.leave.approved}
+              {t('approved')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -261,7 +264,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              {ko.leave.rejected}
+              {t('rejected')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -272,7 +275,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              {ko.leave.cancelled}
+              {t('cancelled')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -284,12 +287,12 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
       {/* ─── Department Usage ─── */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">부서별 휴가 사용률</CardTitle>
+          <CardTitle className="text-base">{t('departmentUsageRate')}</CardTitle>
         </CardHeader>
         <CardContent>
           {deptUsage.length === 0 ? (
             <p className="py-4 text-center text-sm text-muted-foreground">
-              {ko.common.noData}
+              {tc('noData')}
             </p>
           ) : (
             <div className="space-y-4">
@@ -299,7 +302,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
                     <span className="font-medium">{dept.departmentName}</span>
                     <span className="text-muted-foreground">
                       {dept.totalUsed}/{dept.totalGranted}
-                      {ko.leave.days} ({dept.usageRate.toFixed(1)}%)
+                      {t('days')} ({dept.usageRate.toFixed(1)}%)
                     </span>
                   </div>
                   <div className="h-4 w-full overflow-hidden rounded-full bg-gray-100">
@@ -321,12 +324,12 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
       <Dialog open={bulkDialogOpen} onOpenChange={setBulkDialogOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>{ko.leave.bulkGrant}</DialogTitle>
+            <DialogTitle>{t('bulkGrant')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             {/* Policy */}
             <div className="space-y-2">
-              <Label>{ko.leave.policy}</Label>
+              <Label>{t('policy')}</Label>
               <Select
                 value={bulkForm.policyId}
                 onValueChange={(v) =>
@@ -334,7 +337,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={ko.common.selectPlaceholder} />
+                  <SelectValue placeholder={tc('selectPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
                   {policies.map((p) => (
@@ -348,7 +351,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
 
             {/* Department */}
             <div className="space-y-2">
-              <Label>부서</Label>
+              <Label>{tc('department')}</Label>
               <Select
                 value={bulkForm.departmentId}
                 onValueChange={(v) =>
@@ -356,7 +359,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={ko.common.selectPlaceholder} />
+                  <SelectValue placeholder={tc('selectPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
                   {departments.map((d) => (
@@ -370,7 +373,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
 
             {/* Year */}
             <div className="space-y-2">
-              <Label>연도</Label>
+              <Label>{tc('year')}</Label>
               <Input
                 type="number"
                 value={bulkForm.year}
@@ -384,7 +387,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
 
             {/* Days */}
             <div className="space-y-2">
-              <Label>{ko.leave.days}</Label>
+              <Label>{t('days')}</Label>
               <Input
                 type="number"
                 value={bulkForm.days}
@@ -393,7 +396,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
                 }
                 min={0}
                 step={0.5}
-                placeholder="부여할 일수"
+                placeholder={t('daysToGrant')}
               />
             </div>
           </div>
@@ -402,7 +405,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
               variant="outline"
               onClick={() => setBulkDialogOpen(false)}
             >
-              {ko.common.cancel}
+              {tc('cancel')}
             </Button>
             <Button
               onClick={handleBulkGrant}
@@ -413,7 +416,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
                 !bulkForm.days
               }
             >
-              {bulkLoading ? ko.common.loading : ko.common.confirm}
+              {bulkLoading ? tc('loading') : tc('confirm')}
             </Button>
           </DialogFooter>
         </DialogContent>

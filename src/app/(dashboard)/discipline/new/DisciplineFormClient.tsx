@@ -6,36 +6,13 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { ChevronLeft, Gavel, ChevronDown, ChevronUp } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-
-// ─── Label Maps ──────────────────────────────────────────
-
-const DISCIPLINARY_TYPE_OPTIONS = [
-  { value: 'VERBAL_WARNING', label: '구두경고' },
-  { value: 'WRITTEN_WARNING', label: '서면경고' },
-  { value: 'REPRIMAND', label: '견책' },
-  { value: 'SUSPENSION', label: '정직' },
-  { value: 'PAY_CUT', label: '감봉' },
-  { value: 'DEMOTION', label: '강등' },
-  { value: 'TERMINATION', label: '해고' },
-]
-
-const DISCIPLINARY_CATEGORY_OPTIONS = [
-  { value: 'ATTENDANCE', label: '근태' },
-  { value: 'SAFETY', label: '안전' },
-  { value: 'QUALITY', label: '품질' },
-  { value: 'CONDUCT', label: '행동' },
-  { value: 'POLICY_VIOLATION', label: '정책위반' },
-  { value: 'MISCONDUCT', label: '비위' },
-  { value: 'HARASSMENT', label: '괴롭힘' },
-  { value: 'FRAUD', label: '사기' },
-  { value: 'OTHER', label: '기타' },
-]
 
 // ─── Schema ──────────────────────────────────────────────
 
@@ -77,10 +54,17 @@ interface Props {
   user: SessionUser
 }
 
+const TYPE_KEYS = ['VERBAL_WARNING', 'WRITTEN_WARNING', 'REPRIMAND', 'SUSPENSION', 'PAY_CUT', 'DEMOTION', 'TERMINATION'] as const
+const CATEGORY_KEYS = ['ATTENDANCE', 'SAFETY', 'QUALITY', 'CONDUCT', 'POLICY_VIOLATION', 'MISCONDUCT', 'HARASSMENT', 'FRAUD', 'OTHER'] as const
+
 // ─── Component ───────────────────────────────────────────
 
 export default function DisciplineFormClient({ user }: Props) {
   const router = useRouter()
+  const t = useTranslations('disciplineForm')
+  const tPage = useTranslations('disciplinePage')
+  const tCommon = useTranslations('common')
+
   const [employees, setEmployees] = useState<EmployeeOption[]>([])
   const [grades, setGrades] = useState<GradeOption[]>([])
   const [submitting, setSubmitting] = useState(false)
@@ -188,7 +172,7 @@ export default function DisciplineFormClient({ user }: Props) {
             <Gavel className="w-5 h-5 text-[#F44336]" />
           </div>
           <h1 className="text-xl font-bold text-[#333]" style={{ letterSpacing: '-0.02em' }}>
-            징계 등록
+            {t('title')}
           </h1>
         </div>
       </div>
@@ -199,17 +183,17 @@ export default function DisciplineFormClient({ user }: Props) {
         {/* Basic Info */}
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
           <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-            기본 정보
+            {t('basicInfo')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Employee */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">대상 사원 *</label>
+              <label className="block text-sm font-medium text-[#333] mb-1">{t('targetEmployee')} *</label>
               <select
                 {...register('employeeId')}
                 className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] bg-white"
               >
-                <option value="">사원 선택</option>
+                <option value="">{t('selectEmployee')}</option>
                 {employees.map((emp) => (
                   <option key={emp.id} value={emp.id}>
                     {emp.name} ({emp.employeeNo})
@@ -223,14 +207,14 @@ export default function DisciplineFormClient({ user }: Props) {
 
             {/* Action Type */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">징계유형 *</label>
+              <label className="block text-sm font-medium text-[#333] mb-1">{tPage('disciplineType')} *</label>
               <select
                 {...register('actionType')}
                 className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] bg-white"
               >
-                <option value="">유형 선택</option>
-                {DISCIPLINARY_TYPE_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                <option value="">{t('selectType')}</option>
+                {TYPE_KEYS.map((key) => (
+                  <option key={key} value={key}>{tPage(`typeLabels.${key}`)}</option>
                 ))}
               </select>
               {errors.actionType && (
@@ -240,14 +224,14 @@ export default function DisciplineFormClient({ user }: Props) {
 
             {/* Category */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">분류 *</label>
+              <label className="block text-sm font-medium text-[#333] mb-1">{tCommon('category')} *</label>
               <select
                 {...register('category')}
                 className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] bg-white"
               >
-                <option value="">분류 선택</option>
-                {DISCIPLINARY_CATEGORY_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                <option value="">{t('selectCategory')}</option>
+                {CATEGORY_KEYS.map((key) => (
+                  <option key={key} value={key}>{tPage(`categoryLabels.${key}`)}</option>
                 ))}
               </select>
               {errors.category && (
@@ -257,7 +241,7 @@ export default function DisciplineFormClient({ user }: Props) {
 
             {/* Incident Date */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">사건일자 *</label>
+              <label className="block text-sm font-medium text-[#333] mb-1">{tPage('incidentDate')} *</label>
               <input
                 type="date"
                 {...register('incidentDate')}
@@ -270,12 +254,12 @@ export default function DisciplineFormClient({ user }: Props) {
 
             {/* Valid Months */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">유효기간 (개월)</label>
+              <label className="block text-sm font-medium text-[#333] mb-1">{t('validMonthsLabel')}</label>
               <input
                 type="number"
                 min={1}
                 {...register('validMonths')}
-                placeholder="예: 6"
+                placeholder={t('validMonthsPlaceholder')}
                 className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3]"
               />
             </div>
@@ -283,11 +267,11 @@ export default function DisciplineFormClient({ user }: Props) {
 
           {/* Description */}
           <div className="mt-4">
-            <label className="block text-sm font-medium text-[#333] mb-1">설명 *</label>
+            <label className="block text-sm font-medium text-[#333] mb-1">{tCommon('description')} *</label>
             <textarea
               {...register('description')}
               rows={4}
-              placeholder="징계 사유를 상세히 입력해주세요."
+              placeholder={t('descriptionPlaceholder')}
               className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] resize-none"
             />
             {errors.description && (
@@ -297,11 +281,11 @@ export default function DisciplineFormClient({ user }: Props) {
 
           {/* Evidence */}
           <div className="mt-4">
-            <label className="block text-sm font-medium text-[#333] mb-1">증거자료 (S3 Key, 줄바꿈 구분)</label>
+            <label className="block text-sm font-medium text-[#333] mb-1">{t('evidenceLabel')}</label>
             <textarea
               {...register('evidenceKeys')}
               rows={2}
-              placeholder="파일 키를 줄바꿈으로 구분하여 입력..."
+              placeholder={t('evidencePlaceholder')}
               className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] resize-none"
             />
           </div>
@@ -311,11 +295,11 @@ export default function DisciplineFormClient({ user }: Props) {
         {actionType === 'SUSPENSION' && (
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
             <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-              정직 기간
+              {t('suspensionPeriod')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-[#333] mb-1">정직 시작일</label>
+                <label className="block text-sm font-medium text-[#333] mb-1">{t('suspensionStart')}</label>
                 <input
                   type="date"
                   {...register('suspensionStart')}
@@ -323,7 +307,7 @@ export default function DisciplineFormClient({ user }: Props) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#333] mb-1">정직 종료일</label>
+                <label className="block text-sm font-medium text-[#333] mb-1">{t('suspensionEnd')}</label>
                 <input
                   type="date"
                   {...register('suspensionEnd')}
@@ -338,27 +322,27 @@ export default function DisciplineFormClient({ user }: Props) {
         {actionType === 'PAY_CUT' && (
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
             <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-              감봉 조건
+              {t('payCutConditions')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-[#333] mb-1">감봉률 (%)</label>
+                <label className="block text-sm font-medium text-[#333] mb-1">{t('reductionRate')}</label>
                 <input
                   type="number"
                   min={0}
                   max={100}
                   {...register('salaryReductionRate')}
-                  placeholder="예: 10"
+                  placeholder={t('reductionRatePlaceholder')}
                   className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3]"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#333] mb-1">감봉 기간 (개월)</label>
+                <label className="block text-sm font-medium text-[#333] mb-1">{t('reductionPeriod')}</label>
                 <input
                   type="number"
                   min={1}
                   {...register('salaryReductionMonths')}
-                  placeholder="예: 3"
+                  placeholder={t('reductionPeriodPlaceholder')}
                   className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3]"
                 />
               </div>
@@ -370,15 +354,15 @@ export default function DisciplineFormClient({ user }: Props) {
         {actionType === 'DEMOTION' && (
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
             <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-              강등 정보
+              {t('demotionInfo')}
             </h2>
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">강등 직급</label>
+              <label className="block text-sm font-medium text-[#333] mb-1">{t('demotionGrade')}</label>
               <select
                 {...register('demotionGradeId')}
                 className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] bg-white"
               >
-                <option value="">직급 선택</option>
+                <option value="">{t('selectGrade')}</option>
                 {grades.map((g) => (
                   <option key={g.id} value={g.id}>{g.name}</option>
                 ))}
@@ -395,7 +379,7 @@ export default function DisciplineFormClient({ user }: Props) {
             className="flex items-center justify-between w-full p-6 text-left"
           >
             <h2 className="text-base font-bold text-[#333]" style={{ letterSpacing: '-0.02em' }}>
-              징계위원회 (선택)
+              {t('committeeOptional')}
             </h2>
             {committeeOpen ? (
               <ChevronUp className="w-4 h-4 text-[#999]" />
@@ -407,7 +391,7 @@ export default function DisciplineFormClient({ user }: Props) {
             <div className="px-6 pb-6 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#333] mb-1">위원회 일자</label>
+                  <label className="block text-sm font-medium text-[#333] mb-1">{t('committeeDate')}</label>
                   <input
                     type="date"
                     {...register('committeeDate')}
@@ -415,7 +399,7 @@ export default function DisciplineFormClient({ user }: Props) {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#333] mb-1">의결일</label>
+                  <label className="block text-sm font-medium text-[#333] mb-1">{t('decisionDate')}</label>
                   <input
                     type="date"
                     {...register('decisionDate')}
@@ -424,20 +408,20 @@ export default function DisciplineFormClient({ user }: Props) {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#333] mb-1">위원 (콤마 구분)</label>
+                <label className="block text-sm font-medium text-[#333] mb-1">{t('committeeMembersLabel')}</label>
                 <input
                   type="text"
                   {...register('committeeMembers')}
-                  placeholder="홍길동, 김영수, 이철수"
+                  placeholder={t('committeeMembersPlaceholder')}
                   className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3]"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#333] mb-1">의결 내용</label>
+                <label className="block text-sm font-medium text-[#333] mb-1">{t('decisionContent')}</label>
                 <textarea
                   {...register('decision')}
                   rows={2}
-                  placeholder="위원회 의결 내용..."
+                  placeholder={t('decisionContentPlaceholder')}
                   className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] resize-none"
                 />
               </div>
@@ -452,14 +436,14 @@ export default function DisciplineFormClient({ user }: Props) {
             disabled={submitting}
             className="px-6 py-2.5 text-sm font-medium bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {submitting ? '등록 중...' : '징계 등록'}
+            {submitting ? t('submitting') : t('submitButton')}
           </button>
           <button
             type="button"
             onClick={() => router.back()}
             className="px-6 py-2.5 text-sm font-medium border border-[#E8E8E8] text-[#333] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150"
           >
-            취소
+            {tCommon('cancel')}
           </button>
         </div>
       </form>

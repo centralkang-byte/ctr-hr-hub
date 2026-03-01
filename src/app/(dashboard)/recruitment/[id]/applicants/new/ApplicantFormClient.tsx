@@ -6,19 +6,10 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { ChevronLeft, UserPlus, Save, Loader2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-
-// ─── Constants ──────────────────────────────────────────
-
-const SOURCE_OPTIONS = [
-  { value: 'DIRECT', label: '직접지원' },
-  { value: 'REFERRAL', label: '추천' },
-  { value: 'AGENCY', label: '에이전시' },
-  { value: 'JOB_BOARD', label: '잡보드' },
-  { value: 'INTERNAL', label: '내부전환' },
-] as const
 
 // ─── Types ──────────────────────────────────────────────
 
@@ -41,6 +32,7 @@ interface Props {
 
 export default function ApplicantFormClient({ user, postingId }: Props) {
   const router = useRouter()
+  const t = useTranslations('recruitment')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [form, setForm] = useState<FormData>({
@@ -52,6 +44,15 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
     memo: '',
     resumeKey: '',
   })
+
+  // ─── Options (use t() for labels) ─────────────────────
+  const SOURCE_OPTIONS = [
+    { value: 'DIRECT', label: t('sourceDIRECT') },
+    { value: 'REFERRAL', label: t('sourceREFERRAL') },
+    { value: 'AGENCY', label: t('sourceAGENCY') },
+    { value: 'JOB_BOARD', label: t('sourceJOB_BOARD') },
+    { value: 'INTERNAL', label: t('sourceINTERNAL') },
+  ] as const
 
   void user
 
@@ -66,15 +67,15 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
     setError(null)
 
     if (!form.name.trim()) {
-      setError('이름을 입력해주세요.')
+      setError(t('validationName'))
       return
     }
     if (!form.email.trim()) {
-      setError('이메일을 입력해주세요.')
+      setError(t('validationEmail'))
       return
     }
     if (!form.source) {
-      setError('지원경로를 선택해주세요.')
+      setError(t('validationSource'))
       return
     }
 
@@ -92,7 +93,7 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
       router.push(`/recruitment/${postingId}/applicants`)
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : '지원자 등록 중 오류가 발생했습니다.'
+        err instanceof Error ? err.message : t('applicantRegisterError')
       setError(message)
     } finally {
       setSubmitting(false)
@@ -118,10 +119,10 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
               className="text-xl font-bold text-[#333]"
               style={{ letterSpacing: '-0.02em' }}
             >
-              지원자 등록
+              {t('applicantFormTitle')}
             </h1>
             <p className="text-sm text-[#999]">
-              새로운 지원자 정보를 입력해주세요.
+              {t('applicantFormDescription')}
             </p>
           </div>
         </div>
@@ -140,14 +141,14 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
             {/* 이름 */}
             <div>
               <label className="block text-sm font-medium text-[#333] mb-1">
-                이름 <span className="text-[#F44336]">*</span>
+                {t('nameLabel')} <span className="text-[#F44336]">*</span>
               </label>
               <input
                 type="text"
                 name="name"
                 value={form.name}
                 onChange={handleChange}
-                placeholder="지원자 이름"
+                placeholder={t('namePlaceholder')}
                 className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] transition-colors duration-150"
               />
             </div>
@@ -155,7 +156,7 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
             {/* 이메일 */}
             <div>
               <label className="block text-sm font-medium text-[#333] mb-1">
-                이메일 <span className="text-[#F44336]">*</span>
+                {t('emailLabel')} <span className="text-[#F44336]">*</span>
               </label>
               <input
                 type="email"
@@ -170,7 +171,7 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
             {/* 전화번호 */}
             <div>
               <label className="block text-sm font-medium text-[#333] mb-1">
-                전화번호
+                {t('phoneLabel')}
               </label>
               <input
                 type="tel"
@@ -185,7 +186,7 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
             {/* 지원경로 */}
             <div>
               <label className="block text-sm font-medium text-[#333] mb-1">
-                지원경로 <span className="text-[#F44336]">*</span>
+                {t('sourceLabel')} <span className="text-[#F44336]">*</span>
               </label>
               <select
                 name="source"
@@ -204,7 +205,7 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
             {/* 포트폴리오 URL */}
             <div>
               <label className="block text-sm font-medium text-[#333] mb-1">
-                포트폴리오 URL
+                {t('portfolioUrlLabel')}
               </label>
               <input
                 type="url"
@@ -219,31 +220,31 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
             {/* 이력서 키 (placeholder) */}
             <div>
               <label className="block text-sm font-medium text-[#333] mb-1">
-                이력서 파일 키
+                {t('resumeKeyLabel')}
               </label>
               <input
                 type="text"
                 name="resumeKey"
                 value={form.resumeKey}
                 onChange={handleChange}
-                placeholder="S3 파일 키 (추후 업로드 연동)"
+                placeholder={t('resumeKeyPlaceholder')}
                 className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-[#FAFAFA] focus:outline-none focus:border-[#2196F3] transition-colors duration-150"
               />
               <p className="text-xs text-[#999] mt-1">
-                파일 업로드 기능은 추후 연동 예정입니다.
+                {t('resumeKeyDescription')}
               </p>
             </div>
 
             {/* 메모 */}
             <div>
               <label className="block text-sm font-medium text-[#333] mb-1">
-                메모
+                {t('memoLabel')}
               </label>
               <textarea
                 name="memo"
                 value={form.memo}
                 onChange={handleChange}
-                placeholder="지원자 관련 메모..."
+                placeholder={t('memoPlaceholder')}
                 rows={3}
                 className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg resize-none focus:outline-none focus:border-[#2196F3] transition-colors duration-150"
               />
@@ -257,7 +258,7 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
               onClick={() => router.push(`/recruitment/${postingId}/applicants`)}
               className="px-4 py-2 text-sm font-medium text-[#666] border border-[#E8E8E8] rounded-lg hover:bg-[#FAFAFA] transition-colors duration-150"
             >
-              취소
+              {t('cancelButton')}
             </button>
             <button
               type="submit"
@@ -269,7 +270,7 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
               ) : (
                 <Save className="w-4 h-4" />
               )}
-              등록
+              {t('registerSubmit')}
             </button>
           </div>
         </div>

@@ -7,6 +7,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Loader2 } from 'lucide-react'
 import {
   BarChart, Bar, PieChart, Pie, Cell,
@@ -25,6 +26,7 @@ const BAND_COLORS = ['#EF4444', '#10B981', '#F59E0B']
 export default function CompensationAnalyticsClient() {
   const searchParams = useSearchParams()
   const companyId = searchParams.get('company_id') ?? undefined
+  const t = useTranslations('analytics.compensationPage')
 
   const [data, setData] = useState<CompensationData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -47,7 +49,7 @@ export default function CompensationAnalyticsClient() {
 
   if (loading) {
     return (
-      <AnalyticsPageLayout title="보상 분석">
+      <AnalyticsPageLayout title={t('title')}>
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
         </div>
@@ -57,7 +59,7 @@ export default function CompensationAnalyticsClient() {
 
   if (!data) {
     return (
-      <AnalyticsPageLayout title="보상 분석">
+      <AnalyticsPageLayout title={t('title')}>
         <EmptyChart />
       </AnalyticsPageLayout>
     )
@@ -71,7 +73,7 @@ export default function CompensationAnalyticsClient() {
   ]
 
   return (
-    <AnalyticsPageLayout title="보상 분석" description="Compa-ratio 분포, 직급별 보상 비교, 밴드 적합도">
+    <AnalyticsPageLayout title={t('title')} description={t('description')}>
       {/* KPI Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <AnalyticsKpiCard
@@ -96,7 +98,7 @@ export default function CompensationAnalyticsClient() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* 직급별 평균 Compa-Ratio */}
-        <ChartCard title="직급별 평균 Compa-Ratio">
+        <ChartCard title={t('avgCompaRatioByGrade')}>
           {data.byGrade.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={data.byGrade}>
@@ -113,7 +115,7 @@ export default function CompensationAnalyticsClient() {
         </ChartCard>
 
         {/* 밴드 적합도 분포 */}
-        <ChartCard title="급여 밴드 적합도">
+        <ChartCard title={t('bandFit')}>
           {total > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
@@ -141,18 +143,18 @@ export default function CompensationAnalyticsClient() {
         </ChartCard>
 
         {/* Compa-Ratio 상세 테이블 */}
-        <ChartCard title="직급/직군별 Compa-Ratio 상세" className="lg:col-span-2">
+        <ChartCard title={t('compaRatioDetail')} className="lg:col-span-2">
           {data.distribution.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-100 bg-slate-50">
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">직급</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">직군</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">인원</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">평균</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">{t('grade')}</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">{t('jobCategory')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('headcount')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('average')}</th>
                     <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">P25</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">중간값</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('median')}</th>
                     <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">P75</th>
                   </tr>
                 </thead>

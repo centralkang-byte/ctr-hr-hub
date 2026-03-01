@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { format, differenceInDays } from 'date-fns'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -29,14 +30,6 @@ interface Props {
   permissions: Permission[]
 }
 
-const PERMIT_TYPE_LABELS: Record<string, string> = {
-  WORK_VISA: '취업비자',
-  WORK_PERMIT: '취업허가',
-  RESIDENCE_PERMIT: '거주허가',
-  I9_VERIFICATION: 'I-9 확인',
-  OTHER: '기타',
-}
-
 const STATUS_COLORS: Record<string, string> = {
   ACTIVE: 'bg-green-100 text-green-800',
   EXPIRED: 'bg-red-100 text-red-800',
@@ -44,14 +37,25 @@ const STATUS_COLORS: Record<string, string> = {
   PENDING_RENEWAL: 'bg-yellow-100 text-yellow-800',
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  ACTIVE: '유효',
-  EXPIRED: '만료',
-  REVOKED: '취소',
-  PENDING_RENEWAL: '갱신 중',
-}
-
 export default function WorkPermitsClient({ employeeId, permissions }: Props) {
+  const t = useTranslations('employee')
+  const tc = useTranslations('common')
+
+  const PERMIT_TYPE_LABELS: Record<string, string> = {
+    WORK_VISA: t('permitWorkVisa'),
+    WORK_PERMIT: t('permitWorkPermit'),
+    RESIDENCE_PERMIT: t('permitResidence'),
+    I9_VERIFICATION: t('permitI9'),
+    OTHER: t('permitOther'),
+  }
+
+  const STATUS_LABELS: Record<string, string> = {
+    ACTIVE: t('permitActive'),
+    EXPIRED: t('permitExpired'),
+    REVOKED: t('permitRevoked'),
+    PENDING_RENEWAL: t('permitPendingRenewal'),
+  }
+
   const [permits, setPermits] = useState<WorkPermit[]>([])
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
@@ -106,21 +110,21 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">비자/취업허가</h2>
+        <h2 className="text-lg font-semibold">{t('workPermitsTitle')}</h2>
         {canWrite && (
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button size="sm" className="bg-ctr-primary hover:bg-ctr-primary/90">
-                + 비자 등록
+                + {t('newWorkPermit')}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>비자/취업허가 등록</DialogTitle>
+                <DialogTitle>{t('workPermitRegistration')}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <div className="space-y-1">
-                  <Label>허가 유형</Label>
+                  <Label>{t('permitType')}</Label>
                   <Select
                     value={form.permitType}
                     onValueChange={(v) => setForm((f) => ({ ...f, permitType: v }))}
@@ -137,14 +141,14 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <Label>허가 번호 (선택)</Label>
+                    <Label>{t('permitNumberOptional')}</Label>
                     <Input
                       value={form.permitNumber}
                       onChange={(e) => setForm((f) => ({ ...f, permitNumber: e.target.value }))}
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label>발급 국가 *</Label>
+                    <Label>{t('issuingCountry')} *</Label>
                     <Input
                       placeholder="KR, PL, US..."
                       maxLength={3}
@@ -154,7 +158,7 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <Label>발급 기관 (선택)</Label>
+                  <Label>{t('issuingAuthorityOptional')}</Label>
                   <Input
                     value={form.issuingAuthority}
                     onChange={(e) => setForm((f) => ({ ...f, issuingAuthority: e.target.value }))}
@@ -162,7 +166,7 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <Label>발급일 *</Label>
+                    <Label>{t('issueDate')} *</Label>
                     <Input
                       type="date"
                       value={form.issueDate}
@@ -170,7 +174,7 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label>만료일 (선택)</Label>
+                    <Label>{t('expiryDateOptional')}</Label>
                     <Input
                       type="date"
                       value={form.expiryDate}
@@ -179,7 +183,7 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <Label>메모</Label>
+                  <Label>{tc('memo')}</Label>
                   <Textarea
                     value={form.notes}
                     onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
@@ -191,7 +195,7 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
                   disabled={!form.issuingCountry || !form.issueDate}
                   className="w-full bg-ctr-primary"
                 >
-                  등록
+                  {tc('create')}
                 </Button>
               </div>
             </DialogContent>
@@ -200,18 +204,18 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
       </div>
 
       {loading ? (
-        <p className="text-sm text-gray-500">로딩 중...</p>
+        <p className="text-sm text-gray-500">{tc('loading')}</p>
       ) : (
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>유형</TableHead>
-              <TableHead>허가번호</TableHead>
-              <TableHead>발급국가</TableHead>
-              <TableHead>발급일</TableHead>
-              <TableHead>만료일</TableHead>
-              <TableHead>상태</TableHead>
-              <TableHead>비고</TableHead>
+              <TableHead>{tc('type')}</TableHead>
+              <TableHead>{t('permitNumber')}</TableHead>
+              <TableHead>{t('issuingCountry')}</TableHead>
+              <TableHead>{t('issueDate')}</TableHead>
+              <TableHead>{t('expiryDate')}</TableHead>
+              <TableHead>{tc('status')}</TableHead>
+              <TableHead>{tc('note')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -244,7 +248,7 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
             {permits.length === 0 && (
               <TableRow>
                 <TableCell colSpan={7} className="text-center text-gray-400">
-                  비자/취업허가 이력이 없습니다
+                  {t('noWorkPermits')}
                 </TableCell>
               </TableRow>
             )}

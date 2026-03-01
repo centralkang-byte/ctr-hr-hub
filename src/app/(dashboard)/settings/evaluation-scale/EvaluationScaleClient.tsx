@@ -7,6 +7,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { Loader2, Save, Plus, Trash2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import type { SessionUser } from '@/types'
 import { apiClient } from '@/lib/api'
@@ -27,6 +28,8 @@ interface EvaluationScaleData {
 const DEFAULT_GRADES = ['S', 'A', 'B', 'C', 'D']
 
 export function EvaluationScaleClient({ user: _user }: { user: SessionUser }) {
+  const t = useTranslations('settings')
+  const tc = useTranslations('common')
   const { toast } = useToast()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -45,11 +48,11 @@ export function EvaluationScaleClient({ user: _user }: { user: SessionUser }) {
       setRatingLabels(d.ratingLabels as string[])
       setGradeLabels(d.gradeLabels as Record<string, string>)
     } catch {
-      toast({ title: '오류', description: '평가 척도를 불러올 수 없습니다.', variant: 'destructive' })
+      toast({ title: tc('error'), description: t('evaluationScaleLoadError'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
-  }, [toast])
+  }, [toast, t, tc])
 
   useEffect(() => { fetchData() }, [fetchData])
 
@@ -66,12 +69,12 @@ export function EvaluationScaleClient({ user: _user }: { user: SessionUser }) {
 
   const handleSave = async () => {
     if (scaleMin >= scaleMax) {
-      toast({ title: '오류', description: '최소값은 최대값보다 작아야 합니다.', variant: 'destructive' })
+      toast({ title: tc('error'), description: t('minGreaterThanMax'), variant: 'destructive' })
       return
     }
     const expectedCount = scaleMax - scaleMin + 1
     if (ratingLabels.length !== expectedCount) {
-      toast({ title: '오류', description: `등급 라벨 ${expectedCount}개가 필요합니다.`, variant: 'destructive' })
+      toast({ title: tc('error'), description: t('ratingLabelsRequired', { count: expectedCount }), variant: 'destructive' })
       return
     }
 
@@ -83,9 +86,9 @@ export function EvaluationScaleClient({ user: _user }: { user: SessionUser }) {
         ratingLabels,
         gradeLabels,
       })
-      toast({ title: '성공', description: '평가 척도가 저장되었습니다.' })
+      toast({ title: tc('success'), description: t('evaluationScaleSaved') })
     } catch {
-      toast({ title: '오류', description: '저장 중 오류가 발생했습니다.', variant: 'destructive' })
+      toast({ title: tc('error'), description: t('saveError'), variant: 'destructive' })
     } finally {
       setSaving(false)
     }
@@ -101,16 +104,16 @@ export function EvaluationScaleClient({ user: _user }: { user: SessionUser }) {
 
   return (
     <div className="space-y-6 p-6">
-      <PageHeader title="평가 척도" description="성과 평가 등급과 라벨을 설정합니다." />
+      <PageHeader title={t('evaluationScale')} description={t('evaluationScaleDesc')} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* 점수 척도 */}
         <Card>
-          <CardHeader><CardTitle className="text-lg">점수 척도</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-lg">{t('scoreScale')}</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>최소 점수</Label>
+                <Label>{t('minScore')}</Label>
                 <Input
                   type="number"
                   value={scaleMin}
@@ -119,7 +122,7 @@ export function EvaluationScaleClient({ user: _user }: { user: SessionUser }) {
                 />
               </div>
               <div className="space-y-2">
-                <Label>최대 점수</Label>
+                <Label>{t('maxScore')}</Label>
                 <Input
                   type="number"
                   value={scaleMax}
@@ -130,7 +133,7 @@ export function EvaluationScaleClient({ user: _user }: { user: SessionUser }) {
             </div>
 
             <div className="space-y-2">
-              <Label>등급 라벨 ({scaleMax - scaleMin + 1}개)</Label>
+              <Label>{t('ratingLabels', { count: scaleMax - scaleMin + 1 })}</Label>
               {ratingLabels.map((label, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <span className="w-8 text-center text-sm font-medium text-muted-foreground">{scaleMin + i}</span>
@@ -141,7 +144,7 @@ export function EvaluationScaleClient({ user: _user }: { user: SessionUser }) {
                       next[i] = e.target.value
                       setRatingLabels(next)
                     }}
-                    placeholder={`${scaleMin + i}점 라벨`}
+                    placeholder={t('ratingLabelPlaceholder', { score: scaleMin + i })}
                   />
                 </div>
               ))}
@@ -153,7 +156,7 @@ export function EvaluationScaleClient({ user: _user }: { user: SessionUser }) {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">성과 등급</CardTitle>
+              <CardTitle className="text-lg">{t('performanceGrades')}</CardTitle>
               <Button
                 type="button" variant="outline" size="sm"
                 onClick={() => {
@@ -161,7 +164,7 @@ export function EvaluationScaleClient({ user: _user }: { user: SessionUser }) {
                   setGradeLabels((prev) => ({ ...prev, [key]: '' }))
                 }}
               >
-                <Plus className="mr-1 h-4 w-4" /> 등급 추가
+                <Plus className="mr-1 h-4 w-4" /> {t('addGrade')}
               </Button>
             </div>
           </CardHeader>
@@ -184,7 +187,7 @@ export function EvaluationScaleClient({ user: _user }: { user: SessionUser }) {
                 <Input
                   value={label}
                   onChange={(e) => setGradeLabels((prev) => ({ ...prev, [key]: e.target.value }))}
-                  placeholder="등급명"
+                  placeholder={t('gradeNamePlaceholder')}
                   className="flex-1"
                 />
                 <Button
@@ -205,13 +208,13 @@ export function EvaluationScaleClient({ user: _user }: { user: SessionUser }) {
 
       {/* 미리보기 */}
       <Card>
-        <CardHeader><CardTitle className="text-lg">미리보기</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-lg">{tc('preview')}</CardTitle></CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-3">
             {ratingLabels.map((label, i) => (
               <div key={i} className="flex flex-col items-center rounded-lg border px-4 py-3">
                 <span className="text-2xl font-bold text-blue-600">{scaleMin + i}</span>
-                <span className="text-xs text-muted-foreground">{label || '미설정'}</span>
+                <span className="text-xs text-muted-foreground">{label || t('notSet')}</span>
               </div>
             ))}
           </div>
@@ -228,7 +231,7 @@ export function EvaluationScaleClient({ user: _user }: { user: SessionUser }) {
       <div className="flex justify-end">
         <Button onClick={handleSave} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          저장
+          {tc('save')}
         </Button>
       </div>
     </div>

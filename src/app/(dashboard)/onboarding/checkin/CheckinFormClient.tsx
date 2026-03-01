@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Send } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -23,17 +24,17 @@ interface CheckinFormClientProps {
 interface MoodOption {
   value: string
   emoji: string
-  label: string
+  labelKey: string
 }
 
 // ─── Constants ──────────────────────────────────────────────
 
 const MOODS: MoodOption[] = [
-  { value: 'GREAT', emoji: '\u{1F603}', label: '최고예요' },
-  { value: 'GOOD', emoji: '\u{1F642}', label: '좋아요' },
-  { value: 'NEUTRAL', emoji: '\u{1F610}', label: '보통이에요' },
-  { value: 'STRUGGLING', emoji: '\u{1F61F}', label: '힘들어요' },
-  { value: 'BAD', emoji: '\u{1F622}', label: '매우 힘들어요' },
+  { value: 'GREAT', emoji: '\u{1F603}', labelKey: 'moodGreat' },
+  { value: 'GOOD', emoji: '\u{1F642}', labelKey: 'moodGood' },
+  { value: 'NEUTRAL', emoji: '\u{1F610}', labelKey: 'moodNeutral' },
+  { value: 'STRUGGLING', emoji: '\u{1F61F}', labelKey: 'moodStruggling' },
+  { value: 'BAD', emoji: '\u{1F622}', labelKey: 'moodBad' },
 ]
 
 const SLIDER_LABELS = ['1', '2', '3', '4', '5']
@@ -41,6 +42,8 @@ const SLIDER_LABELS = ['1', '2', '3', '4', '5']
 // ─── Component ──────────────────────────────────────────────
 
 export function CheckinFormClient({ user }: CheckinFormClientProps) {
+  const t = useTranslations('onboarding')
+
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -109,13 +112,13 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
   if (submitted) {
     return (
       <div className="space-y-6 p-6">
-        <PageHeader title="주간 체크인" description="이번 주 체크인을 완료했습니다." />
+        <PageHeader title={t('weeklyCheckin')} description={t('weeklyCheckinCompleted')} />
         <Card>
           <CardContent className="flex flex-col items-center gap-4 py-12">
             <div className="text-5xl">{'\u{2705}'}</div>
-            <h2 className="text-xl font-semibold text-ctr-primary">체크인 완료!</h2>
+            <h2 className="text-xl font-semibold text-ctr-primary">{t('checkinComplete')}</h2>
             <p className="text-sm text-muted-foreground">
-              {checkinWeek}주차 체크인이 제출되었습니다. 감사합니다, {user.name}님!
+              {t('checkinWeekSubmitted', { week: checkinWeek, name: user.name })}
             </p>
             <Button
               variant="outline"
@@ -128,7 +131,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
                 fetchCheckins()
               }}
             >
-              다시 제출하기
+              {t('resubmit')}
             </Button>
           </CardContent>
         </Card>
@@ -139,21 +142,21 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
   return (
     <div className="space-y-6 p-6">
       <PageHeader
-        title="주간 체크인"
-        description={`${user.name}님, 이번 주 온보딩 경험을 공유해주세요.`}
+        title={t('weeklyCheckin')}
+        description={t('checkinDescription', { name: user.name })}
       />
 
       <Card>
         <CardHeader>
           <CardTitle className="text-base">
-            {checkinWeek}주차 체크인
+            {t('weekCheckin', { week: checkinWeek })}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-8">
           {/* ─── Week selector ─── */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
-              체크인 주차
+              {t('checkinWeekLabel')}
             </label>
             <select
               className="w-32 rounded-md border px-3 py-2 text-sm"
@@ -164,7 +167,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
                 const alreadyDone = pastCheckins.some((c) => c.checkinWeek === w)
                 return (
                   <option key={w} value={w} disabled={alreadyDone}>
-                    {w}주차{alreadyDone ? ' (제출 완료)' : ''}
+                    {t('weekLabel', { week: w })}{alreadyDone ? t('weekSubmitted') : ''}
                   </option>
                 )
               })}
@@ -174,7 +177,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
           {/* ─── Mood selector ─── */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-3">
-              이번 주 기분은 어떠셨나요?
+              {t('moodQuestion')}
             </label>
             <div className="flex gap-3 flex-wrap">
               {MOODS.map((m) => (
@@ -189,19 +192,19 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
                   }`}
                 >
                   <span className="text-3xl">{m.emoji}</span>
-                  <span className="text-xs font-medium text-muted-foreground">{m.label}</span>
+                  <span className="text-xs font-medium text-muted-foreground">{t(m.labelKey)}</span>
                 </button>
               ))}
             </div>
             {!mood && (
-              <p className="mt-1 text-xs text-muted-foreground">기분을 선택해주세요.</p>
+              <p className="mt-1 text-xs text-muted-foreground">{t('selectMood')}</p>
             )}
           </div>
 
           {/* ─── Energy slider ─── */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
-              에너지 수준 <span className="text-ctr-primary font-semibold">{energy}/5</span>
+              {t('energyLevel')} <span className="text-ctr-primary font-semibold">{energy}/5</span>
             </label>
             <input
               type="range"
@@ -222,7 +225,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
           {/* ─── Belonging slider ─── */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
-              소속감 <span className="text-ctr-primary font-semibold">{belonging}/5</span>
+              {t('belongingLevel')} <span className="text-ctr-primary font-semibold">{belonging}/5</span>
             </label>
             <input
               type="range"
@@ -243,11 +246,11 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
           {/* ─── Comment ─── */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
-              추가 의견 <span className="text-xs text-muted-foreground">(선택)</span>
+              {t('additionalComment')} <span className="text-xs text-muted-foreground">{t('optional')}</span>
             </label>
             <textarea
               className="w-full rounded-md border px-3 py-2 text-sm placeholder:text-muted-foreground min-h-[80px] resize-y"
-              placeholder="이번 주에 특별히 좋았던 점이나 어려웠던 점이 있다면 알려주세요."
+              placeholder={t('commentPlaceholder')}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               maxLength={1000}
@@ -262,7 +265,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
               className="gap-2"
             >
               <Send className="h-4 w-4" />
-              {submitting ? '제출 중...' : '체크인 제출'}
+              {submitting ? t('submitting') : t('submitCheckin')}
             </Button>
           </div>
         </CardContent>

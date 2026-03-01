@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Plus, Pencil, Trash2, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import type { SessionUser, PaginationInfo } from '@/types'
 import { apiClient } from '@/lib/api'
@@ -45,13 +46,6 @@ interface EmailTemplateLocal {
   isSystem: boolean
 }
 
-const CHANNELS = [
-  { value: '', label: '전체' },
-  { value: 'EMAIL', label: '이메일' },
-  { value: 'PUSH', label: '푸시' },
-  { value: 'IN_APP', label: '인앱' },
-]
-
 const EVENT_TYPES = [
   'LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED',
   'GOAL_CREATED', 'REVIEW_STARTED', 'REVIEW_COMPLETED',
@@ -59,26 +53,36 @@ const EVENT_TYPES = [
   'SALARY_CHANGED', 'PASSWORD_RESET',
 ]
 
-const createSchema = z.object({
-  eventType: z.string().min(1, '이벤트 유형은 필수입니다'),
-  channel: z.enum(['EMAIL', 'PUSH', 'IN_APP']),
-  locale: z.string().min(2),
-  subject: z.string().min(1, '제목은 필수입니다'),
-  body: z.string().min(1, '본문은 필수입니다'),
-  isActive: z.boolean(),
-})
-
-const updateSchema = z.object({
-  subject: z.string().min(1, '제목은 필수입니다'),
-  body: z.string().min(1, '본문은 필수입니다'),
-  isActive: z.boolean(),
-})
-
-type CreateFormData = z.infer<typeof createSchema>
-type UpdateFormData = z.infer<typeof updateSchema>
-
 export function EmailTemplatesClient({ user: _user }: { user: SessionUser }) {
+  const t = useTranslations('settings')
+  const tc = useTranslations('common')
   const { toast } = useToast()
+
+  const CHANNELS = [
+    { value: '', label: t('channelAll') },
+    { value: 'EMAIL', label: t('channelEmail') },
+    { value: 'PUSH', label: t('channelPush') },
+    { value: 'IN_APP', label: t('channelInApp') },
+  ]
+
+  const createSchema = z.object({
+    eventType: z.string().min(1, t('eventTypeRequired')),
+    channel: z.enum(['EMAIL', 'PUSH', 'IN_APP']),
+    locale: z.string().min(2),
+    subject: z.string().min(1, t('subjectRequired')),
+    body: z.string().min(1, t('bodyRequired')),
+    isActive: z.boolean(),
+  })
+
+  const updateSchema = z.object({
+    subject: z.string().min(1, t('subjectRequired')),
+    body: z.string().min(1, t('bodyRequired')),
+    isActive: z.boolean(),
+  })
+
+  type CreateFormData = z.infer<typeof createSchema>
+  type UpdateFormData = z.infer<typeof updateSchema>
+
   const [items, setItems] = useState<EmailTemplateLocal[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -101,11 +105,11 @@ export function EmailTemplatesClient({ user: _user }: { user: SessionUser }) {
       setItems(res.data)
       setPagination(res.pagination)
     } catch {
-      toast({ title: '오류', description: '이메일 템플릿 목록을 불러올 수 없습니다.', variant: 'destructive' })
+      toast({ title: tc('error'), description: t('templateLoadError'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
-  }, [page, filterChannel, toast])
+  }, [page, filterChannel, toast, t, tc])
 
   useEffect(() => { fetchItems() }, [fetchItems])
 
@@ -125,11 +129,11 @@ export function EmailTemplatesClient({ user: _user }: { user: SessionUser }) {
     setSaving(true)
     try {
       await apiClient.post('/api/v1/settings/email-templates', { ...data, variables: [] })
-      toast({ title: '성공', description: '이메일 템플릿이 추가되었습니다.' })
+      toast({ title: tc('success'), description: t('templateAdded') })
       setDialogOpen(false)
       fetchItems()
     } catch {
-      toast({ title: '오류', description: '저장 중 오류가 발생했습니다.', variant: 'destructive' })
+      toast({ title: tc('error'), description: t('saveError'), variant: 'destructive' })
     } finally {
       setSaving(false)
     }
@@ -140,11 +144,11 @@ export function EmailTemplatesClient({ user: _user }: { user: SessionUser }) {
     setSaving(true)
     try {
       await apiClient.put(`/api/v1/settings/email-templates/${editing.id}`, data)
-      toast({ title: '성공', description: '이메일 템플릿이 수정되었습니다.' })
+      toast({ title: tc('success'), description: t('templateUpdated') })
       setDialogOpen(false)
       fetchItems()
     } catch {
-      toast({ title: '오류', description: '저장 중 오류가 발생했습니다.', variant: 'destructive' })
+      toast({ title: tc('error'), description: t('saveError'), variant: 'destructive' })
     } finally {
       setSaving(false)
     }
@@ -154,34 +158,34 @@ export function EmailTemplatesClient({ user: _user }: { user: SessionUser }) {
     if (!deleteTarget) return
     try {
       await apiClient.delete(`/api/v1/settings/email-templates/${deleteTarget.id}`)
-      toast({ title: '성공', description: '이메일 템플릿이 삭제되었습니다.' })
+      toast({ title: tc('success'), description: t('templateDeleted') })
       setDeleteTarget(null)
       fetchItems()
     } catch {
-      toast({ title: '오류', description: '삭제 중 오류가 발생했습니다.', variant: 'destructive' })
+      toast({ title: tc('error'), description: t('deleteError'), variant: 'destructive' })
     }
   }
 
   const columns: DataTableColumn<EmailTemplateLocal>[] = [
-    { key: 'eventType', header: '이벤트', render: (row) => <span className="font-mono text-xs">{row.eventType}</span> },
+    { key: 'eventType', header: t('event'), render: (row) => <span className="font-mono text-xs">{row.eventType}</span> },
     {
-      key: 'channel', header: '채널',
+      key: 'channel', header: t('channel'),
       render: (row) => CHANNELS.find((c) => c.value === row.channel)?.label ?? row.channel,
     },
-    { key: 'locale', header: '로케일', render: (row) => row.locale.toUpperCase() },
-    { key: 'subject', header: '제목', render: (row) => <span className="max-w-[200px] truncate block">{row.subject}</span> },
+    { key: 'locale', header: t('localeCol'), render: (row) => row.locale.toUpperCase() },
+    { key: 'subject', header: t('subject'), render: (row) => <span className="max-w-[200px] truncate block">{row.subject}</span> },
     {
-      key: 'isActive', header: '상태',
+      key: 'isActive', header: tc('status'),
       render: (row) => (
         <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${row.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
-          {row.isActive ? '활성' : '비활성'}
+          {row.isActive ? t('active') : t('inactive')}
         </span>
       ),
     },
     {
-      key: 'actions', header: '관리',
+      key: 'actions', header: t('manage'),
       render: (row) => row.isSystem ? (
-        <span className="text-xs text-muted-foreground">시스템</span>
+        <span className="text-xs text-muted-foreground">{t('system')}</span>
       ) : (
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" onClick={() => openEdit(row)}><Pencil className="h-4 w-4" /></Button>
@@ -194,15 +198,15 @@ export function EmailTemplatesClient({ user: _user }: { user: SessionUser }) {
   return (
     <div className="space-y-6 p-6">
       <PageHeader
-        title="이메일 템플릿"
-        description="알림 이메일/푸시 템플릿을 관리합니다."
-        actions={<Button onClick={openCreate}><Plus className="mr-1 h-4 w-4" /> 템플릿 추가</Button>}
+        title={t('emailTemplatesTitle')}
+        description={t('emailTemplatesDesc')}
+        actions={<Button onClick={openCreate}><Plus className="mr-1 h-4 w-4" /> {t('addTemplate')}</Button>}
       />
 
       <div className="flex items-center gap-3">
-        <Label className="text-sm">채널 필터:</Label>
+        <Label className="text-sm">{t('channelFilter')}</Label>
         <Select value={filterChannel} onValueChange={(v) => { setFilterChannel(v); setPage(1) }}>
-          <SelectTrigger className="w-40"><SelectValue placeholder="전체" /></SelectTrigger>
+          <SelectTrigger className="w-40"><SelectValue placeholder={t('channelAll')} /></SelectTrigger>
           <SelectContent>
             {CHANNELS.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
           </SelectContent>
@@ -215,36 +219,36 @@ export function EmailTemplatesClient({ user: _user }: { user: SessionUser }) {
         loading={loading}
         pagination={pagination}
         onPageChange={setPage}
-        emptyMessage="등록된 이메일 템플릿이 없습니다."
+        emptyMessage={t('noTemplates')}
         rowKey={(row) => row.id}
       />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>{editing ? '템플릿 수정' : '템플릿 추가'}</DialogTitle>
-            <DialogDescription>이메일/푸시 템플릿을 설정합니다.</DialogDescription>
+            <DialogTitle>{editing ? t('editTemplate') : t('addTemplate')}</DialogTitle>
+            <DialogDescription>{t('templateDialogDesc')}</DialogDescription>
           </DialogHeader>
           {editing ? (
             <form onSubmit={updateForm.handleSubmit(onUpdateSubmit)} className="space-y-4">
               <div className="space-y-2">
-                <Label>제목</Label>
+                <Label>{t('subject')}</Label>
                 <Input {...updateForm.register('subject')} />
                 {updateForm.formState.errors.subject && <p className="text-xs text-destructive">{updateForm.formState.errors.subject.message}</p>}
               </div>
               <div className="space-y-2">
-                <Label>본문</Label>
+                <Label>{t('body')}</Label>
                 <Textarea {...updateForm.register('body')} rows={8} className="font-mono text-sm" />
                 {updateForm.formState.errors.body && <p className="text-xs text-destructive">{updateForm.formState.errors.body.message}</p>}
               </div>
               <div className="flex items-center gap-2">
                 <Switch checked={updateForm.watch('isActive')} onCheckedChange={(v) => updateForm.setValue('isActive', v)} />
-                <Label>활성</Label>
+                <Label>{t('active')}</Label>
               </div>
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>취소</Button>
+                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>{tc('cancel')}</Button>
                 <Button type="submit" disabled={saving}>
-                  {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}수정
+                  {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{tc('edit')}
                 </Button>
               </DialogFooter>
             </form>
@@ -252,16 +256,16 @@ export function EmailTemplatesClient({ user: _user }: { user: SessionUser }) {
             <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>이벤트 유형</Label>
+                  <Label>{t('eventTypeLabel')}</Label>
                   <Select value={createForm.watch('eventType')} onValueChange={(v) => createForm.setValue('eventType', v)}>
-                    <SelectTrigger><SelectValue placeholder="선택" /></SelectTrigger>
+                    <SelectTrigger><SelectValue placeholder={t('select')} /></SelectTrigger>
                     <SelectContent>
-                      {EVENT_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                      {EVENT_TYPES.map((et) => <SelectItem key={et} value={et}>{et}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>채널</Label>
+                  <Label>{t('channel')}</Label>
                   <Select value={createForm.watch('channel')} onValueChange={(v) => createForm.setValue('channel', v as 'EMAIL' | 'PUSH' | 'IN_APP')}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -271,21 +275,21 @@ export function EmailTemplatesClient({ user: _user }: { user: SessionUser }) {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>제목</Label>
-                <Input {...createForm.register('subject')} placeholder="{{employeeName}}님의 휴가 요청" />
+                <Label>{t('subject')}</Label>
+                <Input {...createForm.register('subject')} placeholder={t('subjectPlaceholder')} />
               </div>
               <div className="space-y-2">
-                <Label>본문</Label>
-                <Textarea {...createForm.register('body')} rows={8} className="font-mono text-sm" placeholder="안녕하세요 {{employeeName}}님,&#10;&#10;내용을 입력하세요." />
+                <Label>{t('body')}</Label>
+                <Textarea {...createForm.register('body')} rows={8} className="font-mono text-sm" placeholder={t('bodyPlaceholder')} />
               </div>
               <div className="flex items-center gap-2">
                 <Switch checked={createForm.watch('isActive')} onCheckedChange={(v) => createForm.setValue('isActive', v)} />
-                <Label>활성</Label>
+                <Label>{t('active')}</Label>
               </div>
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>취소</Button>
+                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>{tc('cancel')}</Button>
                 <Button type="submit" disabled={saving}>
-                  {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}추가
+                  {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{tc('add')}
                 </Button>
               </DialogFooter>
             </form>
@@ -296,14 +300,14 @@ export function EmailTemplatesClient({ user: _user }: { user: SessionUser }) {
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>템플릿 삭제</AlertDialogTitle>
+            <AlertDialogTitle>{t('templateDeleteTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              &quot;{deleteTarget?.subject}&quot; 템플릿을 삭제하시겠습니까?
+              &quot;{deleteTarget?.subject}&quot; {t('templateDeleteConfirm', { subject: '' })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">삭제</AlertDialogAction>
+            <AlertDialogCancel>{tc('cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{tc('delete')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

@@ -2,25 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { ArrowLeft } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-
-// ─── Schema ───────────────────────────────────────────────
-
-const formSchema = z.object({
-  cycleId: z.string().min(1, '사이클을 선택하세요'),
-  title: z.string().min(1, '제목을 입력하세요').max(200),
-  description: z.string().max(2000).optional(),
-  weight: z.coerce.number().min(0, '0 이상이어야 합니다').max(100, '100 이하여야 합니다'),
-  targetMetric: z.string().max(100).optional(),
-  targetValue: z.string().max(100).optional(),
-})
-
-type FormValues = z.input<typeof formSchema>
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -34,8 +22,22 @@ interface CycleOption {
 
 export default function NewGoalClient({ user }: { user: SessionUser }) {
   const router = useRouter()
+  const t = useTranslations('performance')
+  const tc = useTranslations('common')
   const [cycles, setCycles] = useState<CycleOption[]>([])
   const [submitting, setSubmitting] = useState(false)
+
+  // ─── Schema (uses t for validation messages) ──────────
+  const formSchema = z.object({
+    cycleId: z.string().min(1, t('validationSelectCycle')),
+    title: z.string().min(1, t('validationEnterTitle')).max(200),
+    description: z.string().max(2000).optional(),
+    weight: z.coerce.number().min(0, t('validationMinZero')).max(100, t('validationMaxHundred')),
+    targetMetric: z.string().max(100).optional(),
+    targetValue: z.string().max(100).optional(),
+  })
+
+  type FormValues = z.input<typeof formSchema>
 
   const {
     register,
@@ -55,11 +57,11 @@ export default function NewGoalClient({ user }: { user: SessionUser }) {
         )
         setCycles(res.data)
       } catch {
-        console.error('사이클 목록 로드 실패')
+        console.error(t('cycleListLoadFailed'))
       }
     }
     fetchCycles()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ─── Submit ───────────────────────────────────────────
 
@@ -76,7 +78,7 @@ export default function NewGoalClient({ user }: { user: SessionUser }) {
       })
       router.push('/performance/goals')
     } catch {
-      alert('목표 등록에 실패했습니다.')
+      alert(t('registerFailed'))
     } finally {
       setSubmitting(false)
     }
@@ -94,9 +96,9 @@ export default function NewGoalClient({ user }: { user: SessionUser }) {
             className="mb-4 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-ctr-secondary transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            목표 목록으로
+            {t('backToGoalList')}
           </button>
-          <h1 className="text-2xl font-bold text-ctr-dark">새 목표 등록</h1>
+          <h1 className="text-2xl font-bold text-ctr-dark">{t('newGoalRegister')}</h1>
         </div>
 
         {/* Form */}
@@ -108,13 +110,13 @@ export default function NewGoalClient({ user }: { user: SessionUser }) {
           {/* 사이클 */}
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">
-              사이클 <span className="text-red-500">*</span>
+              {t('cycleLabel')} <span className="text-red-500">*</span>
             </label>
             <select
               {...register('cycleId')}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
             >
-              <option value="">사이클을 선택하세요</option>
+              <option value="">{t('selectCycle')}</option>
               {cycles.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
@@ -129,12 +131,12 @@ export default function NewGoalClient({ user }: { user: SessionUser }) {
           {/* 제목 */}
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">
-              제목 <span className="text-red-500">*</span>
+              {t('titleLabel')} <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               {...register('title')}
-              placeholder="목표 제목을 입력하세요"
+              placeholder={t('titlePlaceholder')}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
             />
             {errors.title && (
@@ -145,12 +147,12 @@ export default function NewGoalClient({ user }: { user: SessionUser }) {
           {/* 설명 */}
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">
-              설명
+              {t('descriptionLabel')}
             </label>
             <textarea
               rows={4}
               {...register('description')}
-              placeholder="목표에 대한 상세 설명을 입력하세요"
+              placeholder={t('descriptionPlaceholder')}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
             />
             {errors.description && (
@@ -163,7 +165,7 @@ export default function NewGoalClient({ user }: { user: SessionUser }) {
           {/* 가중치 */}
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">
-              가중치 (%) <span className="text-red-500">*</span>
+              {t('weightPercent')} <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
@@ -180,12 +182,12 @@ export default function NewGoalClient({ user }: { user: SessionUser }) {
           {/* KPI 지표 */}
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">
-              KPI 지표
+              {t('kpiMetric')}
             </label>
             <input
               type="text"
               {...register('targetMetric')}
-              placeholder="예: 매출액, 고객만족도"
+              placeholder={t('kpiMetricPlaceholder')}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
             />
             {errors.targetMetric && (
@@ -198,12 +200,12 @@ export default function NewGoalClient({ user }: { user: SessionUser }) {
           {/* 목표값 */}
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">
-              목표값
+              {t('targetValue')}
             </label>
             <input
               type="text"
               {...register('targetValue')}
-              placeholder="예: 10억원, 95점"
+              placeholder={t('targetValuePlaceholder')}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
             />
             {errors.targetValue && (
@@ -220,14 +222,14 @@ export default function NewGoalClient({ user }: { user: SessionUser }) {
               disabled={submitting}
               className="rounded-lg bg-ctr-primary px-6 py-2 text-sm font-medium text-white hover:bg-ctr-secondary disabled:opacity-50 transition-colors"
             >
-              {submitting ? '등록 중...' : '목표 등록'}
+              {submitting ? t('registering') : t('registerGoal')}
             </button>
             <button
               type="button"
               onClick={() => router.push('/performance/goals')}
               className="rounded-lg border border-gray-300 px-6 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
             >
-              취소
+              {tc('cancel')}
             </button>
           </div>
         </form>

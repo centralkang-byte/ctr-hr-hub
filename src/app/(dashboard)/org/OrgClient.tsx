@@ -5,7 +5,8 @@
 
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   ReactFlow,
   type Node,
@@ -64,6 +65,7 @@ const SENTINEL_ALL = '__ALL__'
 
 function DeptFlowNode({ data }: NodeProps) {
   const { dept, onClick } = data as unknown as DeptNodeData
+  const tOrg = useTranslations('org')
 
   return (
     <div
@@ -79,7 +81,7 @@ function DeptFlowNode({ data }: NodeProps) {
       <p className="text-sm font-semibold text-ctr-gray-900 text-center line-clamp-2">
         {dept.name}
       </p>
-      <p className="text-xs text-ctr-gray-500 mt-1">{dept.employeeCount}명</p>
+      <p className="text-xs text-ctr-gray-500 mt-1">{tOrg('headcountUnit', { count: dept.employeeCount })}</p>
       <Handle type="source" position={Position.Bottom} className="!bg-ctr-primary" />
     </div>
   )
@@ -193,6 +195,8 @@ interface DetailPanelProps {
 }
 
 function DetailPanel({ dept, onClose }: DetailPanelProps) {
+  const t = useTranslations('org')
+  const tc = useTranslations('common')
   const [employees, setEmployees] = useState<EmployeeRow[]>([])
   const [loadingEmps, setLoadingEmps] = useState(false)
 
@@ -219,7 +223,7 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
         <button
           onClick={onClose}
           className="text-white/70 hover:text-white text-lg leading-none ml-2"
-          aria-label="닫기"
+          aria-label={t('close')}
         >
           ×
         </button>
@@ -229,14 +233,14 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
         {/* Dept Info */}
         <div className="space-y-2">
           <h4 className="text-xs font-semibold text-ctr-gray-500 uppercase tracking-wide">
-            부서 정보
+            {t('deptInfo')}
           </h4>
           <div className="bg-ctr-gray-50 rounded-lg p-3 space-y-1.5 text-sm">
-            <InfoRow label="코드" value={dept.code} />
-            <InfoRow label="레벨" value={String(dept.level)} />
-            <InfoRow label="상태" value={dept.isActive ? '활성' : '비활성'} />
-            <InfoRow label="인원수" value={`${dept.employeeCount}명`} />
-            {dept.nameEn && <InfoRow label="영문명" value={dept.nameEn} />}
+            <InfoRow label={t('code')} value={dept.code} />
+            <InfoRow label={t('level')} value={String(dept.level)} />
+            <InfoRow label={t('status')} value={dept.isActive ? tc('active') : tc('inactive')} />
+            <InfoRow label={t('headcount')} value={t('headcountUnit', { count: dept.employeeCount })} />
+            {dept.nameEn && <InfoRow label={t('nameEn')} value={dept.nameEn} />}
           </div>
         </div>
 
@@ -244,7 +248,7 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
         {dept.children.length > 0 && (
           <div className="space-y-2">
             <h4 className="text-xs font-semibold text-ctr-gray-500 uppercase tracking-wide">
-              하위 부서 ({dept.children.length})
+              {t('subDepartments')} ({dept.children.length})
             </h4>
             <ul className="space-y-1">
               {dept.children.map((child) => (
@@ -253,7 +257,7 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
                   className="text-sm px-3 py-1.5 bg-ctr-gray-50 rounded flex justify-between"
                 >
                   <span className="text-ctr-gray-900">{child.name}</span>
-                  <span className="text-ctr-gray-500 text-xs">{child.employeeCount}명</span>
+                  <span className="text-ctr-gray-500 text-xs">{t('headcountUnit', { count: child.employeeCount })}</span>
                 </li>
               ))}
             </ul>
@@ -263,12 +267,12 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
         {/* Employees */}
         <div className="space-y-2">
           <h4 className="text-xs font-semibold text-ctr-gray-500 uppercase tracking-wide">
-            소속 직원
+            {t('employees')}
           </h4>
           {loadingEmps ? (
-            <p className="text-xs text-ctr-gray-500 py-2">불러오는 중...</p>
+            <p className="text-xs text-ctr-gray-500 py-2">{t('loadingData')}</p>
           ) : employees.length === 0 ? (
-            <p className="text-xs text-ctr-gray-500 py-2">소속 직원 없음</p>
+            <p className="text-xs text-ctr-gray-500 py-2">{t('noEmployees')}</p>
           ) : (
             <ul className="space-y-1">
               {employees.map((emp) => (
@@ -299,6 +303,44 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   )
 }
 
+// ─── Snapshot Tree Builder ──────────────────────────────────
+
+function buildSnapshotTree(
+  depts: Array<{
+    id: string
+    name: string
+    code: string
+    level: number
+    parentId: string | null
+    headcount: number
+  }>,
+): DeptNode[] {
+  const nodeMap = new Map<string, DeptNode>()
+  for (const d of depts) {
+    nodeMap.set(d.id, {
+      id: d.id,
+      name: d.name,
+      nameEn: null,
+      code: d.code,
+      level: d.level,
+      sortOrder: 0,
+      isActive: true,
+      parentId: d.parentId,
+      employeeCount: d.headcount,
+      children: [],
+    })
+  }
+  const roots: DeptNode[] = []
+  for (const node of nodeMap.values()) {
+    if (node.parentId && nodeMap.has(node.parentId)) {
+      nodeMap.get(node.parentId)!.children.push(node)
+    } else {
+      roots.push(node)
+    }
+  }
+  return roots
+}
+
 // ─── OrgClient ──────────────────────────────────────────────
 
 interface OrgClientProps {
@@ -307,6 +349,7 @@ interface OrgClientProps {
 }
 
 export function OrgClient({ user, companies }: OrgClientProps) {
+  const t = useTranslations('org')
   const isSuperAdmin = user.role === ROLE.SUPER_ADMIN
 
   const [selectedCompanyId, setSelectedCompanyId] = useState<string>(
@@ -315,14 +358,43 @@ export function OrgClient({ user, companies }: OrgClientProps) {
   const [tree, setTree] = useState<DeptNode[]>([])
   const [loading, setLoading] = useState(false)
   const [selectedDept, setSelectedDept] = useState<DeptNode | null>(null)
+  const [snapshotDate, setSnapshotDate] = useState<string>('') // YYYY-MM-DD or empty for live
+  const dateInputRef = useRef<HTMLInputElement>(null)
 
-  const loadTree = useCallback(async (companyId: string) => {
+  const loadTree = useCallback(async (companyId: string, date?: string) => {
     setLoading(true)
     setSelectedDept(null)
     try {
-      const params = companyId !== SENTINEL_ALL ? `?companyId=${companyId}` : ''
-      const res = await apiClient.get<{ tree: DeptNode[] }>(`/api/v1/org/tree${params}`)
-      setTree(res.data.tree)
+      if (date) {
+        // Load from snapshot
+        const params = new URLSearchParams({ date })
+        if (companyId !== SENTINEL_ALL) params.set('companyId', companyId)
+        const res = await apiClient.get<Array<{
+          snapshotData: {
+            departments: Array<{
+              id: string
+              name: string
+              code: string
+              level: number
+              parentId: string | null
+              headcount: number
+            }>
+          }
+        }>>(`/api/v1/org/snapshots?${params.toString()}`)
+        const snapshots = res.data
+        if (snapshots.length > 0) {
+          const depts = snapshots[0].snapshotData.departments
+          // Convert flat snapshot to tree
+          const snapshotTree = buildSnapshotTree(depts)
+          setTree(snapshotTree)
+        } else {
+          setTree([])
+        }
+      } else {
+        const params = companyId !== SENTINEL_ALL ? `?companyId=${companyId}` : ''
+        const res = await apiClient.get<{ tree: DeptNode[] }>(`/api/v1/org/tree${params}`)
+        setTree(res.data.tree)
+      }
     } catch {
       setTree([])
     } finally {
@@ -331,8 +403,8 @@ export function OrgClient({ user, companies }: OrgClientProps) {
   }, [])
 
   useEffect(() => {
-    loadTree(selectedCompanyId)
-  }, [loadTree, selectedCompanyId])
+    loadTree(selectedCompanyId, snapshotDate || undefined)
+  }, [loadTree, selectedCompanyId, snapshotDate])
 
   const handleNodeClick = useCallback((dept: DeptNode) => {
     setSelectedDept((prev) => (prev?.id === dept.id ? null : dept))
@@ -347,34 +419,69 @@ export function OrgClient({ user, companies }: OrgClientProps) {
     <div className="flex flex-col h-full">
       {/* Toolbar */}
       <div className="flex items-center gap-4 px-6 py-4 border-b border-ctr-gray-200 bg-white shrink-0">
-        <h1 className="text-lg font-bold text-ctr-gray-900">조직도</h1>
-        {isSuperAdmin && (
-          <select
-            value={selectedCompanyId}
-            onChange={(e) => setSelectedCompanyId(e.target.value)}
-            className="ml-auto text-sm border border-ctr-gray-300 rounded-md px-3 py-1.5 text-ctr-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-ctr-primary"
-          >
-            <option value={SENTINEL_ALL}>전체 회사</option>
-            {companies.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        )}
+        <h1 className="text-lg font-bold text-ctr-gray-900">{t('orgChart')}</h1>
+
+        <div className="flex items-center gap-2 ml-auto">
+          {/* Snapshot DatePicker */}
+          <input
+            ref={dateInputRef}
+            type="month"
+            value={snapshotDate ? snapshotDate.substring(0, 7) : ''}
+            onChange={(e) => {
+              if (e.target.value) {
+                setSnapshotDate(`${e.target.value}-01`)
+              } else {
+                setSnapshotDate('')
+              }
+            }}
+            className="text-sm border border-ctr-gray-300 rounded-md px-3 py-1.5 text-ctr-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-ctr-primary"
+            style={{ width: 160 }}
+          />
+          {snapshotDate && (
+            <button
+              onClick={() => setSnapshotDate('')}
+              className="text-sm px-3 py-1.5 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+            >
+              {t('current')}
+            </button>
+          )}
+
+          {isSuperAdmin && (
+            <select
+              value={selectedCompanyId}
+              onChange={(e) => setSelectedCompanyId(e.target.value)}
+              className="text-sm border border-ctr-gray-300 rounded-md px-3 py-1.5 text-ctr-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-ctr-primary"
+            >
+              <option value={SENTINEL_ALL}>{t('allCompanies')}</option>
+              {companies.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
       </div>
+
+      {/* Snapshot mode banner */}
+      {snapshotDate && (
+        <div className="px-6 py-2 bg-amber-50 border-b border-amber-200 text-amber-800 text-sm flex items-center gap-2 shrink-0">
+          <span className="font-medium">{t('snapshotViewing', { date: snapshotDate })}</span>
+          <span className="text-amber-600 text-xs">({t('snapshotData')})</span>
+        </div>
+      )}
 
       {/* Flow canvas area */}
       <div className="relative flex-1 overflow-hidden">
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/70 z-20">
-            <p className="text-sm text-ctr-gray-500">불러오는 중...</p>
+            <p className="text-sm text-ctr-gray-500">{t('loadingData')}</p>
           </div>
         )}
 
         {!loading && tree.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-sm text-ctr-gray-500">표시할 부서가 없습니다.</p>
+            <p className="text-sm text-ctr-gray-500">{t('noDepartments')}</p>
           </div>
         )}
 

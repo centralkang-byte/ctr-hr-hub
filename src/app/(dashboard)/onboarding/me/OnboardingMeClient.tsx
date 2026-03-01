@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { CheckCircle2, Clock, User } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -60,21 +61,6 @@ const CATEGORY_ICONS: Record<string, string> = {
   OTHER: '📌',
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
-  DOCUMENT: '서류',
-  TRAINING: '교육',
-  SETUP: '장비',
-  INTRODUCTION: '소개',
-  OTHER: '기타',
-}
-
-const ASSIGNEE_LABELS: Record<string, string> = {
-  EMPLOYEE: '본인',
-  MANAGER: '매니저',
-  HR: 'HR',
-  BUDDY: '버디',
-}
-
 type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline'
 
 const ASSIGNEE_VARIANTS: Record<string, BadgeVariant> = {
@@ -106,9 +92,26 @@ function groupByCategory(tasks: OnboardingTaskRow[]): Record<string, OnboardingT
 // ─── Component ──────────────────────────────────────────────
 
 export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
+  const t = useTranslations('onboarding')
+
   const [data, setData] = useState<MyOnboarding | null>(null)
   const [loading, setLoading] = useState(true)
   const [completing, setCompleting] = useState<string | null>(null)
+
+  const CATEGORY_LABELS: Record<string, string> = {
+    DOCUMENT: t('categoryDocument'),
+    TRAINING: t('categoryTraining'),
+    SETUP: t('categorySetup'),
+    INTRODUCTION: t('categoryIntroduction'),
+    OTHER: t('categoryOther'),
+  }
+
+  const ASSIGNEE_LABELS: Record<string, string> = {
+    EMPLOYEE: t('assigneeEmployee'),
+    MANAGER: t('assigneeManager'),
+    HR: t('assigneeHr'),
+    BUDDY: t('assigneeBuddy'),
+  }
 
   // ─── Fetch ───
   const fetchData = useCallback(() => {
@@ -173,13 +176,13 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
     return (
       <div className="space-y-6 p-6">
         <PageHeader
-          title="내 온보딩"
-          description="현재 진행 중인 온보딩이 없습니다."
+          title={t('myOnboarding')}
+          description={t('myOnboardingNoActive')}
         />
         <div className="rounded-md border p-8">
           <EmptyState
-            title="온보딩 데이터가 없습니다"
-            description="아직 배정된 온보딩 프로그램이 없습니다. HR 담당자에게 문의해주세요."
+            title={t('noOnboardingData')}
+            description={t('noOnboardingAssigned')}
           />
         </div>
       </div>
@@ -191,10 +194,10 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
       {/* ─── Welcome Banner ─── */}
       <div className="rounded-lg bg-ctr-primary p-6 text-white">
         <h1 className="text-2xl font-bold">
-          {user.name}님, CTR HR Hub에 오신 것을 환영합니다!
+          {t('welcomeMessage', { name: user.name })}
         </h1>
         <p className="mt-1 text-sm text-white/80">
-          아래 온보딩 체크리스트를 완료하며 새로운 시작을 준비하세요.
+          {t('welcomeSubMessage')}
         </p>
       </div>
 
@@ -203,7 +206,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
         {/* Buddy Card */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">온보딩 버디</CardTitle>
+            <CardTitle className="text-base">{t('onboardingBuddy')}</CardTitle>
           </CardHeader>
           <CardContent>
             {data.buddy ? (
@@ -219,7 +222,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">배정된 버디가 없습니다.</p>
+              <p className="text-sm text-muted-foreground">{t('noBuddyAssigned')}</p>
             )}
           </CardContent>
         </Card>
@@ -227,13 +230,13 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
         {/* Progress Card */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">전체 진행률</CardTitle>
+            <CardTitle className="text-base">{t('overallProgress')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">
-                  {progress.completed} / {progress.total} 완료
+                  {t('completedCount', { completed: progress.completed, total: progress.total })}
                 </span>
                 <span className="font-semibold text-ctr-primary">{progress.pct}%</span>
               </div>
@@ -246,7 +249,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
               {data.status === 'COMPLETED' && (
                 <div className="flex items-center gap-1 text-sm text-ctr-success">
                   <CheckCircle2 className="h-4 w-4" />
-                  온보딩이 완료되었습니다!
+                  {t('onboardingCompleted')}
                 </div>
               )}
             </div>
@@ -303,7 +306,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
                             {row.task.title}
                           </span>
                           {!row.task.isRequired && (
-                            <span className="text-xs text-muted-foreground">(선택)</span>
+                            <span className="text-xs text-muted-foreground">{t('optional')}</span>
                           )}
                         </div>
                         {row.task.description && (
@@ -332,7 +335,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
                         <CheckCircle2 className="h-4 w-4 shrink-0 text-ctr-success" />
                       )}
                       {isCompleting && (
-                        <span className="text-xs text-muted-foreground shrink-0">처리 중...</span>
+                        <span className="text-xs text-muted-foreground shrink-0">{t('processing')}</span>
                       )}
                     </div>
                   )

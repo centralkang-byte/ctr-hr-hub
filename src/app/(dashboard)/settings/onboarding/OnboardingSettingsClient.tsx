@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useTranslations } from 'next-intl'
 import {
   DndContext,
   closestCenter,
@@ -79,73 +80,22 @@ interface OnboardingTemplateLocal {
   _count?: { onboardingTasks: number }
 }
 
-// ─── Label maps ──────────────────────────────────────────
-
-const TARGET_TYPE_LABELS: Record<string, string> = {
-  NEW_HIRE: '신입',
-  TRANSFER: '전배',
-  REHIRE: '재입사',
-}
-
-const CATEGORY_COLORS: Record<string, string> = {
-  DOCUMENT: 'bg-blue-100 text-blue-800',
-  TRAINING: 'bg-green-100 text-green-800',
-  SETUP: 'bg-yellow-100 text-yellow-800',
-  INTRODUCTION: 'bg-purple-100 text-purple-800',
-  OTHER: 'bg-gray-100 text-gray-800',
-}
-
-const CATEGORY_LABELS: Record<string, string> = {
-  DOCUMENT: '문서',
-  TRAINING: '교육',
-  SETUP: '환경설정',
-  INTRODUCTION: '소개',
-  OTHER: '기타',
-}
-
-const ASSIGNEE_COLORS: Record<string, string> = {
-  EMPLOYEE: 'bg-gray-100 text-gray-800',
-  MANAGER: 'bg-blue-100 text-blue-800',
-  HR: 'bg-green-100 text-green-800',
-  BUDDY: 'bg-purple-100 text-purple-800',
-}
-
-const ASSIGNEE_LABELS: Record<string, string> = {
-  EMPLOYEE: '직원',
-  MANAGER: '매니저',
-  HR: 'HR',
-  BUDDY: '버디',
-}
-
-// ─── Zod schemas ─────────────────────────────────────────
-
-const templateSchema = z.object({
-  name: z.string().min(1, '템플릿명을 입력하세요'),
-  description: z.string().optional(),
-  targetType: z.enum(['NEW_HIRE', 'TRANSFER', 'REHIRE']),
-})
-
-type TemplateFormData = z.infer<typeof templateSchema>
-
-const taskSchema = z.object({
-  title: z.string().min(1, '태스크명을 입력하세요'),
-  description: z.string().optional(),
-  assigneeType: z.enum(['EMPLOYEE', 'MANAGER', 'HR', 'BUDDY']),
-  dueDaysAfter: z.number().int().min(0, '0 이상 입력하세요'),
-  category: z.enum(['DOCUMENT', 'TRAINING', 'SETUP', 'INTRODUCTION', 'OTHER']),
-  isRequired: z.boolean(),
-})
-
-type TaskFormData = z.infer<typeof taskSchema>
-
 // ─── SortableTaskItem ────────────────────────────────────
 
 function SortableTaskItem({
   task,
   onDelete,
+  categoryLabels,
+  categoryColors,
+  assigneeLabels,
+  assigneeColors,
 }: {
   task: OnboardingTaskLocal
   onDelete: (id: string) => void
+  categoryLabels: Record<string, string>
+  categoryColors: Record<string, string>
+  assigneeLabels: Record<string, string>
+  assigneeColors: Record<string, string>
 }) {
   const {
     attributes,
@@ -179,12 +129,12 @@ function SortableTaskItem({
       <span className="flex-1 text-sm font-medium">{task.title}</span>
       <Badge
         variant="outline"
-        className={`text-xs ${CATEGORY_COLORS[task.category] ?? ''}`}
+        className={`text-xs ${categoryColors[task.category] ?? ''}`}
       >
-        {CATEGORY_LABELS[task.category] ?? task.category}
+        {categoryLabels[task.category] ?? task.category}
       </Badge>
-      <Badge className={`text-xs ${ASSIGNEE_COLORS[task.assigneeType] ?? ''}`}>
-        {ASSIGNEE_LABELS[task.assigneeType] ?? task.assigneeType}
+      <Badge className={`text-xs ${assigneeColors[task.assigneeType] ?? ''}`}>
+        {assigneeLabels[task.assigneeType] ?? task.assigneeType}
       </Badge>
       <span className="text-xs text-gray-500">D+{task.dueDaysAfter}</span>
       <Button
@@ -202,26 +152,82 @@ function SortableTaskItem({
 // ─── Main Component ──────────────────────────────────────
 
 export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
+  const t = useTranslations('onboarding')
+  const tCommon = useTranslations('common')
+
+  const CATEGORY_COLORS: Record<string, string> = {
+    DOCUMENT: 'bg-blue-100 text-blue-800',
+    TRAINING: 'bg-green-100 text-green-800',
+    SETUP: 'bg-yellow-100 text-yellow-800',
+    INTRODUCTION: 'bg-purple-100 text-purple-800',
+    OTHER: 'bg-gray-100 text-gray-800',
+  }
+
+  const CATEGORY_LABELS: Record<string, string> = {
+    DOCUMENT: t('categoryDocumentFull'),
+    TRAINING: t('categoryTrainingFull'),
+    SETUP: t('categorySetupFull'),
+    INTRODUCTION: t('categoryIntroductionFull'),
+    OTHER: t('categoryOtherFull'),
+  }
+
+  const ASSIGNEE_COLORS: Record<string, string> = {
+    EMPLOYEE: 'bg-gray-100 text-gray-800',
+    MANAGER: 'bg-blue-100 text-blue-800',
+    HR: 'bg-green-100 text-green-800',
+    BUDDY: 'bg-purple-100 text-purple-800',
+  }
+
+  const ASSIGNEE_LABELS: Record<string, string> = {
+    EMPLOYEE: t('assigneeEmployee'),
+    MANAGER: t('assigneeManager'),
+    HR: t('assigneeHr'),
+    BUDDY: t('assigneeBuddy'),
+  }
+
+  const TARGET_TYPE_LABELS: Record<string, string> = {
+    NEW_HIRE: t('targetTypeNewHire'),
+    TRANSFER: t('targetTypeTransfer'),
+    REHIRE: t('targetTypeRehire'),
+  }
+
+  // ── Zod schemas ──
+  const templateSchema = z.object({
+    name: z.string().min(1, t('templateName')),
+    description: z.string().optional(),
+    targetType: z.enum(['NEW_HIRE', 'TRANSFER', 'REHIRE']),
+  })
+
+  type TemplateFormData = z.infer<typeof templateSchema>
+
+  const taskSchema = z.object({
+    title: z.string().min(1, t('taskName')),
+    description: z.string().optional(),
+    assigneeType: z.enum(['EMPLOYEE', 'MANAGER', 'HR', 'BUDDY']),
+    dueDaysAfter: z.number().int().min(0),
+    category: z.enum(['DOCUMENT', 'TRAINING', 'SETUP', 'INTRODUCTION', 'OTHER']),
+    isRequired: z.boolean(),
+  })
+
+  type TaskFormData = z.infer<typeof taskSchema>
+
   // ── State ──
   const [templates, setTemplates] = useState<OnboardingTemplateLocal[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | undefined>()
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
 
-  // Template dialog
   const [templateDialogOpen, setTemplateDialogOpen] = useState(false)
   const [editingTemplate, setEditingTemplate] =
     useState<OnboardingTemplateLocal | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
-  // Tasks dialog
   const [tasksDialogOpen, setTasksDialogOpen] = useState(false)
   const [selectedTemplate, setSelectedTemplate] =
     useState<OnboardingTemplateLocal | null>(null)
   const [tasks, setTasks] = useState<OnboardingTaskLocal[]>([])
   const [tasksLoading, setTasksLoading] = useState(false)
 
-  // Task add form
   const [taskFormOpen, setTaskFormOpen] = useState(false)
   const [taskSubmitting, setTaskSubmitting] = useState(false)
 
@@ -233,13 +239,11 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
     }),
   )
 
-  // ── Template form ──
   const templateForm = useForm<TemplateFormData>({
     resolver: zodResolver(templateSchema),
     defaultValues: { name: '', description: '', targetType: 'NEW_HIRE' },
   })
 
-  // ── Task form ──
   const taskForm = useForm<TaskFormData>({
     resolver: zodResolver(taskSchema),
     defaultValues: {
@@ -252,7 +256,6 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
     },
   })
 
-  // ── Fetch templates ──
   const fetchTemplates = useCallback(async (p: number) => {
     setLoading(true)
     try {
@@ -263,7 +266,7 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
       setTemplates(res.data)
       setPagination(res.pagination)
     } catch {
-      // silently handle – toast can be added later
+      // silently handle
     } finally {
       setLoading(false)
     }
@@ -273,7 +276,6 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
     void fetchTemplates(page)
   }, [page, fetchTemplates])
 
-  // ── Fetch tasks for a template ──
   const fetchTasks = useCallback(async (templateId: string) => {
     setTasksLoading(true)
     try {
@@ -291,7 +293,6 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
     }
   }, [])
 
-  // ── Template CRUD ──
   const openCreateDialog = () => {
     setEditingTemplate(null)
     templateForm.reset({ name: '', description: '', targetType: 'NEW_HIRE' })
@@ -329,7 +330,7 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
   }
 
   const handleDelete = async (tpl: OnboardingTemplateLocal) => {
-    if (!confirm(`"${tpl.name}" 템플릿을 삭제하시겠습니까?`)) return
+    if (!confirm(t('deleteTemplateConfirm', { name: tpl.name }))) return
     try {
       await apiClient.delete(`/api/v1/onboarding/templates/${tpl.id}`)
       void fetchTemplates(page)
@@ -338,7 +339,6 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
     }
   }
 
-  // ── Tasks management ──
   const openTasksDialog = (tpl: OnboardingTemplateLocal) => {
     setSelectedTemplate(tpl)
     setTasksDialogOpen(true)
@@ -349,18 +349,17 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
     const { active, over } = event
     if (!over || active.id === over.id || !selectedTemplate) return
 
-    const oldIndex = tasks.findIndex((t) => t.id === active.id)
-    const newIndex = tasks.findIndex((t) => t.id === over.id)
+    const oldIndex = tasks.findIndex((tsk) => tsk.id === active.id)
+    const newIndex = tasks.findIndex((tsk) => tsk.id === over.id)
     const reordered = arrayMove(tasks, oldIndex, newIndex)
     setTasks(reordered)
 
     try {
       await apiClient.put(
         `/api/v1/onboarding/templates/${selectedTemplate.id}/tasks/reorder`,
-        { taskIds: reordered.map((t) => t.id) },
+        { taskIds: reordered.map((tsk) => tsk.id) },
       )
     } catch {
-      // revert on error
       void fetchTasks(selectedTemplate.id)
     }
   }
@@ -398,10 +397,10 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
   // ── DataTable columns ──
   type Row = Record<string, unknown>
   const columns: DataTableColumn<Row>[] = [
-    { key: 'name', header: '템플릿명' },
+    { key: 'name', header: t('templateName') },
     {
       key: 'targetType',
-      header: '대상유형',
+      header: t('targetType'),
       render: (r) => {
         const row = r as unknown as OnboardingTemplateLocal
         return (
@@ -413,7 +412,7 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
     },
     {
       key: 'taskCount',
-      header: '태스크수',
+      header: t('taskCount'),
       render: (r) => {
         const row = r as unknown as OnboardingTemplateLocal
         return (
@@ -423,19 +422,19 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
     },
     {
       key: 'isActive',
-      header: '상태',
+      header: t('statusLabel'),
       render: (r) => {
         const row = r as unknown as OnboardingTemplateLocal
         return row.isActive ? (
-          <Badge className="bg-green-100 text-green-800">활성</Badge>
+          <Badge className="bg-green-100 text-green-800">{t('active')}</Badge>
         ) : (
-          <Badge className="bg-gray-100 text-gray-600">비활성</Badge>
+          <Badge className="bg-gray-100 text-gray-600">{t('inactive')}</Badge>
         )
       },
     },
     {
       key: 'actions',
-      header: '액션',
+      header: t('actions'),
       render: (r) => {
         const row = r as unknown as OnboardingTemplateLocal
         return (
@@ -467,17 +466,15 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
     },
   ]
 
-  // ─── Render ────────────────────────────────────────────
-
   return (
     <div className="space-y-6">
       <PageHeader
-        title="온보딩 템플릿 관리"
-        description="신입/전배/재입사 직원의 온보딩 프로세스를 관리합니다."
+        title={t('templateManagement')}
+        description={t('templateManagementDesc')}
         actions={
           <Button onClick={openCreateDialog}>
             <Plus className="mr-1 h-4 w-4" />
-            새 템플릿
+            {t('newTemplate')}
           </Button>
         }
       />
@@ -488,9 +485,9 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
         pagination={pagination}
         onPageChange={setPage}
         loading={loading}
-        emptyMessage="등록된 온보딩 템플릿이 없습니다"
-        emptyDescription="새 템플릿을 생성하여 온보딩 프로세스를 시작하세요."
-        emptyAction={{ label: '새 템플릿 만들기', onClick: openCreateDialog }}
+        emptyMessage={t('noTemplates')}
+        emptyDescription={t('noTemplatesDesc')}
+        emptyAction={{ label: t('createNewTemplate'), onClick: openCreateDialog }}
         rowKey={(row) => (row as unknown as OnboardingTemplateLocal).id}
         onRowClick={(row) =>
           openTasksDialog(row as unknown as OnboardingTemplateLocal)
@@ -502,10 +499,10 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editingTemplate ? '템플릿 수정' : '새 템플릿 생성'}
+              {editingTemplate ? t('editTemplate') : t('createTemplate')}
             </DialogTitle>
             <DialogDescription>
-              온보딩 템플릿의 기본 정보를 입력합니다.
+              {t('templateBasicInfo')}
             </DialogDescription>
           </DialogHeader>
           <form
@@ -513,10 +510,10 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
             className="space-y-4"
           >
             <div className="space-y-2">
-              <Label htmlFor="name">템플릿명</Label>
+              <Label htmlFor="name">{t('templateName')}</Label>
               <Input
                 id="name"
-                placeholder="예: 신입 엔지니어 온보딩"
+                placeholder={t('templateNamePlaceholder')}
                 {...templateForm.register('name')}
               />
               {templateForm.formState.errors.name && (
@@ -526,27 +523,27 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="description">설명</Label>
+              <Label htmlFor="description">{t('descriptionLabel')}</Label>
               <Input
                 id="description"
-                placeholder="선택 사항"
+                placeholder={t('descriptionPlaceholder')}
                 {...templateForm.register('description')}
               />
             </div>
             <div className="space-y-2">
-              <Label>대상유형</Label>
+              <Label>{t('targetTypeLabel')}</Label>
               <Controller
                 control={templateForm.control}
                 name="targetType"
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger>
-                      <SelectValue placeholder="유형 선택" />
+                      <SelectValue placeholder={t('targetTypePlaceholder')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="NEW_HIRE">신입</SelectItem>
-                      <SelectItem value="TRANSFER">전배</SelectItem>
-                      <SelectItem value="REHIRE">재입사</SelectItem>
+                      <SelectItem value="NEW_HIRE">{t('targetTypeNewHire')}</SelectItem>
+                      <SelectItem value="TRANSFER">{t('targetTypeTransfer')}</SelectItem>
+                      <SelectItem value="REHIRE">{t('targetTypeRehire')}</SelectItem>
                     </SelectContent>
                   </Select>
                 )}
@@ -558,13 +555,13 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
                 variant="outline"
                 onClick={() => setTemplateDialogOpen(false)}
               >
-                취소
+                {tCommon('cancel')}
               </Button>
               <Button type="submit" disabled={submitting}>
                 {submitting && (
                   <Loader2 className="mr-1 h-4 w-4 animate-spin" />
                 )}
-                {editingTemplate ? '수정' : '생성'}
+                {editingTemplate ? tCommon('edit') : tCommon('create')}
               </Button>
             </DialogFooter>
           </form>
@@ -576,10 +573,10 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>
-              {selectedTemplate?.name} — 태스크 관리
+              {selectedTemplate?.name} — {t('taskManagement')}
             </DialogTitle>
             <DialogDescription>
-              태스크를 드래그하여 순서를 변경할 수 있습니다.
+              {t('taskDragHint')}
             </DialogDescription>
           </DialogHeader>
 
@@ -595,12 +592,12 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
                 onDragEnd={handleDragEnd}
               >
                 <SortableContext
-                  items={tasks.map((t) => t.id)}
+                  items={tasks.map((tsk) => tsk.id)}
                   strategy={verticalListSortingStrategy}
                 >
                   {tasks.length === 0 ? (
                     <p className="py-4 text-center text-sm text-gray-500">
-                      등록된 태스크가 없습니다.
+                      {t('noTasks')}
                     </p>
                   ) : (
                     <div className="space-y-2">
@@ -609,6 +606,10 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
                           key={task.id}
                           task={task}
                           onDelete={handleDeleteTask}
+                          categoryLabels={CATEGORY_LABELS}
+                          categoryColors={CATEGORY_COLORS}
+                          assigneeLabels={ASSIGNEE_LABELS}
+                          assigneeColors={ASSIGNEE_COLORS}
                         />
                       ))}
                     </div>
@@ -616,7 +617,6 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
                 </SortableContext>
               </DndContext>
 
-              {/* ─── Add task section ─── */}
               {!taskFormOpen ? (
                 <Button
                   variant="outline"
@@ -628,7 +628,7 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
                   }}
                 >
                   <Plus className="mr-1 h-4 w-4" />
-                  태스크 추가
+                  {t('addTask')}
                 </Button>
               ) : (
                 <form
@@ -636,10 +636,10 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
                   className="space-y-3 rounded border bg-gray-50 p-3"
                 >
                   <div className="space-y-2">
-                    <Label htmlFor="taskTitle">태스크명</Label>
+                    <Label htmlFor="taskTitle">{t('taskName')}</Label>
                     <Input
                       id="taskTitle"
-                      placeholder="예: 보안 교육 수료"
+                      placeholder={t('taskNamePlaceholder')}
                       {...taskForm.register('title')}
                     />
                     {taskForm.formState.errors.title && (
@@ -650,7 +650,7 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-2">
-                      <Label>담당자 유형</Label>
+                      <Label>{t('assigneeType')}</Label>
                       <Controller
                         control={taskForm.control}
                         name="assigneeType"
@@ -663,17 +663,17 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="EMPLOYEE">직원</SelectItem>
-                              <SelectItem value="MANAGER">매니저</SelectItem>
-                              <SelectItem value="HR">HR</SelectItem>
-                              <SelectItem value="BUDDY">버디</SelectItem>
+                              <SelectItem value="EMPLOYEE">{t('assigneeEmployee')}</SelectItem>
+                              <SelectItem value="MANAGER">{t('assigneeManager')}</SelectItem>
+                              <SelectItem value="HR">{t('assigneeHr')}</SelectItem>
+                              <SelectItem value="BUDDY">{t('assigneeBuddy')}</SelectItem>
                             </SelectContent>
                           </Select>
                         )}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>카테고리</Label>
+                      <Label>{t('categoryLabelField')}</Label>
                       <Controller
                         control={taskForm.control}
                         name="category"
@@ -686,11 +686,11 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="DOCUMENT">문서</SelectItem>
-                              <SelectItem value="TRAINING">교육</SelectItem>
-                              <SelectItem value="SETUP">환경설정</SelectItem>
-                              <SelectItem value="INTRODUCTION">소개</SelectItem>
-                              <SelectItem value="OTHER">기타</SelectItem>
+                              <SelectItem value="DOCUMENT">{t('categoryDocumentFull')}</SelectItem>
+                              <SelectItem value="TRAINING">{t('categoryTrainingFull')}</SelectItem>
+                              <SelectItem value="SETUP">{t('categorySetupFull')}</SelectItem>
+                              <SelectItem value="INTRODUCTION">{t('categoryIntroductionFull')}</SelectItem>
+                              <SelectItem value="OTHER">{t('categoryOtherFull')}</SelectItem>
                             </SelectContent>
                           </Select>
                         )}
@@ -698,7 +698,7 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="dueDaysAfter">완료 기한 (입사 후 일수)</Label>
+                    <Label htmlFor="dueDaysAfter">{t('dueDaysAfter')}</Label>
                     <Input
                       id="dueDaysAfter"
                       type="number"
@@ -718,13 +718,13 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
                       size="sm"
                       onClick={() => setTaskFormOpen(false)}
                     >
-                      취소
+                      {tCommon('cancel')}
                     </Button>
                     <Button type="submit" size="sm" disabled={taskSubmitting}>
                       {taskSubmitting && (
                         <Loader2 className="mr-1 h-4 w-4 animate-spin" />
                       )}
-                      추가
+                      {tCommon('add')}
                     </Button>
                   </div>
                 </form>

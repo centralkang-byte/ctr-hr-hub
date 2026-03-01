@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { RefreshCw, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { apiClient } from '@/lib/api'
@@ -99,6 +100,7 @@ function parseFactors(
 
 export default function AttritionRiskClient() {
   const { toast } = useToast()
+  const t = useTranslations('analytics.attritionPage')
   const [loading, setLoading] = useState(true)
   const [recalculating, setRecalculating] = useState(false)
 
@@ -147,11 +149,11 @@ export default function AttritionRiskClient() {
       // Trend
       setTrend(trendRes.data)
     } catch {
-      toast({ title: '데이터 로드 실패', description: '이탈 위험 데이터를 불러올 수 없습니다.', variant: 'destructive' })
+      toast({ title: t('dataLoadFailed'), description: t('dataLoadFailedDesc'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
-  }, [toast])
+  }, [toast, t])
 
   useEffect(() => {
     fetchAll()
@@ -162,10 +164,10 @@ export default function AttritionRiskClient() {
     setRecalculating(true)
     try {
       await apiClient.post('/api/v1/attrition/recalculate')
-      toast({ title: '재계산 완료', description: '이탈 위험 점수가 업데이트되었습니다.' })
+      toast({ title: t('recalcDone'), description: t('recalcDoneDesc') })
       await fetchAll()
     } catch {
-      toast({ title: '재계산 실패', variant: 'destructive' })
+      toast({ title: t('recalcFailed'), variant: 'destructive' })
     } finally {
       setRecalculating(false)
     }
@@ -185,8 +187,8 @@ export default function AttritionRiskClient() {
       {/* ─── 헤더 ─── */}
       <div className="flex items-center justify-between">
         <div>
-          <nav className="text-xs text-slate-400 mb-1">분석 / 이탈 위험</nav>
-          <h1 className="text-2xl font-bold text-slate-900">이탈 위험 분석</h1>
+          <nav className="text-xs text-slate-400 mb-1">{t('breadcrumb')}</nav>
+          <h1 className="text-2xl font-bold text-slate-900">{t('title')}</h1>
         </div>
         <Button
           variant="outline"
@@ -198,7 +200,7 @@ export default function AttritionRiskClient() {
           ) : (
             <RefreshCw className="mr-1.5 h-4 w-4" />
           )}
-          재계산
+          {t('recalculate')}
         </Button>
       </div>
 

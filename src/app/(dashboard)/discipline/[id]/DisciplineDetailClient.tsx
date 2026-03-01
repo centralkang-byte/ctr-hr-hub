@@ -6,48 +6,13 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { ChevronLeft, Gavel, User, FileText, AlertTriangle } from 'lucide-react'
 import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 
-// ─── Label Maps ──────────────────────────────────────────
-
-const DISCIPLINARY_TYPE_LABELS: Record<string, string> = {
-  VERBAL_WARNING: '구두경고',
-  WRITTEN_WARNING: '서면경고',
-  REPRIMAND: '견책',
-  SUSPENSION: '정직',
-  PAY_CUT: '감봉',
-  DEMOTION: '강등',
-  TERMINATION: '해고',
-}
-
-const DISCIPLINARY_CATEGORY_LABELS: Record<string, string> = {
-  ATTENDANCE: '근태',
-  SAFETY: '안전',
-  QUALITY: '품질',
-  CONDUCT: '행동',
-  POLICY_VIOLATION: '정책위반',
-  MISCONDUCT: '비위',
-  HARASSMENT: '괴롭힘',
-  FRAUD: '사기',
-  OTHER: '기타',
-}
-
-const STATUS_LABELS: Record<string, string> = {
-  DISCIPLINE_ACTIVE: '활성',
-  DISCIPLINE_EXPIRED: '만료',
-  DISCIPLINE_OVERTURNED: '번복',
-}
-
-const APPEAL_LABELS: Record<string, string> = {
-  NONE: '없음',
-  FILED: '접수',
-  UNDER_REVIEW: '검토중',
-  UPHELD: '유지',
-  OVERTURNED: '번복',
-}
+// ─── Badge Styles ────────────────────────────────────────
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
   DISCIPLINE_ACTIVE: 'bg-[#E8F5E9] text-[#2E7D32]',
@@ -107,6 +72,10 @@ interface Props {
 
 export default function DisciplineDetailClient({ user, id }: Props) {
   const router = useRouter()
+  const t = useTranslations('disciplineDetail')
+  const tPage = useTranslations('disciplinePage')
+  const tCommon = useTranslations('common')
+
   const [data, setData] = useState<DisciplinaryDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [appealText, setAppealText] = useState('')
@@ -149,7 +118,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
       <div className="min-h-screen bg-[#FAFAFA] p-6 flex items-center justify-center">
         <div className="flex items-center gap-2 text-sm text-[#999]">
           <div className="w-5 h-5 border-2 border-[#E8E8E8] border-t-[#00C853] rounded-full animate-spin" />
-          데이터를 불러오는 중...
+          {tPage('loadingData')}
         </div>
       </div>
     )
@@ -159,7 +128,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
     return (
       <div className="min-h-screen bg-[#FAFAFA] p-6">
         <div className="text-center text-sm text-[#999] py-12">
-          징계 기록을 찾을 수 없습니다.
+          {t('notFound')}
         </div>
       </div>
     )
@@ -181,14 +150,14 @@ export default function DisciplineDetailClient({ user, id }: Props) {
           </div>
           <div>
             <h1 className="text-xl font-bold text-[#333]" style={{ letterSpacing: '-0.02em' }}>
-              징계 상세
+              {t('title')}
             </h1>
             <div className="flex items-center gap-2 mt-0.5">
               <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${STATUS_BADGE_STYLES[data.status] ?? 'bg-[#F5F5F5] text-[#999]'}`}>
-                {STATUS_LABELS[data.status] ?? data.status}
+                {tPage(`statusLabels.${data.status}`, { defaultValue: data.status })}
               </span>
               <span className="text-xs text-[#999]">
-                {DISCIPLINARY_TYPE_LABELS[data.actionType] ?? data.actionType}
+                {tPage(`typeLabels.${data.actionType}`, { defaultValue: data.actionType })}
               </span>
             </div>
           </div>
@@ -202,18 +171,18 @@ export default function DisciplineDetailClient({ user, id }: Props) {
           {/* Info Card */}
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
             <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-              징계 정보
+              {t('disciplineInfo')}
             </h2>
             <div className="grid grid-cols-2 gap-y-4 gap-x-6">
-              <InfoItem label="대상 사원" value={data.employee.name} />
-              <InfoItem label="부서" value={data.employee.department?.name ?? '-'} />
-              <InfoItem label="직급" value={data.employee.jobGrade?.name ?? '-'} />
-              <InfoItem label="징계유형" value={DISCIPLINARY_TYPE_LABELS[data.actionType] ?? data.actionType} />
-              <InfoItem label="분류" value={DISCIPLINARY_CATEGORY_LABELS[data.category] ?? data.category} />
-              <InfoItem label="사건일" value={format(new Date(data.incidentDate), 'yyyy-MM-dd')} />
-              <InfoItem label="유효기간" value={data.validMonths ? `${data.validMonths}개월` : '-'} />
-              <InfoItem label="만료일" value={data.expiresAt ? format(new Date(data.expiresAt), 'yyyy-MM-dd') : '-'} />
-              {data.issuer && <InfoItem label="발행자" value={data.issuer.name} />}
+              <InfoItem label={t('targetEmployee')} value={data.employee.name} />
+              <InfoItem label={tCommon('department')} value={data.employee.department?.name ?? '-'} />
+              <InfoItem label={tCommon('grade')} value={data.employee.jobGrade?.name ?? '-'} />
+              <InfoItem label={tPage('disciplineType')} value={tPage(`typeLabels.${data.actionType}`, { defaultValue: data.actionType })} />
+              <InfoItem label={tCommon('category')} value={tPage(`categoryLabels.${data.category}`, { defaultValue: data.category })} />
+              <InfoItem label={tPage('incidentDate')} value={format(new Date(data.incidentDate), 'yyyy-MM-dd')} />
+              <InfoItem label={t('validPeriod')} value={data.validMonths ? t('monthsValue', { count: data.validMonths }) : '-'} />
+              <InfoItem label={t('expiryDate')} value={data.expiresAt ? format(new Date(data.expiresAt), 'yyyy-MM-dd') : '-'} />
+              {data.issuer && <InfoItem label={t('issuer')} value={data.issuer.name} />}
             </div>
           </div>
 
@@ -221,7 +190,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
             <h2 className="text-base font-bold text-[#333] mb-3 flex items-center gap-2" style={{ letterSpacing: '-0.02em' }}>
               <FileText className="w-4 h-4 text-[#666]" />
-              징계 사유
+              {t('reason')}
             </h2>
             <p className="text-sm text-[#333] leading-relaxed whitespace-pre-wrap">
               {data.description}
@@ -232,7 +201,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
           {data.evidenceKeys && data.evidenceKeys.length > 0 && (
             <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
               <h2 className="text-base font-bold text-[#333] mb-3" style={{ letterSpacing: '-0.02em' }}>
-                증거자료
+                {t('evidence')}
               </h2>
               <div className="space-y-1.5">
                 {data.evidenceKeys.map((key, idx) => (
@@ -249,24 +218,24 @@ export default function DisciplineDetailClient({ user, id }: Props) {
           {(data.committeeDate || (data.committeeMembers && data.committeeMembers.length > 0)) && (
             <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
               <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-                징계위원회
+                {t('committee')}
               </h2>
               <div className="grid grid-cols-2 gap-y-3 gap-x-6">
                 {data.committeeDate && (
-                  <InfoItem label="위원회 일자" value={format(new Date(data.committeeDate), 'yyyy-MM-dd')} />
+                  <InfoItem label={t('committeeDate')} value={format(new Date(data.committeeDate), 'yyyy-MM-dd')} />
                 )}
                 {data.decisionDate && (
-                  <InfoItem label="의결일" value={format(new Date(data.decisionDate), 'yyyy-MM-dd')} />
+                  <InfoItem label={t('decisionDate')} value={format(new Date(data.decisionDate), 'yyyy-MM-dd')} />
                 )}
                 {data.committeeMembers && data.committeeMembers.length > 0 && (
                   <div className="col-span-2">
-                    <span className="text-xs text-[#999]">위원</span>
+                    <span className="text-xs text-[#999]">{t('committeeMembers')}</span>
                     <p className="text-sm text-[#333]">{data.committeeMembers.join(', ')}</p>
                   </div>
                 )}
                 {data.decision && (
                   <div className="col-span-2">
-                    <span className="text-xs text-[#999]">의결 내용</span>
+                    <span className="text-xs text-[#999]">{t('decisionContent')}</span>
                     <p className="text-sm text-[#333] whitespace-pre-wrap">{data.decision}</p>
                   </div>
                 )}
@@ -278,12 +247,12 @@ export default function DisciplineDetailClient({ user, id }: Props) {
           {data.suspensionStart && (
             <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
               <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-                정직 기간
+                {t('suspensionPeriod')}
               </h2>
               <div className="grid grid-cols-2 gap-y-3 gap-x-6">
-                <InfoItem label="시작일" value={format(new Date(data.suspensionStart), 'yyyy-MM-dd')} />
+                <InfoItem label={tCommon('startDate')} value={format(new Date(data.suspensionStart), 'yyyy-MM-dd')} />
                 {data.suspensionEnd && (
-                  <InfoItem label="종료일" value={format(new Date(data.suspensionEnd), 'yyyy-MM-dd')} />
+                  <InfoItem label={tCommon('endDate')} value={format(new Date(data.suspensionEnd), 'yyyy-MM-dd')} />
                 )}
               </div>
             </div>
@@ -293,12 +262,12 @@ export default function DisciplineDetailClient({ user, id }: Props) {
           {data.salaryReductionRate !== null && data.salaryReductionRate !== undefined && (
             <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
               <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-                감봉 정보
+                {t('salaryReductionInfo')}
               </h2>
               <div className="grid grid-cols-2 gap-y-3 gap-x-6">
-                <InfoItem label="감봉률" value={`${Number(data.salaryReductionRate)}%`} />
+                <InfoItem label={t('reductionRate')} value={`${Number(data.salaryReductionRate)}%`} />
                 {data.salaryReductionMonths && (
-                  <InfoItem label="감봉 기간" value={`${data.salaryReductionMonths}개월`} />
+                  <InfoItem label={t('reductionPeriod')} value={t('monthsValue', { count: data.salaryReductionMonths })} />
                 )}
               </div>
             </div>
@@ -308,9 +277,9 @@ export default function DisciplineDetailClient({ user, id }: Props) {
           {data.demotionGrade && (
             <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
               <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
-                강등 정보
+                {t('demotionInfo')}
               </h2>
-              <InfoItem label="강등 직급" value={data.demotionGrade.name} />
+              <InfoItem label={t('demotionGrade')} value={data.demotionGrade.name} />
             </div>
           )}
         </div>
@@ -330,11 +299,11 @@ export default function DisciplineDetailClient({ user, id }: Props) {
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[#999]">부서</span>
+                <span className="text-[#999]">{tCommon('department')}</span>
                 <span className="text-[#333]">{data.employee.department?.name ?? '-'}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[#999]">직급</span>
+                <span className="text-[#999]">{tCommon('grade')}</span>
                 <span className="text-[#333]">{data.employee.jobGrade?.name ?? '-'}</span>
               </div>
             </div>
@@ -344,7 +313,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
             <h3 className="text-base font-bold text-[#333] mb-4 flex items-center gap-2" style={{ letterSpacing: '-0.02em' }}>
               <AlertTriangle className="w-4 h-4 text-[#FF9800]" />
-              이의신청
+              {t('appealSection')}
             </h3>
 
             {data.appealStatus === 'NONE' && (
@@ -353,7 +322,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
                   value={appealText}
                   onChange={(e) => setAppealText(e.target.value)}
                   rows={4}
-                  placeholder="이의신청 사유를 입력해주세요..."
+                  placeholder={t('appealPlaceholder')}
                   className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] resize-none"
                 />
                 <button
@@ -361,7 +330,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
                   disabled={!appealText.trim() || appealSubmitting}
                   className="w-full px-4 py-2 text-sm font-medium bg-[#FF9800] hover:bg-[#F57C00] text-white rounded-lg transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {appealSubmitting ? '접수 중...' : '이의신청'}
+                  {appealSubmitting ? t('appealSubmitting') : t('submitAppeal')}
                 </button>
               </div>
             )}
@@ -370,7 +339,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <span className={`px-2 py-1 text-xs font-medium rounded ${APPEAL_BADGE_STYLES.FILED}`}>
-                    {APPEAL_LABELS.FILED}
+                    {tPage('appealLabels.FILED')}
                   </span>
                   {data.appealDate && (
                     <span className="text-xs text-[#999]">
@@ -387,7 +356,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
             {data.appealStatus === 'UNDER_REVIEW' && (
               <div className="space-y-3">
                 <span className={`px-2 py-1 text-xs font-medium rounded ${APPEAL_BADGE_STYLES.UNDER_REVIEW}`}>
-                  {APPEAL_LABELS.UNDER_REVIEW}
+                  {tPage('appealLabels.UNDER_REVIEW')}
                 </span>
                 {data.appealText && (
                   <p className="text-sm text-[#333] whitespace-pre-wrap">{data.appealText}</p>
@@ -398,17 +367,17 @@ export default function DisciplineDetailClient({ user, id }: Props) {
             {(data.appealStatus === 'UPHELD' || data.appealStatus === 'OVERTURNED') && (
               <div className="space-y-3">
                 <span className={`px-2 py-1 text-xs font-medium rounded ${APPEAL_BADGE_STYLES[data.appealStatus]}`}>
-                  {APPEAL_LABELS[data.appealStatus]}
+                  {tPage(`appealLabels.${data.appealStatus}`)}
                 </span>
                 {data.appealText && (
                   <div className="mt-2">
-                    <span className="text-xs text-[#999]">이의신청 내용</span>
+                    <span className="text-xs text-[#999]">{t('appealContent')}</span>
                     <p className="text-sm text-[#333] whitespace-pre-wrap">{data.appealText}</p>
                   </div>
                 )}
                 {data.appealResult && (
                   <div className="mt-2">
-                    <span className="text-xs text-[#999]">심사 결과</span>
+                    <span className="text-xs text-[#999]">{t('appealReviewResult')}</span>
                     <p className="text-sm text-[#333] whitespace-pre-wrap">{data.appealResult}</p>
                   </div>
                 )}

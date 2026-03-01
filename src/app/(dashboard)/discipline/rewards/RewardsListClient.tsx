@@ -6,23 +6,13 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Search, Plus, ChevronLeft, ChevronRight, Award, Filter } from 'lucide-react'
 import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 
-// ─── Label Maps ──────────────────────────────────────────
-
-const REWARD_TYPE_LABELS: Record<string, string> = {
-  COMMENDATION: '표창',
-  BONUS_AWARD: '포상금',
-  PROMOTION_RECOMMENDATION: '승진추천',
-  LONG_SERVICE: '장기근속',
-  INNOVATION: '혁신상',
-  SAFETY_AWARD: '안전상',
-  CTR_VALUE_AWARD: 'CTR 핵심가치상',
-  OTHER: '기타',
-}
+// ─── Badge Styles ────────────────────────────────────────
 
 const REWARD_TYPE_BADGE_STYLES: Record<string, string> = {
   COMMENDATION: 'bg-[#E8F5E9] text-[#2E7D32]',
@@ -33,13 +23,6 @@ const REWARD_TYPE_BADGE_STYLES: Record<string, string> = {
   SAFETY_AWARD: 'bg-[#E3F2FD] text-[#2196F3]',
   PROMOTION_RECOMMENDATION: 'bg-[#E8F5E9] text-[#2E7D32]',
   OTHER: 'bg-[#F5F5F5] text-[#999]',
-}
-
-const CTR_VALUE_LABELS: Record<string, string> = {
-  CHALLENGE: '도전',
-  TRUST: '신뢰',
-  RESPONSIBILITY: '책임',
-  RESPECT: '존중',
 }
 
 const CTR_VALUE_BADGE_STYLES: Record<string, string> = {
@@ -73,10 +56,15 @@ interface Props {
 
 const LIMIT = 20
 
+const REWARD_TYPE_KEYS = ['COMMENDATION', 'BONUS_AWARD', 'PROMOTION_RECOMMENDATION', 'LONG_SERVICE', 'INNOVATION', 'SAFETY_AWARD', 'CTR_VALUE_AWARD', 'OTHER'] as const
+
 // ─── Component ───────────────────────────────────────────
 
 export default function RewardsListClient({ user }: Props) {
   const router = useRouter()
+  const t = useTranslations('rewardsPage')
+  const tCommon = useTranslations('common')
+
   const [data, setData] = useState<RewardRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
@@ -128,9 +116,9 @@ export default function RewardsListClient({ user }: Props) {
           </div>
           <div>
             <h1 className="text-xl font-bold text-[#333]" style={{ letterSpacing: '-0.02em' }}>
-              포상관리
+              {t('title')}
             </h1>
-            <p className="text-sm text-[#999]">총 {total}건</p>
+            <p className="text-sm text-[#999]">{tCommon('total')} {total}{tCommon('items')}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -138,14 +126,14 @@ export default function RewardsListClient({ user }: Props) {
             onClick={() => router.push('/discipline')}
             className="px-4 py-2 text-sm font-medium border border-[#E8E8E8] text-[#333] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150"
           >
-            징계관리
+            {t('disciplineManagement')}
           </button>
           <button
             onClick={() => router.push('/discipline/rewards/new')}
             className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg transition-colors duration-150"
           >
             <Plus className="w-4 h-4" />
-            포상 등록
+            {t('registerReward')}
           </button>
         </div>
       </div>
@@ -157,7 +145,7 @@ export default function RewardsListClient({ user }: Props) {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
             <input
               type="text"
-              placeholder="사원명 또는 포상명으로 검색..."
+              placeholder={t('searchPlaceholder')}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="w-full pl-10 pr-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] transition-colors"
@@ -170,9 +158,9 @@ export default function RewardsListClient({ user }: Props) {
               onChange={(e) => { setTypeFilter(e.target.value); setPage(1) }}
               className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] bg-white"
             >
-              <option value="">유형 전체</option>
-              {Object.entries(REWARD_TYPE_LABELS).map(([key, label]) => (
-                <option key={key} value={key}>{label}</option>
+              <option value="">{t('typeAll')}</option>
+              {REWARD_TYPE_KEYS.map((key) => (
+                <option key={key} value={key}>{t(`rewardTypeLabels.${key}`)}</option>
               ))}
             </select>
           </div>
@@ -184,12 +172,12 @@ export default function RewardsListClient({ user }: Props) {
         <table className="w-full">
           <thead>
             <tr className="border-b border-[#E8E8E8]">
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">사원명</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">사번</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">포상유형</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">포상명</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">수여일</th>
-              <th className="px-4 py-3 text-right text-xs font-semibold text-[#999]">금액</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('employeeName')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('employeeNo')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('rewardType')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('rewardName')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('awardedDate')}</th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-[#999]">{tCommon('amount')}</th>
             </tr>
           </thead>
           <tbody>
@@ -198,14 +186,14 @@ export default function RewardsListClient({ user }: Props) {
                 <td colSpan={6} className="px-4 py-12 text-center text-sm text-[#999]">
                   <div className="flex items-center justify-center gap-2">
                     <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#00C853] rounded-full animate-spin" />
-                    데이터를 불러오는 중...
+                    {t('loadingData')}
                   </div>
                 </td>
               </tr>
             ) : data.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-4 py-12 text-center text-sm text-[#999]">
-                  등록된 포상 기록이 없습니다.
+                  {t('emptyMessage')}
                 </td>
               </tr>
             ) : (
@@ -224,11 +212,11 @@ export default function RewardsListClient({ user }: Props) {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1.5">
                       <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${REWARD_TYPE_BADGE_STYLES[row.rewardType] ?? 'bg-[#F5F5F5] text-[#999]'}`}>
-                        {REWARD_TYPE_LABELS[row.rewardType] ?? row.rewardType}
+                        {t(`rewardTypeLabels.${row.rewardType}`, { defaultValue: row.rewardType })}
                       </span>
                       {row.rewardType === 'CTR_VALUE_AWARD' && row.ctrValue && (
                         <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${CTR_VALUE_BADGE_STYLES[row.ctrValue] ?? 'bg-[#F5F5F5] text-[#999]'}`}>
-                          {CTR_VALUE_LABELS[row.ctrValue] ?? row.ctrValue}
+                          {t(`ctrValueLabels.${row.ctrValue}`, { defaultValue: row.ctrValue })}
                         </span>
                       )}
                     </div>
@@ -241,7 +229,7 @@ export default function RewardsListClient({ user }: Props) {
                   </td>
                   <td className="px-4 py-3 text-sm text-[#333] text-right">
                     {row.amount !== null && row.amount !== undefined
-                      ? `${Number(row.amount).toLocaleString()}원`
+                      ? t('amountValue', { amount: Number(row.amount).toLocaleString() })
                       : '-'}
                   </td>
                 </tr>
@@ -254,7 +242,7 @@ export default function RewardsListClient({ user }: Props) {
         {totalPages > 1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-[#E8E8E8]">
             <p className="text-xs text-[#999]">
-              {total}건 중 {(page - 1) * LIMIT + 1}-{Math.min(page * LIMIT, total)}건
+              {t('paginationInfo', { total, start: (page - 1) * LIMIT + 1, end: Math.min(page * LIMIT, total) })}
             </p>
             <div className="flex items-center gap-1">
               <button

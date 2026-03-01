@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Sparkles } from 'lucide-react'
 import {
   LineChart,
@@ -49,28 +50,6 @@ interface ChartDataPoint {
   belonging: number
 }
 
-// ─── Constants ──────────────────────────────────────────────
-
-const MOOD_MAP: Record<string, { emoji: string; label: string; value: number }> = {
-  GREAT: { emoji: '\u{1F603}', label: '최고', value: 5 },
-  GOOD: { emoji: '\u{1F642}', label: '좋음', value: 4 },
-  NEUTRAL: { emoji: '\u{1F610}', label: '보통', value: 3 },
-  STRUGGLING: { emoji: '\u{1F61F}', label: '힘듦', value: 2 },
-  BAD: { emoji: '\u{1F622}', label: '매우 힘듦', value: 1 },
-}
-
-const SENTIMENT_BADGE: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' }> = {
-  POSITIVE: { label: '긍정적', variant: 'default' },
-  MIXED: { label: '혼합', variant: 'secondary' },
-  CONCERNING: { label: '우려', variant: 'destructive' },
-}
-
-const TREND_BADGE: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' }> = {
-  IMPROVING: { label: '개선 중', variant: 'default' },
-  STABLE: { label: '안정적', variant: 'secondary' },
-  DECLINING: { label: '하락 중', variant: 'destructive' },
-}
-
 // ─── Helpers ──────────────────────────────────────────────────
 
 function isRiskRow(row: CheckinRow): boolean {
@@ -85,6 +64,28 @@ function formatDate(dateStr: string | null): string {
 // ─── Component ──────────────────────────────────────────────
 
 export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
+  const t = useTranslations('onboarding')
+
+  const MOOD_MAP: Record<string, { emoji: string; label: string; value: number }> = {
+    GREAT: { emoji: '\u{1F603}', label: t('moodBestShort'), value: 5 },
+    GOOD: { emoji: '\u{1F642}', label: t('moodGoodShort'), value: 4 },
+    NEUTRAL: { emoji: '\u{1F610}', label: t('moodNeutralShort'), value: 3 },
+    STRUGGLING: { emoji: '\u{1F61F}', label: t('moodStrugglingShort'), value: 2 },
+    BAD: { emoji: '\u{1F622}', label: t('moodBadShort'), value: 1 },
+  }
+
+  const SENTIMENT_BADGE: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' }> = {
+    POSITIVE: { label: t('sentimentPositive'), variant: 'default' },
+    MIXED: { label: t('sentimentMixed'), variant: 'secondary' },
+    CONCERNING: { label: t('sentimentConcerning'), variant: 'destructive' },
+  }
+
+  const TREND_BADGE: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' }> = {
+    IMPROVING: { label: t('trendImproving'), variant: 'default' },
+    STABLE: { label: t('trendStable'), variant: 'secondary' },
+    DECLINING: { label: t('trendDeclining'), variant: 'destructive' },
+  }
+
   const [checkins, setCheckins] = useState<CheckinRow[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | null>(null)
   const [loading, setLoading] = useState(true)
@@ -176,7 +177,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
     () => [
       {
         key: 'employeeName',
-        header: '직원명',
+        header: t('employeeName'),
         render: (r) => {
           const row = r as unknown as CheckinRow
           return (
@@ -195,10 +196,10 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
       },
       {
         key: 'checkinWeek',
-        header: '주차',
+        header: t('checkinWeekLabel'),
         render: (r) => {
           const row = r as unknown as CheckinRow
-          return <span className="text-sm">{row.checkinWeek}주차</span>
+          return <span className="text-sm">{t('weekLabel', { week: row.checkinWeek })}</span>
         },
       },
       {
@@ -236,14 +237,14 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
       },
       {
         key: 'submittedAt',
-        header: '제출일',
+        header: t('submittedDate'),
         render: (r) => {
           const row = r as unknown as CheckinRow
           return <span className="text-sm text-muted-foreground">{formatDate(String(row.submittedAt))}</span>
         },
       },
     ],
-    [selectEmployee],
+    [selectEmployee, t],
   )
 
   // ─── Loading state ───
@@ -259,14 +260,14 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
   return (
     <div className="space-y-6 p-6">
       <PageHeader
-        title="온보딩 체크인 관리"
-        description="신입사원 주간 체크인 현황을 확인하고 AI 분석을 요청하세요."
+        title={t('checkinAdminTitle')}
+        description={t('checkinAdminDescription')}
       />
 
       {/* ─── Employee selector ─── */}
       {uniqueEmployees.length > 0 && (
         <div className="flex items-center gap-3">
-          <label className="text-sm font-medium text-foreground">직원 선택:</label>
+          <label className="text-sm font-medium text-foreground">{t('selectEmployee')}</label>
           <select
             className="rounded-md border px-3 py-2 text-sm"
             value={selectedEmployeeId ?? ''}
@@ -275,7 +276,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
               if (emp) selectEmployee(emp.id, emp.name)
             }}
           >
-            <option value="">-- 직원을 선택하세요 --</option>
+            <option value="">{t('selectEmployeePlaceholder')}</option>
             {uniqueEmployees.map((emp) => (
               <option key={emp.id} value={emp.id}>
                 {emp.name}
@@ -292,8 +293,8 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
         pagination={pagination ?? undefined}
         onPageChange={setPage}
         loading={loading}
-        emptyMessage="체크인 데이터가 없습니다"
-        emptyDescription="아직 제출된 체크인이 없습니다."
+        emptyMessage={t('noCheckinData')}
+        emptyDescription={t('noCheckinDataDesc')}
         rowKey={(row) => (row as unknown as CheckinRow).id}
       />
 
@@ -303,7 +304,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-3">
               <CardTitle className="text-base">
-                {selectedEmployeeName} - 체크인 트렌드
+                {selectedEmployeeName} - {t('checkinTrend')}
               </CardTitle>
               <Button
                 variant="outline"
@@ -313,25 +314,25 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
                 className="gap-2"
               >
                 <Sparkles className="h-4 w-4" />
-                {loadingAi ? 'AI 분석 중...' : 'AI 요약'}
+                {loadingAi ? t('aiAnalyzing') : t('aiSummary')}
               </Button>
             </CardHeader>
             <CardContent>
               {loadingDetail ? (
                 <Skeleton className="h-64 w-full" />
               ) : chartData.length === 0 ? (
-                <p className="py-8 text-center text-sm text-muted-foreground">체크인 데이터가 없습니다.</p>
+                <p className="py-8 text-center text-sm text-muted-foreground">{t('noCheckinData')}</p>
               ) : (
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={chartData}>
                     <XAxis
                       dataKey="week"
-                      tickFormatter={(v: number) => `${v}주`}
+                      tickFormatter={(v: number) => t('weekShort', { week: v })}
                       fontSize={12}
                     />
                     <YAxis domain={[0, 5]} ticks={[1, 2, 3, 4, 5]} fontSize={12} />
                     <Tooltip
-                      labelFormatter={(v) => `${v}주차`}
+                      labelFormatter={(v) => t('weekLong', { week: v })}
                       formatter={(value, name) => {
                         const labels: Record<string, string> = {
                           mood: 'Mood',
@@ -384,7 +385,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
                   <Sparkles className="h-4 w-4 text-ctr-secondary" />
-                  AI 분석 요약
+                  {t('aiAnalysisSummary')}
                   <Badge variant="outline" className="ml-2 text-xs">
                     AI Generated
                   </Badge>
@@ -393,7 +394,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
               <CardContent className="space-y-4">
                 <div className="flex gap-3">
                   <div>
-                    <span className="text-xs text-muted-foreground">전반적 감정</span>
+                    <span className="text-xs text-muted-foreground">{t('overallSentiment')}</span>
                     <div className="mt-1">
                       <Badge variant={SENTIMENT_BADGE[aiSummary.overall_sentiment]?.variant ?? 'secondary'}>
                         {SENTIMENT_BADGE[aiSummary.overall_sentiment]?.label ?? aiSummary.overall_sentiment}
@@ -401,7 +402,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
                     </div>
                   </div>
                   <div>
-                    <span className="text-xs text-muted-foreground">추이</span>
+                    <span className="text-xs text-muted-foreground">{t('trendLabel')}</span>
                     <div className="mt-1">
                       <Badge variant={TREND_BADGE[aiSummary.trend]?.variant ?? 'secondary'}>
                         {TREND_BADGE[aiSummary.trend]?.label ?? aiSummary.trend}
@@ -412,7 +413,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
 
                 {aiSummary.key_observations.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-foreground mb-1">주요 관찰 사항</h4>
+                    <h4 className="text-sm font-medium text-foreground mb-1">{t('keyObservations')}</h4>
                     <ul className="space-y-1 text-sm text-muted-foreground">
                       {aiSummary.key_observations.map((obs, i) => (
                         <li key={i} className="flex items-start gap-2">
@@ -426,7 +427,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
 
                 {aiSummary.recommended_actions.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-foreground mb-1">권장 조치</h4>
+                    <h4 className="text-sm font-medium text-foreground mb-1">{t('recommendedActions')}</h4>
                     <ul className="space-y-1 text-sm text-muted-foreground">
                       {aiSummary.recommended_actions.map((action, i) => (
                         <li key={i} className="flex items-start gap-2">

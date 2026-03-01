@@ -10,6 +10,7 @@ import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Plus, Pencil, Trash2, Loader2, GripVertical } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import type { SessionUser, PaginationInfo } from '@/types'
 import { apiClient } from '@/lib/api'
@@ -53,23 +54,6 @@ interface WorkflowRuleLocal {
   createdAt: string
 }
 
-const WORKFLOW_TYPES = [
-  { value: '', label: '전체' },
-  { value: 'LEAVE_APPROVAL', label: '휴가 승인' },
-  { value: 'OVERTIME_APPROVAL', label: '초과근무 승인' },
-  { value: 'EXPENSE_APPROVAL', label: '경비 승인' },
-  { value: 'PROFILE_CHANGE', label: '정보변경 승인' },
-  { value: 'SALARY_CHANGE', label: '급여변경 승인' },
-]
-
-const APPROVER_TYPES = [
-  { value: 'DIRECT_MANAGER', label: '직속 상사' },
-  { value: 'DEPARTMENT_HEAD', label: '부서장' },
-  { value: 'HR_ADMIN', label: 'HR 관리자' },
-  { value: 'SPECIFIC_ROLE', label: '특정 역할' },
-  { value: 'SPECIFIC_EMPLOYEE', label: '특정 사원' },
-]
-
 const stepSchema = z.object({
   stepOrder: z.number().int().positive(),
   approverType: z.enum(['DIRECT_MANAGER', 'DEPARTMENT_HEAD', 'HR_ADMIN', 'SPECIFIC_ROLE', 'SPECIFIC_EMPLOYEE']),
@@ -80,16 +64,36 @@ const stepSchema = z.object({
 })
 
 const formSchema = z.object({
-  workflowType: z.string().min(1, '워크플로 유형은 필수입니다'),
-  name: z.string().min(1, '이름은 필수입니다'),
+  workflowType: z.string().min(1),
+  name: z.string().min(1),
   isActive: z.boolean(),
-  steps: z.array(stepSchema).min(1, '최소 1개의 단계가 필요합니다'),
+  steps: z.array(stepSchema).min(1),
 })
 
 type FormData = z.infer<typeof formSchema>
 
 export function WorkflowsClient({ user: _user }: { user: SessionUser }) {
+  const t = useTranslations('settings')
+  const tc = useTranslations('common')
   const { toast } = useToast()
+
+  const WORKFLOW_TYPES = [
+    { value: '', label: t('typeAll') },
+    { value: 'LEAVE_APPROVAL', label: t('typeLeaveApproval') },
+    { value: 'OVERTIME_APPROVAL', label: t('typeOvertimeApproval') },
+    { value: 'EXPENSE_APPROVAL', label: t('typeExpenseApproval') },
+    { value: 'PROFILE_CHANGE', label: t('typeProfileChange') },
+    { value: 'SALARY_CHANGE', label: t('typeSalaryChange') },
+  ]
+
+  const APPROVER_TYPES = [
+    { value: 'DIRECT_MANAGER', label: t('approverDirectManager') },
+    { value: 'DEPARTMENT_HEAD', label: t('approverDeptHead') },
+    { value: 'HR_ADMIN', label: t('approverHrAdmin') },
+    { value: 'SPECIFIC_ROLE', label: t('approverSpecificRole') },
+    { value: 'SPECIFIC_EMPLOYEE', label: t('approverSpecificEmployee') },
+  ]
+
   const [items, setItems] = useState<WorkflowRuleLocal[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -116,11 +120,11 @@ export function WorkflowsClient({ user: _user }: { user: SessionUser }) {
       setItems(res.data)
       setPagination(res.pagination)
     } catch {
-      toast({ title: '오류', description: '워크플로 목록을 불러올 수 없습니다.', variant: 'destructive' })
+      toast({ title: tc('error'), description: t('workflowLoadError'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
-  }, [page, filterType, toast])
+  }, [page, filterType, toast, t, tc])
 
   useEffect(() => { fetchItems() }, [fetchItems])
 
@@ -163,11 +167,11 @@ export function WorkflowsClient({ user: _user }: { user: SessionUser }) {
       } else {
         await apiClient.post('/api/v1/settings/workflows', payload)
       }
-      toast({ title: '성공', description: '워크플로가 저장되었습니다.' })
+      toast({ title: tc('success'), description: t('workflowSaved') })
       setDialogOpen(false)
       fetchItems()
     } catch {
-      toast({ title: '오류', description: '저장 중 오류가 발생했습니다.', variant: 'destructive' })
+      toast({ title: tc('error'), description: t('saveError'), variant: 'destructive' })
     } finally {
       setSaving(false)
     }
@@ -177,31 +181,31 @@ export function WorkflowsClient({ user: _user }: { user: SessionUser }) {
     if (!deleteTarget) return
     try {
       await apiClient.delete(`/api/v1/settings/workflows/${deleteTarget.id}`)
-      toast({ title: '성공', description: '워크플로가 삭제되었습니다.' })
+      toast({ title: tc('success'), description: t('workflowDeleted') })
       setDeleteTarget(null)
       fetchItems()
     } catch {
-      toast({ title: '오류', description: '삭제 중 오류가 발생했습니다.', variant: 'destructive' })
+      toast({ title: tc('error'), description: t('deleteError'), variant: 'destructive' })
     }
   }
 
   const columns: DataTableColumn<WorkflowRuleLocal>[] = [
     {
-      key: 'workflowType', header: '유형',
-      render: (row) => WORKFLOW_TYPES.find((t) => t.value === row.workflowType)?.label ?? row.workflowType,
+      key: 'workflowType', header: t('workflowType'),
+      render: (row) => WORKFLOW_TYPES.find((wt) => wt.value === row.workflowType)?.label ?? row.workflowType,
     },
-    { key: 'name', header: '이름' },
-    { key: 'totalSteps', header: '단계 수', render: (row) => `${row.totalSteps}단계` },
+    { key: 'name', header: t('workflowName') },
+    { key: 'totalSteps', header: t('stepCount', { count: '' }), render: (row) => t('stepCount', { count: row.totalSteps }) },
     {
-      key: 'isActive', header: '상태',
+      key: 'isActive', header: tc('status'),
       render: (row) => (
         <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${row.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
-          {row.isActive ? '활성' : '비활성'}
+          {row.isActive ? t('active') : t('inactive')}
         </span>
       ),
     },
     {
-      key: 'actions', header: '관리',
+      key: 'actions', header: t('manage'),
       render: (row) => (
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" onClick={() => openEdit(row)}><Pencil className="h-4 w-4" /></Button>
@@ -214,18 +218,18 @@ export function WorkflowsClient({ user: _user }: { user: SessionUser }) {
   return (
     <div className="space-y-6 p-6">
       <PageHeader
-        title="워크플로 빌더"
-        description="승인 워크플로를 구성합니다."
-        actions={<Button onClick={openCreate}><Plus className="mr-1 h-4 w-4" /> 워크플로 추가</Button>}
+        title={t('workflowsTitle')}
+        description={t('workflowsDesc')}
+        actions={<Button onClick={openCreate}><Plus className="mr-1 h-4 w-4" /> {t('addWorkflow')}</Button>}
       />
 
       <div className="flex items-center gap-3">
-        <Label className="text-sm">유형 필터:</Label>
+        <Label className="text-sm">{t('typeFilter')}</Label>
         <Select value={filterType} onValueChange={(v) => { setFilterType(v); setPage(1) }}>
-          <SelectTrigger className="w-48"><SelectValue placeholder="전체" /></SelectTrigger>
+          <SelectTrigger className="w-48"><SelectValue placeholder={t('typeAll')} /></SelectTrigger>
           <SelectContent>
-            {WORKFLOW_TYPES.map((t) => (
-              <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+            {WORKFLOW_TYPES.map((wt) => (
+              <SelectItem key={wt.value} value={wt.value}>{wt.label}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -237,51 +241,51 @@ export function WorkflowsClient({ user: _user }: { user: SessionUser }) {
         loading={loading}
         pagination={pagination}
         onPageChange={setPage}
-        emptyMessage="등록된 워크플로가 없습니다."
+        emptyMessage={t('noWorkflows')}
         rowKey={(row) => row.id}
       />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editing ? '워크플로 수정' : '워크플로 추가'}</DialogTitle>
-            <DialogDescription>승인 단계를 구성합니다.</DialogDescription>
+            <DialogTitle>{editing ? t('editWorkflow') : t('addWorkflow')}</DialogTitle>
+            <DialogDescription>{t('workflowDialogDesc')}</DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>워크플로 유형</Label>
+                <Label>{t('workflowType')}</Label>
                 <Select value={watch('workflowType')} onValueChange={(v) => setValue('workflowType', v)} disabled={!!editing}>
-                  <SelectTrigger><SelectValue placeholder="유형 선택" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={t('selectType')} /></SelectTrigger>
                   <SelectContent>
-                    {WORKFLOW_TYPES.filter((t) => t.value).map((t) => (
-                      <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                    {WORKFLOW_TYPES.filter((wt) => wt.value).map((wt) => (
+                      <SelectItem key={wt.value} value={wt.value}>{wt.label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
                 {errors.workflowType && <p className="text-xs text-destructive">{errors.workflowType.message}</p>}
               </div>
               <div className="space-y-2">
-                <Label>이름</Label>
-                <Input {...register('name')} placeholder="기본 휴가 승인" />
+                <Label>{t('name')}</Label>
+                <Input {...register('name')} placeholder={t('defaultLeaveApproval')} />
                 {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
               </div>
             </div>
 
             <div className="flex items-center gap-2">
               <Switch checked={watch('isActive')} onCheckedChange={(v) => setValue('isActive', v)} />
-              <Label>활성</Label>
+              <Label>{t('active')}</Label>
             </div>
 
             {/* Steps */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <Label className="text-base font-semibold">승인 단계</Label>
+                <Label className="text-base font-semibold">{t('approvalSteps')}</Label>
                 <Button
                   type="button" variant="outline" size="sm"
                   onClick={() => append({ stepOrder: fields.length + 1, approverType: 'DIRECT_MANAGER', canSkip: false })}
                 >
-                  <Plus className="mr-1 h-4 w-4" /> 단계 추가
+                  <Plus className="mr-1 h-4 w-4" /> {t('addStep')}
                 </Button>
               </div>
               {errors.steps && <p className="text-xs text-destructive">{typeof errors.steps.message === 'string' ? errors.steps.message : ''}</p>}
@@ -291,7 +295,7 @@ export function WorkflowsClient({ user: _user }: { user: SessionUser }) {
                   <GripVertical className="mt-2 h-4 w-4 shrink-0 text-muted-foreground" />
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">단계 {index + 1}</span>
+                      <span className="text-sm font-medium">{t('stepNumber', { index: index + 1 })}</span>
                       {fields.length > 1 && (
                         <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
                           <Trash2 className="h-4 w-4 text-destructive" />
@@ -300,26 +304,26 @@ export function WorkflowsClient({ user: _user }: { user: SessionUser }) {
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <Label className="text-xs">승인자 유형</Label>
+                        <Label className="text-xs">{t('approverType')}</Label>
                         <Select
                           value={watch(`steps.${index}.approverType`)}
                           onValueChange={(v) => setValue(`steps.${index}.approverType`, v as FormData['steps'][0]['approverType'])}
                         >
                           <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            {APPROVER_TYPES.map((t) => (
-                              <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                            {APPROVER_TYPES.map((at) => (
+                              <SelectItem key={at.value} value={at.value}>{at.label}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">자동승인 (시간)</Label>
+                        <Label className="text-xs">{t('autoApproveHours')}</Label>
                         <Input
                           type="number"
                           className="h-8 text-xs"
                           {...register(`steps.${index}.autoApproveAfterHours`)}
-                          placeholder="미설정"
+                          placeholder={t('notSet')}
                         />
                       </div>
                     </div>
@@ -328,7 +332,7 @@ export function WorkflowsClient({ user: _user }: { user: SessionUser }) {
                         checked={watch(`steps.${index}.canSkip`)}
                         onCheckedChange={(v) => setValue(`steps.${index}.canSkip`, v)}
                       />
-                      <Label className="text-xs">건너뛰기 가능</Label>
+                      <Label className="text-xs">{t('canSkip')}</Label>
                     </div>
                   </div>
                 </div>
@@ -336,10 +340,10 @@ export function WorkflowsClient({ user: _user }: { user: SessionUser }) {
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>취소</Button>
+              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>{tc('cancel')}</Button>
               <Button type="submit" disabled={saving}>
                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {editing ? '수정' : '추가'}
+                {editing ? tc('edit') : tc('add')}
               </Button>
             </DialogFooter>
           </form>
@@ -349,14 +353,14 @@ export function WorkflowsClient({ user: _user }: { user: SessionUser }) {
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>워크플로 삭제</AlertDialogTitle>
+            <AlertDialogTitle>{t('workflowDeleteTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              &quot;{deleteTarget?.name}&quot; 워크플로를 삭제하시겠습니까?
+              &quot;{deleteTarget?.name}&quot; {t('workflowDeleteConfirm', { name: '' })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">삭제</AlertDialogAction>
+            <AlertDialogCancel>{tc('cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{tc('delete')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

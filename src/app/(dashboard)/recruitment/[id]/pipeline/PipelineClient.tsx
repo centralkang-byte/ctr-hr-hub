@@ -7,6 +7,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import {
   ChevronLeft,
   GitBranch,
@@ -32,15 +33,15 @@ const STAGES = [
 
 type StageType = typeof STAGES[number]
 
-const STAGE_LABELS: Record<string, string> = {
-  APPLIED: '지원완료',
-  SCREENING: '서류심사',
-  INTERVIEW_1: '1차면접',
-  INTERVIEW_2: '2차면접',
-  FINAL: '최종심사',
-  OFFER: '오퍼',
-  HIRED: '합격',
-  REJECTED: '탈락',
+const STAGE_KEYS: Record<string, string> = {
+  APPLIED: 'stageAPPLIED',
+  SCREENING: 'stageSCREENING',
+  INTERVIEW_1: 'stageINTERVIEW_1',
+  INTERVIEW_2: 'stageINTERVIEW_2',
+  FINAL: 'stageFINAL',
+  OFFER: 'stageOFFER',
+  HIRED: 'stageHIRED',
+  REJECTED: 'stageREJECTED',
 }
 
 const STAGE_BORDER_COLORS: Record<string, string> = {
@@ -107,6 +108,7 @@ interface OfferFormData {
 
 export default function PipelineClient({ user, postingId }: Props) {
   const router = useRouter()
+  const t = useTranslations('recruitment')
   const [applications, setApplications] = useState<ApplicationRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [dragOverStage, setDragOverStage] = useState<string | null>(null)
@@ -333,7 +335,7 @@ export default function PipelineClient({ user, postingId }: Props) {
       <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
         <div className="flex items-center gap-2 text-sm text-[#999]">
           <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#00C853] rounded-full animate-spin" />
-          데이터를 불러오는 중...
+          {t('loadingData')}
         </div>
       </div>
     )
@@ -358,10 +360,10 @@ export default function PipelineClient({ user, postingId }: Props) {
               className="text-xl font-bold text-[#333]"
               style={{ letterSpacing: '-0.02em' }}
             >
-              채용 파이프라인
+              {t('pipelineTitle')}
             </h1>
             <p className="text-sm text-[#999]">
-              드래그 앤 드롭으로 단계를 변경하세요
+              {t('pipelineDescription')}
             </p>
           </div>
         </div>
@@ -390,7 +392,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                 <div className={`px-3 py-3 ${STAGE_HEADER_BG[stage]} rounded-t-xl`}>
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-[#333]">
-                      {STAGE_LABELS[stage]}
+                      {STAGE_KEYS[stage] ? t(STAGE_KEYS[stage]) : stage}
                     </span>
                     <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold bg-white text-[#666] rounded-full">
                       {items.length}
@@ -443,7 +445,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                 className="text-lg font-bold text-[#333]"
                 style={{ letterSpacing: '-0.02em' }}
               >
-                탈락 사유
+                {t('rejectionReason')}
               </h2>
               <button
                 onClick={() =>
@@ -459,7 +461,7 @@ export default function PipelineClient({ user, postingId }: Props) {
               onChange={(e) =>
                 setRejectionModal((prev) => ({ ...prev, reason: e.target.value }))
               }
-              placeholder="탈락 사유를 입력해주세요..."
+              placeholder={t('rejectionReasonPlaceholder')}
               rows={4}
               className="w-full px-4 py-3 text-sm border border-[#E8E8E8] rounded-lg resize-none focus:outline-none focus:border-[#F44336] transition-colors duration-150"
             />
@@ -470,7 +472,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                 }
                 className="px-4 py-2 text-sm font-medium text-[#666] border border-[#E8E8E8] rounded-lg hover:bg-[#FAFAFA] transition-colors duration-150"
               >
-                취소
+                {t('cancelButton')}
               </button>
               <button
                 onClick={handleRejectionSubmit}
@@ -478,7 +480,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#F44336] hover:bg-[#D32F2F] text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
               >
                 {modalSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                확인
+                {t('confirmButton')}
               </button>
             </div>
           </div>
@@ -504,7 +506,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                 className="text-lg font-bold text-[#333]"
                 style={{ letterSpacing: '-0.02em' }}
               >
-                오퍼 정보
+                {t('offerInfo')}
               </h2>
               <button
                 onClick={() =>
@@ -523,7 +525,7 @@ export default function PipelineClient({ user, postingId }: Props) {
               {/* 제안 연봉 */}
               <div>
                 <label className="block text-sm font-medium text-[#333] mb-1">
-                  제안 연봉 (원)
+                  {t('offeredSalaryLabel')}
                 </label>
                 <input
                   type="number"
@@ -534,14 +536,14 @@ export default function PipelineClient({ user, postingId }: Props) {
                       form: { ...prev.form, offeredSalary: e.target.value },
                     }))
                   }
-                  placeholder="예: 50000000"
+                  placeholder={t('offeredSalaryPlaceholder')}
                   className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] transition-colors duration-150"
                 />
               </div>
               {/* 제안일 */}
               <div>
                 <label className="block text-sm font-medium text-[#333] mb-1">
-                  제안일
+                  {t('offeredDateLabel')}
                 </label>
                 <input
                   type="date"
@@ -558,7 +560,7 @@ export default function PipelineClient({ user, postingId }: Props) {
               {/* 입사 예정일 */}
               <div>
                 <label className="block text-sm font-medium text-[#333] mb-1">
-                  입사 예정일
+                  {t('expectedStartDateLabel')}
                 </label>
                 <input
                   type="date"
@@ -584,7 +586,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                 }
                 className="px-4 py-2 text-sm font-medium text-[#666] border border-[#E8E8E8] rounded-lg hover:bg-[#FAFAFA] transition-colors duration-150"
               >
-                취소
+                {t('cancelButton')}
               </button>
               <button
                 onClick={handleOfferSubmit}
@@ -597,7 +599,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
               >
                 {modalSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                확인
+                {t('confirmButton')}
               </button>
             </div>
           </div>
