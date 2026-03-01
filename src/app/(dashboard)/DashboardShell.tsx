@@ -33,9 +33,11 @@ export function DashboardShell({ user, companies, children }: DashboardShellProp
     void signOut({ callbackUrl: '/login' })
   }, [])
 
+  const currentCountryCode = companies.find((c) => c.id === user.companyId)?.countryCode ?? null
+
   return (
     <>
-      <Sidebar user={user} onSignOut={handleSignOut} />
+      <Sidebar user={user} onSignOut={handleSignOut} countryCode={currentCountryCode ?? undefined} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header user={user} companies={companies} />
         <main className="flex-1 overflow-auto p-6">{children}</main>

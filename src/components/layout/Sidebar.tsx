@@ -27,6 +27,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Shield,
+  ShieldCheck,
   ListChecks,
   BarChart3,
   ClipboardCheck,
@@ -58,6 +59,10 @@ import {
   ToggleLeft,
   Download,
   LayoutGrid,
+  Eye,
+  FileSearch,
+  Database,
+  Scale,
   type LucideIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -79,6 +84,7 @@ interface NavItem {
   labelKey: string
   href: string
   icon: LucideIcon
+  countryFilter?: string[]
 }
 
 interface NavGroup {
@@ -91,6 +97,7 @@ interface NavGroup {
 interface SidebarProps {
   user: SessionUser
   onSignOut: () => void
+  countryCode?: string
 }
 
 // ─── Navigation Configuration ───────────────────────────────
@@ -255,6 +262,20 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
+    labelKey: 'compliance',
+    icon: ShieldCheck,
+    module: MODULE.COMPLIANCE,
+    items: [
+      { labelKey: 'gdprPrivacy', href: '/compliance/gdpr', icon: Shield },
+      { labelKey: 'dataRetention', href: '/compliance/data-retention', icon: Database },
+      { labelKey: 'piiAudit', href: '/compliance/pii-audit', icon: Eye },
+      { labelKey: 'dpia', href: '/compliance/dpia', icon: FileSearch },
+      { labelKey: 'ruCompliance', href: '/compliance/ru', icon: FileText, countryFilter: ['RU'] },
+      { labelKey: 'cnCompliance', href: '/compliance/cn', icon: Scale, countryFilter: ['CN'] },
+      { labelKey: 'krCompliance', href: '/compliance/kr', icon: ClipboardCheck, countryFilter: ['KR'] },
+    ],
+  },
+  {
     labelKey: 'systemSettings',
     icon: Settings,
     module: MODULE.SETTINGS,
@@ -311,7 +332,7 @@ function canAccessModule(
 
 // ─── Component ──────────────────────────────────────────────
 
-export function Sidebar({ user, onSignOut }: SidebarProps) {
+export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false)
   const pathname = usePathname()
   const t = useTranslations('menu')
@@ -322,8 +343,18 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
   }, [])
 
   const filteredGroups = useMemo(() => {
-    return NAV_GROUPS.filter((group) => canAccessModule(user, group.module))
-  }, [user])
+    return NAV_GROUPS
+      .filter((group) => canAccessModule(user, group.module))
+      .map((group) => ({
+        ...group,
+        items: group.items.filter((item) => {
+          if (!item.countryFilter) return true
+          if (!countryCode) return true
+          return item.countryFilter.includes(countryCode)
+        }),
+      }))
+      .filter((group) => group.items.length > 0)
+  }, [user, countryCode])
 
   const userInitial = user.name.charAt(0).toUpperCase()
 

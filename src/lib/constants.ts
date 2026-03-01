@@ -22,6 +22,8 @@ export const MODULE = {
   PULSE: 'pulse',
   SUCCESSION: 'succession',
   HR_CHATBOT: 'hr_chatbot',
+  TEAMS: 'teams',
+  COMPLIANCE: 'compliance',
   SETTINGS: 'settings',
 } as const
 
@@ -74,6 +76,7 @@ export const ALL_MODULES = [
   'SUCCESSION',
   'L_AND_D',
   'HR_CHATBOT',
+  'COMPLIANCE',
 ] as const
 
 export type EnabledModule = (typeof ALL_MODULES)[number]

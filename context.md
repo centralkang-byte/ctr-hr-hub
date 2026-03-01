@@ -1296,3 +1296,75 @@ common, auth, menu, employee, attendance, leave, terminal, holiday, shift, perfo
 ## NPM Dependencies Added
 
 - `next-intl`
+
+---
+
+# STEP 9-2: Country-specific Compliance — Session Context
+
+**Date:** 2026-03-01
+**Status:** Complete
+**TypeScript Errors:** 0
+
+## What Was Built
+
+Complete compliance module for global HR operations across 6 countries (KR/CN/RU/US/VN/MX).
+
+### Phase 1: Schema + Foundation
+- 15 Prisma enums + 11 new models added to schema.prisma
+- `MODULE.COMPLIANCE` added to constants
+- Zod validation schemas: `src/lib/schemas/compliance.ts`
+- Sidebar updated with compliance nav group + `countryFilter` for country-specific items
+- DashboardShell passes `countryCode` to Sidebar
+- i18n keys added to all 7 language files (ko/en/zh/ru/vi/es/pt)
+- Types re-exported in `src/types/index.ts`
+
+### Phase 2: Russian Compliance (CTR-RU)
+- `src/lib/compliance/ru.ts` — T-2/P-4/57-T reports, KEDO signature hash
+- 9 API routes under `/api/v1/compliance/ru/`
+- Dashboard: RuComplianceClient.tsx (3 tabs: Military/KEDO/Reports)
+- 6 components under `src/components/compliance/ru/`
+
+### Phase 3: Chinese Compliance (CTR-CN)
+- `src/lib/compliance/cn.ts` — Social insurance (五险一金) calculation, registry
+- 6 API routes under `/api/v1/compliance/cn/`
+- Dashboard: CnComplianceClient.tsx (3 tabs: Config/Report/Registry)
+- 4 components under `src/components/compliance/cn/`
+
+### Phase 4: GDPR / Privacy Protection (All)
+- `src/lib/compliance/gdpr.ts` — PII logger, retention enforcement, data export, anonymization
+- `src/lib/compliance/pii-middleware.ts` — withPiiTracking wrapper
+- 11 API routes under `/api/v1/compliance/gdpr/`
+- Cron job: `/api/v1/compliance/cron/retention/`
+- 4 dashboard pages: GDPR, PII Audit, Data Retention, DPIA
+- 10 components under `src/components/compliance/gdpr/`
+
+### Phase 5: Korean Labor Law (CTR-KR)
+- `src/lib/compliance/kr.ts` — 52-hour monitoring, mandatory training, severance calculation
+- 9 API routes under `/api/v1/compliance/kr/`
+- Dashboard: KrComplianceClient.tsx (3 tabs: Work Hours/Training/Severance)
+- 7 components under `src/components/compliance/kr/`
+
+### Phase 6: Landing Page
+- `src/app/(dashboard)/compliance/ComplianceClient.tsx` — GDPR KPIs + country nav cards
+
+## Stats
+
+| Category | Files |
+|----------|-------|
+| Prisma Schema | 1 modified |
+| Lib (Compliance) | 5 new |
+| Zod Schemas | 1 new |
+| API Routes | ~35 new |
+| Dashboard Pages | ~14 new |
+| Components | ~27 new |
+| Translation JSON | 7 modified |
+| Other (constants, types, sidebar) | 4 modified |
+
+## New Prisma Models
+MilitaryRegistration, KedoDocument, SocialInsuranceConfig, SocialInsuranceRecord, GdprConsent, GdprRequest, DataRetentionPolicy, DpiaRecord, PiiAccessLog, MandatoryTraining, SeveranceInterimPayment
+
+## Key Patterns
+- `countryFilter` on NavItem for country-specific sidebar items
+- All API routes use `withPermission` + `perm(MODULE.COMPLIANCE, ACTION.*)` pattern
+- Route params typed as `Promise<Record<string, string>>` per project convention
+- Decimal fields serialized with `Number()` in API responses

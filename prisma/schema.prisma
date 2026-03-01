@@ -445,6 +445,7 @@ enum NotificationChannel {
   IN_APP
   EMAIL
   PUSH
+  TEAMS
 }
 
 enum AiFeature {
@@ -740,6 +741,23 @@ model Company {
   contractHistories ContractHistory[]
   workPermits       WorkPermit[]
   orgSnapshots      OrgSnapshot[]
+
+  // STEP 8-3: Teams 연동
+  teamsIntegration TeamsIntegration?
+  teamsCardActions TeamsCardAction[]
+
+  // STEP 9-2: Compliance
+  militaryRegistrations      MilitaryRegistration[]
+  kedoDocuments              KedoDocument[]
+  socialInsuranceConfigs     SocialInsuranceConfig[]
+  socialInsuranceRecords     SocialInsuranceRecord[]
+  gdprConsents               GdprConsent[]
+  gdprRequests               GdprRequest[]
+  dataRetentionPolicies      DataRetentionPolicy[]
+  dpiaRecords                DpiaRecord[]
+  piiAccessLogs              PiiAccessLog[]
+  mandatoryTrainings         MandatoryTraining[]
+  severanceInterimPayments   SeveranceInterimPayment[]
 
   @@map("companies")
 }
@@ -1063,6 +1081,28 @@ model Employee {
   workPermitsCreated  WorkPermit[]      @relation("WorkPermitCreator")
   convertedEmployees  Application[]     @relation("ApplicationConvertedEmployee")
   orgSnapshotsCreated OrgSnapshot[]
+
+  // STEP 8-3: Teams
+  teamsCardActions TeamsCardAction[] @relation("TeamsCardRecipient")
+
+  // STEP 8-4: Leave Promotion + Push
+  leavePromotionLogs LeavePromotionLog[]
+  pushSubscriptions  PushSubscription[]
+
+  // STEP 9-2: Compliance
+  militaryRegistration      MilitaryRegistration?
+  kedoDocuments             KedoDocument[]            @relation("KedoEmployee")
+  kedoDocumentsSigned       KedoDocument[]            @relation("KedoSigner")
+  kedoDocumentsRejected     KedoDocument[]            @relation("KedoRejecter")
+  socialInsuranceRecords    SocialInsuranceRecord[]
+  gdprConsents              GdprConsent[]
+  gdprRequests              GdprRequest[]
+  gdprRequestsCompleted     GdprRequest[]             @relation("GdprRequestCompleter")
+  dpiaReviews               DpiaRecord[]              @relation("DpiaReviewer")
+  piiAccessLogsAsActor      PiiAccessLog[]            @relation("PiiActor")
+  piiAccessLogsAsTarget     PiiAccessLog[]            @relation("PiiTarget")
+  severanceInterimPayments  SeveranceInterimPayment[] @relation("SeveranceEmployee")
+  severanceInterimApprovals SeveranceInterimPayment[] @relation("SeveranceApprover")
 
   @@map("employees")
 }
@@ -1673,8 +1713,10 @@ model InterviewSchedule {
   meetingLink     String?         @map("meeting_link")
   interviewType   InterviewType?  @map("interview_type")
   round           InterviewRound?
-  status          InterviewStatus
-  createdAt       DateTime        @default(now()) @map("created_at")
+  status             InterviewStatus
+  calendarEventId    String?         @map("calendar_event_id")
+  teamsAutoScheduled Boolean         @default(false) @map("teams_auto_scheduled")
+  createdAt          DateTime        @default(now()) @map("created_at")
 
   application          Application           @relation(fields: [applicationId], references: [id])
   interviewer          Employee              @relation(fields: [interviewerId], references: [id])
@@ -2161,6 +2203,8 @@ model Notification {
   trigger   NotificationTrigger? @relation(fields: [triggerId], references: [id])
   triggerId String?              @map("trigger_id")
 
+  teamsCardActions TeamsCardAction[]
+
   @@map("notifications")
 }
 
@@ -2207,8 +2251,9 @@ model TrainingCourse {
   createdAt           DateTime         @default(now()) @map("created_at")
   deletedAt           DateTime?        @map("deleted_at")
 
-  company     Company?             @relation(fields: [companyId], references: [id])
-  enrollments TrainingEnrollment[]
+  company            Company?             @relation(fields: [companyId], references: [id])
+  enrollments        TrainingEnrollment[]
+  mandatoryTrainings MandatoryTraining[]
 
   @@map("training_courses")
 }
@@ -2781,4 +2826,482 @@ model OrgSnapshot {
 
   @@unique([companyId, snapshotDate])
   @@map("org_snapshots")
+}
+
+// ═══════════════════════════════════════════════════════════
+// STEP 8-3: Microsoft Teams Integration
+// ═══════════════════════════════════════════════════════════
+
+model TeamsIntegration {
+  id            String    @id @default(uuid())
+  companyId     String    @unique @map("company_id")
+  tenantId      String    @map("tenant_id")
+  teamId        String?   @map("team_id")
+  channelId     String?   @map("channel_id")
+  webhookUrl    String?   @map("webhook_url")
+  botEnabled    Boolean   @default(false) @map("bot_enabled")
+  presenceSync  Boolean   @default(false) @map("presence_sync")
+  digestEnabled Boolean   @default(false) @map("digest_enabled")
+  digestDay     Int       @default(1) @map("digest_day")
+  digestHour    Int       @default(9) @map("digest_hour")
+  connectedAt   DateTime? @map("connected_at")
+  connectedBy   String?   @map("connected_by")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  company Company @relation(fields: [companyId], references: [id])
+
+  @@map("teams_integrations")
+}
+
+model TeamsCardAction {
+  id              String    @id @default(uuid())
+  companyId       String    @map("company_id")
+  notificationId  String?   @map("notification_id")
+  cardType        String    @map("card_type")
+  referenceId     String    @map("reference_id")
+  recipientId     String    @map("recipient_id")
+  teamsMessageId  String?   @map("teams_message_id")
+  actionTaken     String?   @map("action_taken")
+  actionBy        String?   @map("action_by")
+  actionAt        DateTime? @map("action_at")
+  expiresAt       DateTime? @map("expires_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  company      Company       @relation(fields: [companyId], references: [id])
+  notification Notification? @relation(fields: [notificationId], references: [id])
+  recipient    Employee      @relation("TeamsCardRecipient", fields: [recipientId], references: [id])
+
+  @@index([companyId, cardType])
+  @@index([referenceId])
+  @@map("teams_card_actions")
+}
+
+// ═══════════════════════════════════════════════════════════
+// STEP 8-4: Leave Promotion + Web Push
+// ═══════════════════════════════════════════════════════════
+
+model LeavePromotionLog {
+  id            String   @id @default(uuid())
+  employeeId    String   @map("employee_id")
+  year          Int
+  step          Int      // 1=60일전, 2=30일전, 3=10일전
+  remainingDays Decimal  @map("remaining_days")
+  sentAt        DateTime @default(now()) @map("sent_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id])
+
+  @@unique([employeeId, year, step])
+  @@map("leave_promotion_logs")
+}
+
+model PushSubscription {
+  id         String   @id @default(uuid())
+  employeeId String   @map("employee_id")
+  endpoint   String
+  p256dh     String
+  auth       String
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id])
+
+  @@unique([employeeId, endpoint])
+  @@map("push_subscriptions")
+}
+
+// ═══════════════════════════════════════════════════════════
+// STEP 9-2: Country-specific Compliance
+// ═══════════════════════════════════════════════════════════
+
+// ─── Russia (CTR-RU) Enums ─────────────────────────────────
+
+enum KedoDocumentType {
+  EMPLOYMENT_CONTRACT
+  SUPPLEMENTARY_AGREEMENT
+  TRANSFER_ORDER
+  VACATION_ORDER
+  DISMISSAL_ORDER
+  SALARY_CHANGE
+  DISCIPLINARY_ORDER
+}
+
+enum KedoSignatureLevel {
+  PEP   // Простая электронная подпись
+  UNEP  // Усиленная неквалифицированная
+  UKEP  // Усиленная квалифицированная
+}
+
+enum KedoDocumentStatus {
+  DRAFT
+  PENDING_SIGNATURE
+  SIGNED
+  REJECTED
+  EXPIRED
+}
+
+enum MilitaryCategory {
+  OFFICER
+  SOLDIER
+  RESERVIST
+  EXEMPT
+}
+
+enum MilitaryFitness {
+  FIT_A
+  FIT_B
+  FIT_C
+  FIT_D
+  UNFIT
+}
+
+// ─── GDPR Enums ────────────────────────────────────────────
+
+enum GdprConsentPurpose {
+  EMPLOYMENT_PROCESSING
+  PAYROLL_PROCESSING
+  BENEFITS_ADMINISTRATION
+  PERFORMANCE_MANAGEMENT
+  TRAINING_RECORDS
+  HEALTH_SAFETY
+  MARKETING_COMMUNICATION
+  THIRD_PARTY_TRANSFER
+}
+
+enum GdprConsentStatus {
+  ACTIVE
+  REVOKED
+  EXPIRED
+}
+
+enum GdprRequestType {
+  ACCESS
+  RECTIFICATION
+  ERASURE
+  PORTABILITY
+  RESTRICTION
+  OBJECTION
+}
+
+enum GdprRequestStatus {
+  GDPR_PENDING
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+  EXPIRED
+
+  @@map("GdprRequestStatus")
+}
+
+enum DataRetentionCategory {
+  EMPLOYMENT_RECORDS
+  PAYROLL_DATA
+  PERFORMANCE_DATA
+  TRAINING_RECORDS
+  RECRUITMENT_DATA
+  HEALTH_SAFETY
+  DISCIPLINARY_RECORDS
+  LEAVE_RECORDS
+  AUDIT_LOGS
+}
+
+enum DpiaStatus {
+  DPIA_DRAFT
+  IN_REVIEW
+  APPROVED
+  REJECTED
+
+  @@map("DpiaStatus")
+}
+
+// ─── China (CTR-CN) Enums ──────────────────────────────────
+
+enum SocialInsuranceType {
+  PENSION           // 养老保险
+  MEDICAL           // 医疗保险
+  UNEMPLOYMENT      // 失业保险
+  WORK_INJURY       // 工伤保险
+  MATERNITY_INS     // 生育保险
+  HOUSING_FUND      // 住房公积金
+}
+
+// ─── Korea (CTR-KR) Enums ──────────────────────────────────
+
+enum MandatoryTrainingType {
+  SEXUAL_HARASSMENT_PREVENTION   // 성희롱 예방교육
+  WORKPLACE_HARASSMENT           // 직장내 괴롭힘 예방교육
+  DISABILITY_AWARENESS           // 장애인 인식개선 교육
+  OCCUPATIONAL_SAFETY            // 산업안전보건 교육
+  PERSONAL_INFO_PROTECTION       // 개인정보보호 교육
+}
+
+enum SeveranceInterimReason {
+  HOUSING_PURCHASE    // 무주택 주택 구입
+  HOUSING_LEASE       // 전세금/보증금
+  MEDICAL_EXPENSE     // 본인/가족 의료비
+  BANKRUPTCY          // 파산/개인회생
+  NATURAL_DISASTER    // 천재지변
+  OTHER_APPROVED      // 기타 승인 사유
+}
+
+enum SeveranceInterimStatus {
+  SIP_PENDING
+  SIP_APPROVED
+  SIP_REJECTED
+  SIP_PAID
+
+  @@map("SeveranceInterimStatus")
+}
+
+// ─── Russia Models ─────────────────────────────────────────
+
+model MilitaryRegistration {
+  id                String           @id @default(uuid())
+  employeeId        String           @map("employee_id")
+  companyId         String           @map("company_id")
+  category          MilitaryCategory
+  rank              String?
+  specialtyCode     String?          @map("specialty_code")
+  fitnessCategory   MilitaryFitness  @map("fitness_category")
+  militaryOffice    String?          @map("military_office")
+  registrationDate  DateTime?        @map("registration_date")
+  deregistrationDate DateTime?       @map("deregistration_date")
+  notes             String?
+  createdAt         DateTime         @default(now()) @map("created_at")
+  updatedAt         DateTime         @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id])
+  company  Company  @relation(fields: [companyId], references: [id])
+
+  @@unique([employeeId])
+  @@index([companyId])
+  @@map("military_registrations")
+}
+
+model KedoDocument {
+  id              String             @id @default(uuid())
+  companyId       String             @map("company_id")
+  employeeId      String             @map("employee_id")
+  documentType    KedoDocumentType   @map("document_type")
+  title           String
+  content         String?
+  status          KedoDocumentStatus @default(DRAFT)
+  signatureLevel  KedoSignatureLevel? @map("signature_level")
+  signatureHash   String?            @map("signature_hash")
+  signedAt        DateTime?          @map("signed_at")
+  signedById      String?            @map("signed_by_id")
+  rejectedAt      DateTime?          @map("rejected_at")
+  rejectedById    String?            @map("rejected_by_id")
+  rejectionReason String?            @map("rejection_reason")
+  expiresAt       DateTime?          @map("expires_at")
+  createdAt       DateTime           @default(now()) @map("created_at")
+  updatedAt       DateTime           @updatedAt @map("updated_at")
+
+  employee   Employee  @relation("KedoEmployee", fields: [employeeId], references: [id])
+  company    Company   @relation(fields: [companyId], references: [id])
+  signedBy   Employee? @relation("KedoSigner", fields: [signedById], references: [id])
+  rejectedBy Employee? @relation("KedoRejecter", fields: [rejectedById], references: [id])
+
+  @@index([companyId, status])
+  @@index([employeeId])
+  @@map("kedo_documents")
+}
+
+// ─── China Models ──────────────────────────────────────────
+
+model SocialInsuranceConfig {
+  id                String              @id @default(uuid())
+  companyId         String              @map("company_id")
+  insuranceType     SocialInsuranceType @map("insurance_type")
+  city              String
+  employerRate      Decimal             @map("employer_rate")
+  employeeRate      Decimal             @map("employee_rate")
+  baseMin           Decimal             @map("base_min")
+  baseMax           Decimal             @map("base_max")
+  effectiveFrom     DateTime            @map("effective_from")
+  effectiveTo       DateTime?           @map("effective_to")
+  isActive          Boolean             @default(true) @map("is_active")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+
+  company Company @relation(fields: [companyId], references: [id])
+
+  @@unique([companyId, insuranceType, city, effectiveFrom])
+  @@map("social_insurance_configs")
+}
+
+model SocialInsuranceRecord {
+  id              String              @id @default(uuid())
+  companyId       String              @map("company_id")
+  employeeId      String              @map("employee_id")
+  insuranceType   SocialInsuranceType @map("insurance_type")
+  year            Int
+  month           Int
+  baseSalary      Decimal             @map("base_salary")
+  employerAmount  Decimal             @map("employer_amount")
+  employeeAmount  Decimal             @map("employee_amount")
+  createdAt       DateTime            @default(now()) @map("created_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id])
+  company  Company  @relation(fields: [companyId], references: [id])
+
+  @@unique([employeeId, insuranceType, year, month])
+  @@index([companyId, year, month])
+  @@map("social_insurance_records")
+}
+
+// ─── GDPR Models ───────────────────────────────────────────
+
+model GdprConsent {
+  id            String              @id @default(uuid())
+  companyId     String              @map("company_id")
+  employeeId    String              @map("employee_id")
+  purpose       GdprConsentPurpose
+  status        GdprConsentStatus   @default(ACTIVE)
+  consentedAt   DateTime            @map("consented_at")
+  revokedAt     DateTime?           @map("revoked_at")
+  expiresAt     DateTime?           @map("expires_at")
+  legalBasis    String?             @map("legal_basis")
+  version       Int                 @default(1)
+  createdAt     DateTime            @default(now()) @map("created_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id])
+  company  Company  @relation(fields: [companyId], references: [id])
+
+  @@index([companyId, status])
+  @@index([employeeId])
+  @@map("gdpr_consents")
+}
+
+model GdprRequest {
+  id            String            @id @default(uuid())
+  companyId     String            @map("company_id")
+  employeeId    String            @map("employee_id")
+  requestType   GdprRequestType   @map("request_type")
+  status        GdprRequestStatus @default(GDPR_PENDING)
+  description   String?
+  deadline      DateTime
+  completedAt   DateTime?         @map("completed_at")
+  completedById String?           @map("completed_by_id")
+  responseNote  String?           @map("response_note")
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @updatedAt @map("updated_at")
+
+  employee    Employee  @relation(fields: [employeeId], references: [id])
+  company     Company   @relation(fields: [companyId], references: [id])
+  completedBy Employee? @relation("GdprRequestCompleter", fields: [completedById], references: [id])
+
+  @@index([companyId, status])
+  @@index([employeeId])
+  @@map("gdpr_requests")
+}
+
+model DataRetentionPolicy {
+  id                String                @id @default(uuid())
+  companyId         String                @map("company_id")
+  category          DataRetentionCategory
+  retentionMonths   Int                   @map("retention_months")
+  description       String?
+  autoDelete        Boolean               @default(false) @map("auto_delete")
+  anonymize         Boolean               @default(true)
+  lastRunAt         DateTime?             @map("last_run_at")
+  isActive          Boolean               @default(true) @map("is_active")
+  createdAt         DateTime              @default(now()) @map("created_at")
+  updatedAt         DateTime              @updatedAt @map("updated_at")
+
+  company Company @relation(fields: [companyId], references: [id])
+
+  @@unique([companyId, category])
+  @@map("data_retention_policies")
+}
+
+model DpiaRecord {
+  id              String     @id @default(uuid())
+  companyId       String     @map("company_id")
+  title           String
+  description     String?
+  processingScope String?    @map("processing_scope")
+  riskLevel       String?    @map("risk_level")
+  mitigations     String?
+  status          DpiaStatus @default(DPIA_DRAFT)
+  reviewedById    String?    @map("reviewed_by_id")
+  reviewedAt      DateTime?  @map("reviewed_at")
+  approvedAt      DateTime?  @map("approved_at")
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
+
+  company    Company   @relation(fields: [companyId], references: [id])
+  reviewedBy Employee? @relation("DpiaReviewer", fields: [reviewedById], references: [id])
+
+  @@index([companyId, status])
+  @@map("dpia_records")
+}
+
+model PiiAccessLog {
+  id          String   @id @default(uuid())
+  companyId   String   @map("company_id")
+  actorId     String   @map("actor_id")
+  targetId    String   @map("target_id")
+  accessType  String   @map("access_type")
+  fieldName   String   @map("field_name")
+  ipAddress   String?  @map("ip_address")
+  userAgent   String?  @map("user_agent")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  company Company  @relation(fields: [companyId], references: [id])
+  actor   Employee @relation("PiiActor", fields: [actorId], references: [id])
+  target  Employee @relation("PiiTarget", fields: [targetId], references: [id])
+
+  @@index([companyId, createdAt])
+  @@index([targetId])
+  @@index([actorId])
+  @@map("pii_access_logs")
+}
+
+// ─── Korea Models ──────────────────────────────────────────
+
+model MandatoryTraining {
+  id              String                @id @default(uuid())
+  companyId       String                @map("company_id")
+  courseId         String                @map("course_id")
+  trainingType    MandatoryTrainingType @map("training_type")
+  year            Int
+  dueDate         DateTime              @map("due_date")
+  requiredHours   Decimal               @map("required_hours")
+  isActive        Boolean               @default(true) @map("is_active")
+  createdAt       DateTime              @default(now()) @map("created_at")
+  updatedAt       DateTime              @updatedAt @map("updated_at")
+
+  company Company        @relation(fields: [companyId], references: [id])
+  course  TrainingCourse @relation(fields: [courseId], references: [id])
+
+  @@unique([companyId, trainingType, year])
+  @@map("mandatory_trainings")
+}
+
+model SeveranceInterimPayment {
+  id              String                @id @default(uuid())
+  companyId       String                @map("company_id")
+  employeeId      String                @map("employee_id")
+  reason          SeveranceInterimReason
+  amount          Decimal?
+  yearsOfService  Decimal?              @map("years_of_service")
+  avgSalary       Decimal?              @map("avg_salary")
+  status          SeveranceInterimStatus @default(SIP_PENDING)
+  requestDate     DateTime              @map("request_date")
+  approvedById    String?               @map("approved_by_id")
+  approvedAt      DateTime?             @map("approved_at")
+  paidAt          DateTime?             @map("paid_at")
+  rejectionReason String?               @map("rejection_reason")
+  attachmentUrl   String?               @map("attachment_url")
+  createdAt       DateTime              @default(now()) @map("created_at")
+  updatedAt       DateTime              @updatedAt @map("updated_at")
+
+  employee   Employee  @relation("SeveranceEmployee", fields: [employeeId], references: [id])
+  company    Company   @relation(fields: [companyId], references: [id])
+  approvedBy Employee? @relation("SeveranceApprover", fields: [approvedById], references: [id])
+
+  @@index([companyId, status])
+  @@index([employeeId])
+  @@map("severance_interim_payments")
 }

@@ -91,6 +91,21 @@ export type {
   OrgChangeHistory,
   WorkSchedule,
   EmployeeSchedule,
+  TeamsIntegration,
+  TeamsCardAction,
+  LeavePromotionLog,
+  PushSubscription,
+  MilitaryRegistration,
+  KedoDocument,
+  SocialInsuranceConfig,
+  SocialInsuranceRecord,
+  GdprConsent,
+  GdprRequest,
+  DataRetentionPolicy,
+  DpiaRecord,
+  PiiAccessLog,
+  MandatoryTraining,
+  SeveranceInterimPayment,
 } from '@/generated/prisma/client'
 
 export {
@@ -168,6 +183,21 @@ export {
   type ExitReason,
   type ResignType,
   type OrgChangeType,
+  type KedoDocumentType,
+  type KedoSignatureLevel,
+  type KedoDocumentStatus,
+  type MilitaryCategory,
+  type MilitaryFitness,
+  type GdprConsentPurpose,
+  type GdprConsentStatus,
+  type GdprRequestType,
+  type GdprRequestStatus,
+  type DataRetentionCategory,
+  type DpiaStatus,
+  type SocialInsuranceType,
+  type MandatoryTrainingType,
+  type SeveranceInterimReason,
+  type SeveranceInterimStatus,
 } from '@/generated/prisma/enums'
 
 // ─── Permission (RBAC) ────────────────────────────────────
