@@ -9,7 +9,19 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ChevronLeft, UserPlus, Save, Loader2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import DuplicateWarningModal from '@/components/recruitment/DuplicateWarningModal'
 import type { SessionUser } from '@/types'
+
+interface DuplicateMatch {
+  applicantId: string
+  name: string
+  email: string
+  phone: string | null
+  matchType: 'email' | 'phone' | 'name_dob'
+  matchScore: number
+  applicationCount: number
+  lastApplicationAt: string | null
+}
 
 // ─── Types ──────────────────────────────────────────────
 
@@ -35,6 +47,8 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
   const t = useTranslations('recruitment')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [duplicates, setDuplicates] = useState<DuplicateMatch[]>([])
+  const [pendingSubmit, setPendingSubmit] = useState(false)
   const [form, setForm] = useState<FormData>({
     name: '',
     email: '',
@@ -62,24 +76,9 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-
-    if (!form.name.trim()) {
-      setError(t('validationName'))
-      return
-    }
-    if (!form.email.trim()) {
-      setError(t('validationEmail'))
-      return
-    }
-    if (!form.source) {
-      setError(t('validationSource'))
-      return
-    }
-
+  const doSubmit = async () => {
     setSubmitting(true)
+    setDuplicates([])
     try {
       await apiClient.post(`/api/v1/recruitment/postings/${postingId}/applicants`, {
         name: form.name.trim(),
@@ -97,10 +96,58 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
       setError(message)
     } finally {
       setSubmitting(false)
+      setPendingSubmit(false)
     }
   }
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+
+    if (!form.name.trim()) {
+      setError(t('validationName'))
+      return
+    }
+    if (!form.email.trim()) {
+      setError(t('validationEmail'))
+      return
+    }
+    if (!form.source) {
+      setError(t('validationSource'))
+      return
+    }
+
+    // 중복 감지 체크
+    try {
+      const res = await apiClient.post<{ hasDuplicates: boolean; matches: DuplicateMatch[] }>(
+        '/api/v1/recruitment/applicants/check-duplicate',
+        {
+          name: form.name.trim(),
+          email: form.email.trim(),
+          phone: form.phone.trim() || null,
+        },
+      )
+      if (res.data.hasDuplicates && res.data.matches.length > 0) {
+        setDuplicates(res.data.matches)
+        setPendingSubmit(true)
+        return
+      }
+    } catch {
+      // 중복 체크 실패 시 그냥 진행
+    }
+
+    await doSubmit()
+  }
+
   return (
+    <>
+    {pendingSubmit && duplicates.length > 0 && (
+      <DuplicateWarningModal
+        matches={duplicates}
+        onProceed={doSubmit}
+        onCancel={() => { setDuplicates([]); setPendingSubmit(false) }}
+      />
+    )}
     <div className="min-h-screen bg-[#FAFAFA] p-6">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
@@ -275,5 +322,6 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
         </div>
       </form>
     </div>
+    </>
   )
 }

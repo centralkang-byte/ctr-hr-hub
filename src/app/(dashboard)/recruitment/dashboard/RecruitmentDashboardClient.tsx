@@ -15,6 +15,7 @@ import {
   Clock,
   Target,
   Loader2,
+  Briefcase,
   type LucideIcon,
 } from 'lucide-react'
 import {
@@ -56,6 +57,22 @@ interface DashboardData {
   kpis: DashboardKpis
   funnel: FunnelItem[]
   recentPostings: RecentPosting[]
+}
+
+interface VacancySummary {
+  totalVacancies: number
+  withActivePosting: number
+  withoutPosting: number
+  recentlyFilled: number
+  avgFillDays: number | null
+}
+
+interface VacancyByCompany {
+  companyId: string
+  companyName: string
+  total: number
+  withActivePosting: number
+  withoutPosting: number
 }
 
 // ─── Constants ──────────────────────────────────────────────
@@ -193,16 +210,23 @@ export function RecruitmentDashboardClient(_props: {
   const router = useRouter()
   const t = useTranslations('recruitment')
   const [data, setData] = useState<DashboardData | null>(null)
+  const [vacancySummary, setVacancySummary] = useState<VacancySummary | null>(null)
+  const [vacancyByCompany, setVacancyByCompany] = useState<VacancyByCompany[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function loadDashboard() {
       setLoading(true)
       try {
-        const res = await apiClient.get<DashboardData>(
-          '/api/v1/recruitment/dashboard',
-        )
-        setData(res.data)
+        const [dashRes, vacRes] = await Promise.all([
+          apiClient.get<DashboardData>('/api/v1/recruitment/dashboard'),
+          apiClient.get<{ summary: VacancySummary; byCompany: VacancyByCompany[] }>(
+            '/api/v1/recruitment/positions/vacancies',
+          ),
+        ])
+        setData(dashRes.data)
+        setVacancySummary(vacRes.data.summary)
+        setVacancyByCompany(vacRes.data.byCompany)
       } catch {
         // Error handled by apiClient
       } finally {
@@ -369,6 +393,79 @@ export function RecruitmentDashboardClient(_props: {
           </ResponsiveContainer>
         </div>
       </div>
+
+      {/* 공석 현황 (B4 + A2) */}
+      {vacancySummary && (
+        <div
+          style={{
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #E8E8E8',
+            borderRadius: 12,
+            padding: 24,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+            <Briefcase size={18} style={{ color: '#00C853' }} />
+            <h2 style={{ fontSize: 16, fontWeight: 700, color: '#1A1A1A', letterSpacing: '-0.02em' }}>
+              공석 현황 (Position Vacancies)
+            </h2>
+          </div>
+
+          {/* 요약 뱃지 */}
+          <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
+            {[
+              { label: '전체 공석', value: vacancySummary.totalVacancies, bg: '#F5F5F5', color: '#1A1A1A' },
+              { label: '채용 진행 중', value: vacancySummary.withActivePosting, bg: '#E8F5E9', color: '#00A844' },
+              { label: '공고 없음', value: vacancySummary.withoutPosting, bg: '#FEF3C7', color: '#B45309' },
+              { label: '30일 내 충원', value: vacancySummary.recentlyFilled, bg: '#E0E7FF', color: '#4338CA' },
+            ].map((item) => (
+              <div
+                key={item.label}
+                style={{
+                  backgroundColor: item.bg,
+                  borderRadius: 10,
+                  padding: '12px 16px',
+                  minWidth: 110,
+                }}
+              >
+                <div style={{ fontSize: 22, fontWeight: 700, color: item.color }}>{item.value}</div>
+                <div style={{ fontSize: 11, color: '#666', marginTop: 2 }}>{item.label}</div>
+              </div>
+            ))}
+            {vacancySummary.avgFillDays !== null && (
+              <div style={{ backgroundColor: '#F0F9FF', borderRadius: 10, padding: '12px 16px', minWidth: 110 }}>
+                <div style={{ fontSize: 22, fontWeight: 700, color: '#0369A1' }}>{vacancySummary.avgFillDays}일</div>
+                <div style={{ fontSize: 11, color: '#666', marginTop: 2 }}>평균 채용 소요일</div>
+              </div>
+            )}
+          </div>
+
+          {/* 법인별 공석 테이블 */}
+          {vacancyByCompany.length > 0 && (
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid #E8E8E8' }}>
+                  {['법인', '전체 공석', '채용 진행', '공고 없음'].map((h) => (
+                    <th key={h} style={{ textAlign: h === '법인' ? 'left' : 'right', padding: '8px 12px', fontSize: 12, color: '#999', fontWeight: 600 }}>
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {vacancyByCompany.map((row) => (
+                  <tr key={row.companyId} style={{ borderBottom: '1px solid #F5F5F5' }}>
+                    <td style={{ padding: '10px 12px', fontSize: 13, color: '#1A1A1A', fontWeight: 500 }}>{row.companyName}</td>
+                    <td style={{ padding: '10px 12px', fontSize: 13, color: '#1A1A1A', textAlign: 'right' }}>{row.total}</td>
+                    <td style={{ padding: '10px 12px', fontSize: 13, color: '#00A844', textAlign: 'right' }}>{row.withActivePosting}</td>
+                    <td style={{ padding: '10px 12px', fontSize: 13, color: '#B45309', textAlign: 'right' }}>{row.withoutPosting}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
 
       {/* Recent Postings */}
       <div

@@ -55,7 +55,7 @@ export const PUT = withPermission(
     const existing = await prisma.application.findFirst({
       where: { id, ...companyFilter },
       include: {
-        posting: { select: { companyId: true, title: true } },
+        posting: { select: { companyId: true, title: true, positionId: true } },
         applicant: { select: { name: true } },
       },
     })
@@ -78,27 +78,39 @@ export const PUT = withPermission(
     const { stage, rejectionReason } = parsed.data
 
     try {
-      const updated = await prisma.application.update({
-        where: { id },
-        data: {
-          stage,
-          ...(rejectionReason ? { rejectionReason } : {}),
-        },
-        include: {
-          applicant: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
+      const updated = await prisma.$transaction(async (tx) => {
+        const application = await tx.application.update({
+          where: { id },
+          data: {
+            stage,
+            ...(rejectionReason ? { rejectionReason } : {}),
+          },
+          include: {
+            applicant: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+            posting: {
+              select: {
+                id: true,
+                title: true,
+              },
             },
           },
-          posting: {
-            select: {
-              id: true,
-              title: true,
-            },
-          },
-        },
+        })
+
+        // B4: HIRED 시 연결된 Position.isFilled = true 업데이트
+        if (stage === 'HIRED' && existing.posting.positionId) {
+          await tx.position.update({
+            where: { id: existing.posting.positionId },
+            data: { isFilled: true },
+          })
+        }
+
+        return application
       })
 
       const { ip, userAgent } = extractRequestMeta(req.headers)
