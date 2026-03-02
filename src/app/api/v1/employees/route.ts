@@ -36,6 +36,9 @@ export const GET = withPermission(
       status,
       employmentType,
       search,
+      contractType,
+      hireDateFrom,
+      hireDateTo,
     } = parsed.data
 
     // Company scope: SUPER_ADMIN sees all, others only their company
@@ -51,11 +54,17 @@ export const GET = withPermission(
     if (jobCategoryId) assignmentScopeFilter.jobCategoryId = jobCategoryId
     if (status) assignmentScopeFilter.status = status
     if (employmentType) assignmentScopeFilter.employmentType = employmentType
+    if (contractType) assignmentScopeFilter.contractType = contractType
 
     const hasAssignmentFilter = Object.keys(assignmentScopeFilter).length > 0
 
+    const hireDateFilter: Record<string, unknown> = {}
+    if (hireDateFrom) hireDateFilter.gte = new Date(hireDateFrom)
+    if (hireDateTo) hireDateFilter.lte = new Date(hireDateTo)
+
     const where = {
       deletedAt: null,
+      ...(Object.keys(hireDateFilter).length > 0 ? { hireDate: hireDateFilter } : {}),
       ...(hasAssignmentFilter
         ? {
             assignments: {
