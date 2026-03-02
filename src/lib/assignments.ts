@@ -222,6 +222,7 @@ export async function getManagerByPosition(positionId: string): Promise<{
         select: {
           id: true,
           titleKo: true,
+          titleEn: true,
           assignments: {
             where: { isPrimary: true, endDate: null },
             select: { employeeId: true },
@@ -259,7 +260,7 @@ export async function getDirectReports(
     orderBy: { titleKo: 'asc' },
   })
 
-  return reports.map((r: { id: string; titleKo: string; assignments: { employeeId: string }[] }) => ({
+  return reports.map((r: typeof reports[number]) => ({
     positionId: r.id,
     titleKo: r.titleKo,
     employeeId: r.assignments[0]?.employeeId ?? null,
@@ -269,6 +270,7 @@ export async function getDirectReports(
 // ── 점선 라인 매니저 조회 ────────────────────────────────────────
 export async function getDottedLineManager(positionId: string): Promise<{
   managerId: string | null
+  positionId: string
   positionTitle: string
 } | null> {
   const position = await prisma.position.findUnique({
@@ -276,6 +278,7 @@ export async function getDottedLineManager(positionId: string): Promise<{
     select: {
       dottedLineTo: {
         select: {
+          id: true,
           titleKo: true,
           assignments: {
             where: { isPrimary: true, endDate: null },
@@ -291,6 +294,7 @@ export async function getDottedLineManager(positionId: string): Promise<{
 
   return {
     managerId: position.dottedLineTo.assignments[0]?.employeeId ?? null,
+    positionId: position.dottedLineTo.id,
     positionTitle: position.dottedLineTo.titleKo,
   }
 }
