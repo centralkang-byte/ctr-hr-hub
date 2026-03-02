@@ -157,3 +157,43 @@ id String @id @default(uuid())
 ## 다음 세션: B4 (ATS Enhancement) — 이미 완료
 
 > 참조: context/TRACK_B.md
+
+## B3-2 완료 (2026-03-02)
+
+### DB 변경 (migrate: a_b3_talent_review + a_b3_talent_review_fix)
+- `ai_evaluation_drafts` 테이블 신규 (AiEvaluationDraft)
+- `bias_detection_logs` 테이블 신규 (BiasDetectionLog)
+- `OneOnOne.sentimentTag` 필드 추가
+- `SuccessionCandidate.ranking`, `developmentNote` 필드 추가
+- `AiFeature` enum: `EVAL_DRAFT_GENERATION` 추가
+
+### 신규 API
+- `POST/GET /api/v1/succession/readiness-batch` — 직원 readiness 일괄 조회
+- `PUT /api/v1/succession/plans/[id]/candidates` — ranking, developmentNote 지원 추가
+- `PUT /api/v1/succession/candidates/[id]` — ranking, developmentNote 지원 추가
+- `GET /api/v1/employees/[id]/insights` — 직원 통합 사이드패널 데이터
+- `POST/GET /api/v1/performance/evaluations/[id]/ai-draft` — AI 평가 초안 생성/조회
+- `POST/GET /api/v1/performance/evaluations/bias-check` — 편향 감지 실행/조회
+- `PUT /api/v1/cfr/one-on-ones/[id]` — sentimentTag 지원 추가
+
+### 신규 컴포넌트
+- `src/components/performance/EmployeeInsightPanel.tsx` — 직원 통합 사이드패널
+- `src/components/performance/AiDraftModal.tsx` — AI 평가 초안 모달
+- `src/components/performance/BiasDetectionBanner.tsx` — 편향 감지 배너
+
+### 기존 컴포넌트 수정
+- `CalibrationClient.tsx` — Readiness 뱃지 오버레이 + EmployeeInsightPanel + BiasDetectionBanner
+- `ManagerEvalClient.tsx` — AI 초안 생성 버튼 + AiDraftModal
+- `OneOnOneDetailClient.tsx` — sentimentTag 선택 UI
+- `CandidateCard.tsx` — ranking Badge + developmentNote + EmployeeInsightPanel
+- `navigation.ts` — succession href → /talent/succession
+
+### 신규 페이지
+- `src/app/(dashboard)/talent/succession/page.tsx` — /talent/succession 라우트
+
+### 다음 세션 주의사항
+- B10-1: `OneOnOne.sentimentTag` → 이직 예측 입력 데이터로 활용
+- B10-1: `BiasDetectionLog` → HR 애널리틱스 대시보드 표시
+- B10-2: AI 평가 초안 사용률 → HR KPI 위젯
+- `AiEvaluationDraft.status` 값: draft|reviewed|applied|discarded
+- 편향 감지 현재 central_tendency, leniency 2가지 — severity/recency/tenure/gender 확장 예정
