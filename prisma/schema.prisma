@@ -496,6 +496,7 @@ enum AiFeature {
   ONE_ON_ONE_NOTES
   PEER_REVIEW_SUMMARY
   PULSE_ANALYSIS
+  EVAL_DRAFT_GENERATION
 }
 
 enum TrainingCategory {
@@ -819,6 +820,10 @@ model Company {
 
   // B5: 온보딩 플랜 법인 연결
   employeeOnboardingPlans EmployeeOnboarding[] @relation("EmployeeOnboardingCompany")
+
+  // B3-2: Talent Review
+  aiEvaluationDrafts AiEvaluationDraft[]
+  biasDetectionLogs  BiasDetectionLog[]
 
   @@map("companies")
 }
@@ -1231,6 +1236,9 @@ model Employee {
   transferToApprovals       EntityTransfer[]     @relation("TransferToApprover")
   transferExecApprovals     EntityTransfer[]     @relation("TransferExecApprover")
 
+  // B6-1: 52시간 경고
+  workHourAlerts WorkHourAlert[]
+
   // STEP 9-2: Compliance
   militaryRegistration      MilitaryRegistration?
   kedoDocuments             KedoDocument[]            @relation("KedoEmployee")
@@ -1245,6 +1253,11 @@ model Employee {
   piiAccessLogsAsTarget     PiiAccessLog[]            @relation("PiiTarget")
   severanceInterimPayments  SeveranceInterimPayment[] @relation("SeveranceEmployee")
   severanceInterimApprovals SeveranceInterimPayment[] @relation("SeveranceApprover")
+
+  // B3-2: Talent Review
+  aiDraftsAsEmployee   AiEvaluationDraft[] @relation("AiDraftEmployee")
+  aiDraftsAsReviewer   AiEvaluationDraft[] @relation("AiDraftReviewer")
+  biasLogsAsReviewer   BiasDetectionLog[]  @relation("BiasLogReviewer")
 
   @@map("employees")
 }
@@ -2185,8 +2198,9 @@ model OneOnOne {
   notes       String?
   aiGuide     String?        @map("ai_guide")
   aiSummary   String?        @map("ai_summary")
-  actionItems Json?          @map("action_items")
-  createdAt   DateTime       @default(now()) @map("created_at")
+  actionItems  Json?          @map("action_items")
+  sentimentTag String?        @map("sentiment_tag")
+  createdAt    DateTime       @default(now()) @map("created_at")
 
   employee  Employee @relation("OneOnOneEmployee", fields: [employeeId], references: [id])
   manager   Employee @relation("OneOnOneManager", fields: [managerId], references: [id])
@@ -2708,7 +2722,9 @@ model SuccessionCandidate {
   employeeId       String    @map("employee_id")
   readiness        Readiness
   developmentAreas Json?     @map("development_areas")
-  notes            String?
+  notes           String?
+  ranking         Int     @default(0)
+  developmentNote String? @db.Text @map("development_note")
   nominatedBy      String    @map("nominated_by")
   createdAt        DateTime  @default(now()) @map("created_at")
 
@@ -4361,8 +4377,17 @@ model AttendanceSetting {
   // 교대제 여부
   shiftEnabled Boolean @default(false) @map("shift_enabled")
 
-  // 유연근무 설정 (JSON: {flexEnabled, coreTimeStart, coreTimeEnd})
+  // 유연근무 설정 (JSON: {flexEnabled, coreTimeStart, coreTimeEnd, minDailyHours})
   flexWork Json @default("{}") @map("flex_work")
+
+  // 52시간 경고 임계값 (JSON: {caution: 44, warning: 48, blocked: 52})
+  alertThresholds Json    @default("{\"caution\":44,\"warning\":48,\"blocked\":52}") @map("alert_thresholds")
+
+  // 차단 기능 (true=KR, false=기타 법인)
+  enableBlocking Boolean @default(false) @map("enable_blocking")
+
+  // 법인 타임존
+  timezone String @default("Asia/Seoul")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -4370,6 +4395,27 @@ model AttendanceSetting {
   @@unique([companyId])
   @@index([companyId])
   @@map("attendance_settings")
+}
+
+// ─── 52시간 경고 로그 (B6-1) ──────────────────────────────────────
+model WorkHourAlert {
+  id          String   @id @default(uuid())
+  employeeId  String   @map("employee_id")
+  employee    Employee @relation(fields: [employeeId], references: [id])
+  weekStart   DateTime @map("week_start") @db.Date
+  totalHours  Float    @map("total_hours")
+  alertLevel  String   @map("alert_level") @db.VarChar(20) // 'caution'|'warning'|'blocked'
+  threshold   Float
+  isResolved  Boolean  @default(false) @map("is_resolved")
+  resolvedBy  String?  @map("resolved_by")
+  resolvedAt  DateTime? @map("resolved_at")
+  resolveNote String?  @map("resolve_note") @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@unique([employeeId, weekStart, alertLevel])
+  @@index([employeeId, weekStart])
+  @@index([alertLevel, isResolved])
+  @@map("work_hour_alerts")
 }
 
 // ─── 5. 휴가 설정 (모델만, UI는 B6) ─────────────────────────
@@ -4570,4 +4616,46 @@ model CandidateDuplicateLog {
   @@index([candidateAId])
   @@index([candidateBId])
   @@map("candidate_duplicate_logs")
+}
+
+// ================================================================
+// === TRACK A: B3-2 Talent Review ===
+// ================================================================
+
+model AiEvaluationDraft {
+  id           String   @id @default(uuid())
+  evaluationId String   @map("evaluation_id")
+  employeeId   String   @map("employee_id")
+  reviewerId   String   @map("reviewer_id")
+  companyId    String   @map("company_id")
+  draftContent Json     @map("draft_content")
+  inputSummary Json     @map("input_summary")
+  status       String   @default("draft") @map("status")
+  managerEdits Json?    @map("manager_edits")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  employee Employee @relation("AiDraftEmployee", fields: [employeeId], references: [id])
+  reviewer Employee @relation("AiDraftReviewer", fields: [reviewerId], references: [id])
+  company  Company  @relation(fields: [companyId], references: [id])
+
+  @@map("ai_evaluation_drafts")
+}
+
+model BiasDetectionLog {
+  id              String   @id @default(uuid())
+  evaluationCycle String   @map("evaluation_cycle")
+  reviewerId      String   @map("reviewer_id")
+  companyId       String   @map("company_id")
+  biasType        String   @map("bias_type")
+  severity        String   @map("severity")
+  description     String   @db.Text
+  details         Json?
+  isAcknowledged  Boolean  @default(false) @map("is_acknowledged")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  reviewer Employee @relation("BiasLogReviewer", fields: [reviewerId], references: [id])
+  company  Company  @relation(fields: [companyId], references: [id])
+
+  @@map("bias_detection_logs")
 }
