@@ -19,8 +19,9 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const category = getCategoryById(params.category)
   if (!category) redirect('/settings')
 
-  const activeTabId = searchParams.tab ?? category.items[0]?.id ?? ''
-  const activeItem = category.items.find((i) => i.id === activeTabId) ?? category.items[0]
+  const requestedTabId = searchParams.tab ?? category.items[0]?.id ?? ''
+  const activeItem = category.items.find((i) => i.id === requestedTabId) ?? category.items[0]
+  const activeTabId = activeItem?.id ?? ''
 
   const Icon = category.icon
 
