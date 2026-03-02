@@ -39,6 +39,8 @@ export const PUT = withPermission(
           ...(data.readiness !== undefined && { readiness: data.readiness }),
           ...(data.developmentAreas !== undefined && { developmentAreas: data.developmentAreas }),
           ...(data.notes !== undefined && { notes: data.notes }),
+          ...(data.ranking != null && { ranking: data.ranking }),
+          ...(data.developmentNote !== undefined && { developmentNote: data.developmentNote }),
         },
         include: {
           employee: { select: { id: true, name: true, employeeNo: true } },

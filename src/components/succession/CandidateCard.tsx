@@ -35,7 +35,7 @@ export default function CandidateCard({ candidate, onDelete }: CandidateCardProp
             <p className="text-sm font-medium text-[#1A1A1A]">
               {candidate.employee.name}
               {candidate.ranking != null && candidate.ranking > 0 && (
-                <span className="text-xs text-[#999] ml-1">#{candidate.ranking}</span>
+                <Badge variant="outline" className="text-xs ml-1">#{candidate.ranking}</Badge>
               )}
             </p>
             <p className="text-xs text-[#666]">{candidate.employee.employeeNo}</p>
