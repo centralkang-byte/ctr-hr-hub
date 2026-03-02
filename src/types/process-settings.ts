@@ -1,23 +1,83 @@
-export type SettingType = 'evaluation' | 'attendance' | 'leave' | 'payroll' | 'recruitment'
+export type SettingType =
+  | 'EVALUATION'
+  | 'PROMOTION'
+  | 'COMPENSATION'
+  | 'ATTENDANCE'
+  | 'LEAVE'
+  | 'ONBOARDING'
+  | 'RECRUITMENT'
+  | 'BENEFITS'
 
-export type EvaluationCycleSetting = { type: 'ANNUAL' | 'SEMI_ANNUAL'; months: number[] }
-export type EvaluationWeightSetting = { weight: number }
-export type OvertimeSetting = { hoursPerWeek: number; alertAt: number; legalMax?: number }
-export type WorkModesSetting = { allowed: string[] }
-export type AnnualDaysSetting = { days: number; accrual: 'MONTHLY' | 'UPFRONT'; lawMinimum?: number }
-export type CarryOverSetting = { days: number }
-export type PayDaySetting = { dayOfMonth: number }
-export type ApprovalFlowSetting = { steps: string[] }
+// ── Per-setting-type JSONB schemas ──
+
+export type EvaluationSettings = {
+  grading_scale: 'S_A_B_C' | 'S_A_B_C_D' | 'A_B_C_D_E'
+  forced_distribution: boolean
+  distribution_rules?: { grade: string; min_pct: number; max_pct: number }[]
+  review_sequence: ('SELF' | 'MANAGER' | 'PEER' | 'CALIBRATION')[]
+  bei_enabled: boolean
+  mbo_weight: number   // 0–100
+  bei_weight: number   // 0–100; mbo_weight + bei_weight = 100
+}
+
+export type PromotionSettings = {
+  min_tenure_by_grade: Record<string, number>   // e.g. { "G5": 3, "G4": 4 }
+  requires_evaluation_grade?: string[]          // e.g. ["S", "A"]
+  requires_consecutive_years?: number
+  approval_chain: string[]                      // e.g. ["TEAM_LEAD", "HR_COMMITTEE"]
+}
+
+export type CompensationSettings = {
+  salary_bands: { grade_code: string; min: number; max: number; currency: string }[]
+  raise_matrix?: { eval_grade: string; band_position: 'LOW' | 'MID' | 'HIGH'; raise_pct: number }[]
+  bonus_rules?: Record<string, unknown>
+}
+
+export type AttendanceSettings = {
+  work_hours_per_day: number
+  work_days_per_week: number
+  weekly_hour_limit: number
+  overtime_requires_approval: boolean
+  shift_enabled: boolean
+  shift_patterns?: { name: string; start: string; end: string }[]
+}
+
+export type LeaveSettings = {
+  leave_types: { code: string; name: string; paid: boolean; default_days: number }[]
+  accrual_rules: { tenure_years: number; annual_days: number }[]
+  carryover_max_days: number
+  carryover_expiry_months: number
+}
+
+export type OnboardingSettings = {
+  probation_period_months: number
+  checklist_template_id?: string
+  required_documents: string[]
+  buddy_assignment: boolean
+}
+
+export type RecruitmentSettings = {
+  pipeline_stages: string[]
+  approval_required: boolean
+  approval_chain: string[]
+  ai_screening_enabled: boolean
+}
+
+export type BenefitsSettings = {
+  eligible_programs: string[]
+  annual_budget_per_employee?: number
+  currency: string
+}
 
 export type ProcessSettingValue =
-  | EvaluationCycleSetting
-  | EvaluationWeightSetting
-  | OvertimeSetting
-  | WorkModesSetting
-  | AnnualDaysSetting
-  | CarryOverSetting
-  | PayDaySetting
-  | ApprovalFlowSetting
+  | EvaluationSettings
+  | PromotionSettings
+  | CompensationSettings
+  | AttendanceSettings
+  | LeaveSettings
+  | OnboardingSettings
+  | RecruitmentSettings
+  | BenefitsSettings
   | Record<string, unknown>
 
 export type CompanyProcessSettingRow = {

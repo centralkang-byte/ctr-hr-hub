@@ -1532,20 +1532,26 @@ async function main() {
   console.log(`  ✅ ${otherPosCount} positions for other companies`)
 
   // ----------------------------------------------------------
-  // STEP 26: CompanyProcessSettings (global defaults + CTR-KR overrides)
+  // STEP 26: CompanyProcessSettings (global defaults + per-company overrides)
   // ----------------------------------------------------------
   console.log('📌 Seeding company process settings...')
+
+  // Clean up legacy lowercase-type records from earlier seed runs
+  await prisma.companyProcessSetting.deleteMany({
+    where: { settingType: { in: ['evaluation', 'attendance', 'leave', 'payroll', 'recruitment'] } },
+  })
+
   let settingCount = 0
 
   const globalSettings = [
-    { type: 'evaluation', key: 'cycle',              value: { type: 'SEMI_ANNUAL', months: [1, 7] } },
-    { type: 'evaluation', key: 'self_eval_weight',   value: { weight: 0.3 } },
-    { type: 'attendance', key: 'overtime_threshold', value: { hoursPerWeek: 40, alertAt: 36 } },
-    { type: 'attendance', key: 'work_modes',         value: { allowed: ['OFFICE', 'REMOTE', 'HYBRID'] } },
-    { type: 'leave',      key: 'annual_base_days',   value: { days: 15, accrual: 'MONTHLY' } },
-    { type: 'leave',      key: 'carry_over_max',     value: { days: 10 } },
-    { type: 'payroll',    key: 'pay_day',            value: { dayOfMonth: 25 } },
-    { type: 'recruitment',key: 'approval_flow',      value: { steps: ['HR', 'DEPT_HEAD', 'EXEC'] } },
+    { type: 'EVALUATION',  key: 'config',   value: { grading_scale: 'S_A_B_C', forced_distribution: true, distribution_rules: [{ grade: 'S', min_pct: 0, max_pct: 10 }, { grade: 'A', min_pct: 15, max_pct: 30 }, { grade: 'B', min_pct: 40, max_pct: 60 }, { grade: 'C', min_pct: 10, max_pct: 30 }], review_sequence: ['SELF', 'MANAGER', 'CALIBRATION'], bei_enabled: true, mbo_weight: 70, bei_weight: 30 } },
+    { type: 'PROMOTION',   key: 'config',   value: { min_tenure_by_grade: { G5: 3, G4: 4, G3: 4, G2: 5 }, requires_evaluation_grade: ['S', 'A'], approval_chain: ['TEAM_LEAD', 'DIVISION_HEAD', 'HR_COMMITTEE'] } },
+    { type: 'ATTENDANCE',  key: 'config',   value: { work_hours_per_day: 8, work_days_per_week: 5, weekly_hour_limit: 40, overtime_requires_approval: true, shift_enabled: false } },
+    { type: 'LEAVE',       key: 'config',   value: { leave_types: [{ code: 'ANNUAL', name: '연차', paid: true, default_days: 15 }, { code: 'SICK', name: '병가', paid: false, default_days: 5 }], accrual_rules: [{ tenure_years: 0, annual_days: 11 }, { tenure_years: 1, annual_days: 15 }], carryover_max_days: 10, carryover_expiry_months: 6 } },
+    { type: 'ONBOARDING',  key: 'config',   value: { probation_period_months: 3, required_documents: ['ID', 'DEGREE', 'BANK_ACCOUNT'], buddy_assignment: true } },
+    { type: 'RECRUITMENT', key: 'config',   value: { pipeline_stages: ['APPLIED', 'SCREEN', 'INTERVIEW_1', 'INTERVIEW_2', 'OFFER', 'ACCEPTED'], approval_required: true, approval_chain: ['HR', 'DEPT_HEAD', 'EXEC'], ai_screening_enabled: true } },
+    { type: 'BENEFITS',    key: 'config',   value: { eligible_programs: ['HEALTH', 'PENSION', 'MEAL', 'TRANSPORT'], currency: 'KRW' } },
+    { type: 'COMPENSATION', key: 'pay_day', value: { dayOfMonth: 25 } },
   ]
 
   for (const s of globalSettings) {
@@ -1554,33 +1560,50 @@ async function main() {
       where: { companyId: null, settingType: s.type, settingKey: s.key },
     })
     if (existing) {
-      await prisma.companyProcessSetting.update({
-        where: { id: existing.id },
-        data: { settingValue: s.value },
-      })
+      await prisma.companyProcessSetting.update({ where: { id: existing.id }, data: { settingValue: s.value } })
     } else {
-      await prisma.companyProcessSetting.create({
-        data: { id, companyId: null, settingType: s.type, settingKey: s.key, settingValue: s.value },
-      })
+      await prisma.companyProcessSetting.create({ data: { id, companyId: null, settingType: s.type, settingKey: s.key, settingValue: s.value } })
     }
     settingCount++
   }
 
-  // CTR-KR overrides
-  const krOverrides = [
-    { type: 'attendance', key: 'overtime_threshold', value: { hoursPerWeek: 52, alertAt: 48, legalMax: 52 } },
-    { type: 'leave',      key: 'annual_base_days',   value: { days: 15, accrual: 'MONTHLY', lawMinimum: 15 } },
+  // ── Per-company overrides ──
+  const companyOverrides = [
+    // CTR-KR: Korean labor law (52h weekly limit, extended maternity, 4대보험)
+    { companyCode: 'CTR-KR', type: 'ATTENDANCE', key: 'config', value: { work_hours_per_day: 8, work_days_per_week: 5, weekly_hour_limit: 52, overtime_requires_approval: true, shift_enabled: false } },
+    { companyCode: 'CTR-KR', type: 'LEAVE',      key: 'config', value: { leave_types: [{ code: 'ANNUAL', name: '연차', paid: true, default_days: 15 }, { code: 'SICK', name: '병가', paid: false, default_days: 5 }, { code: 'MATERNITY', name: '출산휴가', paid: true, default_days: 90 }], accrual_rules: [{ tenure_years: 0, annual_days: 11 }, { tenure_years: 1, annual_days: 15 }, { tenure_years: 3, annual_days: 16 }], carryover_max_days: 10, carryover_expiry_months: 6 } },
+    { companyCode: 'CTR-KR', type: 'ONBOARDING', key: 'config', value: { probation_period_months: 3, required_documents: ['ID', 'DEGREE', 'BANK_ACCOUNT', 'HEALTH_INSURANCE', 'EMPLOYMENT_INSURANCE'], buddy_assignment: true } },
+    // CTR-CN: Chinese labor law (44h/week, 春节 bonus leave)
+    { companyCode: 'CTR-CN', type: 'ATTENDANCE', key: 'config', value: { work_hours_per_day: 8, work_days_per_week: 5, weekly_hour_limit: 44, overtime_requires_approval: true, shift_enabled: true } },
+    { companyCode: 'CTR-CN', type: 'LEAVE',      key: 'config', value: { leave_types: [{ code: 'ANNUAL', name: '年假', paid: true, default_days: 5 }, { code: 'SPRING_FESTIVAL', name: '春节', paid: true, default_days: 7 }, { code: 'SICK', name: '病假', paid: false, default_days: 7 }], accrual_rules: [{ tenure_years: 0, annual_days: 5 }, { tenure_years: 10, annual_days: 10 }, { tenure_years: 20, annual_days: 15 }], carryover_max_days: 5, carryover_expiry_months: 12 } },
+    // CTR-US: US practices (PTO unified, bi-weekly pay, I-9/W-4 docs)
+    { companyCode: 'CTR-US', type: 'EVALUATION',   key: 'config',   value: { grading_scale: 'A_B_C_D_E', forced_distribution: false, review_sequence: ['SELF', 'MANAGER'], bei_enabled: false, mbo_weight: 100, bei_weight: 0 } },
+    { companyCode: 'CTR-US', type: 'LEAVE',        key: 'config',   value: { leave_types: [{ code: 'PTO', name: 'PTO', paid: true, default_days: 15 }, { code: 'SICK', name: 'Sick Leave', paid: true, default_days: 5 }], accrual_rules: [{ tenure_years: 0, annual_days: 15 }, { tenure_years: 5, annual_days: 20 }], carryover_max_days: 5, carryover_expiry_months: 3 } },
+    { companyCode: 'CTR-US', type: 'COMPENSATION', key: 'pay_day',  value: { dayOfMonth: 15, biWeekly: true, currency: 'USD' } },
+    { companyCode: 'CTR-US', type: 'ONBOARDING',   key: 'config',   value: { probation_period_months: 0, required_documents: ['I9', 'W4', 'STATE_TAX', 'DIRECT_DEPOSIT', '401K_ENROLLMENT'], buddy_assignment: true } },
+    // CTR-RU: Russian labor law (28 days annual, military docs)
+    { companyCode: 'CTR-RU', type: 'LEAVE',      key: 'config', value: { leave_types: [{ code: 'ANNUAL', name: 'Ежегодный отпуск', paid: true, default_days: 28 }, { code: 'SICK', name: 'Больничный', paid: true, default_days: 14 }], accrual_rules: [{ tenure_years: 0, annual_days: 28 }], carryover_max_days: 14, carryover_expiry_months: 18 } },
+    { companyCode: 'CTR-RU', type: 'ONBOARDING', key: 'config', value: { probation_period_months: 3, required_documents: ['PASSPORT', 'MILITARY_ID', 'WORKBOOK', 'INN', 'SNILS'], buddy_assignment: false } },
+    // CTR-VN: Vietnamese labor law (12 days annual, notarized contract)
+    { companyCode: 'CTR-VN', type: 'LEAVE',      key: 'config', value: { leave_types: [{ code: 'ANNUAL', name: 'Nghỉ phép năm', paid: true, default_days: 12 }, { code: 'SICK', name: 'Nghỉ ốm', paid: true, default_days: 30 }], accrual_rules: [{ tenure_years: 0, annual_days: 12 }, { tenure_years: 5, annual_days: 13 }, { tenure_years: 10, annual_days: 14 }], carryover_max_days: 5, carryover_expiry_months: 12 } },
+    { companyCode: 'CTR-VN', type: 'ONBOARDING', key: 'config', value: { probation_period_months: 2, required_documents: ['CITIZEN_ID', 'HOUSEHOLD_REGISTRATION', 'DEGREE', 'HEALTH_CERT'], buddy_assignment: false } },
+    // CTR-MX: Mexican labor law (graduated vacation, bi-weekly MXN)
+    { companyCode: 'CTR-MX', type: 'LEAVE',        key: 'config',   value: { leave_types: [{ code: 'ANNUAL', name: 'Vacaciones', paid: true, default_days: 12 }, { code: 'SICK', name: 'Incapacidad', paid: true, default_days: 3 }], accrual_rules: [{ tenure_years: 1, annual_days: 12 }, { tenure_years: 2, annual_days: 14 }, { tenure_years: 3, annual_days: 16 }], carryover_max_days: 0, carryover_expiry_months: 12 } },
+    { companyCode: 'CTR-MX', type: 'COMPENSATION', key: 'pay_day',  value: { dayOfMonth: 15, biWeekly: true, currency: 'MXN' } },
   ]
 
-  for (const s of krOverrides) {
-    const id = deterministicUUID('procsetting', `CTR-KR:${s.type}:${s.key}`)
+  for (const s of companyOverrides) {
+    const compId = companyMap[s.companyCode]
+    if (!compId) continue
+    const id = deterministicUUID('procsetting', `${s.companyCode}:${s.type}:${s.key}`)
     await prisma.companyProcessSetting.upsert({
-      where: { companyId_settingType_settingKey: { companyId: ctrKrId, settingType: s.type, settingKey: s.key } },
+      where: { companyId_settingType_settingKey: { companyId: compId, settingType: s.type, settingKey: s.key } },
       update: { settingValue: s.value },
-      create: { id, companyId: ctrKrId, settingType: s.type, settingKey: s.key, settingValue: s.value },
+      create: { id, companyId: compId, settingType: s.type, settingKey: s.key, settingValue: s.value },
     })
     settingCount++
   }
+
   console.log(`  ✅ ${settingCount} process settings`)
 
   // ----------------------------------------------------------

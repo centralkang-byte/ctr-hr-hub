@@ -87,7 +87,7 @@ async function resolveApprover(
             include: {
               position: {
                 include: {
-                  reportsToPosition: {
+                  reportsTo: {
                     include: {
                       assignments: {
                         where: { isPrimary: true, endDate: null },
@@ -103,7 +103,7 @@ async function resolveApprover(
         },
       })
       const managerEmployee =
-        employee?.assignments?.[0]?.position?.reportsToPosition?.assignments?.[0]?.employee
+        employee?.assignments?.[0]?.position?.reportsTo?.assignments?.[0]?.employee
       if (!managerEmployee) return null
       return {
         employeeId: managerEmployee.id,
