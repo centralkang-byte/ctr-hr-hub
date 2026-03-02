@@ -21,6 +21,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
+import { EmployeeFilterPanel, type FilterValues } from '@/components/employees/EmployeeFilterPanel'
 import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser, PaginationInfo, SortDirection } from '@/types'
@@ -86,6 +87,8 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
   const [departmentId, setDepartmentId] = useState('')
   const [employmentType, setEmploymentType] = useState('')
   const [status, setStatus] = useState('')
+  const [filters, setFilters] = useState<FilterValues>({})
+  const [exportLoading, setExportLoading] = useState(false)
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(20)
   const [sortBy, setSortBy] = useState('name')
@@ -127,9 +130,16 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
         sortBy,
         sortDir,
         ...(debouncedSearch ? { search: debouncedSearch } : {}),
-        ...(departmentId ? { departmentId } : {}),
-        ...(employmentType ? { employmentType } : {}),
-        ...(status ? { status } : {}),
+        // Quick-filter bar values take precedence; panel filters supplement
+        ...(departmentId ? { departmentId } : filters.departmentId ? { departmentId: filters.departmentId } : {}),
+        ...(employmentType ? { employmentType } : filters.employmentType ? { employmentType: filters.employmentType } : {}),
+        ...(status ? { status } : filters.status ? { status: filters.status } : {}),
+        // Panel-only filters
+        ...(filters.companyId ? { companyId: filters.companyId } : {}),
+        ...(filters.jobGradeId ? { jobGradeId: filters.jobGradeId } : {}),
+        ...(filters.contractType ? { contractType: filters.contractType } : {}),
+        ...(filters.hireDateFrom ? { hireDateFrom: filters.hireDateFrom } : {}),
+        ...(filters.hireDateTo ? { hireDateTo: filters.hireDateTo } : {}),
       })
       .then((res) => {
         setEmployees(res.data)
@@ -137,7 +147,7 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
       })
       .catch(() => setEmployees([]))
       .finally(() => setLoading(false))
-  }, [page, limit, sortBy, sortDir, debouncedSearch, departmentId, employmentType, status])
+  }, [page, limit, sortBy, sortDir, debouncedSearch, departmentId, employmentType, status, filters])
 
   // ─── Sort handler ───
   const handleSort = useCallback(
@@ -152,6 +162,25 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
     },
     [sortBy],
   )
+
+  // ─── Export handler ───
+  const handleExport = useCallback(() => {
+    setExportLoading(true)
+    const params = new URLSearchParams()
+    if (debouncedSearch) params.set('search', debouncedSearch)
+    Object.entries(filters).forEach(([k, v]) => { if (v) params.set(k, v) })
+    // Also include quick-filter bar values
+    if (departmentId) params.set('departmentId', departmentId)
+    if (employmentType) params.set('employmentType', employmentType)
+    if (status) params.set('status', status)
+    const a = document.createElement('a')
+    a.href = `/api/v1/employees/export?${params.toString()}`
+    a.download = 'employees.xlsx'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    setTimeout(() => setExportLoading(false), 1000)
+  }, [filters, debouncedSearch, departmentId, employmentType, status])
 
   // ─── Row click ───
   const handleRowClick = useCallback(
@@ -236,6 +265,18 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
             </Button>
           ) : undefined
         }
+      />
+
+      {/* ─── Advanced Filter Panel ─── */}
+      <EmployeeFilterPanel
+        filters={filters}
+        onFilterChange={(newFilters) => {
+          setFilters(newFilters)
+          setPage(1)
+        }}
+        onExport={handleExport}
+        exportLoading={exportLoading}
+        isHrAdmin={isHrAdmin}
       />
 
       {/* ─── Filters ─── */}
