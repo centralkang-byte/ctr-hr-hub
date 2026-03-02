@@ -154,8 +154,9 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
 
   // ─── Load session detail ────────────────────────────
 
-  const loadSession = async (sessionId: string) => {
+  const loadSession = useCallback(async (sessionId: string) => {
     setDetailLoading(true)
+    setReadinessMap({})   // 이전 세션 데이터 초기화
     try {
       const res = await apiClient.get<SessionDetail>(`/api/v1/performance/calibration/sessions/${sessionId}`)
       setSelectedSession(res.data)
@@ -165,7 +166,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
       }
     } catch { /* ignore */ }
     finally { setDetailLoading(false) }
-  }
+  }, [loadReadinessData])
 
   // ─── Create session ─────────────────────────────────
 
@@ -186,7 +187,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
 
   // ─── Submit adjustment ──────────────────────────────
 
-  const handleAdjustment = async () => {
+  const handleAdjustment = useCallback(async () => {
     if (!adjEmployee || !selectedSession || !adjReason.trim()) return
     try {
       await apiClient.post('/api/v1/performance/calibration/adjustments', {
@@ -203,7 +204,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
     } catch {
       alert('조정 저장에 실패했습니다.')
     }
-  }
+  }, [adjEmployee, selectedSession, adjReason, adjPerfScore, adjCompScore, loadSession])
 
   // ─── AI Analysis ────────────────────────────────────
 
@@ -295,7 +296,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                       <span
                         className="truncate max-w-[60px]"
                         title={ev.employee.name}
-                        onClickCapture={(e) => {
+                        onClick={(e) => {
                           e.stopPropagation()
                           setAdjEmployee(ev)
                           setAdjPerfScore(ev.performanceScore ?? 3)
