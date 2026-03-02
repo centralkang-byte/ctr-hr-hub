@@ -50,11 +50,23 @@ export const POST = withPermission(
     const employee = await prisma.employee.findFirst({
       where: {
         id: employeeId,
-        status: 'ACTIVE',
         deletedAt: null,
-        ...(user.role !== ROLE.SUPER_ADMIN ? { companyId: user.companyId } : {}),
+        assignments: {
+          some: {
+            status: 'ACTIVE',
+            isPrimary: true,
+            endDate: null,
+            ...(user.role !== ROLE.SUPER_ADMIN ? { companyId: user.companyId } : {}),
+          },
+        },
       },
-      include: { company: true },
+      include: {
+        assignments: {
+          where: { isPrimary: true, endDate: null },
+          take: 1,
+          include: { company: true },
+        },
+      },
     })
 
     if (!employee) {
@@ -74,10 +86,13 @@ export const POST = withPermission(
     //    ResignType and OffboardingTargetType share the same 4 values
     const targetType = resignType as OffboardingTargetType
 
+    const currentAssignment = employee.assignments[0]
+    const employeeCompanyId = currentAssignment?.companyId ?? ''
+
     // 5. Find matching active checklist
     const checklist = await prisma.offboardingChecklist.findFirst({
       where: {
-        companyId: employee.companyId,
+        companyId: employeeCompanyId,
         targetType,
         isActive: true,
       },
@@ -100,13 +115,18 @@ export const POST = withPermission(
 
     // 7. Run transaction
     const result = await prisma.$transaction(async (tx) => {
-      // a) Update employee status & resignDate
+      // a) Update employee resignDate and update assignment status
       await tx.employee.update({
         where: { id: employeeId },
         data: {
-          status: newStatus,
           resignDate: new Date(lastWorkingDate),
         },
+      })
+
+      // Update status on the current assignment instead of employee directly
+      await tx.employeeAssignment.updateMany({
+        where: { employeeId, isPrimary: true, endDate: null },
+        data: { status: newStatus },
       })
 
       // b) Create EmployeeHistory
@@ -152,10 +172,14 @@ export const POST = withPermission(
     // 8. Fire-and-forget notifications
     const notifications = []
 
-    // Notify manager
-    if (employee.managerId) {
+    // TODO: Manager lookup should use position-based lookup via getManagerByPosition()
+    // employee.managerId has been removed; manager is derived from the position hierarchy
+    const managerId: string | null = null
+
+    // Notify manager (position-based lookup not yet implemented)
+    if (managerId) {
       notifications.push({
-        employeeId: employee.managerId,
+        employeeId: managerId,
         triggerType: 'OFFBOARDING_START',
         title: '퇴직 프로세스 시작',
         body: `${employee.name}님의 퇴직 프로세스가 시작되었습니다. 최종 근무일: ${lastWorkingDate.split('T')[0]}`,
@@ -185,7 +209,7 @@ export const POST = withPermission(
       action: 'OFFBOARDING_START',
       resourceType: 'EmployeeOffboarding',
       resourceId: result.id,
-      companyId: employee.companyId,
+      companyId: employeeCompanyId,
       changes: {
         employeeId,
         resignType,

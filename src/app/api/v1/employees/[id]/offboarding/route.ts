@@ -19,7 +19,9 @@ export const GET = withPermission(
       where: {
         employeeId,
         employee: {
-          ...(user.role !== 'SUPER_ADMIN' ? { companyId: user.companyId } : {}),
+          ...(user.role !== 'SUPER_ADMIN'
+            ? { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
+            : {}),
         },
       },
       orderBy: { createdAt: 'desc' },

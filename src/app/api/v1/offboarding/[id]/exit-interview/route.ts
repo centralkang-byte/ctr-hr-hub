@@ -21,9 +21,9 @@ export const GET = withPermission(
     const offboarding = await prisma.employeeOffboarding.findFirst({
       where: {
         id,
-        employee: {
-          ...(user.role !== 'SUPER_ADMIN' ? { companyId: user.companyId } : {}),
-        },
+        ...(user.role !== 'SUPER_ADMIN'
+          ? { employee: { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } } }
+          : {}),
       },
     })
     if (!offboarding) throw notFound('퇴직 기록을 찾을 수 없습니다.')
@@ -66,11 +66,22 @@ export const POST = withPermission(
     const offboarding = await prisma.employeeOffboarding.findFirst({
       where: {
         id,
+        ...(user.role !== 'SUPER_ADMIN'
+          ? { employee: { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } } }
+          : {}),
+      },
+      include: {
         employee: {
-          ...(user.role !== 'SUPER_ADMIN' ? { companyId: user.companyId } : {}),
+          select: {
+            id: true,
+            assignments: {
+              where: { isPrimary: true, endDate: null },
+              take: 1,
+              select: { companyId: true },
+            },
+          },
         },
       },
-      include: { employee: { select: { id: true, companyId: true } } },
     })
     if (!offboarding) throw notFound('퇴직 기록을 찾을 수 없습니다.')
 
@@ -105,7 +116,7 @@ export const POST = withPermission(
           satisfactionScore: data.satisfactionScore,
           wouldRecommend: data.wouldRecommend ?? null,
           feedbackText: data.feedbackText,
-          companyId: offboarding.employee.companyId,
+          companyId: ((offboarding.employee.assignments?.[0] as any)?.companyId as string | undefined) ?? user.companyId, // eslint-disable-line @typescript-eslint/no-explicit-any
         },
         include: { interviewer: { select: { id: true, name: true } } },
       })

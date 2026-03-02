@@ -42,10 +42,10 @@ export default function SeveranceCalculator({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+    <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
       <div className="flex items-center gap-2 mb-4">
-        <Calculator className="h-5 w-5 text-blue-600" />
-        <h3 className="text-sm font-semibold text-slate-900">
+        <Calculator className="h-5 w-5 text-[#00C853]" />
+        <h3 className="text-sm font-semibold text-[#1A1A1A]">
           퇴직금 계산{employeeName ? ` — ${employeeName}` : ''}
         </h3>
       </div>
@@ -58,7 +58,7 @@ export default function SeveranceCalculator({
         <Button
           type="submit"
           disabled={loading}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
+          className="bg-[#00C853] hover:bg-[#00A844] text-white"
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : '계산'}
         </Button>
@@ -69,20 +69,20 @@ export default function SeveranceCalculator({
           {/* 기본 정보 */}
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-slate-500">입사일</p>
+              <p className="text-[#666]">입사일</p>
               <p className="font-medium">{result.hireDate.split('T')[0]}</p>
             </div>
             <div>
-              <p className="text-slate-500">퇴직일</p>
+              <p className="text-[#666]">퇴직일</p>
               <p className="font-medium">{result.terminationDate.split('T')[0]}</p>
             </div>
             <div>
-              <p className="text-slate-500">재직일수</p>
+              <p className="text-[#666]">재직일수</p>
               <p className="font-medium">{result.tenureDays}일 ({result.tenureYears}년)</p>
             </div>
             <div>
-              <p className="text-slate-500">퇴직금 대상</p>
-              <p className={`font-medium ${result.isEligible ? 'text-emerald-600' : 'text-red-600'}`}>
+              <p className="text-[#666]">퇴직금 대상</p>
+              <p className={`font-medium ${result.isEligible ? 'text-[#059669]' : 'text-[#DC2626]'}`}>
                 {result.isEligible ? '해당' : '비해당 (1년 미만)'}
               </p>
             </div>
@@ -91,10 +91,10 @@ export default function SeveranceCalculator({
           {/* 3개월 평균임금 테이블 */}
           {result.recentThreeMonths.length > 0 && (
             <div>
-              <p className="text-xs font-medium text-slate-500 mb-2">최근 3개월 급여</p>
+              <p className="text-xs font-medium text-[#666] mb-2">최근 3개월 급여</p>
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-slate-50 text-xs text-slate-500">
+                  <tr className="bg-[#FAFAFA] text-xs text-[#666]">
                     <th className="text-left px-3 py-2">월</th>
                     <th className="text-right px-3 py-2">기본급</th>
                     <th className="text-right px-3 py-2">초과근무</th>
@@ -104,7 +104,7 @@ export default function SeveranceCalculator({
                 </thead>
                 <tbody>
                   {result.recentThreeMonths.map((m) => (
-                    <tr key={m.yearMonth} className="border-b border-slate-100">
+                    <tr key={m.yearMonth} className="border-b border-[#F5F5F5]">
                       <td className="px-3 py-2">{m.yearMonth}</td>
                       <td className="text-right px-3 py-2">{formatCurrency(m.baseSalary)}</td>
                       <td className="text-right px-3 py-2">{formatCurrency(m.overtimePay)}</td>
@@ -114,7 +114,7 @@ export default function SeveranceCalculator({
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr className="bg-slate-50 font-semibold">
+                  <tr className="bg-[#FAFAFA] font-semibold">
                     <td className="px-3 py-2" colSpan={4}>3개월 평균임금</td>
                     <td className="text-right px-3 py-2">{formatCurrency(result.averageMonthlyPay)}</td>
                   </tr>
@@ -125,22 +125,22 @@ export default function SeveranceCalculator({
 
           {/* 퇴직금 결과 */}
           {result.isEligible && (
-            <div className="bg-blue-50 rounded-xl p-4 space-y-2">
+            <div className="bg-[#E8F5E9] rounded-xl p-4 space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-slate-600">퇴직금</span>
+                <span className="text-[#555]">퇴직금</span>
                 <span className="font-medium">{formatCurrency(result.severancePay)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-slate-600">퇴직소득세</span>
-                <span className="text-red-600">-{formatCurrency(result.incomeTax)}</span>
+                <span className="text-[#555]">퇴직소득세</span>
+                <span className="text-[#DC2626]">-{formatCurrency(result.incomeTax)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-slate-600">지방소득세</span>
-                <span className="text-red-600">-{formatCurrency(result.localIncomeTax)}</span>
+                <span className="text-[#555]">지방소득세</span>
+                <span className="text-[#DC2626]">-{formatCurrency(result.localIncomeTax)}</span>
               </div>
-              <div className="flex justify-between text-sm font-bold pt-2 border-t border-blue-200">
-                <span className="text-blue-700">실지급액</span>
-                <span className="text-blue-700">{formatCurrency(result.netSeverancePay)}</span>
+              <div className="flex justify-between text-sm font-bold pt-2 border-t border-[#E8F5E9]">
+                <span className="text-[#00A844]">실지급액</span>
+                <span className="text-[#00A844]">{formatCurrency(result.netSeverancePay)}</span>
               </div>
             </div>
           )}

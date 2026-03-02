@@ -72,7 +72,7 @@ export default function PayStubDetailClient({ user, runId }: PayStubDetailClient
   if (loading) {
     return (
       <div className="p-6 flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full" />
+        <div className="animate-spin h-8 w-8 border-4 border-[#00C853] border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -86,7 +86,7 @@ export default function PayStubDetailClient({ user, runId }: PayStubDetailClient
           <ArrowLeft className="h-4 w-4 mr-1" />
           {tCommon('back')}
         </Button>
-        <div className="text-center py-16 text-slate-500">
+        <div className="text-center py-16 text-[#666]">
           {t('notFound')}
         </div>
       </div>
@@ -103,10 +103,10 @@ export default function PayStubDetailClient({ user, runId }: PayStubDetailClient
           </Button>
           <div>
             <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-blue-600" />
-              <h1 className="text-2xl font-bold text-slate-900">{t('titleWithMonth', { month: item.run.yearMonth })}</h1>
+              <FileText className="h-5 w-5 text-[#00C853]" />
+              <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('titleWithMonth', { month: item.run.yearMonth })}</h1>
             </div>
-            <p className="text-sm text-slate-500 mt-0.5">{item.run.name}</p>
+            <p className="text-sm text-[#666] mt-0.5">{item.run.name}</p>
           </div>
         </div>
         <Button
@@ -120,16 +120,16 @@ export default function PayStubDetailClient({ user, runId }: PayStubDetailClient
       </div>
 
       {/* Pay Period Info */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+      <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
           <div>
-            <p className="text-slate-500">{t('payPeriod')}</p>
+            <p className="text-[#666]">{t('payPeriod')}</p>
             <p className="font-medium">
               {item.run.periodStart.split('T')[0]} ~ {item.run.periodEnd.split('T')[0]}
             </p>
           </div>
           <div>
-            <p className="text-slate-500">{t('payDate')}</p>
+            <p className="text-[#666]">{t('payDate')}</p>
             <p className="font-medium">
               {item.run.paidAt?.split('T')[0] ?? item.run.payDate?.split('T')[0] ?? '-'}
             </p>
@@ -138,7 +138,7 @@ export default function PayStubDetailClient({ user, runId }: PayStubDetailClient
       </div>
 
       {/* Breakdown */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+      <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
         <PayStubBreakdown detail={item.detail} />
       </div>
     </div>

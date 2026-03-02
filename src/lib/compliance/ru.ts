@@ -20,35 +20,44 @@ export async function generateT2Report(companyId: string) {
           birthDate: true,
           gender: true,
           hireDate: true,
-          department: { select: { name: true } },
-          jobGrade: { select: { name: true } },
-          jobCategory: { select: { name: true } },
+          assignments: {
+            where: { isPrimary: true, endDate: null },
+            take: 1,
+            include: {
+              department: { select: { name: true } },
+              jobGrade: { select: { name: true } },
+              jobCategory: { select: { name: true } },
+            },
+          },
         },
       },
     },
     orderBy: { createdAt: 'asc' },
   })
 
-  return registrations.map((reg) => ({
-    id: reg.id,
-    employeeId: reg.employeeId,
-    employeeNo: reg.employee.employeeNo,
-    name: reg.employee.name,
-    birthDate: reg.employee.birthDate,
-    gender: reg.employee.gender,
-    hireDate: reg.employee.hireDate,
-    department: reg.employee.department?.name ?? null,
-    jobGrade: reg.employee.jobGrade?.name ?? null,
-    jobCategory: reg.employee.jobCategory?.name ?? null,
-    militaryCategory: reg.category,
-    rank: reg.rank,
-    specialtyCode: reg.specialtyCode,
-    fitnessCategory: reg.fitnessCategory,
-    militaryOffice: reg.militaryOffice,
-    registrationDate: reg.registrationDate,
-    deregistrationDate: reg.deregistrationDate,
-    notes: reg.notes,
-  }))
+  return registrations.map((reg) => {
+    const assignment = reg.employee.assignments?.[0]
+    return {
+      id: reg.id,
+      employeeId: reg.employeeId,
+      employeeNo: reg.employee.employeeNo,
+      name: reg.employee.name,
+      birthDate: reg.employee.birthDate,
+      gender: reg.employee.gender,
+      hireDate: reg.employee.hireDate,
+      department: assignment?.department?.name ?? null,
+      jobGrade: assignment?.jobGrade?.name ?? null,
+      jobCategory: assignment?.jobCategory?.name ?? null,
+      militaryCategory: reg.category,
+      rank: reg.rank,
+      specialtyCode: reg.specialtyCode,
+      fitnessCategory: reg.fitnessCategory,
+      militaryOffice: reg.militaryOffice,
+      registrationDate: reg.registrationDate,
+      deregistrationDate: reg.deregistrationDate,
+      notes: reg.notes,
+    }
+  })
 }
 
 // ─── P-4 Quarterly Employee/Salary Stats ─────────────────
@@ -60,23 +69,35 @@ export async function generateP4Report(companyId: string, year: number, quarter:
 
   const employees = await prisma.employee.findMany({
     where: {
-      companyId,
       hireDate: { lte: quarterEnd },
       OR: [
         { resignDate: null },
         { resignDate: { gte: quarterStart } },
       ],
       deletedAt: null,
+      assignments: {
+        some: {
+          companyId,
+          isPrimary: true,
+          endDate: null,
+        },
+      },
     },
     include: {
-      department: { select: { name: true } },
-      jobCategory: { select: { name: true } },
+      assignments: {
+        where: { isPrimary: true, endDate: null },
+        take: 1,
+        include: {
+          department: { select: { name: true } },
+          jobCategory: { select: { name: true } },
+        },
+      },
     },
   })
 
   const byDepartment = employees.reduce(
     (acc, emp) => {
-      const dept = emp.department?.name ?? '미분류'
+      const dept = emp.assignments?.[0]?.department?.name ?? '미분류'
       if (!acc[dept]) {
         acc[dept] = { department: dept, headcount: 0, employeeIds: [] }
       }
@@ -108,24 +129,36 @@ export async function generate57TReport(companyId: string, year: number) {
 
   const employees = await prisma.employee.findMany({
     where: {
-      companyId,
       hireDate: { lte: yearEnd },
       OR: [
         { resignDate: null },
         { resignDate: { gte: yearStart } },
       ],
       deletedAt: null,
+      assignments: {
+        some: {
+          companyId,
+          isPrimary: true,
+          endDate: null,
+        },
+      },
     },
     include: {
-      jobCategory: { select: { id: true, name: true, code: true } },
-      jobGrade: { select: { id: true, name: true, code: true } },
+      assignments: {
+        where: { isPrimary: true, endDate: null },
+        take: 1,
+        include: {
+          jobCategory: { select: { id: true, name: true, code: true } },
+          jobGrade: { select: { id: true, name: true, code: true } },
+        },
+      },
     },
   })
 
   const byJobCategory = employees.reduce(
     (acc, emp) => {
-      const catKey = emp.jobCategory?.code ?? 'UNKNOWN'
-      const catName = emp.jobCategory?.name ?? '미분류'
+      const catKey = emp.assignments?.[0]?.jobCategory?.code ?? 'UNKNOWN'
+      const catName = emp.assignments?.[0]?.jobCategory?.name ?? '미분류'
       if (!acc[catKey]) {
         acc[catKey] = {
           categoryCode: catKey,

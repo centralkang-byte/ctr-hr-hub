@@ -577,8 +577,8 @@ export function OffboardingDetailClient({
                           key={n}
                           className={`h-5 w-5 ${
                             n <= interview.satisfactionScore
-                              ? 'fill-yellow-400 text-yellow-400'
-                              : 'text-gray-300'
+                              ? 'fill-[#FACC15] text-[#FACC15]'
+                              : 'text-[#D4D4D4]'
                           }`}
                         />
                       ))}
@@ -762,8 +762,8 @@ export function OffboardingDetailClient({
                         <Star
                           className={`h-7 w-7 ${
                             n <= formScore
-                              ? 'fill-yellow-400 text-yellow-400'
-                              : 'text-gray-300'
+                              ? 'fill-[#FACC15] text-[#FACC15]'
+                              : 'text-[#D4D4D4]'
                           }`}
                         />
                       </button>

@@ -19,9 +19,9 @@ export const PUT = withPermission(
     const offboarding = await prisma.employeeOffboarding.findFirst({
       where: {
         id,
-        employee: {
-          ...(user.role !== 'SUPER_ADMIN' ? { companyId: user.companyId } : {}),
-        },
+        ...(user.role !== 'SUPER_ADMIN'
+          ? { employee: { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } } }
+          : {}),
       },
       include: {
         offboardingTasks: { include: { task: true } },

@@ -124,7 +124,7 @@ export default function RewardFormClient({ user }: Props) {
           <div className="w-10 h-10 bg-[#E8F5E9] rounded-lg flex items-center justify-center">
             <Award className="w-5 h-5 text-[#00C853]" />
           </div>
-          <h1 className="text-xl font-bold text-[#333]" style={{ letterSpacing: '-0.02em' }}>
+          <h1 className="text-xl font-bold text-[#1A1A1A] tracking-[-0.02em]">
             {t('title')}
           </h1>
         </div>
@@ -134,16 +134,16 @@ export default function RewardFormClient({ user }: Props) {
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6 max-w-3xl">
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-          <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+          <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
             {t('rewardInfo')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Employee */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">{t('targetEmployee')} *</label>
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{t('targetEmployee')} *</label>
               <select
                 {...register('employeeId')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] bg-white"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 bg-white"
               >
                 <option value="">{t('selectEmployee')}</option>
                 {employees.map((emp) => (
@@ -159,10 +159,10 @@ export default function RewardFormClient({ user }: Props) {
 
             {/* Reward Type */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">{tRewards('rewardType')} *</label>
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{tRewards('rewardType')} *</label>
               <select
                 {...register('rewardType')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] bg-white"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 bg-white"
               >
                 <option value="">{t('selectType')}</option>
                 {REWARD_TYPE_KEYS.map((key) => (
@@ -176,12 +176,12 @@ export default function RewardFormClient({ user }: Props) {
 
             {/* Title */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-[#333] mb-1">{tRewards('rewardName')} *</label>
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{tRewards('rewardName')} *</label>
               <input
                 type="text"
                 {...register('title')}
                 placeholder={t('rewardNamePlaceholder')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3]"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
               />
               {errors.title && (
                 <p className="text-xs text-[#F44336] mt-1">{errors.title.message}</p>
@@ -190,23 +190,23 @@ export default function RewardFormClient({ user }: Props) {
 
             {/* Amount */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">{t('amountLabel')}</label>
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{t('amountLabel')}</label>
               <input
                 type="number"
                 min={0}
                 {...register('amount')}
                 placeholder="0"
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3]"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
               />
             </div>
 
             {/* Awarded Date */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">{tRewards('awardedDate')} *</label>
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{tRewards('awardedDate')} *</label>
               <input
                 type="date"
                 {...register('awardedDate')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3]"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
               />
               {errors.awardedDate && (
                 <p className="text-xs text-[#F44336] mt-1">{errors.awardedDate.message}</p>
@@ -216,12 +216,12 @@ export default function RewardFormClient({ user }: Props) {
 
           {/* Description */}
           <div className="mt-4">
-            <label className="block text-sm font-medium text-[#333] mb-1">{tCommon('description')}</label>
+            <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{tCommon('description')}</label>
             <textarea
               {...register('description')}
               rows={3}
               placeholder={t('descriptionPlaceholder')}
-              className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] resize-none"
+              className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 resize-none"
             />
           </div>
         </div>
@@ -229,7 +229,7 @@ export default function RewardFormClient({ user }: Props) {
         {/* Conditional: CTR_VALUE_AWARD */}
         {rewardType === 'CTR_VALUE_AWARD' && (
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+            <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
               {t('ctrValueSelection')}
             </h2>
             <div className="grid grid-cols-2 gap-3">
@@ -244,7 +244,7 @@ export default function RewardFormClient({ user }: Props) {
                     {...register('ctrValue')}
                     className="w-4 h-4 text-[#00C853] focus:ring-[#00C853]"
                   />
-                  <span className="text-sm text-[#333]">{t(`ctrValueOptions.${key}`)}</span>
+                  <span className="text-sm text-[#1A1A1A]">{t(`ctrValueOptions.${key}`)}</span>
                 </label>
               ))}
             </div>
@@ -254,17 +254,17 @@ export default function RewardFormClient({ user }: Props) {
         {/* Conditional: LONG_SERVICE */}
         {rewardType === 'LONG_SERVICE' && (
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+            <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
               {t('longServiceInfo')}
             </h2>
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">{t('serviceYearsLabel')}</label>
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{t('serviceYearsLabel')}</label>
               <input
                 type="number"
                 min={0}
                 {...register('serviceYears')}
                 placeholder={t('serviceYearsPlaceholder')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3]"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
               />
             </div>
           </div>
@@ -282,7 +282,7 @@ export default function RewardFormClient({ user }: Props) {
           <button
             type="button"
             onClick={() => router.back()}
-            className="px-6 py-2.5 text-sm font-medium border border-[#E8E8E8] text-[#333] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150"
+            className="px-6 py-2.5 text-sm font-medium border border-[#E8E8E8] text-[#1A1A1A] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150"
           >
             {tCommon('cancel')}
           </button>

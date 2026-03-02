@@ -212,7 +212,7 @@ export function NotificationTriggersClient({ user: _user }: { user: SessionUser 
       key: 'template',
       header: t('templateLabel'),
       render: (row: TriggerLocal) => (
-        <span className="max-w-[200px] truncate block text-sm text-slate-600">
+        <span className="max-w-[200px] truncate block text-sm text-[#555]">
           {row.template}
         </span>
       ),

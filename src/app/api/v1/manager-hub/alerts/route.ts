@@ -34,8 +34,30 @@ export const GET = withPermission(
       const managerId = user.employeeId
       const { limit } = parsed.data
 
+      // 2-step: find manager's positionId, then find direct reports via position hierarchy
+      const managerAsgn = await prisma.employeeAssignment.findFirst({
+        where: { employeeId: managerId, isPrimary: true, endDate: null },
+        select: { positionId: true },
+      })
+      const directReportAsgnList = managerAsgn?.positionId
+        ? await prisma.employeeAssignment.findMany({
+            where: {
+              position: { reportsToPositionId: managerAsgn.positionId },
+              isPrimary: true,
+              endDate: null,
+            },
+            select: { employeeId: true },
+          })
+        : []
+      const reportIds = directReportAsgnList.map((a: any) => a.employeeId) // eslint-disable-line @typescript-eslint/no-explicit-any
+
       const teamMembers = await prisma.employee.findMany({
-        where: { managerId, companyId, status: 'ACTIVE' },
+        where: {
+          id: { in: reportIds },
+          assignments: {
+            some: { companyId, status: 'ACTIVE', isPrimary: true, endDate: null },
+          },
+        },
         select: { id: true, name: true },
       })
       const teamMap = new Map(teamMembers.map((m) => [m.id, m.name]))

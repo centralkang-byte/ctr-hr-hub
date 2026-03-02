@@ -65,10 +65,10 @@ export default function ComplianceClient() {
   }, [])
 
   const kpiCards = [
-    { label: t('gdpr.consents'), value: stats?.activeConsents ?? 0, icon: Shield, color: 'text-emerald-600' },
-    { label: t('gdpr.requests'), value: stats?.pendingRequests ?? 0, icon: FileSearch, color: 'text-amber-600' },
-    { label: t('gdpr.retention'), value: stats?.retentionPolicies ?? 0, icon: Database, color: 'text-blue-600' },
-    { label: t('gdpr.dpia'), value: stats?.dpiaRecords ?? 0, icon: FileSearch, color: 'text-indigo-600' },
+    { label: t('gdpr.consents'), value: stats?.activeConsents ?? 0, icon: Shield, color: 'text-[#059669]' },
+    { label: t('gdpr.requests'), value: stats?.pendingRequests ?? 0, icon: FileSearch, color: 'text-[#D97706]' },
+    { label: t('gdpr.retention'), value: stats?.retentionPolicies ?? 0, icon: Database, color: 'text-[#00C853]' },
+    { label: t('gdpr.dpia'), value: stats?.dpiaRecords ?? 0, icon: FileSearch, color: 'text-[#4F46E5]' },
   ]
 
   const navCards = [
@@ -77,28 +77,28 @@ export default function ComplianceClient() {
       description: 'GDPR compliance management — consents, requests, DPIA',
       href: '/compliance/gdpr',
       icon: Shield,
-      color: 'bg-emerald-50 text-emerald-600',
+      color: 'bg-[#D1FAE5] text-[#059669]',
     },
     {
       title: t('gdpr.piiAudit'),
       description: 'PII access monitoring and audit trail',
       href: '/compliance/pii-audit',
       icon: Eye,
-      color: 'bg-blue-50 text-blue-600',
+      color: 'bg-[#E8F5E9] text-[#00C853]',
     },
     {
       title: t('gdpr.retention'),
       description: 'Data retention policies and enforcement',
       href: '/compliance/data-retention',
       icon: Database,
-      color: 'bg-purple-50 text-purple-600',
+      color: 'bg-[#FAF5FF] text-[#9333EA]',
     },
     {
       title: t('gdpr.dpia'),
       description: 'Data Protection Impact Assessments',
       href: '/compliance/dpia',
       icon: FileSearch,
-      color: 'bg-indigo-50 text-indigo-600',
+      color: 'bg-[#E0E7FF] text-[#4F46E5]',
     },
   ]
 
@@ -130,21 +130,21 @@ export default function ComplianceClient() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <ShieldCheck className="h-7 w-7 text-blue-600" />
-        <h1 className="text-2xl font-bold text-slate-900">{t('title')}</h1>
+        <ShieldCheck className="h-7 w-7 text-[#00C853]" />
+        <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('title')}</h1>
       </div>
 
       {/* GDPR KPI Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpiCards.map((card) => (
-          <div key={card.label} className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+          <div key={card.label} className="bg-white rounded-xl border border-[#E8E8E8] p-5">
             <div className="flex items-center gap-3">
               <div className={`rounded-lg p-2 ${card.color} bg-opacity-10`}>
                 <card.icon className={`h-5 w-5 ${card.color}`} />
               </div>
               <div>
-                <p className="text-xs text-slate-500">{card.label}</p>
-                <p className="text-2xl font-bold text-slate-900">
+                <p className="text-xs text-[#666]">{card.label}</p>
+                <p className="text-2xl font-bold text-[#1A1A1A]">
                   {loading ? '—' : card.value}
                 </p>
               </div>
@@ -155,20 +155,20 @@ export default function ComplianceClient() {
 
       {/* GDPR Navigation */}
       <div>
-        <h2 className="text-lg font-semibold text-slate-900 mb-3">{t('gdpr.title')}</h2>
+        <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3">{t('gdpr.title')}</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {navCards.map((card) => (
             <Link
               key={card.href}
               href={card.href}
-              className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:shadow-md transition-shadow group"
+              className="bg-white rounded-xl border border-[#E8E8E8] p-5 hover:transition-shadow group"
             >
               <div className={`inline-flex rounded-lg p-2 ${card.color} mb-3`}>
                 <card.icon className="h-5 w-5" />
               </div>
-              <h3 className="text-sm font-semibold text-slate-900 mb-1">{card.title}</h3>
-              <p className="text-xs text-slate-500 mb-3">{card.description}</p>
-              <div className="flex items-center text-xs font-medium text-blue-600 group-hover:text-blue-700">
+              <h3 className="text-sm font-semibold text-[#1A1A1A] mb-1">{card.title}</h3>
+              <p className="text-xs text-[#666] mb-3">{card.description}</p>
+              <div className="flex items-center text-xs font-medium text-[#00C853] group-hover:text-[#00A844]">
                 <ArrowRight className="h-3.5 w-3.5" />
               </div>
             </Link>
@@ -178,20 +178,20 @@ export default function ComplianceClient() {
 
       {/* Country-specific Compliance */}
       <div>
-        <h2 className="text-lg font-semibold text-slate-900 mb-3">Country-specific Compliance</h2>
+        <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3">Country-specific Compliance</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {countryCards.map((card) => (
             <Link
               key={card.href}
               href={card.href}
-              className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:shadow-md transition-shadow group"
+              className="bg-white rounded-xl border border-[#E8E8E8] p-5 hover:transition-shadow group"
             >
               <div className="flex items-center gap-3 mb-3">
                 <span className="text-2xl">{card.flag}</span>
-                <h3 className="text-sm font-semibold text-slate-900">{card.title}</h3>
+                <h3 className="text-sm font-semibold text-[#1A1A1A]">{card.title}</h3>
               </div>
-              <p className="text-xs text-slate-500 mb-3">{card.description}</p>
-              <div className="flex items-center text-xs font-medium text-blue-600 group-hover:text-blue-700">
+              <p className="text-xs text-[#666] mb-3">{card.description}</p>
+              <div className="flex items-center text-xs font-medium text-[#00C853] group-hover:text-[#00A844]">
                 <ArrowRight className="h-3.5 w-3.5" />
               </div>
             </Link>

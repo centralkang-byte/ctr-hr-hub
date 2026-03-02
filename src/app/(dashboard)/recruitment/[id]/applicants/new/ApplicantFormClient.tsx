@@ -116,8 +116,7 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
           </div>
           <div>
             <h1
-              className="text-xl font-bold text-[#333]"
-              style={{ letterSpacing: '-0.02em' }}
+              className="text-xl font-bold text-[#1A1A1A] tracking-[-0.02em]"
             >
               {t('applicantFormTitle')}
             </h1>
@@ -140,7 +139,7 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
           <div className="space-y-5">
             {/* 이름 */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
                 {t('nameLabel')} <span className="text-[#F44336]">*</span>
               </label>
               <input
@@ -149,13 +148,13 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
                 value={form.name}
                 onChange={handleChange}
                 placeholder={t('namePlaceholder')}
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"
               />
             </div>
 
             {/* 이메일 */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
                 {t('emailLabel')} <span className="text-[#F44336]">*</span>
               </label>
               <input
@@ -164,13 +163,13 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
                 value={form.email}
                 onChange={handleChange}
                 placeholder="example@email.com"
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"
               />
             </div>
 
             {/* 전화번호 */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
                 {t('phoneLabel')}
               </label>
               <input
@@ -179,20 +178,20 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
                 value={form.phone}
                 onChange={handleChange}
                 placeholder="010-0000-0000"
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"
               />
             </div>
 
             {/* 지원경로 */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
                 {t('sourceLabel')} <span className="text-[#F44336]">*</span>
               </label>
               <select
                 name="source"
                 value={form.source}
                 onChange={handleChange}
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#2196F3] transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"
               >
                 {SOURCE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -204,7 +203,7 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
 
             {/* 포트폴리오 URL */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
                 {t('portfolioUrlLabel')}
               </label>
               <input
@@ -213,13 +212,13 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
                 value={form.portfolioUrl}
                 onChange={handleChange}
                 placeholder="https://..."
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"
               />
             </div>
 
             {/* 이력서 키 (placeholder) */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
                 {t('resumeKeyLabel')}
               </label>
               <input
@@ -228,7 +227,7 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
                 value={form.resumeKey}
                 onChange={handleChange}
                 placeholder={t('resumeKeyPlaceholder')}
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-[#FAFAFA] focus:outline-none focus:border-[#2196F3] transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-[#FAFAFA] focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"
               />
               <p className="text-xs text-[#999] mt-1">
                 {t('resumeKeyDescription')}
@@ -237,7 +236,7 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
 
             {/* 메모 */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
                 {t('memoLabel')}
               </label>
               <textarea
@@ -246,7 +245,7 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
                 onChange={handleChange}
                 placeholder={t('memoPlaceholder')}
                 rows={3}
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg resize-none focus:outline-none focus:border-[#2196F3] transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg resize-none focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"
               />
             </div>
           </div>

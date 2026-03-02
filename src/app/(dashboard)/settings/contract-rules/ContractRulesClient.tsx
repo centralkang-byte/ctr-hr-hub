@@ -21,7 +21,7 @@ export default function ContractRulesClient() {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold">{t('title')}</h2>
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-[#666]">
         {t('description')}
       </p>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -37,7 +37,7 @@ export default function ContractRulesClient() {
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-500">{t('maxFixedTermCount')}</span>
+                <span className="text-[#666]">{t('maxFixedTermCount')}</span>
                 <span className="font-medium">
                   {rule.max_fixed_term_count === 0
                     ? t('unlimited')
@@ -45,7 +45,7 @@ export default function ContractRulesClient() {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">{t('maxFixedTermMonths')}</span>
+                <span className="text-[#666]">{t('maxFixedTermMonths')}</span>
                 <span className="font-medium">
                   {rule.max_fixed_term_months === 0
                     ? t('unlimited')
@@ -53,7 +53,7 @@ export default function ContractRulesClient() {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">{t('probationPeriod')}</span>
+                <span className="text-[#666]">{t('probationPeriod')}</span>
                 <span className="font-medium">
                   {rule.probation_range.min_days === rule.probation_range.max_days
                     ? t('daysSuffix', { days: rule.probation_range.min_days })
@@ -61,8 +61,8 @@ export default function ContractRulesClient() {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">{t('autoConvert')}</span>
-                <span className={rule.auto_convert_to_permanent ? 'font-medium text-green-600' : 'font-medium text-gray-400'}>
+                <span className="text-[#666]">{t('autoConvert')}</span>
+                <span className={rule.auto_convert_to_permanent ? 'font-medium text-green-600' : 'font-medium text-[#999]'}>
                   {rule.auto_convert_to_permanent ? t('applied') : t('notApplied')}
                 </span>
               </div>

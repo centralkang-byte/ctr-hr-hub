@@ -91,11 +91,22 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email) return null
         const sso = await prisma.ssoIdentity.findFirst({
           where: { email: credentials.email },
-          include: { employee: true },
+          include: {
+            employee: {
+              include: {
+                assignments: {
+                  where: { isPrimary: true, endDate: null },
+                  take: 1,
+                  select: { status: true },
+                },
+              },
+            },
+          },
         })
         if (!sso?.employee) return null
         const emp = sso.employee
-        if (emp.status === 'RESIGNED' || emp.status === 'TERMINATED') return null
+        const empStatus = emp.assignments?.[0]?.status
+        if (empStatus === 'RESIGNED' || empStatus === 'TERMINATED') return null
         return { id: emp.id, email: credentials.email, name: emp.name }
       },
     }),
@@ -104,6 +115,18 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
     maxAge: 8 * 60 * 60, // 8 hours
+  },
+
+  cookies: {
+    sessionToken: {
+      name: env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: env.NODE_ENV === 'production',
+      },
+    },
   },
 
   pages: {
@@ -118,7 +141,17 @@ export const authOptions: NextAuthOptions = {
       // SSO 이메일로 직원 조회
       const ssoIdentity = await prisma.ssoIdentity.findFirst({
         where: { email: user.email },
-        include: { employee: true },
+        include: {
+          employee: {
+            include: {
+              assignments: {
+                where: { isPrimary: true, endDate: null },
+                take: 1,
+                select: { status: true },
+              },
+            },
+          },
+        },
       })
 
       if (!ssoIdentity?.employee) {
@@ -126,7 +159,8 @@ export const authOptions: NextAuthOptions = {
       }
 
       const employee = ssoIdentity.employee
-      if (employee.status === 'RESIGNED' || employee.status === 'TERMINATED') {
+      const employeeStatus = employee.assignments?.[0]?.status
+      if (employeeStatus === 'RESIGNED' || employeeStatus === 'TERMINATED') {
         return false
       }
 
@@ -149,7 +183,7 @@ export const authOptions: NextAuthOptions = {
             await loadEmployeePermissions(employee.id)
 
           token.employeeId = employee.id
-          token.companyId = companyId || employee.companyId
+          token.companyId = companyId
           token.role = role
           token.permissions = permissions
           token.name = employee.name

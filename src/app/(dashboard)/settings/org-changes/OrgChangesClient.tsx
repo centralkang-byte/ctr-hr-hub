@@ -41,12 +41,12 @@ type HistoryRow = {
 }
 
 const CHANGE_TYPE_COLORS: Record<OrgChangeType, string> = {
-  CREATE: 'bg-green-100 text-green-800',
-  MERGE: 'bg-blue-100 text-blue-800',
-  SPLIT: 'bg-purple-100 text-purple-800',
-  RENAME: 'bg-yellow-100 text-yellow-800',
-  CLOSE: 'bg-red-100 text-red-800',
-  RESTRUCTURE: 'bg-ctr-gray-100 text-ctr-gray-800',
+  CREATE: 'bg-[#E8F5E9] text-[#00C853]',
+  MERGE: 'bg-[#F3E5F5] text-[#9C27B0]',
+  SPLIT: 'bg-[#E3F2FD] text-[#2196F3]',
+  RENAME: 'bg-[#FFF3E0] text-[#FF9800]',
+  CLOSE: 'bg-[#FFEBEE] text-[#F44336]',
+  RESTRUCTURE: 'bg-[#F5F5F5] text-[#666]',
 }
 
 // ─── JSON Diff Viewer ───────────────────────────────────────
@@ -64,7 +64,7 @@ function JsonDiffViewer({
   beforeLabel: string
   afterLabel: string
 }) {
-  if (!from && !to) return <p className="text-xs text-ctr-gray-500">{noChangeDataLabel}</p>
+  if (!from && !to) return <p className="text-xs text-[#999]">{noChangeDataLabel}</p>
 
   const allKeys = Array.from(
     new Set([...Object.keys(from ?? {}), ...Object.keys(to ?? {})]),
@@ -80,10 +80,10 @@ function JsonDiffViewer({
         return (
           <div
             key={key}
-            className={`flex gap-4 px-2 py-0.5 rounded ${changed ? 'bg-yellow-50' : ''}`}
+            className={`flex gap-4 px-2 py-0.5 rounded ${changed ? 'bg-[#FEFCE8]' : ''}`}
           >
-            <span className="w-32 shrink-0 text-ctr-gray-500">{key}</span>
-            <span className={`w-40 shrink-0 ${changed ? 'text-red-600 line-through' : 'text-ctr-gray-700'}`}>
+            <span className="w-32 shrink-0 text-[#999]">{key}</span>
+            <span className={`w-40 shrink-0 ${changed ? 'text-[#DC2626] line-through' : 'text-[#333]'}`}>
               {fromVal !== undefined ? String(fromVal) : '—'}
             </span>
             {changed && (
@@ -119,33 +119,33 @@ function ExpandableRow({
 
   return (
     <>
-      <tr className="border-b border-ctr-gray-100 hover:bg-ctr-gray-50 cursor-pointer" onClick={() => setExpanded((v) => !v)}>
-        <td className="px-4 py-3 text-sm text-ctr-gray-700">
+      <tr className="border-b border-[#E8E8E8] hover:bg-[#FAFAFA] cursor-pointer" onClick={() => setExpanded((v) => !v)}>
+        <td className="px-4 py-3 text-sm text-[#333]">
           {new Date(row.effectiveDate).toLocaleDateString('ko-KR')}
         </td>
         <td className="px-4 py-3">
-          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${CHANGE_TYPE_COLORS[row.changeType]}`}>
+          <span className={`px-2 py-0.5 rounded-[4px] text-xs font-medium ${CHANGE_TYPE_COLORS[row.changeType]}`}>
             {changeTypeLabels[row.changeType]}
           </span>
         </td>
-        <td className="px-4 py-3 text-sm text-ctr-gray-700">
+        <td className="px-4 py-3 text-sm text-[#333]">
           {row.reason ?? '—'}
         </td>
-        <td className="px-4 py-3 text-sm text-ctr-gray-700">
+        <td className="px-4 py-3 text-sm text-[#333]">
           {row.approver?.name ?? row.approvedBy ?? '—'}
         </td>
-        <td className="px-4 py-3 text-ctr-gray-500">
+        <td className="px-4 py-3 text-[#999]">
           {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
         </td>
       </tr>
       {expanded && (
-        <tr className="bg-ctr-gray-50">
+        <tr className="bg-[#FAFAFA]">
           <td colSpan={5} className="px-6 py-3">
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-ctr-gray-500 uppercase tracking-wide">
+              <p className="text-xs font-semibold text-[#999] uppercase tracking-wide">
                 {beforeAfterLabel}
               </p>
-              <div className="grid grid-cols-3 gap-2 text-xs text-ctr-gray-500 font-mono px-2">
+              <div className="grid grid-cols-3 gap-2 text-xs text-[#999] font-mono px-2">
                 <span className="w-32">{fieldLabel}</span>
                 <span className="w-40">{beforeLabel}</span>
                 <span>{afterLabel}</span>
@@ -316,7 +316,7 @@ function ChangeDialog({ open, onClose, departments, companyId, onSuccess }: Chan
                     className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
                       form.changeType === tp
                         ? 'border-ctr-primary bg-ctr-primary text-white'
-                        : 'border-ctr-gray-300 text-ctr-gray-700 hover:border-ctr-primary'
+                        : 'border-[#D4D4D4] text-[#333] hover:border-ctr-primary'
                     }`}
                   >
                     {CHANGE_TYPE_LABELS[tp]}
@@ -371,7 +371,7 @@ function ChangeDialog({ open, onClose, departments, companyId, onSuccess }: Chan
                 <select
                   value={form.parentDeptId}
                   onChange={(e) => set('parentDeptId', e.target.value)}
-                  className="w-full text-sm border border-ctr-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ctr-primary"
+                  className="w-full text-sm border border-[#D4D4D4] rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ctr-primary"
                 >
                   <option value="">{t('noParent')}</option>
                   {departments.map((d) => (
@@ -388,7 +388,7 @@ function ChangeDialog({ open, onClose, departments, companyId, onSuccess }: Chan
               <select
                 value={form.targetDeptId}
                 onChange={(e) => set('targetDeptId', e.target.value)}
-                className="w-full text-sm border border-ctr-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ctr-primary"
+                className="w-full text-sm border border-[#D4D4D4] rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ctr-primary"
               >
                 <option value="">{tc('selectPlaceholder')}</option>
                 {departments.map((d) => (
@@ -444,20 +444,20 @@ function ChangeDialog({ open, onClose, departments, companyId, onSuccess }: Chan
                       Array.from(e.target.selectedOptions).map((o) => o.value),
                     )
                   }
-                  className="w-full text-sm border border-ctr-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ctr-primary"
+                  className="w-full text-sm border border-[#D4D4D4] rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ctr-primary"
                 >
                   {departments.map((d) => (
                     <option key={d.id} value={d.id}>{d.name}</option>
                   ))}
                 </select>
-                <p className="text-xs text-ctr-gray-500">{t('multiSelectHint')}</p>
+                <p className="text-xs text-[#999]">{t('multiSelectHint')}</p>
               </div>
               <div className="space-y-1.5">
                 <Label>{t('mergeTargetDept')}</Label>
                 <select
                   value={form.mergeToDeptId}
                   onChange={(e) => set('mergeToDeptId', e.target.value)}
-                  className="w-full text-sm border border-ctr-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ctr-primary"
+                  className="w-full text-sm border border-[#D4D4D4] rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ctr-primary"
                 >
                   <option value="">{tc('selectPlaceholder')}</option>
                   {departments.map((d) => (
@@ -479,7 +479,7 @@ function ChangeDialog({ open, onClose, departments, companyId, onSuccess }: Chan
           </div>
 
           {error && (
-            <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded">{error}</p>
+            <p className="text-sm text-[#DC2626] bg-[#FEE2E2] px-3 py-2 rounded">{error}</p>
           )}
         </div>
 
@@ -490,7 +490,7 @@ function ChangeDialog({ open, onClose, departments, companyId, onSuccess }: Chan
           <Button
             onClick={handleSubmit}
             disabled={submitting}
-            className="bg-ctr-primary hover:bg-ctr-primary/90 text-white"
+            className="bg-ctr-primary hover:bg-ctr-primary-dark text-white"
           >
             {submitting ? t('processing') : t('execute')}
           </Button>
@@ -601,7 +601,7 @@ export function OrgChangesClient({ user, companies, departments }: OrgChangesCli
         actions={
           <Button
             onClick={() => setShowDialog(true)}
-            className="bg-ctr-primary hover:bg-ctr-primary/90 text-white"
+            className="bg-ctr-primary hover:bg-ctr-primary-dark text-white"
           >
             <Plus className="h-4 w-4 mr-1.5" />
             {t('execute')}
@@ -615,7 +615,7 @@ export function OrgChangesClient({ user, companies, departments }: OrgChangesCli
           <select
             value={filterCompanyId}
             onChange={(e) => setFilterCompanyId(e.target.value)}
-            className="text-sm border border-ctr-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-ctr-primary"
+            className="text-sm border border-[#D4D4D4] rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-ctr-primary"
           >
             <option value="">{t('allCompanies')}</option>
             {companies.map((c) => (
@@ -627,7 +627,7 @@ export function OrgChangesClient({ user, companies, departments }: OrgChangesCli
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value as OrgChangeType | '')}
-          className="text-sm border border-ctr-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-ctr-primary"
+          className="text-sm border border-[#D4D4D4] rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-ctr-primary"
         >
           <option value="">{t('allTypes')}</option>
           {(Object.entries(CHANGE_TYPE_LABELS) as [OrgChangeType, string][]).map(([key, label]) => (
@@ -637,12 +637,12 @@ export function OrgChangesClient({ user, companies, departments }: OrgChangesCli
       </div>
 
       {/* History table — custom expandable rows */}
-      <div className="rounded-lg border border-ctr-gray-200 overflow-hidden bg-white">
+      <div className="rounded-xl border border-[#E8E8E8] overflow-hidden bg-white">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-ctr-gray-200 bg-ctr-gray-50">
+            <tr className="border-b border-[#E8E8E8]">
               <th
-                className="px-4 py-3 text-left text-xs font-semibold text-ctr-gray-500 uppercase tracking-wide cursor-pointer hover:text-ctr-gray-900"
+                className="px-4 py-3 text-left text-xs font-semibold text-[#999] cursor-pointer hover:text-[#333]"
                 onClick={() => handleSort('effectiveDate')}
               >
                 {t('effectiveDate')}
@@ -650,13 +650,13 @@ export function OrgChangesClient({ user, companies, departments }: OrgChangesCli
                   <span className="ml-1">{sortDir === 'asc' ? '↑' : '↓'}</span>
                 )}
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-ctr-gray-500 uppercase tracking-wide">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">
                 {t('changeType')}
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-ctr-gray-500 uppercase tracking-wide">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">
                 {t('reason')}
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-ctr-gray-500 uppercase tracking-wide">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">
                 {t('approver')}
               </th>
               <th className="px-4 py-3 w-8" />
@@ -665,17 +665,17 @@ export function OrgChangesClient({ user, companies, departments }: OrgChangesCli
           <tbody>
             {loading ? (
               Array.from({ length: 5 }).map((_, i) => (
-                <tr key={i} className="border-b border-ctr-gray-100">
+                <tr key={i} className="border-b border-[#E8E8E8]">
                   {Array.from({ length: 5 }).map((__, j) => (
                     <td key={j} className="px-4 py-3">
-                      <div className="h-4 bg-ctr-gray-100 rounded animate-pulse" />
+                      <div className="h-4 bg-[#F5F5F5] rounded animate-pulse" />
                     </td>
                   ))}
                 </tr>
               ))
             ) : history.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-12 text-center text-sm text-ctr-gray-500">
+                <td colSpan={5} className="px-4 py-12 text-center text-sm text-[#999]">
                   {t('noHistory')}
                 </td>
               </tr>
@@ -698,8 +698,8 @@ export function OrgChangesClient({ user, companies, departments }: OrgChangesCli
 
         {/* Pagination */}
         {pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-ctr-gray-200">
-            <p className="text-xs text-ctr-gray-500">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-[#E8E8E8]">
+            <p className="text-xs text-[#999]">
               {t('totalCount', { total: pagination.total })}
             </p>
             <div className="flex gap-1">
@@ -711,7 +711,7 @@ export function OrgChangesClient({ user, companies, departments }: OrgChangesCli
               >
                 {tc('prev')}
               </Button>
-              <span className="px-3 py-1 text-sm text-ctr-gray-700">
+              <span className="px-3 py-1 text-sm text-[#333]">
                 {pagination.page} / {pagination.totalPages}
               </span>
               <Button

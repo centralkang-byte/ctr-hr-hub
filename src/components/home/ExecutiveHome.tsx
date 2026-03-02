@@ -76,7 +76,7 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
                   {summary?.totalEmployees?.toLocaleString() ?? '-'}
                 </p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#E8F5E9]">
                 <Users className="h-6 w-6 text-ctr-primary" />
               </div>
             </div>
@@ -96,7 +96,7 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
                   {summary?.turnoverRate ?? '-'}%
                 </p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-50">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FEE2E2]">
                 <TrendingDown className="h-6 w-6 text-ctr-accent" />
               </div>
             </div>
@@ -125,15 +125,15 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
         </Card>
 
         {/* 인건비 비율 */}
-        <Card className="border-t-4 border-t-yellow-500">
+        <Card className="border-t-4 border-t-[#F59E0B]">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-ctr-gray-500">인건비 비율</p>
                 <p className="text-3xl font-bold text-ctr-gray-900">32.1%</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-50">
-                <DollarSign className="h-6 w-6 text-yellow-600" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FEFCE8]">
+                <DollarSign className="h-6 w-6 text-[#CA8A04]" />
               </div>
             </div>
             <p className="mt-2 text-xs text-ctr-gray-500">
@@ -206,11 +206,11 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="rounded-lg border border-red-200 bg-red-50 p-3">
-                  <p className="text-sm font-medium text-red-800">
+                <div className="rounded-lg border border-[#FECACA] bg-[#FEE2E2] p-3">
+                  <p className="text-sm font-medium text-[#991B1B]">
                     핵심 인재 유출 위험
                   </p>
-                  <p className="mt-1 text-xs text-red-700">
+                  <p className="mt-1 text-xs text-[#B91C1C]">
                     SW개발 직군의 이직 위험도가 업계 평균 대비 높은 수준입니다.
                     경쟁력 있는 보상 패키지 검토를 권장합니다.
                   </p>

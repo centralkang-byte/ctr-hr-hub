@@ -32,6 +32,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
+import { ProfileSidebar } from '@/components/employees/ProfileSidebar'
 import {
   Dialog,
   DialogContent,
@@ -174,7 +175,7 @@ function Avatar({ name, photoUrl, size = 'md' }: { name: string; photoUrl?: stri
     return <img src={photoUrl} alt={name} className={`${sizeClass} rounded-full object-cover`} />
   }
   return (
-    <div className={`${sizeClass} flex items-center justify-center rounded-full bg-ctr-primary font-semibold text-white`}>
+    <div className={`${sizeClass} flex items-center justify-center rounded-full bg-ctr-primary-light font-semibold text-ctr-primary`}>
       {getInitials(name)}
     </div>
   )
@@ -184,9 +185,9 @@ function Avatar({ name, photoUrl, size = 'md' }: { name: string; photoUrl?: stri
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex gap-2 py-1.5">
-      <dt className="w-36 shrink-0 text-sm text-muted-foreground">{label}</dt>
-      <dd className="text-sm font-medium">{value ?? '-'}</dd>
+    <div className="py-2.5">
+      <p className="text-xs text-[#999] font-medium mb-1">{label}</p>
+      <p className="text-sm text-[#1A1A1A]">{value ?? '-'}</p>
     </div>
   )
 }
@@ -393,7 +394,7 @@ export function EmployeeDetailClient({
               {editError}
             </p>
           )}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-2">
             {/* Personal */}
             <div className="space-y-1.5">
               <Label>{t('nameKorean')} <span className="text-destructive">*</span></Label>
@@ -489,7 +490,7 @@ export function EmployeeDetailClient({
             </div>
           </div>
           <div className="flex gap-2 pt-2">
-            <Button onClick={handleSave} disabled={saving} className="bg-ctr-primary hover:bg-ctr-primary/90">
+            <Button onClick={handleSave} disabled={saving} className="bg-ctr-primary hover:bg-ctr-primary-dark text-white">
               <Check className="mr-1 h-4 w-4" />
               {saving ? t('saving') : tc('save')}
             </Button>
@@ -505,8 +506,8 @@ export function EmployeeDetailClient({
     return (
       <div className="space-y-6">
         <div>
-          <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide">{t('personalInfo')}</h3>
-          <dl className="grid grid-cols-1 gap-0 divide-y sm:grid-cols-2 sm:divide-y-0">
+          <h3 className="mb-3 text-base font-bold text-[#1A1A1A] tracking-ctr">{t('personalInfo')}</h3>
+          <dl className="grid grid-cols-1 gap-x-8 gap-y-0 md:grid-cols-2">
             <InfoRow label={t('nameKorean')} value={employee.name} />
             <InfoRow label={t('nameEn')} value={employee.nameEn} />
             <InfoRow label={t('birthDate')} value={formatDate(employee.birthDate)} />
@@ -520,8 +521,8 @@ export function EmployeeDetailClient({
         </div>
         <Separator />
         <div>
-          <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide">{t('employmentInfo')}</h3>
-          <dl className="grid grid-cols-1 gap-0 divide-y sm:grid-cols-2 sm:divide-y-0">
+          <h3 className="mb-3 text-base font-bold text-[#1A1A1A] tracking-ctr">{t('employmentInfo')}</h3>
+          <dl className="grid grid-cols-1 gap-x-8 gap-y-0 md:grid-cols-2">
             <InfoRow label={t('employeeCode')} value={<span className="font-mono">{employee.employeeNo}</span>} />
             <InfoRow label={t('companyEntity')} value={employee.company?.name} />
             <InfoRow label={t('department')} value={employee.department?.name} />
@@ -623,41 +624,50 @@ export function EmployeeDetailClient({
   // ─── Render ─────────────────────────────────────────────────
 
   return (
-    <div className="space-y-6 p-6">
-      {/* ─── Profile header ─── */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex items-center gap-4">
-          <Avatar name={employee.name} photoUrl={employee.photoUrl} size="lg" />
-          <div>
-            <h1 className="text-2xl font-bold">{employee.name}</h1>
-            {employee.nameEn && <p className="text-sm text-muted-foreground">{employee.nameEn}</p>}
-            <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-              <span className="font-mono">{employee.employeeNo}</span>
-              {employee.department && (
-                <>
-                  <span>·</span>
-                  <span>{employee.department.name}</span>
-                </>
-              )}
-              {employee.jobGrade && (
-                <>
-                  <span>·</span>
-                  <span>{employee.jobGrade.name}</span>
-                </>
-              )}
-            </div>
-            <div className="mt-2">
-              <Badge variant={STATUS_VARIANTS[employee.status] ?? 'outline'}>
+    <div className="flex h-full">
+      {/* ─── Left: Profile Sidebar (P04) ─── */}
+      <ProfileSidebar
+        name={employee.name}
+        nameEn={employee.nameEn}
+        photoUrl={employee.photoUrl}
+        department={employee.department?.name ?? null}
+        jobGrade={employee.jobGrade?.name ?? null}
+        email={employee.email}
+        phone={employee.phone}
+        hireDate={employee.hireDate}
+        status={employee.status}
+        statusLabel={STATUS_LABELS[employee.status] ?? employee.status}
+        tenureText={calcTenure(employee.hireDate)}
+        company={employee.company?.name ?? null}
+        manager={employee.manager ? {
+          id: employee.manager.id,
+          name: employee.manager.name,
+          photoUrl: employee.manager.photoUrl,
+          department: employee.manager.department?.name ?? null,
+          jobGrade: employee.manager.jobGrade?.name ?? null,
+        } : null}
+        onManagerClick={(id) => router.push(`/employees/${id}`)}
+      />
+
+      {/* ─── Right: Main Content ─── */}
+      <div className="flex-1 min-w-0 overflow-auto">
+        {/* Mobile profile header (shown on small screens) */}
+        <div className="lg:hidden p-6 pb-0">
+          <div className="flex items-center gap-4">
+            <Avatar name={employee.name} photoUrl={employee.photoUrl} size="lg" />
+            <div>
+              <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-ctr">{employee.name}</h1>
+              <p className="text-sm text-[#999]">
+                {employee.department?.name ?? '-'}{employee.jobGrade ? ` · ${employee.jobGrade.name}` : ''}
+              </p>
+              <Badge variant={STATUS_VARIANTS[employee.status] ?? 'outline'} className="mt-1">
                 {STATUS_LABELS[employee.status] ?? employee.status}
               </Badge>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* ─── Side info cards + main tabs ─── */}
-      <div className="flex flex-col gap-6 lg:flex-row">
-        {/* ─── Left: tabs ─── */}
+        <div className="p-6">
         <div className="flex-1 min-w-0">
           <Tabs defaultValue="basic" onValueChange={handleTabChange}>
             <TabsList className="mb-4">
@@ -687,7 +697,7 @@ export function EmployeeDetailClient({
 
             {/* Tab 1: 기본정보 */}
             <TabsContent value="basic" className="mt-0">
-              <div className="rounded-lg border bg-card p-6">
+              <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
                 {isHrAdmin && !editing && (
                   <div className="mb-4 flex justify-end">
                     <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
@@ -702,8 +712,8 @@ export function EmployeeDetailClient({
 
             {/* Tab 2: 인사이력 */}
             <TabsContent value="histories" className="mt-0">
-              <div className="rounded-lg border bg-card p-6">
-                <h2 className="mb-4 text-lg font-semibold">{t('hrHistory')}</h2>
+              <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
+                <h2 className="mb-4 text-base font-bold text-[#1A1A1A] tracking-ctr">{t('hrHistory')}</h2>
                 <DataTable<HistoryRow>
                   columns={historyColumns}
                   data={histories}
@@ -718,11 +728,11 @@ export function EmployeeDetailClient({
 
             {/* Tab 3: 문서 */}
             <TabsContent value="documents" className="mt-0">
-              <div className="rounded-lg border bg-card p-6">
+              <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
                 <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-lg font-semibold">{t('documents')}</h2>
+                  <h2 className="text-base font-bold text-[#1A1A1A] tracking-ctr">{t('documents')}</h2>
                   {isHrAdmin && (
-                    <Button size="sm" className="bg-ctr-primary hover:bg-ctr-primary/90">
+                    <Button size="sm" className="bg-ctr-primary hover:bg-ctr-primary-dark text-white">
                       <FileText className="mr-1 h-4 w-4" />
                       {t('uploadDocument')}
                     </Button>
@@ -740,8 +750,8 @@ export function EmployeeDetailClient({
 
             {/* Tab 4: 징계·상벌 */}
             <TabsContent value="discipline" className="mt-0">
-              <div className="rounded-lg border bg-card p-6">
-                <h2 className="mb-4 text-lg font-semibold">{t('discipline')}</h2>
+              <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
+                <h2 className="mb-4 text-base font-bold text-[#1A1A1A] tracking-ctr">{t('discipline')}</h2>
                 <EmptyState
                   title={t('noDiscipline')}
                   description={t('disciplineComingSoon')}
@@ -752,8 +762,8 @@ export function EmployeeDetailClient({
             {/* Tab 5: 연봉이력 (HR_ADMIN only) */}
             {isHrAdmin && (
               <TabsContent value="compensation" className="mt-0">
-                <div className="rounded-lg border bg-card p-6">
-                  <h2 className="mb-4 text-lg font-semibold">{t('compensationHistory')}</h2>
+                <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
+                  <h2 className="mb-4 text-base font-bold text-[#1A1A1A] tracking-ctr">{t('compensationHistory')}</h2>
                   <EmptyState
                     title={t('noCompensationHistory')}
                     description={t('compensationComingSoon')}
@@ -764,59 +774,24 @@ export function EmployeeDetailClient({
           </Tabs>
         </div>
 
-        {/* ─── Right sidebar ─── */}
-        <div className="w-full space-y-4 lg:w-72 shrink-0">
-          {/* Manager card */}
-          {employee.manager && (
-            <div className="rounded-lg border bg-card p-4">
-              <h3 className="mb-3 text-sm font-semibold text-muted-foreground">{t('manager')}</h3>
-              <button
-                type="button"
-                className="flex w-full items-center gap-3 rounded-md p-2 text-left hover:bg-muted/50 transition-colors"
-                onClick={() => router.push(`/employees/${employee.manager!.id}`)}
-              >
-                <Avatar name={employee.manager.name} photoUrl={employee.manager.photoUrl} size="sm" />
-                <div>
-                  <p className="text-sm font-medium">{employee.manager.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {employee.manager.department?.name ?? ''}{employee.manager.jobGrade ? ` · ${employee.manager.jobGrade.name}` : ''}
-                  </p>
-                </div>
-              </button>
-            </div>
-          )}
-
-          {/* Tenure */}
-          <div className="rounded-lg border bg-card p-4">
-            <h3 className="mb-2 text-sm font-semibold text-muted-foreground">{t('tenure')}</h3>
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-medium">{calcTenure(employee.hireDate)}</span>
-            </div>
-            {employee.hireDate && (
-              <p className="mt-1 text-xs text-muted-foreground">
-                {t('hireDate')}: {formatDate(employee.hireDate)}
-              </p>
-            )}
+        {/* ─── Offboarding action (HR_ADMIN + ACTIVE) ─── */}
+        {isHrAdmin && employee.status === 'ACTIVE' && (
+          <div className="mt-6 pt-6 border-t border-[#E8E8E8]">
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => {
+                resetOffboarding()
+                setOffboardingOpen(true)
+              }}
+            >
+              {t('offboarding')}
+            </Button>
           </div>
+        )}
 
-          {/* Offboarding wizard (HR_ADMIN + ACTIVE) */}
-          {isHrAdmin && employee.status === 'ACTIVE' && (
-            <div className="rounded-lg border bg-card p-4">
-              <h3 className="mb-2 text-sm font-semibold text-muted-foreground">{t('offboarding')}</h3>
-              <Button
-                variant="destructive"
-                size="sm"
-                className="w-full"
-                onClick={() => {
-                  resetOffboarding()
-                  setOffboardingOpen(true)
-                }}
-              >
-                {t('offboarding')}
-              </Button>
-            </div>
-          )}
+        </div>{/* end p-6 */}
+        </div>{/* end flex-1 overflow */}
 
           {/* Offboarding wizard dialog */}
           <Dialog open={offboardingOpen} onOpenChange={(open) => { setOffboardingOpen(open); if (!open) resetOffboarding() }}>
@@ -943,7 +918,7 @@ export function EmployeeDetailClient({
                 )}
                 {offboardingStep < 3 && (
                   <Button
-                    className="bg-ctr-primary hover:bg-ctr-primary/90"
+                    className="bg-ctr-primary hover:bg-ctr-primary-dark text-white"
                     disabled={
                       offboardingStep === 1 && (!offboardingData.resignType || !offboardingData.lastWorkingDate)
                     }
@@ -964,8 +939,6 @@ export function EmployeeDetailClient({
               </DialogFooter>
             </DialogContent>
           </Dialog>
-        </div>
-      </div>
     </div>
   )
 }

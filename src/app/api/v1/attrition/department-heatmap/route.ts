@@ -24,8 +24,18 @@ export const GET = withPermission(
 
     // ── Get active employees grouped by department ─────────
     const activeEmployees = await prisma.employee.findMany({
-      where: { companyId, status: 'ACTIVE', deletedAt: null },
-      select: { id: true, departmentId: true },
+      where: {
+        assignments: { some: { companyId, status: 'ACTIVE', isPrimary: true, endDate: null } },
+        deletedAt: null,
+      },
+      select: {
+        id: true,
+        assignments: {
+          where: { isPrimary: true, endDate: null },
+          take: 1,
+          select: { departmentId: true },
+        },
+      },
     })
 
     const employeeIds = activeEmployees.map((e) => e.id)
@@ -56,9 +66,12 @@ export const GET = withPermission(
     // ── Build a map: departmentId → employeeIds ────────────
     const deptEmployeeMap = new Map<string, string[]>()
     for (const emp of activeEmployees) {
-      const list = deptEmployeeMap.get(emp.departmentId) ?? []
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const deptId: string | null | undefined = (emp.assignments?.[0] as any)?.departmentId
+      if (!deptId) continue
+      const list = deptEmployeeMap.get(deptId) ?? []
       list.push(emp.id)
-      deptEmployeeMap.set(emp.departmentId, list)
+      deptEmployeeMap.set(deptId, list)
     }
 
     // ── Aggregate per department ───────────────────────────

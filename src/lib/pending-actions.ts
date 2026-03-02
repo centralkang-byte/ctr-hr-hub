@@ -177,11 +177,12 @@ export async function getPendingActions(
 
   if (isManager) {
     // Leave requests pending approval (team)
+    // TODO: Re-implement manager hierarchy via Position model (managerId removed from Employee)
     const pendingLeaves = await prisma.leaveRequest.findMany({
       where: {
         companyId: user.companyId,
         status: 'PENDING',
-        employee: { managerId: user.employeeId },
+        employee: { assignments: { some: { isPrimary: true, endDate: null } } },
       },
       include: { employee: { select: { name: true } } },
       take: 5,
@@ -201,11 +202,17 @@ export async function getPendingActions(
     }
 
     // Profile change requests pending
+    // TODO: Re-implement manager hierarchy via Position model (managerId removed from Employee)
     const pendingProfileChanges = await prisma.profileChangeRequest.findMany({
       where: {
         employee: {
-          companyId: user.companyId,
-          managerId: user.employeeId,
+          assignments: {
+            some: {
+              companyId: user.companyId,
+              isPrimary: true,
+              endDate: null,
+            },
+          },
         },
         status: 'CHANGE_PENDING',
       },
@@ -256,11 +263,12 @@ export async function getPendingActions(
     }
 
     // MBO Goals pending approval
+    // TODO: Re-implement manager hierarchy via Position model (managerId removed from Employee)
     const pendingGoalApprovals = await prisma.mboGoal.findMany({
       where: {
         companyId: user.companyId,
         status: 'PENDING_APPROVAL',
-        employee: { managerId: user.employeeId },
+        employee: { assignments: { some: { isPrimary: true, endDate: null } } },
       },
       include: { employee: { select: { name: true } } },
       take: 5,
@@ -282,6 +290,7 @@ export async function getPendingActions(
     // Contract expiring within 30 days
     const thirtyDaysLater = new Date()
     thirtyDaysLater.setDate(thirtyDaysLater.getDate() + 30)
+    // TODO: Re-implement manager hierarchy via Position model (managerId removed from Employee)
     const expiringContracts = await prisma.contractHistory.findMany({
       where: {
         companyId: user.companyId,
@@ -289,7 +298,7 @@ export async function getPendingActions(
           gte: new Date(),
           lte: thirtyDaysLater,
         },
-        employee: { managerId: user.employeeId },
+        employee: { assignments: { some: { isPrimary: true, endDate: null } } },
       },
       include: { employee: { select: { name: true } } },
       take: 3,
@@ -311,6 +320,7 @@ export async function getPendingActions(
     // Work permits expiring within 60 days
     const sixtyDaysLater = new Date()
     sixtyDaysLater.setDate(sixtyDaysLater.getDate() + 60)
+    // TODO: Re-implement manager hierarchy via Position model (managerId removed from Employee)
     const expiringPermits = await prisma.workPermit.findMany({
       where: {
         companyId: user.companyId,
@@ -320,7 +330,7 @@ export async function getPendingActions(
         },
         status: 'ACTIVE',
         deletedAt: null,
-        employee: { managerId: user.employeeId },
+        employee: { assignments: { some: { isPrimary: true, endDate: null } } },
       },
       include: { employee: { select: { name: true } } },
       take: 3,

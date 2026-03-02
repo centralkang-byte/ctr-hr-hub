@@ -1,0 +1,67 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.16/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.16",
+  "version": "1.0.0",
+  "id": "{{TEAMS_APP_ID}}",
+  "developer": {
+    "name": "CTR",
+    "websiteUrl": "https://hr.ctr.co.kr",
+    "privacyUrl": "https://hr.ctr.co.kr/privacy",
+    "termsOfUseUrl": "https://hr.ctr.co.kr/terms"
+  },
+  "name": {
+    "short": "CTR HR Hub",
+    "full": "CTR HR Hub — 인사관리 Bot"
+  },
+  "description": {
+    "short": "CTR HR Hub 봇 — 휴가, 급여, 근태 조회",
+    "full": "CTR HR Hub와 연동된 Teams 봇입니다. 휴가 잔여일, 급여명세서, 근태 현황을 조회하고, 승인 카드에서 바로 휴가를 승인/반려할 수 있습니다."
+  },
+  "icons": {
+    "outline": "icon-outline-32x32.png",
+    "color": "icon-color-192x192.png"
+  },
+  "accentColor": "#2563EB",
+  "bots": [
+    {
+      "botId": "{{TEAMS_BOT_ID}}",
+      "scopes": ["personal", "team", "groupChat"],
+      "commandLists": [
+        {
+          "scopes": ["personal"],
+          "commands": [
+            {
+              "title": "휴가",
+              "description": "휴가 잔여 현황 조회"
+            },
+            {
+              "title": "급여",
+              "description": "최근 급여명세서 조회"
+            },
+            {
+              "title": "근태",
+              "description": "오늘 근태 현황 조회"
+            },
+            {
+              "title": "도움",
+              "description": "사용 가능한 명령어 안내"
+            }
+          ]
+        }
+      ],
+      "supportsFiles": false
+    }
+  ],
+  "permissions": [
+    "identity",
+    "messageTeamMembers"
+  ],
+  "validDomains": [
+    "hr.ctr.co.kr",
+    "*.ctr.co.kr"
+  ],
+  "webApplicationInfo": {
+    "id": "{{AZURE_AD_CLIENT_ID}}",
+    "resource": "api://hr.ctr.co.kr/{{AZURE_AD_CLIENT_ID}}"
+  }
+}

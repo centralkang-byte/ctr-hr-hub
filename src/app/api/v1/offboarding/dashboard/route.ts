@@ -28,12 +28,14 @@ export const GET = withPermission(
               in: ['IN_PROGRESS', 'COMPLETED'],
             },
           }),
-      employee: { ...(companyId ? { companyId } : {}) },
+      employee: companyId
+        ? { assignments: { some: { companyId, isPrimary: true, endDate: null } } }
+        : {},
     }
 
     const include = {
       employee: {
-        select: { id: true, name: true, companyId: true },
+        select: { id: true, name: true },
       },
       checklist: { select: { id: true, name: true } },
       offboardingTasks: {

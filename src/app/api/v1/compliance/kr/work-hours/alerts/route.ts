@@ -55,7 +55,11 @@ export const GET = withPermission(
             id: true,
             name: true,
             employeeNo: true,
-            department: { select: { name: true } },
+            assignments: {
+              where: { isPrimary: true, endDate: null },
+              take: 1,
+              select: { department: { select: { name: true } } },
+            },
           },
         })
       : []

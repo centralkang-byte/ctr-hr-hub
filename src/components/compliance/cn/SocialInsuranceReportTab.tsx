@@ -142,23 +142,23 @@ export default function SocialInsuranceReportTab() {
   const months = Array.from({ length: 12 }, (_, i) => i + 1)
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+    <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-base font-semibold text-slate-900">월간 사회보험 보고서</h2>
-          <p className="text-xs text-slate-500 mt-0.5">월별 五险一金 납부 내역을 확인합니다</p>
+          <h2 className="text-base font-semibold text-[#1A1A1A]">월간 사회보험 보고서</h2>
+          <p className="text-xs text-[#666] mt-0.5">월별 五险一金 납부 내역을 확인합니다</p>
         </div>
       </div>
 
       {/* Controls */}
-      <div className="flex flex-wrap items-end gap-3 mb-5 p-4 bg-slate-50 rounded-lg">
+      <div className="flex flex-wrap items-end gap-3 mb-5 p-4 bg-[#FAFAFA] rounded-lg">
         <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">연도</label>
+          <label className="block text-xs font-medium text-[#555] mb-1">연도</label>
           <select
             value={year}
             onChange={(e) => setYear(Number(e.target.value))}
-            className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
           >
             {years.map((y) => (
               <option key={y} value={y}>
@@ -168,11 +168,11 @@ export default function SocialInsuranceReportTab() {
           </select>
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">월</label>
+          <label className="block text-xs font-medium text-[#555] mb-1">월</label>
           <select
             value={month}
             onChange={(e) => setMonth(Number(e.target.value))}
-            className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
           >
             {months.map((m) => (
               <option key={m} value={m}>
@@ -184,7 +184,7 @@ export default function SocialInsuranceReportTab() {
         <button
           onClick={handleCalculate}
           disabled={calculating}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Calculator className="w-4 h-4" />
           {calculating ? '계산 중...' : '월간 보험 계산'}
@@ -193,7 +193,7 @@ export default function SocialInsuranceReportTab() {
           <button
             onClick={handleExport}
             disabled={exporting}
-            className="flex items-center gap-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 bg-white border border-[#D4D4D4] hover:bg-[#FAFAFA] text-[#333] px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50"
           >
             <Download className="w-4 h-4" />
             {exporting ? '내보내는 중...' : '보고서 내보내기'}
@@ -203,21 +203,21 @@ export default function SocialInsuranceReportTab() {
 
       {/* Status Messages */}
       {calcMessage && (
-        <div className="mb-4 bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-lg px-4 py-3">
+        <div className="mb-4 bg-[#D1FAE5] border border-[#A7F3D0] text-[#047857] text-sm rounded-lg px-4 py-3">
           {calcMessage}
         </div>
       )}
       {error && (
-        <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
+        <div className="mb-4 bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-sm rounded-lg px-4 py-3">
           {error}
         </div>
       )}
 
       {/* Report Table */}
       {loading ? (
-        <div className="py-12 text-center text-sm text-slate-500">Loading...</div>
+        <div className="py-12 text-center text-sm text-[#666]">Loading...</div>
       ) : !reportData || reportData.rows.length === 0 ? (
-        <div className="py-12 text-center text-sm text-slate-500">
+        <div className="py-12 text-center text-sm text-[#666]">
           {year}년 {month}월 데이터가 없습니다. 계산 버튼을 눌러 데이터를 생성하세요.
         </div>
       ) : (
@@ -225,7 +225,7 @@ export default function SocialInsuranceReportTab() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-slate-50 text-xs text-slate-500 font-medium uppercase tracking-wider">
+                <tr className="bg-[#FAFAFA] text-xs text-[#666] font-medium uppercase tracking-wider">
                   <th className="px-4 py-3 text-left">보험 유형</th>
                   <th className="px-4 py-3 text-right">직원 수</th>
                   <th className="px-4 py-3 text-right">총 기수</th>
@@ -238,41 +238,41 @@ export default function SocialInsuranceReportTab() {
                 {reportData.rows.map((row) => (
                   <tr
                     key={row.insuranceType}
-                    className="border-b border-slate-100 hover:bg-slate-50"
+                    className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]"
                   >
-                    <td className="px-4 py-3 font-medium text-slate-900">
+                    <td className="px-4 py-3 font-medium text-[#1A1A1A]">
                       {INSURANCE_TYPE_LABELS[row.insuranceType] ?? row.insuranceType}
                     </td>
-                    <td className="px-4 py-3 text-right text-slate-700">
+                    <td className="px-4 py-3 text-right text-[#333]">
                       {row.employeeCount.toLocaleString()}명
                     </td>
-                    <td className="px-4 py-3 text-right text-slate-700">
+                    <td className="px-4 py-3 text-right text-[#333]">
                       {formatCNY(row.totalBaseSalary)}
                     </td>
-                    <td className="px-4 py-3 text-right text-slate-700">
+                    <td className="px-4 py-3 text-right text-[#333]">
                       {formatCNY(row.totalEmployerAmount)}
                     </td>
-                    <td className="px-4 py-3 text-right text-slate-700">
+                    <td className="px-4 py-3 text-right text-[#333]">
                       {formatCNY(row.totalEmployeeAmount)}
                     </td>
-                    <td className="px-4 py-3 text-right font-medium text-slate-900">
+                    <td className="px-4 py-3 text-right font-medium text-[#1A1A1A]">
                       {formatCNY(row.totalAmount)}
                     </td>
                   </tr>
                 ))}
               </tbody>
               <tfoot>
-                <tr className="bg-slate-50 font-semibold">
-                  <td className="px-4 py-3 text-slate-900">합계</td>
+                <tr className="bg-[#FAFAFA] font-semibold">
+                  <td className="px-4 py-3 text-[#1A1A1A]">합계</td>
                   <td className="px-4 py-3" />
                   <td className="px-4 py-3" />
-                  <td className="px-4 py-3 text-right text-slate-900">
+                  <td className="px-4 py-3 text-right text-[#1A1A1A]">
                     {formatCNY(reportData.summary.grandTotalEmployer)}
                   </td>
-                  <td className="px-4 py-3 text-right text-slate-900">
+                  <td className="px-4 py-3 text-right text-[#1A1A1A]">
                     {formatCNY(reportData.summary.grandTotalEmployee)}
                   </td>
-                  <td className="px-4 py-3 text-right text-blue-700">
+                  <td className="px-4 py-3 text-right text-[#00A844]">
                     {formatCNY(reportData.summary.grandTotal)}
                   </td>
                 </tr>
@@ -280,7 +280,7 @@ export default function SocialInsuranceReportTab() {
             </table>
           </div>
 
-          <p className="mt-3 text-xs text-slate-400">
+          <p className="mt-3 text-xs text-[#999]">
             생성일시: {new Date(reportData.meta.generatedAt).toLocaleString('ko-KR')}
           </p>
         </>

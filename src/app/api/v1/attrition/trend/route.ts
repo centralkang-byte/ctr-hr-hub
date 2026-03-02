@@ -28,7 +28,10 @@ export const GET = withPermission(
     let employeeFilter: { employeeId?: { in: string[] } } = {}
     if (departmentId) {
       const deptEmployees = await prisma.employee.findMany({
-        where: { companyId, departmentId, status: 'ACTIVE', deletedAt: null },
+        where: {
+          assignments: { some: { companyId, departmentId, status: 'ACTIVE', isPrimary: true, endDate: null } },
+          deletedAt: null,
+        },
         select: { id: true },
       })
       employeeFilter = { employeeId: { in: deptEmployees.map((e) => e.id) } }

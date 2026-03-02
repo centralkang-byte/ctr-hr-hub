@@ -11,6 +11,7 @@ import { notFound, badRequest, conflict, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
+import { createAssignment } from '@/lib/assignments'
 import type { SessionUser } from '@/types'
 
 // ─── Schema ───────────────────────────────────────────────
@@ -92,7 +93,11 @@ export const POST = withPermission(
     // 사번 중복 체크
     if (employeeNo) {
       const existing = await prisma.employee.findFirst({
-        where: { employeeNo, companyId: targetCompanyId, deletedAt: null },
+        where: {
+          employeeNo,
+          deletedAt: null,
+          assignments: { some: { companyId: targetCompanyId, isPrimary: true, endDate: null } },
+        },
       })
       if (existing) throw conflict('이미 사용 중인 사번입니다.')
     }
@@ -100,32 +105,40 @@ export const POST = withPermission(
     const generatedNo = employeeNo ?? await generateEmployeeNo(targetCompanyId)
 
     try {
-      const newEmployee = await prisma.$transaction(async (tx) => {
-        const emp = await tx.employee.create({
-          data: {
-            name: application.applicant.name,
-            email: application.applicant.email,
-            employeeNo: generatedNo,
-            companyId: targetCompanyId,
-            departmentId: resolvedDepartmentId,
-            jobGradeId: resolvedJobGradeId,
-            jobCategoryId: resolvedJobCategoryId,
-            hireDate: new Date(startDate),
-            employmentType: 'FULL_TIME',
-            status: 'ACTIVE',
-          },
-        })
-
-        await tx.application.update({
-          where: { id },
-          data: {
-            convertedEmployeeId: emp.id,
-            convertedAt: new Date(),
-          },
-        })
-
-        return emp
+      // Create employee record (without assignment fields)
+      const emp = await prisma.employee.create({
+        data: {
+          name: application.applicant.name,
+          email: application.applicant.email,
+          employeeNo: generatedNo,
+          hireDate: new Date(startDate),
+        },
       })
+
+      // Create initial assignment (handles its own transaction internally)
+      await createAssignment({
+        employeeId: emp.id,
+        effectiveDate: new Date(startDate),
+        changeType: 'HIRE',
+        companyId: targetCompanyId,
+        departmentId: resolvedDepartmentId,
+        jobGradeId: resolvedJobGradeId,
+        jobCategoryId: resolvedJobCategoryId,
+        employmentType: 'FULL_TIME',
+        status: 'ACTIVE',
+        isPrimary: true,
+      })
+
+      // Link application to the new employee
+      await prisma.application.update({
+        where: { id },
+        data: {
+          convertedEmployeeId: emp.id,
+          convertedAt: new Date(),
+        },
+      })
+
+      const newEmployee = emp
 
       const { ip, userAgent } = extractRequestMeta(req.headers)
       logAudit({
@@ -153,7 +166,10 @@ async function generateEmployeeNo(companyId: string): Promise<string> {
   const prefix = `EMP-${year}-`
 
   const last = await prisma.employee.findFirst({
-    where: { companyId, employeeNo: { startsWith: prefix } },
+    where: {
+      employeeNo: { startsWith: prefix },
+      assignments: { some: { companyId, isPrimary: true, endDate: null } },
+    },
     orderBy: { employeeNo: 'desc' },
     select: { employeeNo: true },
   })

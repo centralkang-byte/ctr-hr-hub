@@ -26,25 +26,25 @@ const TEST_ACCOUNTS: TestAccount[] = [
   {
     name: '이시스템',
     role: '시스템 관리자',
-    roleBadgeClass: 'bg-purple-100 text-purple-700',
+    roleBadgeClass: 'bg-[#F3E8FF] text-[#7E22CE]',
     email: 'admin@ctr.co.kr',
   },
   {
     name: '김인사',
     role: 'HR 담당자',
-    roleBadgeClass: 'bg-blue-100 text-blue-700',
+    roleBadgeClass: 'bg-[#E8F5E9] text-[#00A844]',
     email: 'hr@ctr.co.kr',
   },
   {
     name: '박매니저',
     role: '팀장',
-    roleBadgeClass: 'bg-amber-100 text-amber-700',
+    roleBadgeClass: 'bg-[#FEF3C7] text-[#B45309]',
     email: 'manager@ctr.co.kr',
   },
   {
     name: '최사원',
     role: '직원',
-    roleBadgeClass: 'bg-gray-100 text-gray-600',
+    roleBadgeClass: 'bg-[#F5F5F5] text-[#555]',
     email: 'employee@ctr.co.kr',
   },
 ]
@@ -56,12 +56,12 @@ export default function LoginPage() {
 
   const handleM365Login = useCallback(() => {
     setLoadingId('m365')
-    void signIn('azure-ad', { callbackUrl: '/' })
+    void signIn('azure-ad', { callbackUrl: '/home' })
   }, [])
 
   const handleDevLogin = useCallback((email: string) => {
     setLoadingId(email)
-    void signIn('credentials', { email, callbackUrl: '/' })
+    void signIn('credentials', { email, callbackUrl: '/home' })
   }, [])
 
   return (
@@ -89,7 +89,7 @@ export default function LoginPage() {
             <h1 className="text-xl font-bold text-ctr-primary">CTR HR Hub</h1>
           </div>
 
-          <Card className="border-0 shadow-none lg:border lg:shadow-sm">
+          <Card className="border-0 shadow-none lg:border lg:">
             <CardHeader className="text-center">
               <CardTitle className="text-xl">{ko.auth.login}</CardTitle>
             </CardHeader>
@@ -135,12 +135,12 @@ export default function LoginPage() {
                       key={account.email}
                       onClick={() => handleDevLogin(account.email)}
                       disabled={loadingId !== null}
-                      className="group w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-left transition-colors hover:border-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="group w-full rounded-xl border border-[#E8E8E8] bg-white px-4 py-3 text-left transition-colors hover:border-[#D4D4D4] hover:bg-[#FAFAFA] disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-semibold text-gray-900">
+                            <span className="text-sm font-semibold text-[#1A1A1A]">
                               {account.name}
                             </span>
                             <span
@@ -151,7 +151,7 @@ export default function LoginPage() {
                           </div>
                           <p className="text-[11px] text-muted-foreground">{account.email}</p>
                         </div>
-                        <div className="flex items-center gap-0.5 text-xs text-muted-foreground transition-colors group-hover:text-gray-700">
+                        <div className="flex items-center gap-0.5 text-xs text-muted-foreground transition-colors group-hover:text-[#333]">
                           {isLoading ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                           ) : (

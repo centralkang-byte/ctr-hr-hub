@@ -61,30 +61,43 @@ export const POST = withPermission(
       approvedBy,
     } = parsed.data
 
-    const companyFilter = user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }
+    const assignmentFilter =
+      user.role === 'SUPER_ADMIN'
+        ? {}
+        : { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
 
     // Pre-check: verify employee exists within the user's company scope
     const employee = await prisma.employee.findFirst({
-      where: { id, deletedAt: null, ...companyFilter },
-      select: { id: true, companyId: true },
+      where: { id, deletedAt: null, ...assignmentFilter },
+      select: {
+        id: true,
+        assignments: {
+          where: { isPrimary: true, endDate: null },
+          take: 1,
+          select: { companyId: true },
+        },
+      },
     })
     if (!employee) throw notFound('직원을 찾을 수 없습니다.')
 
+    const employeeCompanyId = (employee.assignments[0]?.companyId as string | undefined) ?? ''
+
     try {
-      // Build employee update payload based on provided fields
-      const employeeUpdate: Record<string, unknown> = {}
-      if (toDeptId) employeeUpdate.departmentId = toDeptId
-      if (toGradeId) employeeUpdate.jobGradeId = toGradeId
-      if (toCompanyId) employeeUpdate.companyId = toCompanyId
+      // Build assignment update payload based on provided fields
+      // departmentId, jobGradeId, companyId, and status now live on EmployeeAssignment
+      const assignmentUpdate: Record<string, unknown> = {}
+      if (toDeptId) assignmentUpdate.departmentId = toDeptId
+      if (toGradeId) assignmentUpdate.jobGradeId = toGradeId
+      if (toCompanyId) assignmentUpdate.companyId = toCompanyId
 
       // Status transitions based on changeType
       if (changeType === 'RESIGN') {
-        employeeUpdate.status = 'RESIGNED'
+        assignmentUpdate.status = 'RESIGNED'
       } else if (changeType === 'TERMINATE') {
-        employeeUpdate.status = 'TERMINATED'
+        assignmentUpdate.status = 'TERMINATED'
       }
 
-      // Create history record and optionally update employee in a transaction
+      // Create history record and optionally update the current assignment in a transaction
       const history = await prisma.$transaction(async (tx) => {
         const record = await tx.employeeHistory.create({
           data: {
@@ -102,10 +115,10 @@ export const POST = withPermission(
           },
         })
 
-        if (Object.keys(employeeUpdate).length > 0) {
-          await tx.employee.update({
-            where: { id, ...companyFilter },
-            data: employeeUpdate,
+        if (Object.keys(assignmentUpdate).length > 0) {
+          await tx.employeeAssignment.updateMany({
+            where: { employeeId: id, isPrimary: true, endDate: null },
+            data: assignmentUpdate,
           })
         }
 
@@ -118,7 +131,7 @@ export const POST = withPermission(
         action: 'employee.transfer',
         resourceType: 'employee',
         resourceId: id,
-        companyId: employee.companyId,
+        companyId: employeeCompanyId,
         ip,
         userAgent,
       })

@@ -45,8 +45,9 @@ export const POST = withPermission(
     // Load active employees with salary info
     const employees = await prisma.employee.findMany({
       where: {
-        companyId,
-        status: 'ACTIVE',
+        assignments: {
+          some: { companyId, status: 'ACTIVE', isPrimary: true, endDate: null },
+        },
       },
       select: {
         id: true,

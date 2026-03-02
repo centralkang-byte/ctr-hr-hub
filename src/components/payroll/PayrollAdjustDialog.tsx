@@ -78,7 +78,7 @@ export default function PayrollAdjustDialog({
             <div>
               <Label>기본급</Label>
               <Input name="baseSalary" type="number" defaultValue={item.baseSalary} />
-              <p className="text-xs text-slate-400 mt-0.5">현재: {formatCurrency(item.baseSalary)}</p>
+              <p className="text-xs text-[#999] mt-0.5">현재: {formatCurrency(item.baseSalary)}</p>
             </div>
             <div>
               <Label>초과근무수당</Label>
@@ -114,7 +114,7 @@ export default function PayrollAdjustDialog({
             <Button
               type="submit"
               disabled={loading}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-[#00C853] hover:bg-[#00A844] text-white"
             >
               {loading ? '저장 중...' : '저장'}
             </Button>

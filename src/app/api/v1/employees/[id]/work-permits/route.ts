@@ -35,10 +35,13 @@ export const GET = withPermission(
   ) => {
     const { id } = await context.params
 
-    const companyFilter = user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }
+    const assignmentFilter =
+      user.role === 'SUPER_ADMIN'
+        ? {}
+        : { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
 
     const employee = await prisma.employee.findFirst({
-      where: { id, deletedAt: null, ...companyFilter },
+      where: { id, deletedAt: null, ...assignmentFilter },
       select: { id: true },
     })
     if (!employee) throw notFound('직원을 찾을 수 없습니다.')
@@ -66,13 +69,25 @@ export const POST = withPermission(
   ) => {
     const { id } = await context.params
 
-    const companyFilter = user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }
+    const assignmentFilter =
+      user.role === 'SUPER_ADMIN'
+        ? {}
+        : { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
 
     const employee = await prisma.employee.findFirst({
-      where: { id, deletedAt: null, ...companyFilter },
-      select: { id: true, companyId: true },
+      where: { id, deletedAt: null, ...assignmentFilter },
+      select: {
+        id: true,
+        assignments: {
+          where: { isPrimary: true, endDate: null },
+          take: 1,
+          select: { companyId: true },
+        },
+      },
     })
     if (!employee) throw notFound('직원을 찾을 수 없습니다.')
+
+    const companyId = (employee.assignments[0]?.companyId as string | undefined) ?? ''
 
     const body: unknown = await req.json()
     const parsed = workPermitCreateSchema.safeParse(body)
@@ -95,7 +110,7 @@ export const POST = withPermission(
       const workPermit = await prisma.workPermit.create({
         data: {
           employeeId: id,
-          companyId: employee.companyId,
+          companyId,
           permitType,
           permitNumber: permitNumber ?? null,
           issuingCountry,
@@ -114,7 +129,7 @@ export const POST = withPermission(
         action: 'workPermit.create',
         resourceType: 'workPermit',
         resourceId: workPermit.id,
-        companyId: employee.companyId,
+        companyId,
         ip,
         userAgent,
       })

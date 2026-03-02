@@ -17,11 +17,22 @@ export const PUT = withPermission(
     const offboarding = await prisma.employeeOffboarding.findFirst({
       where: {
         id,
+        ...(user.role !== 'SUPER_ADMIN'
+          ? { employee: { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } } }
+          : {}),
+      },
+      include: {
         employee: {
-          ...(user.role !== 'SUPER_ADMIN' ? { companyId: user.companyId } : {}),
+          select: {
+            id: true,
+            assignments: {
+              where: { isPrimary: true, endDate: null },
+              take: 1,
+              select: { companyId: true },
+            },
+          },
         },
       },
-      include: { employee: { select: { id: true, companyId: true } } },
     })
     if (!offboarding) throw notFound('퇴직 처리를 찾을 수 없습니다.')
     if (offboarding.status !== 'IN_PROGRESS') {
@@ -33,9 +44,13 @@ export const PUT = withPermission(
       await tx.employee.update({
         where: { id: offboarding.employeeId },
         data: {
-          status: 'ACTIVE',
           resignDate: null,
         },
+      })
+      // Restore assignment status to ACTIVE
+      await tx.employeeAssignment.updateMany({
+        where: { employeeId: offboarding.employeeId, isPrimary: true, endDate: null },
+        data: { status: 'ACTIVE' },
       })
 
       // Set offboarding status to CANCELLED
@@ -52,7 +67,7 @@ export const PUT = withPermission(
           effectiveDate: new Date(),
           reason: '퇴직 처리 취소',
           approvedBy: user.employeeId,
-          toCompanyId: offboarding.employee.companyId,
+          toCompanyId: (offboarding.employee.assignments?.[0] as any)?.companyId as string | undefined, // eslint-disable-line @typescript-eslint/no-explicit-any
         },
       })
     })

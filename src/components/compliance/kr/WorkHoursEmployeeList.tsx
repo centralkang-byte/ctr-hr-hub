@@ -27,17 +27,17 @@ const STATUS_MAP: Record<WorkHoursStatus, { label: string; className: string }> 
   COMPLIANT: {
     label: '준수',
     className:
-      'bg-emerald-50 text-emerald-700 border border-emerald-200',
+      'bg-[#E8F5E9] text-[#2E7D32]',
   },
   WARNING: {
     label: '주의',
     className:
-      'bg-amber-50 text-amber-700 border border-amber-200',
+      'bg-[#FFF3E0] text-[#FF9800]',
   },
   VIOLATION: {
     label: '위반',
     className:
-      'bg-red-50 text-red-700 border border-red-200',
+      'bg-[#FFEBEE] text-[#F44336]',
   },
 }
 
@@ -66,8 +66,9 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
         if (statusFilter !== 'ALL') params.set('status', statusFilter)
         const res = await fetch(`/api/v1/compliance/kr/work-hours/employees?${params}`)
         if (res.ok) {
-          const data = await res.json()
-          setEmployees(data.employees ?? data)
+          const json = await res.json()
+          const list = json.data ?? json.employees ?? json
+          setEmployees(Array.isArray(list) ? list : [])
         } else {
           setEmployees(MOCK_EMPLOYEES)
         }
@@ -90,12 +91,12 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
   })
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
+    <div className="bg-white rounded-xl border border-[#E8E8E8]">
       {/* List Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-5 border-b border-slate-100">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-6 border-b border-[#E8E8E8]">
         <div className="flex items-center gap-2">
-          <h2 className="text-base font-semibold text-slate-900">직원별 근무현황</h2>
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+          <h2 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em]">직원별 근무현황</h2>
+          <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-semibold bg-[#F5F5F5] text-[#666]">
             {filtered.length}명
           </span>
         </div>
@@ -103,13 +104,13 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
         <div className="flex items-center gap-2">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#999]" />
             <input
               type="text"
               placeholder="이름 / 사번 / 부서 검색"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-8 pr-3 py-1.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-48"
+              className="pl-8 pr-3 py-1.5 text-sm border border-[#E0E0E0] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 w-48"
             />
           </div>
 
@@ -117,7 +118,7 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as WorkHoursStatus | 'ALL')}
-            className="text-sm border border-slate-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="text-sm border border-[#E0E0E0] rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
           >
             <option value="ALL">전체 상태</option>
             <option value="COMPLIANT">준수</option>
@@ -131,20 +132,20 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="bg-slate-50">
-              <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">
+            <tr className="border-b border-[#E8E8E8]">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">
                 이름
               </th>
-              <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">
                 사번
               </th>
-              <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">
                 부서
               </th>
-              <th className="px-4 py-3 text-right text-xs text-slate-500 font-medium uppercase tracking-wider">
+              <th className="px-4 py-3 text-right text-xs font-semibold text-[#999]">
                 주간 근무시간
               </th>
-              <th className="px-4 py-3 text-center text-xs text-slate-500 font-medium uppercase tracking-wider">
+              <th className="px-4 py-3 text-center text-xs font-semibold text-[#999]">
                 상태
               </th>
             </tr>
@@ -152,10 +153,10 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
           <tbody>
             {loading ? (
               Array.from({ length: 5 }).map((_, i) => (
-                <tr key={i} className="border-b border-slate-100">
+                <tr key={i} className="border-b border-[#F0F0F0]">
                   {Array.from({ length: 5 }).map((_, j) => (
                     <td key={j} className="px-4 py-3">
-                      <div className="h-4 bg-slate-100 rounded animate-pulse" />
+                      <div className="h-4 bg-[#F5F5F5] rounded animate-pulse" />
                     </td>
                   ))}
                 </tr>
@@ -163,7 +164,7 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
             ) : filtered.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-4 py-12 text-center">
-                  <div className="flex flex-col items-center gap-2 text-slate-400">
+                  <div className="flex flex-col items-center gap-2 text-[#999]">
                     <AlertTriangle className="w-8 h-8" />
                     <p className="text-sm">검색 결과가 없습니다.</p>
                   </div>
@@ -176,26 +177,26 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
                 return (
                   <tr
                     key={employee.id}
-                    className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
+                    className="border-b border-[#F0F0F0] hover:bg-[#FAFAFA] transition-colors"
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-slate-900">{employee.name}</span>
+                        <span className="text-sm font-medium text-[#1A1A1A]">{employee.name}</span>
                         {isViolation && (
-                          <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
+                          <AlertTriangle className="w-3.5 h-3.5 text-[#F44336]" />
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-slate-600">{employee.employeeNo}</td>
-                    <td className="px-4 py-3 text-sm text-slate-600">{employee.department}</td>
+                    <td className="px-4 py-3 text-sm text-[#666]">{employee.employeeNo}</td>
+                    <td className="px-4 py-3 text-sm text-[#666]">{employee.department}</td>
                     <td className="px-4 py-3 text-right">
                       <span
                         className={`text-sm font-semibold ${
                           isViolation
-                            ? 'text-red-700'
+                            ? 'text-[#F44336]'
                             : employee.status === 'WARNING'
-                            ? 'text-amber-700'
-                            : 'text-slate-900'
+                            ? 'text-[#FF9800]'
+                            : 'text-[#1A1A1A]'
                         }`}
                       >
                         {employee.weeklyHours}시간
@@ -203,7 +204,7 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
                     </td>
                     <td className="px-4 py-3 text-center">
                       <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusInfo.className}`}
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${statusInfo.className}`}
                       >
                         {statusInfo.label}
                       </span>

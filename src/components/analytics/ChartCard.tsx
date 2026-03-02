@@ -16,11 +16,11 @@ interface ChartCardProps {
 
 export function ChartCard({ title, description, children, className }: ChartCardProps) {
   return (
-    <div className={`rounded-xl border border-slate-200 bg-white p-5 shadow-sm ${className ?? ''}`}>
+    <div className={`rounded-xl border border-[#E8E8E8] bg-white p-5 ${className ?? ''}`}>
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-slate-900">{title}</h3>
+        <h3 className="text-base font-semibold text-[#1A1A1A]">{title}</h3>
         {description && (
-          <p className="mt-0.5 text-xs text-slate-500">{description}</p>
+          <p className="mt-0.5 text-xs text-[#666]">{description}</p>
         )}
       </div>
       {children}

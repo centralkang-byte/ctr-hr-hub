@@ -39,11 +39,11 @@ const STATUS_LABELS: Record<string, string> = {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  DRAFT: 'bg-slate-50 text-slate-600 border-slate-200',
-  PENDING_SIGNATURE: 'bg-amber-50 text-amber-700 border-amber-200',
-  SIGNED: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  REJECTED: 'bg-red-50 text-red-700 border-red-200',
-  EXPIRED: 'bg-orange-50 text-orange-700 border-orange-200',
+  DRAFT: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]',
+  PENDING_SIGNATURE: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]',
+  SIGNED: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]',
+  REJECTED: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]',
+  EXPIRED: 'bg-[#FFF7ED] text-[#C2410C] border-[#FED7AA]',
 }
 
 const DOC_TYPE_LABELS: Record<string, string> = {
@@ -107,14 +107,14 @@ export default function KedoDocumentsTab() {
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+      <div className="bg-white rounded-xl border border-[#E8E8E8] p-4">
         <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
           <div className="flex gap-2 flex-1">
             {/* Status Filter */}
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
             >
               <option value="">전체 상태</option>
               {Object.entries(STATUS_LABELS).map(([val, label]) => (
@@ -125,7 +125,7 @@ export default function KedoDocumentsTab() {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
             >
               <option value="">전체 유형</option>
               {Object.entries(DOC_TYPE_LABELS).map(([val, label]) => (
@@ -135,14 +135,14 @@ export default function KedoDocumentsTab() {
             {/* Refresh */}
             <button
               onClick={() => fetchDocuments()}
-              className="p-2 border border-slate-300 rounded-lg hover:bg-slate-50 text-slate-600"
+              className="p-2 border border-[#D4D4D4] rounded-lg hover:bg-[#FAFAFA] text-[#555]"
             >
               <RefreshCw className="w-4 h-4" />
             </button>
           </div>
           <button
             onClick={() => { setSelectedDoc(null); setShowForm(true) }}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm"
+            className="flex items-center gap-2 bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm"
           >
             <Plus className="w-4 h-4" />
             문서 생성
@@ -151,72 +151,72 @@ export default function KedoDocumentsTab() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
         {loading ? (
-          <div className="flex items-center justify-center py-16 text-slate-400 text-sm">
+          <div className="flex items-center justify-center py-16 text-[#999] text-sm">
             로딩 중...
           </div>
         ) : documents.length === 0 ? (
-          <div className="flex items-center justify-center py-16 text-slate-400 text-sm">
+          <div className="flex items-center justify-center py-16 text-[#999] text-sm">
             KEDO 문서가 없습니다.
           </div>
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">
+              <tr className="bg-[#FAFAFA] border-b border-[#E8E8E8]">
+                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
                   제목
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
                   직원
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
                   문서 유형
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
                   상태
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
                   서명 수준
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
                   생성일
                 </th>
-                <th className="px-4 py-3 text-right text-xs text-slate-500 font-medium uppercase tracking-wider">
+                <th className="px-4 py-3 text-right text-xs text-[#666] font-medium uppercase tracking-wider">
                   작업
                 </th>
               </tr>
             </thead>
             <tbody>
               {documents.map((doc) => (
-                <tr key={doc.id} className="border-b border-slate-100 hover:bg-slate-50">
+                <tr key={doc.id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
                   <td className="px-4 py-3">
-                    <p className="text-sm font-medium text-slate-900 max-w-xs truncate">
+                    <p className="text-sm font-medium text-[#1A1A1A] max-w-xs truncate">
                       {doc.title}
                     </p>
                   </td>
                   <td className="px-4 py-3">
                     <div>
-                      <p className="text-sm text-slate-900">{doc.employee.name}</p>
-                      <p className="text-xs text-slate-500">{doc.employee.employeeNo}</p>
+                      <p className="text-sm text-[#1A1A1A]">{doc.employee.name}</p>
+                      <p className="text-xs text-[#666]">{doc.employee.employeeNo}</p>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-slate-600">
+                  <td className="px-4 py-3 text-sm text-[#555]">
                     {DOC_TYPE_LABELS[doc.documentType] ?? doc.documentType}
                   </td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-                        STATUS_COLORS[doc.status] ?? 'bg-slate-50 text-slate-600 border-slate-200'
+                        STATUS_COLORS[doc.status] ?? 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]'
                       }`}
                     >
                       {STATUS_LABELS[doc.status] ?? doc.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-slate-600">
+                  <td className="px-4 py-3 text-sm text-[#555]">
                     {doc.signatureLevel ?? '-'}
                   </td>
-                  <td className="px-4 py-3 text-sm text-slate-600">
+                  <td className="px-4 py-3 text-sm text-[#555]">
                     {new Date(doc.createdAt).toLocaleDateString('ko-KR')}
                   </td>
                   <td className="px-4 py-3 text-right">
@@ -224,7 +224,7 @@ export default function KedoDocumentsTab() {
                       {doc.status === 'DRAFT' && (
                         <button
                           onClick={() => { setSelectedDoc(doc); setShowForm(true) }}
-                          className="p-1.5 hover:bg-slate-100 rounded text-slate-500 hover:text-slate-700"
+                          className="p-1.5 hover:bg-[#F5F5F5] rounded text-[#666] hover:text-[#333]"
                           title="수정"
                         >
                           <PenLine className="w-4 h-4" />
@@ -233,7 +233,7 @@ export default function KedoDocumentsTab() {
                       {(doc.status === 'DRAFT' || doc.status === 'PENDING_SIGNATURE') && (
                         <button
                           onClick={() => setSignDoc(doc)}
-                          className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                          className="text-sm text-[#00C853] hover:text-[#00A844] font-medium"
                         >
                           서명
                         </button>
@@ -241,7 +241,7 @@ export default function KedoDocumentsTab() {
                       {doc.status !== 'SIGNED' && doc.status !== 'REJECTED' && (
                         <button
                           onClick={() => setSignDoc(doc)}
-                          className="p-1.5 hover:bg-red-50 rounded text-red-400 hover:text-red-600"
+                          className="p-1.5 hover:bg-[#FEE2E2] rounded text-[#F87171] hover:text-[#DC2626]"
                           title="반려"
                         >
                           <XCircle className="w-4 h-4" />
@@ -257,8 +257,8 @@ export default function KedoDocumentsTab() {
 
         {/* Pagination */}
         {pagination && pagination.totalPages > 1 && (
-          <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between">
-            <p className="text-xs text-slate-500">전체 {pagination.total}건</p>
+          <div className="px-4 py-3 border-t border-[#E8E8E8] flex items-center justify-between">
+            <p className="text-xs text-[#666]">전체 {pagination.total}건</p>
             <div className="flex gap-1">
               {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((page) => (
                 <button
@@ -266,8 +266,8 @@ export default function KedoDocumentsTab() {
                   onClick={() => fetchDocuments(page)}
                   className={`w-8 h-8 text-xs rounded-lg ${
                     page === pagination.page
-                      ? 'bg-blue-600 text-white'
-                      : 'text-slate-600 hover:bg-slate-100'
+                      ? 'bg-[#00C853] text-white'
+                      : 'text-[#555] hover:bg-[#F5F5F5]'
                   }`}
                 >
                   {page}

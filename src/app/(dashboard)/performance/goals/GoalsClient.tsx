@@ -10,10 +10,10 @@ import type { SessionUser, MboGoal } from '@/types'
 // ─── Status config ────────────────────────────────────────
 
 const STATUS_STYLES: Record<string, string> = {
-  DRAFT: 'bg-gray-100 text-gray-700',
-  PENDING_APPROVAL: 'bg-yellow-100 text-yellow-700',
-  APPROVED: 'bg-green-100 text-green-700',
-  REJECTED: 'bg-red-100 text-red-700',
+  DRAFT: 'bg-[#F5F5F5] text-[#666]',
+  PENDING_APPROVAL: 'bg-[#FFF8E1] text-[#F57F17]',
+  APPROVED: 'bg-[#E8F5E9] text-[#2E7D32]',
+  REJECTED: 'bg-[#FFEBEE] text-[#C62828]',
 }
 
 // ─── Types ────────────────────────────────────────────────
@@ -144,14 +144,14 @@ export default function GoalsClient({ user }: { user: SessionUser }) {
   // ─── Render ───────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-ctr-light p-6">
+    <div className="min-h-screen bg-[#FAFAFA] p-6">
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-ctr-dark">{t('mboGoalManagement')}</h1>
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('mboGoalManagement')}</h1>
           <button
             onClick={() => router.push('/performance/goals/new')}
-            className="inline-flex items-center gap-2 rounded-lg bg-ctr-primary px-4 py-2 text-sm font-medium text-white hover:bg-ctr-secondary transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#00C853] px-4 py-2 text-sm font-medium text-white hover:bg-[#00A844] transition-colors"
           >
             <Plus className="h-4 w-4" />
             {t('addGoal')}
@@ -160,13 +160,13 @@ export default function GoalsClient({ user }: { user: SessionUser }) {
 
         {/* Cycle selector */}
         <div className="mb-6">
-          <label className="mb-1 block text-sm font-medium text-gray-700">
+          <label className="mb-1 block text-sm font-medium text-[#666]">
             {t('evaluationCycle')}
           </label>
           <select
             value={selectedCycleId}
             onChange={(e) => setSelectedCycleId(e.target.value)}
-            className="w-full max-w-xs rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
+            className="w-full max-w-xs rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
           >
             {cycles.map((c) => (
               <option key={c.id} value={c.id}>
@@ -178,13 +178,13 @@ export default function GoalsClient({ user }: { user: SessionUser }) {
 
         {/* Goal cards */}
         {loading ? (
-          <div className="py-20 text-center text-gray-500">{t('loadingText')}</div>
+          <div className="py-20 text-center text-[#999]">{t('loadingText')}</div>
         ) : goals.length === 0 ? (
-          <div className="rounded-lg bg-white p-12 text-center shadow-sm">
-            <p className="text-gray-500">{t('noGoalsRegistered')}</p>
+          <div className="rounded-lg bg-white p-12 text-center">
+            <p className="text-[#999]">{t('noGoalsRegistered')}</p>
             <button
               onClick={() => router.push('/performance/goals/new')}
-              className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-ctr-secondary hover:underline"
+              className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-[#00C853] hover:underline"
             >
               <Plus className="h-4 w-4" />
               {t('addFirstGoal')}
@@ -197,41 +197,41 @@ export default function GoalsClient({ user }: { user: SessionUser }) {
               return (
                 <div
                   key={goal.id}
-                  className="rounded-lg bg-white p-5 shadow-sm"
+                  className="rounded-lg bg-white p-5"
                 >
                   {/* Card header */}
                   <div className="mb-3 flex items-start justify-between gap-3">
                     <div className="flex-1">
                       <div className="mb-1 flex items-center gap-2">
-                        <h3 className="text-base font-semibold text-ctr-dark">
+                        <h3 className="text-base font-semibold text-[#1A1A1A]">
                           {goal.title}
                         </h3>
                         <span
-                          className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[goal.status] ?? 'bg-gray-100 text-gray-700'}`}
+                          className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[goal.status] ?? 'bg-[#F5F5F5] text-[#666]'}`}
                         >
                           {t(`goalStatusLabels.${goal.status}` as Parameters<typeof t>[0])}
                         </span>
                       </div>
                       {goal.description && (
-                        <p className="text-sm text-gray-500 line-clamp-2">
+                        <p className="text-sm text-[#999] line-clamp-2">
                           {goal.description}
                         </p>
                       )}
                     </div>
-                    <span className="shrink-0 text-lg font-bold text-ctr-secondary">
+                    <span className="shrink-0 text-lg font-bold text-[#00C853]">
                       {Number(goal.weight)}%
                     </span>
                   </div>
 
                   {/* Progress bar */}
                   <div className="mb-3">
-                    <div className="mb-1 flex items-center justify-between text-xs text-gray-500">
+                    <div className="mb-1 flex items-center justify-between text-xs text-[#999]">
                       <span>{t('achievement')}</span>
                       <span>{pct}%</span>
                     </div>
-                    <div className="h-2 rounded-full bg-gray-200">
+                    <div className="h-2 rounded-full bg-[#E8E8E8]">
                       <div
-                        className="h-2 rounded-full bg-ctr-secondary transition-all"
+                        className="h-2 rounded-full bg-[#00C853] transition-all"
                         style={{ width: `${Math.min(pct, 100)}%` }}
                       />
                     </div>
@@ -244,7 +244,7 @@ export default function GoalsClient({ user }: { user: SessionUser }) {
                         onClick={() =>
                           router.push(`/performance/goals/${goal.id}/edit`)
                         }
-                        className="inline-flex items-center gap-1 rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                        className="inline-flex items-center gap-1 rounded-md border border-[#E8E8E8] px-3 py-1.5 text-xs font-medium text-[#666] hover:bg-[#FAFAFA] transition-colors"
                       >
                         <Pencil className="h-3 w-3" />
                         {t('editButton')}
@@ -253,7 +253,7 @@ export default function GoalsClient({ user }: { user: SessionUser }) {
                     {goal.status === 'DRAFT' && (
                       <button
                         onClick={() => handleDelete(goal.id)}
-                        className="inline-flex items-center gap-1 rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 transition-colors"
+                        className="inline-flex items-center gap-1 rounded-md border border-[#FECACA] px-3 py-1.5 text-xs font-medium text-[#DC2626] hover:bg-[#FEE2E2] transition-colors"
                       >
                         <Trash2 className="h-3 w-3" />
                         {t('deleteButton')}
@@ -268,7 +268,7 @@ export default function GoalsClient({ user }: { user: SessionUser }) {
                             note: '',
                           })
                         }
-                        className="inline-flex items-center gap-1 rounded-md border border-ctr-secondary px-3 py-1.5 text-xs font-medium text-ctr-secondary hover:bg-blue-50 transition-colors"
+                        className="inline-flex items-center gap-1 rounded-md border border-[#00C853] px-3 py-1.5 text-xs font-medium text-[#00C853] hover:bg-[#E8F5E9] transition-colors"
                       >
                         <TrendingUp className="h-3 w-3" />
                         {t('recordProgress')}
@@ -278,12 +278,12 @@ export default function GoalsClient({ user }: { user: SessionUser }) {
 
                   {/* Inline progress form */}
                   {progressForm?.goalId === goal.id && (
-                    <div className="mt-4 rounded-md border border-gray-200 bg-gray-50 p-4">
-                      <h4 className="mb-3 text-sm font-semibold text-gray-700">
+                    <div className="mt-4 rounded-md border border-[#E8E8E8] bg-[#FAFAFA] p-4">
+                      <h4 className="mb-3 text-sm font-semibold text-[#666]">
                         {t('recordProgressTitle')}
                       </h4>
                       <div className="mb-3">
-                        <label className="mb-1 block text-xs font-medium text-gray-600">
+                        <label className="mb-1 block text-xs font-medium text-[#666]">
                           {t('achievementRate')}
                         </label>
                         <input
@@ -297,11 +297,11 @@ export default function GoalsClient({ user }: { user: SessionUser }) {
                               progressPct: Number(e.target.value),
                             })
                           }
-                          className="w-32 rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
+                          className="w-32 rounded-md border border-[#E8E8E8] px-3 py-1.5 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
                         />
                       </div>
                       <div className="mb-3">
-                        <label className="mb-1 block text-xs font-medium text-gray-600">
+                        <label className="mb-1 block text-xs font-medium text-[#666]">
                           {t('memoLabel')}
                         </label>
                         <textarea
@@ -314,20 +314,20 @@ export default function GoalsClient({ user }: { user: SessionUser }) {
                             })
                           }
                           placeholder={t('memoPlaceholder')}
-                          className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
+                          className="w-full rounded-md border border-[#E8E8E8] px-3 py-1.5 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
                         />
                       </div>
                       <div className="flex gap-2">
                         <button
                           onClick={handleProgressSubmit}
                           disabled={submitting}
-                          className="rounded-md bg-ctr-primary px-4 py-1.5 text-xs font-medium text-white hover:bg-ctr-secondary disabled:opacity-50 transition-colors"
+                          className="rounded-md bg-[#00C853] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#00A844] disabled:opacity-50 transition-colors"
                         >
                           {submitting ? t('saving') : tc('save')}
                         </button>
                         <button
                           onClick={() => setProgressForm(null)}
-                          className="rounded-md border border-gray-300 px-4 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+                          className="rounded-md border border-[#E8E8E8] px-4 py-1.5 text-xs font-medium text-[#666] hover:bg-[#F5F5F5] transition-colors"
                         >
                           {tc('cancel')}
                         </button>
@@ -342,16 +342,16 @@ export default function GoalsClient({ user }: { user: SessionUser }) {
 
         {/* Summary bar */}
         {goals.length > 0 && (
-          <div className="mt-6 flex items-center justify-between rounded-lg bg-white p-4 shadow-sm">
+          <div className="mt-6 flex items-center justify-between rounded-lg bg-white p-4">
             <div className="text-sm">
-              <span className="text-gray-600">{t('weightSum')}</span>
+              <span className="text-[#666]">{t('weightSum')}</span>
               <span
-                className={`font-bold ${totalWeight === 100 ? 'text-green-600' : 'text-red-600'}`}
+                className={`font-bold ${totalWeight === 100 ? 'text-green-600' : 'text-[#DC2626]'}`}
               >
                 {totalWeight}%
               </span>
               {totalWeight !== 100 && (
-                <span className="ml-2 text-xs text-red-500">
+                <span className="ml-2 text-xs text-[#EF4444]">
                   {t('weightMustBe100')}
                 </span>
               )}
@@ -359,7 +359,7 @@ export default function GoalsClient({ user }: { user: SessionUser }) {
             <button
               onClick={handleSubmitAll}
               disabled={!canSubmit || submitting}
-              className="rounded-lg bg-ctr-accent px-5 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-40 transition-opacity"
+              className="rounded-lg bg-[#EF4444] px-5 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-40 transition-opacity"
             >
               {submitting ? t('submittingAll') : t('submitAll')}
             </button>

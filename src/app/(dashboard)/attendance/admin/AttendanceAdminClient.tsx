@@ -70,11 +70,11 @@ interface CorrectionForm {
 
 // ─── Status variant map ─────────────────────────────────────
 
-const STATUS_VARIANTS: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-  NORMAL: 'default',
-  LATE: 'secondary',
-  EARLY_OUT: 'outline',
-  ABSENT: 'destructive',
+const STATUS_BADGE_STYLES: Record<string, string> = {
+  NORMAL: 'bg-[#E8F5E9] text-[#2E7D32]',
+  LATE: 'bg-[#FFEBEE] text-[#E53935]',
+  EARLY_OUT: 'bg-[#FFF3E0] text-[#E65100]',
+  ABSENT: 'bg-[#FFEBEE] text-[#F44336]',
 }
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -211,9 +211,9 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
       key: 'status',
       header: t('status'),
       render: (row) => (
-        <Badge variant={STATUS_VARIANTS[row.status] ?? 'outline'}>
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_BADGE_STYLES[row.status] ?? 'bg-[#F5F5F5] text-[#666]'}`}>
           {STATUS_LABELS[row.status] ?? row.status}
-        </Badge>
+        </span>
       ),
     },
     {
@@ -229,74 +229,42 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
       <PageHeader title={t('adminAttendance')} />
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              {t('totalEmployees')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{kpi?.totalEmployees ?? 0}</p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+          <p className="text-xs text-[#999] font-medium mb-2">{t('totalEmployees')}</p>
+          <p className="text-3xl font-bold text-[#1A1A1A] tracking-[-0.02em]">{kpi?.totalEmployees ?? 0}</p>
+        </div>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              {t('clockIn')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">
-              {kpi?.presentCount ?? 0}
-              <span className="ml-2 text-sm font-normal text-muted-foreground">
-                ({presentPct}%)
-              </span>
-            </p>
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+          <p className="text-xs text-[#999] font-medium mb-2">{t('clockIn')}</p>
+          <p className="text-3xl font-bold text-[#1A1A1A] tracking-[-0.02em]">
+            {kpi?.presentCount ?? 0}
+          </p>
+          <span className="text-xs font-semibold text-[#00C853]">{presentPct}%</span>
+        </div>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              {t('late')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className={`text-2xl font-bold ${(kpi?.lateCount ?? 0) > 0 ? 'text-red-600' : ''}`}>
-              {kpi?.lateCount ?? 0}
-            </p>
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+          <p className="text-xs text-[#999] font-medium mb-2">{t('late')}</p>
+          <p className={`text-3xl font-bold tracking-[-0.02em] ${(kpi?.lateCount ?? 0) > 0 ? 'text-[#F44336]' : 'text-[#1A1A1A]'}`}>
+            {kpi?.lateCount ?? 0}
+          </p>
+        </div>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              {t('absent')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className={`text-2xl font-bold ${(kpi?.absentCount ?? 0) > 0 ? 'text-red-600' : ''}`}>
-              {kpi?.absentCount ?? 0}
-            </p>
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+          <p className="text-xs text-[#999] font-medium mb-2">{t('absent')}</p>
+          <p className={`text-3xl font-bold tracking-[-0.02em] ${(kpi?.absentCount ?? 0) > 0 ? 'text-[#F44336]' : 'text-[#1A1A1A]'}`}>
+            {kpi?.absentCount ?? 0}
+          </p>
+        </div>
       </div>
 
       {/* Average work hours */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">
-            {t('averageWorkHours')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-2xl font-bold">
-            {kpi ? formatMinutes(kpi.avgTotalMinutes) : '—'}
-          </p>
-        </CardContent>
-      </Card>
+      <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+        <p className="text-xs text-[#999] font-medium mb-2">{t('averageWorkHours')}</p>
+        <p className="text-3xl font-bold text-[#1A1A1A] tracking-[-0.02em]">
+          {kpi ? formatMinutes(kpi.avgTotalMinutes) : '—'}
+        </p>
+      </div>
 
       {/* Anomaly table */}
       <DataTable
@@ -376,7 +344,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
 
             <div className="space-y-2">
               <Label htmlFor="correction-note">
-                {t('correctionReason')} <span className="text-red-500">*</span>
+                {t('correctionReason')} <span className="text-[#F44336]">*</span>
               </Label>
               <Textarea
                 id="correction-note"

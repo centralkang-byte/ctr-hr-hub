@@ -119,7 +119,7 @@ export const NAVIGATION: NavSection[] = [
         key: 'dashboard',
         labelKey: 'nav.home.dashboard',
         label: '대시보드',
-        href: '/',
+        href: '/home',
         icon: LayoutDashboard,
         module: MODULE.EMPLOYEES,
       },

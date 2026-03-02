@@ -25,11 +25,11 @@ interface PerformanceCycle {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  DRAFT: 'bg-gray-100 text-gray-700',
-  ACTIVE: 'bg-blue-100 text-blue-700',
-  EVAL_OPEN: 'bg-yellow-100 text-yellow-700',
-  CALIBRATION: 'bg-purple-100 text-purple-700',
-  CLOSED: 'bg-green-100 text-green-700',
+  DRAFT: 'bg-[#F5F5F5] text-[#666]',
+  ACTIVE: 'bg-[#E3F2FD] text-[#1565C0]',
+  EVAL_OPEN: 'bg-[#FFF8E1] text-[#F57F17]',
+  CALIBRATION: 'bg-[#F3E5F5] text-[#7B1FA2]',
+  CLOSED: 'bg-[#E8F5E9] text-[#2E7D32]',
 }
 
 export default function PerformanceCyclesClient({ user }: { user: SessionUser }) {
@@ -75,10 +75,10 @@ export default function PerformanceCyclesClient({ user }: { user: SessionUser })
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-ctr-primary">{t('cycleManagement')}</h1>
+        <h1 className="text-2xl font-bold text-[#00C853]">{t('cycleManagement')}</h1>
         <button
           onClick={() => router.push('/settings/performance-cycles/new')}
-          className="inline-flex items-center gap-2 rounded-lg bg-ctr-primary px-4 py-2 text-sm font-medium text-white hover:bg-ctr-secondary transition-colors"
+          className="inline-flex items-center gap-2 rounded-lg bg-[#00C853] px-4 py-2 text-sm font-medium text-white hover:bg-[#00A844] transition-colors"
         >
           <Plus className="h-4 w-4" />
           {t('newCycleButton')}
@@ -90,7 +90,7 @@ export default function PerformanceCyclesClient({ user }: { user: SessionUser })
         <select
           value={year}
           onChange={(e) => { setYear(e.target.value); setPage(1) }}
-          className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
+          className="rounded-lg border border-[#E8E8E8] bg-white px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
         >
           <option value="">{t('allYears')}</option>
           {[2024, 2025, 2026, 2027].map((y) => (
@@ -100,7 +100,7 @@ export default function PerformanceCyclesClient({ user }: { user: SessionUser })
         <select
           value={status}
           onChange={(e) => { setStatus(e.target.value); setPage(1) }}
-          className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
+          className="rounded-lg border border-[#E8E8E8] bg-white px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
         >
           <option value="">{t('allStatuses')}</option>
           {['DRAFT', 'ACTIVE', 'EVAL_OPEN', 'CALIBRATION', 'CLOSED'].map((key) => (
@@ -110,30 +110,30 @@ export default function PerformanceCyclesClient({ user }: { user: SessionUser })
       </div>
 
       {/* Table */}
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-xl border border-[#E8E8E8] bg-white overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-200 bg-gray-50">
-              <th className="px-4 py-3 text-left font-medium text-gray-600">{t('nameColumn')}</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-600">{t('yearColumn')}</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-600">{t('typeColumn')}</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-600">{t('statusColumn')}</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-600">{t('goalSettingPeriod')}</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-600">{t('evaluationPeriodColumn')}</th>
-              <th className="px-4 py-3 text-center font-medium text-gray-600">{t('goalCount')}</th>
-              <th className="px-4 py-3 text-center font-medium text-gray-600">{t('evalCount')}</th>
+            <tr className="border-b border-[#E8E8E8] bg-[#FAFAFA]">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('nameColumn')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('yearColumn')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('typeColumn')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('statusColumn')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('goalSettingPeriod')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('evaluationPeriodColumn')}</th>
+              <th className="px-4 py-3 text-center text-xs font-semibold text-[#999]">{t('goalCount')}</th>
+              <th className="px-4 py-3 text-center text-xs font-semibold text-[#999]">{t('evalCount')}</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={8} className="px-4 py-12 text-center text-gray-400">
+                <td colSpan={8} className="px-4 py-12 text-center text-[#999]">
                   {t('fetchingData')}
                 </td>
               </tr>
             ) : cycles.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-4 py-12 text-center text-gray-400">
+                <td colSpan={8} className="px-4 py-12 text-center text-[#999]">
                   {t('noCyclesRegistered')}
                 </td>
               </tr>
@@ -142,26 +142,26 @@ export default function PerformanceCyclesClient({ user }: { user: SessionUser })
                 <tr
                   key={cycle.id}
                   onClick={() => router.push(`/settings/performance-cycles/${cycle.id}`)}
-                  className="border-b border-gray-100 hover:bg-ctr-light cursor-pointer transition-colors"
+                  className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA] cursor-pointer transition-colors"
                 >
-                  <td className="px-4 py-3 font-medium text-gray-900">{cycle.name}</td>
-                  <td className="px-4 py-3 text-gray-600">{t('yearUnit', { year: cycle.year })}</td>
-                  <td className="px-4 py-3 text-gray-600">{t(`halfLabels.${cycle.half}` as Parameters<typeof t>[0])}</td>
+                  <td className="px-4 py-3 font-medium text-[#1A1A1A]">{cycle.name}</td>
+                  <td className="px-4 py-3 text-[#666]">{t('yearUnit', { year: cycle.year })}</td>
+                  <td className="px-4 py-3 text-[#666]">{t(`halfLabels.${cycle.half}` as Parameters<typeof t>[0])}</td>
                   <td className="px-4 py-3">
-                    <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[cycle.status] ?? 'bg-gray-100 text-gray-700'}`}>
+                    <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[cycle.status] ?? 'bg-[#F5F5F5] text-[#666]'}`}>
                       {t(`cycleStatusLabels.${cycle.status}` as Parameters<typeof t>[0])}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-gray-600">
+                  <td className="px-4 py-3 text-[#666]">
                     {formatDate(cycle.goalStart)} ~ {formatDate(cycle.goalEnd)}
                   </td>
-                  <td className="px-4 py-3 text-gray-600">
+                  <td className="px-4 py-3 text-[#666]">
                     {formatDate(cycle.evalStart)} ~ {formatDate(cycle.evalEnd)}
                   </td>
-                  <td className="px-4 py-3 text-center text-gray-600">
+                  <td className="px-4 py-3 text-center text-[#666]">
                     {cycle._count?.goals ?? 0}
                   </td>
-                  <td className="px-4 py-3 text-center text-gray-600">
+                  <td className="px-4 py-3 text-center text-[#666]">
                     {cycle._count?.evaluations ?? 0}
                   </td>
                 </tr>
@@ -177,18 +177,18 @@ export default function PerformanceCyclesClient({ user }: { user: SessionUser })
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page <= 1}
-            className="inline-flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-1 rounded-lg border border-[#E8E8E8] bg-white px-3 py-1.5 text-sm text-[#666] hover:bg-[#FAFAFA] disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <ChevronLeft className="h-4 w-4" />
             {t('previousPage')}
           </button>
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-[#666]">
             {page} / {totalPages}
           </span>
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}
-            className="inline-flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-1 rounded-lg border border-[#E8E8E8] bg-white px-3 py-1.5 text-sm text-[#666] hover:bg-[#FAFAFA] disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {t('nextPage')}
             <ChevronRight className="h-4 w-4" />

@@ -21,11 +21,14 @@ export const GET = withPermission(
   ) => {
     const { id } = await context.params
 
-    const companyFilter = user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }
+    const assignmentFilter =
+      user.role === 'SUPER_ADMIN'
+        ? {}
+        : { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
 
     // Verify the employee belongs to the user's company before returning histories
     const employee = await prisma.employee.findFirst({
-      where: { id, deletedAt: null, ...companyFilter },
+      where: { id, deletedAt: null, ...assignmentFilter },
       select: { id: true },
     })
     if (!employee) throw notFound('직원을 찾을 수 없습니다.')

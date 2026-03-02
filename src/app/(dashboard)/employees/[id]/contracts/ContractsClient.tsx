@@ -34,11 +34,11 @@ interface Props {
 }
 
 const CONTRACT_TYPE_COLORS: Record<string, string> = {
-  PERMANENT: 'bg-blue-100 text-blue-800',
-  FIXED_TERM: 'bg-yellow-100 text-yellow-800',
-  DISPATCH: 'bg-gray-100 text-gray-800',
-  INTERN: 'bg-purple-100 text-purple-800',
-  PROBATION_ONLY: 'bg-orange-100 text-orange-800',
+  PERMANENT: 'bg-[#E8F5E9] text-[#00A844]',
+  FIXED_TERM: 'bg-[#FEF9C3] text-[#854D0E]',
+  DISPATCH: 'bg-[#F5F5F5] text-[#1A1A1A]',
+  INTERN: 'bg-[#F3E8FF] text-[#6B21A8]',
+  PROBATION_ONLY: 'bg-[#FFEDD5] text-[#9A3412]',
 }
 
 export default function ContractsClient({ employeeId, permissions }: Props) {
@@ -178,7 +178,7 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
       </div>
 
       {loading ? (
-        <p className="text-sm text-gray-500">{tc('loading')}</p>
+        <p className="text-sm text-[#666]">{tc('loading')}</p>
       ) : (
         <Table>
           <TableHeader>
@@ -196,12 +196,12 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
             {contracts.map((c) => (
               <TableRow
                 key={c.id}
-                className={isExpiringSoon(c.endDate) ? 'bg-yellow-50' : ''}
+                className={isExpiringSoon(c.endDate) ? 'bg-[#FEFCE8]' : ''}
               >
                 <TableCell>{c.contractNumber}{t('contractSequenceSuffix')}</TableCell>
                 <TableCell>
                   <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${CONTRACT_TYPE_COLORS[c.contractType] ?? 'bg-gray-100 text-gray-800'}`}
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${CONTRACT_TYPE_COLORS[c.contractType] ?? 'bg-[#F5F5F5] text-[#1A1A1A]'}`}
                   >
                     {CONTRACT_TYPE_LABELS[c.contractType] ?? c.contractType}
                   </span>
@@ -209,11 +209,11 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
                 <TableCell>{format(new Date(c.startDate), 'yyyy-MM-dd')}</TableCell>
                 <TableCell>
                   {c.endDate ? (
-                    <span className={isExpiringSoon(c.endDate) ? 'font-medium text-yellow-700' : ''}>
+                    <span className={isExpiringSoon(c.endDate) ? 'font-medium text-[#A16207]' : ''}>
                       {format(new Date(c.endDate), 'yyyy-MM-dd')}
                     </span>
                   ) : (
-                    <span className="text-gray-400">{t('indefinite')}</span>
+                    <span className="text-[#999]">{t('indefinite')}</span>
                   )}
                 </TableCell>
                 <TableCell>
@@ -224,12 +224,12 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
                 <TableCell>
                   {c.signedAt ? format(new Date(c.signedAt), 'yyyy-MM-dd') : '-'}
                 </TableCell>
-                <TableCell className="text-sm text-gray-500">{c.notes ?? '-'}</TableCell>
+                <TableCell className="text-sm text-[#666]">{c.notes ?? '-'}</TableCell>
               </TableRow>
             ))}
             {contracts.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="text-center text-gray-400">
+                <TableCell colSpan={7} className="text-center text-[#999]">
                   {t('noContractHistory')}
                 </TableCell>
               </TableRow>

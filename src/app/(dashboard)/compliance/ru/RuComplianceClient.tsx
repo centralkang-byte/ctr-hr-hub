@@ -27,27 +27,27 @@ export default function RuComplianceClient() {
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex items-center gap-3">
-        <div className="p-2 bg-blue-50 rounded-lg">
-          <Shield className="w-6 h-6 text-blue-600" />
+        <div className="p-2 bg-[#E8F5E9] rounded-lg">
+          <Shield className="w-6 h-6 text-[#00C853]" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">{t('ru.title')}</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('ru.title')}</h1>
+          <p className="text-sm text-[#666] mt-0.5">
             군복무 등록, 전자문서(КЭДО) 및 법정 보고서 관리
           </p>
         </div>
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex border-b border-slate-200">
+      <div className="flex border-b border-[#E8E8E8]">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             className={
               activeTab === tab.key
-                ? 'px-4 py-2.5 text-sm font-medium border-b-2 border-blue-600 text-blue-600'
-                : 'px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-700 border-b-2 border-transparent'
+                ? 'px-4 py-2.5 text-sm font-medium border-b-2 border-[#00C853] text-[#00C853]'
+                : 'px-4 py-2.5 text-sm font-medium text-[#666] hover:text-[#333] border-b-2 border-transparent'
             }
           >
             {tab.label}

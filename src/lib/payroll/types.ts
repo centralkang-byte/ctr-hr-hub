@@ -35,6 +35,14 @@ export interface PayrollOvertime {
   nightHours: number
 }
 
+export interface CustomPayItem {
+  code: string
+  name: string
+  amount: number
+  category: string
+  isTaxExempt?: boolean
+}
+
 export interface PayrollItemDetail {
   earnings: PayrollEarnings
   deductions: PayrollDeductions
@@ -42,6 +50,15 @@ export interface PayrollItemDetail {
   grossPay: number
   totalDeductions: number
   netPay: number
+  customAllowances?: CustomPayItem[]
+  customDeductions?: CustomPayItem[]
+  previousMonth?: {
+    grossPay: number
+    totalDeductions: number
+    netPay: number
+    earnings: PayrollEarnings
+    deductions: PayrollDeductions
+  }
 }
 
 // ─── Anomaly Detection ──────────────────────────────────

@@ -53,12 +53,12 @@ interface TeamMemberGoals {
 // ─── Status config ────────────────────────────────────────
 
 const CYCLE_STATUS_STYLES: Record<string, string> = {
-  PLANNING: 'bg-gray-100 text-gray-700',
-  GOAL_SETTING: 'bg-blue-100 text-blue-700',
-  IN_PROGRESS: 'bg-green-100 text-green-700',
-  EVALUATION: 'bg-yellow-100 text-yellow-700',
-  CALIBRATION: 'bg-purple-100 text-purple-700',
-  COMPLETED: 'bg-gray-200 text-gray-600',
+  PLANNING: 'bg-[#F5F5F5] text-[#666]',
+  GOAL_SETTING: 'bg-[#E3F2FD] text-[#1565C0]',
+  IN_PROGRESS: 'bg-[#E8F5E9] text-[#2E7D32]',
+  EVALUATION: 'bg-[#FFF8E1] text-[#F57F17]',
+  CALIBRATION: 'bg-[#F3E5F5] text-[#7B1FA2]',
+  COMPLETED: 'bg-[#E8E8E8] text-[#666]',
 }
 
 // ─── Helpers ──────────────────────────────────────────────
@@ -194,18 +194,18 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
   // ─── Render ───────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-ctr-light">
+    <div className="min-h-screen bg-[#FAFAFA]">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
+            <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('title')}</h1>
             {activeCycle && (
               <div className="mt-2 flex items-center gap-3">
-                <span className="text-sm text-gray-500">{activeCycle.name}</span>
+                <span className="text-sm text-[#999]">{activeCycle.name}</span>
                 <span
                   className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                    CYCLE_STATUS_STYLES[activeCycle.status] ?? 'bg-gray-100 text-gray-700'
+                    CYCLE_STATUS_STYLES[activeCycle.status] ?? 'bg-[#F5F5F5] text-[#666]'
                   }`}
                 >
                   {t(`cycleStatusLabels.${activeCycle.status}` as Parameters<typeof t>[0])}
@@ -218,14 +218,14 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
         {/* Quick Stats */}
         <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {/* Card 1: 현재 사이클 상태 */}
-          <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="rounded-lg border border-[#E8E8E8] bg-white p-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50">
-                <Calendar className="h-5 w-5 text-ctr-secondary" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#E8F5E9]">
+                <Calendar className="h-5 w-5 text-[#00C853]" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">{t('currentCycle')}</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-sm text-[#999]">{t('currentCycle')}</p>
+                <p className="text-lg font-semibold text-[#1A1A1A]">
                   {activeCycle
                     ? t(`cycleStatusLabels.${activeCycle.status}` as Parameters<typeof t>[0])
                     : t('noCycle')}
@@ -235,16 +235,16 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
           </div>
 
           {/* Card 2: 목표 수 */}
-          <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="rounded-lg border border-[#E8E8E8] bg-white p-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-50">
-                <Target className="h-5 w-5 text-green-600" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#E8F5E9]">
+                <Target className="h-5 w-5 text-[#00C853]" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-[#999]">
                   {isManager ? t('teamGoalCount') : t('myGoalCount')}
                 </p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-lg font-semibold text-[#1A1A1A]">
                   {t('goalCountUnit', { count: isManager ? teamGoalCount : myGoalCount })}
                 </p>
               </div>
@@ -252,14 +252,14 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
           </div>
 
           {/* Card 3: 평균 달성률 */}
-          <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="rounded-lg border border-[#E8E8E8] bg-white p-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-50">
-                <TrendingUp className="h-5 w-5 text-purple-600" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#F3E5F5]">
+                <TrendingUp className="h-5 w-5 text-[#7B1FA2]" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">{t('avgAchievement')}</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-sm text-[#999]">{t('avgAchievement')}</p>
+                <p className="text-lg font-semibold text-[#1A1A1A]">
                   {isManager ? teamAvgProgress : avgProgress}%
                 </p>
               </div>
@@ -267,14 +267,14 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
           </div>
 
           {/* Card 4: 다음 마감일 */}
-          <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="rounded-lg border border-[#E8E8E8] bg-white p-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-50">
-                <ClipboardList className="h-5 w-5 text-orange-600" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#FFF3E0]">
+                <ClipboardList className="h-5 w-5 text-[#E65100]" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">{t('nextDeadline')}</p>
-                <p className="text-sm font-semibold text-gray-900">
+                <p className="text-sm text-[#999]">{t('nextDeadline')}</p>
+                <p className="text-sm font-semibold text-[#1A1A1A]">
                   {getNextDeadline(activeCycle)}
                 </p>
               </div>
@@ -284,7 +284,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-ctr-secondary border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#00C853] border-t-transparent" />
           </div>
         ) : (
           <>
@@ -292,16 +292,16 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
             {!isManager && !isAdmin && (
               <section className="mb-8">
                 <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-gray-900">{t('myGoals')}</h2>
+                  <h2 className="text-lg font-semibold text-[#1A1A1A]">{t('myGoals')}</h2>
                   <Link
                     href="/performance/goals"
-                    className="flex items-center gap-1 text-sm font-medium text-ctr-secondary hover:underline"
+                    className="flex items-center gap-1 text-sm font-medium text-[#00C853] hover:underline"
                   >
                     {t('viewAll')} <ChevronRight className="h-4 w-4" />
                   </Link>
                 </div>
                 {goals.length === 0 ? (
-                  <div className="rounded-lg border border-gray-200 bg-white p-8 text-center text-gray-500">
+                  <div className="rounded-lg border border-[#E8E8E8] bg-white p-8 text-center text-[#999]">
                     {t('noGoals')}
                   </div>
                 ) : (
@@ -311,39 +311,39 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                       return (
                         <div
                           key={goal.id}
-                          className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+                          className="rounded-lg border border-[#E8E8E8] bg-white p-4"
                         >
                           <div className="mb-2 flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <span className="font-medium text-gray-900">
+                              <span className="font-medium text-[#1A1A1A]">
                                 {goal.title}
                               </span>
                               <span
                                 className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
                                   goal.status === 'APPROVED'
-                                    ? 'bg-green-100 text-green-700'
+                                    ? 'bg-[#E8F5E9] text-[#2E7D32]'
                                     : goal.status === 'PENDING_APPROVAL'
-                                      ? 'bg-yellow-100 text-yellow-700'
+                                      ? 'bg-[#FFF8E1] text-[#F57F17]'
                                       : goal.status === 'REJECTED'
-                                        ? 'bg-red-100 text-red-700'
-                                        : 'bg-gray-100 text-gray-700'
+                                        ? 'bg-[#FFEBEE] text-[#C62828]'
+                                        : 'bg-[#F5F5F5] text-[#666]'
                                 }`}
                               >
                                 {t(`goalStatusLabels.${goal.status}` as Parameters<typeof t>[0])}
                               </span>
                             </div>
-                            <span className="text-sm text-gray-500">
+                            <span className="text-sm text-[#999]">
                               {t('weightLabel', { weight: goal.weight })}
                             </span>
                           </div>
                           <div className="flex items-center gap-3">
-                            <div className="h-2 flex-1 rounded-full bg-gray-200">
+                            <div className="h-2 flex-1 rounded-full bg-[#E8E8E8]">
                               <div
-                                className="h-2 rounded-full bg-ctr-secondary transition-all"
+                                className="h-2 rounded-full bg-[#00C853] transition-all"
                                 style={{ width: `${Math.min(progress, 100)}%` }}
                               />
                             </div>
-                            <span className="text-sm font-medium text-gray-700">
+                            <span className="text-sm font-medium text-[#666]">
                               {progress}%
                             </span>
                           </div>
@@ -359,19 +359,19 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
             {isManager && (
               <section className="mb-8">
                 <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-gray-900">
+                  <h2 className="text-lg font-semibold text-[#1A1A1A]">
                     <Users className="mr-2 inline-block h-5 w-5" />
                     {t('teamStatus')}
                   </h2>
                   <Link
                     href="/performance/goals"
-                    className="flex items-center gap-1 text-sm font-medium text-ctr-secondary hover:underline"
+                    className="flex items-center gap-1 text-sm font-medium text-[#00C853] hover:underline"
                   >
                     {t('manageTeamGoals')} <ChevronRight className="h-4 w-4" />
                   </Link>
                 </div>
                 {teamData.length === 0 ? (
-                  <div className="rounded-lg border border-gray-200 bg-white p-8 text-center text-gray-500">
+                  <div className="rounded-lg border border-[#E8E8E8] bg-white p-8 text-center text-[#999]">
                     {t('noTeamMembers')}
                   </div>
                 ) : (
@@ -379,32 +379,32 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                     {teamData.map((member) => (
                       <div
                         key={member.employee.id}
-                        className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm"
+                        className="rounded-lg border border-[#E8E8E8] bg-white p-5"
                       >
                         <div className="mb-3 flex items-center justify-between">
                           <div>
-                            <p className="font-medium text-gray-900">
+                            <p className="font-medium text-[#1A1A1A]">
                               {member.employee.name}
                             </p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-[#999]">
                               {member.employee.department?.name ?? '-'} /{' '}
                               {member.employee.jobGrade?.name ?? '-'}
                             </p>
                           </div>
-                          <span className="text-sm font-semibold text-ctr-secondary">
+                          <span className="text-sm font-semibold text-[#00C853]">
                             {t('goalCountWithUnit', { count: member.goals.length })}
                           </span>
                         </div>
                         <div className="flex items-center gap-3">
-                          <div className="h-2 flex-1 rounded-full bg-gray-200">
+                          <div className="h-2 flex-1 rounded-full bg-[#E8E8E8]">
                             <div
-                              className="h-2 rounded-full bg-ctr-secondary transition-all"
+                              className="h-2 rounded-full bg-[#00C853] transition-all"
                               style={{
                                 width: `${Math.min(member.avgProgress, 100)}%`,
                               }}
                             />
                           </div>
-                          <span className="text-sm font-medium text-gray-700">
+                          <span className="text-sm font-medium text-[#666]">
                             {member.avgProgress}%
                           </span>
                         </div>
@@ -416,7 +416,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                 {/* Manager also sees own goals */}
                 {goals.length > 0 && (
                   <div className="mt-6">
-                    <h3 className="mb-3 text-base font-semibold text-gray-900">
+                    <h3 className="mb-3 text-base font-semibold text-[#1A1A1A]">
                       {t('myGoals')}
                     </h3>
                     <div className="space-y-3">
@@ -425,19 +425,19 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                         return (
                           <div
                             key={goal.id}
-                            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+                            className="rounded-lg border border-[#E8E8E8] bg-white p-4"
                           >
                             <div className="mb-2 flex items-center justify-between">
-                              <span className="font-medium text-gray-900">
+                              <span className="font-medium text-[#1A1A1A]">
                                 {goal.title}
                               </span>
-                              <span className="text-sm text-gray-500">
+                              <span className="text-sm text-[#999]">
                                 {progress}%
                               </span>
                             </div>
-                            <div className="h-2 rounded-full bg-gray-200">
+                            <div className="h-2 rounded-full bg-[#E8E8E8]">
                               <div
-                                className="h-2 rounded-full bg-ctr-secondary transition-all"
+                                className="h-2 rounded-full bg-[#00C853] transition-all"
                                 style={{ width: `${Math.min(progress, 100)}%` }}
                               />
                             </div>
@@ -454,13 +454,13 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
             {isAdmin && (
               <section className="mb-8">
                 <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-gray-900">
+                  <h2 className="text-lg font-semibold text-[#1A1A1A]">
                     <BarChart3 className="mr-2 inline-block h-5 w-5" />
                     {t('companyOverview')}
                   </h2>
                   <Link
                     href="/settings/performance-cycles"
-                    className="flex items-center gap-1 text-sm font-medium text-ctr-secondary hover:underline"
+                    className="flex items-center gap-1 text-sm font-medium text-[#00C853] hover:underline"
                   >
                     <Settings className="h-4 w-4" />
                     {t('manageCycles')} <ChevronRight className="h-4 w-4" />
@@ -469,11 +469,11 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
 
                 {/* Active cycles */}
                 <div className="mb-6">
-                  <h3 className="mb-3 text-sm font-semibold text-gray-700">
+                  <h3 className="mb-3 text-sm font-semibold text-[#666]">
                     {t('activeCycles')}
                   </h3>
                   {cycles.length === 0 ? (
-                    <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-500">
+                    <div className="rounded-lg border border-[#E8E8E8] bg-white p-6 text-center text-[#999]">
                       {t('noCycles')}
                     </div>
                   ) : (
@@ -481,21 +481,21 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                       {cycles.map((cycle) => (
                         <div
                           key={cycle.id}
-                          className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+                          className="rounded-lg border border-[#E8E8E8] bg-white p-4"
                         >
                           <div className="mb-2 flex items-center justify-between">
-                            <span className="font-medium text-gray-900">
+                            <span className="font-medium text-[#1A1A1A]">
                               {cycle.name}
                             </span>
                             <span
                               className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                                CYCLE_STATUS_STYLES[cycle.status] ?? 'bg-gray-100 text-gray-700'
+                                CYCLE_STATUS_STYLES[cycle.status] ?? 'bg-[#F5F5F5] text-[#666]'
                               }`}
                             >
                               {t(`cycleStatusLabels.${cycle.status}` as Parameters<typeof t>[0])}
                             </span>
                           </div>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-[#999]">
                             {formatDate(cycle.startDate)} ~ {formatDate(cycle.endDate)}
                           </p>
                         </div>
@@ -505,22 +505,22 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                 </div>
 
                 {/* Submission rate */}
-                <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
-                  <h3 className="mb-3 text-sm font-semibold text-gray-700">
+                <div className="rounded-lg border border-[#E8E8E8] bg-white p-5">
+                  <h3 className="mb-3 text-sm font-semibold text-[#666]">
                     {t('overallSubmissionRate')}
                   </h3>
                   <div className="flex items-center gap-4">
-                    <div className="h-3 flex-1 rounded-full bg-gray-200">
+                    <div className="h-3 flex-1 rounded-full bg-[#E8E8E8]">
                       <div
-                        className="h-3 rounded-full bg-ctr-secondary transition-all"
+                        className="h-3 rounded-full bg-[#00C853] transition-all"
                         style={{ width: `${submissionRate}%` }}
                       />
                     </div>
-                    <span className="text-lg font-bold text-ctr-secondary">
+                    <span className="text-lg font-bold text-[#00C853]">
                       {submissionRate}%
                     </span>
                   </div>
-                  <p className="mt-2 text-xs text-gray-500">
+                  <p className="mt-2 text-xs text-[#999]">
                     {t('submissionStats', { submitted: submittedGoals, total: totalGoals })}
                   </p>
                 </div>
@@ -529,12 +529,12 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                 {goals.length > 0 && (
                   <div className="mt-6">
                     <div className="mb-3 flex items-center justify-between">
-                      <h3 className="text-base font-semibold text-gray-900">
+                      <h3 className="text-base font-semibold text-[#1A1A1A]">
                         {t('myGoals')}
                       </h3>
                       <Link
                         href="/performance/goals"
-                        className="flex items-center gap-1 text-sm font-medium text-ctr-secondary hover:underline"
+                        className="flex items-center gap-1 text-sm font-medium text-[#00C853] hover:underline"
                       >
                         {t('viewAll')} <ChevronRight className="h-4 w-4" />
                       </Link>
@@ -545,19 +545,19 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                         return (
                           <div
                             key={goal.id}
-                            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+                            className="rounded-lg border border-[#E8E8E8] bg-white p-4"
                           >
                             <div className="mb-2 flex items-center justify-between">
-                              <span className="font-medium text-gray-900">
+                              <span className="font-medium text-[#1A1A1A]">
                                 {goal.title}
                               </span>
-                              <span className="text-sm text-gray-500">
+                              <span className="text-sm text-[#999]">
                                 {progress}%
                               </span>
                             </div>
-                            <div className="h-2 rounded-full bg-gray-200">
+                            <div className="h-2 rounded-full bg-[#E8E8E8]">
                               <div
-                                className="h-2 rounded-full bg-ctr-secondary transition-all"
+                                className="h-2 rounded-full bg-[#00C853] transition-all"
                                 style={{ width: `${Math.min(progress, 100)}%` }}
                               />
                             </div>

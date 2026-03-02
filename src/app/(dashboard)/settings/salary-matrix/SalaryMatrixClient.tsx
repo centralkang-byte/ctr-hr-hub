@@ -341,7 +341,7 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       ) : !selectedCycleId ? (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 text-center">
+        <div className="bg-white rounded-xl border border-[#E8E8E8] p-8 text-center">
           <p className="text-sm text-muted-foreground">
             {t('noCycles')}
           </p>
@@ -349,18 +349,18 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
       ) : (
         <>
           {/* ─── 3x3 Matrix Grid ─── */}
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+          <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
                   <tr>
-                    <th className="w-[160px] p-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider border-b border-slate-200">
+                    <th className="w-[160px] p-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider border-b border-[#E8E8E8]">
                       {t('perfCompaHeader')}
                     </th>
                     {COLS.map((col) => (
                       <th
                         key={col.key}
-                        className="p-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider border-b border-slate-200"
+                        className="p-3 text-center text-xs font-medium text-[#666] uppercase tracking-wider border-b border-[#E8E8E8]"
                       >
                         {col.label}
                       </th>
@@ -373,17 +373,17 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
                       key={row.key}
                       className={
                         rowIdx < ROWS.length - 1
-                          ? 'border-b border-slate-100'
+                          ? 'border-b border-[#F5F5F5]'
                           : ''
                       }
                     >
                       <td className="p-3">
                         <div>
-                          <span className="text-sm font-semibold text-slate-800">
+                          <span className="text-sm font-semibold text-[#1A1A1A]">
                             {row.label}
                           </span>
                           <br />
-                          <span className="text-xs text-slate-400">
+                          <span className="text-xs text-[#999]">
                             {row.sublabel}
                           </span>
                         </div>
@@ -399,7 +399,7 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
                             <div className="space-y-2 min-w-[160px]">
                               {/* Min */}
                               <div className="flex items-center gap-2">
-                                <Label className="text-xs text-slate-500 w-10 shrink-0">
+                                <Label className="text-xs text-[#666] w-10 shrink-0">
                                   {t('matrixMin')}
                                 </Label>
                                 <div className="relative flex-1">
@@ -419,14 +419,14 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
                                     className="h-8 text-sm pr-6"
                                     placeholder="0"
                                   />
-                                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-slate-400">
+                                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#999]">
                                     %
                                   </span>
                                 </div>
                               </div>
                               {/* Recommended */}
                               <div className="flex items-center gap-2">
-                                <Label className="text-xs text-blue-600 font-semibold w-10 shrink-0">
+                                <Label className="text-xs text-[#00C853] font-semibold w-10 shrink-0">
                                   {t('matrixRecommended')}
                                 </Label>
                                 <div className="relative flex-1">
@@ -445,17 +445,17 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
                                         e.target.value,
                                       )
                                     }
-                                    className="h-8 text-sm pr-6 border-blue-300 focus:ring-blue-500"
+                                    className="h-8 text-sm pr-6 border-[#E8F5E9] focus:ring-[#00C853]/10"
                                     placeholder="0"
                                   />
-                                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-slate-400">
+                                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#999]">
                                     %
                                   </span>
                                 </div>
                               </div>
                               {/* Max */}
                               <div className="flex items-center gap-2">
-                                <Label className="text-xs text-slate-500 w-10 shrink-0">
+                                <Label className="text-xs text-[#666] w-10 shrink-0">
                                   {t('matrixMax')}
                                 </Label>
                                 <div className="relative flex-1">
@@ -475,7 +475,7 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
                                     className="h-8 text-sm pr-6"
                                     placeholder="0"
                                   />
-                                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-slate-400">
+                                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#999]">
                                     %
                                   </span>
                                 </div>
@@ -491,11 +491,11 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
             </div>
 
             {/* ─── EMS Block Reference ─── */}
-            <div className="mt-4 pt-4 border-t border-slate-100">
-              <p className="text-xs text-slate-400 mb-2">
+            <div className="mt-4 pt-4 border-t border-[#F5F5F5]">
+              <p className="text-xs text-[#999] mb-2">
                 {t('emsBlockRef')}
               </p>
-              <div className="grid grid-cols-3 gap-2 text-xs text-slate-500">
+              <div className="grid grid-cols-3 gap-2 text-xs text-[#666]">
                 {ROWS.map((row) => (
                   <div key={row.key} className="flex gap-2">
                     {COLS.map((col) => {
@@ -503,7 +503,7 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
                       return (
                         <span
                           key={block}
-                          className="inline-flex items-center px-2 py-0.5 rounded bg-slate-50 border border-slate-200 font-mono"
+                          className="inline-flex items-center px-2 py-0.5 rounded bg-[#FAFAFA] border border-[#E8E8E8] font-mono"
                         >
                           {block}
                         </span>
@@ -567,7 +567,7 @@ export function SalaryMatrixClient({ user }: { user: SessionUser }) {
 
             <div className="space-y-2">
               <Label>{t('targetCycle')}</Label>
-              <div className="px-3 py-2 bg-slate-50 rounded-lg text-sm text-slate-700 border border-slate-200">
+              <div className="px-3 py-2 bg-[#FAFAFA] rounded-lg text-sm text-[#333] border border-[#E8E8E8]">
                 {cycles.find((c) => c.id === selectedCycleId)
                   ? getCycleName(
                       cycles.find((c) => c.id === selectedCycleId)!,

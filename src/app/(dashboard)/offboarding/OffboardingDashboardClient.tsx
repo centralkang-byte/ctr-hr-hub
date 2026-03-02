@@ -104,11 +104,11 @@ const RESIGN_TYPE_VARIANTS: Record<string, BadgeVariant> = {
 }
 
 const ASSIGNEE_COLORS: Record<string, string> = {
-  EMPLOYEE: 'bg-gray-100 text-gray-700',
-  MANAGER: 'bg-blue-100 text-blue-700',
+  EMPLOYEE: 'bg-[#F5F5F5] text-[#333]',
+  MANAGER: 'bg-[#E8F5E9] text-[#00A844]',
   HR: 'bg-green-100 text-green-700',
-  IT: 'bg-purple-100 text-purple-700',
-  FINANCE: 'bg-orange-100 text-orange-700',
+  IT: 'bg-[#F3E8FF] text-[#7E22CE]',
+  FINANCE: 'bg-[#FFEDD5] text-[#C2410C]',
 }
 
 const LIMIT_OPTIONS = [10, 20, 50]
@@ -232,13 +232,13 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
         const pct = total > 0 ? (completed / total) * 100 : 0
         return (
           <div className="flex items-center gap-2">
-            <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div className="flex-1 bg-[#E8E8E8] rounded-full h-2">
               <div
                 className="bg-ctr-primary h-2 rounded-full transition-all"
                 style={{ width: `${pct}%` }}
               />
             </div>
-            <span className="text-sm text-gray-600 whitespace-nowrap">
+            <span className="text-sm text-[#555] whitespace-nowrap">
               {completed}/{total}
             </span>
           </div>
@@ -254,22 +254,22 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
         return (
           <div className="flex items-center gap-1.5">
             <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F87171] opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#EF4444]" />
             </span>
-            <span className="text-sm font-semibold text-red-600">D-{Math.max(daysUntil, 0)}</span>
+            <span className="text-sm font-semibold text-[#DC2626]">D-{Math.max(daysUntil, 0)}</span>
           </div>
         )
       }
       if (isD7) {
         return (
           <div className="flex items-center gap-1.5">
-            <span className="inline-flex rounded-full h-2.5 w-2.5 bg-yellow-500" />
-            <span className="text-sm font-medium text-yellow-700">D-{daysUntil}</span>
+            <span className="inline-flex rounded-full h-2.5 w-2.5 bg-[#EAB308]" />
+            <span className="text-sm font-medium text-[#A16207]">D-{daysUntil}</span>
           </div>
         )
       }
-      return <span className="text-sm text-gray-500">D-{daysUntil}</span>
+      return <span className="text-sm text-[#666]">D-{daysUntil}</span>
     },
     [],
   )
@@ -327,8 +327,8 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
           <Table>
             <TableHeader>
               <TableRow>
-                {headerCols.map((h) => (
-                  <TableHead key={h}>{h}</TableHead>
+                {headerCols.map((h, i) => (
+                  <TableHead key={i}>{h}</TableHead>
                 ))}
               </TableRow>
             </TableHeader>
@@ -358,8 +358,8 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
             <Table>
               <TableHeader>
                 <TableRow>
-                  {headerCols.map((h) => (
-                    <TableHead key={h} className={h === t('progressLabel') ? 'w-48' : ''}>
+                  {headerCols.map((h, i) => (
+                    <TableHead key={i} className={h === t('progressLabel') ? 'w-48' : ''}>
                       {h}
                     </TableHead>
                   ))}
@@ -373,9 +373,9 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
                       key={row.id}
                       className={
                         row.isD3
-                          ? 'bg-red-50'
+                          ? 'bg-[#FEE2E2]'
                           : row.isD7
-                            ? 'bg-yellow-50'
+                            ? 'bg-[#FEFCE8]'
                             : ''
                       }
                     >
@@ -444,7 +444,7 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
                         ) : row.isD7 ? (
                           <Badge
                             variant="outline"
-                            className="border-yellow-500 text-yellow-700"
+                            className="border-[#EAB308] text-[#A16207]"
                           >
                             <AlertTriangle className="mr-1 h-3 w-3" />
                             {t('caution')}
@@ -463,7 +463,7 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
                           <Button
                             size="sm"
                             variant="outline"
-                            className="text-xs text-red-600 border-red-300 hover:bg-red-50"
+                            className="text-xs text-[#DC2626] border-[#FCA5A5] hover:bg-[#FEE2E2]"
                             onClick={() => setCancelTarget(row)}
                           >
                             {t('cancelOffboarding')}
@@ -477,7 +477,7 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
                       <TableRow key={`${row.id}-tasks`}>
                         <TableCell
                           colSpan={headerCols.length}
-                          className="bg-gray-50 p-0"
+                          className="bg-[#FAFAFA] p-0"
                         >
                           <div className="p-4">
                             <h4 className="text-sm font-semibold mb-3">
@@ -501,7 +501,7 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
                                     </TableCell>
                                     <TableCell>
                                       <span
-                                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ASSIGNEE_COLORS[tsk.task.assigneeType] ?? 'bg-gray-100 text-gray-700'}`}
+                                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ASSIGNEE_COLORS[tsk.task.assigneeType] ?? 'bg-[#F5F5F5] text-[#333]'}`}
                                       >
                                         {ASSIGNEE_LABELS[tsk.task.assigneeType] ??
                                           tsk.task.assigneeType}

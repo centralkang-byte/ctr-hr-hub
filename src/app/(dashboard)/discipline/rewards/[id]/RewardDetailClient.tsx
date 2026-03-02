@@ -123,7 +123,7 @@ export default function RewardDetailClient({ user, id }: Props) {
             <Award className="w-5 h-5 text-[#00C853]" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-[#333]" style={{ letterSpacing: '-0.02em' }}>
+            <h1 className="text-xl font-bold text-[#1A1A1A] tracking-[-0.02em]">
               {t('title')}
             </h1>
             <div className="flex items-center gap-2 mt-0.5">
@@ -146,7 +146,7 @@ export default function RewardDetailClient({ user, id }: Props) {
         <div className="space-y-6">
           {/* Reward Info */}
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+            <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
               {t('rewardInfo')}
             </h2>
             <div className="grid grid-cols-2 gap-y-4 gap-x-6">
@@ -189,10 +189,10 @@ export default function RewardDetailClient({ user, id }: Props) {
           {/* Description */}
           {data.description && (
             <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-              <h2 className="text-base font-bold text-[#333] mb-3" style={{ letterSpacing: '-0.02em' }}>
+              <h2 className="text-base font-bold text-[#1A1A1A] mb-3 tracking-[-0.02em]">
                 {t('reason')}
               </h2>
-              <p className="text-sm text-[#333] leading-relaxed whitespace-pre-wrap">
+              <p className="text-sm text-[#1A1A1A] leading-relaxed whitespace-pre-wrap">
                 {data.description}
               </p>
             </div>
@@ -208,36 +208,36 @@ export default function RewardDetailClient({ user, id }: Props) {
                 <User className="w-5 h-5 text-[#1565C0]" />
               </div>
               <div>
-                <p className="text-sm font-bold text-[#333]">{data.employee.name}</p>
+                <p className="text-sm font-bold text-[#1A1A1A]">{data.employee.name}</p>
                 <p className="text-xs text-[#999]">{data.employee.employeeNo}</p>
               </div>
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[#999]">{tCommon('department')}</span>
-                <span className="text-[#333]">{data.employee.department?.name ?? '-'}</span>
+                <span className="text-[#1A1A1A]">{data.employee.department?.name ?? '-'}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[#999]">{tCommon('grade')}</span>
-                <span className="text-[#333]">{data.employee.jobGrade?.name ?? '-'}</span>
+                <span className="text-[#1A1A1A]">{data.employee.jobGrade?.name ?? '-'}</span>
               </div>
             </div>
           </div>
 
           {/* Date Info */}
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h3 className="text-base font-bold text-[#333] mb-4 flex items-center gap-2" style={{ letterSpacing: '-0.02em' }}>
+            <h3 className="text-base font-bold text-[#1A1A1A] mb-4 flex items-center gap-2 tracking-[-0.02em]">
               <Calendar className="w-4 h-4 text-[#666]" />
               {t('dateInfo')}
             </h3>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[#999]">{tRewards('awardedDate')}</span>
-                <span className="text-[#333]">{format(new Date(data.awardedDate), 'yyyy-MM-dd')}</span>
+                <span className="text-[#1A1A1A]">{format(new Date(data.awardedDate), 'yyyy-MM-dd')}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[#999]">{t('registeredDate')}</span>
-                <span className="text-[#333]">{format(new Date(data.createdAt), 'yyyy-MM-dd')}</span>
+                <span className="text-[#1A1A1A]">{format(new Date(data.createdAt), 'yyyy-MM-dd')}</span>
               </div>
             </div>
           </div>
@@ -253,7 +253,7 @@ function InfoItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <span className="text-xs text-[#999]">{label}</span>
-      <p className="text-sm text-[#333] mt-0.5">{value}</p>
+      <p className="text-sm text-[#1A1A1A] mt-0.5">{value}</p>
     </div>
   )
 }

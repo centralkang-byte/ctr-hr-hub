@@ -199,7 +199,7 @@ export function WorkflowsClient({ user: _user }: { user: SessionUser }) {
     {
       key: 'isActive', header: tc('status'),
       render: (row) => (
-        <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${row.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+        <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${row.isActive ? 'bg-[#D1FAE5] text-[#047857]' : 'bg-[#F5F5F5] text-[#666]'}`}>
           {row.isActive ? t('active') : t('inactive')}
         </span>
       ),

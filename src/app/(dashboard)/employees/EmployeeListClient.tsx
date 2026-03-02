@@ -229,7 +229,7 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
           isHrAdmin ? (
             <Button
               onClick={() => router.push('/employees/new')}
-              className="bg-ctr-primary hover:bg-ctr-primary/90"
+              className="bg-ctr-primary hover:bg-ctr-primary-dark text-white"
             >
               <Plus className="mr-2 h-4 w-4" />
               {t('newEmployee')}
@@ -320,7 +320,7 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
           <SelectContent>
             {LIMIT_OPTIONS.map((n) => (
               <SelectItem key={n} value={String(n)}>
-                {n}{tc('items')}
+                {n} {tc('items')}
               </SelectItem>
             ))}
           </SelectContent>

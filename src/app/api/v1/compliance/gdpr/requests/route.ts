@@ -9,6 +9,7 @@ import { badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import { gdprRequestSearchSchema, gdprRequestCreateSchema } from '@/lib/schemas/compliance'
 import { calculateGdprDeadline } from '@/lib/compliance/gdpr'
 import type { SessionUser } from '@/types'
@@ -46,7 +47,7 @@ export const GET = withPermission(
   perm(MODULE.COMPLIANCE, ACTION.VIEW),
 )
 
-export const POST = withPermission(
+export const POST = withRateLimit(withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
     const body: unknown = await req.json()
     const parsed = gdprRequestCreateSchema.safeParse(body)
@@ -82,4 +83,4 @@ export const POST = withPermission(
     }
   },
   perm(MODULE.COMPLIANCE, ACTION.CREATE),
-)
+), RATE_LIMITS.BULK)

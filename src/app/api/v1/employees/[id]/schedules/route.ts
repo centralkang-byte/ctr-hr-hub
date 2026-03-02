@@ -18,7 +18,9 @@ export const GET = withPermission(
       where: {
         id,
         deletedAt: null,
-        ...(user.role !== 'SUPER_ADMIN' ? { companyId: user.companyId } : {}),
+        ...(user.role !== 'SUPER_ADMIN'
+          ? { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
+          : {}),
       },
     })
     if (!employee) throw notFound('직원을 찾을 수 없습니다.')
@@ -49,7 +51,17 @@ export const POST = withPermission(
         where: {
           id,
           deletedAt: null,
-          ...(user.role !== 'SUPER_ADMIN' ? { companyId: user.companyId } : {}),
+          ...(user.role !== 'SUPER_ADMIN'
+            ? { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
+            : {}),
+        },
+        select: {
+          id: true,
+          assignments: {
+            where: { isPrimary: true, endDate: null },
+            take: 1,
+            select: { companyId: true },
+          },
         },
       })
       if (!employee) throw notFound('직원을 찾을 수 없습니다.')
@@ -92,7 +104,7 @@ export const POST = withPermission(
         action: 'attendance.employee-schedule.assign',
         resourceType: 'employee_schedule',
         resourceId: assignment.id,
-        companyId: employee.companyId,
+        companyId: (employee.assignments[0]?.companyId as string | undefined) ?? '',
         ip,
         userAgent,
       })

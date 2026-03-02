@@ -19,10 +19,10 @@ interface Dpia {
 
 function RiskBadge({ level }: { level: string }) {
   const map: Record<string, string> = {
-    low: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
-    medium: 'bg-amber-50 text-amber-700 border border-amber-200',
-    high: 'bg-orange-50 text-orange-700 border border-orange-200',
-    critical: 'bg-red-50 text-red-700 border border-red-200',
+    low: 'bg-[#D1FAE5] text-[#047857] border border-[#A7F3D0]',
+    medium: 'bg-[#FEF3C7] text-[#B45309] border border-[#FCD34D]',
+    high: 'bg-[#FFF7ED] text-[#C2410C] border border-[#FED7AA]',
+    critical: 'bg-[#FEE2E2] text-[#B91C1C] border border-[#FECACA]',
   }
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[level] ?? map.medium}`}>
@@ -33,10 +33,10 @@ function RiskBadge({ level }: { level: string }) {
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
-    draft: 'bg-slate-50 text-slate-600 border border-slate-200',
-    in_review: 'bg-amber-50 text-amber-700 border border-amber-200',
-    approved: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
-    rejected: 'bg-red-50 text-red-700 border border-red-200',
+    draft: 'bg-[#FAFAFA] text-[#555] border border-[#E8E8E8]',
+    in_review: 'bg-[#FEF3C7] text-[#B45309] border border-[#FCD34D]',
+    approved: 'bg-[#D1FAE5] text-[#047857] border border-[#A7F3D0]',
+    rejected: 'bg-[#FEE2E2] text-[#B91C1C] border border-[#FECACA]',
   }
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[status] ?? map.draft}`}>
@@ -81,16 +81,16 @@ export default function DpiaClient() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-            <FileSearch className="w-5 h-5 text-purple-600" />
+          <div className="w-10 h-10 bg-[#F3E8FF] rounded-xl flex items-center justify-center">
+            <FileSearch className="w-5 h-5 text-[#9333EA]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 mb-6">{t('gdpr.dpia')}</h1>
+            <h1 className="text-2xl font-bold text-[#1A1A1A] mb-6">{t('gdpr.dpia')}</h1>
           </div>
         </div>
         <button
           onClick={() => { setSelected(null); setShowForm(true) }}
-          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm"
+          className="inline-flex items-center gap-2 bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm"
         >
           <Plus className="w-4 h-4" />
           {tc('create')}
@@ -99,33 +99,33 @@ export default function DpiaClient() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-          <p className="text-xs text-slate-500 mb-1">Total DPIAs</p>
-          <p className="text-3xl font-bold text-slate-900">{dpias.length}</p>
+        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+          <p className="text-xs text-[#666] mb-1">Total DPIAs</p>
+          <p className="text-3xl font-bold text-[#1A1A1A]">{dpias.length}</p>
         </div>
-        <div className="bg-white rounded-xl border border-red-100 shadow-sm p-5">
-          <p className="text-xs text-red-500 mb-1">Critical Risk</p>
-          <p className="text-3xl font-bold text-red-600">{riskCounts.critical}</p>
+        <div className="bg-white rounded-xl border border-[#FEE2E2] p-5">
+          <p className="text-xs text-[#EF4444] mb-1">Critical Risk</p>
+          <p className="text-3xl font-bold text-[#DC2626]">{riskCounts.critical}</p>
         </div>
-        <div className="bg-white rounded-xl border border-orange-100 shadow-sm p-5">
-          <p className="text-xs text-orange-500 mb-1">High Risk</p>
-          <p className="text-3xl font-bold text-orange-600">{riskCounts.high}</p>
+        <div className="bg-white rounded-xl border border-[#FFEDD5] p-5">
+          <p className="text-xs text-[#F97316] mb-1">High Risk</p>
+          <p className="text-3xl font-bold text-[#EA580C]">{riskCounts.high}</p>
         </div>
-        <div className="bg-white rounded-xl border border-amber-100 shadow-sm p-5">
-          <p className="text-xs text-amber-500 mb-1">Medium Risk</p>
-          <p className="text-3xl font-bold text-amber-600">{riskCounts.medium}</p>
+        <div className="bg-white rounded-xl border border-[#FEF3C7] p-5">
+          <p className="text-xs text-[#F59E0B] mb-1">Medium Risk</p>
+          <p className="text-3xl font-bold text-[#D97706]">{riskCounts.medium}</p>
         </div>
       </div>
 
       {/* High Risk Alert */}
       {(riskCounts.critical > 0 || riskCounts.high > 0) && (
-        <div className="flex items-start gap-3 p-4 bg-orange-50 border border-orange-200 rounded-xl">
-          <AlertTriangle className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
+        <div className="flex items-start gap-3 p-4 bg-[#FFF7ED] border border-[#FED7AA] rounded-xl">
+          <AlertTriangle className="w-5 h-5 text-[#EA580C] mt-0.5 flex-shrink-0" />
           <div>
-            <p className="text-sm font-medium text-orange-800">
+            <p className="text-sm font-medium text-[#9A3412]">
               {riskCounts.critical + riskCounts.high} high-risk DPIA(s) require attention
             </p>
-            <p className="text-xs text-orange-600 mt-0.5">
+            <p className="text-xs text-[#EA580C] mt-0.5">
               Review and ensure mitigations are in place for critical and high risk assessments.
             </p>
           </div>
@@ -133,47 +133,47 @@ export default function DpiaClient() {
       )}
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
+      <div className="bg-white rounded-xl border border-[#E8E8E8]">
         {loading ? (
-          <div className="p-8 text-center text-slate-500">{tc('loading')}</div>
+          <div className="p-8 text-center text-[#666]">{tc('loading')}</div>
         ) : dpias.length === 0 ? (
-          <div className="p-8 text-center text-slate-500">{tc('noData')}</div>
+          <div className="p-8 text-center text-[#666]">{tc('noData')}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200">
-                  <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">Title</th>
-                  <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">{t('gdpr.processingScope')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">{t('gdpr.riskLevel')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">{tc('status')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">{tc('updatedAt')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">{tc('actions')}</th>
+                <tr className="bg-[#FAFAFA] border-b border-[#E8E8E8]">
+                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">Title</th>
+                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.processingScope')}</th>
+                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.riskLevel')}</th>
+                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tc('status')}</th>
+                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tc('updatedAt')}</th>
+                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tc('actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {dpias.map((d) => (
-                  <tr key={d.id} className="border-b border-slate-100 hover:bg-slate-50">
+                  <tr key={d.id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
                     <td className="px-4 py-3 text-sm">
-                      <div className="font-medium text-slate-900">{d.title}</div>
+                      <div className="font-medium text-[#1A1A1A]">{d.title}</div>
                       {d.description && (
-                        <div className="text-xs text-slate-400 mt-0.5 max-w-[200px] truncate">{d.description}</div>
+                        <div className="text-xs text-[#999] mt-0.5 max-w-[200px] truncate">{d.description}</div>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-sm text-slate-600 max-w-[240px] truncate">{d.processing_scope}</td>
+                    <td className="px-4 py-3 text-sm text-[#555] max-w-[240px] truncate">{d.processing_scope}</td>
                     <td className="px-4 py-3 text-sm">
                       <RiskBadge level={d.risk_level} />
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <StatusBadge status={d.status} />
                     </td>
-                    <td className="px-4 py-3 text-sm text-slate-500">
+                    <td className="px-4 py-3 text-sm text-[#666]">
                       {new Date(d.updated_at).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <button
                         onClick={() => { setSelected(d); setShowForm(true) }}
-                        className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-700 text-sm font-medium"
+                        className="inline-flex items-center gap-1.5 text-[#00C853] hover:text-[#00A844] text-sm font-medium"
                       >
                         {d.status === 'draft' || d.status === 'in_review' ? (
                           <>

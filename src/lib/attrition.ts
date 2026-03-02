@@ -57,10 +57,18 @@ async function calculateTenureFactor(employeeId: string): Promise<number> {
 async function calculateCompensationFactor(employeeId: string): Promise<number> {
   const employee = await prisma.employee.findUnique({
     where: { id: employeeId },
-    select: { companyId: true, jobGradeId: true, jobCategoryId: true },
+    include: {
+      assignments: {
+        where: { isPrimary: true, endDate: null },
+        take: 1,
+        select: { companyId: true, jobGradeId: true, jobCategoryId: true },
+      },
+    },
   })
 
   if (!employee) return 50
+
+  const assignment = employee.assignments?.[0]
 
   // Get latest compensation history for current salary
   const latestComp = await prisma.compensationHistory.findFirst({
@@ -72,16 +80,18 @@ async function calculateCompensationFactor(employeeId: string): Promise<number> 
   if (!latestComp) return 50 // no compensation data — neutral
 
   // Get matching salary band
-  const salaryBand = await prisma.salaryBand.findFirst({
-    where: {
-      companyId: employee.companyId,
-      jobGradeId: employee.jobGradeId,
-      ...(employee.jobCategoryId ? { jobCategoryId: employee.jobCategoryId } : {}),
-      deletedAt: null,
-    },
-    orderBy: { effectiveFrom: 'desc' },
-    select: { midSalary: true },
-  })
+  const salaryBand = assignment?.companyId && assignment?.jobGradeId
+    ? await prisma.salaryBand.findFirst({
+        where: {
+          companyId: assignment.companyId,
+          jobGradeId: assignment.jobGradeId,
+          ...(assignment.jobCategoryId ? { jobCategoryId: assignment.jobCategoryId } : {}),
+          deletedAt: null,
+        },
+        orderBy: { effectiveFrom: 'desc' },
+        select: { midSalary: true },
+      })
+    : null
 
   let score: number
 
@@ -150,17 +160,30 @@ async function calculatePerformanceFactor(employeeId: string): Promise<number> {
 }
 
 async function calculateManagerFactor(employeeId: string): Promise<number> {
+  // managerId no longer exists on Employee; use position-based manager lookup
   const employee = await prisma.employee.findUnique({
     where: { id: employeeId },
-    select: { managerId: true },
+    include: {
+      assignments: {
+        where: { isPrimary: true, endDate: null },
+        take: 1,
+        include: {
+          position: {
+            select: { reportsToPositionId: true },
+          },
+        },
+      },
+    },
   })
 
   if (!employee) return 50
 
-  // No manager assigned — higher uncertainty
-  if (!employee.managerId) return 50
+  const hasReportsTo = !!employee.assignments?.[0]?.position?.reportsToPositionId
 
-  // Has manager — default lower risk
+  // No manager position assigned — higher uncertainty
+  if (!hasReportsTo) return 50
+
+  // Has manager position chain — default lower risk
   // Future: integrate 1:1 frequency and Pulse manager scores
   return 30
 }
@@ -350,7 +373,17 @@ export async function calculateAttritionRiskBatch(
   companyId: string,
 ): Promise<{ processed: number }> {
   const employees = await prisma.employee.findMany({
-    where: { companyId, status: 'ACTIVE', deletedAt: null },
+    where: {
+      deletedAt: null,
+      assignments: {
+        some: {
+          companyId,
+          status: 'ACTIVE',
+          isPrimary: true,
+          endDate: null,
+        },
+      },
+    },
     select: { id: true },
   })
 

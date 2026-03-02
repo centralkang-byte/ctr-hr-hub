@@ -41,11 +41,11 @@ interface TeamAttendanceData {
 
 // ─── Status variant map ─────────────────────────────────────
 
-const STATUS_VARIANTS: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-  NORMAL: 'default',
-  LATE: 'secondary',
-  EARLY_OUT: 'outline',
-  ABSENT: 'destructive',
+const STATUS_BADGE_STYLES: Record<string, string> = {
+  NORMAL: 'bg-[#E8F5E9] text-[#2E7D32]',
+  LATE: 'bg-[#FFEBEE] text-[#E53935]',
+  EARLY_OUT: 'bg-[#FFF3E0] text-[#E65100]',
+  ABSENT: 'bg-[#FFEBEE] text-[#F44336]',
 }
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -119,14 +119,14 @@ export function AttendanceTeamClient({ user }: { user: SessionUser }) {
       render: (row) => {
         if (!row.attendance) {
           return (
-            <Badge variant="destructive">{t('notClockedIn')}</Badge>
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-[#FFEBEE] text-[#F44336]">{t('notClockedIn')}</span>
           )
         }
         const status = row.attendance.status
         return (
-          <Badge variant={STATUS_VARIANTS[status] ?? 'outline'}>
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_BADGE_STYLES[status] ?? 'bg-[#F5F5F5] text-[#666]'}`}>
             {STATUS_LABELS[status] ?? status}
-          </Badge>
+          </span>
         )
       },
     },
@@ -144,39 +144,21 @@ export function AttendanceTeamClient({ user }: { user: SessionUser }) {
       <PageHeader title={t('teamAttendance')} />
 
       {/* Summary cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              {t('clockIn')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{presentCount}</p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+          <p className="text-xs text-[#999] font-medium mb-2">{t('clockIn')}</p>
+          <p className="text-3xl font-bold text-[#00C853] tracking-[-0.02em]">{presentCount}</p>
+        </div>
 
-        <Card className="bg-amber-50">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              {t('notClockedIn')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{absentCount}</p>
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6 border-l-4 border-l-[#FF9800]">
+          <p className="text-xs text-[#999] font-medium mb-2">{t('notClockedIn')}</p>
+          <p className="text-3xl font-bold text-[#FF9800] tracking-[-0.02em]">{absentCount}</p>
+        </div>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              {t('late')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{lateCount}</p>
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+          <p className="text-xs text-[#999] font-medium mb-2">{t('late')}</p>
+          <p className={`text-3xl font-bold tracking-[-0.02em] ${lateCount > 0 ? 'text-[#F44336]' : 'text-[#1A1A1A]'}`}>{lateCount}</p>
+        </div>
       </div>
 
       {/* Team member table */}

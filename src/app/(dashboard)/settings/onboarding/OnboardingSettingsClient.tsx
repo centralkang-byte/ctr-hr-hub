@@ -122,7 +122,7 @@ function SortableTaskItem({
         type="button"
         {...attributes}
         {...listeners}
-        className="cursor-grab touch-none text-gray-400 hover:text-gray-600"
+        className="cursor-grab touch-none text-[#999] hover:text-[#666]"
       >
         <GripVertical className="h-4 w-4" />
       </button>
@@ -136,11 +136,11 @@ function SortableTaskItem({
       <Badge className={`text-xs ${assigneeColors[task.assigneeType] ?? ''}`}>
         {assigneeLabels[task.assigneeType] ?? task.assigneeType}
       </Badge>
-      <span className="text-xs text-gray-500">D+{task.dueDaysAfter}</span>
+      <span className="text-xs text-[#999]">D+{task.dueDaysAfter}</span>
       <Button
         variant="ghost"
         size="sm"
-        className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+        className="h-6 w-6 p-0 text-[#F44336] hover:text-[#D32F2F]"
         onClick={() => onDelete(task.id)}
       >
         <Trash2 className="h-3 w-3" />
@@ -156,11 +156,11 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
 
   const CATEGORY_COLORS: Record<string, string> = {
-    DOCUMENT: 'bg-blue-100 text-blue-800',
-    TRAINING: 'bg-green-100 text-green-800',
-    SETUP: 'bg-yellow-100 text-yellow-800',
-    INTRODUCTION: 'bg-purple-100 text-purple-800',
-    OTHER: 'bg-gray-100 text-gray-800',
+    DOCUMENT: 'bg-[#E3F2FD] text-[#2196F3]',
+    TRAINING: 'bg-[#E8F5E9] text-[#2E7D32]',
+    SETUP: 'bg-[#FFF3E0] text-[#FF9800]',
+    INTRODUCTION: 'bg-[#F3E5F5] text-[#9C27B0]',
+    OTHER: 'bg-[#F5F5F5] text-[#666]',
   }
 
   const CATEGORY_LABELS: Record<string, string> = {
@@ -172,10 +172,10 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
   }
 
   const ASSIGNEE_COLORS: Record<string, string> = {
-    EMPLOYEE: 'bg-gray-100 text-gray-800',
-    MANAGER: 'bg-blue-100 text-blue-800',
-    HR: 'bg-green-100 text-green-800',
-    BUDDY: 'bg-purple-100 text-purple-800',
+    EMPLOYEE: 'bg-[#E8F5E9] text-[#2E7D32]',
+    MANAGER: 'bg-[#E3F2FD] text-[#2196F3]',
+    HR: 'bg-[#FFEBEE] text-[#F44336]',
+    BUDDY: 'bg-[#F3E5F5] text-[#9C27B0]',
   }
 
   const ASSIGNEE_LABELS: Record<string, string> = {
@@ -426,9 +426,9 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
       render: (r) => {
         const row = r as unknown as OnboardingTemplateLocal
         return row.isActive ? (
-          <Badge className="bg-green-100 text-green-800">{t('active')}</Badge>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-[#E8F5E9] text-[#2E7D32]">{t('active')}</span>
         ) : (
-          <Badge className="bg-gray-100 text-gray-600">{t('inactive')}</Badge>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-[#F5F5F5] text-[#666]">{t('inactive')}</span>
         )
       },
     },
@@ -452,7 +452,7 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
             <Button
               variant="ghost"
               size="sm"
-              className="text-red-500 hover:text-red-700"
+              className="text-[#F44336] hover:text-[#D32F2F]"
               onClick={(e) => {
                 e.stopPropagation()
                 void handleDelete(row)
@@ -517,7 +517,7 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
                 {...templateForm.register('name')}
               />
               {templateForm.formState.errors.name && (
-                <p className="text-xs text-red-500">
+                <p className="text-xs text-[#F44336]">
                   {templateForm.formState.errors.name.message}
                 </p>
               )}
@@ -582,7 +582,7 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
 
           {tasksLoading ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+              <Loader2 className="h-6 w-6 animate-spin text-[#999]" />
             </div>
           ) : (
             <div className="space-y-3">
@@ -596,7 +596,7 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
                   strategy={verticalListSortingStrategy}
                 >
                   {tasks.length === 0 ? (
-                    <p className="py-4 text-center text-sm text-gray-500">
+                    <p className="py-4 text-center text-sm text-[#999]">
                       {t('noTasks')}
                     </p>
                   ) : (
@@ -633,7 +633,7 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
               ) : (
                 <form
                   onSubmit={taskForm.handleSubmit(handleAddTask)}
-                  className="space-y-3 rounded border bg-gray-50 p-3"
+                  className="space-y-3 rounded-lg border border-[#E8E8E8] bg-[#FAFAFA] p-3"
                 >
                   <div className="space-y-2">
                     <Label htmlFor="taskTitle">{t('taskName')}</Label>
@@ -643,7 +643,7 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
                       {...taskForm.register('title')}
                     />
                     {taskForm.formState.errors.title && (
-                      <p className="text-xs text-red-500">
+                      <p className="text-xs text-[#F44336]">
                         {taskForm.formState.errors.title.message}
                       </p>
                     )}
@@ -706,7 +706,7 @@ export function OnboardingSettingsClient({ user }: { user: SessionUser }) {
                       {...taskForm.register('dueDaysAfter', { valueAsNumber: true })}
                     />
                     {taskForm.formState.errors.dueDaysAfter && (
-                      <p className="text-xs text-red-500">
+                      <p className="text-xs text-[#F44336]">
                         {taskForm.formState.errors.dueDaysAfter.message}
                       </p>
                     )}

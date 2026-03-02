@@ -92,7 +92,7 @@ export function ModuleToggleClient({ user: _user }: { user: SessionUser }) {
           return (
             <Card
               key={mod.key}
-              className={`transition-colors ${isEnabled ? 'border-blue-200 bg-blue-50/30' : ''}`}
+              className={`transition-colors ${isEnabled ? 'border-[#E8F5E9] bg-[#E8F5E9]/30' : ''}`}
             >
               <CardContent className="flex items-start gap-3 p-4">
                 <Switch
@@ -104,7 +104,7 @@ export function ModuleToggleClient({ user: _user }: { user: SessionUser }) {
                   <p className="text-sm font-medium">{mod.label}</p>
                   <p className="text-xs text-muted-foreground">{mod.description}</p>
                   {'required' in mod && mod.required && (
-                    <span className="mt-1 inline-flex text-[10px] text-blue-600">{t('requiredModule')}</span>
+                    <span className="mt-1 inline-flex text-[10px] text-[#00C853]">{t('requiredModule')}</span>
                   )}
                 </div>
               </CardContent>

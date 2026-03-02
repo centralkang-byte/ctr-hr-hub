@@ -19,10 +19,10 @@ interface Consent {
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
-    active: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
-    revoked: 'bg-red-50 text-red-700 border border-red-200',
-    expired: 'bg-slate-50 text-slate-600 border border-slate-200',
-    pending: 'bg-amber-50 text-amber-700 border border-amber-200',
+    active: 'bg-[#D1FAE5] text-[#047857] border border-[#A7F3D0]',
+    revoked: 'bg-[#FEE2E2] text-[#B91C1C] border border-[#FECACA]',
+    expired: 'bg-[#FAFAFA] text-[#555] border border-[#E8E8E8]',
+    pending: 'bg-[#FEF3C7] text-[#B45309] border border-[#FCD34D]',
   }
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[status] ?? map.pending}`}>
@@ -66,65 +66,65 @@ export default function ConsentManagementTab() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-slate-800">{t('gdpr.consents')}</h2>
+        <h2 className="text-lg font-semibold text-[#1A1A1A]">{t('gdpr.consents')}</h2>
         <button
           onClick={() => setShowForm(true)}
-          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm"
+          className="inline-flex items-center gap-2 bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm"
         >
           <Plus className="w-4 h-4" />
           {t('gdpr.consentForm')}
         </button>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
+      <div className="bg-white rounded-xl border border-[#E8E8E8]">
         {loading ? (
-          <div className="p-8 text-center text-slate-500">{tc('loading')}</div>
+          <div className="p-8 text-center text-[#666]">{tc('loading')}</div>
         ) : consents.length === 0 ? (
-          <div className="p-8 text-center text-slate-500">{tc('noData')}</div>
+          <div className="p-8 text-center text-[#666]">{tc('noData')}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200">
-                  <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">{tc('name')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">{t('gdpr.purpose')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">{t('gdpr.legalBasis')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">{tc('status')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">{t('gdpr.consentedAt')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">{t('gdpr.expiresAt')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">{tc('actions')}</th>
+                <tr className="bg-[#FAFAFA] border-b border-[#E8E8E8]">
+                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tc('name')}</th>
+                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.purpose')}</th>
+                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.legalBasis')}</th>
+                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tc('status')}</th>
+                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.consentedAt')}</th>
+                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.expiresAt')}</th>
+                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tc('actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {consents.map((c) => (
-                  <tr key={c.id} className="border-b border-slate-100 hover:bg-slate-50">
+                  <tr key={c.id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
                     <td className="px-4 py-3 text-sm">
-                      <div className="font-medium text-slate-900">{c.employee_name}</div>
-                      <div className="text-xs text-slate-400">{c.employee_no}</div>
+                      <div className="font-medium text-[#1A1A1A]">{c.employee_name}</div>
+                      <div className="text-xs text-[#999]">{c.employee_no}</div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-slate-700">{c.purpose}</td>
-                    <td className="px-4 py-3 text-sm text-slate-600 max-w-[200px] truncate">{c.legal_basis}</td>
+                    <td className="px-4 py-3 text-sm text-[#333]">{c.purpose}</td>
+                    <td className="px-4 py-3 text-sm text-[#555] max-w-[200px] truncate">{c.legal_basis}</td>
                     <td className="px-4 py-3 text-sm">
                       <StatusBadge status={c.status} />
                     </td>
-                    <td className="px-4 py-3 text-sm text-slate-600">
+                    <td className="px-4 py-3 text-sm text-[#555]">
                       {c.consented_at ? new Date(c.consented_at).toLocaleDateString() : '-'}
                     </td>
-                    <td className="px-4 py-3 text-sm text-slate-600">
+                    <td className="px-4 py-3 text-sm text-[#555]">
                       {c.expires_at ? new Date(c.expires_at).toLocaleDateString() : '-'}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       {c.status === 'active' && (
                         <button
                           onClick={() => handleRevoke(c.id)}
-                          className="inline-flex items-center gap-1 text-red-600 hover:text-red-700 text-sm font-medium"
+                          className="inline-flex items-center gap-1 text-[#DC2626] hover:text-[#B91C1C] text-sm font-medium"
                         >
                           <XCircle className="w-4 h-4" />
                           {t('gdpr.revokeConsent')}
                         </button>
                       )}
                       {c.status !== 'active' && (
-                        <span className="text-slate-400 text-xs flex items-center gap-1">
+                        <span className="text-[#999] text-xs flex items-center gap-1">
                           <ShieldCheck className="w-3.5 h-3.5" />
                           {c.status}
                         </span>

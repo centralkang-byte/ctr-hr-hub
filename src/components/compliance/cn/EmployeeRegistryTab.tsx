@@ -130,20 +130,20 @@ export default function EmployeeRegistryTab() {
   }) ?? []
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+    <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-base font-semibold text-slate-900">
-            직원 명부 <span className="text-slate-400 font-normal text-sm">(花名册)</span>
+          <h2 className="text-base font-semibold text-[#1A1A1A]">
+            직원 명부 <span className="text-[#999] font-normal text-sm">(花名册)</span>
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-[#666] mt-0.5">
             재직 중인 직원 명부를 관리합니다
           </p>
         </div>
         <div className="flex items-center gap-2">
           {registryData && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#E8F5E9] text-[#00A844] border border-[#E8F5E9]">
               <Users className="w-3 h-3" />
               총 {registryData.meta.totalCount.toLocaleString()}명
             </span>
@@ -151,7 +151,7 @@ export default function EmployeeRegistryTab() {
           <button
             onClick={handleExport}
             disabled={exporting || !registryData}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Download className="w-4 h-4" />
             {exporting ? '내보내는 중...' : '명부 내보내기'}
@@ -166,12 +166,12 @@ export default function EmployeeRegistryTab() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="이름, 사번 검색..."
-          className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder:text-slate-400 w-56"
+          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853] placeholder:text-[#999] w-56"
         />
         <select
           value={departmentFilter}
           onChange={(e) => setDepartmentFilter(e.target.value)}
-          className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
         >
           <option value="">전체 부서</option>
           {departments.map((dept) => (
@@ -184,9 +184,9 @@ export default function EmployeeRegistryTab() {
 
       {/* Table */}
       {loading ? (
-        <div className="py-12 text-center text-sm text-slate-500">Loading...</div>
+        <div className="py-12 text-center text-sm text-[#666]">Loading...</div>
       ) : filteredRows.length === 0 ? (
-        <div className="py-12 text-center text-sm text-slate-500">
+        <div className="py-12 text-center text-sm text-[#666]">
           직원 데이터가 없습니다.
         </div>
       ) : (
@@ -194,7 +194,7 @@ export default function EmployeeRegistryTab() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-slate-50 text-xs text-slate-500 font-medium uppercase tracking-wider">
+                <tr className="bg-[#FAFAFA] text-xs text-[#666] font-medium uppercase tracking-wider">
                   <th className="px-4 py-3 text-left">사번</th>
                   <th className="px-4 py-3 text-left">이름</th>
                   <th className="px-4 py-3 text-left">성별</th>
@@ -211,43 +211,43 @@ export default function EmployeeRegistryTab() {
                 {filteredRows.map((row) => (
                   <tr
                     key={row.employeeNo}
-                    className="border-b border-slate-100 hover:bg-slate-50"
+                    className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]"
                   >
-                    <td className="px-4 py-3 font-mono text-slate-600 text-xs">
+                    <td className="px-4 py-3 font-mono text-[#555] text-xs">
                       {row.employeeNo}
                     </td>
                     <td className="px-4 py-3">
-                      <div className="font-medium text-slate-900">{row.name}</div>
+                      <div className="font-medium text-[#1A1A1A]">{row.name}</div>
                       {row.nameEn && (
-                        <div className="text-xs text-slate-400">{row.nameEn}</div>
+                        <div className="text-xs text-[#999]">{row.nameEn}</div>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-slate-700">
+                    <td className="px-4 py-3 text-[#333]">
                       {row.gender ? (GENDER_LABELS[row.gender] ?? row.gender) : '-'}
                     </td>
-                    <td className="px-4 py-3 text-slate-700">
+                    <td className="px-4 py-3 text-[#333]">
                       {row.birthDate ?? '-'}
                     </td>
-                    <td className="px-4 py-3 text-slate-700">{row.department}</td>
-                    <td className="px-4 py-3 text-slate-700">{row.jobGrade}</td>
-                    <td className="px-4 py-3 text-slate-700">
+                    <td className="px-4 py-3 text-[#333]">{row.department}</td>
+                    <td className="px-4 py-3 text-[#333]">{row.jobGrade}</td>
+                    <td className="px-4 py-3 text-[#333]">
                       {EMPLOYMENT_TYPE_LABELS[row.employmentType] ?? row.employmentType}
                     </td>
-                    <td className="px-4 py-3 text-slate-700">{row.hireDate}</td>
+                    <td className="px-4 py-3 text-[#333]">{row.hireDate}</td>
                     <td className="px-4 py-3 text-center">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           row.status === 'ACTIVE'
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                            ? 'bg-[#D1FAE5] text-[#047857] border border-[#A7F3D0]'
                             : row.status === 'ON_LEAVE'
-                              ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                              : 'bg-slate-50 text-slate-600 border border-slate-200'
+                              ? 'bg-[#FEF3C7] text-[#B45309] border border-[#FCD34D]'
+                              : 'bg-[#FAFAFA] text-[#555] border border-[#E8E8E8]'
                         }`}
                       >
                         {STATUS_LABELS[row.status] ?? row.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-600 text-xs">{row.email}</td>
+                    <td className="px-4 py-3 text-[#555] text-xs">{row.email}</td>
                   </tr>
                 ))}
               </tbody>
@@ -255,14 +255,14 @@ export default function EmployeeRegistryTab() {
           </div>
 
           <div className="mt-3 flex items-center justify-between">
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[#999]">
               {filteredRows.length.toLocaleString()}명 표시
               {registryData && filteredRows.length < registryData.rows.length
                 ? ` (전체 ${registryData.rows.length.toLocaleString()}명 중)`
                 : ''}
             </p>
             {registryData && (
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-[#999]">
                 생성일시: {new Date(registryData.meta.generatedAt).toLocaleString('ko-KR')}
               </p>
             )}

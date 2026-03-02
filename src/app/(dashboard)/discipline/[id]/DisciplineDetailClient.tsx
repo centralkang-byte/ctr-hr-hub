@@ -149,7 +149,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
             <Gavel className="w-5 h-5 text-[#F44336]" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-[#333]" style={{ letterSpacing: '-0.02em' }}>
+            <h1 className="text-xl font-bold text-[#1A1A1A] tracking-[-0.02em]">
               {t('title')}
             </h1>
             <div className="flex items-center gap-2 mt-0.5">
@@ -170,7 +170,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
         <div className="space-y-6">
           {/* Info Card */}
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+            <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
               {t('disciplineInfo')}
             </h2>
             <div className="grid grid-cols-2 gap-y-4 gap-x-6">
@@ -188,11 +188,11 @@ export default function DisciplineDetailClient({ user, id }: Props) {
 
           {/* Description */}
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h2 className="text-base font-bold text-[#333] mb-3 flex items-center gap-2" style={{ letterSpacing: '-0.02em' }}>
+            <h2 className="text-base font-bold text-[#1A1A1A] mb-3 flex items-center gap-2 tracking-[-0.02em]">
               <FileText className="w-4 h-4 text-[#666]" />
               {t('reason')}
             </h2>
-            <p className="text-sm text-[#333] leading-relaxed whitespace-pre-wrap">
+            <p className="text-sm text-[#1A1A1A] leading-relaxed whitespace-pre-wrap">
               {data.description}
             </p>
           </div>
@@ -200,7 +200,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
           {/* Evidence */}
           {data.evidenceKeys && data.evidenceKeys.length > 0 && (
             <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-              <h2 className="text-base font-bold text-[#333] mb-3" style={{ letterSpacing: '-0.02em' }}>
+              <h2 className="text-base font-bold text-[#1A1A1A] mb-3 tracking-[-0.02em]">
                 {t('evidence')}
               </h2>
               <div className="space-y-1.5">
@@ -217,7 +217,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
           {/* Committee */}
           {(data.committeeDate || (data.committeeMembers && data.committeeMembers.length > 0)) && (
             <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-              <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+              <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
                 {t('committee')}
               </h2>
               <div className="grid grid-cols-2 gap-y-3 gap-x-6">
@@ -230,13 +230,13 @@ export default function DisciplineDetailClient({ user, id }: Props) {
                 {data.committeeMembers && data.committeeMembers.length > 0 && (
                   <div className="col-span-2">
                     <span className="text-xs text-[#999]">{t('committeeMembers')}</span>
-                    <p className="text-sm text-[#333]">{data.committeeMembers.join(', ')}</p>
+                    <p className="text-sm text-[#1A1A1A]">{data.committeeMembers.join(', ')}</p>
                   </div>
                 )}
                 {data.decision && (
                   <div className="col-span-2">
                     <span className="text-xs text-[#999]">{t('decisionContent')}</span>
-                    <p className="text-sm text-[#333] whitespace-pre-wrap">{data.decision}</p>
+                    <p className="text-sm text-[#1A1A1A] whitespace-pre-wrap">{data.decision}</p>
                   </div>
                 )}
               </div>
@@ -246,7 +246,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
           {/* Conditional: Suspension */}
           {data.suspensionStart && (
             <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-              <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+              <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
                 {t('suspensionPeriod')}
               </h2>
               <div className="grid grid-cols-2 gap-y-3 gap-x-6">
@@ -261,7 +261,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
           {/* Conditional: Salary Reduction */}
           {data.salaryReductionRate !== null && data.salaryReductionRate !== undefined && (
             <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-              <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+              <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
                 {t('salaryReductionInfo')}
               </h2>
               <div className="grid grid-cols-2 gap-y-3 gap-x-6">
@@ -276,7 +276,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
           {/* Conditional: Demotion */}
           {data.demotionGrade && (
             <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-              <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+              <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
                 {t('demotionInfo')}
               </h2>
               <InfoItem label={t('demotionGrade')} value={data.demotionGrade.name} />
@@ -293,25 +293,25 @@ export default function DisciplineDetailClient({ user, id }: Props) {
                 <User className="w-5 h-5 text-[#1565C0]" />
               </div>
               <div>
-                <p className="text-sm font-bold text-[#333]">{data.employee.name}</p>
+                <p className="text-sm font-bold text-[#1A1A1A]">{data.employee.name}</p>
                 <p className="text-xs text-[#999]">{data.employee.employeeNo}</p>
               </div>
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[#999]">{tCommon('department')}</span>
-                <span className="text-[#333]">{data.employee.department?.name ?? '-'}</span>
+                <span className="text-[#1A1A1A]">{data.employee.department?.name ?? '-'}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[#999]">{tCommon('grade')}</span>
-                <span className="text-[#333]">{data.employee.jobGrade?.name ?? '-'}</span>
+                <span className="text-[#1A1A1A]">{data.employee.jobGrade?.name ?? '-'}</span>
               </div>
             </div>
           </div>
 
           {/* Appeal Section */}
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h3 className="text-base font-bold text-[#333] mb-4 flex items-center gap-2" style={{ letterSpacing: '-0.02em' }}>
+            <h3 className="text-base font-bold text-[#1A1A1A] mb-4 flex items-center gap-2 tracking-[-0.02em]">
               <AlertTriangle className="w-4 h-4 text-[#FF9800]" />
               {t('appealSection')}
             </h3>
@@ -323,7 +323,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
                   onChange={(e) => setAppealText(e.target.value)}
                   rows={4}
                   placeholder={t('appealPlaceholder')}
-                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] resize-none"
+                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 resize-none"
                 />
                 <button
                   onClick={handleAppeal}
@@ -348,7 +348,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
                   )}
                 </div>
                 {data.appealText && (
-                  <p className="text-sm text-[#333] whitespace-pre-wrap">{data.appealText}</p>
+                  <p className="text-sm text-[#1A1A1A] whitespace-pre-wrap">{data.appealText}</p>
                 )}
               </div>
             )}
@@ -359,7 +359,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
                   {tPage('appealLabels.UNDER_REVIEW')}
                 </span>
                 {data.appealText && (
-                  <p className="text-sm text-[#333] whitespace-pre-wrap">{data.appealText}</p>
+                  <p className="text-sm text-[#1A1A1A] whitespace-pre-wrap">{data.appealText}</p>
                 )}
               </div>
             )}
@@ -372,13 +372,13 @@ export default function DisciplineDetailClient({ user, id }: Props) {
                 {data.appealText && (
                   <div className="mt-2">
                     <span className="text-xs text-[#999]">{t('appealContent')}</span>
-                    <p className="text-sm text-[#333] whitespace-pre-wrap">{data.appealText}</p>
+                    <p className="text-sm text-[#1A1A1A] whitespace-pre-wrap">{data.appealText}</p>
                   </div>
                 )}
                 {data.appealResult && (
                   <div className="mt-2">
                     <span className="text-xs text-[#999]">{t('appealReviewResult')}</span>
-                    <p className="text-sm text-[#333] whitespace-pre-wrap">{data.appealResult}</p>
+                    <p className="text-sm text-[#1A1A1A] whitespace-pre-wrap">{data.appealResult}</p>
                   </div>
                 )}
               </div>
@@ -396,7 +396,7 @@ function InfoItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <span className="text-xs text-[#999]">{label}</span>
-      <p className="text-sm text-[#333] mt-0.5">{value}</p>
+      <p className="text-sm text-[#1A1A1A] mt-0.5">{value}</p>
     </div>
   )
 }

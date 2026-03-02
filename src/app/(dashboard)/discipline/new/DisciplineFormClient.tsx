@@ -171,7 +171,7 @@ export default function DisciplineFormClient({ user }: Props) {
           <div className="w-10 h-10 bg-[#FFEBEE] rounded-lg flex items-center justify-center">
             <Gavel className="w-5 h-5 text-[#F44336]" />
           </div>
-          <h1 className="text-xl font-bold text-[#333]" style={{ letterSpacing: '-0.02em' }}>
+          <h1 className="text-xl font-bold text-[#1A1A1A] tracking-[-0.02em]">
             {t('title')}
           </h1>
         </div>
@@ -182,16 +182,16 @@ export default function DisciplineFormClient({ user }: Props) {
       <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6 max-w-3xl">
         {/* Basic Info */}
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-          <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+          <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
             {t('basicInfo')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Employee */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">{t('targetEmployee')} *</label>
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{t('targetEmployee')} *</label>
               <select
                 {...register('employeeId')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] bg-white"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 bg-white"
               >
                 <option value="">{t('selectEmployee')}</option>
                 {employees.map((emp) => (
@@ -207,10 +207,10 @@ export default function DisciplineFormClient({ user }: Props) {
 
             {/* Action Type */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">{tPage('disciplineType')} *</label>
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{tPage('disciplineType')} *</label>
               <select
                 {...register('actionType')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] bg-white"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 bg-white"
               >
                 <option value="">{t('selectType')}</option>
                 {TYPE_KEYS.map((key) => (
@@ -224,10 +224,10 @@ export default function DisciplineFormClient({ user }: Props) {
 
             {/* Category */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">{tCommon('category')} *</label>
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{tCommon('category')} *</label>
               <select
                 {...register('category')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] bg-white"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 bg-white"
               >
                 <option value="">{t('selectCategory')}</option>
                 {CATEGORY_KEYS.map((key) => (
@@ -241,11 +241,11 @@ export default function DisciplineFormClient({ user }: Props) {
 
             {/* Incident Date */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">{tPage('incidentDate')} *</label>
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{tPage('incidentDate')} *</label>
               <input
                 type="date"
                 {...register('incidentDate')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3]"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
               />
               {errors.incidentDate && (
                 <p className="text-xs text-[#F44336] mt-1">{errors.incidentDate.message}</p>
@@ -254,25 +254,25 @@ export default function DisciplineFormClient({ user }: Props) {
 
             {/* Valid Months */}
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">{t('validMonthsLabel')}</label>
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{t('validMonthsLabel')}</label>
               <input
                 type="number"
                 min={1}
                 {...register('validMonths')}
                 placeholder={t('validMonthsPlaceholder')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3]"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
               />
             </div>
           </div>
 
           {/* Description */}
           <div className="mt-4">
-            <label className="block text-sm font-medium text-[#333] mb-1">{tCommon('description')} *</label>
+            <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{tCommon('description')} *</label>
             <textarea
               {...register('description')}
               rows={4}
               placeholder={t('descriptionPlaceholder')}
-              className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] resize-none"
+              className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 resize-none"
             />
             {errors.description && (
               <p className="text-xs text-[#F44336] mt-1">{errors.description.message}</p>
@@ -281,12 +281,12 @@ export default function DisciplineFormClient({ user }: Props) {
 
           {/* Evidence */}
           <div className="mt-4">
-            <label className="block text-sm font-medium text-[#333] mb-1">{t('evidenceLabel')}</label>
+            <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{t('evidenceLabel')}</label>
             <textarea
               {...register('evidenceKeys')}
               rows={2}
               placeholder={t('evidencePlaceholder')}
-              className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] resize-none"
+              className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 resize-none"
             />
           </div>
         </div>
@@ -294,24 +294,24 @@ export default function DisciplineFormClient({ user }: Props) {
         {/* Conditional: SUSPENSION */}
         {actionType === 'SUSPENSION' && (
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+            <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
               {t('suspensionPeriod')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-[#333] mb-1">{t('suspensionStart')}</label>
+                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{t('suspensionStart')}</label>
                 <input
                   type="date"
                   {...register('suspensionStart')}
-                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3]"
+                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#333] mb-1">{t('suspensionEnd')}</label>
+                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{t('suspensionEnd')}</label>
                 <input
                   type="date"
                   {...register('suspensionEnd')}
-                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3]"
+                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
                 />
               </div>
             </div>
@@ -321,29 +321,29 @@ export default function DisciplineFormClient({ user }: Props) {
         {/* Conditional: PAY_CUT */}
         {actionType === 'PAY_CUT' && (
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+            <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
               {t('payCutConditions')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-[#333] mb-1">{t('reductionRate')}</label>
+                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{t('reductionRate')}</label>
                 <input
                   type="number"
                   min={0}
                   max={100}
                   {...register('salaryReductionRate')}
                   placeholder={t('reductionRatePlaceholder')}
-                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3]"
+                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#333] mb-1">{t('reductionPeriod')}</label>
+                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{t('reductionPeriod')}</label>
                 <input
                   type="number"
                   min={1}
                   {...register('salaryReductionMonths')}
                   placeholder={t('reductionPeriodPlaceholder')}
-                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3]"
+                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
                 />
               </div>
             </div>
@@ -353,14 +353,14 @@ export default function DisciplineFormClient({ user }: Props) {
         {/* Conditional: DEMOTION */}
         {actionType === 'DEMOTION' && (
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+            <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
               {t('demotionInfo')}
             </h2>
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">{t('demotionGrade')}</label>
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{t('demotionGrade')}</label>
               <select
                 {...register('demotionGradeId')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] bg-white"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 bg-white"
               >
                 <option value="">{t('selectGrade')}</option>
                 {grades.map((g) => (
@@ -378,7 +378,7 @@ export default function DisciplineFormClient({ user }: Props) {
             onClick={() => setCommitteeOpen((prev) => !prev)}
             className="flex items-center justify-between w-full p-6 text-left"
           >
-            <h2 className="text-base font-bold text-[#333]" style={{ letterSpacing: '-0.02em' }}>
+            <h2 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em]">
               {t('committeeOptional')}
             </h2>
             {committeeOpen ? (
@@ -391,38 +391,38 @@ export default function DisciplineFormClient({ user }: Props) {
             <div className="px-6 pb-6 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#333] mb-1">{t('committeeDate')}</label>
+                  <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{t('committeeDate')}</label>
                   <input
                     type="date"
                     {...register('committeeDate')}
-                    className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3]"
+                    className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#333] mb-1">{t('decisionDate')}</label>
+                  <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{t('decisionDate')}</label>
                   <input
                     type="date"
                     {...register('decisionDate')}
-                    className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3]"
+                    className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#333] mb-1">{t('committeeMembersLabel')}</label>
+                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{t('committeeMembersLabel')}</label>
                 <input
                   type="text"
                   {...register('committeeMembers')}
                   placeholder={t('committeeMembersPlaceholder')}
-                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3]"
+                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#333] mb-1">{t('decisionContent')}</label>
+                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{t('decisionContent')}</label>
                 <textarea
                   {...register('decision')}
                   rows={2}
                   placeholder={t('decisionContentPlaceholder')}
-                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] resize-none"
+                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 resize-none"
                 />
               </div>
             </div>
@@ -441,7 +441,7 @@ export default function DisciplineFormClient({ user }: Props) {
           <button
             type="button"
             onClick={() => router.back()}
-            className="px-6 py-2.5 text-sm font-medium border border-[#E8E8E8] text-[#333] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150"
+            className="px-6 py-2.5 text-sm font-medium border border-[#E8E8E8] text-[#1A1A1A] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150"
           >
             {tCommon('cancel')}
           </button>

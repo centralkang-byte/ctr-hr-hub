@@ -31,19 +31,27 @@ export const GET = withPermission(
     const { cycleId } = parsed.data
 
     // Find direct reports
+    // TODO: implement proper manager hierarchy via position reportsTo
     const directReports = await prisma.employee.findMany({
       where: {
-        managerId: user.employeeId,
-        companyId: user.companyId,
         deletedAt: null,
+        assignments: {
+          some: { companyId: user.companyId, isPrimary: true, endDate: null },
+        },
       },
       select: {
         id: true,
         name: true,
         employeeNo: true,
         email: true,
-        department: { select: { id: true, name: true } },
-        jobGrade: { select: { id: true, name: true } },
+        assignments: {
+          where: { isPrimary: true, endDate: null },
+          take: 1,
+          include: {
+            department: { select: { id: true, name: true } },
+            jobGrade: { select: { id: true, name: true } },
+          },
+        },
       },
     })
 

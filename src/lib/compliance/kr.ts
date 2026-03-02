@@ -78,14 +78,43 @@ export async function getEmployeeWorkHours(companyId: string, weekStart: Date, p
   weekEnd.setDate(weekEnd.getDate() + 7)
 
   const employees = await prisma.employee.findMany({
-    where: { companyId, status: 'ACTIVE', deletedAt: null },
-    select: { id: true, name: true, employeeNo: true, departmentId: true },
+    where: {
+      deletedAt: null,
+      assignments: {
+        some: {
+          companyId,
+          status: 'ACTIVE',
+          isPrimary: true,
+          endDate: null,
+        },
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      employeeNo: true,
+      assignments: {
+        where: { isPrimary: true, endDate: null },
+        take: 1,
+        select: { departmentId: true },
+      },
+    },
     skip: (page - 1) * limit,
     take: limit,
   })
 
   const total = await prisma.employee.count({
-    where: { companyId, status: 'ACTIVE', deletedAt: null },
+    where: {
+      deletedAt: null,
+      assignments: {
+        some: {
+          companyId,
+          status: 'ACTIVE',
+          isPrimary: true,
+          endDate: null,
+        },
+      },
+    },
   })
 
   const employeeIds = employees.map((e) => e.id)
@@ -110,7 +139,10 @@ export async function getEmployeeWorkHours(companyId: string, weekStart: Date, p
   const data = employees.map((e) => {
     const hours = Math.round((hoursByEmployee.get(e.id) ?? 0) * 10) / 10
     return {
-      ...e,
+      id: e.id,
+      name: e.name,
+      employeeNo: e.employeeNo,
+      departmentId: e.assignments?.[0]?.departmentId ?? null,
       weeklyHours: hours,
       status: classifyWorkHoursStatus(hours),
     }
@@ -130,7 +162,17 @@ export async function getMandatoryTrainingStatus(companyId: string, year: number
         include: {
           enrollments: {
             where: {
-              employee: { companyId, status: 'ACTIVE', deletedAt: null },
+              employee: {
+                deletedAt: null,
+                assignments: {
+                  some: {
+                    companyId,
+                    status: 'ACTIVE',
+                    isPrimary: true,
+                    endDate: null,
+                  },
+                },
+              },
             },
             select: { employeeId: true, status: true, completedAt: true },
           },
@@ -140,7 +182,17 @@ export async function getMandatoryTrainingStatus(companyId: string, year: number
   })
 
   const totalActiveEmployees = await prisma.employee.count({
-    where: { companyId, status: 'ACTIVE', deletedAt: null },
+    where: {
+      deletedAt: null,
+      assignments: {
+        some: {
+          companyId,
+          status: 'ACTIVE',
+          isPrimary: true,
+          endDate: null,
+        },
+      },
+    },
   })
 
   return trainings.map((mt) => {

@@ -116,12 +116,12 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
         <div className="space-y-4 py-2 max-h-[60vh] overflow-y-auto pr-1">
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              {tc('name')} / Title <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-[#333] mb-1">
+              {tc('name')} / Title <span className="text-[#EF4444]">*</span>
             </label>
             <input
               type="text"
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853]"
               placeholder="e.g., Employee Biometric Attendance System DPIA"
               value={form.title}
               onChange={(e) => handleChange('title', e.target.value)}
@@ -130,9 +130,9 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">{tc('description')}</label>
+            <label className="block text-sm font-medium text-[#333] mb-1">{tc('description')}</label>
             <textarea
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853] resize-none"
               rows={3}
               placeholder="Describe the data processing activity..."
               value={form.description}
@@ -142,11 +142,11 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
 
           {/* Processing Scope */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              {t('gdpr.processingScope')} <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-[#333] mb-1">
+              {t('gdpr.processingScope')} <span className="text-[#EF4444]">*</span>
             </label>
             <textarea
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853] resize-none"
               rows={4}
               placeholder="Describe what personal data is processed, how, and by whom..."
               value={form.processing_scope}
@@ -156,7 +156,7 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
 
           {/* Risk Level */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">{t('gdpr.riskLevel')}</label>
+            <label className="block text-sm font-medium text-[#333] mb-1">{t('gdpr.riskLevel')}</label>
             <div className="grid grid-cols-4 gap-2">
               {RISK_LEVELS.map((rl) => (
                 <button
@@ -165,11 +165,11 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
                   onClick={() => handleChange('risk_level', rl.value)}
                   className={`px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${
                     form.risk_level === rl.value
-                      ? rl.value === 'low' ? 'bg-emerald-600 text-white border-emerald-600'
-                      : rl.value === 'medium' ? 'bg-amber-500 text-white border-amber-500'
-                      : rl.value === 'high' ? 'bg-orange-500 text-white border-orange-500'
-                      : 'bg-red-600 text-white border-red-600'
-                      : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
+                      ? rl.value === 'low' ? 'bg-[#059669] text-white border-[#059669]'
+                      : rl.value === 'medium' ? 'bg-[#F59E0B] text-white border-[#F59E0B]'
+                      : rl.value === 'high' ? 'bg-[#F97316] text-white border-[#F97316]'
+                      : 'bg-[#DC2626] text-white border-[#DC2626]'
+                      : 'bg-white text-[#555] border-[#D4D4D4] hover:bg-[#FAFAFA]'
                   }`}
                 >
                   {rl.label}
@@ -180,9 +180,9 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
 
           {/* Mitigations */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">{t('gdpr.mitigations')}</label>
+            <label className="block text-sm font-medium text-[#333] mb-1">{t('gdpr.mitigations')}</label>
             <textarea
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853] resize-none"
               rows={4}
               placeholder="Describe risk mitigation measures..."
               value={form.mitigations}
@@ -193,9 +193,9 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
           {/* Status */}
           {isEdit && (
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{tc('status')}</label>
+              <label className="block text-sm font-medium text-[#333] mb-1">{tc('status')}</label>
               <select
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853]"
                 value={form.status}
                 onChange={(e) => handleChange('status', e.target.value)}
               >
@@ -206,20 +206,20 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
             </div>
           )}
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-[#DC2626]">{error}</p>}
         </div>
 
         <DialogFooter className="gap-2">
           <button
             onClick={onClose}
-            className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-lg font-medium text-sm"
+            className="bg-white border border-[#D4D4D4] hover:bg-[#FAFAFA] text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
           >
             {tc('cancel')}
           </button>
           <button
             onClick={handleSubmit}
             disabled={saving}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
+            className="bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
           >
             {saving ? tc('loading') : tc('save')}
           </button>

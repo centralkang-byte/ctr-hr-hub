@@ -38,8 +38,8 @@ export const GET = withPermission(
     const futureDate = new Date()
     futureDate.setDate(futureDate.getDate() + days)
 
-    // Company scope enforcement
-    const companyFilter =
+    // Company scope enforcement via assignments
+    const assignmentCompanyFilter =
       user.role === 'SUPER_ADMIN'
         ? companyId
           ? { companyId }
@@ -53,20 +53,28 @@ export const GET = withPermission(
           gte: now,
           lte: futureDate,
         },
-        ...companyFilter,
+        assignments: {
+          some: { ...assignmentCompanyFilter, isPrimary: true, endDate: null },
+        },
       },
       select: {
         id: true,
         name: true,
         employeeNo: true,
         email: true,
-        companyId: true,
-        contractType: true,
         contractNumber: true,
         contractStartDate: true,
         contractEndDate: true,
-        department: { select: { id: true, name: true } },
-        jobGrade: { select: { id: true, name: true } },
+        assignments: {
+          where: { isPrimary: true, endDate: null },
+          take: 1,
+          select: {
+            companyId: true,
+            contractType: true,
+            department: { select: { id: true, name: true } },
+            jobGrade: { select: { id: true, name: true } },
+          },
+        },
       },
       orderBy: { contractEndDate: 'asc' },
     })

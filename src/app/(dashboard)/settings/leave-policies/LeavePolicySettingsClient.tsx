@@ -256,9 +256,9 @@ export function LeavePolicySettingsClient({ user }: { user: SessionUser }) {
       header: t('isPaid'),
       render: (row: LeavePolicyLocal) =>
         row.isPaid ? (
-          <Badge className="bg-green-100 text-green-800 hover:bg-green-100">{t('paid')}</Badge>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-[#E8F5E9] text-[#2E7D32]">{t('paid')}</span>
         ) : (
-          <Badge variant="secondary">{t('unpaid')}</Badge>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-[#F5F5F5] text-[#666]">{t('unpaid')}</span>
         ),
     },
     {
@@ -266,9 +266,9 @@ export function LeavePolicySettingsClient({ user }: { user: SessionUser }) {
       header: t('carryOver'),
       render: (row: LeavePolicyLocal) =>
         row.carryOverAllowed ? (
-          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">{t('carryOverAllowed')}</Badge>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-[#E3F2FD] text-[#2196F3]">{t('carryOverAllowed')}</span>
         ) : (
-          <Badge variant="secondary">{t('carryOverNotAllowed')}</Badge>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-[#F5F5F5] text-[#666]">{t('carryOverNotAllowed')}</span>
         ),
     },
     {

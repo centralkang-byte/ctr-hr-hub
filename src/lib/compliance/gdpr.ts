@@ -89,8 +89,14 @@ export async function generateDataExport(employeeId: string) {
   const employee = await prisma.employee.findUnique({
     where: { id: employeeId },
     include: {
-      department: { select: { name: true } },
-      jobGrade: { select: { name: true } },
+      assignments: {
+        where: { isPrimary: true, endDate: null },
+        take: 1,
+        include: {
+          department: { select: { name: true } },
+          jobGrade: { select: { name: true } },
+        },
+      },
       attendances: { take: 100, orderBy: { clockIn: 'desc' } },
       leaveRequests: { take: 100, orderBy: { createdAt: 'desc' } },
       compensationHistories: { take: 50, orderBy: { effectiveDate: 'desc' } },
@@ -104,6 +110,8 @@ export async function generateDataExport(employeeId: string) {
   })
   if (!employee) return null
 
+  const assignment = employee.assignments?.[0]
+
   return {
     exportedAt: new Date().toISOString(),
     personalData: {
@@ -115,33 +123,33 @@ export async function generateDataExport(employeeId: string) {
       gender: employee.gender,
       nationality: employee.nationality,
       hireDate: employee.hireDate,
-      department: employee.department.name,
-      jobGrade: employee.jobGrade.name,
+      department: assignment?.department?.name ?? '-',
+      jobGrade: assignment?.jobGrade?.name ?? '-',
     },
-    attendanceRecords: employee.attendances.map((a) => ({
+    attendanceRecords: employee.attendances.map((a: any) => ({
       date: a.clockIn,
       clockIn: a.clockIn,
       clockOut: a.clockOut,
       status: a.status,
     })),
-    leaveRecords: employee.leaveRequests.map((l) => ({
+    leaveRecords: employee.leaveRequests.map((l: any) => ({
       policyId: l.policyId,
       startDate: l.startDate,
       endDate: l.endDate,
       status: l.status,
     })),
-    compensationHistory: employee.compensationHistories.map((c) => ({
+    compensationHistory: employee.compensationHistories.map((c: any) => ({
       changeType: c.changeType,
       effectiveDate: c.effectiveDate,
       newBaseSalary: Number(c.newBaseSalary),
     })),
-    trainingRecords: employee.trainingEnrollments.map((t) => ({
+    trainingRecords: employee.trainingEnrollments.map((t: any) => ({
       course: t.course.title,
       category: t.course.category,
       status: t.status,
       completedAt: t.completedAt,
     })),
-    consents: employee.gdprConsents.map((c) => ({
+    consents: employee.gdprConsents.map((c: any) => ({
       purpose: c.purpose,
       status: c.status,
       consentedAt: c.consentedAt,

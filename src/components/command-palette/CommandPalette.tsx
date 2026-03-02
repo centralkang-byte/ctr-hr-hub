@@ -53,7 +53,7 @@ interface ApiDocument {
 // ─── Menu items for fuzzy matching ──────────────────────────
 
 const MENU_ITEMS: SearchResult[] = [
-  { id: 'menu-home', label: '홈', href: '/', category: 'menu' },
+  { id: 'menu-home', label: '홈', href: '/home', category: 'menu' },
   { id: 'menu-employees', label: '직원 관리', href: '/employees', category: 'menu' },
   { id: 'menu-attendance', label: '근태 관리', href: '/attendance', category: 'menu' },
   { id: 'menu-attendance-team', label: '팀 근태', href: '/attendance/team', category: 'menu' },

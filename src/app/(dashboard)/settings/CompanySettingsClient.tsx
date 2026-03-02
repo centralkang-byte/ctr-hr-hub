@@ -136,7 +136,7 @@ export function CompanySettingsClient({ user: _user }: { user: SessionUser }) {
   }
 
   const addCoreValue = () => {
-    setCoreValues((prev) => [...prev, { key: '', label: '', color: '#2563EB' }])
+    setCoreValues((prev) => [...prev, { key: '', label: '', color: '#00C853' }])
   }
 
   const removeCoreValue = (index: number) => {
@@ -253,7 +253,7 @@ export function CompanySettingsClient({ user: _user }: { user: SessionUser }) {
                 />
                 <Input
                   type="color"
-                  value={cv.color ?? '#2563EB'}
+                  value={cv.color ?? '#00C853'}
                   onChange={(e) => updateCoreValue(i, 'color', e.target.value)}
                   className="h-9 w-14 p-1"
                 />

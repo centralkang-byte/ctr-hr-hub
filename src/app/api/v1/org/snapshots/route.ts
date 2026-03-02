@@ -92,29 +92,29 @@ export const POST = withPermission(
         include: {
           _count: {
             select: {
-              employees: {
-                where: { deletedAt: null, status: 'ACTIVE' },
+              assignments: {
+                where: { endDate: null },
               },
             },
           },
         },
         orderBy: { sortOrder: 'asc' },
       }),
-      prisma.employee.count({
-        where: { companyId, deletedAt: null, status: 'ACTIVE' },
+      prisma.employeeAssignment.count({
+        where: { companyId, status: 'ACTIVE', isPrimary: true, endDate: null },
       }),
     ])
 
     const snapshotData = {
       totalHeadcount,
       capturedAt: new Date().toISOString(),
-      departments: departments.map((dept) => ({
+      departments: departments.map((dept: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
         id: dept.id,
         name: dept.name,
         code: dept.code,
         level: dept.level,
         parentId: dept.parentId,
-        headcount: dept._count.employees,
+        headcount: dept._count.assignments,
       })),
     }
 

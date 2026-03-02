@@ -78,7 +78,7 @@ export function ManagerHome({ user }: ManagerHomeProps) {
                 <p className="text-xs text-ctr-gray-500">출근</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-yellow-600">2</p>
+                <p className="text-2xl font-bold text-[#CA8A04]">2</p>
                 <p className="text-xs text-ctr-gray-500">휴가</p>
               </div>
               <div className="text-center">
@@ -230,7 +230,7 @@ export function ManagerHome({ user }: ManagerHomeProps) {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-ctr-gray-500">수습 중</span>
-                <span className="text-sm font-medium text-yellow-600">1명</span>
+                <span className="text-sm font-medium text-[#CA8A04]">1명</span>
               </div>
             </div>
           </CardContent>

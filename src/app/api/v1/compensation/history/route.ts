@@ -31,7 +31,7 @@ export const GET = withPermission(
         companyId,
         ...(employeeId ? { employeeId } : {}),
         ...(departmentId
-          ? { employee: { departmentId } }
+          ? { employee: { assignments: { some: { departmentId, isPrimary: true, endDate: null } } } }
           : {}),
         ...(changeType
           ? { changeType: changeType as CompensationChangeType }
@@ -48,8 +48,14 @@ export const GET = withPermission(
             employee: {
               select: {
                 name: true,
-                department: { select: { name: true } },
-                jobGrade: { select: { name: true } },
+                assignments: {
+                  where: { isPrimary: true, endDate: null },
+                  take: 1,
+                  select: {
+                    department: { select: { name: true } },
+                    jobGrade: { select: { name: true } },
+                  },
+                },
               },
             },
             approver: {

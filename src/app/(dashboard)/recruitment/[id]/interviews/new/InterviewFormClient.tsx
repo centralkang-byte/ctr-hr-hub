@@ -260,7 +260,7 @@ export function InterviewFormClient({
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           {/* Applicant Select */}
           <div>
-            <Label style={{ fontSize: 14, color: '#333', fontWeight: 600 }}>
+            <Label style={{ fontSize: 14, color: '#1A1A1A', fontWeight: 600 }}>
               {t('selectApplicant')}
             </Label>
             <Select
@@ -287,7 +287,7 @@ export function InterviewFormClient({
 
           {/* Interviewer Search */}
           <div style={{ position: 'relative' }}>
-            <Label style={{ fontSize: 14, color: '#333', fontWeight: 600 }}>
+            <Label style={{ fontSize: 14, color: '#1A1A1A', fontWeight: 600 }}>
               {t('interviewerFormLabel')}
             </Label>
             {selectedEmployeeName ? (
@@ -306,7 +306,7 @@ export function InterviewFormClient({
                     border: '1px solid #E8E8E8',
                     flex: 1,
                     fontSize: 14,
-                    color: '#333',
+                    color: '#1A1A1A',
                     backgroundColor: '#FAFAFA',
                   }}
                 >
@@ -402,7 +402,7 @@ export function InterviewFormClient({
                             background: 'none',
                             cursor: 'pointer',
                             fontSize: 14,
-                            color: '#333',
+                            color: '#1A1A1A',
                             borderBottom: '1px solid #F5F5F5',
                             transition: 'background 0.15s ease',
                           }}
@@ -429,7 +429,7 @@ export function InterviewFormClient({
 
           {/* Scheduled At */}
           <div>
-            <Label style={{ fontSize: 14, color: '#333', fontWeight: 600 }}>
+            <Label style={{ fontSize: 14, color: '#1A1A1A', fontWeight: 600 }}>
               {t('scheduledAtLabel')}
             </Label>
             <Input
@@ -442,7 +442,7 @@ export function InterviewFormClient({
 
           {/* Duration */}
           <div>
-            <Label style={{ fontSize: 14, color: '#333', fontWeight: 600 }}>
+            <Label style={{ fontSize: 14, color: '#1A1A1A', fontWeight: 600 }}>
               {t('durationLabel')}
             </Label>
             <Input
@@ -460,7 +460,7 @@ export function InterviewFormClient({
           {/* Type + Round row */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div>
-              <Label style={{ fontSize: 14, color: '#333', fontWeight: 600 }}>
+              <Label style={{ fontSize: 14, color: '#1A1A1A', fontWeight: 600 }}>
                 {t('interviewTypeLabel')}
               </Label>
               <Select
@@ -480,7 +480,7 @@ export function InterviewFormClient({
               </Select>
             </div>
             <div>
-              <Label style={{ fontSize: 14, color: '#333', fontWeight: 600 }}>
+              <Label style={{ fontSize: 14, color: '#1A1A1A', fontWeight: 600 }}>
                 {t('roundLabel')}
               </Label>
               <Select
@@ -503,7 +503,7 @@ export function InterviewFormClient({
 
           {/* Location */}
           <div>
-            <Label style={{ fontSize: 14, color: '#333', fontWeight: 600 }}>
+            <Label style={{ fontSize: 14, color: '#1A1A1A', fontWeight: 600 }}>
               {t('locationFormLabel')}
             </Label>
             <Input
@@ -516,7 +516,7 @@ export function InterviewFormClient({
 
           {/* Meeting Link */}
           <div>
-            <Label style={{ fontSize: 14, color: '#333', fontWeight: 600 }}>
+            <Label style={{ fontSize: 14, color: '#1A1A1A', fontWeight: 600 }}>
               {t('meetingLinkLabel')}
             </Label>
             <Input

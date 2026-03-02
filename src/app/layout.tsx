@@ -2,7 +2,7 @@
 // CTR HR Hub — Root Layout (Server Component)
 // ═══════════════════════════════════════════════════════════
 
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import localFont from 'next/font/local'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
@@ -25,12 +25,15 @@ export const metadata: Metadata = {
   title: 'CTR HR Hub',
   description: 'CTR 그룹 통합 인사관리 시스템 — Central to your safe mobility',
   manifest: '/manifest.json',
-  themeColor: '#2563EB',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
     title: 'CTR HR Hub',
   },
+}
+
+export const viewport: Viewport = {
+  themeColor: '#00C853',
 }
 
 export default async function RootLayout({
@@ -43,8 +46,16 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
+      <head>
+        <link
+          rel="stylesheet"
+          as="style"
+          crossOrigin="anonymous"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+        />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased tracking-ctr`}
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>{children}</Providers>

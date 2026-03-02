@@ -22,7 +22,13 @@ export const GET = withPermission(
     const companyFilter =
       user.role === ROLE.SUPER_ADMIN
         ? {}
-        : { employee: { companyId: user.companyId } }
+        : {
+            employee: {
+              assignments: {
+                some: { companyId: user.companyId, isPrimary: true, endDate: null },
+              },
+            },
+          }
 
     const requests = await prisma.profileChangeRequest.findMany({
       where: {

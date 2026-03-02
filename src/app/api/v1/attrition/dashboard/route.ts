@@ -18,7 +18,10 @@ export const GET = withPermission(
 
     // ── Get all active employees ───────────────────────────
     const activeEmployees = await prisma.employee.findMany({
-      where: { companyId, status: 'ACTIVE', deletedAt: null },
+      where: {
+        assignments: { some: { companyId, status: 'ACTIVE', isPrimary: true, endDate: null } },
+        deletedAt: null,
+      },
       select: { id: true },
     })
 
@@ -55,10 +58,14 @@ export const GET = withPermission(
           select: {
             id: true,
             name: true,
-            departmentId: true,
-            jobGradeId: true,
-            department: { select: { id: true, name: true } },
-            jobGrade: { select: { id: true, name: true } },
+            assignments: {
+              where: { isPrimary: true, endDate: null },
+              take: 1,
+              select: {
+                department: { select: { id: true, name: true } },
+                jobGrade: { select: { id: true, name: true } },
+              },
+            },
           },
         },
       },
@@ -104,15 +111,19 @@ export const GET = withPermission(
       .filter((r) => r.score >= 60)
       .sort((a, b) => b.score - a.score)
       .slice(0, 20)
-      .map((r) => ({
-        employeeId: r.employeeId,
-        name: r.employee.name,
-        department: r.employee.department?.name ?? null,
-        grade: r.employee.jobGrade?.name ?? null,
-        score: r.score,
-        factors: r.scoreFactors,
-        calculatedAt: r.calculatedAt,
-      }))
+      .map((r) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const emp = r.employee as any
+        return {
+          employeeId: r.employeeId,
+          name: emp.name as string,
+          department: (emp.assignments?.[0]?.department?.name as string | null) ?? null,
+          grade: (emp.assignments?.[0]?.jobGrade?.name as string | null) ?? null,
+          score: r.score,
+          factors: r.scoreFactors,
+          calculatedAt: r.calculatedAt,
+        }
+      })
 
     return apiSuccess({
       kpi: {

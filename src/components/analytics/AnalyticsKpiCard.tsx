@@ -18,19 +18,19 @@ interface AnalyticsKpiCardProps {
 }
 
 const colorMap = {
-  default: 'border-slate-200',
-  success: 'border-emerald-200',
-  warning: 'border-amber-200',
-  danger: 'border-red-200',
-  info: 'border-blue-200',
+  default: 'border-[#E8E8E8]',
+  success: 'border-[#A7F3D0]',
+  warning: 'border-[#FCD34D]',
+  danger: 'border-[#FECACA]',
+  info: 'border-[#E8F5E9]',
 }
 
 const iconBgMap = {
-  default: 'bg-slate-100 text-slate-600',
-  success: 'bg-emerald-100 text-emerald-600',
-  warning: 'bg-amber-100 text-amber-600',
-  danger: 'bg-red-100 text-red-600',
-  info: 'bg-blue-100 text-blue-600',
+  default: 'bg-[#F5F5F5] text-[#555]',
+  success: 'bg-[#D1FAE5] text-[#059669]',
+  warning: 'bg-[#FEF3C7] text-[#D97706]',
+  danger: 'bg-[#FEE2E2] text-[#DC2626]',
+  info: 'bg-[#E8F5E9] text-[#00C853]',
 }
 
 export function AnalyticsKpiCard({
@@ -42,19 +42,19 @@ export function AnalyticsKpiCard({
   suffix,
 }: AnalyticsKpiCardProps) {
   return (
-    <div className={cn('rounded-xl border bg-white p-5 shadow-sm', colorMap[color])}>
+    <div className={cn('rounded-xl border bg-white p-5', colorMap[color])}>
       <div className="flex items-start justify-between">
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-medium text-slate-500">{label}</p>
-          <p className="mt-1 text-3xl font-bold text-slate-900">
+          <p className="text-xs font-medium text-[#666]">{label}</p>
+          <p className="mt-1 text-3xl font-bold text-[#1A1A1A]">
             {value}
-            {suffix && <span className="ml-1 text-base font-normal text-slate-400">{suffix}</span>}
+            {suffix && <span className="ml-1 text-base font-normal text-[#999]">{suffix}</span>}
           </p>
           {change && (
             <p
               className={cn(
                 'mt-1 text-xs font-medium',
-                change.value > 0 ? 'text-emerald-600' : change.value < 0 ? 'text-red-600' : 'text-slate-500',
+                change.value > 0 ? 'text-[#059669]' : change.value < 0 ? 'text-[#DC2626]' : 'text-[#666]',
               )}
             >
               {change.value > 0 ? '\u2191' : change.value < 0 ? '\u2193' : ''}

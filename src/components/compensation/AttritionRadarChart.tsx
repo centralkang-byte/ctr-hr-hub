@@ -42,8 +42,8 @@ export default function AttritionRadarChart({ factors }: AttritionRadarChartProp
     <div className="w-full h-64">
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart cx="50%" cy="50%" outerRadius="75%" data={data}>
-          <PolarGrid stroke="#E2E8F0" />
-          <PolarAngleAxis dataKey="subject" tick={{ fontSize: 12, fill: '#64748B' }} />
+          <PolarGrid stroke="#E8E8E8" />
+          <PolarAngleAxis dataKey="subject" tick={{ fontSize: 12, fill: '#666' }} />
           <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 10 }} />
           <Radar
             name="위험 점수"

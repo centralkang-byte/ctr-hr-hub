@@ -213,7 +213,7 @@ export function EvaluationScaleClient({ user: _user }: { user: SessionUser }) {
           <div className="flex flex-wrap gap-3">
             {ratingLabels.map((label, i) => (
               <div key={i} className="flex flex-col items-center rounded-lg border px-4 py-3">
-                <span className="text-2xl font-bold text-blue-600">{scaleMin + i}</span>
+                <span className="text-2xl font-bold text-[#00C853]">{scaleMin + i}</span>
                 <span className="text-xs text-muted-foreground">{label || t('notSet')}</span>
               </div>
             ))}

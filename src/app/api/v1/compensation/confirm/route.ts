@@ -50,15 +50,22 @@ export const POST = withPermission(
           // Get employee's salary band for compa-ratio
           const employee = await tx.employee.findUnique({
             where: { id: adj.employeeId },
-            select: { jobGradeId: true },
+            select: {
+              assignments: {
+                where: { isPrimary: true, endDate: null },
+                take: 1,
+                select: { jobGradeId: true },
+              },
+            },
           })
+          const empJobGradeId = employee?.assignments?.[0]?.jobGradeId
 
           let compaRatio: number | null = null
-          if (employee?.jobGradeId) {
+          if (empJobGradeId) {
             const band = await tx.salaryBand.findFirst({
               where: {
                 companyId,
-                jobGradeId: employee.jobGradeId,
+                jobGradeId: empJobGradeId,
                 deletedAt: null,
               },
               orderBy: { effectiveFrom: 'desc' },

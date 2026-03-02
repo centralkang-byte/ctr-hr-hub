@@ -54,13 +54,13 @@ interface Warning {
 function getShiftColor(type: string): string {
   switch (type) {
     case 'FIXED':
-      return 'bg-blue-100 text-blue-800'
+      return 'bg-[#E8F5E9] text-[#00A844]'
     case 'FLEXIBLE':
       return 'bg-green-100 text-green-800'
     case 'SHIFT':
-      return 'bg-purple-100 text-purple-800'
+      return 'bg-[#F3E8FF] text-[#6B21A8]'
     default:
-      return 'bg-gray-100 text-gray-800'
+      return 'bg-[#F5F5F5] text-[#1A1A1A]'
   }
 }
 
@@ -178,9 +178,9 @@ export function ShiftRosterClient({ user }: { user: SessionUser }) {
 
       {/* ─── 경고 배너 ─────────────────────────────────────── */}
       {warnings.length > 0 && (
-        <Card className="border-orange-200 bg-orange-50">
+        <Card className="border-[#FED7AA] bg-[#FFF7ED]">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm text-orange-800">
+            <CardTitle className="flex items-center gap-2 text-sm text-[#9A3412]">
               <AlertTriangle className="h-4 w-4" />
               {ta('overtimeCritical')} ({t('warningCount', { count: warnings.length })})
             </CardTitle>
@@ -188,7 +188,7 @@ export function ShiftRosterClient({ user }: { user: SessionUser }) {
           <CardContent className="pt-0">
             <ul className="space-y-1">
               {warnings.map((w, idx) => (
-                <li key={idx} className="text-sm text-orange-700">
+                <li key={idx} className="text-sm text-[#C2410C]">
                   {w.message}
                 </li>
               ))}
@@ -200,7 +200,7 @@ export function ShiftRosterClient({ user }: { user: SessionUser }) {
       {/* ─── 범례 ──────────────────────────────────────────── */}
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-1">
-          <span className="inline-block h-5 w-7 rounded bg-blue-100 text-center text-xs leading-5 text-blue-800">
+          <span className="inline-block h-5 w-7 rounded bg-[#E8F5E9] text-center text-xs leading-5 text-[#00A844]">
             {t('fixedShort')}
           </span>
           <span className="text-xs text-muted-foreground">{t('fixed')}</span>
@@ -212,7 +212,7 @@ export function ShiftRosterClient({ user }: { user: SessionUser }) {
           <span className="text-xs text-muted-foreground">{t('flexible')}</span>
         </div>
         <div className="flex items-center gap-1">
-          <span className="inline-block h-5 w-7 rounded bg-purple-100 text-center text-xs leading-5 text-purple-800">
+          <span className="inline-block h-5 w-7 rounded bg-[#F3E8FF] text-center text-xs leading-5 text-[#6B21A8]">
             {t('shiftShort')}
           </span>
           <span className="text-xs text-muted-foreground">{t('shiftWork')}</span>
@@ -228,7 +228,7 @@ export function ShiftRosterClient({ user }: { user: SessionUser }) {
       )}
 
       {error && (
-        <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
+        <div className="rounded-md bg-[#FEE2E2] p-4 text-sm text-[#B91C1C]">
           {error}
         </div>
       )}
@@ -244,8 +244,8 @@ export function ShiftRosterClient({ user }: { user: SessionUser }) {
         <div className="overflow-x-auto rounded-lg border">
           <table className="min-w-full text-sm">
             <thead>
-              <tr className="bg-gray-50">
-                <th className="sticky left-0 z-10 bg-gray-50 px-4 py-2 text-left font-medium">
+              <tr className="bg-[#FAFAFA]">
+                <th className="sticky left-0 z-10 bg-[#FAFAFA] px-4 py-2 text-left font-medium">
                   {te('name')}
                 </th>
                 {days.map((day) => {
@@ -256,7 +256,7 @@ export function ShiftRosterClient({ user }: { user: SessionUser }) {
                     <th
                       key={day}
                       className={`min-w-[40px] px-2 py-2 text-center font-medium ${
-                        isWeekend ? 'text-red-400' : ''
+                        isWeekend ? 'text-[#F87171]' : ''
                       }`}
                     >
                       {d.getDate()}
@@ -267,7 +267,7 @@ export function ShiftRosterClient({ user }: { user: SessionUser }) {
             </thead>
             <tbody>
               {roster.map((entry) => (
-                <tr key={entry.employeeId} className="border-t hover:bg-gray-50/50">
+                <tr key={entry.employeeId} className="border-t hover:bg-[#FAFAFA]/50">
                   <td className="sticky left-0 z-10 bg-white px-4 py-2 font-medium">
                     <div className="flex flex-col">
                       <span>{entry.employeeName}</span>

@@ -73,9 +73,9 @@ function getYearOptions(): number[] {
 }
 
 function getBarColor(usageRate: number): string {
-  if (usageRate > 90) return 'bg-ctr-accent'
-  if (usageRate >= 70) return 'bg-ctr-warning'
-  return 'bg-ctr-success'
+  if (usageRate > 90) return 'bg-[#F44336]'
+  if (usageRate >= 70) return 'bg-[#FF9800]'
+  return 'bg-[#00C853]'
 }
 
 // ─── Component ──────────────────────────────────────────────
@@ -231,81 +231,50 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
       </div>
 
       {/* ─── KPI Cards ─── */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              {t('pending')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold">{stats.pending}</span>
-              {stats.pending > 0 && (
-                <Badge className="bg-ctr-warning text-white">{t('actionRequired')}</Badge>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6 border-l-4 border-l-[#FF9800]">
+          <p className="text-xs text-[#999] font-medium mb-2">{t('pending')}</p>
+          <p className="text-3xl font-bold text-[#FF9800] tracking-[-0.02em]">{stats.pending}</p>
+          {stats.pending > 0 && (
+            <span className="text-xs font-semibold text-[#E65100]">{t('actionRequired')}</span>
+          )}
+        </div>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              {t('approved')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <span className="text-2xl font-bold text-ctr-success">
-              {stats.approved}
-            </span>
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+          <p className="text-xs text-[#999] font-medium mb-2">{t('approved')}</p>
+          <p className="text-3xl font-bold text-[#00C853] tracking-[-0.02em]">{stats.approved}</p>
+        </div>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              {t('rejected')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <span className="text-2xl font-bold">{stats.rejected}</span>
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+          <p className="text-xs text-[#999] font-medium mb-2">{t('rejected')}</p>
+          <p className="text-3xl font-bold text-[#1A1A1A] tracking-[-0.02em]">{stats.rejected}</p>
+        </div>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              {t('cancelled')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <span className="text-2xl font-bold">{stats.cancelled}</span>
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+          <p className="text-xs text-[#999] font-medium mb-2">{t('cancelled')}</p>
+          <p className="text-3xl font-bold text-[#1A1A1A] tracking-[-0.02em]">{stats.cancelled}</p>
+        </div>
       </div>
 
       {/* ─── Department Usage ─── */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">{t('departmentUsageRate')}</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+        <h3 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em] mb-4">{t('departmentUsageRate')}</h3>
           {deptUsage.length === 0 ? (
-            <p className="py-4 text-center text-sm text-muted-foreground">
+            <p className="py-4 text-center text-sm text-[#999]">
               {tc('noData')}
             </p>
           ) : (
             <div className="space-y-4">
               {deptUsage.map((dept) => (
-                <div key={dept.departmentName} className="space-y-1">
+                <div key={dept.departmentName} className="space-y-1.5">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium">{dept.departmentName}</span>
-                    <span className="text-muted-foreground">
+                    <span className="font-medium text-[#1A1A1A]">{dept.departmentName}</span>
+                    <span className="text-[#999]">
                       {dept.totalUsed}/{dept.totalGranted}
                       {t('days')} ({dept.usageRate.toFixed(1)}%)
                     </span>
                   </div>
-                  <div className="h-4 w-full overflow-hidden rounded-full bg-gray-100">
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-[#E8E8E8]">
                     <div
                       className={`h-full rounded-full transition-all duration-300 ${getBarColor(dept.usageRate)}`}
                       style={{
@@ -317,8 +286,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
               ))}
             </div>
           )}
-        </CardContent>
-      </Card>
+      </div>
 
       {/* ─── Bulk Grant Dialog ─── */}
       <Dialog open={bulkDialogOpen} onOpenChange={setBulkDialogOpen}>

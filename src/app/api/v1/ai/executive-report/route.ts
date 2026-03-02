@@ -6,12 +6,13 @@
 import { NextRequest } from 'next/server'
 import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { aiReportGenerateSchema } from '@/lib/schemas/analytics'
 import { generateExecutiveReport } from '@/lib/analytics/ai-report'
 import type { SessionUser } from '@/types'
 
-export const POST = withPermission(
+export const POST = withRateLimit(withPermission(
   async (req: NextRequest, _ctx, user: SessionUser) => {
     const body = await req.json()
     const { company_id: companyId } = aiReportGenerateSchema.parse(body)
@@ -21,4 +22,4 @@ export const POST = withPermission(
     return apiSuccess(report)
   },
   perm(MODULE.ANALYTICS, ACTION.VIEW),
-)
+), RATE_LIMITS.AI)

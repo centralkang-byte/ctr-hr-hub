@@ -98,12 +98,12 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
 
         <div className="space-y-4">
           {/* Document Info */}
-          <div className="p-4 bg-slate-50 rounded-lg space-y-1.5">
-            <p className="text-sm font-semibold text-slate-900">{document.title}</p>
-            <p className="text-xs text-slate-500">
+          <div className="p-4 bg-[#FAFAFA] rounded-lg space-y-1.5">
+            <p className="text-sm font-semibold text-[#1A1A1A]">{document.title}</p>
+            <p className="text-xs text-[#666]">
               {DOC_TYPE_LABELS[document.documentType] ?? document.documentType}
             </p>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-[#666]">
               대상자: {document.employee.name} ({document.employee.employeeNo})
             </p>
           </div>
@@ -114,8 +114,8 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
               onClick={() => { setMode('sign'); setError(null) }}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium border transition-colors ${
                 mode === 'sign'
-                  ? 'bg-emerald-600 text-white border-emerald-600'
-                  : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
+                  ? 'bg-[#059669] text-white border-[#059669]'
+                  : 'bg-white text-[#555] border-[#D4D4D4] hover:bg-[#FAFAFA]'
               }`}
             >
               <CheckCircle2 className="w-4 h-4" />
@@ -125,8 +125,8 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
               onClick={() => { setMode('reject'); setError(null) }}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium border transition-colors ${
                 mode === 'reject'
-                  ? 'bg-red-600 text-white border-red-600'
-                  : 'border-red-300 text-red-600 hover:bg-red-50'
+                  ? 'bg-[#DC2626] text-white border-[#DC2626]'
+                  : 'border-[#FCA5A5] text-[#DC2626] hover:bg-[#FEE2E2]'
               }`}
             >
               <XCircle className="w-4 h-4" />
@@ -138,22 +138,22 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
           {mode === 'sign' && (
             <div className="space-y-3">
               <div>
-                <label className="text-sm font-medium text-slate-700 block mb-1">
-                  서명 수준 <span className="text-red-500">*</span>
+                <label className="text-sm font-medium text-[#333] block mb-1">
+                  서명 수준 <span className="text-[#EF4444]">*</span>
                 </label>
                 <select
                   value={signatureLevel}
                   onChange={(e) => setSignatureLevel(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
                 >
                   <option value="PEP">PEP — 간이 전자서명</option>
                   <option value="UNEP">УНЭП — 강화 비인증 전자서명</option>
                   <option value="UKEP">УКЭП — 강화 인증 전자서명</option>
                 </select>
               </div>
-              <div className="p-3 bg-blue-50 rounded-lg flex gap-2">
-                <AlertTriangle className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
-                <p className="text-xs text-blue-700">
+              <div className="p-3 bg-[#E8F5E9] rounded-lg flex gap-2">
+                <AlertTriangle className="w-4 h-4 text-[#00C853] mt-0.5 shrink-0" />
+                <p className="text-xs text-[#00A844]">
                   {SIGNATURE_DESCRIPTIONS[signatureLevel]}
                 </p>
               </div>
@@ -163,22 +163,22 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
           {/* Reject Mode */}
           {mode === 'reject' && (
             <div>
-              <label className="text-sm font-medium text-slate-700 block mb-1">
-                반려 사유 <span className="text-red-500">*</span>
+              <label className="text-sm font-medium text-[#333] block mb-1">
+                반려 사유 <span className="text-[#EF4444]">*</span>
               </label>
               <textarea
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
                 rows={3}
                 placeholder="반려 사유를 상세히 입력하세요."
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400 resize-none"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999] resize-none"
               />
             </div>
           )}
 
           {/* Error */}
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+            <div className="p-3 bg-[#FEE2E2] border border-[#FECACA] rounded-lg text-sm text-[#B91C1C]">
               {error}
             </div>
           )}
@@ -189,7 +189,7 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
             type="button"
             onClick={onClose}
             disabled={processing}
-            className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-lg font-medium text-sm"
+            className="bg-white border border-[#D4D4D4] hover:bg-[#FAFAFA] text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
           >
             취소
           </button>
@@ -197,7 +197,7 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
             <button
               onClick={handleSign}
               disabled={processing}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
+              className="bg-[#059669] hover:bg-[#047857] text-white px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
             >
               {processing ? '처리 중...' : '서명 완료'}
             </button>
@@ -205,7 +205,7 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
             <button
               onClick={handleReject}
               disabled={processing}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
+              className="bg-[#DC2626] hover:bg-[#B91C1C] text-white px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
             >
               {processing ? '처리 중...' : '반려 확인'}
             </button>

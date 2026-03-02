@@ -13,6 +13,7 @@ import {
   employeeSearchSchema,
   employeeCreateSchema,
 } from '@/lib/schemas/employee'
+import { createAssignment } from '@/lib/assignments'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/employees ────────────────────────────────
@@ -38,21 +39,34 @@ export const GET = withPermission(
     } = parsed.data
 
     // Company scope: SUPER_ADMIN sees all, others only their company
-    const companyFilter =
-      user.role === 'SUPER_ADMIN'
-        ? companyId
-          ? { companyId }
-          : {}
-        : { companyId: user.companyId }
+    // Build the assignments filter for company scope + optional field filters
+    const assignmentScopeFilter: Record<string, unknown> = {}
+    if (user.role !== 'SUPER_ADMIN') {
+      assignmentScopeFilter.companyId = user.companyId
+    } else if (companyId) {
+      assignmentScopeFilter.companyId = companyId
+    }
+    if (departmentId) assignmentScopeFilter.departmentId = departmentId
+    if (jobGradeId) assignmentScopeFilter.jobGradeId = jobGradeId
+    if (jobCategoryId) assignmentScopeFilter.jobCategoryId = jobCategoryId
+    if (status) assignmentScopeFilter.status = status
+    if (employmentType) assignmentScopeFilter.employmentType = employmentType
+
+    const hasAssignmentFilter = Object.keys(assignmentScopeFilter).length > 0
 
     const where = {
       deletedAt: null,
-      ...companyFilter,
-      ...(departmentId ? { departmentId } : {}),
-      ...(jobGradeId ? { jobGradeId } : {}),
-      ...(jobCategoryId ? { jobCategoryId } : {}),
-      ...(status ? { status } : {}),
-      ...(employmentType ? { employmentType } : {}),
+      ...(hasAssignmentFilter
+        ? {
+            assignments: {
+              some: {
+                ...assignmentScopeFilter,
+                isPrimary: true,
+                endDate: null,
+              },
+            },
+          }
+        : {}),
       ...(search
         ? {
             OR: [
@@ -69,10 +83,15 @@ export const GET = withPermission(
       prisma.employee.findMany({
         where,
         include: {
-          department: { select: { id: true, name: true } },
-          jobGrade: { select: { id: true, name: true } },
-          jobCategory: { select: { id: true, name: true } },
-          manager: { select: { id: true, name: true, photoUrl: true } },
+          assignments: {
+            where: { isPrimary: true, endDate: null },
+            take: 1,
+            include: {
+              department: { select: { id: true, name: true } },
+              jobGrade: { select: { id: true, name: true } },
+              jobCategory: { select: { id: true, name: true } },
+            },
+          },
         },
         skip: (page - 1) * limit,
         take: limit,
@@ -97,13 +116,39 @@ export const POST = withPermission(
     }
 
     try {
+      // Extract assignment fields (removed from Employee model in A2-1)
+      const {
+        companyId: empCompanyId,
+        departmentId,
+        jobGradeId,
+        jobCategoryId,
+        employmentType,
+        status,
+        managerId: _managerId, // managerId removed from Employee; ignored here
+        ...employeeFields
+      } = parsed.data
+
       const employee = await prisma.employee.create({
         data: {
-          ...parsed.data,
+          ...employeeFields,
           hireDate: new Date(parsed.data.hireDate),
           birthDate: parsed.data.birthDate ? new Date(parsed.data.birthDate) : null,
           resignDate: parsed.data.resignDate ? new Date(parsed.data.resignDate) : null,
         },
+      })
+
+      // Create the initial assignment with the assignment-scoped fields
+      await createAssignment({
+        employeeId: employee.id,
+        effectiveDate: employee.hireDate,
+        changeType: 'HIRE',
+        companyId: empCompanyId,
+        departmentId,
+        jobGradeId,
+        jobCategoryId,
+        employmentType,
+        status,
+        isPrimary: true,
       })
 
       const { ip, userAgent } = extractRequestMeta(req.headers)
@@ -112,7 +157,7 @@ export const POST = withPermission(
         action: 'employee.create',
         resourceType: 'employee',
         resourceId: employee.id,
-        companyId: employee.companyId,
+        companyId: empCompanyId,
         ip,
         userAgent,
       })

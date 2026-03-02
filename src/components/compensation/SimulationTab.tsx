@@ -176,7 +176,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
             {row.emsBlock}
           </Badge>
         ) : (
-          <span className="text-slate-400">-</span>
+          <span className="text-[#999]">-</span>
         ),
     },
     {
@@ -188,7 +188,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
       key: 'recommendedPct',
       header: '추천%',
       render: (row) => (
-        <span className="text-xs text-slate-500">
+        <span className="text-xs text-[#666]">
           {row.minPct}~{row.maxPct}%
         </span>
       ),
@@ -202,16 +202,16 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
           <div className="flex items-center gap-1">
             <input
               type="number"
-              className="w-16 px-2 py-1 border border-slate-300 rounded text-sm text-right focus:ring-2 focus:ring-blue-500"
+              className="w-16 px-2 py-1 border border-[#D4D4D4] rounded text-sm text-right focus:ring-2 focus:ring-[#00C853]/10"
               value={row.adjustedPct}
               onChange={(e) => handlePctChange(row.id, Number(e.target.value))}
               min={0}
               max={100}
               step={0.5}
             />
-            <span className="text-xs text-slate-500">%</span>
+            <span className="text-xs text-[#666]">%</span>
             {outOfRange && (
-              <AlertTriangle className="h-4 w-4 text-amber-500" />
+              <AlertTriangle className="h-4 w-4 text-[#F59E0B]" />
             )}
           </div>
         )
@@ -221,7 +221,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
       key: 'newSalary',
       header: '신규 연봉',
       render: (row) => (
-        <span className="text-sm font-semibold text-blue-700">
+        <span className="text-sm font-semibold text-[#00A844]">
           {formatCurrency(row.newSalary, row.currency)}
         </span>
       ),
@@ -235,7 +235,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
           size="sm"
           onClick={() => handleAiRecommend(row.id)}
           disabled={aiLoadingId === row.id}
-          className="text-indigo-600 hover:text-indigo-700"
+          className="text-[#4F46E5] hover:text-[#4338CA]"
         >
           <Sparkles className={`h-4 w-4 ${aiLoadingId === row.id ? 'animate-pulse' : ''}`} />
         </Button>
@@ -247,53 +247,53 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
     <div className="space-y-4">
       {/* ─── 예산 요약 카드 ─── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-          <p className="text-xs text-slate-500 mb-1">대상 인원</p>
-          <p className="text-3xl font-bold text-slate-900">{budget.headcount}명</p>
+        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+          <p className="text-xs text-[#666] mb-1">대상 인원</p>
+          <p className="text-3xl font-bold text-[#1A1A1A]">{budget.headcount}명</p>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-          <p className="text-xs text-slate-500 mb-1">현재 총 연봉</p>
-          <p className="text-xl font-bold text-slate-900">
+        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+          <p className="text-xs text-[#666] mb-1">현재 총 연봉</p>
+          <p className="text-xl font-bold text-[#1A1A1A]">
             {formatCurrency(budget.totalCurrentSalary)}
           </p>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-          <p className="text-xs text-slate-500 mb-1">총 인상액</p>
-          <p className="text-xl font-bold text-emerald-600">
+        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+          <p className="text-xs text-[#666] mb-1">총 인상액</p>
+          <p className="text-xl font-bold text-[#059669]">
             +{formatCurrency(budget.totalIncrease)}
           </p>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-          <p className="text-xs text-slate-500 mb-1">평균 인상률</p>
-          <p className="text-3xl font-bold text-blue-600">{budget.avgIncreasePct}%</p>
+        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+          <p className="text-xs text-[#666] mb-1">평균 인상률</p>
+          <p className="text-3xl font-bold text-[#00C853]">{budget.avgIncreasePct}%</p>
         </div>
       </div>
 
       {/* ─── AI 추천 결과 패널 ─── */}
       {aiResult && (
-        <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
+        <div className="bg-[#E0E7FF] border border-[#C7D2FE] rounded-xl p-4">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="h-4 w-4 text-indigo-600" />
-              <h4 className="text-sm font-semibold text-indigo-900">
+              <Sparkles className="h-4 w-4 text-[#4F46E5]" />
+              <h4 className="text-sm font-semibold text-[#312E81]">
                 AI 추천 결과 — {rows.find((r) => r.id === aiResult.employeeId)?.name ?? ''}
               </h4>
-              <Badge className="bg-indigo-100 text-indigo-700 border-indigo-300 text-xs">
+              <Badge className="bg-[#E0E7FF] text-[#4338CA] border-[#C7D2FE] text-xs">
                 {aiResult.data.recommendedPct}%
               </Badge>
             </div>
-            <button onClick={() => setAiResult(null)} className="text-indigo-400 hover:text-indigo-600">
+            <button onClick={() => setAiResult(null)} className="text-[#818CF8] hover:text-[#4F46E5]">
               <X className="h-4 w-4" />
             </button>
           </div>
-          <p className="text-sm text-indigo-800 mb-3">{aiResult.data.reasoning}</p>
+          <p className="text-sm text-[#3730A3] mb-3">{aiResult.data.reasoning}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {aiResult.data.riskFactors.length > 0 && (
               <div>
-                <p className="text-xs font-medium text-indigo-700 mb-1">위험 요인</p>
+                <p className="text-xs font-medium text-[#4338CA] mb-1">위험 요인</p>
                 <ul className="space-y-1">
                   {aiResult.data.riskFactors.map((f, i) => (
-                    <li key={i} className="text-xs text-indigo-600 flex items-start gap-1">
+                    <li key={i} className="text-xs text-[#4F46E5] flex items-start gap-1">
                       <AlertTriangle className="h-3 w-3 mt-0.5 flex-shrink-0" />
                       {f}
                     </li>
@@ -303,10 +303,10 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
             )}
             {aiResult.data.alternativeActions.length > 0 && (
               <div>
-                <p className="text-xs font-medium text-indigo-700 mb-1">대안</p>
+                <p className="text-xs font-medium text-[#4338CA] mb-1">대안</p>
                 <ul className="space-y-1">
                   {aiResult.data.alternativeActions.map((a, i) => (
-                    <li key={i} className="text-xs text-indigo-600">
+                    <li key={i} className="text-xs text-[#4F46E5]">
                       {i + 1}. {a}
                     </li>
                   ))}
@@ -318,7 +318,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
       )}
 
       {/* ─── DataTable ─── */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
+      <div className="bg-white rounded-xl border border-[#E8E8E8]">
         <DataTable<SimulationRow>
           columns={columns}
           data={rows}
@@ -335,7 +335,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
         <Button
           onClick={handlePrepareConfirm}
           disabled={rows.length === 0}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium text-sm"
+          className="bg-[#00C853] hover:bg-[#00A844] text-white px-6 py-2 rounded-lg font-medium text-sm"
         >
           연봉 조정 확정으로 이동 →
         </Button>

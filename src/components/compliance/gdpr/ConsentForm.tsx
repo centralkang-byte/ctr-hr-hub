@@ -92,11 +92,11 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
         <div className="space-y-4 py-2">
           {/* Employee Selector */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              {tc('name')} <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-[#333] mb-1">
+              {tc('name')} <span className="text-[#EF4444]">*</span>
             </label>
             <select
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853]"
               value={form.employee_id}
               onChange={(e) => handleChange('employee_id', e.target.value)}
             >
@@ -111,11 +111,11 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
 
           {/* Purpose */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              {t('gdpr.purpose')} <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-[#333] mb-1">
+              {t('gdpr.purpose')} <span className="text-[#EF4444]">*</span>
             </label>
             <select
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853]"
               value={form.purpose}
               onChange={(e) => handleChange('purpose', e.target.value)}
             >
@@ -130,11 +130,11 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
 
           {/* Legal Basis */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              {t('gdpr.legalBasis')} <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-[#333] mb-1">
+              {t('gdpr.legalBasis')} <span className="text-[#EF4444]">*</span>
             </label>
             <textarea
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853] resize-none"
               rows={3}
               placeholder="e.g., Art. 6(1)(b) – Contractual necessity"
               value={form.legal_basis}
@@ -144,31 +144,31 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
 
           {/* Expires At */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="block text-sm font-medium text-[#333] mb-1">
               {t('gdpr.expiresAt')}
             </label>
             <input
               type="date"
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853]"
               value={form.expires_at}
               onChange={(e) => handleChange('expires_at', e.target.value)}
             />
           </div>
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-[#DC2626]">{error}</p>}
         </div>
 
         <DialogFooter className="gap-2">
           <button
             onClick={onClose}
-            className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-lg font-medium text-sm"
+            className="bg-white border border-[#D4D4D4] hover:bg-[#FAFAFA] text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
           >
             {tc('cancel')}
           </button>
           <button
             onClick={handleSubmit}
             disabled={saving}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
+            className="bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
           >
             {saving ? tc('loading') : tc('save')}
           </button>

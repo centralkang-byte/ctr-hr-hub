@@ -38,8 +38,8 @@ export default function AttritionDonutChart({
   }))
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-      <h3 className="text-lg font-semibold text-slate-900 mb-4">위험 분포</h3>
+    <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+      <h3 className="text-lg font-semibold text-[#1A1A1A] mb-4">위험 분포</h3>
       <div className="flex items-center gap-6">
         <div className="relative w-48 h-48">
           <ResponsiveContainer width="100%" height="100%">
@@ -64,7 +64,7 @@ export default function AttritionDonutChart({
                   return (
                     <div className="rounded-md border bg-white p-3 shadow-lg">
                       <p className="font-medium text-sm">{d.label}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-[#666]">
                         {d.count}명 ({d.percentage.toFixed(1)}%)
                       </p>
                     </div>
@@ -75,8 +75,8 @@ export default function AttritionDonutChart({
           </ResponsiveContainer>
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="text-center">
-              <p className="text-2xl font-bold text-slate-900">{totalCount}</p>
-              <p className="text-xs text-slate-500">전체</p>
+              <p className="text-2xl font-bold text-[#1A1A1A]">{totalCount}</p>
+              <p className="text-xs text-[#666]">전체</p>
             </div>
           </div>
         </div>
@@ -87,9 +87,9 @@ export default function AttritionDonutChart({
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: d.color }}
               />
-              <span className="text-sm text-slate-700">{d.label}</span>
-              <span className="text-sm font-medium text-slate-900">{d.count}명</span>
-              <span className="text-xs text-slate-400">({d.percentage.toFixed(1)}%)</span>
+              <span className="text-sm text-[#333]">{d.label}</span>
+              <span className="text-sm font-medium text-[#1A1A1A]">{d.count}명</span>
+              <span className="text-xs text-[#999]">({d.percentage.toFixed(1)}%)</span>
             </div>
           ))}
         </div>

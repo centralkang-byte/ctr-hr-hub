@@ -47,9 +47,15 @@ export async function calculatePayrollRun(runId: string): Promise<void> {
     // 3. ACTIVE 직원 조회
     const employees = await prisma.employee.findMany({
       where: {
-        companyId: run.companyId,
-        status: 'ACTIVE',
         hireDate: { lte: run.periodEnd },
+        assignments: {
+          some: {
+            companyId: run.companyId,
+            status: 'ACTIVE',
+            isPrimary: true,
+            endDate: null,
+          },
+        },
       },
       select: { id: true },
     })

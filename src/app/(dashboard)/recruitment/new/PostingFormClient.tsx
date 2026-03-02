@@ -200,8 +200,8 @@ export default function PostingFormClient({ user }: Props) {
 
   // ─── Field Style ──────────────────────────────────────
 
-  const inputClass = 'w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] transition-colors'
-  const labelClass = 'block text-sm font-medium text-[#333] mb-1'
+  const inputClass = 'w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors'
+  const labelClass = 'block text-sm font-medium text-[#1A1A1A] mb-1'
   const errorClass = 'text-xs text-[#F44336] mt-1'
 
   return (
@@ -218,7 +218,7 @@ export default function PostingFormClient({ user }: Props) {
           <div className="w-10 h-10 bg-[#E3F2FD] rounded-lg flex items-center justify-center">
             <Briefcase className="w-5 h-5 text-[#2196F3]" />
           </div>
-          <h1 className="text-xl font-bold text-[#333]" style={{ letterSpacing: '-0.02em' }}>
+          <h1 className="text-xl font-bold text-[#1A1A1A] tracking-[-0.02em]">
             {t('registerPostingTitle')}
           </h1>
         </div>
@@ -228,7 +228,7 @@ export default function PostingFormClient({ user }: Props) {
       <form onSubmit={handleSubmit(onSubmit as any)}>
         {/* 기본정보 */}
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6 mb-6">
-          <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+          <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
             {t('basicInfo')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -302,14 +302,14 @@ export default function PostingFormClient({ user }: Props) {
         {/* 공고내용 */}
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-bold text-[#333]" style={{ letterSpacing: '-0.02em' }}>
+            <h2 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em]">
               {t('postingContent')}
             </h2>
             <button
               type="button"
               onClick={handleAiGenerate}
               disabled={aiLoading || !watch('title')}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#2196F3] hover:bg-[#1976D2] text-white rounded-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#7C3AED] hover:bg-[#6D28D9] text-white rounded-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {aiLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -356,7 +356,7 @@ export default function PostingFormClient({ user }: Props) {
 
         {/* 급여 */}
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6 mb-6">
-          <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+          <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
             {t('salarySection')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -369,7 +369,7 @@ export default function PostingFormClient({ user }: Props) {
               <input {...register('salaryRangeMax')} type="number" className={inputClass} placeholder="0" />
             </div>
             <div className="md:col-span-2">
-              <label className="flex items-center gap-2 text-sm text-[#333]">
+              <label className="flex items-center gap-2 text-sm text-[#1A1A1A]">
                 <input {...register('salaryHidden')} type="checkbox" className="rounded border-[#E8E8E8]" />
                 {t('salaryHiddenLabel')}
               </label>
@@ -379,7 +379,7 @@ export default function PostingFormClient({ user }: Props) {
 
         {/* 채용정보 */}
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6 mb-6">
-          <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+          <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
             {t('recruitmentInfo')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -412,7 +412,7 @@ export default function PostingFormClient({ user }: Props) {
           <button
             type="button"
             onClick={() => router.back()}
-            className="px-6 py-2.5 text-sm font-medium border border-[#E8E8E8] text-[#333] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150"
+            className="px-6 py-2.5 text-sm font-medium border border-[#E8E8E8] text-[#1A1A1A] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150"
           >
             {t('cancelButton')}
           </button>

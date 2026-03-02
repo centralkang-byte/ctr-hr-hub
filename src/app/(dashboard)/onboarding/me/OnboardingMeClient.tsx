@@ -8,9 +8,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { CheckCircle2, Clock, User } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { apiClient } from '@/lib/api'
@@ -61,13 +58,11 @@ const CATEGORY_ICONS: Record<string, string> = {
   OTHER: '📌',
 }
 
-type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline'
-
-const ASSIGNEE_VARIANTS: Record<string, BadgeVariant> = {
-  EMPLOYEE: 'default',
-  MANAGER: 'secondary',
-  HR: 'destructive',
-  BUDDY: 'outline',
+const ASSIGNEE_BADGE_STYLES: Record<string, string> = {
+  EMPLOYEE: 'bg-[#E8F5E9] text-[#2E7D32]',
+  MANAGER: 'bg-[#E3F2FD] text-[#2196F3]',
+  HR: 'bg-[#FFEBEE] text-[#F44336]',
+  BUDDY: 'bg-[#F3E5F5] text-[#9C27B0]',
 }
 
 // ─── Helpers ──────────────────────────────────────────────────
@@ -163,10 +158,10 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
   if (loading) {
     return (
       <div className="space-y-6 p-6">
-        <Skeleton className="h-10 w-64" />
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-40 w-full" />
-        <Skeleton className="h-60 w-full" />
+        <div className="h-10 w-64 bg-[#F5F5F5] rounded animate-pulse" />
+        <div className="h-24 w-full bg-[#F5F5F5] rounded-xl animate-pulse" />
+        <div className="h-40 w-full bg-[#F5F5F5] rounded-xl animate-pulse" />
+        <div className="h-60 w-full bg-[#F5F5F5] rounded-xl animate-pulse" />
       </div>
     )
   }
@@ -179,7 +174,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
           title={t('myOnboarding')}
           description={t('myOnboardingNoActive')}
         />
-        <div className="rounded-md border p-8">
+        <div className="bg-white rounded-xl border border-[#E8E8E8] p-8">
           <EmptyState
             title={t('noOnboardingData')}
             description={t('noOnboardingAssigned')}
@@ -192,7 +187,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
   return (
     <div className="space-y-6 p-6">
       {/* ─── Welcome Banner ─── */}
-      <div className="rounded-lg bg-ctr-primary p-6 text-white">
+      <div className="rounded-xl bg-[#00C853] p-6 text-white">
         <h1 className="text-2xl font-bold">
           {t('welcomeMessage', { name: user.name })}
         </h1>
@@ -204,57 +199,49 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
       {/* ─── Buddy + Progress Row ─── */}
       <div className="grid gap-4 md:grid-cols-2">
         {/* Buddy Card */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">{t('onboardingBuddy')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {data.buddy ? (
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-ctr-light text-ctr-primary">
-                  <User className="h-6 w-6" />
-                </div>
-                <div>
-                  <p className="font-semibold">{data.buddy.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.buddy.jobCategory?.name ?? ''}
-                  </p>
-                </div>
+        <div className="bg-white rounded-xl border border-[#E8E8E8] p-6">
+          <h3 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em] mb-4">{t('onboardingBuddy')}</h3>
+          {data.buddy ? (
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#E8F5E9] text-[#00C853]">
+                <User className="h-6 w-6" />
               </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">{t('noBuddyAssigned')}</p>
-            )}
-          </CardContent>
-        </Card>
+              <div>
+                <p className="font-semibold text-[#1A1A1A]">{data.buddy.name}</p>
+                <p className="text-sm text-[#999]">
+                  {data.buddy.jobCategory?.name ?? ''}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-[#999]">{t('noBuddyAssigned')}</p>
+          )}
+        </div>
 
         {/* Progress Card */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">{t('overallProgress')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">
-                  {t('completedCount', { completed: progress.completed, total: progress.total })}
-                </span>
-                <span className="font-semibold text-ctr-primary">{progress.pct}%</span>
-              </div>
-              <div className="h-3 w-full rounded-full bg-gray-200">
-                <div
-                  className="h-3 rounded-full bg-ctr-primary transition-all duration-500"
-                  style={{ width: `${progress.pct}%` }}
-                />
-              </div>
-              {data.status === 'COMPLETED' && (
-                <div className="flex items-center gap-1 text-sm text-ctr-success">
-                  <CheckCircle2 className="h-4 w-4" />
-                  {t('onboardingCompleted')}
-                </div>
-              )}
+        <div className="bg-white rounded-xl border border-[#E8E8E8] p-6">
+          <h3 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em] mb-4">{t('overallProgress')}</h3>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-[#999]">
+                {t('completedCount', { completed: progress.completed, total: progress.total })}
+              </span>
+              <span className="font-semibold text-[#00C853]">{progress.pct}%</span>
             </div>
-          </CardContent>
-        </Card>
+            <div className="h-3 w-full rounded-full bg-[#F5F5F5]">
+              <div
+                className="h-3 rounded-full bg-gradient-to-r from-[#00C853] to-[#00BFA5] transition-all duration-500"
+                style={{ width: `${progress.pct}%` }}
+              />
+            </div>
+            {data.status === 'COMPLETED' && (
+              <div className="flex items-center gap-1 text-sm text-[#2E7D32]">
+                <CheckCircle2 className="h-4 w-4" />
+                {t('onboardingCompleted')}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* ─── Task Groups ─── */}
@@ -262,18 +249,18 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
         {categoryOrder
           .filter((cat) => grouped[cat] && grouped[cat].length > 0)
           .map((cat) => (
-            <Card key={cat}>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <span>{CATEGORY_ICONS[cat]}</span>
+            <div key={cat} className="bg-white rounded-xl border border-[#E8E8E8] p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <span>{CATEGORY_ICONS[cat]}</span>
+                <h3 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em]">
                   {CATEGORY_LABELS[cat]}
-                  <Badge variant="outline" className="ml-auto text-xs font-normal">
-                    {grouped[cat].filter((t) => t.status === 'DONE').length} /{' '}
-                    {grouped[cat].length}
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
+                </h3>
+                <span className="ml-auto inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-[#F5F5F5] text-[#666]">
+                  {grouped[cat].filter((t) => t.status === 'DONE').length} /{' '}
+                  {grouped[cat].length}
+                </span>
+              </div>
+              <div className="space-y-2">
                 {grouped[cat].map((row) => {
                   const isDone = row.status === 'DONE'
                   const isSkipped = row.status === 'SKIPPED'
@@ -282,8 +269,8 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
                   return (
                     <div
                       key={row.id}
-                      className={`flex items-center gap-3 rounded-md border px-4 py-3 transition-colors ${
-                        isDone ? 'bg-gray-50 opacity-70' : 'hover:bg-gray-50'
+                      className={`flex items-center gap-3 rounded-lg border border-[#E8E8E8] px-4 py-3 transition-colors ${
+                        isDone ? 'bg-[#FAFAFA] opacity-70' : 'hover:bg-[#FAFAFA]'
                       }`}
                     >
                       {/* Checkbox */}
@@ -292,7 +279,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
                         checked={isDone || isSkipped}
                         disabled={isDone || isSkipped || isCompleting}
                         onChange={() => handleComplete(row.id)}
-                        className="h-5 w-5 rounded border-gray-300 text-ctr-primary accent-ctr-primary cursor-pointer disabled:cursor-default"
+                        className="h-5 w-5 rounded border-[#E0E0E0] text-[#00C853] accent-[#00C853] cursor-pointer disabled:cursor-default"
                       />
 
                       {/* Task info */}
@@ -300,48 +287,47 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
                         <div className="flex flex-wrap items-center gap-2">
                           <span
                             className={`text-sm font-medium ${
-                              isDone ? 'line-through text-muted-foreground' : ''
+                              isDone ? 'line-through text-[#999]' : 'text-[#1A1A1A]'
                             }`}
                           >
                             {row.task.title}
                           </span>
                           {!row.task.isRequired && (
-                            <span className="text-xs text-muted-foreground">{t('optional')}</span>
+                            <span className="text-xs text-[#999]">{t('optional')}</span>
                           )}
                         </div>
                         {row.task.description && (
-                          <p className="mt-0.5 text-xs text-muted-foreground truncate">
+                          <p className="mt-0.5 text-xs text-[#999] truncate">
                             {row.task.description}
                           </p>
                         )}
                       </div>
 
                       {/* Assignee badge */}
-                      <Badge
-                        variant={ASSIGNEE_VARIANTS[row.task.assigneeType] ?? 'outline'}
-                        className="shrink-0 text-xs"
+                      <span
+                        className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-semibold ${ASSIGNEE_BADGE_STYLES[row.task.assigneeType] ?? 'bg-[#F5F5F5] text-[#666]'}`}
                       >
                         {ASSIGNEE_LABELS[row.task.assigneeType] ?? row.task.assigneeType}
-                      </Badge>
+                      </span>
 
                       {/* Due date */}
-                      <div className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
+                      <div className="flex shrink-0 items-center gap-1 text-xs text-[#999]">
                         <Clock className="h-3 w-3" />
                         {addDays(data.startedAt, row.task.dueDaysAfter)}
                       </div>
 
                       {/* Status */}
                       {isDone && (
-                        <CheckCircle2 className="h-4 w-4 shrink-0 text-ctr-success" />
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-[#2E7D32]" />
                       )}
                       {isCompleting && (
-                        <span className="text-xs text-muted-foreground shrink-0">{t('processing')}</span>
+                        <span className="text-xs text-[#999] shrink-0">{t('processing')}</span>
                       )}
                     </div>
                   )
                 })}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
       </div>
     </div>

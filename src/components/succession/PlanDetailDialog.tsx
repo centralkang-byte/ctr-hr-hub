@@ -127,27 +127,27 @@ export default function PlanDetailDialog({ planId, onClose }: PlanDetailDialogPr
         </DialogHeader>
 
         {loading ? (
-          <div className="py-8 text-center text-slate-500">로딩 중...</div>
+          <div className="py-8 text-center text-[#666]">로딩 중...</div>
         ) : plan ? (
           <div className="space-y-6">
             {/* ─── Plan Info ─── */}
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-slate-500">부서:</span>{' '}
+                <span className="text-[#666]">부서:</span>{' '}
                 <span className="font-medium">{plan.department?.name ?? '-'}</span>
               </div>
               <div>
-                <span className="text-slate-500">현 직책자:</span>{' '}
+                <span className="text-[#666]">현 직책자:</span>{' '}
                 <span className="font-medium">
                   {plan.currentHolder?.name ?? '-'}
                 </span>
               </div>
               <div>
-                <span className="text-slate-500">중요도:</span>{' '}
+                <span className="text-[#666]">중요도:</span>{' '}
                 <Badge variant="outline">{CRITICALITY_LABELS[plan.criticality] ?? plan.criticality}</Badge>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-slate-500">상태:</span>
+                <span className="text-[#666]">상태:</span>
                 <Badge variant="outline">{STATUS_LABELS[plan.status] ?? plan.status}</Badge>
                 {plan.status === 'PLAN_DRAFT' && (
                   <Button variant="ghost" size="sm" className="text-xs" onClick={() => handleStatusChange('PLAN_ACTIVE')}>
@@ -162,13 +162,13 @@ export default function PlanDetailDialog({ planId, onClose }: PlanDetailDialogPr
               </div>
             </div>
             {plan.notes && (
-              <p className="text-sm text-slate-600 bg-slate-50 p-3 rounded-lg">{plan.notes}</p>
+              <p className="text-sm text-[#555] bg-[#FAFAFA] p-3 rounded-lg">{plan.notes}</p>
             )}
 
             {/* ─── Candidates ─── */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-lg font-semibold text-slate-900">
+                <h3 className="text-lg font-semibold text-[#1A1A1A]">
                   후보자 ({plan.candidates.length}명)
                 </h3>
                 <Button size="sm" onClick={() => setAddingCandidate(true)}>
@@ -178,7 +178,7 @@ export default function PlanDetailDialog({ planId, onClose }: PlanDetailDialogPr
               </div>
 
               {addingCandidate && (
-                <div className="bg-slate-50 rounded-lg p-4 mb-4 space-y-3">
+                <div className="bg-[#FAFAFA] rounded-lg p-4 mb-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">후보자 추가</span>
                     <Button variant="ghost" size="sm" onClick={() => setAddingCandidate(false)}>
@@ -186,13 +186,13 @@ export default function PlanDetailDialog({ planId, onClose }: PlanDetailDialogPr
                     </Button>
                   </div>
                   <input
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                    className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
                     placeholder="직원 ID (UUID)"
                     value={candidateForm.employeeId}
                     onChange={(e) => setCandidateForm((f) => ({ ...f, employeeId: e.target.value }))}
                   />
                   <select
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                    className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
                     value={candidateForm.readiness}
                     onChange={(e) => setCandidateForm((f) => ({ ...f, readiness: e.target.value }))}
                   >
@@ -201,7 +201,7 @@ export default function PlanDetailDialog({ planId, onClose }: PlanDetailDialogPr
                     <option value="READY_3_PLUS_YEARS">3년 이상</option>
                   </select>
                   <textarea
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                    className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
                     rows={2}
                     placeholder="비고"
                     value={candidateForm.notes}
@@ -214,7 +214,7 @@ export default function PlanDetailDialog({ planId, onClose }: PlanDetailDialogPr
               )}
 
               {plan.candidates.length === 0 ? (
-                <p className="text-sm text-slate-500 py-4 text-center">등록된 후보자가 없습니다.</p>
+                <p className="text-sm text-[#666] py-4 text-center">등록된 후보자가 없습니다.</p>
               ) : (
                 <div className="grid gap-3">
                   {plan.candidates.map((c) => (

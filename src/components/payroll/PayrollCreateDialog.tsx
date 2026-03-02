@@ -71,7 +71,7 @@ export default function PayrollCreateDialog({ onCreated }: PayrollCreateDialogPr
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+        <Button className="bg-[#00C853] hover:bg-[#00A844] text-white">
           <Plus className="h-4 w-4 mr-1" />
           급여 실행 생성
         </Button>
@@ -125,7 +125,7 @@ export default function PayrollCreateDialog({ onCreated }: PayrollCreateDialogPr
             <Button
               type="submit"
               disabled={loading}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-[#00C853] hover:bg-[#00A844] text-white"
             >
               {loading ? '생성 중...' : '생성'}
             </Button>

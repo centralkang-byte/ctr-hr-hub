@@ -126,7 +126,7 @@ function KpiCard({
           style={{
             fontSize: 24,
             fontWeight: 700,
-            color: '#333',
+            color: '#1A1A1A',
             lineHeight: 1.2,
           }}
         >
@@ -175,7 +175,7 @@ function CustomTooltip({
         boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
       }}
     >
-      <p style={{ fontSize: 13, fontWeight: 600, color: '#333' }}>
+      <p style={{ fontSize: 13, fontWeight: 600, color: '#1A1A1A' }}>
         {data.payload.stageName}
       </p>
       <p style={{ fontSize: 12, color: '#666', marginTop: 2 }}>
@@ -320,7 +320,7 @@ export function RecruitmentDashboardClient(_props: {
           style={{
             fontSize: 16,
             fontWeight: 700,
-            color: '#333',
+            color: '#1A1A1A',
             marginBottom: 20,
             letterSpacing: '-0.02em',
           }}
@@ -344,7 +344,7 @@ export function RecruitmentDashboardClient(_props: {
                 type="category"
                 dataKey="stageName"
                 width={80}
-                tick={{ fontSize: 13, fill: '#333' }}
+                tick={{ fontSize: 13, fill: '#1A1A1A' }}
               />
               <Tooltip
                 content={<CustomTooltip t={t} />}
@@ -383,7 +383,7 @@ export function RecruitmentDashboardClient(_props: {
           style={{
             fontSize: 16,
             fontWeight: 700,
-            color: '#333',
+            color: '#1A1A1A',
             marginBottom: 16,
             letterSpacing: '-0.02em',
           }}
@@ -403,9 +403,7 @@ export function RecruitmentDashboardClient(_props: {
                   padding: '8px 12px',
                   fontSize: 12,
                   color: '#999',
-                  fontWeight: 500,
-                  textTransform: 'uppercase' as const,
-                  letterSpacing: '0.05em',
+                  fontWeight: 600,
                 }}
               >
                 {t('postingTitleColumn')}
@@ -416,9 +414,7 @@ export function RecruitmentDashboardClient(_props: {
                   padding: '8px 12px',
                   fontSize: 12,
                   color: '#999',
-                  fontWeight: 500,
-                  textTransform: 'uppercase' as const,
-                  letterSpacing: '0.05em',
+                  fontWeight: 600,
                 }}
               >
                 {t('applicantCountColumn')}
@@ -429,9 +425,7 @@ export function RecruitmentDashboardClient(_props: {
                   padding: '8px 12px',
                   fontSize: 12,
                   color: '#999',
-                  fontWeight: 500,
-                  textTransform: 'uppercase' as const,
-                  letterSpacing: '0.05em',
+                  fontWeight: 600,
                 }}
               >
                 {t('publishedDateColumn')}
@@ -474,7 +468,7 @@ export function RecruitmentDashboardClient(_props: {
                     style={{
                       padding: '12px',
                       fontSize: 14,
-                      color: '#333',
+                      color: '#1A1A1A',
                       fontWeight: 500,
                     }}
                   >
@@ -484,7 +478,7 @@ export function RecruitmentDashboardClient(_props: {
                     style={{
                       padding: '12px',
                       fontSize: 14,
-                      color: '#333',
+                      color: '#1A1A1A',
                       textAlign: 'right',
                     }}
                   >

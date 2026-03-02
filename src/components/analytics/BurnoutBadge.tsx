@@ -17,8 +17,8 @@ export function BurnoutBadge({ isCritical }: BurnoutBadgeProps) {
       className={cn(
         'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
         isCritical
-          ? 'border border-red-200 bg-red-50 text-red-700'
-          : 'border border-orange-200 bg-orange-50 text-orange-700',
+          ? 'border border-[#FECACA] bg-[#FEE2E2] text-[#B91C1C]'
+          : 'border border-[#FED7AA] bg-[#FFF7ED] text-[#C2410C]',
       )}
     >
       {isCritical ? 'CRITICAL' : 'WARNING'}

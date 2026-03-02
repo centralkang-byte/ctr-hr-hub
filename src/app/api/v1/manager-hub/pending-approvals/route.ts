@@ -16,13 +16,30 @@ export const GET = withPermission(
       const companyId = user.companyId
       const managerId = user.employeeId
 
+      // 2-step: find manager's positionId, then find direct reports via position hierarchy
+      const managerAsgn = await prisma.employeeAssignment.findFirst({
+        where: { employeeId: managerId, isPrimary: true, endDate: null },
+        select: { positionId: true },
+      })
+      const directReportAsgnList = managerAsgn?.positionId
+        ? await prisma.employeeAssignment.findMany({
+            where: {
+              position: { reportsToPositionId: managerAsgn.positionId },
+              isPrimary: true,
+              endDate: null,
+            },
+            select: { employeeId: true },
+          })
+        : []
+      const reportIds = directReportAsgnList.map((a: any) => a.employeeId) // eslint-disable-line @typescript-eslint/no-explicit-any
+
       const [pendingLeaves, pendingProfileChanges, pendingGoals] =
         await Promise.all([
           prisma.leaveRequest.findMany({
             where: {
               companyId,
               status: 'PENDING',
-              employee: { managerId },
+              employeeId: { in: reportIds },
             },
             include: {
               employee: { select: { name: true, employeeNo: true } },
@@ -33,7 +50,12 @@ export const GET = withPermission(
           }),
           prisma.profileChangeRequest.findMany({
             where: {
-              employee: { companyId, managerId },
+              employee: {
+                assignments: {
+                  some: { companyId, isPrimary: true, endDate: null },
+                },
+              },
+              employeeId: { in: reportIds },
               status: 'CHANGE_PENDING',
             },
             include: {
@@ -46,7 +68,7 @@ export const GET = withPermission(
             where: {
               companyId,
               status: 'PENDING_APPROVAL',
-              employee: { managerId },
+              employeeId: { in: reportIds },
             },
             include: {
               employee: { select: { name: true, employeeNo: true } },

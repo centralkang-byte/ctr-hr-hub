@@ -42,10 +42,6 @@ export const GET = withPermission(
         throw badRequest('잘못된 연도/월 파라미터입니다.')
       }
 
-      // 회사 필터 (SUPER_ADMIN은 전체 접근)
-      const companyFilter =
-        user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }
-
       const targetDate = new Date(yearNum, monthNum - 1, 1)
       const monthStart = startOfMonth(targetDate)
       const monthEnd = endOfMonth(targetDate)
@@ -55,10 +51,24 @@ export const GET = withPermission(
         end: monthEnd,
       }).map((d) => format(d, 'yyyy-MM-dd'))
 
+      // 회사 필터 (SUPER_ADMIN은 전체 접근) — companyId가 Employee에서 EmployeeAssignment로 이관됨
+      const employeeFilter =
+        user.role === 'SUPER_ADMIN'
+          ? undefined
+          : {
+              assignments: {
+                some: {
+                  companyId: user.companyId,
+                  isPrimary: true,
+                  endDate: null,
+                },
+              },
+            }
+
       // 해당 월과 겹치는 배정 조회 (employee → company 필터)
       const schedules = await prisma.employeeSchedule.findMany({
         where: {
-          employee: companyFilter,
+          ...(employeeFilter ? { employee: employeeFilter } : {}),
           effectiveFrom: { lte: monthEnd },
           OR: [
             { effectiveTo: null },

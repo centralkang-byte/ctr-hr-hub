@@ -33,17 +33,27 @@ export const POST = withPermission(
         id: true,
         name: true,
         hireDate: true,
-        department: { select: { name: true } },
-        jobGrade: { select: { name: true } },
-        jobGradeId: true,
-        jobCategoryId: true,
-        companyId: true,
+        assignments: {
+          where: { isPrimary: true, endDate: null },
+          take: 1,
+          select: {
+            companyId: true,
+            jobGradeId: true,
+            jobCategoryId: true,
+            department: { select: { name: true } },
+            jobGrade: { select: { name: true } },
+          },
+        },
       },
     })
 
     if (!employee) {
       throw notFound('직원을 찾을 수 없습니다.')
     }
+
+    const empAssignment = employee.assignments?.[0]
+    const empJobGradeId = empAssignment?.jobGradeId
+    const empJobCategoryId = empAssignment?.jobCategoryId
 
     // ── Latest compensation ──────────────────────────────────
     const latestComp = await prisma.compensationHistory.findFirst({
@@ -58,9 +68,9 @@ export const POST = withPermission(
     // ── Compa-Ratio ──────────────────────────────────────────
     const salaryBand = await prisma.salaryBand.findFirst({
       where: {
-        companyId: employee.companyId,
-        jobGradeId: employee.jobGradeId,
-        ...(employee.jobCategoryId ? { jobCategoryId: employee.jobCategoryId } : {}),
+        companyId: empAssignment?.companyId ?? user.companyId,
+        jobGradeId: empJobGradeId ?? undefined,
+        ...(empJobCategoryId ? { jobCategoryId: empJobCategoryId } : {}),
         deletedAt: null,
       },
       orderBy: { effectiveFrom: 'desc' },
@@ -87,8 +97,8 @@ export const POST = withPermission(
     const result = await compensationRecommendation(
       {
         employeeName: employee.name,
-        department: employee.department?.name ?? '-',
-        grade: employee.jobGrade?.name ?? '-',
+        department: (empAssignment as any)?.department?.name ?? '-', // eslint-disable-line @typescript-eslint/no-explicit-any
+        grade: (empAssignment as any)?.jobGrade?.name ?? '-', // eslint-disable-line @typescript-eslint/no-explicit-any
         emsBlock: latestEval?.emsBlock ?? null,
         compaRatio,
         currentSalary,

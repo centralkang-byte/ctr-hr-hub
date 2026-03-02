@@ -144,15 +144,15 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
       {/* ─── Filter Tabs ─── */}
       <div className="flex flex-wrap items-center gap-4">
         {/* Trigger type tabs */}
-        <div className="flex border-b border-slate-200">
+        <div className="flex border-b border-[#E8E8E8]">
           {TRIGGER_TABS.map((tab) => (
             <button
               key={tab.value}
               type="button"
               className={`px-4 py-2.5 text-sm font-medium transition-colors ${
                 selectedTab === tab.value
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-slate-500 hover:text-slate-700'
+                  ? 'border-b-2 border-[#00C853] text-[#00C853]'
+                  : 'text-[#666] hover:text-[#333]'
               }`}
               onClick={() => setSelectedTab(tab.value)}
             >
@@ -162,15 +162,15 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
         </div>
 
         {/* Read status filter */}
-        <div className="flex items-center gap-1 rounded-lg border border-slate-200 p-0.5">
+        <div className="flex items-center gap-1 rounded-lg border border-[#E8E8E8] p-0.5">
           {READ_FILTERS.map((f) => (
             <button
               key={f.value}
               type="button"
               className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                 readFilter === f.value
-                  ? 'bg-blue-600 text-white'
-                  : 'text-slate-600 hover:bg-slate-100'
+                  ? 'bg-[#00C853] text-white'
+                  : 'text-[#555] hover:bg-[#F5F5F5]'
               }`}
               onClick={() => setReadFilter(f.value)}
             >
@@ -181,7 +181,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
       </div>
 
       {/* ─── Notification List ─── */}
-      <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="rounded-xl border border-[#E8E8E8] bg-white">
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -191,16 +191,16 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
             {t('noNotifications')}
           </div>
         ) : (
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-[#F5F5F5]">
             {notifications.map((item) => (
               <div
                 key={item.id}
-                className="flex items-start gap-3 px-5 py-4 hover:bg-slate-50 transition-colors"
+                className="flex items-start gap-3 px-5 py-4 hover:bg-[#FAFAFA] transition-colors"
               >
                 {/* Unread dot */}
                 <div className="mt-1.5 shrink-0">
                   {!item.isRead ? (
-                    <div className="h-2.5 w-2.5 rounded-full bg-blue-500" />
+                    <div className="h-2.5 w-2.5 rounded-full bg-[#00C853]" />
                   ) : (
                     <div className="h-2.5 w-2.5" />
                   )}
@@ -212,27 +212,27 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
                     <div>
                       <p
                         className={`text-sm ${
-                          !item.isRead ? 'font-semibold text-slate-900' : 'text-slate-700'
+                          !item.isRead ? 'font-semibold text-[#1A1A1A]' : 'text-[#333]'
                         }`}
                       >
                         {item.title}
                       </p>
-                      <p className="mt-1 text-sm text-slate-500">
+                      <p className="mt-1 text-sm text-[#666]">
                         {item.body}
                       </p>
                     </div>
-                    <span className="shrink-0 text-xs text-slate-400">
+                    <span className="shrink-0 text-xs text-[#999]">
                       {formatRelativeTime(item.createdAt)}
                     </span>
                   </div>
                   <div className="mt-2 flex items-center gap-2">
-                    <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
+                    <span className="inline-flex items-center rounded-full bg-[#F5F5F5] px-2 py-0.5 text-[11px] font-medium text-[#555]">
                       {item.triggerType}
                     </span>
                     {!item.isRead && (
                       <button
                         type="button"
-                        className="text-xs text-blue-600 hover:text-blue-700"
+                        className="text-xs text-[#00C853] hover:text-[#00A844]"
                         onClick={() => handleMarkRead(item.id)}
                       >
                         {t('markAsRead')}
@@ -241,7 +241,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
                     {item.link && (
                       <a
                         href={item.link}
-                        className="text-xs text-blue-600 hover:text-blue-700"
+                        className="text-xs text-[#00C853] hover:text-[#00A844]"
                       >
                         {t('goToLink')}
                       </a>

@@ -15,10 +15,17 @@ export const GET = withPermission(
     // 1. Get manager's department
     const manager = await prisma.employee.findUnique({
       where: { id: user.employeeId },
-      select: { departmentId: true },
+      select: {
+        assignments: {
+          where: { isPrimary: true, endDate: null },
+          take: 1,
+          select: { departmentId: true },
+        },
+      },
     })
 
-    if (!manager?.departmentId) {
+    const managerDepartmentId = manager?.assignments?.[0]?.departmentId
+    if (!managerDepartmentId) {
       return apiSuccess({ date: new Date().toISOString().slice(0, 10), members: [] })
     }
 
@@ -31,15 +38,25 @@ export const GET = withPermission(
     // 3. Get all team members in the same department
     const teamMembers = await prisma.employee.findMany({
       where: {
-        departmentId: manager.departmentId,
-        companyId: user.companyId,
         deletedAt: null,
+        assignments: {
+          some: {
+            departmentId: managerDepartmentId,
+            companyId: user.companyId,
+            isPrimary: true,
+            endDate: null,
+          },
+        },
       },
       select: {
         id: true,
         employeeNo: true,
         name: true,
-        jobGrade: { select: { name: true } },
+        assignments: {
+          where: { isPrimary: true, endDate: null },
+          take: 1,
+          select: { jobGrade: { select: { name: true } } },
+        },
       },
       orderBy: { name: 'asc' },
     })
@@ -70,7 +87,7 @@ export const GET = withPermission(
         employeeId: emp.id,
         employeeNo: emp.employeeNo,
         name: emp.name,
-        position: emp.jobGrade?.name ?? '',
+        position: (emp.assignments?.[0] as any)?.jobGrade?.name ?? '', // eslint-disable-line @typescript-eslint/no-explicit-any
         attendance: attendance
           ? {
               id: attendance.id,

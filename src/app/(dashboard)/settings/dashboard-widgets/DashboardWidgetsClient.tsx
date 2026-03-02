@@ -119,7 +119,7 @@ export function DashboardWidgetsClient({ user: _user }: { user: SessionUser }) {
           return (
             <Card
               key={widget.key}
-              className={`transition-colors ${enabled ? 'border-blue-200 bg-blue-50/30' : ''}`}
+              className={`transition-colors ${enabled ? 'border-[#E8F5E9] bg-[#E8F5E9]/30' : ''}`}
             >
               <CardContent className="flex items-start gap-3 p-4">
                 <Switch

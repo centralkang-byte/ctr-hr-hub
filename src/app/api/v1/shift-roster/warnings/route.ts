@@ -16,13 +16,24 @@ import type { SessionUser } from '@/types'
 export const GET = withPermission(
   async (_req: NextRequest, _context, user: SessionUser) => {
     try {
-      const companyFilter =
-        user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }
+      // companyId가 Employee에서 EmployeeAssignment로 이관됨
+      const employeeFilter =
+        user.role === 'SUPER_ADMIN'
+          ? undefined
+          : {
+              assignments: {
+                some: {
+                  companyId: user.companyId,
+                  isPrimary: true,
+                  endDate: null,
+                },
+              },
+            }
 
       // SHIFT 타입 스케줄이 배정된 직원 조회
       const shiftSchedules = await prisma.employeeSchedule.findMany({
         where: {
-          employee: companyFilter,
+          ...(employeeFilter ? { employee: employeeFilter } : {}),
           schedule: { scheduleType: { in: ['SHIFT_2', 'SHIFT_3'] } },
         },
         include: {

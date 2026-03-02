@@ -30,10 +30,19 @@ export const GET = withPermission(
   ) => {
     const { id } = await context.params
 
-    const companyFilter = user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }
+    const assignmentFilter =
+      user.role === 'SUPER_ADMIN'
+        ? {}
+        : { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
+
+    const employeeCheck = await prisma.employee.findFirst({
+      where: { id, deletedAt: null, ...assignmentFilter },
+      select: { id: true },
+    })
+    if (!employeeCheck) throw notFound('직원을 찾을 수 없습니다.')
 
     const documents = await prisma.employeeDocument.findMany({
-      where: { employeeId: id, deletedAt: null, ...companyFilter },
+      where: { employeeId: id, deletedAt: null },
       include: {
         uploader: { select: { id: true, name: true } },
       },
@@ -61,23 +70,36 @@ export const POST = withPermission(
       throw badRequest('잘못된 요청 데이터입니다.', { issues: parsed.error.issues })
     }
 
-    const companyFilter = user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }
-
-    // Verify employee exists in the user's company and retrieve companyId
+    // Verify employee exists in the user's company and retrieve companyId from assignment
     const employee = await prisma.employee.findFirst({
-      where: { id, deletedAt: null, ...companyFilter },
-      select: { id: true, companyId: true },
+      where: {
+        id,
+        deletedAt: null,
+        ...(user.role !== 'SUPER_ADMIN'
+          ? { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
+          : {}),
+      },
+      select: {
+        id: true,
+        assignments: {
+          where: { isPrimary: true, endDate: null },
+          take: 1,
+          select: { companyId: true },
+        },
+      },
     })
 
     if (!employee) {
       throw notFound('직원을 찾을 수 없습니다.')
     }
 
+    const companyId = (employee.assignments[0]?.companyId as string | undefined) ?? ''
+
     try {
       const document = await prisma.employeeDocument.create({
         data: {
           employeeId: id,
-          companyId: employee.companyId,
+          companyId,
           docType: parsed.data.docType,
           title: parsed.data.title,
           fileKey: parsed.data.fileKey,
@@ -93,7 +115,7 @@ export const POST = withPermission(
         action: 'employee.document.upload',
         resourceType: 'employee_document',
         resourceId: document.id,
-        companyId: employee.companyId,
+        companyId,
         ip,
         userAgent,
       })

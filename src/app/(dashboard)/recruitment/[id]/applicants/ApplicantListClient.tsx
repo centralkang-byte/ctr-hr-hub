@@ -182,7 +182,7 @@ export default function ApplicantListClient({ user, postingId }: Props) {
             </div>
             <div>
               <h1
-                className="text-xl font-bold text-[#333]"
+                className="text-xl font-bold text-[#1A1A1A]"
                 style={{ letterSpacing: '-0.02em' }}
               >
                 {t('applicantManagement')}
@@ -214,7 +214,7 @@ export default function ApplicantListClient({ user, postingId }: Props) {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full pl-10 pr-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] transition-colors duration-150"
+              className="w-full pl-10 pr-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"
             />
           </div>
           {/* Stage Filter */}
@@ -226,7 +226,7 @@ export default function ApplicantListClient({ user, postingId }: Props) {
                 setStageFilter(e.target.value)
                 setPage(1)
               }}
-              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#2196F3] transition-colors duration-150"
+              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"
             >
               <option value="">{t('allStages')}</option>
               {STAGES_ALL.map((s) => (
@@ -238,7 +238,7 @@ export default function ApplicantListClient({ user, postingId }: Props) {
           </div>
           <button
             onClick={handleSearch}
-            className="px-4 py-2 text-sm font-medium bg-[#333] text-white rounded-lg hover:bg-[#555] transition-colors duration-150"
+            className="px-4 py-2 text-sm font-medium bg-[#1A1A1A] text-white rounded-lg hover:bg-[#333] transition-colors duration-150"
           >
             {t('searchButton')}
           </button>
@@ -264,22 +264,22 @@ export default function ApplicantListClient({ user, postingId }: Props) {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-[#E8E8E8]">
-                  <th className="text-left px-6 py-3 text-xs font-medium text-[#999] uppercase tracking-wider">
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-[#999]">
                     {t('nameColumn')}
                   </th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-[#999] uppercase tracking-wider">
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-[#999]">
                     {t('emailColumn')}
                   </th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-[#999] uppercase tracking-wider">
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-[#999]">
                     {t('sourceColumn')}
                   </th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-[#999] uppercase tracking-wider">
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-[#999]">
                     {t('aiScoreColumn')}
                   </th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-[#999] uppercase tracking-wider">
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-[#999]">
                     {t('stageColumn')}
                   </th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-[#999] uppercase tracking-wider">
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-[#999]">
                     {t('appliedDateColumn')}
                   </th>
                 </tr>
@@ -292,7 +292,7 @@ export default function ApplicantListClient({ user, postingId }: Props) {
                     className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA] cursor-pointer transition-colors duration-150"
                   >
                     <td className="px-6 py-4">
-                      <span className="text-sm font-medium text-[#333]">
+                      <span className="text-sm font-medium text-[#1A1A1A]">
                         {app.applicant.name}
                       </span>
                     </td>
@@ -359,7 +359,7 @@ export default function ApplicantListClient({ user, postingId }: Props) {
                         onClick={() => setPage(pg)}
                         className={`w-8 h-8 text-sm rounded-lg transition-colors duration-150 ${
                           pg === page
-                            ? 'bg-[#333] text-white'
+                            ? 'bg-[#1A1A1A] text-white'
                             : 'text-[#666] hover:bg-[#FAFAFA]'
                         }`}
                       >

@@ -115,7 +115,7 @@ export default function DisciplineListClient({ user }: Props) {
             <Gavel className="w-5 h-5 text-[#F44336]" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-[#333]" style={{ letterSpacing: '-0.02em' }}>
+            <h1 className="text-xl font-bold text-[#1A1A1A] tracking-[-0.02em]">
               {t('title')}
             </h1>
             <p className="text-sm text-[#999]">{tCommon('total')} {total}{tCommon('items')}</p>
@@ -124,7 +124,7 @@ export default function DisciplineListClient({ user }: Props) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => router.push('/discipline/rewards')}
-            className="px-4 py-2 text-sm font-medium border border-[#E8E8E8] text-[#333] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150"
+            className="px-4 py-2 text-sm font-medium border border-[#E8E8E8] text-[#1A1A1A] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150"
           >
             {t('rewardsManagement')}
           </button>
@@ -148,7 +148,7 @@ export default function DisciplineListClient({ user }: Props) {
               placeholder={t('searchPlaceholder')}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] transition-colors"
+              className="w-full pl-10 pr-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -156,7 +156,7 @@ export default function DisciplineListClient({ user }: Props) {
             <select
               value={statusFilter}
               onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
-              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] bg-white"
+              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 bg-white"
             >
               <option value="">{t('statusAll')}</option>
               <option value="DISCIPLINE_ACTIVE">{t('statusLabels.DISCIPLINE_ACTIVE')}</option>
@@ -166,7 +166,7 @@ export default function DisciplineListClient({ user }: Props) {
             <select
               value={categoryFilter}
               onChange={(e) => { setCategoryFilter(e.target.value); setPage(1) }}
-              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#2196F3] bg-white"
+              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 bg-white"
             >
               <option value="">{t('categoryAll')}</option>
               {CATEGORY_KEYS.map((key) => (
@@ -214,16 +214,16 @@ export default function DisciplineListClient({ user }: Props) {
                   onClick={() => router.push(`/discipline/${row.id}`)}
                   className="border-b border-[#E8E8E8] last:border-b-0 hover:bg-[#FAFAFA] cursor-pointer transition-colors duration-150"
                 >
-                  <td className="px-4 py-3 text-sm text-[#333] font-medium">
+                  <td className="px-4 py-3 text-sm text-[#1A1A1A] font-medium">
                     {row.employee.name}
                   </td>
                   <td className="px-4 py-3 text-sm text-[#666]">
                     {row.employee.employeeNo}
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#333]">
+                  <td className="px-4 py-3 text-sm text-[#1A1A1A]">
                     {t(`typeLabels.${row.actionType}`, { defaultValue: row.actionType })}
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#333]">
+                  <td className="px-4 py-3 text-sm text-[#1A1A1A]">
                     {t(`categoryLabels.${row.category}`, { defaultValue: row.category })}
                   </td>
                   <td className="px-4 py-3 text-sm text-[#666]">
@@ -259,7 +259,7 @@ export default function DisciplineListClient({ user }: Props) {
               >
                 <ChevronLeft className="w-4 h-4 text-[#666]" />
               </button>
-              <span className="px-3 text-sm text-[#333]">
+              <span className="px-3 text-sm text-[#1A1A1A]">
                 {page} / {totalPages}
               </span>
               <button

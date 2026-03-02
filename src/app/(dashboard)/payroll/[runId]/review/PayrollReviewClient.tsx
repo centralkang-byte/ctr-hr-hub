@@ -136,7 +136,7 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
   if (loading || !data) {
     return (
       <div className="p-6 flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full" />
+        <div className="animate-spin h-8 w-8 border-4 border-[#00C853] border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -157,8 +157,8 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
       header: t('employee'),
       render: (row) => (
         <div>
-          <p className="font-medium text-slate-900">{row.employee.name}</p>
-          <p className="text-xs text-slate-500">{row.employee.employeeNo}</p>
+          <p className="font-medium text-[#1A1A1A]">{row.employee.name}</p>
+          <p className="text-xs text-[#666]">{row.employee.employeeNo}</p>
         </div>
       ),
     },
@@ -186,7 +186,7 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
       key: 'grossPay',
       header: t('totalGross'),
       render: (row) => (
-        <span className="font-medium text-emerald-600">
+        <span className="font-medium text-[#059669]">
           {formatCurrency(Number(row.grossPay))}
         </span>
       ),
@@ -195,7 +195,7 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
       key: 'deductions',
       header: t('deductionsCol'),
       render: (row) => (
-        <span className="text-red-600">
+        <span className="text-[#DC2626]">
           -{formatCurrency(Number(row.deductions))}
         </span>
       ),
@@ -204,7 +204,7 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
       key: 'netPay',
       header: t('netPayCol'),
       render: (row) => (
-        <span className="font-bold text-slate-900">
+        <span className="font-bold text-[#1A1A1A]">
           {formatCurrency(Number(row.netPay))}
         </span>
       ),
@@ -219,10 +219,10 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
 
         return (
           <div className="flex items-center gap-1">
-            {hasError && <AlertTriangle className="h-4 w-4 text-red-500" aria-label={t('anomaly')} />}
-            {hasWarning && <AlertTriangle className="h-4 w-4 text-amber-500" aria-label={t('warning')} />}
+            {hasError && <AlertTriangle className="h-4 w-4 text-[#EF4444]" aria-label={t('anomaly')} />}
+            {hasWarning && <AlertTriangle className="h-4 w-4 text-[#F59E0B]" aria-label={t('warning')} />}
             {row.isManuallyAdjusted && (
-              <Pencil className="h-3.5 w-3.5 text-blue-500" aria-label={t('manuallyAdjusted')} />
+              <Pencil className="h-3.5 w-3.5 text-[#00C853]" aria-label={t('manuallyAdjusted')} />
             )}
             {status === 'REVIEW' && (
               <button
@@ -231,7 +231,7 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
                   e.stopPropagation()
                   setAdjustItem(row)
                 }}
-                className="text-slate-400 hover:text-blue-600"
+                className="text-[#999] hover:text-[#00C853]"
               >
                 <Pencil className="h-3.5 w-3.5" />
               </button>
@@ -251,9 +251,9 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">{run.name}</h1>
+            <h1 className="text-2xl font-bold text-[#1A1A1A]">{run.name}</h1>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-sm text-slate-500">{run.yearMonth}</span>
+              <span className="text-sm text-[#666]">{run.yearMonth}</span>
               <PayrollStatusBadge status={run.status} />
             </div>
           </div>
@@ -265,7 +265,7 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
             <Button
               onClick={handleCalculate}
               disabled={actionLoading}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-[#00C853] hover:bg-[#00A844] text-white"
             >
               <Play className="h-4 w-4 mr-1" />
               {t('runCalculation')}
@@ -275,7 +275,7 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
             <Button
               onClick={handleApprove}
               disabled={actionLoading}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="bg-[#059669] hover:bg-[#047857] text-white"
             >
               <CheckCircle2 className="h-4 w-4 mr-1" />
               {tCommon('approve')}
@@ -285,7 +285,7 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
             <Button
               onClick={handlePaid}
               disabled={actionLoading}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+              className="bg-[#4F46E5] hover:bg-[#4338CA] text-white"
             >
               <CreditCard className="h-4 w-4 mr-1" />
               {t('markPaid')}
@@ -308,9 +308,9 @@ export default function PayrollReviewClient({ user, runId }: PayrollReviewClient
       )}
 
       {/* Data Table */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
-        <div className="p-4 border-b border-slate-200">
-          <h2 className="text-sm font-semibold text-slate-900">
+      <div className="bg-white rounded-xl border border-[#E8E8E8]">
+        <div className="p-4 border-b border-[#E8E8E8]">
+          <h2 className="text-sm font-semibold text-[#1A1A1A]">
             {t('payrollItems', { count: run.payrollItems.length })}
           </h2>
         </div>

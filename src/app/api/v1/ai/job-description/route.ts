@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { apiSuccess } from '@/lib/api'
 import { badRequest } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import { generateJobDescription } from '@/lib/claude'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
@@ -23,7 +24,7 @@ const bodySchema = z.object({
 
 // ─── POST /api/v1/ai/job-description ──────────────────────
 
-export const POST = withPermission(
+export const POST = withRateLimit(withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
     const body: unknown = await req.json()
     const parsed = bodySchema.safeParse(body)
@@ -40,4 +41,4 @@ export const POST = withPermission(
     return apiSuccess(result)
   },
   perm(MODULE.RECRUITMENT, ACTION.CREATE),
-)
+), RATE_LIMITS.AI)

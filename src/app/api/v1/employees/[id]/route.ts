@@ -22,15 +22,24 @@ export const GET = withPermission(
   ) => {
     const { id } = await context.params
 
-    const companyFilter = user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }
+    const assignmentFilter =
+      user.role === 'SUPER_ADMIN'
+        ? {}
+        : { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
 
     const employee = await prisma.employee.findFirst({
-      where: { id, deletedAt: null, ...companyFilter },
+      where: { id, deletedAt: null, ...assignmentFilter },
       include: {
-        department: true,
-        jobGrade: true,
-        jobCategory: true,
-        manager: { select: { id: true, name: true, photoUrl: true } },
+        assignments: {
+          where: { isPrimary: true, endDate: null },
+          take: 1,
+          include: {
+            department: true,
+            jobGrade: true,
+            jobCategory: true,
+            company: true,
+          },
+        },
         employeeHistories: {
           orderBy: { createdAt: 'desc' },
           take: 10,
@@ -63,18 +72,52 @@ export const PUT = withPermission(
       throw badRequest('잘못된 요청 데이터입니다.', { issues: parsed.error.issues })
     }
 
-    const updateData: Record<string, unknown> = { ...parsed.data }
+    // Strip fields that now live on EmployeeAssignment (moved in A2-1)
+    const {
+      companyId: _companyId,
+      departmentId: _departmentId,
+      jobGradeId: _jobGradeId,
+      jobCategoryId: _jobCategoryId,
+      employmentType: _employmentType,
+      status: _status,
+      managerId: _managerId,
+      ...employeeOnlyFields
+    } = parsed.data
+
+    const updateData: Record<string, unknown> = { ...employeeOnlyFields }
     if (parsed.data.hireDate) updateData.hireDate = new Date(parsed.data.hireDate)
     if (parsed.data.birthDate) updateData.birthDate = new Date(parsed.data.birthDate)
     if (parsed.data.resignDate) updateData.resignDate = new Date(parsed.data.resignDate)
 
-    const companyFilter = user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }
-
     try {
+      // For non-SUPER_ADMIN, first verify the employee belongs to user's company via assignment
+      if (user.role !== 'SUPER_ADMIN') {
+        const exists = await prisma.employee.findFirst({
+          where: {
+            id,
+            deletedAt: null,
+            assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } },
+          },
+          select: { id: true },
+        })
+        if (!exists) {
+          throw notFound('직원을 찾을 수 없습니다.')
+        }
+      }
+
       const employee = await prisma.employee.update({
-        where: { id, ...companyFilter },
+        where: { id },
         data: updateData,
+        include: {
+          assignments: {
+            where: { isPrimary: true, endDate: null },
+            take: 1,
+            select: { companyId: true },
+          },
+        },
       })
+
+      const employeeCompanyId = (employee.assignments[0]?.companyId as string | undefined) ?? ''
 
       const { ip, userAgent } = extractRequestMeta(req.headers)
       logAudit({
@@ -82,7 +125,7 @@ export const PUT = withPermission(
         action: 'employee.update',
         resourceType: 'employee',
         resourceId: employee.id,
-        companyId: employee.companyId,
+        companyId: employeeCompanyId,
         ip,
         userAgent,
       })
@@ -105,13 +148,36 @@ export const DELETE = withPermission(
   ) => {
     const { id } = await context.params
 
-    const companyFilter = user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }
-
     try {
+      // For non-SUPER_ADMIN, verify the employee belongs to user's company via assignment
+      if (user.role !== 'SUPER_ADMIN') {
+        const exists = await prisma.employee.findFirst({
+          where: {
+            id,
+            deletedAt: null,
+            assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } },
+          },
+          select: { id: true },
+        })
+        if (!exists) {
+          const { notFound: throwNotFound } = await import('@/lib/errors')
+          throw throwNotFound('직원을 찾을 수 없습니다.')
+        }
+      }
+
       const employee = await prisma.employee.update({
-        where: { id, deletedAt: null, ...companyFilter },
+        where: { id, deletedAt: null },
         data: { deletedAt: new Date() },
+        include: {
+          assignments: {
+            where: { isPrimary: true, endDate: null },
+            take: 1,
+            select: { companyId: true },
+          },
+        },
       })
+
+      const employeeCompanyId = (employee.assignments[0]?.companyId as string | undefined) ?? ''
 
       const { ip, userAgent } = extractRequestMeta(req.headers)
       logAudit({
@@ -119,7 +185,7 @@ export const DELETE = withPermission(
         action: 'employee.delete',
         resourceType: 'employee',
         resourceId: id,
-        companyId: employee.companyId,
+        companyId: employeeCompanyId,
         ip,
         userAgent,
       })

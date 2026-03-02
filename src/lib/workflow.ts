@@ -77,17 +77,37 @@ async function resolveApprover(
 ): Promise<ResolvedApprover | null> {
   switch (approverType) {
     case 'DIRECT_MANAGER': {
+      // managerId no longer exists on Employee; use position-based manager lookup
       const employee = await prisma.employee.findUnique({
         where: { id: employeeId },
-        select: {
-          managerId: true,
-          manager: { select: { id: true, name: true } },
+        include: {
+          assignments: {
+            where: { isPrimary: true, endDate: null },
+            take: 1,
+            include: {
+              position: {
+                include: {
+                  reportsToPosition: {
+                    include: {
+                      assignments: {
+                        where: { isPrimary: true, endDate: null },
+                        take: 1,
+                        include: { employee: { select: { id: true, name: true } } },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       })
-      if (!employee?.manager) return null
+      const managerEmployee =
+        employee?.assignments?.[0]?.position?.reportsToPosition?.assignments?.[0]?.employee
+      if (!managerEmployee) return null
       return {
-        employeeId: employee.manager.id,
-        name: employee.manager.name,
+        employeeId: managerEmployee.id,
+        name: managerEmployee.name,
         stepOrder,
         approverType,
       }
@@ -97,15 +117,26 @@ async function resolveApprover(
       const employee = await prisma.employee.findUnique({
         where: { id: employeeId },
         include: {
-          department: true,
+          assignments: {
+            where: { isPrimary: true, endDate: null },
+            take: 1,
+            include: { department: true },
+          },
         },
       })
-      if (!employee?.department) return null
+      const assignment = employee?.assignments?.[0]
+      if (!assignment?.department) return null
 
       // Find department head (manager of the department's top-level)
       const deptHead = await prisma.employee.findFirst({
         where: {
-          departmentId: employee.departmentId,
+          assignments: {
+            some: {
+              departmentId: assignment.departmentId,
+              isPrimary: true,
+              endDate: null,
+            },
+          },
           employeeRoles: {
             some: {
               role: { code: 'MANAGER' },
@@ -126,13 +157,26 @@ async function resolveApprover(
     case 'HR_ADMIN': {
       const employee = await prisma.employee.findUnique({
         where: { id: employeeId },
-        select: { companyId: true },
+        include: {
+          assignments: {
+            where: { isPrimary: true, endDate: null },
+            take: 1,
+            select: { companyId: true },
+          },
+        },
       })
       if (!employee) return null
+      const empCompanyId = employee.assignments?.[0]?.companyId
 
       const hrAdmin = await prisma.employee.findFirst({
         where: {
-          companyId: employee.companyId,
+          assignments: {
+            some: {
+              companyId: empCompanyId,
+              isPrimary: true,
+              endDate: null,
+            },
+          },
           employeeRoles: {
             some: {
               role: { code: 'HR_ADMIN' },
@@ -169,14 +213,27 @@ async function resolveApprover(
       if (!approverRoleId) return null
       const employee = await prisma.employee.findUnique({
         where: { id: employeeId },
-        select: { companyId: true },
+        include: {
+          assignments: {
+            where: { isPrimary: true, endDate: null },
+            take: 1,
+            select: { companyId: true },
+          },
+        },
       })
       if (!employee) return null
+      const roleEmpCompanyId = employee.assignments?.[0]?.companyId
 
       // Find the role by ID, then find an employee with that role
       const roleHolder = await prisma.employee.findFirst({
         where: {
-          companyId: employee.companyId,
+          assignments: {
+            some: {
+              companyId: roleEmpCompanyId,
+              isPrimary: true,
+              endDate: null,
+            },
+          },
           employeeRoles: {
             some: {
               roleId: approverRoleId,

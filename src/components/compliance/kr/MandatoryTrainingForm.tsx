@@ -133,8 +133,8 @@ export default function MandatoryTrainingForm({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50">
-              <BookOpen className="w-4 h-4 text-blue-600" />
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#E8F5E9]">
+              <BookOpen className="w-4 h-4 text-[#00C853]" />
             </div>
             <DialogTitle>법정의무교육 추가</DialogTitle>
           </div>
@@ -143,13 +143,13 @@ export default function MandatoryTrainingForm({
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">
           {/* Training Type */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              교육 유형 <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-[#333] mb-1">
+              교육 유형 <span className="text-[#EF4444]">*</span>
             </label>
             <select
               value={form.trainingType}
               onChange={(e) => handleChange('trainingType', e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
             >
               <option value="">교육 유형 선택</option>
               {TRAINING_TYPES.map((t) => (
@@ -162,14 +162,14 @@ export default function MandatoryTrainingForm({
 
           {/* Course Selector */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              과정 <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-[#333] mb-1">
+              과정 <span className="text-[#EF4444]">*</span>
             </label>
             <select
               value={form.courseId}
               onChange={(e) => handleChange('courseId', e.target.value)}
               disabled={!form.trainingType}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-50 disabled:text-slate-400"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00C853]/10 disabled:bg-[#FAFAFA] disabled:text-[#999]"
             >
               <option value="">
                 {form.trainingType ? '과정 선택' : '교육 유형을 먼저 선택하세요'}
@@ -185,13 +185,13 @@ export default function MandatoryTrainingForm({
           {/* Year + Due Date */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                대상 연도 <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-[#333] mb-1">
+                대상 연도 <span className="text-[#EF4444]">*</span>
               </label>
               <select
                 value={form.year}
                 onChange={(e) => handleChange('year', Number(e.target.value))}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
               >
                 {[defaultYear + 1, defaultYear, defaultYear - 1].map((y) => (
                   <option key={y} value={y}>
@@ -202,21 +202,21 @@ export default function MandatoryTrainingForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                이수 마감일 <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-[#333] mb-1">
+                이수 마감일 <span className="text-[#EF4444]">*</span>
               </label>
               <input
                 type="date"
                 value={form.dueDate}
                 onChange={(e) => handleChange('dueDate', e.target.value)}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
               />
             </div>
           </div>
 
           {/* Required Hours */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="block text-sm font-medium text-[#333] mb-1">
               필수 이수시간 (시간)
             </label>
             <input
@@ -225,17 +225,17 @@ export default function MandatoryTrainingForm({
               max={40}
               value={form.requiredHours}
               onChange={(e) => handleChange('requiredHours', Number(e.target.value))}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
               placeholder="1"
             />
-            <p className="text-xs text-slate-400 mt-1">법정 최소 이수시간을 입력하세요.</p>
+            <p className="text-xs text-[#999] mt-1">법정 최소 이수시간을 입력하세요.</p>
           </div>
 
           {/* Error */}
           {error && (
-            <div className="flex items-center gap-2 px-3 py-2.5 bg-red-50 border border-red-200 rounded-lg">
-              <X className="w-4 h-4 text-red-500 flex-shrink-0" />
-              <p className="text-sm text-red-700">{error}</p>
+            <div className="flex items-center gap-2 px-3 py-2.5 bg-[#FEE2E2] border border-[#FECACA] rounded-lg">
+              <X className="w-4 h-4 text-[#EF4444] flex-shrink-0" />
+              <p className="text-sm text-[#B91C1C]">{error}</p>
             </div>
           )}
 
@@ -244,14 +244,14 @@ export default function MandatoryTrainingForm({
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-[#333] bg-white border border-[#D4D4D4] rounded-lg hover:bg-[#FAFAFA] disabled:opacity-50 transition-colors"
             >
               취소
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg disabled:opacity-50 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-white bg-[#00C853] hover:bg-[#00A844] rounded-lg disabled:opacity-50 transition-colors"
             >
               {submitting ? '등록 중...' : '교육 추가'}
             </button>

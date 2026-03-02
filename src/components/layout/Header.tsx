@@ -82,7 +82,7 @@ export function Header({ user, companies }: HeaderProps) {
   }, [])
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between border-b bg-white px-6">
+    <header className="flex h-14 shrink-0 items-center justify-between border-b border-[#E8E8E8] bg-white px-6">
       {/* ─── Left: Breadcrumb ─── */}
       <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
         <span className="font-medium text-foreground">{t('home')}</span>
@@ -122,10 +122,10 @@ export function Header({ user, companies }: HeaderProps) {
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="flex items-center gap-2 rounded-md px-2 py-1 hover:bg-ctr-gray-50"
+              className="flex items-center gap-2 rounded-md px-2 py-1 hover:bg-[#FAFAFA]"
             >
               <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-ctr-primary text-xs text-white">
+                <AvatarFallback className="bg-ctr-primary-light text-xs text-ctr-primary">
                   {userInitial}
                 </AvatarFallback>
               </Avatar>

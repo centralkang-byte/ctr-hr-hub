@@ -116,15 +116,15 @@ export default function SocialInsuranceConfigForm({
 
         <form onSubmit={handleSubmit} className="space-y-4 py-2">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
+            <div className="bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-sm rounded-lg px-4 py-3">
               {error}
             </div>
           )}
 
           {/* Insurance Type */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              보험 유형 <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-[#333] mb-1">
+              보험 유형 <span className="text-[#EF4444]">*</span>
             </label>
             <select
               name="insuranceType"
@@ -132,7 +132,7 @@ export default function SocialInsuranceConfigForm({
               onChange={handleChange}
               required
               disabled={isEdit}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-slate-50 disabled:text-slate-500"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853] disabled:bg-[#FAFAFA] disabled:text-[#666]"
             >
               <option value="">선택하세요</option>
               {INSURANCE_TYPES.map((t) => (
@@ -145,8 +145,8 @@ export default function SocialInsuranceConfigForm({
 
           {/* City */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              도시 <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-[#333] mb-1">
+              도시 <span className="text-[#EF4444]">*</span>
             </label>
             <input
               type="text"
@@ -155,15 +155,15 @@ export default function SocialInsuranceConfigForm({
               onChange={handleChange}
               required
               placeholder="예: 上海, 北京"
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder:text-slate-400"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853] placeholder:text-[#999]"
             />
           </div>
 
           {/* Rates */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                회사 부담률 (%) <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-[#333] mb-1">
+                회사 부담률 (%) <span className="text-[#EF4444]">*</span>
               </label>
               <input
                 type="number"
@@ -175,12 +175,12 @@ export default function SocialInsuranceConfigForm({
                 max="100"
                 step="0.01"
                 placeholder="예: 16.00"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder:text-slate-400"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853] placeholder:text-[#999]"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                직원 부담률 (%) <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-[#333] mb-1">
+                직원 부담률 (%) <span className="text-[#EF4444]">*</span>
               </label>
               <input
                 type="number"
@@ -192,7 +192,7 @@ export default function SocialInsuranceConfigForm({
                 max="100"
                 step="0.01"
                 placeholder="예: 8.00"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder:text-slate-400"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853] placeholder:text-[#999]"
               />
             </div>
           </div>
@@ -200,8 +200,8 @@ export default function SocialInsuranceConfigForm({
           {/* Base Range */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                기수 하한 (CNY) <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-[#333] mb-1">
+                기수 하한 (CNY) <span className="text-[#EF4444]">*</span>
               </label>
               <input
                 type="number"
@@ -212,12 +212,12 @@ export default function SocialInsuranceConfigForm({
                 min="0"
                 step="1"
                 placeholder="예: 3000"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder:text-slate-400"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853] placeholder:text-[#999]"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                기수 상한 (CNY) <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-[#333] mb-1">
+                기수 상한 (CNY) <span className="text-[#EF4444]">*</span>
               </label>
               <input
                 type="number"
@@ -228,7 +228,7 @@ export default function SocialInsuranceConfigForm({
                 min="0"
                 step="1"
                 placeholder="예: 30000"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder:text-slate-400"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853] placeholder:text-[#999]"
               />
             </div>
           </div>
@@ -236,8 +236,8 @@ export default function SocialInsuranceConfigForm({
           {/* Effective Dates */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                적용 시작일 <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-[#333] mb-1">
+                적용 시작일 <span className="text-[#EF4444]">*</span>
               </label>
               <input
                 type="date"
@@ -245,11 +245,11 @@ export default function SocialInsuranceConfigForm({
                 value={form.effectiveFrom}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853]"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label className="block text-sm font-medium text-[#333] mb-1">
                 적용 종료일
               </label>
               <input
@@ -257,7 +257,7 @@ export default function SocialInsuranceConfigForm({
                 name="effectiveTo"
                 value={form.effectiveTo}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853]"
               />
             </div>
           </div>
@@ -266,14 +266,14 @@ export default function SocialInsuranceConfigForm({
             <button
               type="button"
               onClick={() => onClose()}
-              className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-lg font-medium text-sm transition-colors"
+              className="bg-white border border-[#D4D4D4] hover:bg-[#FAFAFA] text-[#333] px-4 py-2 rounded-lg font-medium text-sm transition-colors"
             >
               취소
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? '저장 중...' : isEdit ? '수정' : '추가'}
             </button>

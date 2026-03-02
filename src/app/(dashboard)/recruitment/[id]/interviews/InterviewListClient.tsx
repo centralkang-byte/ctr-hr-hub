@@ -153,7 +153,7 @@ function ScoreSelect({
 }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-      <Label style={{ minWidth: 100, fontSize: 14, color: '#333' }}>
+      <Label style={{ minWidth: 100, fontSize: 14, color: '#1A1A1A' }}>
         {label}
       </Label>
       <div style={{ display: 'flex', gap: 4 }}>
@@ -240,7 +240,7 @@ function EvaluationModal({
         style={{ maxWidth: 560, borderRadius: 16, padding: 0 }}
       >
         <DialogHeader style={{ padding: '24px 24px 0' }}>
-          <DialogTitle style={{ fontSize: 18, fontWeight: 700, color: '#333' }}>
+          <DialogTitle style={{ fontSize: 18, fontWeight: 700, color: '#1A1A1A' }}>
             {t('evaluationTitle')}
           </DialogTitle>
           {interview && (
@@ -278,8 +278,7 @@ function EvaluationModal({
               style={{
                 fontSize: 12,
                 color: '#999',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
+                fontWeight: 600,
                 marginBottom: 12,
               }}
             >
@@ -305,7 +304,7 @@ function EvaluationModal({
           </div>
 
           <div>
-            <Label style={{ fontSize: 14, color: '#333' }}>{t('strengthsLabel')}</Label>
+            <Label style={{ fontSize: 14, color: '#1A1A1A' }}>{t('strengthsLabel')}</Label>
             <Textarea
               value={form.strengths}
               onChange={(e) => updateField('strengths', e.target.value)}
@@ -316,7 +315,7 @@ function EvaluationModal({
           </div>
 
           <div>
-            <Label style={{ fontSize: 14, color: '#333' }}>{t('concernsLabel')}</Label>
+            <Label style={{ fontSize: 14, color: '#1A1A1A' }}>{t('concernsLabel')}</Label>
             <Textarea
               value={form.concerns}
               onChange={(e) => updateField('concerns', e.target.value)}
@@ -327,7 +326,7 @@ function EvaluationModal({
           </div>
 
           <div>
-            <Label style={{ fontSize: 14, color: '#333', marginBottom: 8, display: 'block' }}>
+            <Label style={{ fontSize: 14, color: '#1A1A1A', marginBottom: 8, display: 'block' }}>
               {t('recommendationLabel')}
             </Label>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
@@ -366,7 +365,7 @@ function EvaluationModal({
           </div>
 
           <div>
-            <Label style={{ fontSize: 14, color: '#333' }}>{t('commentLabel')}</Label>
+            <Label style={{ fontSize: 14, color: '#1A1A1A' }}>{t('commentLabel')}</Label>
             <Textarea
               value={form.comment}
               onChange={(e) => updateField('comment', e.target.value)}
@@ -471,7 +470,7 @@ export function InterviewListClient({
       key: 'applicantName',
       header: t('applicantColumn'),
       render: (row) => (
-        <span style={{ fontWeight: 500, color: '#333' }}>
+        <span style={{ fontWeight: 500, color: '#1A1A1A' }}>
           {row.application.applicant.name}
         </span>
       ),
@@ -480,7 +479,7 @@ export function InterviewListClient({
       key: 'interviewerName',
       header: t('interviewerColumn'),
       render: (row) => (
-        <span style={{ color: '#333' }}>{row.interviewer.name}</span>
+        <span style={{ color: '#1A1A1A' }}>{row.interviewer.name}</span>
       ),
     },
     {
@@ -488,7 +487,7 @@ export function InterviewListClient({
       header: t('dateTimeColumn'),
       sortable: true,
       render: (row) => (
-        <span style={{ color: '#333', fontSize: 14 }}>
+        <span style={{ color: '#1A1A1A', fontSize: 14 }}>
           {format(new Date(row.scheduledAt), 'yyyy-MM-dd HH:mm')}
         </span>
       ),
@@ -506,7 +505,7 @@ export function InterviewListClient({
       key: 'interviewType',
       header: t('typeColumn'),
       render: (row) => (
-        <span style={{ color: '#333', fontSize: 14 }}>
+        <span style={{ color: '#1A1A1A', fontSize: 14 }}>
           {row.interviewType
             ? INTERVIEW_TYPE_KEYS[row.interviewType] ? t(INTERVIEW_TYPE_KEYS[row.interviewType]) : row.interviewType
             : '-'}
@@ -517,7 +516,7 @@ export function InterviewListClient({
       key: 'round',
       header: t('roundColumn'),
       render: (row) => (
-        <span style={{ color: '#333', fontSize: 14 }}>
+        <span style={{ color: '#1A1A1A', fontSize: 14 }}>
           {row.round ? ROUND_KEYS[row.round] ? t(ROUND_KEYS[row.round]) : row.round : '-'}
         </span>
       ),

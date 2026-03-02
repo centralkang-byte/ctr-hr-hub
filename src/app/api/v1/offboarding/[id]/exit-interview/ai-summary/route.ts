@@ -20,12 +20,23 @@ export const POST = withPermission(
     const offboarding = await prisma.employeeOffboarding.findFirst({
       where: {
         id,
-        employee: {
-          ...(user.role !== 'SUPER_ADMIN' ? { companyId: user.companyId } : {}),
-        },
+        ...(user.role !== 'SUPER_ADMIN'
+          ? { employee: { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } } }
+          : {}),
       },
       include: {
-        employee: { select: { id: true, name: true, companyId: true, hireDate: true } },
+        employee: {
+          select: {
+            id: true,
+            name: true,
+            hireDate: true,
+            assignments: {
+              where: { isPrimary: true, endDate: null },
+              take: 1,
+              select: { companyId: true },
+            },
+          },
+        },
       },
     })
     if (!offboarding) throw notFound('퇴직 기록을 찾을 수 없습니다.')
@@ -52,7 +63,7 @@ export const POST = withPermission(
       interview.primaryReason,
       interview.satisfactionScore,
       interview.feedbackText,
-      offboarding.employee.companyId,
+      ((offboarding.employee.assignments?.[0] as any)?.companyId as string | undefined) ?? user.companyId, // eslint-disable-line @typescript-eslint/no-explicit-any
       offboarding.employee.id,
     )
 

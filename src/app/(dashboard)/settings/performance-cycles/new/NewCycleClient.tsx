@@ -75,21 +75,21 @@ export default function NewCycleClient({ user }: { user: SessionUser }) {
       <div className="flex items-center gap-4">
         <button
           onClick={() => router.back()}
-          className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white p-2 text-gray-600 hover:bg-gray-50 transition-colors"
+          className="inline-flex items-center justify-center rounded-lg border border-[#E8E8E8] bg-white p-2 text-[#666] hover:bg-[#FAFAFA] transition-colors"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <h1 className="text-2xl font-bold text-ctr-primary">{t('newEvaluationCycle')}</h1>
+        <h1 className="text-2xl font-bold text-[#00C853]">{t('newEvaluationCycle')}</h1>
       </div>
 
       {/* Form */}
       <form
 
         onSubmit={handleSubmit(onSubmit as Parameters<typeof handleSubmit>[0])}
-        className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm space-y-6"
+        className="rounded-xl border border-[#E8E8E8] bg-white p-6 space-y-6"
       >
         {error && (
-          <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+          <div className="rounded-lg bg-[#FEE2E2] border border-[#FECACA] px-4 py-3 text-sm text-[#B91C1C]">
             {error}
           </div>
         )}
@@ -97,101 +97,101 @@ export default function NewCycleClient({ user }: { user: SessionUser }) {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {/* 이름 */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t('nameColumn')}</label>
+            <label className="block text-sm font-medium text-[#666] mb-1">{t('nameColumn')}</label>
             <input
               {...register('name')}
               type="text"
               placeholder={t('namePlaceholder')}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
+              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
             />
-            {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
+            {errors.name && <p className="mt-1 text-xs text-[#EF4444]">{errors.name.message}</p>}
           </div>
 
           {/* 연도 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t('yearLabel')}</label>
+            <label className="block text-sm font-medium text-[#666] mb-1">{t('yearLabel')}</label>
             <input
               {...register('year')}
               type="number"
               min={2020}
               max={2100}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
+              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
             />
-            {errors.year && <p className="mt-1 text-xs text-red-500">{errors.year.message}</p>}
+            {errors.year && <p className="mt-1 text-xs text-[#EF4444]">{errors.year.message}</p>}
           </div>
 
           {/* 유형 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t('typeLabel')}</label>
+            <label className="block text-sm font-medium text-[#666] mb-1">{t('typeLabel')}</label>
             <select
               {...register('half')}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
+              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
             >
               {(['H1', 'H2', 'ANNUAL'] as const).map((key) => (
                 <option key={key} value={key}>{t(`halfLabels.${key}`)}</option>
               ))}
             </select>
-            {errors.half && <p className="mt-1 text-xs text-red-500">{errors.half.message}</p>}
+            {errors.half && <p className="mt-1 text-xs text-[#EF4444]">{errors.half.message}</p>}
           </div>
 
           {/* 목표설정 시작일 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t('goalSettingStart')}</label>
+            <label className="block text-sm font-medium text-[#666] mb-1">{t('goalSettingStart')}</label>
             <input
               {...register('goalStart')}
               type="date"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
+              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
             />
-            {errors.goalStart && <p className="mt-1 text-xs text-red-500">{errors.goalStart.message}</p>}
+            {errors.goalStart && <p className="mt-1 text-xs text-[#EF4444]">{errors.goalStart.message}</p>}
           </div>
 
           {/* 목표설정 종료일 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t('goalSettingEnd')}</label>
+            <label className="block text-sm font-medium text-[#666] mb-1">{t('goalSettingEnd')}</label>
             <input
               {...register('goalEnd')}
               type="date"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
+              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
             />
-            {errors.goalEnd && <p className="mt-1 text-xs text-red-500">{errors.goalEnd.message}</p>}
+            {errors.goalEnd && <p className="mt-1 text-xs text-[#EF4444]">{errors.goalEnd.message}</p>}
           </div>
 
           {/* 평가 시작일 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t('evalStart')}</label>
+            <label className="block text-sm font-medium text-[#666] mb-1">{t('evalStart')}</label>
             <input
               {...register('evalStart')}
               type="date"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
+              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
             />
-            {errors.evalStart && <p className="mt-1 text-xs text-red-500">{errors.evalStart.message}</p>}
+            {errors.evalStart && <p className="mt-1 text-xs text-[#EF4444]">{errors.evalStart.message}</p>}
           </div>
 
           {/* 평가 종료일 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t('evalEnd')}</label>
+            <label className="block text-sm font-medium text-[#666] mb-1">{t('evalEnd')}</label>
             <input
               {...register('evalEnd')}
               type="date"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
+              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
             />
-            {errors.evalEnd && <p className="mt-1 text-xs text-red-500">{errors.evalEnd.message}</p>}
+            {errors.evalEnd && <p className="mt-1 text-xs text-[#EF4444]">{errors.evalEnd.message}</p>}
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+        <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#E8E8E8]">
           <button
             type="button"
             onClick={() => router.back()}
-            className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+            className="rounded-lg border border-[#E8E8E8] bg-white px-4 py-2 text-sm font-medium text-[#666] hover:bg-[#FAFAFA] transition-colors"
           >
             {tc('cancel')}
           </button>
           <button
             type="submit"
             disabled={submitting}
-            className="inline-flex items-center gap-2 rounded-lg bg-ctr-primary px-4 py-2 text-sm font-medium text-white hover:bg-ctr-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#00C853] px-4 py-2 text-sm font-medium text-white hover:bg-[#00A844] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="h-4 w-4" />
             {submitting ? t('saving') : tc('save')}

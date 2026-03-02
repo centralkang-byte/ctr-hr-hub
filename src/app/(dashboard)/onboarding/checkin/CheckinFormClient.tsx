@@ -9,8 +9,6 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Send } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
 import type { SessionUser, OnboardingCheckin } from '@/types'
@@ -102,8 +100,8 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
   if (loading) {
     return (
       <div className="space-y-6 p-6">
-        <Skeleton className="h-10 w-64" />
-        <Skeleton className="h-60 w-full" />
+        <div className="h-10 w-64 bg-[#F5F5F5] rounded animate-pulse" />
+        <div className="h-60 w-full bg-[#F5F5F5] rounded-xl animate-pulse" />
       </div>
     )
   }
@@ -113,15 +111,15 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
     return (
       <div className="space-y-6 p-6">
         <PageHeader title={t('weeklyCheckin')} description={t('weeklyCheckinCompleted')} />
-        <Card>
-          <CardContent className="flex flex-col items-center gap-4 py-12">
+        <div className="bg-white rounded-xl border border-[#E8E8E8] p-6">
+          <div className="flex flex-col items-center gap-4 py-12">
             <div className="text-5xl">{'\u{2705}'}</div>
-            <h2 className="text-xl font-semibold text-ctr-primary">{t('checkinComplete')}</h2>
-            <p className="text-sm text-muted-foreground">
+            <h2 className="text-xl font-semibold text-[#00C853]">{t('checkinComplete')}</h2>
+            <p className="text-sm text-[#999]">
               {t('checkinWeekSubmitted', { week: checkinWeek, name: user.name })}
             </p>
-            <Button
-              variant="outline"
+            <button
+              className="px-4 py-2 text-sm font-medium rounded-lg border border-[#E0E0E0] text-[#666] hover:bg-[#F5F5F5] transition-colors"
               onClick={() => {
                 setSubmitted(false)
                 setMood('')
@@ -132,9 +130,9 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
               }}
             >
               {t('resubmit')}
-            </Button>
-          </CardContent>
-        </Card>
+            </button>
+          </div>
+        </div>
       </div>
     )
   }
@@ -146,20 +144,18 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
         description={t('checkinDescription', { name: user.name })}
       />
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">
-            {t('weekCheckin', { week: checkinWeek })}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-8">
+      <div className="bg-white rounded-xl border border-[#E8E8E8] p-6">
+        <h3 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em] mb-6">
+          {t('weekCheckin', { week: checkinWeek })}
+        </h3>
+        <div className="space-y-8">
           {/* ─── Week selector ─── */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="block text-sm font-medium text-[#1A1A1A] mb-2">
               {t('checkinWeekLabel')}
             </label>
             <select
-              className="w-32 rounded-md border px-3 py-2 text-sm"
+              className="w-32 rounded-lg border border-[#E0E0E0] px-3 py-2 text-sm focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
               value={checkinWeek}
               onChange={(e) => setCheckinWeek(Number(e.target.value))}
             >
@@ -176,7 +172,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
 
           {/* ─── Mood selector ─── */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-3">
+            <label className="block text-sm font-medium text-[#1A1A1A] mb-3">
               {t('moodQuestion')}
             </label>
             <div className="flex gap-3 flex-wrap">
@@ -185,26 +181,26 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
                   key={m.value}
                   type="button"
                   onClick={() => setMood(m.value)}
-                  className={`flex flex-col items-center gap-1 rounded-lg border-2 px-4 py-3 transition-all ${
+                  className={`flex flex-col items-center gap-1 rounded-xl border-2 px-4 py-3 transition-all ${
                     mood === m.value
-                      ? 'border-ctr-primary bg-ctr-light shadow-sm'
-                      : 'border-transparent hover:border-gray-200 hover:bg-gray-50'
+                      ? 'border-[#00C853] bg-[#E8F5E9]'
+                      : 'border-transparent hover:border-[#E0E0E0] hover:bg-[#FAFAFA]'
                   }`}
                 >
                   <span className="text-3xl">{m.emoji}</span>
-                  <span className="text-xs font-medium text-muted-foreground">{t(m.labelKey)}</span>
+                  <span className="text-xs font-medium text-[#999]">{t(m.labelKey)}</span>
                 </button>
               ))}
             </div>
             {!mood && (
-              <p className="mt-1 text-xs text-muted-foreground">{t('selectMood')}</p>
+              <p className="mt-1 text-xs text-[#999]">{t('selectMood')}</p>
             )}
           </div>
 
           {/* ─── Energy slider ─── */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              {t('energyLevel')} <span className="text-ctr-primary font-semibold">{energy}/5</span>
+            <label className="block text-sm font-medium text-[#1A1A1A] mb-2">
+              {t('energyLevel')} <span className="text-[#00C853] font-semibold">{energy}/5</span>
             </label>
             <input
               type="range"
@@ -213,9 +209,9 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
               step={1}
               value={energy}
               onChange={(e) => setEnergy(Number(e.target.value))}
-              className="w-full max-w-xs accent-ctr-primary"
+              className="w-full max-w-xs accent-[#00C853]"
             />
-            <div className="flex justify-between max-w-xs text-xs text-muted-foreground mt-1">
+            <div className="flex justify-between max-w-xs text-xs text-[#999] mt-1">
               {SLIDER_LABELS.map((l) => (
                 <span key={l}>{l}</span>
               ))}
@@ -224,8 +220,8 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
 
           {/* ─── Belonging slider ─── */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              {t('belongingLevel')} <span className="text-ctr-primary font-semibold">{belonging}/5</span>
+            <label className="block text-sm font-medium text-[#1A1A1A] mb-2">
+              {t('belongingLevel')} <span className="text-[#00C853] font-semibold">{belonging}/5</span>
             </label>
             <input
               type="range"
@@ -234,9 +230,9 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
               step={1}
               value={belonging}
               onChange={(e) => setBelonging(Number(e.target.value))}
-              className="w-full max-w-xs accent-ctr-primary"
+              className="w-full max-w-xs accent-[#00C853]"
             />
-            <div className="flex justify-between max-w-xs text-xs text-muted-foreground mt-1">
+            <div className="flex justify-between max-w-xs text-xs text-[#999] mt-1">
               {SLIDER_LABELS.map((l) => (
                 <span key={l}>{l}</span>
               ))}
@@ -245,11 +241,11 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
 
           {/* ─── Comment ─── */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              {t('additionalComment')} <span className="text-xs text-muted-foreground">{t('optional')}</span>
+            <label className="block text-sm font-medium text-[#1A1A1A] mb-2">
+              {t('additionalComment')} <span className="text-xs text-[#999]">{t('optional')}</span>
             </label>
             <textarea
-              className="w-full rounded-md border px-3 py-2 text-sm placeholder:text-muted-foreground min-h-[80px] resize-y"
+              className="w-full rounded-lg border border-[#E0E0E0] px-3 py-2 text-sm placeholder:text-[#999] min-h-[80px] resize-y focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
               placeholder={t('commentPlaceholder')}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
@@ -259,17 +255,17 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
 
           {/* ─── Submit ─── */}
           <div className="flex justify-end pt-2">
-            <Button
+            <button
               onClick={handleSubmit}
               disabled={!mood || submitting}
-              className="gap-2"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-[#00C853] hover:bg-[#00A844] text-white disabled:opacity-50 transition-colors"
             >
               <Send className="h-4 w-4" />
               {submitting ? t('submitting') : t('submitCheckin')}
-            </Button>
+            </button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }

@@ -272,7 +272,7 @@ export function TerminalSettingsClient({ user }: { user: SessionUser }) {
       header: t('isActive'),
       render: (row: TerminalLocal) =>
         isOnline(row) ? (
-          <Badge className="bg-emerald-100 text-emerald-700">{t('online')}</Badge>
+          <Badge className="bg-[#D1FAE5] text-[#047857]">{t('online')}</Badge>
         ) : (
           <Badge variant="secondary">{t('offline')}</Badge>
         ),
@@ -464,7 +464,7 @@ export function TerminalSettingsClient({ user }: { user: SessionUser }) {
                   </Button>
                 </div>
                 {copied && (
-                  <p className="text-sm text-emerald-600">{t('secretCopied')}</p>
+                  <p className="text-sm text-[#059669]">{t('secretCopied')}</p>
                 )}
               </div>
             </div>

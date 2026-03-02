@@ -71,10 +71,10 @@ interface LeavePolicyLocal {
 // ─── Status badge styles ────────────────────────────────────
 
 const statusBadgeClass: Record<string, string> = {
-  PENDING: 'bg-yellow-100 text-yellow-800',
-  APPROVED: 'bg-green-100 text-green-800',
-  REJECTED: 'bg-red-100 text-red-800',
-  CANCELLED: 'bg-gray-100 text-gray-800',
+  PENDING: 'bg-[#FFF3E0] text-[#FF9800]',
+  APPROVED: 'bg-[#E8F5E9] text-[#2E7D32]',
+  REJECTED: 'bg-[#FFEBEE] text-[#F44336]',
+  CANCELLED: 'bg-[#F5F5F5] text-[#666]',
 }
 
 // ─── Component ──────────────────────────────────────────────
@@ -282,9 +282,9 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       key: 'status',
       header: te('status'),
       render: (row: LeaveRequestLocal) => (
-        <Badge className={statusBadgeClass[row.status] ?? 'bg-gray-100 text-gray-800'}>
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${statusBadgeClass[row.status] ?? 'bg-[#F5F5F5] text-[#666]'}`}>
           {statusLabel[row.status] ?? row.status}
-        </Badge>
+        </span>
       ),
     },
     {
@@ -333,61 +333,64 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       />
 
       {/* ─── Section 1: Leave Balance Cards ─── */}
-      <div className="flex gap-4 overflow-x-auto pb-2">
+      <div className="flex gap-6 overflow-x-auto pb-2">
         {balances.map((b) => {
           const remaining = getRemainingDays(b)
+          const total = b.grantedDays + b.carryOverDays
+          const usagePct = total > 0 ? Math.round(((total - remaining) / total) * 100) : 0
           return (
-            <Card
+            <div
               key={b.id}
-              className={`min-w-[200px] flex-shrink-0 ${
-                remaining > 0 ? 'border-blue-200' : 'border-gray-200'
-              }`}
+              className="min-w-[220px] flex-shrink-0 bg-white border border-[#E8E8E8] rounded-xl p-6"
             >
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {b.policy.name}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p
-                  className={`text-3xl font-bold ${
-                    remaining > 0 ? 'text-blue-600' : 'text-gray-400'
-                  }`}
-                >
+              <p className="text-xs text-[#999] font-medium mb-2">
+                {b.policy.name}
+              </p>
+              <div className="flex items-end gap-1">
+                <p className={`text-3xl font-bold tracking-[-0.02em] ${remaining > 0 ? 'text-[#00C853]' : 'text-[#999]'}`}>
                   {remaining}
-                  <span className="ml-1 text-sm font-normal text-muted-foreground">
-                    {t('fullDay')}
-                  </span>
                 </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {t('grantedDays')} {b.grantedDays}{t('fullDay')} / {t('usedDays')}{' '}
-                  {b.usedDays}{t('fullDay')} / {t('pendingDays')} {b.pendingDays}
-                  {t('fullDay')}
-                </p>
-              </CardContent>
-            </Card>
+                <p className="text-sm text-[#999] mb-1">/ {total}{t('fullDay')}</p>
+              </div>
+              {/* Progress bar */}
+              <div className="mt-3 h-2 rounded-full bg-[#E8E8E8] overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-[#00C853] to-[#00BFA5]"
+                  style={{ width: `${Math.min(usagePct, 100)}%` }}
+                />
+              </div>
+              <p className="mt-2 text-xs text-[#999]">
+                {t('usedDays')} {b.usedDays}{t('fullDay')} / {t('pendingDays')} {b.pendingDays}{t('fullDay')}
+              </p>
+            </div>
           )
         })}
         {balances.length === 0 && !loading && (
-          <p className="py-4 text-sm text-muted-foreground">{tc('noData')}</p>
+          <p className="py-4 text-sm text-[#999]">{tc('noData')}</p>
         )}
       </div>
 
       {/* ─── Section 3: Status filter + Request History ─── */}
-      <div className="flex items-center gap-3">
-        <Label>{tc('filter')}</Label>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">{tc('all')}</SelectItem>
-            <SelectItem value="PENDING">{t('pending')}</SelectItem>
-            <SelectItem value="APPROVED">{t('approved')}</SelectItem>
-            <SelectItem value="REJECTED">{t('rejected')}</SelectItem>
-            <SelectItem value="CANCELLED">{t('cancelled')}</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="flex items-center gap-2">
+        {[
+          { value: 'ALL', label: tc('all') },
+          { value: 'PENDING', label: t('pending') },
+          { value: 'APPROVED', label: t('approved') },
+          { value: 'REJECTED', label: t('rejected') },
+          { value: 'CANCELLED', label: t('cancelled') },
+        ].map((f) => (
+          <button
+            key={f.value}
+            onClick={() => setStatusFilter(f.value)}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
+              statusFilter === f.value
+                ? 'bg-[#1A1A1A] text-white border-[#1A1A1A]'
+                : 'bg-white text-[#666] border-[#E0E0E0] hover:bg-[#F5F5F5]'
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
       </div>
 
       <DataTable

@@ -28,8 +28,8 @@ const EMS_LABELS: Record<string, string> = {
 
 const EMS_COLORS: Record<string, string> = {
   '1': '#EF4444', '2': '#F97316', '3': '#F59E0B',
-  '4': '#F97316', '5': '#10B981', '6': '#2563EB',
-  '7': '#F59E0B', '8': '#2563EB', '9': '#6366F1',
+  '4': '#F97316', '5': '#10B981', '6': '#00C853',
+  '7': '#F59E0B', '8': '#00C853', '9': '#6366F1',
 }
 
 export default function PerformanceClient() {
@@ -61,7 +61,7 @@ export default function PerformanceClient() {
     return (
       <AnalyticsPageLayout title={t('title')}>
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-[#999]" />
         </div>
       </AnalyticsPageLayout>
     )
@@ -98,11 +98,11 @@ export default function PerformanceClient() {
                     className="flex flex-col items-center justify-center rounded-lg border p-4"
                     style={{ backgroundColor: `${EMS_COLORS[block]}15`, borderColor: `${EMS_COLORS[block]}40` }}
                   >
-                    <span className="text-xs font-medium text-slate-500">{EMS_LABELS[block]}</span>
+                    <span className="text-xs font-medium text-[#666]">{EMS_LABELS[block]}</span>
                     <span className="mt-1 text-2xl font-bold" style={{ color: EMS_COLORS[block] }}>
                       {item?.employee_count ?? 0}
                     </span>
-                    <span className="text-xs text-slate-400">{ta('personSuffix')}</span>
+                    <span className="text-xs text-[#999]">{ta('personSuffix')}</span>
                   </div>
                 )
               })}
@@ -115,11 +115,11 @@ export default function PerformanceClient() {
                     className="flex flex-col items-center justify-center rounded-lg border p-4"
                     style={{ backgroundColor: `${EMS_COLORS[block]}15`, borderColor: `${EMS_COLORS[block]}40` }}
                   >
-                    <span className="text-xs font-medium text-slate-500">{EMS_LABELS[block]}</span>
+                    <span className="text-xs font-medium text-[#666]">{EMS_LABELS[block]}</span>
                     <span className="mt-1 text-2xl font-bold" style={{ color: EMS_COLORS[block] }}>
                       {item?.employee_count ?? 0}
                     </span>
-                    <span className="text-xs text-slate-400">{ta('personSuffix')}</span>
+                    <span className="text-xs text-[#999]">{ta('personSuffix')}</span>
                   </div>
                 )
               })}
@@ -132,11 +132,11 @@ export default function PerformanceClient() {
                     className="flex flex-col items-center justify-center rounded-lg border p-4"
                     style={{ backgroundColor: `${EMS_COLORS[block]}15`, borderColor: `${EMS_COLORS[block]}40` }}
                   >
-                    <span className="text-xs font-medium text-slate-500">{EMS_LABELS[block]}</span>
+                    <span className="text-xs font-medium text-[#666]">{EMS_LABELS[block]}</span>
                     <span className="mt-1 text-2xl font-bold" style={{ color: EMS_COLORS[block] }}>
                       {item?.employee_count ?? 0}
                     </span>
-                    <span className="text-xs text-slate-400">{ta('personSuffix')}</span>
+                    <span className="text-xs text-[#999]">{ta('personSuffix')}</span>
                   </div>
                 )
               })}

@@ -141,7 +141,6 @@
     "selectMonth": "월 선택",
     "year": "연도"
   },
-
   "auth": {
     "login": "로그인",
     "logout": "로그아웃",
@@ -153,7 +152,6 @@
     "slogan": "Central to your safe mobility",
     "myProfile": "내 프로필"
   },
-
   "menu": {
     "home": "홈",
     "hrManagement": "인사관리",
@@ -173,7 +171,12 @@
     "performanceDashboard": "성과 대시보드",
     "goalManagement": "목표관리",
     "teamGoals": "팀 목표",
+    "selfEval": "자기평가",
+    "managerEval": "매니저 평가",
+    "calibration": "캘리브레이션",
     "performanceResults": "성과 결과",
+    "teamResults": "팀 성과",
+    "adminResults": "전사 성과",
     "oneOnOne": "1:1 미팅",
     "competencyEval": "역량평가",
     "compensationSalary": "연봉/보상",
@@ -218,6 +221,7 @@
     "recognition": "칭찬/인정",
     "sendRecognition": "칭찬보내기",
     "recognitionStatus": "칭찬현황",
+    "pulseSurvey": "펄스 서베이",
     "systemSettings": "시스템설정",
     "companySettings": "회사설정",
     "roleManagement": "권한관리",
@@ -231,6 +235,7 @@
     "profileRequests": "정보변경 요청",
     "performanceCycles": "평가 사이클",
     "competencyLibrary": "역량 라이브러리",
+    "calibrationSettings": "캘리브레이션 설정",
     "salaryBands": "급여 밴드",
     "raiseMatrix": "인상 매트릭스",
     "notificationSettings": "알림 설정",
@@ -274,9 +279,9 @@
     "dpia": "영향평가 (DPIA)",
     "ruCompliance": "러시아 컴플라이언스",
     "cnCompliance": "중국 컴플라이언스",
-    "krCompliance": "한국 컴플라이언스"
+    "krCompliance": "한국 컴플라이언스",
+    "peerReview": "동료 평가"
   },
-
   "employee": {
     "title": "직원 관리",
     "list": "직원 목록",
@@ -349,9 +354,153 @@
     "profileRequests": "정보변경 요청 목록",
     "pendingRequests": "대기 중 요청",
     "approvedRequests": "승인된 요청",
-    "rejectedRequests": "반려된 요청"
+    "rejectedRequests": "반려된 요청",
+    "approver": "승인자",
+    "assignment": "배정",
+    "autoGenerate": "자동 생성",
+    "change": "변경",
+    "changeApproved": "승인됨",
+    "changePending": "대기중",
+    "changeRejected": "반려됨",
+    "changeRequest": "변경 요청",
+    "changeRequestError": "변경 요청 제출 실패",
+    "changeRequestHistory": "변경 요청 내역",
+    "companyEntity": "법인",
+    "companyId": "법인",
+    "compensationComingSoon": "급여 정보 준비 중",
+    "compensationHistory": "급여 이력",
+    "contractEndDateOptional": "계약 종료일 (선택)",
+    "contractFixedTerm": "기간제",
+    "contractHistory": "계약 이력",
+    "contractPermanent": "정규직",
+    "contractProbation": "수습",
+    "contractSequence": "계약 #{number}호",
+    "contractSequenceSuffix": "호",
+    "contractStartDate": "계약 시작일",
+    "contractType": "계약 유형",
+    "createFailed": "구성원 생성 실패",
+    "creating": "생성 중...",
+    "currentValue": "현재 값",
+    "defaultNationality": "대한민국",
+    "departmentAll": "전체 부서",
+    "departmentId": "부서",
+    "discipline": "징계",
+    "disciplineComingSoon": "징계 정보 준비 중",
+    "docCertificate": "증명서",
+    "docContract": "계약서",
+    "docHandover": "인수인계서",
+    "docIdCard": "신분증",
+    "docOther": "기타",
+    "docResume": "이력서",
+    "docTitle": "문서 제목",
+    "documents": "문서",
+    "editableFields": "수정 가능 항목",
+    "emergencyContactName": "비상 연락처 이름",
+    "emergencyContactPhone": "비상 연락처 전화번호",
+    "employeeLabel": "구성원",
+    "employeeNo": "사번",
+    "employmentTypeAll": "전체 고용형태",
+    "emptyDescription": "새 구성원을 추가하세요",
+    "emptyMessage": "구성원이 없습니다",
+    "enterNewValue": "새 값 입력",
+    "enterNewValuePlaceholder": "새 값을 입력하세요...",
+    "expiryDate": "만료일",
+    "expiryDateOptional": "만료일 (선택)",
+    "fileSize": "파일 크기",
+    "finalConfirmation": "최종 확인",
+    "handoverToId": "인수인계 담당자",
+    "handoverToIdPlaceholder": "인수인계 담당자 선택",
+    "historyDetail": "이력 상세",
+    "hrHistory": "인사 이력",
+    "indefinite": "무기한",
+    "inlineEdit": "클릭하여 편집",
+    "issueDate": "발급일",
+    "issuingAuthorityOptional": "발급기관 (선택)",
+    "issuingCountry": "발급 국가",
+    "jobCategoryId": "직무",
+    "jobGradeId": "직급",
+    "lastWorkingDate": "마지막 근무일",
+    "listDescription": "전체 구성원 정보를 관리합니다",
+    "managerId": "상급자",
+    "managerName": "상급자 이름",
+    "managerOptional": "상급자 (선택)",
+    "managerSearchPlaceholder": "상급자 검색...",
+    "myProfile": "내 프로필",
+    "myProfileDescription": "개인 정보를 확인하고 변경을 요청합니다",
+    "nameKorean": "한국어 이름",
+    "newContract": "신규 계약",
+    "newContractRegistration": "계약 등록",
+    "newEmployeeDescription": "새 구성원 정보를 입력하세요",
+    "newValueLabel": "새 값",
+    "newWorkPermit": "비자/취업허가 등록",
+    "noChangeRequests": "변경 요청 내역이 없습니다",
+    "noCompensationHistory": "급여 이력이 없습니다",
+    "noContractHistory": "계약 이력이 없습니다",
+    "noDiscipline": "징계 내역이 없습니다",
+    "noDocuments": "문서가 없습니다",
+    "noHrHistory": "인사 이력이 없습니다",
+    "noSelection": "선택 안 함",
+    "noValue": "값 없음",
+    "noWorkPermits": "비자/취업허가 내역이 없습니다",
+    "offboarding": "퇴직 처리",
+    "offboardingFailed": "퇴직 처리 실패",
+    "offboardingWarning": "이 작업은 구성원 상태를 퇴직으로 변경합니다. 되돌릴 수 없습니다.",
+    "permitActive": "유효",
+    "permitExpired": "만료",
+    "permitI9": "I-9",
+    "permitNumber": "허가 번호",
+    "permitNumberOptional": "허가 번호 (선택)",
+    "permitOther": "기타",
+    "permitPendingRenewal": "갱신 대기",
+    "permitResidence": "거주 허가",
+    "permitRevoked": "취소됨",
+    "permitType": "허가 유형",
+    "permitWorkPermit": "취업 허가",
+    "permitWorkVisa": "취업 비자",
+    "probationEndDate": "수습 종료일",
+    "processing": "처리 중...",
+    "profileLoadError": "프로필 로드 실패",
+    "rejectionReason": "반려 사유",
+    "requesting": "요청 중...",
+    "resignContractEnd": "계약 만료",
+    "resignDate": "퇴직일",
+    "resignInvoluntary": "비자발적",
+    "resignReasonCode": "퇴직 사유",
+    "resignReasonCodePlaceholder": "퇴직 사유 선택",
+    "resignReasonDetail": "퇴직 상세 사유",
+    "resignReasonDetailPlaceholder": "퇴직 상세 사유를 입력하세요...",
+    "resignRetirement": "정년 퇴직",
+    "resignType": "퇴직 유형",
+    "resignVoluntary": "자발적",
+    "salaryAmountOptional": "급여액 (선택)",
+    "saveFailed": "저장 실패",
+    "saving": "저장 중...",
+    "searching": "검색 중...",
+    "selectCompany": "법인 선택",
+    "selectDepartment": "부서 선택",
+    "selectJobCategory": "직무 선택",
+    "selectJobGrade": "직급 선택",
+    "selectResignType": "퇴직 유형 선택",
+    "sensitive": "민감 정보",
+    "signedDate": "서명일",
+    "startOffboarding": "퇴직 처리 시작",
+    "statusAll": "전체 상태",
+    "uploadDate": "업로드일",
+    "uploadDocument": "문서 업로드",
+    "uploader": "업로더",
+    "validationCompanyRequired": "법인을 선택해주세요",
+    "validationDepartmentRequired": "부서를 선택해주세요",
+    "validationEmailInvalid": "이메일 형식이 올바르지 않습니다",
+    "validationEmailRequired": "이메일을 입력해주세요",
+    "validationEmployeeNoRequired": "사번을 입력해주세요",
+    "validationEmploymentTypeRequired": "고용형태를 선택해주세요",
+    "validationHireDateRequired": "입사일을 입력해주세요",
+    "validationJobCategoryRequired": "직무를 선택해주세요",
+    "validationJobGradeRequired": "직급을 선택해주세요",
+    "validationNameRequired": "이름을 입력해주세요",
+    "workPermitRegistration": "취업허가 등록",
+    "workPermitsTitle": "비자/취업허가"
   },
-
   "attendance": {
     "title": "근태 관리",
     "clockIn": "출근",
@@ -417,7 +566,6 @@
     "totalEmployees": "전체 인원",
     "averageWorkHours": "근무 시간 (평균)"
   },
-
   "leave": {
     "title": "휴가 관리",
     "request": "휴가 신청",
@@ -506,7 +654,6 @@
     "carryOverAllowed": "허용",
     "carryOverNotAllowed": "불가"
   },
-
   "terminal": {
     "title": "출퇴근 단말기",
     "settings": "단말기 설정",
@@ -540,7 +687,6 @@
     "secretCopied": "복사되었습니다!",
     "regenerateConfirm": "시크릿 키를 재발급하면 기존 키는 즉시 무효화됩니다. \"{code}\" 단말기의 시크릿 키를 재발급하시겠습니까?"
   },
-
   "holiday": {
     "title": "공휴일 관리",
     "settings": "공휴일 설정",
@@ -562,7 +708,6 @@
     "exampleHoliday": "예: 설날",
     "yearSuffix": "{year}년"
   },
-
   "shift": {
     "title": "근무 스케줄",
     "settings": "스케줄 설정",
@@ -602,7 +747,6 @@
     "flexibleShort": "유",
     "shiftShort": "교"
   },
-
   "performance": {
     "title": "성과 관리",
     "cycle": "평가 주기",
@@ -660,20 +804,204 @@
     "cycleName": "사이클 이름",
     "cycleStatus": "사이클 상태",
     "evaluationScale": "평가 척도",
-    "cycleStatusLabels": { "PLANNING": "계획", "GOAL_SETTING": "목표설정", "IN_PROGRESS": "진행중", "EVALUATION": "평가", "CALIBRATION_PERF": "보정", "COMPLETED": "완료", "DRAFT": "초안", "ACTIVE": "진행중", "EVAL_OPEN": "평가중", "CALIBRATION": "캘리브레이션", "CLOSED": "확정" },
-    "goalStatusLabels": { "DRAFT": "작성중", "PENDING_APPROVAL": "승인대기", "APPROVED": "승인", "REJECTED": "반려" },
-    "halfLabels": { "H1": "상반기", "H2": "하반기", "ANNUAL": "연간" },
-    "nextActionLabels": { "DRAFT": "목표설정 시작", "ACTIVE": "평가 시작", "EVAL_OPEN": "캘리브레이션 시작", "CALIBRATION": "결과 확정" },
-    "currentCycle": "현재 사이클", "noCycle": "없음", "teamGoalCount": "팀 목표 수", "myGoalCount": "내 목표 수", "goalCountUnit": "{count}개", "avgAchievement": "평균 달성률", "nextDeadline": "다음 마감", "goalDeadline": "목표 마감", "evalDeadline": "평가 마감", "cycleEnd": "사이클 종료", "noDeadline": "마감 없음", "viewAll": "전체보기", "noGoals": "설정된 목표가 없습니다.", "weightLabel": "비중 {weight}%", "teamStatus": "팀 현황", "manageTeamGoals": "팀 목표 관리", "noTeamMembers": "팀원이 없거나 목표가 없습니다.", "goalCountWithUnit": "{count}개 목표", "companyOverview": "전사 현황", "manageCycles": "사이클 관리", "activeCycles": "활성 사이클", "noCycles": "등록된 사이클이 없습니다.", "overallSubmissionRate": "전체 목표 제출률", "submissionStats": "제출/승인: {submitted}건 / 전체: {total}건", "cycleLoadFailed": "사이클 로드 실패", "dataLoadFailed": "데이터 로드 실패",
-    "mboGoalManagement": "MBO 목표 관리", "addGoal": "목표 추가", "evaluationCycle": "평가 사이클", "loadingText": "로딩 중...", "noGoalsRegistered": "등록된 목표가 없습니다.", "addFirstGoal": "첫 번째 목표 추가하기", "achievement": "달성도", "editButton": "수정", "deleteButton": "삭제", "recordProgress": "진행 기록", "recordProgressTitle": "진행 상황 기록", "achievementRate": "달성률 (%)", "memoLabel": "메모", "memoPlaceholder": "진행 상황에 대한 메모를 입력하세요", "saving": "저장 중...", "weightSum": "가중치 합계: ", "weightMustBe100": "(가중치 합계는 100%여야 합니다)", "submittingAll": "제출 중...", "submitAll": "전체 제출", "confirmDeleteGoal": "이 목표를 삭제하시겠습니까?", "deleteFailed": "삭제에 실패했습니다.", "confirmSubmitAll": "모든 목표를 제출하시겠습니까? 제출 후에는 수정할 수 없습니다.", "submitFailed": "제출에 실패했습니다.", "progressRecordFailed": "진행 기록에 실패했습니다.", "cycleListLoadFailed": "사이클 목록 로드 실패", "goalListLoadFailed": "목표 목록 로드 실패",
-    "backToGoalList": "목표 목록으로", "newGoalRegister": "새 목표 등록", "cycleLabel": "사이클", "selectCycle": "사이클을 선택하세요", "titleLabel": "제목", "titlePlaceholder": "목표 제목을 입력하세요", "descriptionLabel": "설명", "descriptionPlaceholder": "목표에 대한 상세 설명을 입력하세요", "weightPercent": "가중치 (%)", "kpiMetric": "KPI 지표", "kpiMetricPlaceholder": "예: 매출액, 고객만족도", "targetValue": "목표값", "targetValuePlaceholder": "예: 10억원, 95점", "registering": "등록 중...", "registerGoal": "목표 등록", "registerFailed": "목표 등록에 실패했습니다.", "validationSelectCycle": "사이클을 선택하세요", "validationEnterTitle": "제목을 입력하세요", "validationMinZero": "0 이상이어야 합니다", "validationMaxHundred": "100 이하여야 합니다",
-    "teamGoalManagement": "팀 목표 관리", "teamLoadFailed": "팀 목표 로드 실패", "noTeamMembersOrGoals": "직속 팀원이 없거나 등록된 목표가 없습니다.", "goalCountLabel": "목표 수", "weightSumLabel": "가중치 합계", "avgAchievementLabel": "평균 달성률", "statusLabel": "상태", "noGoalsStatus": "목표 없음", "allApproved": "전체 승인", "hasPendingApproval": "승인대기 있음", "hasRejected": "반려 있음", "drafting": "작성중", "pendingApprovalCount": "승인대기 {count}건", "weightColLabel": "가중치", "achievementColLabel": "달성률", "evalScore": "평가 점수", "approveButton": "승인", "requestRevisionButton": "수정요청", "revisionPlaceholder": "수정 요청 사유를 입력해주세요...", "sendRevisionRequest": "수정요청 보내기", "confirmApprove": "이 목표를 승인하시겠습니까?", "approveFailed": "승인에 실패했습니다.", "enterRevisionReason": "수정 요청 사유를 입력해주세요.", "revisionRequestFailed": "수정 요청에 실패했습니다.",
-    "cycleManagement": "평가 사이클 관리", "newCycleButton": "새 사이클", "allYears": "전체 연도", "yearUnit": "{year}년", "allStatuses": "전체 상태", "nameColumn": "이름", "yearColumn": "연도", "typeColumn": "유형", "statusColumn": "상태", "goalSettingPeriod": "목표설정기간", "evaluationPeriodColumn": "평가기간", "goalCount": "목표수", "evalCount": "평가수", "fetchingData": "불러오는 중...", "noCyclesRegistered": "등록된 사이클이 없습니다", "previousPage": "이전", "nextPage": "다음",
-    "cycleNotFound": "사이클을 찾을 수 없습니다", "backToList": "목록으로 돌아가기", "editCycle": "수정", "goalSettingStart": "목표설정 시작일", "goalSettingEnd": "목표설정 종료일", "evalStart": "평가 시작일", "evalEnd": "평가 종료일", "saveFailed": "저장에 실패했습니다", "statusChangeFailed": "상태 변경에 실패했습니다", "confirmAdvance": "\"{action}\" 단계로 진행하시겠습니까? 이 작업은 되돌릴 수 없습니다.", "processing": "처리 중...",
-    "newEvaluationCycle": "새 평가 사이클", "namePlaceholder": "예: 2026년 상반기 평가", "yearLabel": "연도", "typeLabel": "유형", "cycleCreationFailed": "사이클 생성에 실패했습니다", "validationEnterName": "이름을 입력하세요", "validationEnterStartDate": "시작일을 입력하세요", "validationEnterEndDate": "종료일을 입력하세요",
-    "competencyNameCol": "역량명", "categoryColLabel": "카테고리", "descriptionColumn": "설명", "activeStatusColumn": "활성상태", "activeLabel": "활성", "inactiveLabel": "비활성", "behavioralIndicatorsCol": "행동지표", "competencyLibraryTitle": "역량 라이브러리", "competencyLibraryDescription": "조직의 역량 항목을 등록하고 관리합니다.", "addCompetency": "역량 추가", "searchCompetencyPlaceholder": "역량명, 카테고리 검색", "filterAll": "전체", "filterActive": "활성", "filterInactive": "비활성", "noCompetencies": "등록된 역량이 없습니다.", "editCompetency": "역량 수정", "editCompetencyDesc": "역량 정보를 수정합니다.", "addCompetencyTitle": "역량 추가", "addCompetencyDesc": "새 역량을 등록합니다.", "competencyNameRequired": "역량명은 필수입니다.", "categoryRequired": "카테고리는 필수입니다.", "competencyNameInputLabel": "역량명 *", "competencyNamePlaceholder": "예: 리더십", "categoryInputLabel": "카테고리 *", "categoryPlaceholder": "예: 공통역량, 직무역량, 리더십역량", "descriptionInputLabel": "설명", "descriptionInputPlaceholder": "역량에 대한 설명을 입력하세요.", "behavioralIndicatorsLabel": "행동지표 (줄바꿈으로 구분)", "behavioralIndicatorsPlaceholder": "예:\n팀원에게 명확한 비전을 제시한다\n변화를 주도적으로 이끈다\n갈등 상황에서 조정 역할을 수행한다", "activeState": "활성 상태", "deleteCompetency": "역량 삭제", "deleteCompetencyConfirm": "\"{name}\"을(를) 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
+    "cycleStatusLabels": {
+      "PLANNING": "계획",
+      "GOAL_SETTING": "목표설정",
+      "IN_PROGRESS": "진행중",
+      "EVALUATION": "평가",
+      "CALIBRATION_PERF": "보정",
+      "COMPLETED": "완료",
+      "DRAFT": "초안",
+      "ACTIVE": "진행중",
+      "EVAL_OPEN": "평가중",
+      "CALIBRATION": "캘리브레이션",
+      "CLOSED": "확정"
+    },
+    "goalStatusLabels": {
+      "DRAFT": "작성중",
+      "PENDING_APPROVAL": "승인대기",
+      "APPROVED": "승인",
+      "REJECTED": "반려"
+    },
+    "halfLabels": {
+      "H1": "상반기",
+      "H2": "하반기",
+      "ANNUAL": "연간"
+    },
+    "nextActionLabels": {
+      "DRAFT": "목표설정 시작",
+      "ACTIVE": "평가 시작",
+      "EVAL_OPEN": "캘리브레이션 시작",
+      "CALIBRATION": "결과 확정"
+    },
+    "currentCycle": "현재 사이클",
+    "noCycle": "없음",
+    "teamGoalCount": "팀 목표 수",
+    "myGoalCount": "내 목표 수",
+    "goalCountUnit": "{count}개",
+    "avgAchievement": "평균 달성률",
+    "nextDeadline": "다음 마감",
+    "goalDeadline": "목표 마감",
+    "evalDeadline": "평가 마감",
+    "cycleEnd": "사이클 종료",
+    "noDeadline": "마감 없음",
+    "viewAll": "전체보기",
+    "noGoals": "설정된 목표가 없습니다.",
+    "weightLabel": "비중 {weight}%",
+    "teamStatus": "팀 현황",
+    "manageTeamGoals": "팀 목표 관리",
+    "noTeamMembers": "팀원이 없거나 목표가 없습니다.",
+    "goalCountWithUnit": "{count}개 목표",
+    "companyOverview": "전사 현황",
+    "manageCycles": "사이클 관리",
+    "activeCycles": "활성 사이클",
+    "noCycles": "등록된 사이클이 없습니다.",
+    "overallSubmissionRate": "전체 목표 제출률",
+    "submissionStats": "제출/승인: {submitted}건 / 전체: {total}건",
+    "cycleLoadFailed": "사이클 로드 실패",
+    "dataLoadFailed": "데이터 로드 실패",
+    "mboGoalManagement": "MBO 목표 관리",
+    "addGoal": "목표 추가",
+    "evaluationCycle": "평가 사이클",
+    "loadingText": "로딩 중...",
+    "noGoalsRegistered": "등록된 목표가 없습니다.",
+    "addFirstGoal": "첫 번째 목표 추가하기",
+    "achievement": "달성도",
+    "editButton": "수정",
+    "deleteButton": "삭제",
+    "recordProgress": "진행 기록",
+    "recordProgressTitle": "진행 상황 기록",
+    "achievementRate": "달성률 (%)",
+    "memoLabel": "메모",
+    "memoPlaceholder": "진행 상황에 대한 메모를 입력하세요",
+    "saving": "저장 중...",
+    "weightSum": "가중치 합계: ",
+    "weightMustBe100": "(가중치 합계는 100%여야 합니다)",
+    "submittingAll": "제출 중...",
+    "submitAll": "전체 제출",
+    "confirmDeleteGoal": "이 목표를 삭제하시겠습니까?",
+    "deleteFailed": "삭제에 실패했습니다.",
+    "confirmSubmitAll": "모든 목표를 제출하시겠습니까? 제출 후에는 수정할 수 없습니다.",
+    "submitFailed": "제출에 실패했습니다.",
+    "progressRecordFailed": "진행 기록에 실패했습니다.",
+    "cycleListLoadFailed": "사이클 목록 로드 실패",
+    "goalListLoadFailed": "목표 목록 로드 실패",
+    "backToGoalList": "목표 목록으로",
+    "newGoalRegister": "새 목표 등록",
+    "cycleLabel": "사이클",
+    "selectCycle": "사이클을 선택하세요",
+    "titleLabel": "제목",
+    "titlePlaceholder": "목표 제목을 입력하세요",
+    "descriptionLabel": "설명",
+    "descriptionPlaceholder": "목표에 대한 상세 설명을 입력하세요",
+    "weightPercent": "가중치 (%)",
+    "kpiMetric": "KPI 지표",
+    "kpiMetricPlaceholder": "예: 매출액, 고객만족도",
+    "targetValue": "목표값",
+    "targetValuePlaceholder": "예: 10억원, 95점",
+    "registering": "등록 중...",
+    "registerGoal": "목표 등록",
+    "registerFailed": "목표 등록에 실패했습니다.",
+    "validationSelectCycle": "사이클을 선택하세요",
+    "validationEnterTitle": "제목을 입력하세요",
+    "validationMinZero": "0 이상이어야 합니다",
+    "validationMaxHundred": "100 이하여야 합니다",
+    "teamGoalManagement": "팀 목표 관리",
+    "teamLoadFailed": "팀 목표 로드 실패",
+    "noTeamMembersOrGoals": "직속 팀원이 없거나 등록된 목표가 없습니다.",
+    "goalCountLabel": "목표 수",
+    "weightSumLabel": "가중치 합계",
+    "avgAchievementLabel": "평균 달성률",
+    "statusLabel": "상태",
+    "noGoalsStatus": "목표 없음",
+    "allApproved": "전체 승인",
+    "hasPendingApproval": "승인대기 있음",
+    "hasRejected": "반려 있음",
+    "drafting": "작성중",
+    "pendingApprovalCount": "승인대기 {count}건",
+    "weightColLabel": "가중치",
+    "achievementColLabel": "달성률",
+    "evalScore": "평가 점수",
+    "approveButton": "승인",
+    "requestRevisionButton": "수정요청",
+    "revisionPlaceholder": "수정 요청 사유를 입력해주세요...",
+    "sendRevisionRequest": "수정요청 보내기",
+    "confirmApprove": "이 목표를 승인하시겠습니까?",
+    "approveFailed": "승인에 실패했습니다.",
+    "enterRevisionReason": "수정 요청 사유를 입력해주세요.",
+    "revisionRequestFailed": "수정 요청에 실패했습니다.",
+    "cycleManagement": "평가 사이클 관리",
+    "newCycleButton": "새 사이클",
+    "allYears": "전체 연도",
+    "yearUnit": "{year}년",
+    "allStatuses": "전체 상태",
+    "nameColumn": "이름",
+    "yearColumn": "연도",
+    "typeColumn": "유형",
+    "statusColumn": "상태",
+    "goalSettingPeriod": "목표설정기간",
+    "evaluationPeriodColumn": "평가기간",
+    "goalCount": "목표수",
+    "evalCount": "평가수",
+    "fetchingData": "불러오는 중...",
+    "noCyclesRegistered": "등록된 사이클이 없습니다",
+    "previousPage": "이전",
+    "nextPage": "다음",
+    "cycleNotFound": "사이클을 찾을 수 없습니다",
+    "backToList": "목록으로 돌아가기",
+    "editCycle": "수정",
+    "goalSettingStart": "목표설정 시작일",
+    "goalSettingEnd": "목표설정 종료일",
+    "evalStart": "평가 시작일",
+    "evalEnd": "평가 종료일",
+    "saveFailed": "저장에 실패했습니다",
+    "statusChangeFailed": "상태 변경에 실패했습니다",
+    "confirmAdvance": "\"{action}\" 단계로 진행하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+    "processing": "처리 중...",
+    "newEvaluationCycle": "새 평가 사이클",
+    "namePlaceholder": "예: 2026년 상반기 평가",
+    "yearLabel": "연도",
+    "typeLabel": "유형",
+    "cycleCreationFailed": "사이클 생성에 실패했습니다",
+    "validationEnterName": "이름을 입력하세요",
+    "validationEnterStartDate": "시작일을 입력하세요",
+    "validationEnterEndDate": "종료일을 입력하세요",
+    "competencyNameCol": "역량명",
+    "categoryColLabel": "카테고리",
+    "descriptionColumn": "설명",
+    "activeStatusColumn": "활성상태",
+    "activeLabel": "활성",
+    "inactiveLabel": "비활성",
+    "behavioralIndicatorsCol": "행동지표",
+    "competencyLibraryTitle": "역량 라이브러리",
+    "competencyLibraryDescription": "조직의 역량 항목을 등록하고 관리합니다.",
+    "addCompetency": "역량 추가",
+    "searchCompetencyPlaceholder": "역량명, 카테고리 검색",
+    "filterAll": "전체",
+    "filterActive": "활성",
+    "filterInactive": "비활성",
+    "noCompetencies": "등록된 역량이 없습니다.",
+    "editCompetency": "역량 수정",
+    "editCompetencyDesc": "역량 정보를 수정합니다.",
+    "addCompetencyTitle": "역량 추가",
+    "addCompetencyDesc": "새 역량을 등록합니다.",
+    "competencyNameRequired": "역량명은 필수입니다.",
+    "categoryRequired": "카테고리는 필수입니다.",
+    "competencyNameInputLabel": "역량명 *",
+    "competencyNamePlaceholder": "예: 리더십",
+    "categoryInputLabel": "카테고리 *",
+    "categoryPlaceholder": "예: 공통역량, 직무역량, 리더십역량",
+    "descriptionInputLabel": "설명",
+    "descriptionInputPlaceholder": "역량에 대한 설명을 입력하세요.",
+    "behavioralIndicatorsLabel": "행동지표 (줄바꿈으로 구분)",
+    "behavioralIndicatorsPlaceholder": "예:\n팀원에게 명확한 비전을 제시한다\n변화를 주도적으로 이끈다\n갈등 상황에서 조정 역할을 수행한다",
+    "activeState": "활성 상태",
+    "deleteCompetency": "역량 삭제",
+    "deleteCompetencyConfirm": "\"{name}\"을(를) 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+    "adminResults": "전체 결과",
+    "results": "결과",
+    "teamResults": "팀 결과"
   },
-
   "recruitment": {
     "title": "채용 관리",
     "posting": "채용 공고",
@@ -971,7 +1299,6 @@
     "stageShortHIRED": "합격",
     "stageShortREJECTED": "불합격"
   },
-
   "offboarding": {
     "title": "퇴직 관리",
     "checklist": "체크리스트",
@@ -1119,7 +1446,6 @@
     "inactive": "비활성",
     "actions": "액션"
   },
-
   "salary": {
     "title": "보상 관리",
     "baseSalary": "기본급",
@@ -1205,9 +1531,9 @@
     "bandMid": "밴드 중간",
     "bandMax": "밴드 최대",
     "gradeLevel": "직급",
-    "performanceGrade": "성과 등급"
+    "performanceGrade": "성과 등급",
+    "ko-KR": "한국 원 (KRW)"
   },
-
   "benefits": {
     "title": "복리후생",
     "pageTitle": "복리후생 관리",
@@ -1232,7 +1558,6 @@
     "companyContribution": "회사 부담금",
     "employeeContribution": "본인 부담금"
   },
-
   "training": {
     "title": "교육 관리",
     "pageTitle": "교육관리",
@@ -1274,7 +1599,6 @@
     "statusChanged": "상태가 변경되었습니다.",
     "statusChangeFailed": "상태 변경 실패"
   },
-
   "discipline": {
     "title": "징계/상벌",
     "disciplinaryAction": "징계",
@@ -1306,7 +1630,6 @@
     "appealApproved": "이의신청 승인",
     "appealRejected": "이의신청 반려"
   },
-
   "onboarding": {
     "title": "온보딩",
     "dashboard": "온보딩 대시보드",
@@ -1465,7 +1788,6 @@
     "dueDaysAfter": "완료 기한 (입사 후 일수)",
     "deleteTemplateConfirm": "\"{name}\" 템플릿을 삭제하시겠습니까?"
   },
-
   "org": {
     "title": "조직 관리",
     "company": "법인",
@@ -1496,9 +1818,9 @@
     "subDepartments": "하위 부서",
     "employees": "소속 직원",
     "noEmployees": "소속 직원 없음",
-    "close": "닫기"
+    "close": "닫기",
+    "companyId": "법인"
   },
-
   "payroll": {
     "title": "급여 관리",
     "processing": "급여 정산",
@@ -1535,7 +1857,6 @@
       "paid": "지급완료"
     }
   },
-
   "analytics": {
     "title": "분석/리포트",
     "overview": "전사 개요",
@@ -1729,9 +2050,9 @@
       "recalcFailed": "재계산 실패",
       "dataLoadFailed": "데이터 로드 실패",
       "dataLoadFailedDesc": "이탈 위험 데이터를 불러올 수 없습니다."
-    }
+    },
+    "company_id": "법인"
   },
-
   "notification": {
     "title": "알림",
     "description": "모든 알림을 확인하고 관리합니다.",
@@ -1760,7 +2081,6 @@
     "inAppNotification": "인앱 알림",
     "teamsNotification": "Teams 알림"
   },
-
   "succession": {
     "title": "후계자 관리",
     "breadcrumb": "인사관리 / 후계자 관리",
@@ -1779,7 +2099,6 @@
     "talentPool": "인재풀",
     "developmentPlan": "육성 계획"
   },
-
   "settings": {
     "title": "설정",
     "general": "일반",
@@ -2130,9 +2449,9 @@
     "deleteError": "삭제 중 오류가 발생했습니다.",
     "active": "활성",
     "inactive": "비활성",
-    "name": "이름"
+    "name": "이름",
+    "input": "입력"
   },
-
   "ai": {
     "generated": "AI 생성",
     "generatedTooltip": "AI가 생성한 내용입니다",
@@ -2144,7 +2463,6 @@
     "feedbackPositive": "도움이 됐어요",
     "feedbackNegative": "도움이 안 됐어요"
   },
-
   "error": {
     "notFound": "리소스를 찾을 수 없습니다.",
     "forbidden": "접근 권한이 없습니다.",
@@ -2163,14 +2481,12 @@
     "invalidFormat": "올바르지 않은 형식입니다.",
     "duplicateEntry": "중복된 항목입니다."
   },
-
   "format": {
     "date": "{date, date, medium}",
     "number": "{value, number}",
     "currency": "{value, number, currency}",
     "percent": "{value, number, percent}"
   },
-
   "orgChanges": {
     "title": "조직개편 관리",
     "description": "부서 생성·통합·분리·폐지·명칭 변경 이력을 관리합니다.",
@@ -2215,9 +2531,14 @@
     "processing": "처리 중...",
     "processingError": "조직개편 처리 중 오류가 발생했습니다.",
     "exampleDeptName": "예: 글로벌사업팀",
-    "exampleDeptCode": "예: GLOBAL"
+    "exampleDeptCode": "예: GLOBAL",
+    "mergeToDeptId": "통합 대상 부서",
+    "newDeptCode": "새 부서 코드",
+    "newDeptLevel": "부서 레벨",
+    "newName": "새 이름",
+    "parentDeptId": "상위 부서",
+    "targetDeptId": "대상 부서"
   },
-
   "contractRules": {
     "title": "국가별 계약 규칙",
     "description": "각 국가의 노동법에 따른 계약 자동 전환 규칙입니다. 실제 법률 적용 시 법무 검토를 거치시기 바랍니다.",
@@ -2240,7 +2561,6 @@
     "countryUS": "미국",
     "countryPL": "폴란드"
   },
-
   "profileRequests": {
     "title": "프로필 변경 요청 관리",
     "description": "직원들의 프로필 수정 요청을 승인 또는 반려합니다.",
@@ -2267,7 +2587,6 @@
     "processingError": "처리 중 오류가 발생했습니다.",
     "noValue": "(없음)"
   },
-
   "compensation": {
     "salaryAdjustment": "연봉 조정",
     "evaluationCycle": "평가 사이클",
@@ -2276,7 +2595,6 @@
     "confirm": "확정",
     "historyAnalysis": "이력/분석"
   },
-
   "payrollPage": {
     "title": "급여 정산",
     "runName": "실행명",
@@ -2302,7 +2620,6 @@
       "cancelled": "취소"
     }
   },
-
   "payrollMe": {
     "title": "내 급여명세서",
     "emptyMessage": "지급된 급여명세서가 없습니다.",
@@ -2311,7 +2628,6 @@
     "deductions": "공제액",
     "netPay": "실수령액"
   },
-
   "payStubDetail": {
     "titleWithMonth": "{month} 급여명세서",
     "notFound": "급여명세서를 찾을 수 없습니다.",
@@ -2319,7 +2635,6 @@
     "payPeriod": "급여 기간",
     "payDate": "지급일"
   },
-
   "payrollReview": {
     "employee": "직원",
     "baseSalary": "기본급",
@@ -2336,7 +2651,6 @@
     "payrollItems": "급여 항목 ({count}명)",
     "emptyItems": "계산된 급여 항목이 없습니다."
   },
-
   "disciplinePage": {
     "title": "징계관리",
     "rewardsManagement": "포상관리",
@@ -2386,7 +2700,6 @@
       "OVERTURNED": "번복"
     }
   },
-
   "disciplineDetail": {
     "title": "징계 상세",
     "notFound": "징계 기록을 찾을 수 없습니다.",
@@ -2416,7 +2729,6 @@
     "appealContent": "이의신청 내용",
     "appealReviewResult": "심사 결과"
   },
-
   "disciplineForm": {
     "title": "징계 등록",
     "basicInfo": "기본 정보",
@@ -2450,7 +2762,6 @@
     "submitting": "등록 중...",
     "submitButton": "징계 등록"
   },
-
   "rewardsPage": {
     "title": "포상관리",
     "disciplineManagement": "징계관리",
@@ -2483,7 +2794,6 @@
       "RESPECT": "존중"
     }
   },
-
   "rewardDetail": {
     "title": "포상 상세",
     "notFound": "포상 기록을 찾을 수 없습니다.",
@@ -2497,7 +2807,6 @@
     "dateInfo": "일자 정보",
     "registeredDate": "등록일"
   },
-
   "rewardForm": {
     "title": "포상 등록",
     "rewardInfo": "포상 정보",
@@ -2520,7 +2829,6 @@
     "submitting": "등록 중...",
     "submitButton": "포상 등록"
   },
-
   "compliance": {
     "title": "컴플라이언스",
     "dashboard": "컴플라이언스 대시보드",
@@ -2598,6 +2906,7 @@
     },
     "kr": {
       "title": "한국 컴플라이언스",
+      "subtitle": "근로기준법 준수 현황 관리",
       "workHours": "52시간 모니터링",
       "mandatoryTraining": "법정의무교육",
       "severanceInterim": "퇴직금 중간정산",
@@ -2636,6 +2945,127 @@
       "SIP_APPROVED": "승인",
       "SIP_REJECTED": "반려",
       "SIP_PAID": "지급완료"
+    }
+  },
+  "nav": {
+    "home": {
+      "label": "홈",
+      "dashboard": "대시보드",
+      "notifications": "알림"
+    },
+    "mySpace": {
+      "label": "나의 공간",
+      "profile": "내 프로필",
+      "attendance": "출퇴근/근태",
+      "leave": "휴가",
+      "goals": "내 목표/평가",
+      "payslip": "내 급여명세서",
+      "benefits": "복리후생",
+      "onboarding": "내 온보딩",
+      "feedback": "1:1/피드백",
+      "selfEval": "자기평가",
+      "recognition": "칭찬/인정",
+      "training": "내 교육"
+    },
+    "team": {
+      "label": "팀 관리",
+      "hub": "팀 현황",
+      "attendance": "팀 근태",
+      "leave": "팀 휴가",
+      "goals": "팀 목표",
+      "results": "팀 성과",
+      "managerEval": "매니저 평가",
+      "oneOnOne": "1:1 미팅"
+    },
+    "hrOps": {
+      "label": "인사 운영",
+      "employees": "직원 관리",
+      "org": "조직 관리",
+      "attendanceAdmin": "근태 관리",
+      "leaveAdmin": "휴가 관리",
+      "onboarding": "온보딩",
+      "checkin": "체크인",
+      "checkinStatus": "체크인 현황",
+      "offboarding": "퇴직관리",
+      "payroll": "급여 관리",
+      "discipline": "징계관리",
+      "rewards": "포상관리"
+    },
+    "talent": {
+      "label": "인재 관리",
+      "recruitment": "채용 (ATS)",
+      "recruitmentDashboard": "채용 대시보드",
+      "performance": "성과 관리",
+      "goals": "목표관리",
+      "calibration": "캘리브레이션",
+      "performanceResults": "성과 결과",
+      "peerReview": "동료 평가",
+      "pulse": "펄스 서베이",
+      "compensation": "보상 관리",
+      "benefits": "복리후생 관리",
+      "training": "교육/개발",
+      "succession": "승계 계획"
+    },
+    "insights": {
+      "label": "인사이트",
+      "overview": "전사 개요",
+      "workforce": "인력 분석",
+      "turnover": "이직 분석",
+      "performance": "성과 분석",
+      "attendance": "근태 분석",
+      "recruitment": "채용 분석",
+      "compensation": "보상 분석",
+      "genderPayGap": "성별 임금 격차",
+      "teamHealth": "팀 건강",
+      "attrition": "이탈 위험",
+      "aiReport": "AI 보고서",
+      "gdpr": "GDPR/개인정보",
+      "dataRetention": "데이터 보관",
+      "piiAudit": "PII 감사",
+      "dpia": "DPIA",
+      "ruCompliance": "러시아 컴플라이언스",
+      "cnCompliance": "중국 컴플라이언스",
+      "krCompliance": "한국 컴플라이언스"
+    },
+    "settings": {
+      "label": "설정",
+      "company": "회사설정",
+      "workSchedule": "근무스케줄",
+      "holidays": "공휴일",
+      "terminals": "단말기",
+      "leavePolicy": "휴가정책",
+      "shiftRoster": "교대근무",
+      "onboarding": "온보딩 설정",
+      "offboarding": "퇴직 체크리스트",
+      "profileRequests": "정보변경 요청",
+      "performanceCycles": "평가 사이클",
+      "competencies": "역량 라이브러리",
+      "calibration": "캘리브레이션 설정",
+      "salaryBands": "급여 밴드",
+      "salaryMatrix": "인상 매트릭스",
+      "notifications": "알림 설정",
+      "branding": "브랜딩",
+      "terms": "용어 설정",
+      "enums": "ENUM 관리",
+      "customFields": "커스텀 필드",
+      "workflows": "워크플로",
+      "emailTemplates": "이메일 템플릿",
+      "evaluationScale": "평가 척도",
+      "modules": "모듈 ON/OFF",
+      "exportTemplates": "내보내기",
+      "dashboardWidgets": "대시보드 위젯",
+      "hrDocuments": "HR 문서 관리",
+      "teams": "Teams 연동",
+      "contractRules": "계약규칙",
+      "shiftPatterns": "교대 패턴",
+      "payrollItems": "급여항목",
+      "taxBrackets": "세율표",
+      "dataMigration": "데이터 마이그레이션",
+      "entityTransfers": "법인 전환",
+      "orgChanges": "조직변경",
+      "monitoring": "모니터링",
+      "m365": "M365 연동",
+      "auditLogs": "감사로그"
     }
   }
 }

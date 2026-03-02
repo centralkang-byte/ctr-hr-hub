@@ -163,7 +163,7 @@ export function ExportTemplatesClient({ user: _user }: { user: SessionUser }) {
     {
       key: 'isDefault', header: t('default'),
       render: (row) => row.isDefault ? (
-        <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs text-blue-700">{t('default')}</span>
+        <span className="rounded-full bg-[#E8F5E9] px-2 py-0.5 text-xs text-[#00A844]">{t('default')}</span>
       ) : '-',
     },
     {

@@ -114,11 +114,11 @@ export default function RetentionPolicyForm({ open, policy, onClose, onSaved }: 
         <div className="space-y-4 py-2">
           {/* Category */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              {tc('category')} <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-[#333] mb-1">
+              {tc('category')} <span className="text-[#EF4444]">*</span>
             </label>
             <select
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853]"
               value={form.category}
               onChange={(e) => handleChange('category', e.target.value)}
             >
@@ -131,25 +131,25 @@ export default function RetentionPolicyForm({ open, policy, onClose, onSaved }: 
 
           {/* Retention Months */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              {t('gdpr.retentionMonths')} <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-[#333] mb-1">
+              {t('gdpr.retentionMonths')} <span className="text-[#EF4444]">*</span>
             </label>
             <input
               type="number"
               min={1}
               max={600}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853]"
               value={form.retention_months}
               onChange={(e) => handleChange('retention_months', parseInt(e.target.value) || 0)}
             />
-            <p className="text-xs text-slate-400 mt-1">e.g., 36 = 3 years, 84 = 7 years</p>
+            <p className="text-xs text-[#999] mt-1">e.g., 36 = 3 years, 84 = 7 years</p>
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">{tc('description')}</label>
+            <label className="block text-sm font-medium text-[#333] mb-1">{tc('description')}</label>
             <textarea
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853] resize-none"
               rows={3}
               placeholder="Policy description and legal basis..."
               value={form.description}
@@ -159,49 +159,49 @@ export default function RetentionPolicyForm({ open, policy, onClose, onSaved }: 
 
           {/* Toggles */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-[#FAFAFA] rounded-lg">
               <div>
-                <p className="text-sm font-medium text-slate-700">{t('gdpr.autoDelete')}</p>
-                <p className="text-xs text-slate-400">Automatically delete data after retention period</p>
+                <p className="text-sm font-medium text-[#333]">{t('gdpr.autoDelete')}</p>
+                <p className="text-xs text-[#999]">Automatically delete data after retention period</p>
               </div>
               <button
                 type="button"
                 onClick={() => handleChange('auto_delete', !form.auto_delete)}
-                className={`relative w-10 h-5 rounded-full transition-colors ${form.auto_delete ? 'bg-blue-600' : 'bg-slate-300'}`}
+                className={`relative w-10 h-5 rounded-full transition-colors ${form.auto_delete ? 'bg-[#00C853]' : 'bg-[#D4D4D4]'}`}
               >
                 <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.auto_delete ? 'translate-x-5' : 'translate-x-0.5'}`} />
               </button>
             </div>
 
-            <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-[#FAFAFA] rounded-lg">
               <div>
-                <p className="text-sm font-medium text-slate-700">{t('gdpr.anonymize')}</p>
-                <p className="text-xs text-slate-400">Anonymize instead of deleting</p>
+                <p className="text-sm font-medium text-[#333]">{t('gdpr.anonymize')}</p>
+                <p className="text-xs text-[#999]">Anonymize instead of deleting</p>
               </div>
               <button
                 type="button"
                 onClick={() => handleChange('anonymize', !form.anonymize)}
-                className={`relative w-10 h-5 rounded-full transition-colors ${form.anonymize ? 'bg-blue-600' : 'bg-slate-300'}`}
+                className={`relative w-10 h-5 rounded-full transition-colors ${form.anonymize ? 'bg-[#00C853]' : 'bg-[#D4D4D4]'}`}
               >
                 <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.anonymize ? 'translate-x-5' : 'translate-x-0.5'}`} />
               </button>
             </div>
           </div>
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-[#DC2626]">{error}</p>}
         </div>
 
         <DialogFooter className="gap-2">
           <button
             onClick={onClose}
-            className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-lg font-medium text-sm"
+            className="bg-white border border-[#D4D4D4] hover:bg-[#FAFAFA] text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
           >
             {tc('cancel')}
           </button>
           <button
             onClick={handleSubmit}
             disabled={saving}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
+            className="bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
           >
             {saving ? tc('loading') : tc('save')}
           </button>

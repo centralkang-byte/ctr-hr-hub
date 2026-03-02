@@ -172,7 +172,7 @@ export default function PostingDetailClient({ user, id }: Props) {
               <Briefcase className="w-5 h-5 text-[#2196F3]" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-[#333]" style={{ letterSpacing: '-0.02em' }}>
+              <h1 className="text-xl font-bold text-[#1A1A1A] tracking-[-0.02em]">
                 {data.title}
               </h1>
               <p className="text-sm text-[#999]">
@@ -186,7 +186,7 @@ export default function PostingDetailClient({ user, id }: Props) {
             <>
               <button
                 onClick={() => router.push(`/recruitment/${id}/edit`)}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[#E8E8E8] text-[#333] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[#E8E8E8] text-[#1A1A1A] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150"
               >
                 <Edit3 className="w-4 h-4" />
                 {t('editButton')}
@@ -222,10 +222,10 @@ export default function PostingDetailClient({ user, id }: Props) {
         <div className="flex-[65] space-y-6">
           {/* Description */}
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+            <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
               {t('descriptionSection')}
             </h2>
-            <p className="text-sm text-[#333] leading-relaxed whitespace-pre-wrap">
+            <p className="text-sm text-[#1A1A1A] leading-relaxed whitespace-pre-wrap">
               {data.description}
             </p>
           </div>
@@ -233,10 +233,10 @@ export default function PostingDetailClient({ user, id }: Props) {
           {/* Requirements */}
           {data.requirements && (
             <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-              <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+              <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
                 {t('requirementsSection')}
               </h2>
-              <p className="text-sm text-[#333] leading-relaxed whitespace-pre-wrap">
+              <p className="text-sm text-[#1A1A1A] leading-relaxed whitespace-pre-wrap">
                 {data.requirements}
               </p>
             </div>
@@ -245,10 +245,10 @@ export default function PostingDetailClient({ user, id }: Props) {
           {/* Preferred */}
           {data.preferred && (
             <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-              <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+              <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
                 {t('preferredSection')}
               </h2>
-              <p className="text-sm text-[#333] leading-relaxed whitespace-pre-wrap">
+              <p className="text-sm text-[#1A1A1A] leading-relaxed whitespace-pre-wrap">
                 {data.preferred}
               </p>
             </div>
@@ -256,7 +256,7 @@ export default function PostingDetailClient({ user, id }: Props) {
 
           {/* Application Summary */}
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h2 className="text-base font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+            <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
               {t('applicationStatus')}
             </h2>
             <div className="flex items-center gap-3">
@@ -275,7 +275,7 @@ export default function PostingDetailClient({ user, id }: Props) {
         <div className="flex-[35] space-y-6">
           {/* Status Card */}
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h3 className="text-sm font-bold text-[#333] mb-4" style={{ letterSpacing: '-0.02em' }}>
+            <h3 className="text-sm font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
               {t('postingInfo')}
             </h3>
             <div className="space-y-3">
@@ -352,7 +352,7 @@ export default function PostingDetailClient({ user, id }: Props) {
           {/* Competencies */}
           {data.requiredCompetencies && Array.isArray(data.requiredCompetencies) && data.requiredCompetencies.length > 0 && (
             <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-              <h3 className="text-sm font-bold text-[#333] mb-3" style={{ letterSpacing: '-0.02em' }}>
+              <h3 className="text-sm font-bold text-[#1A1A1A] mb-3 tracking-[-0.02em]">
                 {t('requiredCompetencies')}
               </h3>
               <div className="flex flex-wrap gap-2">
@@ -370,7 +370,7 @@ export default function PostingDetailClient({ user, id }: Props) {
 
           {/* Timeline */}
           <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h3 className="text-sm font-bold text-[#333] mb-3" style={{ letterSpacing: '-0.02em' }}>
+            <h3 className="text-sm font-bold text-[#1A1A1A] mb-3 tracking-[-0.02em]">
               {t('timelineSection')}
             </h3>
             <div className="space-y-2">
@@ -406,7 +406,7 @@ function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string;
       {icon}
       <div className="flex-1 flex items-center justify-between">
         <span className="text-xs text-[#999]">{label}</span>
-        <span className="text-sm text-[#333]">{value}</span>
+        <span className="text-sm text-[#1A1A1A]">{value}</span>
       </div>
     </div>
   )

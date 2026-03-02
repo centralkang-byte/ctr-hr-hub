@@ -22,10 +22,10 @@ import type { SessionUser } from '@/types'
 // ─── Status config ────────────────────────────────────────
 
 const STATUS_STYLES: Record<string, string> = {
-  DRAFT: 'bg-gray-100 text-gray-700',
-  PENDING_APPROVAL: 'bg-yellow-100 text-yellow-700',
-  APPROVED: 'bg-green-100 text-green-700',
-  REJECTED: 'bg-red-100 text-red-700',
+  DRAFT: 'bg-[#F5F5F5] text-[#666]',
+  PENDING_APPROVAL: 'bg-[#FFF8E1] text-[#F57F17]',
+  APPROVED: 'bg-[#E8F5E9] text-[#2E7D32]',
+  REJECTED: 'bg-[#FFEBEE] text-[#C62828]',
 }
 
 // ─── Types ────────────────────────────────────────────────
@@ -97,10 +97,10 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
   }
 
   function getMemberStatusStyle(label: string): string {
-    if (label === t('allApproved')) return 'text-green-700'
-    if (label === t('hasPendingApproval')) return 'text-yellow-700'
-    if (label === t('hasRejected')) return 'text-red-700'
-    return 'text-gray-500'
+    if (label === t('allApproved')) return 'text-[#2E7D32]'
+    if (label === t('hasPendingApproval')) return 'text-[#F57F17]'
+    if (label === t('hasRejected')) return 'text-[#C62828]'
+    return 'text-[#999]'
   }
 
   // ─── Fetch cycles ─────────────────────────────────────
@@ -203,15 +203,15 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Users className="h-7 w-7 text-ctr-primary" />
-          <h1 className="text-2xl font-bold text-gray-900">{t('teamGoalManagement')}</h1>
+          <Users className="h-7 w-7 text-[#00C853]" />
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('teamGoalManagement')}</h1>
         </div>
 
         {/* Cycle selector */}
         <select
           value={selectedCycleId}
           onChange={(e) => setSelectedCycleId(e.target.value)}
-          className="rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
+          className="rounded-lg border border-[#E8E8E8] px-4 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
         >
           {cycles.map((c) => (
             <option key={c.id} value={c.id}>
@@ -224,16 +224,16 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
       {/* Loading */}
       {loading && (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-ctr-secondary" />
-          <span className="ml-3 text-gray-500">{t('loadingText')}</span>
+          <Loader2 className="h-8 w-8 animate-spin text-[#00C853]" />
+          <span className="ml-3 text-[#999]">{t('loadingText')}</span>
         </div>
       )}
 
       {/* Empty state */}
       {!loading && members.length === 0 && (
-        <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 py-20 text-center">
-          <Users className="mx-auto h-12 w-12 text-gray-300" />
-          <p className="mt-4 text-gray-500">{t('noTeamMembersOrGoals')}</p>
+        <div className="rounded-xl border border-dashed border-[#E8E8E8] bg-[#FAFAFA] py-20 text-center">
+          <Users className="mx-auto h-12 w-12 text-[#CCC]" />
+          <p className="mt-4 text-[#999]">{t('noTeamMembersOrGoals')}</p>
         </div>
       )}
 
@@ -249,31 +249,31 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
           return (
             <div
               key={member.employee.id}
-              className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+              className="overflow-hidden rounded-xl border border-[#E8E8E8] bg-white"
             >
               {/* Summary row */}
               <button
                 type="button"
                 onClick={() => toggleExpanded(member.employee.id)}
-                className="flex w-full items-center gap-4 px-6 py-4 text-left transition-colors hover:bg-gray-50"
+                className="flex w-full items-center gap-4 px-6 py-4 text-left transition-colors hover:bg-[#FAFAFA]"
               >
                 {isExpanded ? (
-                  <ChevronDown className="h-5 w-5 shrink-0 text-gray-400" />
+                  <ChevronDown className="h-5 w-5 shrink-0 text-[#999]" />
                 ) : (
-                  <ChevronRight className="h-5 w-5 shrink-0 text-gray-400" />
+                  <ChevronRight className="h-5 w-5 shrink-0 text-[#999]" />
                 )}
 
                 {/* Employee info */}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-gray-900">
+                    <span className="font-semibold text-[#1A1A1A]">
                       {member.employee.name}
                     </span>
-                    <span className="text-sm text-gray-400">
+                    <span className="text-sm text-[#999]">
                       {member.employee.employeeNo}
                     </span>
                     {member.employee.department && (
-                      <span className="text-sm text-gray-400">
+                      <span className="text-sm text-[#999]">
                         · {member.employee.department.name}
                       </span>
                     )}
@@ -283,31 +283,31 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
                 {/* Stats */}
                 <div className="flex shrink-0 items-center gap-6 text-sm">
                   <div className="text-center">
-                    <div className="text-xs text-gray-400">{t('goalCountLabel')}</div>
-                    <div className="font-medium text-gray-700">
+                    <div className="text-xs text-[#999]">{t('goalCountLabel')}</div>
+                    <div className="font-medium text-[#666]">
                       {member.goals.length}
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-xs text-gray-400">{t('weightSumLabel')}</div>
+                    <div className="text-xs text-[#999]">{t('weightSumLabel')}</div>
                     <div
                       className={`font-medium ${
                         member.totalWeight === 100
                           ? 'text-green-600'
-                          : 'text-orange-500'
+                          : 'text-[#F97316]'
                       }`}
                     >
                       {member.totalWeight}%
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-xs text-gray-400">{t('avgAchievementLabel')}</div>
-                    <div className="font-medium text-gray-700">
+                    <div className="text-xs text-[#999]">{t('avgAchievementLabel')}</div>
+                    <div className="font-medium text-[#666]">
                       {member.avgProgress}%
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-xs text-gray-400">{t('statusLabel')}</div>
+                    <div className="text-xs text-[#999]">{t('statusLabel')}</div>
                     <div
                       className={`font-medium ${getMemberStatusStyle(overallStatus)}`}
                     >
@@ -315,7 +315,7 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
                     </div>
                   </div>
                   {pendingCount > 0 && (
-                    <span className="rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-700">
+                    <span className="rounded-full bg-[#FFF8E1] px-2.5 py-0.5 text-xs font-medium text-[#F57F17]">
                       {t('pendingApprovalCount', { count: pendingCount })}
                     </span>
                   )}
@@ -324,9 +324,9 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
 
               {/* Expanded: Goal cards */}
               {isExpanded && (
-                <div className="border-t border-gray-100 bg-gray-50/50 px-6 py-4">
+                <div className="border-t border-[#F5F5F5] bg-[#FAFAFA] px-6 py-4">
                   {member.goals.length === 0 ? (
-                    <p className="py-4 text-center text-sm text-gray-400">
+                    <p className="py-4 text-center text-sm text-[#999]">
                       {t('noGoalsRegistered')}
                     </p>
                   ) : (
@@ -340,30 +340,30 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
                         return (
                           <div
                             key={goal.id}
-                            className="rounded-lg border border-gray-200 bg-white p-4"
+                            className="rounded-lg border border-[#E8E8E8] bg-white p-4"
                           >
                             <div className="flex items-start justify-between gap-4">
                               {/* Goal info */}
                               <div className="min-w-0 flex-1">
                                 <div className="flex items-center gap-2">
-                                  <Target className="h-4 w-4 shrink-0 text-ctr-secondary" />
-                                  <h4 className="font-medium text-gray-900">
+                                  <Target className="h-4 w-4 shrink-0 text-[#00C853]" />
+                                  <h4 className="font-medium text-[#1A1A1A]">
                                     {goal.title}
                                   </h4>
                                   <span
                                     className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                                      STATUS_STYLES[goal.status] ?? 'bg-gray-100 text-gray-600'
+                                      STATUS_STYLES[goal.status] ?? 'bg-[#F5F5F5] text-[#666]'
                                     }`}
                                   >
                                     {t(`goalStatusLabels.${goal.status}` as Parameters<typeof t>[0])}
                                   </span>
                                 </div>
                                 {goal.description && (
-                                  <p className="mt-1 text-sm text-gray-500 line-clamp-2">
+                                  <p className="mt-1 text-sm text-[#999] line-clamp-2">
                                     {goal.description}
                                   </p>
                                 )}
-                                <div className="mt-2 flex items-center gap-4 text-xs text-gray-400">
+                                <div className="mt-2 flex items-center gap-4 text-xs text-[#999]">
                                   <span>{t('weightColLabel')}: {goal.weight}%</span>
                                   <span>{t('achievementColLabel')}: {latestProgress}%</span>
                                   {goal.achievementScore != null && (
@@ -372,9 +372,9 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
                                 </div>
 
                                 {/* Progress bar */}
-                                <div className="mt-2 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-gray-100">
+                                <div className="mt-2 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-[#F5F5F5]">
                                   <div
-                                    className="h-full rounded-full bg-ctr-secondary transition-all"
+                                    className="h-full rounded-full bg-[#00C853] transition-all"
                                     style={{
                                       width: `${Math.min(latestProgress, 100)}%`,
                                     }}
@@ -410,7 +410,7 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
                                       }
                                     }}
                                     disabled={isThisLoading}
-                                    className="inline-flex items-center gap-1 rounded-lg bg-orange-500 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-orange-600 disabled:opacity-50"
+                                    className="inline-flex items-center gap-1 rounded-lg bg-[#F97316] px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[#EA580C] disabled:opacity-50"
                                   >
                                     <MessageSquareWarning className="h-3.5 w-3.5" />
                                     {t('requestRevisionButton')}
@@ -421,13 +421,13 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
 
                             {/* Inline revision comment */}
                             {isRevisionOpen && (
-                              <div className="mt-3 border-t border-gray-100 pt-3">
+                              <div className="mt-3 border-t border-[#F5F5F5] pt-3">
                                 <textarea
                                   value={revisionComment}
                                   onChange={(e) => setRevisionComment(e.target.value)}
                                   placeholder={t('revisionPlaceholder')}
                                   rows={3}
-                                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
+                                  className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm placeholder-[#999] focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
                                 />
                                 <div className="mt-2 flex justify-end gap-2">
                                   <button
@@ -436,7 +436,7 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
                                       setRevisionGoalId(null)
                                       setRevisionComment('')
                                     }}
-                                    className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50"
+                                    className="rounded-lg border border-[#E8E8E8] px-3 py-1.5 text-xs text-[#666] hover:bg-[#FAFAFA]"
                                   >
                                     {tc('cancel')}
                                   </button>
@@ -444,7 +444,7 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
                                     type="button"
                                     onClick={() => handleRequestRevision(goal.id)}
                                     disabled={isThisLoading || !revisionComment.trim()}
-                                    className="inline-flex items-center gap-1 rounded-lg bg-orange-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-orange-600 disabled:opacity-50"
+                                    className="inline-flex items-center gap-1 rounded-lg bg-[#F97316] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#EA580C] disabled:opacity-50"
                                   >
                                     {isThisLoading && (
                                       <Loader2 className="h-3.5 w-3.5 animate-spin" />

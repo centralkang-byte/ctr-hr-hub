@@ -120,8 +120,8 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
           {/* Employee ID (only when creating) */}
           {!editing && (
             <div>
-              <label className="text-sm font-medium text-slate-700 block mb-1">
-                직원 ID <span className="text-red-500">*</span>
+              <label className="text-sm font-medium text-[#333] block mb-1">
+                직원 ID <span className="text-[#EF4444]">*</span>
               </label>
               <input
                 type="text"
@@ -130,16 +130,16 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
                 onChange={handleChange}
                 required
                 placeholder="직원 UUID 입력"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"
               />
             </div>
           )}
 
           {/* Show current employee info when editing */}
           {editing && (
-            <div className="p-3 bg-slate-50 rounded-lg">
-              <p className="text-sm font-medium text-slate-900">{registration.employee.name}</p>
-              <p className="text-xs text-slate-500">
+            <div className="p-3 bg-[#FAFAFA] rounded-lg">
+              <p className="text-sm font-medium text-[#1A1A1A]">{registration.employee.name}</p>
+              <p className="text-xs text-[#666]">
                 {registration.employee.employeeNo} · {registration.employee.department?.name ?? '-'}
               </p>
             </div>
@@ -148,15 +148,15 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
           {/* Category */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-sm font-medium text-slate-700 block mb-1">
-                복무 구분 <span className="text-red-500">*</span>
+              <label className="text-sm font-medium text-[#333] block mb-1">
+                복무 구분 <span className="text-[#EF4444]">*</span>
               </label>
               <select
                 name="category"
                 value={form.category}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
               >
                 <option value="OFFICER">장교</option>
                 <option value="SOLDIER">병사</option>
@@ -165,15 +165,15 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700 block mb-1">
-                적합도 <span className="text-red-500">*</span>
+              <label className="text-sm font-medium text-[#333] block mb-1">
+                적합도 <span className="text-[#EF4444]">*</span>
               </label>
               <select
                 name="fitnessCategory"
                 value={form.fitnessCategory}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
               >
                 <option value="FIT_A">적합 A</option>
                 <option value="FIT_B">적합 B</option>
@@ -187,82 +187,82 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
           {/* Rank & Specialty */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-sm font-medium text-slate-700 block mb-1">계급</label>
+              <label className="text-sm font-medium text-[#333] block mb-1">계급</label>
               <input
                 type="text"
                 name="rank"
                 value={form.rank}
                 onChange={handleChange}
                 placeholder="예: 상사"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700 block mb-1">군사특기</label>
+              <label className="text-sm font-medium text-[#333] block mb-1">군사특기</label>
               <input
                 type="text"
                 name="specialtyCode"
                 value={form.specialtyCode}
                 onChange={handleChange}
                 placeholder="예: 106A"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"
               />
             </div>
           </div>
 
           {/* Military Office */}
           <div>
-            <label className="text-sm font-medium text-slate-700 block mb-1">군사기관</label>
+            <label className="text-sm font-medium text-[#333] block mb-1">군사기관</label>
             <input
               type="text"
               name="militaryOffice"
               value={form.militaryOffice}
               onChange={handleChange}
               placeholder="담당 군사기관명"
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"
             />
           </div>
 
           {/* Dates */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-sm font-medium text-slate-700 block mb-1">등록일</label>
+              <label className="text-sm font-medium text-[#333] block mb-1">등록일</label>
               <input
                 type="date"
                 name="registrationDate"
                 value={form.registrationDate}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700 block mb-1">해제일</label>
+              <label className="text-sm font-medium text-[#333] block mb-1">해제일</label>
               <input
                 type="date"
                 name="deregistrationDate"
                 value={form.deregistrationDate}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
               />
             </div>
           </div>
 
           {/* Notes */}
           <div>
-            <label className="text-sm font-medium text-slate-700 block mb-1">비고</label>
+            <label className="text-sm font-medium text-[#333] block mb-1">비고</label>
             <textarea
               name="notes"
               value={form.notes}
               onChange={handleChange}
               rows={3}
               placeholder="추가 메모"
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400 resize-none"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999] resize-none"
             />
           </div>
 
           {/* Error */}
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+            <div className="p-3 bg-[#FEE2E2] border border-[#FECACA] rounded-lg text-sm text-[#B91C1C]">
               {error}
             </div>
           )}
@@ -271,14 +271,14 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
             <button
               type="button"
               onClick={onClose}
-              className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-lg font-medium text-sm"
+              className="bg-white border border-[#D4D4D4] hover:bg-[#FAFAFA] text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
             >
               취소
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
+              className="bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
             >
               {saving ? '저장 중...' : editing ? '수정' : '등록'}
             </button>

@@ -46,11 +46,11 @@ const FITNESS_LABELS: Record<string, string> = {
 }
 
 const FITNESS_COLORS: Record<string, string> = {
-  FIT_A: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  FIT_B: 'bg-blue-50 text-blue-700 border-blue-200',
-  FIT_C: 'bg-amber-50 text-amber-700 border-amber-200',
-  FIT_D: 'bg-orange-50 text-orange-700 border-orange-200',
-  UNFIT: 'bg-red-50 text-red-700 border-red-200',
+  FIT_A: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]',
+  FIT_B: 'bg-[#E8F5E9] text-[#00A844] border-[#E8F5E9]',
+  FIT_C: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]',
+  FIT_D: 'bg-[#FFF7ED] text-[#C2410C] border-[#FED7AA]',
+  UNFIT: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]',
 }
 
 export default function MilitaryRegistrationTab() {
@@ -120,25 +120,25 @@ export default function MilitaryRegistrationTab() {
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+      <div className="bg-white rounded-xl border border-[#E8E8E8] p-4">
         <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
           <div className="flex gap-2 flex-1">
             {/* Search */}
             <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
               <input
                 type="text"
                 placeholder="이름 또는 사번 검색..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400"
+                className="w-full pl-9 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"
               />
             </div>
             {/* Category Filter */}
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
             >
               <option value="">전체 구분</option>
               {Object.entries(CATEGORY_LABELS).map(([val, label]) => (
@@ -148,7 +148,7 @@ export default function MilitaryRegistrationTab() {
             {/* Refresh */}
             <button
               onClick={() => fetchRegistrations()}
-              className="p-2 border border-slate-300 rounded-lg hover:bg-slate-50 text-slate-600"
+              className="p-2 border border-[#D4D4D4] rounded-lg hover:bg-[#FAFAFA] text-[#555]"
             >
               <RefreshCw className="w-4 h-4" />
             </button>
@@ -158,7 +158,7 @@ export default function MilitaryRegistrationTab() {
             <button
               onClick={handleExportT2}
               disabled={exporting}
-              className="flex items-center gap-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
+              className="flex items-center gap-2 bg-white border border-[#D4D4D4] hover:bg-[#FAFAFA] text-[#333] px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
             >
               <Download className="w-4 h-4" />
               T-2 내보내기
@@ -166,7 +166,7 @@ export default function MilitaryRegistrationTab() {
             {/* Add New */}
             <button
               onClick={() => { setSelectedRegistration(null); setShowForm(true) }}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm"
+              className="flex items-center gap-2 bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm"
             >
               <Plus className="w-4 h-4" />
               군복무 등록
@@ -176,70 +176,70 @@ export default function MilitaryRegistrationTab() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
         {loading ? (
-          <div className="flex items-center justify-center py-16 text-slate-400 text-sm">
+          <div className="flex items-center justify-center py-16 text-[#999] text-sm">
             로딩 중...
           </div>
         ) : registrations.length === 0 ? (
-          <div className="flex items-center justify-center py-16 text-slate-400 text-sm">
+          <div className="flex items-center justify-center py-16 text-[#999] text-sm">
             군복무 등록 데이터가 없습니다.
           </div>
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">
+              <tr className="bg-[#FAFAFA] border-b border-[#E8E8E8]">
+                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
                   직원
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
                   부서
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
                   복무 구분
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
                   계급
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
                   적합도
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-slate-500 font-medium uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
                   등록일
                 </th>
-                <th className="px-4 py-3 text-right text-xs text-slate-500 font-medium uppercase tracking-wider">
+                <th className="px-4 py-3 text-right text-xs text-[#666] font-medium uppercase tracking-wider">
                   작업
                 </th>
               </tr>
             </thead>
             <tbody>
               {registrations.map((reg) => (
-                <tr key={reg.id} className="border-b border-slate-100 hover:bg-slate-50">
+                <tr key={reg.id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
                   <td className="px-4 py-3">
                     <div>
-                      <p className="text-sm font-medium text-slate-900">{reg.employee.name}</p>
-                      <p className="text-xs text-slate-500">{reg.employee.employeeNo}</p>
+                      <p className="text-sm font-medium text-[#1A1A1A]">{reg.employee.name}</p>
+                      <p className="text-xs text-[#666]">{reg.employee.employeeNo}</p>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-slate-600">
+                  <td className="px-4 py-3 text-sm text-[#555]">
                     {reg.employee.department?.name ?? '-'}
                   </td>
                   <td className="px-4 py-3">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#F5F5F5] text-[#333]">
                       {CATEGORY_LABELS[reg.category] ?? reg.category}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-slate-600">{reg.rank ?? '-'}</td>
+                  <td className="px-4 py-3 text-sm text-[#555]">{reg.rank ?? '-'}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-                        FITNESS_COLORS[reg.fitnessCategory] ?? 'bg-slate-50 text-slate-600 border-slate-200'
+                        FITNESS_COLORS[reg.fitnessCategory] ?? 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]'
                       }`}
                     >
                       {FITNESS_LABELS[reg.fitnessCategory] ?? reg.fitnessCategory}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-slate-600">
+                  <td className="px-4 py-3 text-sm text-[#555]">
                     {reg.registrationDate
                       ? new Date(reg.registrationDate).toLocaleDateString('ko-KR')
                       : '-'}
@@ -250,7 +250,7 @@ export default function MilitaryRegistrationTab() {
                         setSelectedRegistration(reg)
                         setShowForm(true)
                       }}
-                      className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                      className="text-sm text-[#00C853] hover:text-[#00A844] font-medium"
                     >
                       수정
                     </button>
@@ -263,8 +263,8 @@ export default function MilitaryRegistrationTab() {
 
         {/* Pagination */}
         {pagination && pagination.totalPages > 1 && (
-          <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between">
-            <p className="text-xs text-slate-500">
+          <div className="px-4 py-3 border-t border-[#E8E8E8] flex items-center justify-between">
+            <p className="text-xs text-[#666]">
               전체 {pagination.total}건
             </p>
             <div className="flex gap-1">
@@ -274,8 +274,8 @@ export default function MilitaryRegistrationTab() {
                   onClick={() => fetchRegistrations(page)}
                   className={`w-8 h-8 text-xs rounded-lg ${
                     page === pagination.page
-                      ? 'bg-blue-600 text-white'
-                      : 'text-slate-600 hover:bg-slate-100'
+                      ? 'bg-[#00C853] text-white'
+                      : 'text-[#555] hover:bg-[#F5F5F5]'
                   }`}
                 >
                   {page}

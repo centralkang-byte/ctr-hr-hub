@@ -25,7 +25,7 @@ const READINESS_LABELS: Record<string, string> = {
 
 const READINESS_COLORS: Record<string, string> = {
   READY_NOW: '#10B981',
-  READY_1_2_YEARS: '#2563EB',
+  READY_1_2_YEARS: '#00C853',
   READY_3_PLUS_YEARS: '#F59E0B',
 }
 
@@ -52,7 +52,7 @@ export default function SuccessionDashboard() {
   }, [fetchDashboard])
 
   if (loading) {
-    return <div className="py-8 text-center text-slate-500">로딩 중...</div>
+    return <div className="py-8 text-center text-[#666]">로딩 중...</div>
   }
 
   if (!data) return null
@@ -69,47 +69,47 @@ export default function SuccessionDashboard() {
     <div className="space-y-6">
       {/* ─── KPI Cards ─── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-              <Crown className="h-5 w-5 text-blue-600" />
+            <div className="w-10 h-10 rounded-lg bg-[#E8F5E9] flex items-center justify-center">
+              <Crown className="h-5 w-5 text-[#00C853]" />
             </div>
             <div>
-              <p className="text-xs text-slate-500">전체 핵심직책</p>
-              <p className="text-2xl font-bold text-slate-900">{data.totalPlans}</p>
+              <p className="text-xs text-[#666]">전체 핵심직책</p>
+              <p className="text-2xl font-bold text-[#1A1A1A]">{data.totalPlans}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
-              <Shield className="h-5 w-5 text-emerald-600" />
+            <div className="w-10 h-10 rounded-lg bg-[#D1FAE5] flex items-center justify-center">
+              <Shield className="h-5 w-5 text-[#059669]" />
             </div>
             <div>
-              <p className="text-xs text-slate-500">활성 계획</p>
-              <p className="text-2xl font-bold text-slate-900">{data.activePlans}</p>
+              <p className="text-xs text-[#666]">활성 계획</p>
+              <p className="text-2xl font-bold text-[#1A1A1A]">{data.activePlans}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
+            <div className="w-10 h-10 rounded-lg bg-[#FEE2E2] flex items-center justify-center">
+              <AlertTriangle className="h-5 w-5 text-[#DC2626]" />
             </div>
             <div>
-              <p className="text-xs text-slate-500">후보 없는 직책</p>
-              <p className="text-2xl font-bold text-red-600">{data.plansWithoutCandidates}</p>
+              <p className="text-xs text-[#666]">후보 없는 직책</p>
+              <p className="text-2xl font-bold text-[#DC2626]">{data.plansWithoutCandidates}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
-              <Users className="h-5 w-5 text-amber-600" />
+            <div className="w-10 h-10 rounded-lg bg-[#FEF3C7] flex items-center justify-center">
+              <Users className="h-5 w-5 text-[#D97706]" />
             </div>
             <div>
-              <p className="text-xs text-slate-500">전체 후보자</p>
-              <p className="text-2xl font-bold text-slate-900">{totalCandidates}</p>
+              <p className="text-xs text-[#666]">전체 후보자</p>
+              <p className="text-2xl font-bold text-[#1A1A1A]">{totalCandidates}</p>
             </div>
           </div>
         </div>
@@ -117,8 +117,8 @@ export default function SuccessionDashboard() {
 
       {/* ─── Readiness Distribution ─── */}
       {pieData.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">준비도 분포</h3>
+        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+          <h3 className="text-lg font-semibold text-[#1A1A1A] mb-4">준비도 분포</h3>
           <div className="flex items-center gap-6">
             <div className="relative w-48 h-48">
               <ResponsiveContainer>
@@ -140,7 +140,7 @@ export default function SuccessionDashboard() {
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="text-center">
                   <p className="text-2xl font-bold">{totalCandidates}</p>
-                  <p className="text-xs text-slate-500">후보자</p>
+                  <p className="text-xs text-[#666]">후보자</p>
                 </div>
               </div>
             </div>
@@ -150,7 +150,7 @@ export default function SuccessionDashboard() {
                   <span className="w-3 h-3 rounded-full" style={{ backgroundColor: d.color }} />
                   <span className="text-sm">{d.name}</span>
                   <span className="text-sm font-medium">{d.value}명</span>
-                  <span className="text-xs text-slate-400">
+                  <span className="text-xs text-[#999]">
                     ({totalCandidates > 0 ? Math.round((d.value / totalCandidates) * 100) : 0}%)
                   </span>
                 </div>

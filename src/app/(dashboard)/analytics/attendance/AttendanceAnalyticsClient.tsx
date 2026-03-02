@@ -49,7 +49,7 @@ export default function AttendanceAnalyticsClient() {
     return (
       <AnalyticsPageLayout title={t('title')}>
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-[#999]" />
         </div>
       </AnalyticsPageLayout>
     )
@@ -87,7 +87,7 @@ export default function AttendanceAnalyticsClient() {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Area type="monotone" dataKey="avg_total_hours" stroke="#2563EB" fill="#2563EB" fillOpacity={0.1} strokeWidth={2} name={t('avgWorkHours')} />
+                <Area type="monotone" dataKey="avg_total_hours" stroke="#00C853" fill="#00C853" fillOpacity={0.1} strokeWidth={2} name={t('avgWorkHours')} />
                 <Area type="monotone" dataKey="avg_overtime_hours" stroke="#F59E0B" fill="#F59E0B" fillOpacity={0.1} strokeWidth={2} name={t('avgOvertime')} />
               </AreaChart>
             </ResponsiveContainer>

@@ -23,11 +23,11 @@ function StatCard({
   color: string
 }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+    <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs text-slate-500 mb-1">{label}</p>
-          <p className="text-3xl font-bold text-slate-900">{value}</p>
+          <p className="text-xs text-[#666] mb-1">{label}</p>
+          <p className="text-3xl font-bold text-[#1A1A1A]">{value}</p>
         </div>
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}>
           <Icon className="w-5 h-5" />
@@ -55,11 +55,11 @@ export default function PiiAccessDashboard() {
   }, [])
 
   if (loading) {
-    return <div className="p-8 text-center text-slate-500">{tc('loading')}</div>
+    return <div className="p-8 text-center text-[#666]">{tc('loading')}</div>
   }
 
   if (!data) {
-    return <div className="p-8 text-center text-slate-500">{tc('noData')}</div>
+    return <div className="p-8 text-center text-[#666]">{tc('noData')}</div>
   }
 
   const maxByType = Math.max(...(data.access_by_type?.map((a) => a.count) ?? [1]))
@@ -72,37 +72,37 @@ export default function PiiAccessDashboard() {
           label={`${t('gdpr.totalAccess')} (30d)`}
           value={data.total_30d ?? 0}
           icon={Eye}
-          color="bg-blue-100 text-blue-600"
+          color="bg-[#E8F5E9] text-[#00C853]"
         />
         <StatCard
           label={tc('today')}
           value={data.today_count ?? 0}
           icon={Calendar}
-          color="bg-emerald-100 text-emerald-600"
+          color="bg-[#D1FAE5] text-[#059669]"
         />
       </div>
 
       {/* Access by Type + Top Actors */}
       <div className="grid grid-cols-2 gap-4">
         {/* Access by Type */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
           <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="w-4 h-4 text-slate-500" />
-            <h3 className="text-sm font-semibold text-slate-700">{t('gdpr.accessByType')}</h3>
+            <TrendingUp className="w-4 h-4 text-[#666]" />
+            <h3 className="text-sm font-semibold text-[#333]">{t('gdpr.accessByType')}</h3>
           </div>
           {data.access_by_type?.length === 0 ? (
-            <p className="text-sm text-slate-400">{tc('noData')}</p>
+            <p className="text-sm text-[#999]">{tc('noData')}</p>
           ) : (
             <div className="space-y-3">
               {data.access_by_type?.map((item) => (
                 <div key={item.access_type}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-medium text-slate-600">{item.access_type}</span>
-                    <span className="text-xs font-bold text-slate-900">{item.count}</span>
+                    <span className="text-xs font-medium text-[#555]">{item.access_type}</span>
+                    <span className="text-xs font-bold text-[#1A1A1A]">{item.count}</span>
                   </div>
-                  <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-[#F5F5F5] rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-blue-500 rounded-full"
+                      className="h-full bg-[#00C853] rounded-full"
                       style={{ width: `${(item.count / maxByType) * 100}%` }}
                     />
                   </div>
@@ -113,24 +113,24 @@ export default function PiiAccessDashboard() {
         </div>
 
         {/* Top Actors */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Users className="w-4 h-4 text-slate-500" />
-            <h3 className="text-sm font-semibold text-slate-700">{t('gdpr.topActors')}</h3>
+            <Users className="w-4 h-4 text-[#666]" />
+            <h3 className="text-sm font-semibold text-[#333]">{t('gdpr.topActors')}</h3>
           </div>
           {data.top_actors?.length === 0 ? (
-            <p className="text-sm text-slate-400">{tc('noData')}</p>
+            <p className="text-sm text-[#999]">{tc('noData')}</p>
           ) : (
             <div className="space-y-2">
               {data.top_actors?.slice(0, 8).map((actor, idx) => (
-                <div key={actor.actor_name} className="flex items-center justify-between py-1.5 border-b border-slate-50 last:border-0">
+                <div key={actor.actor_name} className="flex items-center justify-between py-1.5 border-b border-[#FAFAFA] last:border-0">
                   <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-slate-100 text-slate-500 text-xs flex items-center justify-center font-medium">
+                    <span className="w-5 h-5 rounded-full bg-[#F5F5F5] text-[#666] text-xs flex items-center justify-center font-medium">
                       {idx + 1}
                     </span>
-                    <span className="text-sm text-slate-700">{actor.actor_name}</span>
+                    <span className="text-sm text-[#333]">{actor.actor_name}</span>
                   </div>
-                  <span className="text-sm font-semibold text-slate-900">{actor.count}</span>
+                  <span className="text-sm font-semibold text-[#1A1A1A]">{actor.count}</span>
                 </div>
               ))}
             </div>

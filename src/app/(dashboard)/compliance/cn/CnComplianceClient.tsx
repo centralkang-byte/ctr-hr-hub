@@ -23,25 +23,25 @@ export default function CnComplianceClient() {
     <div className="p-6 space-y-6">
       {/* Page Header */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-          <Shield className="w-5 h-5 text-blue-600" />
+        <div className="w-10 h-10 bg-[#E8F5E9] rounded-xl flex items-center justify-center">
+          <Shield className="w-5 h-5 text-[#00C853]" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">{t('cn.title')}</h1>
-          <p className="text-sm text-slate-500">{t('cn.socialInsurance')}</p>
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('cn.title')}</h1>
+          <p className="text-sm text-[#666]">{t('cn.socialInsurance')}</p>
         </div>
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex border-b border-slate-200">
+      <div className="flex border-b border-[#E8E8E8]">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             className={
               activeTab === tab.key
-                ? 'px-4 py-2.5 text-sm font-medium border-b-2 border-blue-600 text-blue-600'
-                : 'px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-700 border-b-2 border-transparent'
+                ? 'px-4 py-2.5 text-sm font-medium border-b-2 border-[#00C853] text-[#00C853]'
+                : 'px-4 py-2.5 text-sm font-medium text-[#666] hover:text-[#333] border-b-2 border-transparent'
             }
           >
             {tab.label}

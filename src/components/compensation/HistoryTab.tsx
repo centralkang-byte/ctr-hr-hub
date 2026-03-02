@@ -103,7 +103,7 @@ export default function HistoryTab() {
       key: 'changeType',
       header: '유형',
       render: (row) => (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#E8F5E9] text-[#00A844] border border-[#E8F5E9]">
           {CHANGE_TYPE_LABELS[row.changeType] ?? row.changeType}
         </span>
       ),
@@ -112,7 +112,7 @@ export default function HistoryTab() {
       key: 'previousBaseSalary',
       header: '이전 연봉',
       render: (row) => (
-        <span className="text-sm text-slate-500">{formatCurrency(row.previousBaseSalary)}</span>
+        <span className="text-sm text-[#666]">{formatCurrency(row.previousBaseSalary)}</span>
       ),
     },
     {
@@ -127,7 +127,7 @@ export default function HistoryTab() {
       header: '인상률',
       render: (row) => {
         const pct = Number(row.changePct)
-        const color = pct > 0 ? 'text-emerald-600' : pct < 0 ? 'text-red-600' : 'text-slate-500'
+        const color = pct > 0 ? 'text-[#059669]' : pct < 0 ? 'text-[#DC2626]' : 'text-[#666]'
         return (
           <span className={`text-sm font-medium ${color}`}>
             {pct > 0 ? '+' : ''}
@@ -160,8 +160,8 @@ export default function HistoryTab() {
     <div className="space-y-6">
       {/* ─── Compa-Ratio 분포 차트 ─── */}
       {chartData.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">Compa-Ratio 분포</h3>
+        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+          <h3 className="text-lg font-semibold text-[#1A1A1A] mb-4">Compa-Ratio 분포</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -174,7 +174,7 @@ export default function HistoryTab() {
                   return (
                     <div className="rounded-md border bg-white p-3 shadow-lg">
                       <p className="font-medium text-sm">{d.label}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-[#666]">
                         {d.count}명 ({d.percentage.toFixed(1)}%)
                       </p>
                     </div>
@@ -192,9 +192,9 @@ export default function HistoryTab() {
       )}
 
       {/* ─── 이력 테이블 ─── */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
-        <div className="p-4 border-b border-slate-200">
-          <h3 className="text-lg font-semibold text-slate-900">연봉 변경 이력</h3>
+      <div className="bg-white rounded-xl border border-[#E8E8E8]">
+        <div className="p-4 border-b border-[#E8E8E8]">
+          <h3 className="text-lg font-semibold text-[#1A1A1A]">연봉 변경 이력</h3>
         </div>
         <DataTable<HistoryRow>
           columns={columns}

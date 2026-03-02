@@ -28,31 +28,31 @@ export default function WorkHoursChart({
       label: '준수 (40시간 이하)',
       count: compliantCount,
       pct: compliantPct,
-      barColor: 'bg-emerald-500',
-      textColor: 'text-emerald-700',
-      bgColor: 'bg-emerald-50',
-      borderColor: 'border-emerald-200',
-      dotColor: 'bg-emerald-500',
+      barColor: 'bg-[#00C853]',
+      textColor: 'text-[#2E7D32]',
+      bgColor: 'bg-[#E8F5E9]',
+      borderColor: 'border-[#C8E6C9]',
+      dotColor: 'bg-[#00C853]',
     },
     {
       label: '주의 (40~52시간)',
       count: warningCount,
       pct: warningPct,
-      barColor: 'bg-amber-500',
-      textColor: 'text-amber-700',
-      bgColor: 'bg-amber-50',
-      borderColor: 'border-amber-200',
-      dotColor: 'bg-amber-500',
+      barColor: 'bg-[#FF9800]',
+      textColor: 'text-[#E65100]',
+      bgColor: 'bg-[#FFF3E0]',
+      borderColor: 'border-[#FFE0B2]',
+      dotColor: 'bg-[#FF9800]',
     },
     {
       label: '위반 (52시간 초과)',
       count: violationCount,
       pct: violationPct,
-      barColor: 'bg-red-500',
-      textColor: 'text-red-700',
-      bgColor: 'bg-red-50',
-      borderColor: 'border-red-200',
-      dotColor: 'bg-red-500',
+      barColor: 'bg-[#F44336]',
+      textColor: 'text-[#F44336]',
+      bgColor: 'bg-[#FFEBEE]',
+      borderColor: 'border-[#FFCDD2]',
+      dotColor: 'bg-[#F44336]',
     },
   ]
 
@@ -79,14 +79,14 @@ export default function WorkHoursChart({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className={`inline-block w-2.5 h-2.5 rounded-full ${seg.dotColor}`} />
-                <span className="text-xs text-slate-600">{seg.label}</span>
+                <span className="text-xs text-[#666]">{seg.label}</span>
               </div>
               <div className="flex items-center gap-3">
                 <span className={`text-xs font-semibold ${seg.textColor}`}>{seg.count}명</span>
-                <span className="text-xs text-slate-400 w-10 text-right">{seg.pct}%</span>
+                <span className="text-xs text-[#999] w-10 text-right">{seg.pct}%</span>
               </div>
             </div>
-            <div className="h-2 w-full rounded-full bg-slate-100">
+            <div className="h-2 w-full rounded-full bg-[#F5F5F5]">
               <div
                 className={`h-2 rounded-full ${seg.barColor} transition-all duration-500`}
                 style={{ width: `${seg.pct}%` }}
@@ -97,7 +97,7 @@ export default function WorkHoursChart({
       </div>
 
       {/* Summary chips */}
-      <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
+      <div className="flex flex-wrap gap-2 pt-2 border-t border-[#F0F0F0]">
         {segments.map((seg) => (
           <span
             key={seg.label}
@@ -107,7 +107,7 @@ export default function WorkHoursChart({
             {seg.label.split(' ')[0]}: {seg.count}명
           </span>
         ))}
-        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200">
+        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#F5F5F5] text-[#666] border border-[#E8E8E8]">
           전체: {total}명
         </span>
       </div>

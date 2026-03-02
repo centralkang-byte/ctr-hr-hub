@@ -17,10 +17,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
@@ -74,16 +71,16 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
     BAD: { emoji: '\u{1F622}', label: t('moodBadShort'), value: 1 },
   }
 
-  const SENTIMENT_BADGE: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' }> = {
-    POSITIVE: { label: t('sentimentPositive'), variant: 'default' },
-    MIXED: { label: t('sentimentMixed'), variant: 'secondary' },
-    CONCERNING: { label: t('sentimentConcerning'), variant: 'destructive' },
+  const SENTIMENT_BADGE: Record<string, { label: string; className: string }> = {
+    POSITIVE: { label: t('sentimentPositive'), className: 'bg-[#E8F5E9] text-[#2E7D32]' },
+    MIXED: { label: t('sentimentMixed'), className: 'bg-[#FFF3E0] text-[#FF9800]' },
+    CONCERNING: { label: t('sentimentConcerning'), className: 'bg-[#FFEBEE] text-[#F44336]' },
   }
 
-  const TREND_BADGE: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' }> = {
-    IMPROVING: { label: t('trendImproving'), variant: 'default' },
-    STABLE: { label: t('trendStable'), variant: 'secondary' },
-    DECLINING: { label: t('trendDeclining'), variant: 'destructive' },
+  const TREND_BADGE: Record<string, { label: string; className: string }> = {
+    IMPROVING: { label: t('trendImproving'), className: 'bg-[#E8F5E9] text-[#2E7D32]' },
+    STABLE: { label: t('trendStable'), className: 'bg-[#F5F5F5] text-[#666]' },
+    DECLINING: { label: t('trendDeclining'), className: 'bg-[#FFEBEE] text-[#F44336]' },
   }
 
   const [checkins, setCheckins] = useState<CheckinRow[]>([])
@@ -183,7 +180,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
           return (
             <button
               type="button"
-              className="text-sm font-medium text-ctr-primary hover:underline"
+              className="text-sm font-medium text-[#00C853] hover:underline"
               onClick={(e) => {
                 e.stopPropagation()
                 selectEmployee(row.employee.id, row.employee.name)
@@ -229,7 +226,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
         render: (r) => {
           const row = r as unknown as CheckinRow
           return (
-            <span className={`text-sm ${row.belonging <= 2 ? 'font-semibold text-red-600' : ''}`}>
+            <span className={`text-sm ${row.belonging <= 2 ? 'font-semibold text-[#F44336]' : ''}`}>
               {row.belonging}/5
             </span>
           )
@@ -240,7 +237,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
         header: t('submittedDate'),
         render: (r) => {
           const row = r as unknown as CheckinRow
-          return <span className="text-sm text-muted-foreground">{formatDate(String(row.submittedAt))}</span>
+          return <span className="text-sm text-[#999]">{formatDate(String(row.submittedAt))}</span>
         },
       },
     ],
@@ -251,8 +248,8 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
   if (loading && checkins.length === 0) {
     return (
       <div className="space-y-6 p-6">
-        <Skeleton className="h-10 w-64" />
-        <Skeleton className="h-60 w-full" />
+        <div className="h-10 w-64 bg-[#F5F5F5] rounded animate-pulse" />
+        <div className="h-60 w-full bg-[#F5F5F5] rounded-xl animate-pulse" />
       </div>
     )
   }
@@ -267,9 +264,9 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
       {/* ─── Employee selector ─── */}
       {uniqueEmployees.length > 0 && (
         <div className="flex items-center gap-3">
-          <label className="text-sm font-medium text-foreground">{t('selectEmployee')}</label>
+          <label className="text-sm font-medium text-[#1A1A1A]">{t('selectEmployee')}</label>
           <select
-            className="rounded-md border px-3 py-2 text-sm"
+            className="rounded-lg border border-[#E0E0E0] px-3 py-2 text-sm focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
             value={selectedEmployeeId ?? ''}
             onChange={(e) => {
               const emp = uniqueEmployees.find((u) => u.id === e.target.value)
@@ -301,27 +298,25 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
       {/* ─── Employee Detail Section ─── */}
       {selectedEmployeeId && (
         <div className="space-y-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-3">
-              <CardTitle className="text-base">
+          <div className="bg-white rounded-xl border border-[#E8E8E8] p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em]">
                 {selectedEmployeeName} - {t('checkinTrend')}
-              </CardTitle>
-              <Button
-                variant="outline"
-                size="sm"
+              </h3>
+              <button
                 onClick={requestAiSummary}
                 disabled={loadingAi || employeeCheckins.length === 0}
-                className="gap-2"
+                className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg border border-[#E0E0E0] text-[#666] hover:bg-[#F5F5F5] disabled:opacity-50 transition-colors"
               >
                 <Sparkles className="h-4 w-4" />
                 {loadingAi ? t('aiAnalyzing') : t('aiSummary')}
-              </Button>
-            </CardHeader>
-            <CardContent>
+              </button>
+            </div>
+            <div>
               {loadingDetail ? (
-                <Skeleton className="h-64 w-full" />
+                <div className="h-64 w-full bg-[#F5F5F5] rounded-xl animate-pulse" />
               ) : chartData.length === 0 ? (
-                <p className="py-8 text-center text-sm text-muted-foreground">{t('noCheckinData')}</p>
+                <p className="py-8 text-center text-sm text-[#999]">{t('noCheckinData')}</p>
               ) : (
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={chartData}>
@@ -355,69 +350,69 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
                     <Line
                       type="monotone"
                       dataKey="mood"
-                      stroke="#003876"
+                      stroke="#00C853"
                       strokeWidth={2}
                       dot={{ r: 4 }}
                     />
                     <Line
                       type="monotone"
                       dataKey="energy"
-                      stroke="#0068B7"
+                      stroke="#FF9800"
                       strokeWidth={2}
                       dot={{ r: 4 }}
                     />
                     <Line
                       type="monotone"
                       dataKey="belonging"
-                      stroke="#10B981"
+                      stroke="#2196F3"
                       strokeWidth={2}
                       dot={{ r: 4 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* ─── AI Summary ─── */}
           {aiSummary && (
-            <Card className="border-ctr-secondary/30">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Sparkles className="h-4 w-4 text-ctr-secondary" />
+            <div className="bg-white rounded-xl border border-[#E8E8E8] p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles className="h-4 w-4 text-[#FF9800]" />
+                <h3 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em]">
                   {t('aiAnalysisSummary')}
-                  <Badge variant="outline" className="ml-2 text-xs">
-                    AI Generated
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+                </h3>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-semibold bg-[#F5F5F5] text-[#666] ml-2">
+                  AI Generated
+                </span>
+              </div>
+              <div className="space-y-4">
                 <div className="flex gap-3">
                   <div>
-                    <span className="text-xs text-muted-foreground">{t('overallSentiment')}</span>
+                    <span className="text-xs text-[#999]">{t('overallSentiment')}</span>
                     <div className="mt-1">
-                      <Badge variant={SENTIMENT_BADGE[aiSummary.overall_sentiment]?.variant ?? 'secondary'}>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${SENTIMENT_BADGE[aiSummary.overall_sentiment]?.className ?? 'bg-[#F5F5F5] text-[#666]'}`}>
                         {SENTIMENT_BADGE[aiSummary.overall_sentiment]?.label ?? aiSummary.overall_sentiment}
-                      </Badge>
+                      </span>
                     </div>
                   </div>
                   <div>
-                    <span className="text-xs text-muted-foreground">{t('trendLabel')}</span>
+                    <span className="text-xs text-[#999]">{t('trendLabel')}</span>
                     <div className="mt-1">
-                      <Badge variant={TREND_BADGE[aiSummary.trend]?.variant ?? 'secondary'}>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${TREND_BADGE[aiSummary.trend]?.className ?? 'bg-[#F5F5F5] text-[#666]'}`}>
                         {TREND_BADGE[aiSummary.trend]?.label ?? aiSummary.trend}
-                      </Badge>
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 {aiSummary.key_observations.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-foreground mb-1">{t('keyObservations')}</h4>
-                    <ul className="space-y-1 text-sm text-muted-foreground">
+                    <h4 className="text-sm font-medium text-[#1A1A1A] mb-1">{t('keyObservations')}</h4>
+                    <ul className="space-y-1 text-sm text-[#666]">
                       {aiSummary.key_observations.map((obs, i) => (
                         <li key={i} className="flex items-start gap-2">
-                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-ctr-primary" />
+                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#00C853]" />
                           {obs}
                         </li>
                       ))}
@@ -427,19 +422,19 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
 
                 {aiSummary.recommended_actions.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-foreground mb-1">{t('recommendedActions')}</h4>
-                    <ul className="space-y-1 text-sm text-muted-foreground">
+                    <h4 className="text-sm font-medium text-[#1A1A1A] mb-1">{t('recommendedActions')}</h4>
+                    <ul className="space-y-1 text-sm text-[#666]">
                       {aiSummary.recommended_actions.map((action, i) => (
                         <li key={i} className="flex items-start gap-2">
-                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-ctr-accent" />
+                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F44336]" />
                           {action}
                         </li>
                       ))}
                     </ul>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
         </div>
       )}

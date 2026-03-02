@@ -204,7 +204,7 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
                 MBO 목표 설정 마감 (D-3)
               </li>
               <li className="flex items-center gap-2 text-sm text-ctr-gray-700">
-                <span className="h-2 w-2 rounded-full bg-yellow-500" />
+                <span className="h-2 w-2 rounded-full bg-[#EAB308]" />
                 필수 교육 수강
               </li>
               <li className="flex items-center gap-2 text-sm text-ctr-gray-500 line-through">

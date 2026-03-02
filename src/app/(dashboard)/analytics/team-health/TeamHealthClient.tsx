@@ -62,7 +62,7 @@ export default function TeamHealthClient() {
     return (
       <AnalyticsPageLayout title={t('title')}>
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-[#999]" />
         </div>
       </AnalyticsPageLayout>
     )
@@ -92,7 +92,7 @@ export default function TeamHealthClient() {
                 <PolarGrid />
                 <PolarAngleAxis dataKey="metric" tick={{ fontSize: 12 }} />
                 <PolarRadiusAxis domain={[0, 100]} />
-                <Radar dataKey="value" stroke="#2563EB" fill="#2563EB" fillOpacity={0.3} />
+                <Radar dataKey="value" stroke="#00C853" fill="#00C853" fillOpacity={0.3} />
               </RadarChart>
             </ResponsiveContainer>
           ) : (
@@ -123,30 +123,30 @@ export default function TeamHealthClient() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50">
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">{t('department')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('headcount')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('performanceScore')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('late4w')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('overtime4w')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('unusedLeave')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('oneOnOneCoverageCol')}</th>
+                  <tr className="border-b border-[#F5F5F5] bg-[#FAFAFA]">
+                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#666]">{t('department')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('headcount')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('performanceScore')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('late4w')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('overtime4w')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('unusedLeave')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('oneOnOneCoverageCol')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.teams.map((tm) => (
                     <tr
                       key={tm.department_id}
-                      className={`cursor-pointer border-b border-slate-100 hover:bg-slate-50 ${selectedTeam?.department_id === tm.department_id ? 'bg-blue-50' : ''}`}
+                      className={`cursor-pointer border-b border-[#F5F5F5] hover:bg-[#FAFAFA] ${selectedTeam?.department_id === tm.department_id ? 'bg-[#E8F5E9]' : ''}`}
                       onClick={() => setSelectedTeam(tm)}
                     >
-                      <td className="px-4 py-3 font-medium text-slate-700">{tm.department_name}</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{tm.team_size}</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{tm.avg_performance_score ?? '-'}</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{tm.avg_late_count_4w ?? '-'}</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{tm.avg_overtime_hours_4w ?? '-'}{t('hSuffix')}</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{tm.avg_unused_leave_days ?? '-'}{t('daySuffix')}</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{tm.one_on_one_coverage_pct ?? 0}%</td>
+                      <td className="px-4 py-3 font-medium text-[#333]">{tm.department_name}</td>
+                      <td className="px-4 py-3 text-center text-[#555]">{tm.team_size}</td>
+                      <td className="px-4 py-3 text-center text-[#555]">{tm.avg_performance_score ?? '-'}</td>
+                      <td className="px-4 py-3 text-center text-[#555]">{tm.avg_late_count_4w ?? '-'}</td>
+                      <td className="px-4 py-3 text-center text-[#555]">{tm.avg_overtime_hours_4w ?? '-'}{t('hSuffix')}</td>
+                      <td className="px-4 py-3 text-center text-[#555]">{tm.avg_unused_leave_days ?? '-'}{t('daySuffix')}</td>
+                      <td className="px-4 py-3 text-center text-[#555]">{tm.one_on_one_coverage_pct ?? 0}%</td>
                     </tr>
                   ))}
                 </tbody>
@@ -163,33 +163,33 @@ export default function TeamHealthClient() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50">
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">{t('employeeName')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">{t('departmentCol')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('level')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('highIntensityWeeks')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('unusedLeaveCol')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('daysSinceOneOnOne')}</th>
+                  <tr className="border-b border-[#F5F5F5] bg-[#FAFAFA]">
+                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#666]">{t('employeeName')}</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#666]">{t('departmentCol')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('level')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('highIntensityWeeks')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('unusedLeaveCol')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('daysSinceOneOnOne')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.burnoutList.map((b) => (
-                    <tr key={b.employee_id} className="border-b border-slate-100 hover:bg-slate-50">
-                      <td className="px-4 py-3 font-medium text-slate-700">{b.name}</td>
-                      <td className="px-4 py-3 text-slate-600">{b.department}</td>
+                    <tr key={b.employee_id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                      <td className="px-4 py-3 font-medium text-[#333]">{b.name}</td>
+                      <td className="px-4 py-3 text-[#555]">{b.department}</td>
                       <td className="px-4 py-3 text-center">
                         <BurnoutBadge isCritical={b.is_burnout_critical} />
                       </td>
-                      <td className="px-4 py-3 text-center text-slate-600">{b.consecutive_high_weeks}{t('weekSuffix')}</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{b.unused_days}{t('daySuffix')}</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{b.days_since_last_one_on_one}{t('daySuffix')}</td>
+                      <td className="px-4 py-3 text-center text-[#555]">{b.consecutive_high_weeks}{t('weekSuffix')}</td>
+                      <td className="px-4 py-3 text-center text-[#555]">{b.unused_days}{t('daySuffix')}</td>
+                      <td className="px-4 py-3 text-center text-[#555]">{b.days_since_last_one_on_one}{t('daySuffix')}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           ) : (
-            <div className="py-8 text-center text-sm text-emerald-600">
+            <div className="py-8 text-center text-sm text-[#059669]">
               {t('noBurnoutRisk')}
             </div>
           )}

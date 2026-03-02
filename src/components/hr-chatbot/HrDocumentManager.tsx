@@ -147,7 +147,7 @@ export function HrDocumentManager({ user }: HrDocumentManagerProps) {
                   type="text"
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
                   placeholder="문서 제목"
                 />
               </div>
@@ -159,7 +159,7 @@ export function HrDocumentManager({ user }: HrDocumentManagerProps) {
                   <select
                     value={formDocType}
                     onChange={(e) => setFormDocType(e.target.value)}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
                   >
                     {Object.entries(DOC_TYPE_LABELS).map(([key, label]) => (
                       <option key={key} value={key}>
@@ -176,7 +176,7 @@ export function HrDocumentManager({ user }: HrDocumentManagerProps) {
                     type="text"
                     value={formVersion}
                     onChange={(e) => setFormVersion(e.target.value)}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
                   />
                 </div>
               </div>
@@ -188,7 +188,7 @@ export function HrDocumentManager({ user }: HrDocumentManagerProps) {
                   value={formContent}
                   onChange={(e) => setFormContent(e.target.value)}
                   rows={10}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
                   placeholder="문서 내용을 입력하세요..."
                 />
               </div>
@@ -264,7 +264,7 @@ export function HrDocumentManager({ user }: HrDocumentManagerProps) {
         <div className="overflow-hidden rounded-xl border">
           <table className="w-full">
             <thead>
-              <tr className="bg-slate-50">
+              <tr className="bg-[#FAFAFA]">
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-ctr-gray-500">
                   제목
                 </th>
@@ -290,7 +290,7 @@ export function HrDocumentManager({ user }: HrDocumentManagerProps) {
               {documents.map((doc) => (
                 <tr
                   key={doc.id}
-                  className="border-b border-slate-100 hover:bg-slate-50"
+                  className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]"
                 >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
@@ -317,7 +317,7 @@ export function HrDocumentManager({ user }: HrDocumentManagerProps) {
                       variant={doc.isActive ? 'default' : 'secondary'}
                       className={
                         doc.isActive
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                          ? 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]'
                           : ''
                       }
                     >
@@ -328,7 +328,7 @@ export function HrDocumentManager({ user }: HrDocumentManagerProps) {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0 text-red-500 hover:bg-red-50"
+                      className="h-8 w-8 p-0 text-[#EF4444] hover:bg-[#FEE2E2]"
                       onClick={() => setDeleteId(doc.id)}
                     >
                       <Trash2 className="h-4 w-4" />

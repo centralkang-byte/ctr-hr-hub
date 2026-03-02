@@ -20,7 +20,13 @@ export const GET = withPermission(
           select: {
             id: true,
             name: true,
-            jobCategory: { select: { name: true } },
+            assignments: {
+              where: { isPrimary: true, endDate: null },
+              take: 1,
+              select: {
+                jobCategory: { select: { name: true } },
+              },
+            },
           },
         },
         template: { select: { id: true, name: true } },

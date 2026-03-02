@@ -28,12 +28,14 @@ export const GET = withPermission(
               in: ['IN_PROGRESS', 'COMPLETED'] as OnboardingProgressStatus[],
             },
           }),
-      employee: { ...(companyId ? { companyId } : {}) },
+      employee: companyId
+        ? { assignments: { some: { companyId, isPrimary: true, endDate: null } } }
+        : {},
     }
 
     const include = {
       employee: {
-        select: { id: true, name: true, hireDate: true, companyId: true },
+        select: { id: true, name: true, hireDate: true },
       },
       buddy: { select: { id: true, name: true } },
       template: { select: { id: true, name: true } },

@@ -70,18 +70,18 @@ function DeptFlowNode({ data }: NodeProps) {
   return (
     <div
       className={`
-        w-[200px] min-h-[76px] rounded-lg border-2 bg-white cursor-pointer
-        flex flex-col items-center justify-center px-3 py-2 shadow-sm
-        transition-colors hover:border-ctr-primary hover:shadow-md
-        ${dept.isActive ? 'border-ctr-gray-300' : 'border-ctr-gray-200 opacity-60'}
+        w-[200px] min-h-[76px] rounded-xl border bg-white cursor-pointer
+        flex flex-col items-center justify-center px-3 py-3 shadow-none
+        transition-colors hover:border-ctr-primary
+        ${dept.isActive ? 'border-[#E8E8E8]' : 'border-[#E8E8E8] opacity-60'}
       `}
       onClick={() => onClick(dept)}
     >
       <Handle type="target" position={Position.Top} className="!bg-ctr-primary" />
-      <p className="text-sm font-semibold text-ctr-gray-900 text-center line-clamp-2">
+      <p className="text-sm font-bold text-[#1A1A1A] text-center line-clamp-2">
         {dept.name}
       </p>
-      <p className="text-xs text-ctr-gray-500 mt-1">{tOrg('headcountUnit', { count: dept.employeeCount })}</p>
+      <p className="text-xs text-[#999] mt-1">{tOrg('headcountUnit', { count: dept.employeeCount })}</p>
       <Handle type="source" position={Position.Bottom} className="!bg-ctr-primary" />
     </div>
   )
@@ -144,7 +144,7 @@ function buildFlowElements(
       source: dept.parentId!,
       target: dept.id,
       type: 'smoothstep',
-      style: { stroke: '#94a3b8', strokeWidth: 1.5 },
+      style: { stroke: '#E8E8E8', strokeWidth: 1.5 },
     }))
 
   return { nodes, edges }
@@ -179,9 +179,9 @@ function FlowCanvas({ initNodes, initEdges }: FlowCanvasProps) {
       fitViewOptions={{ padding: 0.15 }}
       minZoom={0.2}
       maxZoom={2}
-      className="bg-ctr-gray-50"
+      className="bg-[#FAFAFA]"
     >
-      <Background color="#e2e8f0" gap={20} />
+      <Background color="#E8E8E8" gap={20} />
       <Controls />
     </ReactFlow>
   )
@@ -216,9 +216,9 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
   if (!dept) return null
 
   return (
-    <div className="absolute top-0 right-0 h-full w-80 bg-white border-l border-ctr-gray-200 shadow-lg z-10 flex flex-col overflow-hidden">
+    <div className="absolute top-0 right-0 h-full w-80 bg-white border-l border-[#E8E8E8] shadow-lg z-10 flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-ctr-gray-200 bg-ctr-primary text-white shrink-0">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#E8E8E8] bg-ctr-primary text-white shrink-0">
         <h3 className="font-semibold text-sm truncate">{dept.name}</h3>
         <button
           onClick={onClose}
@@ -232,10 +232,10 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {/* Dept Info */}
         <div className="space-y-2">
-          <h4 className="text-xs font-semibold text-ctr-gray-500 uppercase tracking-wide">
+          <h4 className="text-xs font-semibold text-[#999]">
             {t('deptInfo')}
           </h4>
-          <div className="bg-ctr-gray-50 rounded-lg p-3 space-y-1.5 text-sm">
+          <div className="bg-[#FAFAFA] rounded-lg p-3 space-y-1.5 text-sm">
             <InfoRow label={t('code')} value={dept.code} />
             <InfoRow label={t('level')} value={String(dept.level)} />
             <InfoRow label={t('status')} value={dept.isActive ? tc('active') : tc('inactive')} />
@@ -247,17 +247,17 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
         {/* Sub-departments */}
         {dept.children.length > 0 && (
           <div className="space-y-2">
-            <h4 className="text-xs font-semibold text-ctr-gray-500 uppercase tracking-wide">
+            <h4 className="text-xs font-semibold text-[#999]">
               {t('subDepartments')} ({dept.children.length})
             </h4>
             <ul className="space-y-1">
               {dept.children.map((child) => (
                 <li
                   key={child.id}
-                  className="text-sm px-3 py-1.5 bg-ctr-gray-50 rounded flex justify-between"
+                  className="text-sm px-3 py-1.5 bg-[#FAFAFA] rounded flex justify-between"
                 >
-                  <span className="text-ctr-gray-900">{child.name}</span>
-                  <span className="text-ctr-gray-500 text-xs">{t('headcountUnit', { count: child.employeeCount })}</span>
+                  <span className="text-[#1A1A1A]">{child.name}</span>
+                  <span className="text-[#999] text-xs">{t('headcountUnit', { count: child.employeeCount })}</span>
                 </li>
               ))}
             </ul>
@@ -266,22 +266,22 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
 
         {/* Employees */}
         <div className="space-y-2">
-          <h4 className="text-xs font-semibold text-ctr-gray-500 uppercase tracking-wide">
+          <h4 className="text-xs font-semibold text-[#999]">
             {t('employees')}
           </h4>
           {loadingEmps ? (
-            <p className="text-xs text-ctr-gray-500 py-2">{t('loadingData')}</p>
+            <p className="text-xs text-[#999] py-2">{t('loadingData')}</p>
           ) : employees.length === 0 ? (
-            <p className="text-xs text-ctr-gray-500 py-2">{t('noEmployees')}</p>
+            <p className="text-xs text-[#999] py-2">{t('noEmployees')}</p>
           ) : (
             <ul className="space-y-1">
               {employees.map((emp) => (
                 <li
                   key={emp.id}
-                  className="text-sm px-3 py-1.5 bg-ctr-gray-50 rounded flex justify-between items-center"
+                  className="text-sm px-3 py-1.5 bg-[#FAFAFA] rounded flex justify-between items-center"
                 >
-                  <span className="text-ctr-gray-900">{emp.name}</span>
-                  <span className="text-ctr-gray-500 text-xs">
+                  <span className="text-[#1A1A1A]">{emp.name}</span>
+                  <span className="text-[#999] text-xs">
                     {emp.jobGrade?.name ?? emp.employeeNo}
                   </span>
                 </li>
@@ -297,8 +297,8 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between">
-      <span className="text-ctr-gray-500">{label}</span>
-      <span className="text-ctr-gray-900 font-medium">{value}</span>
+      <span className="text-[#999]">{label}</span>
+      <span className="text-[#1A1A1A] font-medium">{value}</span>
     </div>
   )
 }
@@ -418,8 +418,8 @@ export function OrgClient({ user, companies }: OrgClientProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Toolbar */}
-      <div className="flex items-center gap-4 px-6 py-4 border-b border-ctr-gray-200 bg-white shrink-0">
-        <h1 className="text-lg font-bold text-ctr-gray-900">{t('orgChart')}</h1>
+      <div className="flex items-center gap-4 px-6 py-4 border-b border-[#E8E8E8] bg-white shrink-0">
+        <h1 className="text-lg font-bold text-[#1A1A1A] tracking-ctr">{t('orgChart')}</h1>
 
         <div className="flex items-center gap-2 ml-auto">
           {/* Snapshot DatePicker */}
@@ -434,13 +434,13 @@ export function OrgClient({ user, companies }: OrgClientProps) {
                 setSnapshotDate('')
               }
             }}
-            className="text-sm border border-ctr-gray-300 rounded-md px-3 py-1.5 text-ctr-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-ctr-primary"
+            className="text-sm border border-[#D4D4D4] rounded-md px-3 py-1.5 text-[#1A1A1A] bg-white focus:outline-none focus:ring-2 focus:ring-ctr-primary"
             style={{ width: 160 }}
           />
           {snapshotDate && (
             <button
               onClick={() => setSnapshotDate('')}
-              className="text-sm px-3 py-1.5 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              className="text-sm px-3 py-1.5 rounded-md bg-ctr-primary text-white hover:bg-ctr-primary-dark transition-colors"
             >
               {t('current')}
             </button>
@@ -450,7 +450,7 @@ export function OrgClient({ user, companies }: OrgClientProps) {
             <select
               value={selectedCompanyId}
               onChange={(e) => setSelectedCompanyId(e.target.value)}
-              className="text-sm border border-ctr-gray-300 rounded-md px-3 py-1.5 text-ctr-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-ctr-primary"
+              className="text-sm border border-[#D4D4D4] rounded-md px-3 py-1.5 text-[#1A1A1A] bg-white focus:outline-none focus:ring-2 focus:ring-ctr-primary"
             >
               <option value={SENTINEL_ALL}>{t('allCompanies')}</option>
               {companies.map((c) => (
@@ -465,9 +465,9 @@ export function OrgClient({ user, companies }: OrgClientProps) {
 
       {/* Snapshot mode banner */}
       {snapshotDate && (
-        <div className="px-6 py-2 bg-amber-50 border-b border-amber-200 text-amber-800 text-sm flex items-center gap-2 shrink-0">
+        <div className="px-6 py-2 bg-[#FEF3C7] border-b border-[#FCD34D] text-[#92400E] text-sm flex items-center gap-2 shrink-0">
           <span className="font-medium">{t('snapshotViewing', { date: snapshotDate })}</span>
-          <span className="text-amber-600 text-xs">({t('snapshotData')})</span>
+          <span className="text-[#D97706] text-xs">({t('snapshotData')})</span>
         </div>
       )}
 
@@ -475,13 +475,13 @@ export function OrgClient({ user, companies }: OrgClientProps) {
       <div className="relative flex-1 overflow-hidden">
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/70 z-20">
-            <p className="text-sm text-ctr-gray-500">{t('loadingData')}</p>
+            <p className="text-sm text-[#999]">{t('loadingData')}</p>
           </div>
         )}
 
         {!loading && tree.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-sm text-ctr-gray-500">{t('noDepartments')}</p>
+            <p className="text-sm text-[#999]">{t('noDepartments')}</p>
           </div>
         )}
 

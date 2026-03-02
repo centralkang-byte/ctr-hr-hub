@@ -35,7 +35,7 @@ export const GET = withPermission(
 
     // Company scope: SUPER_ADMIN can filter by company_id or see all,
     // others only see their own company
-    const companyFilter =
+    const assignmentCompanyFilter =
       user.role === 'SUPER_ADMIN'
         ? company_id
           ? { companyId: company_id }
@@ -53,7 +53,9 @@ export const GET = withPermission(
 
     const where = {
       deletedAt: null,
-      ...companyFilter,
+      assignments: {
+        some: { ...assignmentCompanyFilter, isPrimary: true, endDate: null },
+      },
       ...(searchConditions.length > 0 ? { OR: searchConditions } : {}),
     }
 
@@ -68,12 +70,32 @@ export const GET = withPermission(
         employeeNo: true,
         email: true,
         photoUrl: true,
-        department: { select: { name: true } },
-        jobGrade: { select: { name: true } },
+        assignments: {
+          where: { isPrimary: true, endDate: null },
+          take: 1,
+          select: {
+            department: { select: { name: true } },
+            jobGrade: { select: { name: true } },
+          },
+        },
       },
     })
 
-    return apiSuccess(results)
+    return apiSuccess(
+      results.map((e) => {
+        const asgn = e.assignments?.[0]
+        return {
+          id: e.id,
+          name: e.name,
+          nameEn: e.nameEn,
+          employeeNo: e.employeeNo,
+          email: e.email,
+          photoUrl: e.photoUrl,
+          department: asgn?.department ?? null,
+          jobGrade: asgn?.jobGrade ?? null,
+        }
+      }),
+    )
   },
   perm(MODULE.EMPLOYEES, ACTION.VIEW),
 )

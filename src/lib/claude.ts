@@ -523,3 +523,358 @@ JSON만 응답하세요.`
     throw serviceUnavailable('AI 분석 결과 파싱에 실패했습니다.')
   }
 }
+
+// ─── Eval Comment Suggestion ────────────────────────────
+
+interface EvalCommentInput {
+  employeeName: string
+  goalSummary: string
+  goalScores: { title: string; score: number; weight: number }[]
+  competencyScores: { name: string; score: number }[]
+  evalType: 'SELF' | 'MANAGER'
+}
+
+export interface EvalCommentSuggestionResult {
+  suggested_comment: string
+  strengths: string[]
+  improvement_areas: string[]
+  development_suggestions: string[]
+}
+
+export async function suggestEvalComment(
+  input: EvalCommentInput,
+  companyId: string,
+  employeeId: string,
+): Promise<EvalCommentSuggestionResult> {
+  const goalLines = input.goalScores
+    .map((g) => `- ${g.title} (가중치 ${g.weight}%): ${g.score}/5점`)
+    .join('\n')
+  const compLines = input.competencyScores
+    .map((c) => `- ${c.name}: ${c.score}/5점`)
+    .join('\n')
+
+  const evalTypeLabel = input.evalType === 'SELF' ? '자기평가' : '매니저 평가'
+
+  const prompt = `당신은 CTR Holdings의 성과관리 전문가입니다.
+다음은 ${input.employeeName}에 대한 ${evalTypeLabel} 데이터입니다:
+
+목표 요약: ${input.goalSummary}
+
+목표별 점수:
+${goalLines}
+
+역량별 점수:
+${compLines}
+
+위 데이터를 바탕으로 ${evalTypeLabel} 종합 코멘트 초안을 작성하세요.
+아래 JSON 형식으로 응답하세요:
+{
+  "suggested_comment": "종합 평가 코멘트 (3-5문장)",
+  "strengths": ["강점 1", "강점 2"],
+  "improvement_areas": ["개선영역 1", "개선영역 2"],
+  "development_suggestions": ["육성 제안 1", "육성 제안 2"]
+}
+
+JSON만 응답하세요.`
+
+  const result = await callClaude({
+    feature: 'EVAL_COMMENT_SUGGESTION',
+    prompt,
+    systemPrompt: 'You are an HR performance management specialist for CTR Holdings. Respond in Korean with JSON only.',
+    maxTokens: 1024,
+    companyId,
+    employeeId,
+  })
+
+  try {
+    return JSON.parse(result.content) as EvalCommentSuggestionResult
+  } catch {
+    throw serviceUnavailable('AI 분석 결과 파싱에 실패했습니다.')
+  }
+}
+
+// ─── Calibration Analysis ───────────────────────────────
+
+interface CalibrationAnalysisInput {
+  sessionName: string
+  departmentName?: string
+  evaluations: {
+    employeeName: string
+    performanceScore: number
+    competencyScore: number
+    emsBlock: string
+    selfScore?: number
+    managerScore?: number
+  }[]
+  blockDistribution: Record<string, number>
+}
+
+export interface CalibrationAnalysisResult {
+  overall_assessment: string
+  distribution_analysis: string
+  outliers: { employeeName: string; reason: string; suggestion: string }[]
+  bias_indicators: string[]
+  recommendations: string[]
+}
+
+export async function calibrationAnalysis(
+  input: CalibrationAnalysisInput,
+  companyId: string,
+  employeeId: string,
+): Promise<CalibrationAnalysisResult> {
+  const evalLines = input.evaluations
+    .map(
+      (e) =>
+        `- ${e.employeeName}: 성과=${e.performanceScore.toFixed(1)}, 역량=${e.competencyScore.toFixed(1)}, 블록=${e.emsBlock}${e.selfScore != null ? `, 자기평가=${e.selfScore.toFixed(1)}` : ''}${e.managerScore != null ? `, 매니저평가=${e.managerScore.toFixed(1)}` : ''}`,
+    )
+    .join('\n')
+
+  const distLines = Object.entries(input.blockDistribution)
+    .map(([block, count]) => `- ${block}: ${count}명`)
+    .join('\n')
+
+  const prompt = `당신은 CTR Holdings의 성과 캘리브레이션 전문가입니다.
+다음은 "${input.sessionName}"${input.departmentName ? ` (${input.departmentName})` : ''} 캘리브레이션 세션 데이터입니다:
+
+평가 결과:
+${evalLines}
+
+블록 분포:
+${distLines}
+
+위 데이터를 분석하여 캘리브레이션 인사이트를 제공하세요.
+아래 JSON 형식으로 응답하세요:
+{
+  "overall_assessment": "전체 평가 분포 분석 (2-3문장)",
+  "distribution_analysis": "정규분포 대비 편향 분석 (2-3문장)",
+  "outliers": [{"employeeName": "이름", "reason": "이상값 사유", "suggestion": "조정 제안"}],
+  "bias_indicators": ["편향 지표 1", "편향 지표 2"],
+  "recommendations": ["캘리브레이션 권고 1", "캘리브레이션 권고 2"]
+}
+
+JSON만 응답하세요.`
+
+  const result = await callClaude({
+    feature: 'CALIBRATION_ANALYSIS',
+    prompt,
+    systemPrompt: 'You are a performance calibration specialist for CTR Holdings. Respond in Korean with JSON only.',
+    maxTokens: 2048,
+    companyId,
+    employeeId,
+  })
+
+  try {
+    return JSON.parse(result.content) as CalibrationAnalysisResult
+  } catch {
+    throw serviceUnavailable('AI 분석 결과 파싱에 실패했습니다.')
+  }
+}
+
+// ─── Generate One-on-One Notes ─────────────────────────
+
+export interface OneOnOneNotesInput {
+  employeeName: string
+  meetingType: string
+  previousActionItems: { item: string; status: string }[]
+  currentNotes: string
+  employeeGoals: { title: string; achievementRate: number }[]
+}
+
+export interface OneOnOneNotesResult {
+  structured_notes: string
+  follow_up_items: string[]
+  coaching_tip: string
+}
+
+export async function generateOneOnOneNotes(
+  input: OneOnOneNotesInput,
+  companyId: string,
+  employeeId: string,
+): Promise<OneOnOneNotesResult> {
+  const actionItemLines = input.previousActionItems.length > 0
+    ? input.previousActionItems.map((a) => `- ${a.item} (${a.status})`).join('\n')
+    : '- 없음'
+
+  const goalLines = input.employeeGoals.length > 0
+    ? input.employeeGoals.map((g) => `- ${g.title}: 달성률 ${g.achievementRate}%`).join('\n')
+    : '- 목표 없음'
+
+  const prompt = `당신은 CTR Holdings의 매니저 코칭 전문가입니다.
+다음은 ${input.employeeName}과의 1:1 미팅 (유형: ${input.meetingType}) 정보입니다:
+
+이전 액션 아이템:
+${actionItemLines}
+
+현재 미팅 노트:
+${input.currentNotes || '(작성된 노트 없음)'}
+
+직원 목표 진행 현황:
+${goalLines}
+
+위 정보를 바탕으로 1:1 미팅 노트를 정리하고 후속 조치를 제안하세요.
+아래 JSON 형식으로 응답하세요:
+{
+  "structured_notes": "구조화된 미팅 노트 (마크다운 형식, 주요 논의사항/결정사항/우려사항 구분)",
+  "follow_up_items": ["후속 액션 아이템 1", "후속 액션 아이템 2"],
+  "coaching_tip": "매니저를 위한 코칭 팁 (1-2문장)"
+}
+
+JSON만 응답하세요.`
+
+  const result = await callClaude({
+    feature: 'ONE_ON_ONE_NOTES',
+    prompt,
+    systemPrompt: 'You are a coaching specialist for CTR Holdings. Respond in Korean with JSON only.',
+    maxTokens: 1536,
+    companyId,
+    employeeId,
+  })
+
+  try {
+    return JSON.parse(result.content) as OneOnOneNotesResult
+  } catch {
+    throw serviceUnavailable('AI 미팅 노트 생성에 실패했습니다.')
+  }
+}
+
+// ─── Pulse Survey Analysis ──────────────────────────────
+
+export interface PulseAnalysisInput {
+  surveyTitle: string
+  questionResults: {
+    questionText: string
+    questionType: string
+    average?: number
+    distribution?: Record<string, number>
+    answers?: string[]
+    responseCount: number
+  }[]
+  totalRespondents: number
+  departmentBreakdown?: Record<string, Record<string, number>>
+}
+
+export interface PulseAnalysisResult {
+  overall_sentiment: string
+  key_insights: string[]
+  risk_areas: string[]
+  recommendations: string[]
+  department_comparison?: string
+}
+
+export async function pulseSurveyAnalysis(
+  input: PulseAnalysisInput,
+  companyId: string,
+  employeeId: string,
+): Promise<PulseAnalysisResult> {
+  const questionSummaries = input.questionResults.map((q) => {
+    if (q.questionType === 'LIKERT') {
+      return `- "${q.questionText}" → 평균: ${q.average}/5 (${q.responseCount}명 응답), 분포: ${JSON.stringify(q.distribution)}`
+    }
+    if (q.questionType === 'CHOICE') {
+      return `- "${q.questionText}" → 분포: ${JSON.stringify(q.distribution)} (${q.responseCount}명 응답)`
+    }
+    const sampleAnswers = (q.answers ?? []).slice(0, 5).join('; ')
+    return `- "${q.questionText}" → 주요 응답: ${sampleAnswers} (${q.responseCount}명 응답)`
+  }).join('\n')
+
+  const prompt = `당신은 CTR Holdings의 조직문화 분석 전문가입니다.
+다음은 펄스 서베이 "${input.surveyTitle}" 결과입니다 (총 ${input.totalRespondents}명 응답):
+
+${questionSummaries}
+
+${input.departmentBreakdown ? `부서별 LIKERT 평균:\n${JSON.stringify(input.departmentBreakdown, null, 2)}` : ''}
+
+위 결과를 분석하여 아래 JSON 형식으로 응답하세요:
+{
+  "overall_sentiment": "전체적인 조직 분위기 요약 (2-3문장)",
+  "key_insights": ["핵심 인사이트 1", "핵심 인사이트 2", "핵심 인사이트 3"],
+  "risk_areas": ["주의가 필요한 영역 1", "주의가 필요한 영역 2"],
+  "recommendations": ["개선 제안 1", "개선 제안 2", "개선 제안 3"],
+  "department_comparison": "부서간 차이 분석 (해당시)"
+}
+
+JSON만 응답하세요.`
+
+  const result = await callClaude({
+    feature: 'PULSE_ANALYSIS',
+    prompt,
+    systemPrompt: 'You are an organizational culture analyst for CTR Holdings. Respond in Korean with JSON only.',
+    maxTokens: 1536,
+    companyId,
+    employeeId,
+  })
+
+  try {
+    return JSON.parse(result.content) as PulseAnalysisResult
+  } catch {
+    throw serviceUnavailable('AI 펄스 서베이 분석에 실패했습니다.')
+  }
+}
+
+// ─── Peer Review Summary ────────────────────────────────
+
+export interface PeerReviewSummaryInput {
+  employeeName: string
+  reviewerCount: number
+  averageScore: number
+  competencyAvg: Record<string, number>
+  comments: string[]
+}
+
+export interface PeerReviewSummaryResult {
+  summary: string
+  strengths: string[]
+  development_areas: string[]
+  coaching_suggestion: string
+}
+
+export async function generatePeerReviewSummary(
+  input: PeerReviewSummaryInput,
+  companyId: string,
+  employeeId: string,
+): Promise<PeerReviewSummaryResult> {
+  const competencyLines = Object.entries(input.competencyAvg)
+    .map(([key, val]) => `- ${key}: ${val}/5`)
+    .join('\n')
+
+  const commentLines = input.comments
+    .map((c, i) => `리뷰어 ${i + 1}: "${c}"`)
+    .join('\n')
+
+  const prompt = `당신은 CTR Holdings의 360도 피드백 분석 전문가입니다.
+다음은 ${input.employeeName}의 동료 평가 결과입니다:
+
+평가자 수: ${input.reviewerCount}명
+종합 점수: ${input.averageScore}/5
+
+역량별 평균:
+${competencyLines}
+
+동료 코멘트:
+${commentLines}
+
+위 결과를 종합하여 아래 JSON 형식으로 응답하세요:
+{
+  "summary": "종합 피드백 요약 (3-4문장)",
+  "strengths": ["강점 1", "강점 2"],
+  "development_areas": ["개발 영역 1", "개발 영역 2"],
+  "coaching_suggestion": "매니저를 위한 코칭 제안 (2-3문장)"
+}
+
+JSON만 응답하세요.`
+
+  const result = await callClaude({
+    feature: 'PEER_REVIEW_SUMMARY',
+    prompt,
+    systemPrompt: 'You are a 360-degree feedback analyst for CTR Holdings. Respond in Korean with JSON only.',
+    maxTokens: 1024,
+    companyId,
+    employeeId,
+  })
+
+  try {
+    return JSON.parse(result.content) as PeerReviewSummaryResult
+  } catch {
+    throw serviceUnavailable('AI 동료 평가 요약 생성에 실패했습니다.')
+  }
+}

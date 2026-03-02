@@ -55,19 +55,19 @@ export default function ExecutiveReportClient() {
       }
     >
       {report ? (
-        <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="rounded-xl border border-[#E8E8E8] bg-white">
           {/* Report header */}
-          <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+          <div className="flex items-center justify-between border-b border-[#F5F5F5] px-6 py-4">
             <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-blue-600" />
-              <h2 className="text-lg font-semibold text-slate-900">HR Analytics Report</h2>
+              <FileText className="h-5 w-5 text-[#00C853]" />
+              <h2 className="text-lg font-semibold text-[#1A1A1A]">HR Analytics Report</h2>
             </div>
             <div className="flex items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#C7D2FE] bg-[#E0E7FF] px-2.5 py-0.5 text-xs font-medium text-[#4338CA]">
                 <Sparkles className="h-3 w-3" />
                 AI Generated
               </span>
-              <span className="flex items-center gap-1 text-xs text-slate-500">
+              <span className="flex items-center gap-1 text-xs text-[#666]">
                 <Clock className="h-3 w-3" />
                 {new Date(report.generatedAt).toLocaleString('ko-KR')}
               </span>
@@ -78,34 +78,34 @@ export default function ExecutiveReportClient() {
           <div className="prose prose-sm max-w-none px-6 py-6">
             {report.content.split('\n').map((line, i) => {
               if (line.startsWith('# ')) {
-                return <h1 key={i} className="mb-4 mt-6 text-xl font-bold text-slate-900">{line.slice(2)}</h1>
+                return <h1 key={i} className="mb-4 mt-6 text-xl font-bold text-[#1A1A1A]">{line.slice(2)}</h1>
               }
               if (line.startsWith('## ')) {
-                return <h2 key={i} className="mb-3 mt-5 text-lg font-semibold text-slate-800">{line.slice(3)}</h2>
+                return <h2 key={i} className="mb-3 mt-5 text-lg font-semibold text-[#1A1A1A]">{line.slice(3)}</h2>
               }
               if (line.startsWith('### ')) {
-                return <h3 key={i} className="mb-2 mt-4 text-base font-semibold text-slate-700">{line.slice(4)}</h3>
+                return <h3 key={i} className="mb-2 mt-4 text-base font-semibold text-[#333]">{line.slice(4)}</h3>
               }
               if (line.startsWith('- ')) {
-                return <li key={i} className="ml-4 text-sm text-slate-600">{line.slice(2)}</li>
+                return <li key={i} className="ml-4 text-sm text-[#555]">{line.slice(2)}</li>
               }
               if (line.startsWith('**') && line.endsWith('**')) {
-                return <p key={i} className="text-sm font-semibold text-slate-700">{line.slice(2, -2)}</p>
+                return <p key={i} className="text-sm font-semibold text-[#333]">{line.slice(2, -2)}</p>
               }
               if (line.trim() === '') {
                 return <br key={i} />
               }
-              return <p key={i} className="text-sm text-slate-600">{line}</p>
+              return <p key={i} className="text-sm text-[#555]">{line}</p>
             })}
           </div>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 py-20">
-          <Sparkles className="mb-4 h-12 w-12 text-slate-300" />
-          <p className="text-sm font-medium text-slate-500">
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#D4D4D4] bg-[#FAFAFA] py-20">
+          <Sparkles className="mb-4 h-12 w-12 text-[#D4D4D4]" />
+          <p className="text-sm font-medium text-[#666]">
             {t('promptMessage')}
           </p>
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-[#999]">
             {t('promptDescription')}
           </p>
         </div>

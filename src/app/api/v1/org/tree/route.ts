@@ -6,6 +6,7 @@ import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
+import { withCache, CACHE_STRATEGY } from '@/lib/cache'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 
@@ -51,7 +52,7 @@ function buildTree(flat: Omit<DeptNode, 'children'>[]): DeptNode[] {
 
 // ─── GET /api/v1/org/tree ─────────────────────────────────
 
-export const GET = withPermission(
+export const GET = withCache(withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
     const companyIdParam = req.nextUrl.searchParams.get('companyId')
     const companyFilter =
@@ -74,7 +75,7 @@ export const GET = withPermission(
         parentId: true,
         _count: {
           select: {
-            employees: { where: { deletedAt: null } },
+            assignments: { where: { endDate: null } },
           },
         },
       },
@@ -89,7 +90,7 @@ export const GET = withPermission(
       sortOrder: d.sortOrder,
       isActive: d.isActive,
       parentId: d.parentId,
-      employeeCount: d._count.employees,
+      employeeCount: (d as any)._count.assignments, // eslint-disable-line @typescript-eslint/no-explicit-any
     }))
 
     const tree = buildTree(flat)
@@ -97,4 +98,4 @@ export const GET = withPermission(
     return apiSuccess({ tree })
   },
   perm(MODULE.ORG, ACTION.VIEW),
-)
+), CACHE_STRATEGY.ORG_TREE)

@@ -24,9 +24,9 @@ type EnrollmentRow = {
 }
 
 const STATUS_BADGE: Record<string, { label: string; className: string }> = {
-  ACTIVE: { label: '활성', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  SUSPENDED: { label: '일시중지', className: 'bg-amber-50 text-amber-700 border-amber-200' },
-  EXPIRED: { label: '만료', className: 'bg-slate-50 text-slate-600 border-slate-200' },
+  ACTIVE: { label: '활성', className: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
+  SUSPENDED: { label: '일시중지', className: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]' },
+  EXPIRED: { label: '만료', className: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' },
 }
 
 // ─── Component ───────────────────────────────────────────
@@ -77,7 +77,7 @@ export default function BenefitEnrollmentsTab() {
       render: (row) => (
         <div>
           <p className="text-sm font-medium">{row.employee.name}</p>
-          <p className="text-xs text-slate-500">{row.employee.employeeNo}</p>
+          <p className="text-xs text-[#666]">{row.employee.employeeNo}</p>
         </div>
       ),
     },
@@ -124,7 +124,7 @@ export default function BenefitEnrollmentsTab() {
             <Button
               variant="ghost"
               size="sm"
-              className="text-red-500"
+              className="text-[#EF4444]"
               onClick={() => handleStatusChange(row, 'EXPIRED')}
             >
               만료처리

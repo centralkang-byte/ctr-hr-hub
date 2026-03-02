@@ -170,8 +170,8 @@ export function CustomFieldsClient({ user: _user }: { user: SessionUser }) {
       key: 'flags', header: t('attributes'),
       render: (row) => (
         <div className="flex gap-1">
-          {row.isRequired && <span className="rounded bg-red-50 px-1.5 py-0.5 text-[10px] text-red-700">{t('required')}</span>}
-          {row.isSearchable && <span className="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] text-blue-700">{t('searchable')}</span>}
+          {row.isRequired && <span className="rounded bg-[#FEE2E2] px-1.5 py-0.5 text-[10px] text-[#B91C1C]">{t('required')}</span>}
+          {row.isSearchable && <span className="rounded bg-[#E8F5E9] px-1.5 py-0.5 text-[10px] text-[#00A844]">{t('searchable')}</span>}
         </div>
       ),
     },

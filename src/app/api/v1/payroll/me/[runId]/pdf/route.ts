@@ -28,9 +28,15 @@ export const GET = withPermission(
           select: {
             name: true,
             employeeNo: true,
-            department: { select: { name: true } },
-            jobGrade: { select: { name: true } },
-            company: { select: { name: true } },
+            assignments: {
+              where: { isPrimary: true, endDate: null },
+              take: 1,
+              select: {
+                department: { select: { name: true } },
+                jobGrade: { select: { name: true } },
+                company: { select: { name: true } },
+              },
+            },
           },
         },
         run: {
@@ -48,7 +54,7 @@ export const GET = withPermission(
     if (!item) throw notFound('급여명세서를 찾을 수 없습니다.')
 
     try {
-      const pdfBuffer = await generatePayStubPdf(item)
+      const pdfBuffer = await generatePayStubPdf(item as any) // eslint-disable-line @typescript-eslint/no-explicit-any
       const uint8 = new Uint8Array(pdfBuffer)
 
       return new NextResponse(uint8, {

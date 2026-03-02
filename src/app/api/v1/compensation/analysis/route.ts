@@ -34,17 +34,29 @@ export const GET = withPermission(
       // 1. Fetch all active employees (with optional filters)
       const employees = await prisma.employee.findMany({
         where: {
-          companyId,
-          status: 'ACTIVE',
-          ...(departmentId ? { departmentId } : {}),
-          ...(jobGradeId ? { jobGradeId } : {}),
+          assignments: {
+            some: {
+              companyId,
+              status: 'ACTIVE',
+              isPrimary: true,
+              endDate: null,
+              ...(departmentId ? { departmentId } : {}),
+              ...(jobGradeId ? { jobGradeId } : {}),
+            },
+          },
         },
         select: {
           id: true,
           name: true,
-          jobGradeId: true,
-          department: { select: { name: true } },
-          jobGrade: { select: { name: true } },
+          assignments: {
+            where: { isPrimary: true, endDate: null },
+            take: 1,
+            select: {
+              jobGradeId: true,
+              department: { select: { name: true } },
+              jobGrade: { select: { name: true } },
+            },
+          },
         },
       })
 
@@ -61,6 +73,9 @@ export const GET = withPermission(
       }> = []
 
       for (const emp of employees) {
+        const assignment = emp.assignments?.[0]
+        const empJobGradeId = assignment?.jobGradeId
+
         // Latest CompensationHistory
         const latestComp = await prisma.compensationHistory.findFirst({
           where: { employeeId: emp.id, companyId },
@@ -71,11 +86,11 @@ export const GET = withPermission(
           : 0
 
         // Matching SalaryBand
-        const salaryBand = emp.jobGradeId
+        const salaryBand = empJobGradeId
           ? await prisma.salaryBand.findFirst({
               where: {
                 companyId,
-                jobGradeId: emp.jobGradeId,
+                jobGradeId: empJobGradeId,
                 deletedAt: null,
               },
               orderBy: { effectiveFrom: 'desc' },
@@ -92,8 +107,8 @@ export const GET = withPermission(
         employeeRatios.push({
           id: emp.id,
           name: emp.name,
-          department: emp.department?.name ?? null,
-          jobGrade: emp.jobGrade?.name ?? null,
+          department: (assignment as any)?.department?.name ?? null, // eslint-disable-line @typescript-eslint/no-explicit-any
+          jobGrade: (assignment as any)?.jobGrade?.name ?? null, // eslint-disable-line @typescript-eslint/no-explicit-any
           currentSalary,
           midSalary,
           compaRatio,

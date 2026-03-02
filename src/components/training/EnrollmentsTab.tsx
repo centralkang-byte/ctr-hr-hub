@@ -23,10 +23,10 @@ type EnrollmentRow = {
 }
 
 const STATUS_BADGE: Record<string, { label: string; className: string }> = {
-  ENROLLED: { label: '등록', className: 'bg-blue-50 text-blue-700 border-blue-200' },
-  IN_PROGRESS: { label: '진행중', className: 'bg-amber-50 text-amber-700 border-amber-200' },
-  ENROLLMENT_COMPLETED: { label: '완료', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  DROPPED: { label: '탈락', className: 'bg-red-50 text-red-700 border-red-200' },
+  ENROLLED: { label: '등록', className: 'bg-[#E8F5E9] text-[#00A844] border-[#E8F5E9]' },
+  IN_PROGRESS: { label: '진행중', className: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]' },
+  ENROLLMENT_COMPLETED: { label: '완료', className: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
+  DROPPED: { label: '탈락', className: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]' },
 }
 
 // ─── Component ───────────────────────────────────────────
@@ -77,7 +77,7 @@ export default function EnrollmentsTab() {
       render: (row) => (
         <div>
           <p className="text-sm font-medium">{row.employee.name}</p>
-          <p className="text-xs text-slate-500">{row.employee.employeeNo}</p>
+          <p className="text-xs text-[#666]">{row.employee.employeeNo}</p>
         </div>
       ),
     },
@@ -88,7 +88,7 @@ export default function EnrollmentsTab() {
         <div className="flex items-center gap-2">
           <span>{row.course.title}</span>
           {row.course.isMandatory && (
-            <Badge className="bg-red-50 text-red-700 border-red-200 text-[10px]">필수</Badge>
+            <Badge className="bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA] text-[10px]">필수</Badge>
           )}
         </div>
       ),
@@ -130,7 +130,7 @@ export default function EnrollmentsTab() {
             <Button
               variant="ghost"
               size="sm"
-              className="text-emerald-600"
+              className="text-[#059669]"
               onClick={() => handleStatusChange(row, 'ENROLLMENT_COMPLETED')}
             >
               완료
@@ -138,7 +138,7 @@ export default function EnrollmentsTab() {
             <Button
               variant="ghost"
               size="sm"
-              className="text-red-500"
+              className="text-[#EF4444]"
               onClick={() => handleStatusChange(row, 'DROPPED')}
             >
               탈락

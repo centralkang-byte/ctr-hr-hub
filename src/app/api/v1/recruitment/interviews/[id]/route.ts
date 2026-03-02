@@ -81,7 +81,13 @@ export const GET = withPermission(
           select: {
             id: true,
             name: true,
-            department: { select: { id: true, name: true } },
+            assignments: {
+              where: { isPrimary: true, endDate: null },
+              take: 1,
+              select: {
+                department: { select: { id: true, name: true } },
+              },
+            },
           },
         },
         interviewEvaluations: {

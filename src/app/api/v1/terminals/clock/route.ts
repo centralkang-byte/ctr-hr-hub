@@ -27,8 +27,14 @@ export async function POST(req: NextRequest) {
     const employee = await prisma.employee.findFirst({
       where: {
         employeeNo: parsed.data.employeeNo,
-        companyId: terminal.companyId,
         deletedAt: null,
+        assignments: {
+          some: {
+            companyId: terminal.companyId,
+            isPrimary: true,
+            endDate: null,
+          },
+        },
       },
     })
     if (!employee) {

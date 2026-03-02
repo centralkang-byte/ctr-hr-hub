@@ -58,18 +58,29 @@ const contractUpdateSchema = z.object({
 // ─── Helper ───────────────────────────────────────────────
 
 async function findContract(id: string, contractId: string, user: SessionUser) {
-  const companyFilter = user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }
+  const assignmentFilter =
+    user.role === 'SUPER_ADMIN'
+      ? {}
+      : { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
 
   const employee = await prisma.employee.findFirst({
-    where: { id, deletedAt: null, ...companyFilter },
-    select: { id: true, companyId: true },
+    where: { id, deletedAt: null, ...assignmentFilter },
+    select: {
+      id: true,
+      assignments: {
+        where: { isPrimary: true, endDate: null },
+        take: 1,
+        select: { companyId: true },
+      },
+    },
   })
   if (!employee) return null
 
   const contract = await db.contractHistory.findFirst({
     where: { id: contractId, employeeId: id },
   })
-  return contract ? { contract, companyId: employee.companyId } : null
+  const companyId = (employee.assignments[0]?.companyId as string | undefined) ?? ''
+  return contract ? { contract, companyId } : null
 }
 
 // ─── GET /api/v1/employees/[id]/contracts/[contractId] ────

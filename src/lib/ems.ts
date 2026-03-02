@@ -40,6 +40,19 @@ export interface BlockDefinition {
 /** 기본 임계값: [0, 2.33, 3.67, 5.01] */
 const DEFAULT_THRESHOLDS: readonly number[] = [0, 2.33, 3.67, 5.01]
 
+/** 기본 블록 정의 (DB 설정이 없을 때 사용) */
+export const DEFAULT_BLOCK_DEFINITIONS: BlockDefinition[] = [
+  { row: 1, col: 'A', label: 'Under Performer', color: '#EF4444' },
+  { row: 2, col: 'A', label: 'Inconsistent Player', color: '#F59E0B' },
+  { row: 3, col: 'A', label: 'Rough Diamond', color: '#F59E0B' },
+  { row: 1, col: 'B', label: 'Dilemma', color: '#F59E0B' },
+  { row: 2, col: 'B', label: 'Core Player', color: '#059669' },
+  { row: 3, col: 'B', label: 'High Performer', color: '#059669' },
+  { row: 1, col: 'C', label: 'Enigma', color: '#4338CA' },
+  { row: 2, col: 'C', label: 'Solid Contributor', color: '#059669' },
+  { row: 3, col: 'C', label: 'Star', color: '#00C853' },
+]
+
 /**
  * 블록 번호 매핑 테이블
  * row(성과) × col(역량) → blockNumber

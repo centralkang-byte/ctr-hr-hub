@@ -117,7 +117,7 @@ function SortableTaskItem({
         type="button"
         {...attributes}
         {...listeners}
-        className="cursor-grab touch-none text-gray-400 hover:text-gray-600"
+        className="cursor-grab touch-none text-[#999] hover:text-[#555]"
       >
         <GripVertical className="h-4 w-4" />
       </button>
@@ -125,16 +125,16 @@ function SortableTaskItem({
       <Badge className={`text-xs ${assigneeColors[task.assigneeType] ?? ''}`}>
         {assigneeLabels[task.assigneeType] ?? task.assigneeType}
       </Badge>
-      <span className="text-xs text-gray-500">D-{task.dueDaysBefore}</span>
+      <span className="text-xs text-[#666]">D-{task.dueDaysBefore}</span>
       {task.isRequired && (
-        <Badge variant="outline" className="text-xs bg-red-50 text-red-700">
+        <Badge variant="outline" className="text-xs bg-[#FEE2E2] text-[#B91C1C]">
           {requiredLabel}
         </Badge>
       )}
       <Button
         variant="ghost"
         size="sm"
-        className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+        className="h-6 w-6 p-0 text-[#EF4444] hover:text-[#B91C1C]"
         onClick={() => onDelete(task.id)}
       >
         <Trash2 className="h-3 w-3" />
@@ -157,11 +157,11 @@ export function OffboardingSettingsClient({ user }: { user: SessionUser }) {
   }
 
   const ASSIGNEE_COLORS: Record<string, string> = {
-    EMPLOYEE: 'bg-gray-100 text-gray-800',
-    MANAGER: 'bg-blue-100 text-blue-800',
+    EMPLOYEE: 'bg-[#F5F5F5] text-[#1A1A1A]',
+    MANAGER: 'bg-[#E8F5E9] text-[#00A844]',
     HR: 'bg-green-100 text-green-800',
-    IT: 'bg-purple-100 text-purple-800',
-    FINANCE: 'bg-orange-100 text-orange-800',
+    IT: 'bg-[#F3E8FF] text-[#6B21A8]',
+    FINANCE: 'bg-[#FFEDD5] text-[#9A3412]',
   }
 
   const ASSIGNEE_LABELS: Record<string, string> = {
@@ -405,7 +405,7 @@ export function OffboardingSettingsClient({ user }: { user: SessionUser }) {
         return row.isActive ? (
           <Badge className="bg-green-100 text-green-800">{t('active')}</Badge>
         ) : (
-          <Badge className="bg-gray-100 text-gray-600">{t('inactive')}</Badge>
+          <Badge className="bg-[#F5F5F5] text-[#555]">{t('inactive')}</Badge>
         )
       },
     },
@@ -429,7 +429,7 @@ export function OffboardingSettingsClient({ user }: { user: SessionUser }) {
             <Button
               variant="ghost"
               size="sm"
-              className="text-red-500 hover:text-red-700"
+              className="text-[#EF4444] hover:text-[#B91C1C]"
               onClick={(e) => {
                 e.stopPropagation()
                 void handleDelete(row)
@@ -494,7 +494,7 @@ export function OffboardingSettingsClient({ user }: { user: SessionUser }) {
                 {...checklistForm.register('name')}
               />
               {checklistForm.formState.errors.name && (
-                <p className="text-xs text-red-500">
+                <p className="text-xs text-[#EF4444]">
                   {checklistForm.formState.errors.name.message}
                 </p>
               )}
@@ -552,7 +552,7 @@ export function OffboardingSettingsClient({ user }: { user: SessionUser }) {
 
           {tasksLoading ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+              <Loader2 className="h-6 w-6 animate-spin text-[#999]" />
             </div>
           ) : (
             <div className="space-y-3">
@@ -566,7 +566,7 @@ export function OffboardingSettingsClient({ user }: { user: SessionUser }) {
                   strategy={verticalListSortingStrategy}
                 >
                   {tasks.length === 0 ? (
-                    <p className="py-4 text-center text-sm text-gray-500">
+                    <p className="py-4 text-center text-sm text-[#666]">
                       {t('noTasksInChecklist')}
                     </p>
                   ) : (
@@ -602,7 +602,7 @@ export function OffboardingSettingsClient({ user }: { user: SessionUser }) {
               ) : (
                 <form
                   onSubmit={taskForm.handleSubmit(handleAddTask)}
-                  className="space-y-3 rounded border bg-gray-50 p-3"
+                  className="space-y-3 rounded border bg-[#FAFAFA] p-3"
                 >
                   <div className="space-y-2">
                     <Label htmlFor="taskTitle">{t('taskNameLabel')}</Label>
@@ -612,7 +612,7 @@ export function OffboardingSettingsClient({ user }: { user: SessionUser }) {
                       {...taskForm.register('title')}
                     />
                     {taskForm.formState.errors.title && (
-                      <p className="text-xs text-red-500">
+                      <p className="text-xs text-[#EF4444]">
                         {taskForm.formState.errors.title.message}
                       </p>
                     )}
@@ -659,7 +659,7 @@ export function OffboardingSettingsClient({ user }: { user: SessionUser }) {
                         {...taskForm.register('dueDaysBefore', { valueAsNumber: true })}
                       />
                       {taskForm.formState.errors.dueDaysBefore && (
-                        <p className="text-xs text-red-500">
+                        <p className="text-xs text-[#EF4444]">
                           {taskForm.formState.errors.dueDaysBefore.message}
                         </p>
                       )}

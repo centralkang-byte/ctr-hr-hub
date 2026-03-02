@@ -7,13 +7,14 @@ import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiPaginated, buildPagination, apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
+import { withCache, CACHE_STRATEGY } from '@/lib/cache'
 import { MODULE, ACTION } from '@/lib/constants'
 import { badRequest, handlePrismaError } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { enumOptionSearchSchema, enumOptionCreateSchema } from '@/lib/schemas/settings'
 import type { SessionUser } from '@/types'
 
-export const GET = withPermission(
+export const GET = withCache(withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
     const params = Object.fromEntries(req.nextUrl.searchParams.entries())
     const parsed = enumOptionSearchSchema.safeParse(params)
@@ -40,7 +41,7 @@ export const GET = withPermission(
     return apiPaginated(items, buildPagination(page, limit, total))
   },
   perm(MODULE.SETTINGS, ACTION.VIEW),
-)
+), CACHE_STRATEGY.CODE_TABLES)
 
 export const POST = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {

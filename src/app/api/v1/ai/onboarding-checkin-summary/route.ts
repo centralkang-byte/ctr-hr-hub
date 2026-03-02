@@ -6,6 +6,7 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, notFound } from '@/lib/errors'
 import { onboardingCheckinSummary } from '@/lib/claude'
@@ -17,7 +18,7 @@ const ACTION = { APPROVE: 'manage' }
 
 const schema = z.object({ employeeId: z.string().uuid() })
 
-export const POST = withPermission(
+export const POST = withRateLimit(withPermission(
   async (req: NextRequest, _ctx: unknown, user: SessionUser) => {
     const body = await req.json()
     const parsed = schema.safeParse(body)
@@ -57,4 +58,4 @@ export const POST = withPermission(
     return apiSuccess({ summary, aiGenerated: true })
   },
   perm(MODULE.ONBOARDING, ACTION.APPROVE),
-)
+), RATE_LIMITS.AI)

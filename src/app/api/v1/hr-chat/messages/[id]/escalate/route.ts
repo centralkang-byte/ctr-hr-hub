@@ -31,9 +31,15 @@ export const POST = withPermission(
       // Find an HR admin employee to escalate to (via manager chain or first available)
       const hrAdmin = await prisma.employee.findFirst({
         where: {
-          companyId: user.companyId,
-          status: 'ACTIVE',
-          managerId: null, // Top-level employee, likely HR admin
+          assignments: {
+            some: {
+              companyId: user.companyId,
+              status: 'ACTIVE',
+              isPrimary: true,
+              endDate: null,
+            },
+          },
+          employeeRoles: { some: { role: { name: 'HR_ADMIN' } } },
         },
         select: { id: true },
       })

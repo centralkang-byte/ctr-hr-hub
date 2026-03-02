@@ -140,11 +140,11 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
   const { toast } = useToast()
 
   const COMPA_LEGEND = [
-    { label: 'Compa < 0.80', color: 'bg-red-500', desc: t('compaVeryLow') },
-    { label: '0.80 ~ 0.90', color: 'bg-orange-400', desc: t('compaLow') },
-    { label: '0.90 ~ 1.10', color: 'bg-emerald-500', desc: t('compaFair') },
-    { label: '1.10 ~ 1.20', color: 'bg-blue-400', desc: t('compaHigh') },
-    { label: 'Compa > 1.20', color: 'bg-purple-500', desc: t('compaVeryHigh') },
+    { label: 'Compa < 0.80', color: 'bg-[#EF4444]', desc: t('compaVeryLow') },
+    { label: '0.80 ~ 0.90', color: 'bg-[#FB923C]', desc: t('compaLow') },
+    { label: '0.90 ~ 1.10', color: 'bg-[#059669]', desc: t('compaFair') },
+    { label: '1.10 ~ 1.20', color: 'bg-[#00C853]', desc: t('compaHigh') },
+    { label: 'Compa > 1.20', color: 'bg-[#A855F7]', desc: t('compaVeryHigh') },
   ]
 
   // ─── Form ───
@@ -341,7 +341,7 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
       key: 'currency',
       header: t('currency'),
       render: (row: SalaryBandLocal) => (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#F5F5F5] text-[#333]">
           {row.currency}
         </span>
       ),
@@ -448,8 +448,8 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
       />
 
       {/* ─── Compa-Ratio Legend ─── */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-        <h3 className="text-sm font-semibold text-slate-700 mb-3">
+      <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <h3 className="text-sm font-semibold text-[#333] mb-3">
           {t('compaRatioLegend')}
         </h3>
         <div className="flex flex-wrap gap-4">
@@ -458,7 +458,7 @@ export function SalaryBandsClient({ user }: { user: SessionUser }) {
               <span
                 className={`inline-block h-3 w-3 rounded-full ${item.color}`}
               />
-              <span className="text-xs text-slate-600">
+              <span className="text-xs text-[#555]">
                 {item.label} &mdash; {item.desc}
               </span>
             </div>

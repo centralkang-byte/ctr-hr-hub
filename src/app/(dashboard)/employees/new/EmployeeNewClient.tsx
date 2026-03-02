@@ -104,7 +104,7 @@ function Field({
     <div className="space-y-1.5">
       <Label>
         {label}
-        {required && <span className="ml-0.5 text-destructive">*</span>}
+        {required && <span className="ml-0.5 text-[#F44336]">*</span>}
       </Label>
       {children}
     </div>
@@ -261,7 +261,7 @@ export function EmployeeNewClient({
   // ─── Render steps ───
 
   const renderStep1 = () => (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-2">
       <Field label={t('nameKorean')} required>
         <Input value={data.name} onChange={(e) => set('name', e.target.value)} placeholder="홍길동" />
       </Field>
@@ -302,7 +302,7 @@ export function EmployeeNewClient({
   )
 
   const renderStep2 = () => (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-2">
       <Field label={t('employeeCode')} required>
         <div className="flex gap-2">
           <Input
@@ -346,7 +346,7 @@ export function EmployeeNewClient({
   )
 
   const renderStep3 = () => (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-2">
       <Field label={t('companyEntity')} required>
         <Select
           value={data.companyId || '__NONE__'}
@@ -500,12 +500,12 @@ export function EmployeeNewClient({
     ]
 
     return (
-      <div className="rounded-lg border bg-muted/30 p-4">
-        <dl className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+      <div className="rounded-xl border border-[#E8E8E8] bg-[#FAFAFA] p-6">
+        <dl className="grid grid-cols-1 gap-x-8 gap-y-1 md:grid-cols-2">
           {rows.map(([label, value]) => (
-            <div key={label} className="flex gap-2">
-              <dt className="w-28 shrink-0 text-sm text-muted-foreground">{label}</dt>
-              <dd className="text-sm font-medium">{value}</dd>
+            <div key={label} className="py-2">
+              <p className="text-xs text-[#999] font-medium mb-1">{label}</p>
+              <p className="text-sm text-[#1A1A1A]">{value}</p>
             </div>
           ))}
         </dl>
@@ -568,8 +568,8 @@ export function EmployeeNewClient({
       </div>
 
       {/* ─── Step content ─── */}
-      <div className="rounded-lg border bg-card p-6">
-        <h2 className="mb-4 text-lg font-semibold">
+      <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
+        <h2 className="mb-5 text-base font-bold text-[#1A1A1A] tracking-ctr">
           Step {step + 1}: {STEPS[step]!.label}
         </h2>
         {step === 0 && renderStep1()}
@@ -596,7 +596,7 @@ export function EmployeeNewClient({
         </Button>
 
         {step < STEPS.length - 1 ? (
-          <Button onClick={goNext} className="bg-ctr-primary hover:bg-ctr-primary/90">
+          <Button onClick={goNext} className="bg-ctr-primary hover:bg-ctr-primary-dark text-white">
             {tc('next')}
             <ChevronRight className="ml-1 h-4 w-4" />
           </Button>
@@ -604,7 +604,7 @@ export function EmployeeNewClient({
           <Button
             onClick={handleSubmit}
             disabled={submitting}
-            className="bg-ctr-primary hover:bg-ctr-primary/90"
+            className="bg-ctr-primary hover:bg-ctr-primary-dark text-white"
           >
             {submitting ? t('creating') : t('newEmployee')}
             <Check className="ml-1 h-4 w-4" />

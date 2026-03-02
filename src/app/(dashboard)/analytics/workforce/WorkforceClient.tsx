@@ -19,7 +19,7 @@ import { ChartCard } from '@/components/analytics/ChartCard'
 import { EmptyChart } from '@/components/analytics/EmptyChart'
 import type { WorkforceData } from '@/lib/analytics/types'
 
-const COLORS = ['#2563EB', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
+const COLORS = ['#00C853', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
 
 export default function WorkforceClient() {
   const searchParams = useSearchParams()
@@ -49,7 +49,7 @@ export default function WorkforceClient() {
     return (
       <AnalyticsPageLayout title={t('title')} description={t('description')}>
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-[#999]" />
         </div>
       </AnalyticsPageLayout>
     )
@@ -75,7 +75,7 @@ export default function WorkforceClient() {
                 <XAxis type="number" />
                 <YAxis type="category" dataKey="department_name" width={90} tick={{ fontSize: 12 }} />
                 <Tooltip />
-                <Bar dataKey="headcount" fill="#2563EB" radius={[0, 4, 4, 0]} name={t('headcount')} />
+                <Bar dataKey="headcount" fill="#00C853" radius={[0, 4, 4, 0]} name={t('headcount')} />
               </BarChart>
             </ResponsiveContainer>
           ) : (

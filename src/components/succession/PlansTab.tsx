@@ -33,16 +33,16 @@ type PlanRow = {
 }
 
 const CRITICALITY_BADGE: Record<string, { label: string; className: string }> = {
-  LOW: { label: '낮음', className: 'bg-slate-50 text-slate-600 border-slate-200' },
-  MEDIUM: { label: '보통', className: 'bg-blue-50 text-blue-700 border-blue-200' },
-  HIGH: { label: '높음', className: 'bg-orange-50 text-orange-700 border-orange-200' },
-  CRITICAL: { label: '핵심', className: 'bg-red-50 text-red-700 border-red-200' },
+  LOW: { label: '낮음', className: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' },
+  MEDIUM: { label: '보통', className: 'bg-[#E8F5E9] text-[#00A844] border-[#E8F5E9]' },
+  HIGH: { label: '높음', className: 'bg-[#FFF7ED] text-[#C2410C] border-[#FED7AA]' },
+  CRITICAL: { label: '핵심', className: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]' },
 }
 
 const STATUS_BADGE: Record<string, { label: string; className: string }> = {
-  PLAN_DRAFT: { label: '초안', className: 'bg-slate-50 text-slate-600 border-slate-200' },
-  PLAN_ACTIVE: { label: '활성', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  ARCHIVED: { label: '보관', className: 'bg-amber-50 text-amber-700 border-amber-200' },
+  PLAN_DRAFT: { label: '초안', className: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' },
+  PLAN_ACTIVE: { label: '활성', className: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
+  ARCHIVED: { label: '보관', className: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]' },
 }
 
 // ─── Component ───────────────────────────────────────────
@@ -154,7 +154,7 @@ export default function PlansTab() {
       key: 'candidates',
       header: '후보 수',
       render: (row) => (
-        <span className={row._count.candidates === 0 ? 'text-red-500 font-medium' : ''}>
+        <span className={row._count.candidates === 0 ? 'text-[#EF4444] font-medium' : ''}>
           {row._count.candidates}명
         </span>
       ),
@@ -168,7 +168,7 @@ export default function PlansTab() {
             <Eye className="h-4 w-4" />
           </Button>
           <Button variant="ghost" size="sm" onClick={() => handleDelete(row)}>
-            <Trash2 className="h-4 w-4 text-red-500" />
+            <Trash2 className="h-4 w-4 text-[#EF4444]" />
           </Button>
         </div>
       ),
@@ -205,17 +205,17 @@ export default function PlansTab() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <label className="text-sm font-medium text-slate-700 mb-1 block">직책명 *</label>
+              <label className="text-sm font-medium text-[#333] mb-1 block">직책명 *</label>
               <input
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
                 value={form.positionTitle}
                 onChange={(e) => setForm((f) => ({ ...f, positionTitle: e.target.value }))}
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700 mb-1 block">중요도 *</label>
+              <label className="text-sm font-medium text-[#333] mb-1 block">중요도 *</label>
               <select
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
                 value={form.criticality}
                 onChange={(e) => setForm((f) => ({ ...f, criticality: e.target.value }))}
               >
@@ -225,9 +225,9 @@ export default function PlansTab() {
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700 mb-1 block">비고</label>
+              <label className="text-sm font-medium text-[#333] mb-1 block">비고</label>
               <textarea
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
                 rows={3}
                 value={form.notes}
                 onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}

@@ -106,30 +106,30 @@ export function ManagerInsightsHub({ user }: ManagerInsightsHubProps) {
       value: summary?.headcount ?? 0,
       icon: Users,
       color: 'text-ctr-primary',
-      bgColor: 'bg-blue-50',
+      bgColor: 'bg-[#E8F5E9]',
     },
     {
       label: '이직 위험',
       value: summary?.attritionRisk ?? 0,
       icon: AlertTriangle,
-      color: 'text-red-600',
-      bgColor: 'bg-red-50',
+      color: 'text-[#DC2626]',
+      bgColor: 'bg-[#FEE2E2]',
       suffix: '명',
     },
     {
       label: '평균 초과근무',
       value: summary?.avgOvertimeHours ?? 0,
       icon: Clock,
-      color: 'text-yellow-600',
-      bgColor: 'bg-yellow-50',
+      color: 'text-[#CA8A04]',
+      bgColor: 'bg-[#FEFCE8]',
       suffix: 'h',
     },
     {
       label: '1:1 미완료',
       value: summary?.incompleteOneOnOnes ?? 0,
       icon: MessageSquare,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50',
+      color: 'text-[#9333EA]',
+      bgColor: 'bg-[#FAF5FF]',
       suffix: '건',
     },
   ]
@@ -193,8 +193,8 @@ export function ManagerInsightsHub({ user }: ManagerInsightsHubProps) {
                 <Radar
                   name="팀"
                   dataKey="value"
-                  stroke="#2563EB"
-                  fill="#2563EB"
+                  stroke="#00C853"
+                  fill="#00C853"
                   fillOpacity={0.2}
                   strokeWidth={2}
                 />
@@ -223,20 +223,20 @@ export function ManagerInsightsHub({ user }: ManagerInsightsHubProps) {
                     key={alert.id}
                     className={`rounded-lg border p-3 ${
                       alert.severity === 'HIGH'
-                        ? 'border-red-200 bg-red-50'
+                        ? 'border-[#FECACA] bg-[#FEE2E2]'
                         : alert.severity === 'MEDIUM'
-                          ? 'border-amber-200 bg-amber-50'
-                          : 'border-slate-200 bg-slate-50'
+                          ? 'border-[#FCD34D] bg-[#FEF3C7]'
+                          : 'border-[#E8E8E8] bg-[#FAFAFA]'
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <p
                         className={`text-sm font-medium ${
                           alert.severity === 'HIGH'
-                            ? 'text-red-800'
+                            ? 'text-[#991B1B]'
                             : alert.severity === 'MEDIUM'
-                              ? 'text-amber-800'
-                              : 'text-slate-700'
+                              ? 'text-[#92400E]'
+                              : 'text-[#333]'
                         }`}
                       >
                         {alert.employeeName}
@@ -259,10 +259,10 @@ export function ManagerInsightsHub({ user }: ManagerInsightsHubProps) {
                     <p
                       className={`mt-1 text-xs ${
                         alert.severity === 'HIGH'
-                          ? 'text-red-700'
+                          ? 'text-[#B91C1C]'
                           : alert.severity === 'MEDIUM'
-                            ? 'text-amber-700'
-                            : 'text-slate-500'
+                            ? 'text-[#B45309]'
+                            : 'text-[#666]'
                       }`}
                     >
                       {alert.message}
@@ -300,7 +300,7 @@ export function ManagerInsightsHub({ user }: ManagerInsightsHubProps) {
                   <Tooltip />
                   <Bar
                     dataKey="count"
-                    fill="#2563EB"
+                    fill="#00C853"
                     radius={[4, 4, 0, 0]}
                     name="인원"
                   />
@@ -335,33 +335,33 @@ export function ManagerInsightsHub({ user }: ManagerInsightsHubProps) {
           <CardContent>
             <div className="space-y-3">
               {(summary?.incompleteOneOnOnes ?? 0) > 0 && (
-                <div className="rounded-lg border border-purple-200 bg-purple-50 p-3">
-                  <p className="text-sm font-medium text-purple-800">
+                <div className="rounded-lg border border-[#E9D5FF] bg-[#FAF5FF] p-3">
+                  <p className="text-sm font-medium text-[#6B21A8]">
                     1:1 미팅 진행 필요
                   </p>
-                  <p className="mt-1 text-xs text-purple-700">
+                  <p className="mt-1 text-xs text-[#7E22CE]">
                     이번 달 {summary?.incompleteOneOnOnes}건의 1:1 미팅이 미완료
                     상태입니다. 팀원과의 소통을 위해 일정을 확인하세요.
                   </p>
                 </div>
               )}
               {(summary?.avgOvertimeHours ?? 0) > 5 && (
-                <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
-                  <p className="text-sm font-medium text-amber-800">
+                <div className="rounded-lg border border-[#FCD34D] bg-[#FEF3C7] p-3">
+                  <p className="text-sm font-medium text-[#92400E]">
                     초과근무 관리 필요
                   </p>
-                  <p className="mt-1 text-xs text-amber-700">
+                  <p className="mt-1 text-xs text-[#B45309]">
                     팀 평균 초과근무가 {summary?.avgOvertimeHours}시간으로
                     높은 편입니다. 업무 분배를 재검토하세요.
                   </p>
                 </div>
               )}
               {(summary?.attritionRisk ?? 0) > 0 && (
-                <div className="rounded-lg border border-red-200 bg-red-50 p-3">
-                  <p className="text-sm font-medium text-red-800">
+                <div className="rounded-lg border border-[#FECACA] bg-[#FEE2E2] p-3">
+                  <p className="text-sm font-medium text-[#991B1B]">
                     이직 위험 팀원 관리
                   </p>
-                  <p className="mt-1 text-xs text-red-700">
+                  <p className="mt-1 text-xs text-[#B91C1C]">
                     {summary?.attritionRisk}명의 팀원이 이직 위험으로
                     분류되었습니다. 개별 면담을 권장합니다.
                   </p>

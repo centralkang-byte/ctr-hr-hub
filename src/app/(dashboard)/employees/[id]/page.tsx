@@ -25,22 +25,23 @@ export default async function EmployeeDetailPage({
   const companyFilter =
     user.role === ROLE.SUPER_ADMIN ? {} : { companyId: user.companyId }
 
-  const [employee, companies, departments, jobGrades, jobCategories] = await Promise.all([
+  const assignmentFilter =
+    user.role === ROLE.SUPER_ADMIN
+      ? {}
+      : { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
+
+  const [rawEmployee, companies, departments, jobGrades, jobCategories] = await Promise.all([
     prisma.employee.findFirst({
-      where: { id, deletedAt: null, ...companyFilter },
+      where: { id, deletedAt: null, ...assignmentFilter },
       include: {
-        company: { select: { id: true, name: true } },
-        department: { select: { id: true, name: true } },
-        jobGrade: { select: { id: true, name: true } },
-        jobCategory: { select: { id: true, name: true } },
-        manager: {
-          select: {
-            id: true,
-            name: true,
-            photoUrl: true,
-            employeeNo: true,
-            department: { select: { name: true } },
-            jobGrade: { select: { name: true } },
+        assignments: {
+          where: { isPrimary: true, endDate: null },
+          take: 1,
+          include: {
+            company: { select: { id: true, name: true } },
+            department: { select: { id: true, name: true } },
+            jobGrade: { select: { id: true, name: true } },
+            jobCategory: { select: { id: true, name: true } },
           },
         },
       },
@@ -66,8 +67,26 @@ export default async function EmployeeDetailPage({
     }),
   ])
 
-  if (!employee) {
+  if (!rawEmployee) {
     notFound()
+  }
+
+  // Shape the raw query result into the EmployeeDetail type expected by EmployeeDetailClient.
+  // Fields that moved to EmployeeAssignment are lifted from the primary assignment.
+  // manager is now derived from position hierarchy (A2-2); set to null for now.
+  const primaryAssignment = rawEmployee.assignments[0]
+
+  const employee = {
+    ...rawEmployee,
+    companyId: primaryAssignment?.companyId ?? '',
+    company: primaryAssignment?.company ?? null,
+    department: primaryAssignment?.department ?? null,
+    jobGrade: primaryAssignment?.jobGrade ?? null,
+    jobCategory: primaryAssignment?.jobCategory ?? null,
+    employmentType: primaryAssignment?.employmentType ?? '',
+    status: primaryAssignment?.status ?? '',
+    // TODO: Populate manager via position-based hierarchy lookup (A2-2)
+    manager: null,
   }
 
   return (

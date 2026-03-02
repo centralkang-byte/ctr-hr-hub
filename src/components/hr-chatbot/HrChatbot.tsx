@@ -321,15 +321,15 @@ export function HrChatbot() {
                           type="button"
                           onClick={() => loadSession(s.id)}
                           className={cn(
-                            'w-full rounded px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-100',
-                            s.id === currentSessionId && 'bg-blue-50 font-medium',
+                            'w-full rounded px-3 py-2 text-left text-xs text-[#333] hover:bg-[#F5F5F5]',
+                            s.id === currentSessionId && 'bg-[#E8F5E9] font-medium',
                           )}
                         >
                           {s.title ?? '대화'}
                         </button>
                       ))}
                       {sessions.length === 0 && (
-                        <p className="px-3 py-2 text-xs text-gray-500">
+                        <p className="px-3 py-2 text-xs text-[#666]">
                           대화 내역이 없습니다.
                         </p>
                       )}
@@ -385,7 +385,7 @@ export function HrChatbot() {
                         'rounded-lg px-3 py-2 text-sm',
                         msg.role === 'user'
                           ? 'bg-ctr-primary text-white'
-                          : 'bg-gray-100 text-foreground',
+                          : 'bg-[#F5F5F5] text-foreground',
                       )}
                     >
                       {msg.content}
@@ -399,7 +399,7 @@ export function HrChatbot() {
                           {msg.sources.map((src, i) => (
                             <span
                               key={i}
-                              className="inline-flex items-center gap-1 rounded bg-blue-50 px-1.5 py-0.5 text-xs text-blue-700"
+                              className="inline-flex items-center gap-1 rounded bg-[#E8F5E9] px-1.5 py-0.5 text-xs text-[#00A844]"
                             >
                               {src.title} {src.reference}
                             </span>
@@ -409,15 +409,15 @@ export function HrChatbot() {
 
                     {/* Low confidence warning */}
                     {msg.needsEscalation && !msg.escalated && (
-                      <div className="rounded bg-amber-50 px-2 py-1.5">
-                        <div className="flex items-center gap-1 text-xs text-amber-700">
+                      <div className="rounded bg-[#FEF3C7] px-2 py-1.5">
+                        <div className="flex items-center gap-1 text-xs text-[#B45309]">
                           <AlertTriangle className="h-3 w-3" />
                           정확도가 낮을 수 있습니다.
                         </div>
                         <button
                           type="button"
                           onClick={() => handleEscalate(msg.id)}
-                          className="mt-1 text-xs font-medium text-amber-800 underline hover:text-amber-900"
+                          className="mt-1 text-xs font-medium text-[#92400E] underline hover:text-[#78350F]"
                         >
                           담당자에게 문의
                         </button>
@@ -437,7 +437,7 @@ export function HrChatbot() {
                           type="button"
                           onClick={() => handleFeedback(msg.id, 'POSITIVE')}
                           className={cn(
-                            'rounded p-0.5 hover:bg-gray-200',
+                            'rounded p-0.5 hover:bg-[#E8E8E8]',
                             msg.feedback === 'POSITIVE' && 'text-green-600',
                           )}
                           aria-label="도움이 되었어요"
@@ -448,8 +448,8 @@ export function HrChatbot() {
                           type="button"
                           onClick={() => handleFeedback(msg.id, 'NEGATIVE')}
                           className={cn(
-                            'rounded p-0.5 hover:bg-gray-200',
-                            msg.feedback === 'NEGATIVE' && 'text-red-600',
+                            'rounded p-0.5 hover:bg-[#E8E8E8]',
+                            msg.feedback === 'NEGATIVE' && 'text-[#DC2626]',
                           )}
                           aria-label="도움이 안 되었어요"
                         >
@@ -459,8 +459,8 @@ export function HrChatbot() {
                     )}
                   </div>
                   {msg.role === 'user' && (
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-200">
-                      <UserCircle className="h-3.5 w-3.5 text-gray-600" />
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#E8E8E8]">
+                      <UserCircle className="h-3.5 w-3.5 text-[#555]" />
                     </div>
                   )}
                 </div>
@@ -472,8 +472,8 @@ export function HrChatbot() {
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ctr-primary text-white">
                     <MessageSquare className="h-3.5 w-3.5" />
                   </div>
-                  <div className="rounded-lg bg-gray-100 px-3 py-2">
-                    <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+                  <div className="rounded-lg bg-[#F5F5F5] px-3 py-2">
+                    <Loader2 className="h-4 w-4 animate-spin text-[#666]" />
                   </div>
                 </div>
               )}

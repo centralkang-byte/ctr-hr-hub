@@ -20,7 +20,7 @@ import { ChartCard } from '@/components/analytics/ChartCard'
 import { EmptyChart } from '@/components/analytics/EmptyChart'
 import type { TurnoverData } from '@/lib/analytics/types'
 
-const COLORS = ['#2563EB', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
+const COLORS = ['#00C853', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
 
 export default function TurnoverClient() {
   const searchParams = useSearchParams()
@@ -50,7 +50,7 @@ export default function TurnoverClient() {
     return (
       <AnalyticsPageLayout title={t('title')}>
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-[#999]" />
         </div>
       </AnalyticsPageLayout>
     )

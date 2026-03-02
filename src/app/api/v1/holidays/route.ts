@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
 import { badRequest, notFound, handlePrismaError, isAppError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
+import { withCache, CACHE_STRATEGY } from '@/lib/cache'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { holidaySearchSchema, holidayCreateSchema } from '@/lib/schemas/holiday'
@@ -11,7 +12,7 @@ import type { SessionUser } from '@/types'
 // ─── GET /api/v1/holidays ─────────────────────────────────
 // List holidays for company + year (with pagination)
 
-export const GET = withPermission(
+export const GET = withCache(withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
     const params = Object.fromEntries(req.nextUrl.searchParams.entries())
     const parsed = holidaySearchSchema.safeParse(params)
@@ -41,7 +42,7 @@ export const GET = withPermission(
     return apiPaginated(holidays, buildPagination(page, limit, total))
   },
   perm(MODULE.ATTENDANCE, ACTION.VIEW),
-)
+), CACHE_STRATEGY.CODE_TABLES)
 
 // ─── POST /api/v1/holidays ────────────────────────────────
 // Create a holiday (HR_ADMIN+)

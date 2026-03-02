@@ -1,0 +1,178 @@
+'use client'
+
+import { useState, useEffect, useCallback } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import { ArrowLeft, Send, CheckCircle2 } from 'lucide-react'
+import { apiClient } from '@/lib/api'
+
+// ─── Types ───────────────────────────────────────────────
+
+interface Question {
+  id: string
+  questionText: string
+  questionType: 'LIKERT' | 'TEXT' | 'CHOICE'
+  options: string[] | null
+  sortOrder: number
+  isRequired: boolean
+}
+
+interface SurveyDetail {
+  id: string
+  title: string
+  description: string | null
+  anonymityLevel: string
+  closeAt: string
+  questions: Question[]
+}
+
+const LIKERT_LABELS = ['매우 부정', '부정', '보통', '긍정', '매우 긍정']
+
+// ─── Component ───────────────────────────────────────────
+
+export default function PulseRespondClient() {
+  const { id } = useParams<{ id: string }>()
+  const router = useRouter()
+
+  const [survey, setSurvey] = useState<SurveyDetail | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+
+  const fetchSurvey = useCallback(async () => {
+    try {
+      const res = await apiClient.get<SurveyDetail>(`/api/v1/pulse/surveys/${id}`)
+      setSurvey(res.data)
+    } catch { /* ignore */ }
+    setLoading(false)
+  }, [id])
+
+  useEffect(() => { fetchSurvey() }, [fetchSurvey])
+
+  const setAnswer = (questionId: string, value: string) => {
+    setAnswers((prev) => ({ ...prev, [questionId]: value }))
+  }
+
+  const handleSubmit = async () => {
+    if (!survey) return
+    setSubmitting(true)
+    try {
+      const answerList = Object.entries(answers).map(([questionId, answerValue]) => ({
+        questionId,
+        answerValue,
+      }))
+      await apiClient.post(`/api/v1/pulse/surveys/${id}/respond`, { answers: answerList })
+      setSubmitted(true)
+    } catch { /* ignore */ }
+    setSubmitting(false)
+  }
+
+  if (loading) return <div className="p-6 text-center text-[#999]">로딩 중...</div>
+  if (!survey) return <div className="p-6 text-center text-[#999]">설문을 찾을 수 없습니다.</div>
+
+  if (submitted) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <CheckCircle2 className="w-16 h-16 text-[#00C853]" />
+        <h2 className="text-xl font-bold text-[#1A1A1A]">응답이 제출되었습니다</h2>
+        <p className="text-sm text-[#666]">소중한 의견 감사합니다.</p>
+        <button onClick={() => router.push('/performance/pulse')}
+          className="px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium">
+          돌아가기
+        </button>
+      </div>
+    )
+  }
+
+  const requiredIds = survey.questions.filter((q) => q.isRequired).map((q) => q.id)
+  const allRequiredAnswered = requiredIds.every((qId) => answers[qId]?.trim())
+
+  return (
+    <div className="p-6 space-y-6 max-w-3xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <button onClick={() => router.push('/performance/pulse')} className="p-1 hover:bg-[#F5F5F5] rounded-lg">
+          <ArrowLeft className="w-5 h-5 text-[#666]" />
+        </button>
+        <div>
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">{survey.title}</h1>
+          {survey.description && <p className="text-sm text-[#666] mt-1">{survey.description}</p>}
+        </div>
+      </div>
+
+      <div className="bg-[#E0E7FF] rounded-xl border border-[#C7D2FE] p-4 text-sm text-[#4338CA]">
+        {survey.anonymityLevel === 'FULL_ANONYMOUS'
+          ? '이 설문은 완전 익명으로 진행됩니다. 응답자 정보가 기록되지 않습니다.'
+          : '이 설문은 부서 단위로 익명이 보장됩니다.'}
+        <br />마감: {new Date(survey.closeAt).toLocaleDateString('ko-KR')}
+      </div>
+
+      {/* Questions */}
+      <div className="space-y-6">
+        {survey.questions.map((q, i) => (
+          <div key={q.id} className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+            <div className="flex items-start gap-2 mb-3">
+              <span className="text-xs font-medium text-[#999]">Q{i + 1}</span>
+              <div>
+                <p className="text-sm font-medium text-[#1A1A1A]">
+                  {q.questionText}
+                  {q.isRequired && <span className="text-[#EF4444] ml-1">*</span>}
+                </p>
+              </div>
+            </div>
+
+            {q.questionType === 'LIKERT' && (
+              <div className="flex gap-2 mt-3">
+                {[1, 2, 3, 4, 5].map((v) => (
+                  <button key={v} onClick={() => setAnswer(q.id, String(v))}
+                    className={`flex-1 py-3 rounded-lg border text-sm font-medium transition-colors ${
+                      answers[q.id] === String(v)
+                        ? 'bg-[#00C853] text-white border-[#00C853]'
+                        : 'bg-white text-[#555] border-[#D4D4D4] hover:bg-[#FAFAFA]'
+                    }`}>
+                    <div className="text-lg">{v}</div>
+                    <div className="text-xs mt-1 opacity-80">{LIKERT_LABELS[v - 1]}</div>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {q.questionType === 'TEXT' && (
+              <textarea
+                value={answers[q.id] ?? ''}
+                onChange={(e) => setAnswer(q.id, e.target.value)}
+                placeholder="의견을 입력하세요..."
+                rows={3}
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"
+              />
+            )}
+
+            {q.questionType === 'CHOICE' && q.options && (
+              <div className="space-y-2 mt-3">
+                {(q.options as string[]).map((opt) => (
+                  <button key={opt} onClick={() => setAnswer(q.id, opt)}
+                    className={`w-full text-left px-4 py-2.5 rounded-lg border text-sm transition-colors ${
+                      answers[q.id] === opt
+                        ? 'bg-[#E8F5E9] text-[#00A844] border-[#00C853]'
+                        : 'bg-white text-[#555] border-[#D4D4D4] hover:bg-[#FAFAFA]'
+                    }`}>
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Submit */}
+      <div className="flex justify-end">
+        <button onClick={handleSubmit} disabled={submitting || !allRequiredAnswered}
+          className="flex items-center gap-2 px-6 py-2.5 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium disabled:opacity-50">
+          <Send className="w-4 h-4" />
+          {submitting ? '제출 중...' : '응답 제출'}
+        </button>
+      </div>
+    </div>
+  )
+}

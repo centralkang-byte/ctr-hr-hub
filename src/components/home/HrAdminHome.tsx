@@ -55,7 +55,7 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
     <div className="space-y-6">
       {/* Greeting */}
       <div>
-        <h1 className="text-2xl font-bold text-ctr-gray-900">
+        <h1 className="text-2xl font-bold text-ctr-gray-800">
           안녕하세요, {user.name}님
         </h1>
         <p className="mt-1 text-sm text-ctr-gray-500">
@@ -73,11 +73,11 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-ctr-gray-500">전사 인원</p>
-                <p className="text-2xl font-bold text-ctr-gray-900">
+                <p className="text-2xl font-bold text-ctr-gray-800">
                   {summary?.totalEmployees?.toLocaleString() ?? '-'}
                 </p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-ctr-primary-light">
                 <Users className="h-5 w-5 text-ctr-primary" />
               </div>
             </div>
@@ -110,12 +110,12 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-ctr-gray-500">퇴사자</p>
-                <p className="text-2xl font-bold text-ctr-accent">
+                <p className="text-2xl font-bold text-[#EF4444]">
                   {summary?.terminations ?? '-'}
                 </p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-50">
-                <TrendingDown className="h-5 w-5 text-ctr-accent" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FEE2E2]">
+                <TrendingDown className="h-5 w-5 text-[#EF4444]" />
               </div>
             </div>
             <p className="mt-2 text-xs text-ctr-gray-500">최근 30일</p>
@@ -127,12 +127,12 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-ctr-gray-500">이직률</p>
-                <p className="text-2xl font-bold text-ctr-gray-900">
+                <p className="text-2xl font-bold text-ctr-gray-800">
                   {summary?.turnoverRate ?? '-'}%
                 </p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-50">
-                <AlertTriangle className="h-5 w-5 text-yellow-600" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FEFCE8]">
+                <AlertTriangle className="h-5 w-5 text-[#CA8A04]" />
               </div>
             </div>
             <p className="mt-2 text-xs text-ctr-gray-500">
@@ -155,9 +155,9 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
           <CardContent>
             <div className="space-y-2">
               {[
-                { stage: '서류 심사', count: 45, color: 'bg-blue-500' },
-                { stage: '1차 면접', count: 18, color: 'bg-ctr-primary' },
-                { stage: '2차 면접', count: 8, color: 'bg-purple-500' },
+                { stage: '서류 심사', count: 45, color: 'bg-ctr-primary' },
+                { stage: '1차 면접', count: 18, color: 'bg-[#00C853]' },
+                { stage: '2차 면접', count: 8, color: 'bg-[#A855F7]' },
                 { stage: '최종 합격', count: 3, color: 'bg-green-500' },
               ].map((item) => (
                 <div key={item.stage} className="flex items-center gap-2">
@@ -165,7 +165,7 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
                   <span className="flex-1 text-sm text-ctr-gray-700">
                     {item.stage}
                   </span>
-                  <span className="text-sm font-bold text-ctr-gray-900">
+                  <span className="text-sm font-bold text-ctr-gray-800">
                     {item.count}
                   </span>
                 </div>
@@ -238,14 +238,14 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-ctr-gray-500">이번 달 퇴직</span>
-                <Badge className="bg-ctr-accent text-xs">2명</Badge>
+                <Badge className="bg-ctr-primary text-white text-xs">2명</Badge>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* 승인 대기 */}
-        <Card className="border-l-4 border-l-ctr-accent">
+        <Card className="border-l-4 border-l-ctr-primary">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-ctr-gray-700">
               <CheckSquare className="mr-2 inline-block h-4 w-4" />
@@ -256,15 +256,15 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-ctr-gray-500">휴가 신청</span>
-                <Badge className="bg-ctr-accent text-xs">12건</Badge>
+                <Badge className="bg-ctr-primary text-white text-xs">12건</Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-ctr-gray-500">프로필 변경</span>
-                <Badge className="bg-ctr-accent text-xs">5건</Badge>
+                <Badge className="bg-ctr-primary text-white text-xs">5건</Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-ctr-gray-500">급여 조정</span>
-                <Badge className="bg-ctr-accent text-xs">3건</Badge>
+                <Badge className="bg-ctr-primary text-white text-xs">3건</Badge>
               </div>
             </div>
           </CardContent>
@@ -280,20 +280,20 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3">
-                <p className="text-sm font-medium text-yellow-800">
+              <div className="rounded-lg border border-[#FDE68A] bg-[#FEFCE8] p-3">
+                <p className="text-sm font-medium text-[#854D0E]">
                   SW개발팀 이직 위험도 상승
                 </p>
-                <p className="mt-1 text-xs text-yellow-700">
+                <p className="mt-1 text-xs text-[#A16207]">
                   최근 3개월간 SW개발팀의 이직 위험도가 15%p 상승했습니다.
                   동종 업계 대비 보상 수준 검토를 권장합니다.
                 </p>
               </div>
-              <div className="rounded-lg border border-blue-200 bg-blue-50 p-3">
-                <p className="text-sm font-medium text-blue-800">
+              <div className="rounded-lg border border-[#E8F5E9] bg-[#E8F5E9] p-3">
+                <p className="text-sm font-medium text-[#00A844]">
                   온보딩 완료율 개선
                 </p>
-                <p className="mt-1 text-xs text-blue-700">
+                <p className="mt-1 text-xs text-[#00A844]">
                   이번 분기 신규 입사자 온보딩 완료율이 92%로 전 분기 대비 8%p
                   향상되었습니다.
                 </p>

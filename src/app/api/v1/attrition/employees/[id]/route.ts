@@ -26,7 +26,9 @@ export const GET = withPermission(
       where: {
         id: employeeId,
         deletedAt: null,
-        ...(user.role !== 'SUPER_ADMIN' ? { companyId: user.companyId } : {}),
+        ...(user.role !== 'SUPER_ADMIN'
+          ? { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
+          : {}),
       },
       select: {
         id: true,
@@ -34,13 +36,18 @@ export const GET = withPermission(
         nameEn: true,
         email: true,
         hireDate: true,
-        status: true,
-        companyId: true,
-        jobGradeId: true,
-        jobCategoryId: true,
-        department: { select: { id: true, name: true } },
-        jobGrade: { select: { id: true, name: true } },
-        manager: { select: { id: true, name: true } },
+        assignments: {
+          where: { isPrimary: true, endDate: null },
+          take: 1,
+          select: {
+            status: true,
+            companyId: true,
+            jobGradeId: true,
+            jobCategoryId: true,
+            department: { select: { id: true, name: true } },
+            jobGrade: { select: { id: true, name: true } },
+          },
+        },
       },
     })
 
@@ -93,6 +100,9 @@ export const GET = withPermission(
     let aiAssessment = null
 
     if (includeAi && (riskLevel === 'HIGH' || riskLevel === 'CRITICAL') && latestRisk) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const a = employee.assignments?.[0] as any
+
       const factors = latestRisk.scoreFactors as Array<{
         factor: string
         value: number
@@ -114,9 +124,9 @@ export const GET = withPermission(
 
       const salaryBand = await prisma.salaryBand.findFirst({
         where: {
-          companyId: employee.companyId,
-          jobGradeId: employee.jobGradeId,
-          ...(employee.jobCategoryId ? { jobCategoryId: employee.jobCategoryId } : {}),
+          companyId: a?.companyId,
+          jobGradeId: a?.jobGradeId,
+          ...(a?.jobCategoryId ? { jobCategoryId: a.jobCategoryId } : {}),
           deletedAt: null,
         },
         orderBy: { effectiveFrom: 'desc' },
@@ -143,15 +153,15 @@ export const GET = withPermission(
         aiAssessment = await attritionRiskAssessment(
           {
             employeeName: employee.name,
-            department: employee.department?.name ?? '-',
-            grade: employee.jobGrade?.name ?? '-',
+            department: a?.department?.name ?? '-',
+            grade: a?.jobGrade?.name ?? '-',
             tenureMonths,
             factorScores,
             totalScore: score,
             compaRatio,
             emsBlock: latestEval?.emsBlock ?? null,
           },
-          employee.companyId,
+          a?.companyId ?? '',
           employeeId,
         )
       } catch {
@@ -160,9 +170,23 @@ export const GET = withPermission(
       }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const primaryAssignment = employee.assignments?.[0] as any
+
     return apiSuccess({
       employee: {
-        ...employee,
+        id: employee.id,
+        name: employee.name,
+        nameEn: employee.nameEn,
+        email: employee.email,
+        hireDate: employee.hireDate,
+        manager: null,
+        status: primaryAssignment?.status ?? null,
+        companyId: primaryAssignment?.companyId ?? null,
+        jobGradeId: primaryAssignment?.jobGradeId ?? null,
+        jobCategoryId: primaryAssignment?.jobCategoryId ?? null,
+        department: primaryAssignment?.department ?? null,
+        jobGrade: primaryAssignment?.jobGrade ?? null,
         riskScore: score,
         riskLevel,
       },

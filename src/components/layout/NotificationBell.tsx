@@ -119,7 +119,7 @@ export function NotificationBell() {
         <Button variant="ghost" size="icon" className="relative" aria-label="알림">
           <Bell className="h-5 w-5 text-ctr-gray-500" />
           {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
+            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#EF4444] text-[10px] font-medium text-white">
               {unreadCount > 99 ? '99+' : unreadCount}
             </span>
           )}
@@ -164,26 +164,26 @@ export function NotificationBell() {
                 <button
                   key={item.id}
                   type="button"
-                  className="flex w-full items-start gap-3 px-4 py-3 text-left hover:bg-slate-50 transition-colors"
+                  className="flex w-full items-start gap-3 px-4 py-3 text-left hover:bg-[#FAFAFA] transition-colors"
                   onClick={() => handleClick(item)}
                 >
                   {/* Unread dot */}
                   <div className="mt-1.5 shrink-0">
                     {!item.isRead ? (
-                      <div className="h-2 w-2 rounded-full bg-blue-500" />
+                      <div className="h-2 w-2 rounded-full bg-[#00C853]" />
                     ) : (
                       <div className="h-2 w-2" />
                     )}
                   </div>
                   {/* Content */}
                   <div className="min-w-0 flex-1">
-                    <p className={`text-sm ${!item.isRead ? 'font-semibold' : 'font-normal text-slate-700'}`}>
+                    <p className={`text-sm ${!item.isRead ? 'font-semibold' : 'font-normal text-[#333]'}`}>
                       {item.title}
                     </p>
                     <p className="mt-0.5 truncate text-xs text-muted-foreground">
                       {item.body}
                     </p>
-                    <p className="mt-1 text-[11px] text-slate-400">
+                    <p className="mt-1 text-[11px] text-[#999]">
                       {formatRelativeTime(item.createdAt)}
                     </p>
                   </div>
@@ -198,7 +198,7 @@ export function NotificationBell() {
         <div className="p-2">
           <Link
             href="/notifications"
-            className="block rounded-md px-3 py-2 text-center text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors"
+            className="block rounded-md px-3 py-2 text-center text-sm font-medium text-[#00C853] hover:bg-[#E8F5E9] transition-colors"
             onClick={() => setOpen(false)}
           >
             전체 보기

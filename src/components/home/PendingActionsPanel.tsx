@@ -46,15 +46,15 @@ interface PendingActionsPanelProps {
 // ─── Constants ──────────────────────────────────────────
 
 const PRIORITY_STYLES: Record<PendingPriority, string> = {
-  URGENT: 'bg-red-50 border-l-4 border-red-500',
-  HIGH: 'bg-amber-50 border-l-4 border-amber-500',
-  NORMAL: 'bg-white border-l-4 border-slate-200',
+  URGENT: 'bg-[#FEE2E2] border-l-4 border-[#EF4444]',
+  HIGH: 'bg-[#FEF3C7] border-l-4 border-[#F59E0B]',
+  NORMAL: 'bg-white border-l-4 border-[#E8E8E8]',
 }
 
 const PRIORITY_BADGE: Record<PendingPriority, string> = {
-  URGENT: 'bg-red-100 text-red-700 border-red-200',
-  HIGH: 'bg-amber-100 text-amber-700 border-amber-200',
-  NORMAL: 'bg-slate-100 text-slate-600 border-slate-200',
+  URGENT: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]',
+  HIGH: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]',
+  NORMAL: 'bg-[#F5F5F5] text-[#555] border-[#E8E8E8]',
 }
 
 const TYPE_ICONS: Record<string, typeof CalendarDays> = {
@@ -213,7 +213,7 @@ export function PendingActionsPanel({ user }: PendingActionsPanelProps) {
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="h-7 w-7 p-0 text-red-600 hover:bg-red-50"
+                      className="h-7 w-7 p-0 text-[#DC2626] hover:bg-[#FEE2E2]"
                       disabled={processingId === action.sourceId}
                       onClick={() =>
                         handleLeaveAction(action.sourceId, 'reject')

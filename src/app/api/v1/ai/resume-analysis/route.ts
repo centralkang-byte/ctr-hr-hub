@@ -10,6 +10,7 @@ import { badRequest, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { analyzeResume } from '@/lib/claude'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import type { SessionUser } from '@/types'
 
 // ─── Validation Schema ───────────────────────────────────
@@ -24,7 +25,7 @@ const bodySchema = z.object({
 
 // ─── POST /api/v1/ai/resume-analysis ──────────────────────
 
-export const POST = withPermission(
+export const POST = withRateLimit(withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
     const body: unknown = await req.json()
     const parsed = bodySchema.safeParse(body)
@@ -71,4 +72,4 @@ export const POST = withPermission(
     return apiSuccess(result)
   },
   perm(MODULE.RECRUITMENT, ACTION.CREATE),
-)
+), RATE_LIMITS.AI)

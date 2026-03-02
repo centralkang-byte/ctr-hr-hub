@@ -4,13 +4,14 @@
 
 import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { notFound } from '@/lib/errors'
 import { payrollAnomalySchema } from '@/lib/schemas/payroll'
 import { payrollAnomalyCheck } from '@/lib/payroll/ai-anomaly'
 
-export const POST = withPermission(
+export const POST = withRateLimit(withPermission(
   async (req, _context, user) => {
     const body = await req.json()
     const { runId } = payrollAnomalySchema.parse(body)
@@ -40,4 +41,4 @@ export const POST = withPermission(
     return apiSuccess(result)
   },
   perm(MODULE.PAYROLL, ACTION.VIEW),
-)
+), RATE_LIMITS.AI)

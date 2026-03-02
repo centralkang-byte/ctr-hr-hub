@@ -29,14 +29,26 @@ export const POST = withPermission(
         where: {
           id: employeeId,
           deletedAt: null,
-          ...(user.role !== 'SUPER_ADMIN' ? { companyId } : {}),
+          ...(user.role !== 'SUPER_ADMIN'
+            ? { assignments: { some: { companyId, isPrimary: true, endDate: null } } }
+            : {}),
         },
-        select: { id: true, companyId: true },
+        select: {
+          id: true,
+          assignments: {
+            where: { isPrimary: true, endDate: null },
+            take: 1,
+            select: { companyId: true },
+          },
+        },
       })
 
       if (!employee) {
         throw notFound('직원을 찾을 수 없습니다.')
       }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const employeeCompanyId = ((employee.assignments?.[0] as any)?.companyId as string | undefined) ?? companyId
 
       const result = await calculateAttritionRisk(employeeId)
 
@@ -44,7 +56,7 @@ export const POST = withPermission(
       await prisma.attritionRiskHistory.create({
         data: {
           employeeId,
-          companyId: employee.companyId,
+          companyId: employeeCompanyId,
           score: result.riskScore,
           ruleScore: result.riskScore,
           scoreFactors: JSON.parse(JSON.stringify(result.factors)),
@@ -63,7 +75,7 @@ export const POST = withPermission(
         action: 'attrition.recalculate',
         resourceType: 'employee',
         resourceId: employeeId,
-        companyId: employee.companyId,
+        companyId: employeeCompanyId,
         changes: {
           type: 'single',
           score: result.riskScore,

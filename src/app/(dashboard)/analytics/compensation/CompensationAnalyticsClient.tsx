@@ -51,7 +51,7 @@ export default function CompensationAnalyticsClient() {
     return (
       <AnalyticsPageLayout title={t('title')}>
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-[#999]" />
         </div>
       </AnalyticsPageLayout>
     )
@@ -148,26 +148,26 @@ export default function CompensationAnalyticsClient() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50">
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">{t('grade')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">{t('jobCategory')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('headcount')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('average')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">P25</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">{t('median')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">P75</th>
+                  <tr className="border-b border-[#F5F5F5] bg-[#FAFAFA]">
+                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#666]">{t('grade')}</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#666]">{t('jobCategory')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('headcount')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('average')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">P25</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('median')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">P75</th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.distribution.map((r, i) => (
-                    <tr key={i} className="border-b border-slate-100 hover:bg-slate-50">
-                      <td className="px-4 py-3 font-medium text-slate-700">{r.grade_name}</td>
-                      <td className="px-4 py-3 text-slate-600">{r.job_category_code}</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{r.employee_count}</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{r.avg_compa_ratio?.toFixed(3) ?? '-'}</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{r.p25?.toFixed(3) ?? '-'}</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{r.median?.toFixed(3) ?? '-'}</td>
-                      <td className="px-4 py-3 text-center text-slate-600">{r.p75?.toFixed(3) ?? '-'}</td>
+                    <tr key={i} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                      <td className="px-4 py-3 font-medium text-[#333]">{r.grade_name}</td>
+                      <td className="px-4 py-3 text-[#555]">{r.job_category_code}</td>
+                      <td className="px-4 py-3 text-center text-[#555]">{r.employee_count}</td>
+                      <td className="px-4 py-3 text-center text-[#555]">{r.avg_compa_ratio?.toFixed(3) ?? '-'}</td>
+                      <td className="px-4 py-3 text-center text-[#555]">{r.p25?.toFixed(3) ?? '-'}</td>
+                      <td className="px-4 py-3 text-center text-[#555]">{r.median?.toFixed(3) ?? '-'}</td>
+                      <td className="px-4 py-3 text-center text-[#555]">{r.p75?.toFixed(3) ?? '-'}</td>
                     </tr>
                   ))}
                 </tbody>

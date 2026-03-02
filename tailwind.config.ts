@@ -50,21 +50,36 @@ const config: Config = {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
   			},
-  			// CTR Brand Colors
-  			'ctr-primary': '#003876',
+  			// CTR Brand Colors (FLEX Design System)
+  			'ctr-primary': '#00C853',
+  			'ctr-primary-dark': '#00A844',
+  			'ctr-primary-light': '#E8F5E9',
   			'ctr-secondary': '#0068B7',
-  			'ctr-sidebar': '#D0E8F8',
-  			'ctr-sidebar-text': '#1E3A5F',
-  			'ctr-accent': '#E63312',
-  			'ctr-light': '#F5F7FA',
-  			'ctr-dark': '#1A1A1A',
+  			'ctr-accent': '#EF4444',
   			'ctr-success': '#10B981',
   			'ctr-warning': '#F59E0B',
+  			'ctr-info': '#6366F1',
+  			// Grayscale
+  			'ctr-gray': {
+  				50: '#FAFAFA',
+  				100: '#F5F5F5',
+  				200: '#E8E8E8',
+  				300: '#D4D4D4',
+  				400: '#999999',
+  				500: '#666666',
+  				600: '#555555',
+  				700: '#333333',
+  				800: '#1A1A1A',
+  				900: '#111111',
+  			},
   			brand: {
   				primary: 'var(--brand-primary)',
   				secondary: 'var(--brand-secondary)',
   				accent: 'var(--brand-accent)',
   			},
+  		},
+  		letterSpacing: {
+  			'ctr': '-0.02em',
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

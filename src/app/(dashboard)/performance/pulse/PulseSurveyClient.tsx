@@ -1,0 +1,394 @@
+'use client'
+
+import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
+import { BarChart3, Plus, Eye, Trash2, Play, Square, Calendar } from 'lucide-react'
+import { apiClient } from '@/lib/api'
+
+// ─── Types ───────────────────────────────────────────────
+
+interface Survey {
+  id: string
+  title: string
+  description: string | null
+  targetScope: string
+  anonymityLevel: string
+  openAt: string
+  closeAt: string
+  status: string
+  createdAt: string
+  creator: { id: string; name: string }
+  _count: { questions: number; responses: number }
+}
+
+interface PendingSurvey {
+  id: string
+  title: string
+  description: string | null
+  closeAt: string
+  _count: { questions: number }
+}
+
+const STATUS_MAP: Record<string, { label: string; cls: string }> = {
+  PULSE_DRAFT: { label: '초안', cls: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' },
+  PULSE_ACTIVE: { label: '진행중', cls: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
+  PULSE_CLOSED: { label: '종료', cls: 'bg-[#F5F5F5] text-[#666] border-[#E8E8E8]' },
+}
+
+const SCOPE_MAP: Record<string, string> = {
+  ALL: '전사',
+  DIVISION: '사업부',
+  DEPARTMENT: '부서',
+  TEAM: '팀',
+}
+
+// ─── Create Modal ────────────────────────────────────────
+
+interface CreateModalProps {
+  onClose: () => void
+  onCreated: () => void
+}
+
+interface QuestionInput {
+  questionText: string
+  questionType: 'LIKERT' | 'TEXT' | 'CHOICE'
+  options: string[]
+  isRequired: boolean
+}
+
+function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [targetScope, setTargetScope] = useState<string>('ALL')
+  const [anonymityLevel, setAnonymityLevel] = useState<string>('FULL_ANONYMOUS')
+  const [openAt, setOpenAt] = useState('')
+  const [closeAt, setCloseAt] = useState('')
+  const [questions, setQuestions] = useState<QuestionInput[]>([
+    { questionText: '', questionType: 'LIKERT', options: [], isRequired: true },
+  ])
+  const [saving, setSaving] = useState(false)
+
+  const addQuestion = () => {
+    setQuestions([...questions, { questionText: '', questionType: 'LIKERT', options: [], isRequired: true }])
+  }
+
+  const updateQuestion = (idx: number, field: keyof QuestionInput, value: unknown) => {
+    const updated = [...questions]
+    updated[idx] = { ...updated[idx], [field]: value }
+    setQuestions(updated)
+  }
+
+  const removeQuestion = (idx: number) => {
+    if (questions.length <= 1) return
+    setQuestions(questions.filter((_, i) => i !== idx))
+  }
+
+  const handleSubmit = async () => {
+    if (!title || !openAt || !closeAt || questions.some((q) => !q.questionText)) return
+    setSaving(true)
+    try {
+      await apiClient.post('/api/v1/pulse/surveys', {
+        title,
+        description: description || undefined,
+        targetScope,
+        anonymityLevel,
+        minRespondentsForReport: 5,
+        openAt: new Date(openAt).toISOString(),
+        closeAt: new Date(closeAt).toISOString(),
+        questions: questions.map((q, i) => ({
+          questionText: q.questionText,
+          questionType: q.questionType,
+          options: q.questionType === 'CHOICE' ? q.options : undefined,
+          sortOrder: i,
+          isRequired: q.isRequired,
+        })),
+      })
+      onCreated()
+    } catch { /* ignore */ }
+    setSaving(false)
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b border-[#E8E8E8]">
+          <h2 className="text-lg font-semibold text-[#1A1A1A]">새 펄스 서베이</h2>
+        </div>
+        <div className="p-6 space-y-4">
+          <div>
+            <label className="text-sm font-medium text-[#333] mb-1 block">제목</label>
+            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="서베이 제목"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]" />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-[#333] mb-1 block">설명 (선택)</label>
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2}
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium text-[#333] mb-1 block">대상 범위</label>
+              <select value={targetScope} onChange={(e) => setTargetScope(e.target.value)}
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm">
+                <option value="ALL">전사</option>
+                <option value="DIVISION">사업부</option>
+                <option value="DEPARTMENT">부서</option>
+                <option value="TEAM">팀</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-[#333] mb-1 block">익명 수준</label>
+              <select value={anonymityLevel} onChange={(e) => setAnonymityLevel(e.target.value)}
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm">
+                <option value="FULL_ANONYMOUS">완전 익명</option>
+                <option value="FULL_DIVISION">부서 공개</option>
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium text-[#333] mb-1 block">시작일</label>
+              <input type="datetime-local" value={openAt} onChange={(e) => setOpenAt(e.target.value)}
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm" />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-[#333] mb-1 block">종료일</label>
+              <input type="datetime-local" value={closeAt} onChange={(e) => setCloseAt(e.target.value)}
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm" />
+            </div>
+          </div>
+
+          {/* Questions */}
+          <div className="border-t border-[#E8E8E8] pt-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold text-[#1A1A1A]">질문 구성</h3>
+              <button onClick={addQuestion} className="flex items-center gap-1 text-sm text-[#00C853] hover:text-[#00A844] font-medium">
+                <Plus className="w-4 h-4" /> 질문 추가
+              </button>
+            </div>
+            <div className="space-y-3">
+              {questions.map((q, i) => (
+                <div key={i} className="bg-[#FAFAFA] rounded-lg p-3 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-[#999] font-medium">Q{i + 1}</span>
+                    <input value={q.questionText} onChange={(e) => updateQuestion(i, 'questionText', e.target.value)}
+                      placeholder="질문 내용" className="flex-1 px-3 py-1.5 border border-[#D4D4D4] rounded-lg text-sm placeholder:text-[#999]" />
+                    <select value={q.questionType} onChange={(e) => updateQuestion(i, 'questionType', e.target.value)}
+                      className="px-2 py-1.5 border border-[#D4D4D4] rounded-lg text-xs">
+                      <option value="LIKERT">리커트 (1-5)</option>
+                      <option value="TEXT">주관식</option>
+                      <option value="CHOICE">객관식</option>
+                    </select>
+                    {questions.length > 1 && (
+                      <button onClick={() => removeQuestion(i)} className="p-1 text-[#999] hover:text-[#EF4444]">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                  {q.questionType === 'CHOICE' && (
+                    <div className="pl-8">
+                      <input
+                        value={q.options.join(', ')}
+                        onChange={(e) => updateQuestion(i, 'options', e.target.value.split(',').map((s) => s.trim()).filter(Boolean))}
+                        placeholder="보기를 쉼표로 구분 (예: 매우 만족, 만족, 보통, 불만족)"
+                        className="w-full px-3 py-1.5 border border-[#D4D4D4] rounded-lg text-xs placeholder:text-[#999]"
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="p-6 border-t border-[#E8E8E8] flex justify-end gap-3">
+          <button onClick={onClose} className="px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#333] hover:bg-[#FAFAFA]">취소</button>
+          <button onClick={handleSubmit} disabled={saving} className="px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium disabled:opacity-50">
+            {saving ? '생성 중...' : '생성'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Component ───────────────────────────────────────────
+
+export default function PulseSurveyClient() {
+  const router = useRouter()
+  const [surveys, setSurveys] = useState<Survey[]>([])
+  const [pending, setPending] = useState<PendingSurvey[]>([])
+  const [loading, setLoading] = useState(true)
+  const [tab, setTab] = useState<'manage' | 'respond'>('manage')
+  const [showCreate, setShowCreate] = useState(false)
+  const [statusFilter, setStatusFilter] = useState<string>('')
+
+  const fetchAll = useCallback(async () => {
+    setLoading(true)
+    try {
+      const [surveyRes, pendingRes] = await Promise.all([
+        apiClient.get<{ items: Survey[] }>(`/api/v1/pulse/surveys?size=50${statusFilter ? `&status=${statusFilter}` : ''}`),
+        apiClient.get<PendingSurvey[]>('/api/v1/pulse/my-pending'),
+      ])
+      setSurveys(surveyRes.data.items ?? [])
+      setPending(pendingRes.data ?? [])
+    } catch { /* ignore */ }
+    setLoading(false)
+  }, [statusFilter])
+
+  useEffect(() => { fetchAll() }, [fetchAll])
+
+  const handleStatusChange = async (id: string, newStatus: string) => {
+    try {
+      await apiClient.put(`/api/v1/pulse/surveys/${id}`, { status: newStatus })
+      fetchAll()
+    } catch { /* ignore */ }
+  }
+
+  const handleDelete = async (id: string) => {
+    try {
+      await apiClient.delete(`/api/v1/pulse/surveys/${id}`)
+      fetchAll()
+    } catch { /* ignore */ }
+  }
+
+  const TABS = [
+    { key: 'manage', label: '설문 관리' },
+    { key: 'respond', label: `응답 대기 (${pending.length})` },
+  ] as const
+
+  return (
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <BarChart3 className="w-6 h-6 text-[#00C853]" />
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">펄스 서베이</h1>
+        </div>
+        <button onClick={() => setShowCreate(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium">
+          <Plus className="w-4 h-4" /> 새 설문
+        </button>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex border-b border-[#E8E8E8]">
+        {TABS.map((t) => (
+          <button key={t.key} onClick={() => setTab(t.key)}
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 ${tab === t.key ? 'border-[#00C853] text-[#00C853]' : 'border-transparent text-[#666] hover:text-[#333]'}`}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {loading ? (
+        <div className="text-center text-[#999] py-10">로딩 중...</div>
+      ) : tab === 'manage' ? (
+        <>
+          {/* Status Filter */}
+          <div className="flex gap-2">
+            {[{ key: '', label: '전체' }, { key: 'PULSE_DRAFT', label: '초안' }, { key: 'PULSE_ACTIVE', label: '진행중' }, { key: 'PULSE_CLOSED', label: '종료' }].map((f) => (
+              <button key={f.key} onClick={() => setStatusFilter(f.key)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border ${statusFilter === f.key ? 'bg-[#00C853] text-white border-[#00C853]' : 'bg-white text-[#555] border-[#D4D4D4] hover:bg-[#FAFAFA]'}`}>
+                {f.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Surveys Table */}
+          <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-[#FAFAFA] text-xs text-[#666] font-medium uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left">제목</th>
+                  <th className="px-4 py-3 text-left">대상</th>
+                  <th className="px-4 py-3 text-left">기간</th>
+                  <th className="px-4 py-3 text-center">질문</th>
+                  <th className="px-4 py-3 text-center">응답</th>
+                  <th className="px-4 py-3 text-center">상태</th>
+                  <th className="px-4 py-3 text-center">액션</th>
+                </tr>
+              </thead>
+              <tbody>
+                {surveys.map((s) => (
+                  <tr key={s.id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                    <td className="px-4 py-3 text-sm text-[#1A1A1A] font-medium">{s.title}</td>
+                    <td className="px-4 py-3 text-sm text-[#555]">{SCOPE_MAP[s.targetScope] ?? s.targetScope}</td>
+                    <td className="px-4 py-3 text-xs text-[#666]">
+                      {new Date(s.openAt).toLocaleDateString('ko-KR')} ~ {new Date(s.closeAt).toLocaleDateString('ko-KR')}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-center text-[#555]">{s._count.questions}</td>
+                    <td className="px-4 py-3 text-sm text-center text-[#555]">{s._count.responses}</td>
+                    <td className="px-4 py-3 text-center">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${STATUS_MAP[s.status]?.cls ?? ''}`}>
+                        {STATUS_MAP[s.status]?.label ?? s.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        {s.status === 'PULSE_DRAFT' && (
+                          <button onClick={() => handleStatusChange(s.id, 'PULSE_ACTIVE')} title="시작"
+                            className="p-1.5 text-[#00C853] hover:bg-[#E8F5E9] rounded-lg">
+                            <Play className="w-4 h-4" />
+                          </button>
+                        )}
+                        {s.status === 'PULSE_ACTIVE' && (
+                          <button onClick={() => handleStatusChange(s.id, 'PULSE_CLOSED')} title="종료"
+                            className="p-1.5 text-[#B45309] hover:bg-[#FEF3C7] rounded-lg">
+                            <Square className="w-4 h-4" />
+                          </button>
+                        )}
+                        {(s.status === 'PULSE_ACTIVE' || s.status === 'PULSE_CLOSED') && (
+                          <button onClick={() => router.push(`/performance/pulse/${s.id}/results`)} title="결과 보기"
+                            className="p-1.5 text-[#4338CA] hover:bg-[#E0E7FF] rounded-lg">
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        )}
+                        {s.status === 'PULSE_DRAFT' && (
+                          <button onClick={() => handleDelete(s.id)} title="삭제"
+                            className="p-1.5 text-[#999] hover:text-[#EF4444] hover:bg-[#FEE2E2] rounded-lg">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {surveys.length === 0 && (
+                  <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-[#999]">등록된 설문이 없습니다.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </>
+      ) : (
+        /* Pending Surveys */
+        <div className="space-y-4">
+          {pending.length === 0 ? (
+            <div className="text-center text-[#999] py-10 text-sm">응답 대기 중인 설문이 없습니다.</div>
+          ) : (
+            pending.map((s) => (
+              <div key={s.id} className="bg-white rounded-xl border border-[#E8E8E8] p-5 flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-semibold text-[#1A1A1A]">{s.title}</h3>
+                  {s.description && <p className="text-xs text-[#666] mt-1">{s.description}</p>}
+                  <div className="flex items-center gap-2 mt-2 text-xs text-[#999]">
+                    <Calendar className="w-3 h-3" />
+                    <span>마감: {new Date(s.closeAt).toLocaleDateString('ko-KR')}</span>
+                    <span>·</span>
+                    <span>{s._count.questions}개 질문</span>
+                  </div>
+                </div>
+                <button onClick={() => router.push(`/performance/pulse/${s.id}/respond`)}
+                  className="px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium">
+                  응답하기
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {showCreate && <CreateSurveyModal onClose={() => setShowCreate(false)} onCreated={() => { setShowCreate(false); fetchAll() }} />}
+    </div>
+  )
+}

@@ -25,33 +25,33 @@ export default function KrComplianceClient() {
   const [activeTab, setActiveTab] = useState<TabKey>('workHours')
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#FAFAFA]">
       {/* Page Header */}
-      <div className="bg-white border-b border-slate-200 px-6 py-5">
+      <div className="bg-white border-b border-[#E8E8E8] px-6 py-5">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 bg-blue-50 rounded-lg">
-            <ShieldCheck className="w-5 h-5 text-blue-600" />
+          <div className="flex items-center justify-center w-10 h-10 bg-[#E8F5E9] rounded-lg">
+            <ShieldCheck className="w-5 h-5 text-[#00C853]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">
+            <h1 className="text-2xl font-bold text-[#1A1A1A]">
               {t('kr.title')}
             </h1>
-            <p className="text-sm text-slate-500 mt-0.5">
+            <p className="text-sm text-[#666] mt-0.5">
               {t('kr.subtitle')}
             </p>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex gap-1 mt-5 border-b border-slate-200 -mb-px">
+        <div className="flex gap-1 mt-5 border-b border-[#E8E8E8] -mb-px">
           {TABS.map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={
                 activeTab === tab.key
-                  ? 'px-4 py-2.5 text-sm font-medium border-b-2 border-blue-600 text-blue-600'
-                  : 'px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-700'
+                  ? 'px-4 py-2.5 text-sm font-medium border-b-2 border-[#00C853] text-[#00C853]'
+                  : 'px-4 py-2.5 text-sm font-medium text-[#666] hover:text-[#333]'
               }
             >
               {t(tab.labelKey)}

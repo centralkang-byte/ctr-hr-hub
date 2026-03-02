@@ -24,13 +24,22 @@ export const PUT = withPermission(
       where: { id },
       include: {
         tasks: true,
-        employee: { select: { companyId: true } },
+        employee: {
+          select: {
+            assignments: {
+              where: { isPrimary: true, endDate: null },
+              take: 1,
+              select: { companyId: true },
+            },
+          },
+        },
       },
     })
     if (!onboarding) throw notFound('온보딩 기록을 찾을 수 없습니다.')
+    const empCompanyId = onboarding.employee.assignments?.[0]?.companyId
     if (
       user.role !== 'SUPER_ADMIN' &&
-      onboarding.employee.companyId !== user.companyId
+      empCompanyId !== user.companyId
     ) {
       throw forbidden('권한이 없습니다.')
     }

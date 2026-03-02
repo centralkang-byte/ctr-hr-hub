@@ -20,12 +20,20 @@ export const GET = withPermission(
     // Verify employee exists and belongs to same company (unless SUPER_ADMIN)
     const employee = await prisma.employee.findFirst({
       where: { id: employeeId, deletedAt: null },
-      select: { id: true, companyId: true },
+      select: {
+        id: true,
+        assignments: {
+          where: { isPrimary: true, endDate: null },
+          take: 1,
+          select: { companyId: true },
+        },
+      },
     })
 
     if (!employee) throw notFound('직원을 찾을 수 없습니다.')
 
-    if (user.role !== 'SUPER_ADMIN' && employee.companyId !== user.companyId) {
+    const employeeCompanyId = employee.assignments?.[0]?.companyId
+    if (user.role !== 'SUPER_ADMIN' && employeeCompanyId !== user.companyId) {
       throw forbidden('다른 회사의 직원 정보에 접근할 수 없습니다.')
     }
 

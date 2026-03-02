@@ -2,16 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
+import { Loader2, X } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 
 interface Props {
@@ -52,42 +43,67 @@ export default function ConvertToEmployeeButton({ applicationId, applicantName }
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm" className="bg-ctr-primary hover:bg-ctr-primary/90">
-          직원 전환
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{applicantName} — 직원 전환</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4">
-          <div className="space-y-1">
-            <Label>사번 (선택 — 미입력 시 자동 생성)</Label>
-            <Input
-              placeholder="예: CTR-2025-0042"
-              value={form.employeeNo}
-              onChange={(e) => setForm((f) => ({ ...f, employeeNo: e.target.value }))}
-            />
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="px-3 py-1.5 text-sm font-medium bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg transition-colors duration-150"
+      >
+        직원 전환
+      </button>
+
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-xl w-full max-w-md mx-4">
+            <div className="flex items-center justify-between p-6 pb-0">
+              <h2 className="text-lg font-bold text-[#1A1A1A] tracking-[-0.02em]">
+                {applicantName} — 직원 전환
+              </h2>
+              <button
+                onClick={() => setOpen(false)}
+                className="p-1 rounded-lg hover:bg-[#FAFAFA] text-[#999] transition-colors duration-150"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
+                  사번 (선택 — 미입력 시 자동 생성)
+                </label>
+                <input
+                  placeholder="예: CTR-2025-0042"
+                  value={form.employeeNo}
+                  onChange={(e) => setForm((f) => ({ ...f, employeeNo: e.target.value }))}
+                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">입사일 *</label>
+                <input
+                  type="date"
+                  value={form.startDate}
+                  onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))}
+                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"
+                />
+              </div>
+              <button
+                onClick={handleConvert}
+                disabled={loading || !form.startDate}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    처리 중...
+                  </>
+                ) : (
+                  '직원으로 전환'
+                )}
+              </button>
+            </div>
           </div>
-          <div className="space-y-1">
-            <Label>입사일 *</Label>
-            <Input
-              type="date"
-              value={form.startDate}
-              onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))}
-            />
-          </div>
-          <Button
-            onClick={handleConvert}
-            disabled={loading || !form.startDate}
-            className="w-full bg-ctr-primary"
-          >
-            {loading ? '처리 중...' : '직원으로 전환'}
-          </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+      )}
+    </>
   )
 }

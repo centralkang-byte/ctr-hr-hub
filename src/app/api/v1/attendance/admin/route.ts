@@ -34,8 +34,10 @@ export const GET = withPermission(
     // 3. Total employees count
     const totalEmployees = await prisma.employee.count({
       where: {
-        ...companyFilter,
         deletedAt: null,
+        assignments: {
+          some: { companyId, isPrimary: true, endDate: null },
+        },
       },
     })
 
@@ -50,7 +52,11 @@ export const GET = withPermission(
           select: {
             name: true,
             employeeNo: true,
-            departmentId: true,
+            assignments: {
+              where: { isPrimary: true, endDate: null },
+              take: 1,
+              select: { departmentId: true },
+            },
           },
         },
       },

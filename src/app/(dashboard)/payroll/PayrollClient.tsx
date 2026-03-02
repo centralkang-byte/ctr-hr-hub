@@ -78,7 +78,7 @@ export default function PayrollClient({ user }: PayrollClientProps) {
       key: 'runType',
       header: tCommon('type'),
       render: (row) => (
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-700">
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[#F5F5F5] text-[#333]">
           {t(`runType.${row.runType}`, { defaultValue: row.runType })}
         </span>
       ),
@@ -114,7 +114,7 @@ export default function PayrollClient({ user }: PayrollClientProps) {
             e.stopPropagation()
             router.push(`/payroll/${row.id}/review`)
           }}
-          className="text-blue-600 hover:text-blue-800 text-xs font-medium"
+          className="text-[#00C853] hover:text-[#00A844] text-xs font-medium"
         >
           {tCommon('detail')}
         </button>
@@ -127,8 +127,8 @@ export default function PayrollClient({ user }: PayrollClientProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Wallet className="h-6 w-6 text-blue-600" />
-          <h1 className="text-2xl font-bold text-slate-900">{t('title')}</h1>
+          <Wallet className="h-6 w-6 text-[#00C853]" />
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('title')}</h1>
         </div>
         <PayrollCreateDialog onCreated={() => fetchRuns()} />
       </div>

@@ -35,10 +35,10 @@ export default function TrainingEnrollmentsClient() {
   const [statusFilter, setStatusFilter] = useState('')
 
   const STATUS_BADGE: Record<string, { label: string; className: string }> = {
-    ENROLLED: { label: t('enrolled'), className: 'bg-blue-50 text-blue-700 border-blue-200' },
-    IN_PROGRESS: { label: t('inProgress'), className: 'bg-amber-50 text-amber-700 border-amber-200' },
-    ENROLLMENT_COMPLETED: { label: t('completed'), className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-    DROPPED: { label: t('dropped'), className: 'bg-red-50 text-red-700 border-red-200' },
+    ENROLLED: { label: t('enrolled'), className: 'bg-[#E8F5E9] text-[#00A844] border-[#E8F5E9]' },
+    IN_PROGRESS: { label: t('inProgress'), className: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]' },
+    ENROLLMENT_COMPLETED: { label: t('completed'), className: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
+    DROPPED: { label: t('dropped'), className: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]' },
   }
 
   const fetchEnrollments = useCallback(async (page = 1) => {
@@ -81,7 +81,7 @@ export default function TrainingEnrollmentsClient() {
       render: (row) => (
         <div>
           <p className="text-sm font-medium">{row.employee.name}</p>
-          <p className="text-xs text-slate-500">{row.employee.employeeNo}</p>
+          <p className="text-xs text-[#666]">{row.employee.employeeNo}</p>
         </div>
       ),
     },
@@ -92,7 +92,7 @@ export default function TrainingEnrollmentsClient() {
         <div className="flex items-center gap-2">
           <span>{row.course.title}</span>
           {row.course.isMandatory && (
-            <Badge className="bg-red-50 text-red-700 border-red-200 text-[10px]">{t('mandatoryBadge')}</Badge>
+            <Badge className="bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA] text-[10px]">{t('mandatoryBadge')}</Badge>
           )}
         </div>
       ),
@@ -139,7 +139,7 @@ export default function TrainingEnrollmentsClient() {
             <Button
               variant="ghost"
               size="sm"
-              className="text-emerald-600"
+              className="text-[#059669]"
               onClick={() => handleStatusChange(row, 'ENROLLMENT_COMPLETED')}
             >
               {t('completed')}
@@ -147,7 +147,7 @@ export default function TrainingEnrollmentsClient() {
             <Button
               variant="ghost"
               size="sm"
-              className="text-red-500"
+              className="text-[#EF4444]"
               onClick={() => handleStatusChange(row, 'DROPPED')}
             >
               {t('dropped')}
@@ -162,12 +162,12 @@ export default function TrainingEnrollmentsClient() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <nav className="text-xs text-slate-400 mb-1">{t('enrollmentBreadcrumb')}</nav>
-          <h1 className="text-2xl font-bold text-slate-900">{t('enrollmentList')}</h1>
+          <nav className="text-xs text-[#999] mb-1">{t('enrollmentBreadcrumb')}</nav>
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('enrollmentList')}</h1>
         </div>
         <div className="flex items-center gap-3">
           <select
-            className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
+            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >

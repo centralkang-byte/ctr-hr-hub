@@ -57,7 +57,7 @@ export default function RecruitmentAnalyticsClient() {
     return (
       <AnalyticsPageLayout title={t('title')}>
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-[#999]" />
         </div>
       </AnalyticsPageLayout>
     )
@@ -102,7 +102,7 @@ export default function RecruitmentAnalyticsClient() {
                 <XAxis type="number" />
                 <YAxis type="category" dataKey="stage_label" width={70} tick={{ fontSize: 12 }} />
                 <Tooltip />
-                <Bar dataKey="candidate_count" fill="#2563EB" radius={[0, 4, 4, 0]} name={t('headcount')} />
+                <Bar dataKey="candidate_count" fill="#00C853" radius={[0, 4, 4, 0]} name={t('headcount')} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
@@ -116,10 +116,10 @@ export default function RecruitmentAnalyticsClient() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50">
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">{t('posting')}</th>
+                  <tr className="border-b border-[#F5F5F5] bg-[#FAFAFA]">
+                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#666]">{t('posting')}</th>
                     {STAGE_ORDER.map((s) => (
-                      <th key={s} className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-500">
+                      <th key={s} className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">
                         {STAGE_LABELS[s] ?? s}
                       </th>
                     ))}
@@ -127,10 +127,10 @@ export default function RecruitmentAnalyticsClient() {
                 </thead>
                 <tbody>
                   {[...postingMap.entries()].map(([id, { title, stages }]) => (
-                    <tr key={id} className="border-b border-slate-100 hover:bg-slate-50">
-                      <td className="px-4 py-3 font-medium text-slate-700">{title}</td>
+                    <tr key={id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                      <td className="px-4 py-3 font-medium text-[#333]">{title}</td>
                       {STAGE_ORDER.map((s) => (
-                        <td key={s} className="px-4 py-3 text-center text-slate-600">
+                        <td key={s} className="px-4 py-3 text-center text-[#555]">
                           {stages[s] ?? 0}
                         </td>
                       ))}

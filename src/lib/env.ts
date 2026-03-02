@@ -68,6 +68,20 @@ export const env = {
   TERMINAL_API_SECRET: getOptional('TERMINAL_API_SECRET'),
   TERMINAL_HEARTBEAT_INTERVAL: getOptionalInt('TERMINAL_HEARTBEAT_INTERVAL', 60),
 
+  // Microsoft Teams Bot
+  TEAMS_BOT_ID: getOptional('TEAMS_BOT_ID'),
+  TEAMS_BOT_PASSWORD: getOptional('TEAMS_BOT_PASSWORD'),
+  TEAMS_APP_ID: getOptional('TEAMS_APP_ID'),
+  TEAMS_WEBHOOK_SECRET: getOptional('TEAMS_WEBHOOK_SECRET'),
+
+  // Cron
+  CRON_SECRET: getOptional('CRON_SECRET'),
+
+  // Web Push (VAPID)
+  VAPID_PUBLIC_KEY: getOptional('VAPID_PUBLIC_KEY'),
+  VAPID_PRIVATE_KEY: getOptional('VAPID_PRIVATE_KEY'),
+  WEB_PUSH_EMAIL: getOptional('WEB_PUSH_EMAIL', 'noreply@ctr.co.kr'),
+
   // App
   NODE_ENV: getOptional('NODE_ENV', 'development'),
 } as const

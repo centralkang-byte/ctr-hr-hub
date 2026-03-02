@@ -50,10 +50,10 @@ interface TeamLeaveData {
 // ─── Constants ──────────────────────────────────────────────
 
 const STATUS_BADGE: Record<string, string> = {
-  PENDING: 'bg-ctr-warning text-white',
-  APPROVED: 'bg-ctr-success text-white',
-  REJECTED: 'bg-ctr-accent text-white',
-  CANCELLED: 'bg-gray-400 text-white',
+  PENDING: 'bg-[#FFF3E0] text-[#FF9800]',
+  APPROVED: 'bg-[#E8F5E9] text-[#2E7D32]',
+  REJECTED: 'bg-[#FFEBEE] text-[#F44336]',
+  CANCELLED: 'bg-[#F5F5F5] text-[#666]',
 }
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -209,20 +209,15 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
 
       {/* ─── Team Members ─── */}
       {members.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center text-sm text-muted-foreground">
-            {tc('noData')}
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-[#E8E8E8] rounded-xl p-12 text-center text-sm text-[#999]">
+          {tc('noData')}
+        </div>
       ) : (
         members.map((member) => (
-          <Card key={member.employeeId}>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">{member.name}</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <div key={member.employeeId} className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+            <h3 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em] mb-4">{member.name}</h3>
               {member.requests.length === 0 ? (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-[#999]">
                   {t('noRequestsThisMonth')}
                 </p>
               ) : (
@@ -236,30 +231,30 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                         key={req.id}
                         className={`flex items-center justify-between rounded-lg border p-3 ${
                           isPending
-                            ? 'border-ctr-warning/40 bg-yellow-50'
-                            : 'border-border'
+                            ? 'border-[#FFE0B2] bg-[#FFF3E0]/30'
+                            : 'border-[#E8E8E8]'
                         }`}
                       >
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium">
+                            <span className="text-sm font-medium text-[#1A1A1A]">
                               {formatDate(req.startDate)} ~{' '}
                               {formatDate(req.endDate)}
                             </span>
-                            <Badge variant="outline" className="text-xs">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-medium border border-[#E8E8E8] text-[#666]">
                               {LEAVE_TYPE_LABEL[req.leaveType] ??
                                 req.leaveType}
-                            </Badge>
-                            <Badge
-                              className={`text-xs ${
+                            </span>
+                            <span
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${
                                 STATUS_BADGE[req.status] ??
-                                'bg-gray-200 text-gray-700'
+                                'bg-[#F5F5F5] text-[#666]'
                               }`}
                             >
                               {STATUS_LABEL[req.status] ?? req.status}
-                            </Badge>
+                            </span>
                           </div>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-[#999]">
                             {req.days}
                             {t('days')}
                           </span>
@@ -267,26 +262,22 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
 
                         {isPending && (
                           <div className="flex items-center gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="h-8 border-ctr-success text-ctr-success hover:bg-ctr-success hover:text-white"
+                            <button
+                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-[#00C853] text-[#00C853] hover:bg-[#E8F5E9] disabled:opacity-50 flex items-center"
                               onClick={() => handleApprove(req.id)}
                               disabled={isLoading}
                             >
                               <Check className="mr-1 h-4 w-4" />
                               {t('approve')}
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="h-8 border-ctr-accent text-ctr-accent hover:bg-ctr-accent hover:text-white"
+                            </button>
+                            <button
+                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-[#F44336] text-[#F44336] hover:bg-[#FFEBEE] disabled:opacity-50 flex items-center"
                               onClick={() => openRejectDialog(req.id)}
                               disabled={isLoading}
                             >
                               <X className="mr-1 h-4 w-4" />
                               {t('reject')}
-                            </Button>
+                            </button>
                           </div>
                         )}
                       </div>
@@ -294,8 +285,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                   })}
                 </div>
               )}
-            </CardContent>
-          </Card>
+          </div>
         ))
       )}
 

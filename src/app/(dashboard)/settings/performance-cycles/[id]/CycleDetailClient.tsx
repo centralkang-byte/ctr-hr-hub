@@ -28,11 +28,11 @@ interface PerformanceCycle {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  DRAFT: 'bg-gray-100 text-gray-700',
-  ACTIVE: 'bg-blue-100 text-blue-700',
-  EVAL_OPEN: 'bg-yellow-100 text-yellow-700',
-  CALIBRATION: 'bg-purple-100 text-purple-700',
-  CLOSED: 'bg-green-100 text-green-700',
+  DRAFT: 'bg-[#F5F5F5] text-[#666]',
+  ACTIVE: 'bg-[#E3F2FD] text-[#1565C0]',
+  EVAL_OPEN: 'bg-[#FFF8E1] text-[#F57F17]',
+  CALIBRATION: 'bg-[#F3E5F5] text-[#7B1FA2]',
+  CLOSED: 'bg-[#E8F5E9] text-[#2E7D32]',
 }
 
 export default function CycleDetailClient({ user }: { user: SessionUser }) {
@@ -153,7 +153,7 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-gray-400">{t('fetchingData')}</p>
+        <p className="text-[#999]">{t('fetchingData')}</p>
       </div>
     )
   }
@@ -161,10 +161,10 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
   if (!cycle) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
-        <p className="text-gray-400">{t('cycleNotFound')}</p>
+        <p className="text-[#999]">{t('cycleNotFound')}</p>
         <button
           onClick={() => router.push('/settings/performance-cycles')}
-          className="text-sm text-ctr-secondary hover:underline"
+          className="text-sm text-[#00C853] hover:underline"
         >
           {t('backToList')}
         </button>
@@ -184,13 +184,13 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
         <div className="flex items-center gap-4">
           <button
             onClick={() => router.push('/settings/performance-cycles')}
-            className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white p-2 text-gray-600 hover:bg-gray-50 transition-colors"
+            className="inline-flex items-center justify-center rounded-lg border border-[#E8E8E8] bg-white p-2 text-[#666] hover:bg-[#FAFAFA] transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-ctr-primary">{cycle.name}</h1>
-            <p className="text-sm text-gray-500 mt-0.5">
+            <h1 className="text-2xl font-bold text-[#00C853]">{cycle.name}</h1>
+            <p className="text-sm text-[#999] mt-0.5">
               {t('yearUnit', { year: cycle.year })} {t(`halfLabels.${cycle.half}` as Parameters<typeof t>[0])}
             </p>
           </div>
@@ -199,7 +199,7 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
           {isDraft && !editing && (
             <button
               onClick={() => setEditing(true)}
-              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+              className="rounded-lg border border-[#E8E8E8] bg-white px-4 py-2 text-sm font-medium text-[#666] hover:bg-[#FAFAFA] transition-colors"
             >
               {t('editCycle')}
             </button>
@@ -207,7 +207,7 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
           {nextAction && (
             <button
               onClick={() => setConfirmAdvance(true)}
-              className="inline-flex items-center gap-2 rounded-lg bg-ctr-primary px-4 py-2 text-sm font-medium text-white hover:bg-ctr-secondary transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg bg-[#00C853] px-4 py-2 text-sm font-medium text-white hover:bg-[#00A844] transition-colors"
             >
               {nextAction}
               <ChevronRight className="h-4 w-4" />
@@ -217,28 +217,28 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
       </div>
 
       {error && (
-        <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-lg bg-[#FEE2E2] border border-[#FECACA] px-4 py-3 text-sm text-[#B91C1C]">
           {error}
         </div>
       )}
 
       {/* Confirm Advance Dialog */}
       {confirmAdvance && nextAction && (
-        <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-4 flex items-center justify-between">
-          <p className="text-sm text-yellow-800">
+        <div className="rounded-xl border border-[#FDE68A] bg-[#FEFCE8] p-4 flex items-center justify-between">
+          <p className="text-sm text-[#854D0E]">
             {t('confirmAdvance', { action: nextAction })}
           </p>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setConfirmAdvance(false)}
-              className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
+              className="rounded-lg border border-[#E8E8E8] bg-white px-3 py-1.5 text-sm text-[#666] hover:bg-[#FAFAFA]"
             >
               {tc('cancel')}
             </button>
             <button
               onClick={handleAdvance}
               disabled={advancing}
-              className="rounded-lg bg-ctr-accent px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
+              className="rounded-lg bg-[#EF4444] px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
             >
               {advancing ? t('processing') : tc('confirm')}
             </button>
@@ -251,67 +251,67 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
         <form
 
           onSubmit={handleSubmit(onSave as Parameters<typeof handleSubmit>[0])}
-          className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm space-y-6"
+          className="rounded-xl border border-[#E8E8E8] bg-white p-6 space-y-6"
         >
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t('nameColumn')}</label>
+              <label className="block text-sm font-medium text-[#666] mb-1">{t('nameColumn')}</label>
               <input
                 {...register('name')}
                 type="text"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
+                className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
               />
-              {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
+              {errors.name && <p className="mt-1 text-xs text-[#EF4444]">{errors.name.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t('goalSettingStart')}</label>
+              <label className="block text-sm font-medium text-[#666] mb-1">{t('goalSettingStart')}</label>
               <input
                 {...register('goalStart')}
                 type="date"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
+                className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
               />
-              {errors.goalStart && <p className="mt-1 text-xs text-red-500">{errors.goalStart.message}</p>}
+              {errors.goalStart && <p className="mt-1 text-xs text-[#EF4444]">{errors.goalStart.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t('goalSettingEnd')}</label>
+              <label className="block text-sm font-medium text-[#666] mb-1">{t('goalSettingEnd')}</label>
               <input
                 {...register('goalEnd')}
                 type="date"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
+                className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
               />
-              {errors.goalEnd && <p className="mt-1 text-xs text-red-500">{errors.goalEnd.message}</p>}
+              {errors.goalEnd && <p className="mt-1 text-xs text-[#EF4444]">{errors.goalEnd.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t('evalStart')}</label>
+              <label className="block text-sm font-medium text-[#666] mb-1">{t('evalStart')}</label>
               <input
                 {...register('evalStart')}
                 type="date"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
+                className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
               />
-              {errors.evalStart && <p className="mt-1 text-xs text-red-500">{errors.evalStart.message}</p>}
+              {errors.evalStart && <p className="mt-1 text-xs text-[#EF4444]">{errors.evalStart.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t('evalEnd')}</label>
+              <label className="block text-sm font-medium text-[#666] mb-1">{t('evalEnd')}</label>
               <input
                 {...register('evalEnd')}
                 type="date"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-ctr-secondary focus:outline-none focus:ring-1 focus:ring-ctr-secondary"
+                className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
               />
-              {errors.evalEnd && <p className="mt-1 text-xs text-red-500">{errors.evalEnd.message}</p>}
+              {errors.evalEnd && <p className="mt-1 text-xs text-[#EF4444]">{errors.evalEnd.message}</p>}
             </div>
           </div>
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#E8E8E8]">
             <button
               type="button"
               onClick={() => { setEditing(false); setError(null) }}
-              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+              className="rounded-lg border border-[#E8E8E8] bg-white px-4 py-2 text-sm font-medium text-[#666] hover:bg-[#FAFAFA] transition-colors"
             >
               {tc('cancel')}
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 rounded-lg bg-ctr-primary px-4 py-2 text-sm font-medium text-white hover:bg-ctr-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-2 rounded-lg bg-[#00C853] px-4 py-2 text-sm font-medium text-white hover:bg-[#00A844] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Save className="h-4 w-4" />
               {saving ? t('saving') : tc('save')}
@@ -321,43 +321,43 @@ export default function CycleDetailClient({ user }: { user: SessionUser }) {
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {/* 상태 */}
-          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <p className="text-xs font-medium text-gray-500 mb-1">{t('statusColumn')}</p>
-            <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[cycle.status] ?? 'bg-gray-100 text-gray-700'}`}>
+          <div className="rounded-xl border border-[#E8E8E8] bg-white p-4">
+            <p className="text-xs font-medium text-[#999] mb-1">{t('statusColumn')}</p>
+            <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[cycle.status] ?? 'bg-[#F5F5F5] text-[#666]'}`}>
               {t(`cycleStatusLabels.${cycle.status}` as Parameters<typeof t>[0])}
             </span>
           </div>
 
           {/* 유형 */}
-          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <p className="text-xs font-medium text-gray-500 mb-1">{t('typeColumn')}</p>
-            <p className="text-sm font-semibold text-gray-900">{t(`halfLabels.${cycle.half}` as Parameters<typeof t>[0])}</p>
+          <div className="rounded-xl border border-[#E8E8E8] bg-white p-4">
+            <p className="text-xs font-medium text-[#999] mb-1">{t('typeColumn')}</p>
+            <p className="text-sm font-semibold text-[#1A1A1A]">{t(`halfLabels.${cycle.half}` as Parameters<typeof t>[0])}</p>
           </div>
 
           {/* 목표 수 */}
-          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <p className="text-xs font-medium text-gray-500 mb-1">{t('goalCount')}</p>
-            <p className="text-2xl font-bold text-ctr-primary">{cycle._count?.goals ?? 0}</p>
+          <div className="rounded-xl border border-[#E8E8E8] bg-white p-4">
+            <p className="text-xs font-medium text-[#999] mb-1">{t('goalCount')}</p>
+            <p className="text-2xl font-bold text-[#00C853]">{cycle._count?.goals ?? 0}</p>
           </div>
 
           {/* 평가 수 */}
-          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <p className="text-xs font-medium text-gray-500 mb-1">{t('evalCount')}</p>
-            <p className="text-2xl font-bold text-ctr-primary">{cycle._count?.evaluations ?? 0}</p>
+          <div className="rounded-xl border border-[#E8E8E8] bg-white p-4">
+            <p className="text-xs font-medium text-[#999] mb-1">{t('evalCount')}</p>
+            <p className="text-2xl font-bold text-[#00C853]">{cycle._count?.evaluations ?? 0}</p>
           </div>
 
           {/* 목표설정기간 */}
-          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm md:col-span-2">
-            <p className="text-xs font-medium text-gray-500 mb-1">{t('goalSettingPeriod')}</p>
-            <p className="text-sm font-semibold text-gray-900">
+          <div className="rounded-xl border border-[#E8E8E8] bg-white p-4 md:col-span-2">
+            <p className="text-xs font-medium text-[#999] mb-1">{t('goalSettingPeriod')}</p>
+            <p className="text-sm font-semibold text-[#1A1A1A]">
               {formatDateDisplay(cycle.goalStart)} ~ {formatDateDisplay(cycle.goalEnd)}
             </p>
           </div>
 
           {/* 평가기간 */}
-          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm md:col-span-2">
-            <p className="text-xs font-medium text-gray-500 mb-1">{t('evaluationPeriodColumn')}</p>
-            <p className="text-sm font-semibold text-gray-900">
+          <div className="rounded-xl border border-[#E8E8E8] bg-white p-4 md:col-span-2">
+            <p className="text-xs font-medium text-[#999] mb-1">{t('evaluationPeriodColumn')}</p>
+            <p className="text-sm font-semibold text-[#1A1A1A]">
               {formatDateDisplay(cycle.evalStart)} ~ {formatDateDisplay(cycle.evalEnd)}
             </p>
           </div>

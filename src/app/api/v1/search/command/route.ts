@@ -26,8 +26,10 @@ export const GET = withPermission(
       const [employees, documents] = await Promise.all([
         prisma.employee.findMany({
           where: {
-            companyId,
-            status: 'ACTIVE',
+            deletedAt: null,
+            assignments: {
+              some: { companyId, status: 'ACTIVE', isPrimary: true, endDate: null },
+            },
             OR: [
               { name: { contains: q, mode: 'insensitive' } },
               { employeeNo: { contains: q, mode: 'insensitive' } },
@@ -39,8 +41,14 @@ export const GET = withPermission(
             name: true,
             employeeNo: true,
             email: true,
-            department: { select: { name: true } },
-            jobGrade: { select: { name: true } },
+            assignments: {
+              where: { isPrimary: true, endDate: null },
+              take: 1,
+              select: {
+                department: { select: { name: true } },
+                jobGrade: { select: { name: true } },
+              },
+            },
           },
           take: limit,
         }),
@@ -61,14 +69,17 @@ export const GET = withPermission(
       ])
 
       return apiSuccess({
-        employees: employees.map((e) => ({
-          id: e.id,
-          name: e.name,
-          employeeNo: e.employeeNo,
-          email: e.email,
-          department: e.department?.name ?? null,
-          position: e.jobGrade?.name ?? null,
-        })),
+        employees: employees.map((e) => {
+          const asgn = e.assignments?.[0]
+          return {
+            id: e.id,
+            name: e.name,
+            employeeNo: e.employeeNo,
+            email: e.email,
+            department: (asgn as any)?.department?.name ?? null, // eslint-disable-line @typescript-eslint/no-explicit-any
+            position: (asgn as any)?.jobGrade?.name ?? null, // eslint-disable-line @typescript-eslint/no-explicit-any
+          }
+        }),
         documents: documents.map((d) => ({
           id: d.id,
           title: d.title,

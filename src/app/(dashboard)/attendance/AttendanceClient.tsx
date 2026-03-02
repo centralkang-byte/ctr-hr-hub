@@ -54,19 +54,19 @@ type ClockState = 'NOT_CLOCKED_IN' | 'WORKING' | 'COMPLETED'
 // ─── Constants ──────────────────────────────────────────────
 
 const STATUS_COLORS: Record<string, string> = {
-  NORMAL: 'bg-ctr-success text-white',
-  LATE: 'bg-ctr-warning text-white',
-  EARLY_OUT: 'bg-orange-500 text-white',
-  ABSENT: 'bg-ctr-accent text-white',
-  ON_LEAVE: 'bg-purple-500 text-white',
-  HOLIDAY: 'bg-blue-400 text-white',
+  NORMAL: 'bg-[#E8F5E9] text-[#2E7D32]',
+  LATE: 'bg-[#FFEBEE] text-[#E53935]',
+  EARLY_OUT: 'bg-[#FFF3E0] text-[#E65100]',
+  ABSENT: 'bg-[#FFEBEE] text-[#F44336]',
+  ON_LEAVE: 'bg-[#E3F2FD] text-[#2196F3]',
+  HOLIDAY: 'bg-[#F3E5F5] text-[#9C27B0]',
 }
 
 const WORK_TYPE_COLORS: Record<string, string> = {
-  NORMAL: 'bg-gray-100 text-gray-700',
-  REMOTE: 'bg-blue-100 text-blue-700',
-  FIELD: 'bg-green-100 text-green-700',
-  BUSINESS_TRIP: 'bg-purple-100 text-purple-700',
+  NORMAL: 'bg-[#F5F5F5] text-[#666]',
+  REMOTE: 'bg-[#E3F2FD] text-[#2196F3]',
+  FIELD: 'bg-[#E8F5E9] text-[#2E7D32]',
+  BUSINESS_TRIP: 'bg-[#F3E5F5] text-[#9C27B0]',
 }
 
 const STANDARD_WORK_HOURS = 8
@@ -242,27 +242,25 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
       />
 
       {/* ─── Section 1: Today Card ─── */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Clock className="h-5 w-5 text-ctr-primary" />
-            {t('todaySummary')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+        <h3 className="flex items-center gap-2 text-base font-bold text-[#1A1A1A] tracking-[-0.02em] mb-4">
+          <Clock className="h-5 w-5 text-[#00C853]" />
+          {t('todaySummary')}
+        </h3>
+
           {clockState === 'NOT_CLOCKED_IN' && (
             <div className="flex flex-col items-center gap-4 py-8">
               <div className="text-center">
-                <p className="text-lg font-medium text-muted-foreground">
+                <p className="text-lg font-medium text-[#666]">
                   {t('notClockedIn')}
                 </p>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="mt-1 text-sm text-[#999]">
                   {t('clockInPrompt')}
                 </p>
               </div>
               <Button
                 size="lg"
-                className="h-16 w-48 bg-ctr-primary text-lg font-semibold hover:bg-ctr-primary/90"
+                className="h-16 w-48 bg-[#00C853] hover:bg-[#00A844] text-lg font-semibold text-white"
                 onClick={handleClockIn}
                 disabled={clockLoading}
               >
@@ -274,19 +272,18 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
 
           {clockState === 'WORKING' && (
             <div className="flex flex-col items-center gap-4 py-6">
-              <Badge className="bg-ctr-success text-white px-3 py-1 text-sm">
+              <span className="inline-flex items-center px-3 py-1 rounded-[4px] text-sm font-semibold bg-[#E8F5E9] text-[#2E7D32]">
                 {t('currentlyWorking')}
-              </Badge>
-              <p className="font-mono text-4xl font-bold text-ctr-primary tabular-nums">
+              </span>
+              <p className="font-mono text-4xl font-bold text-[#00C853] tabular-nums">
                 {formatElapsedTime(elapsed)}
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-[#999]">
                 {t('clockIn')}: {formatTime(today?.clockIn ?? null)}
               </p>
               <Button
                 size="lg"
-                variant="destructive"
-                className="h-14 w-48 text-lg font-semibold"
+                className="h-14 w-48 text-lg font-semibold bg-[#F44336] hover:bg-[#D32F2F] text-white"
                 onClick={handleClockOut}
                 disabled={clockLoading}
               >
@@ -298,14 +295,14 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
 
           {clockState === 'COMPLETED' && (
             <div className="flex flex-col items-center gap-4 py-6">
-              <div className="flex items-center gap-2 text-ctr-success">
+              <div className="flex items-center gap-2 text-[#00C853]">
                 <CheckCircle2 className="h-6 w-6" />
                 <span className="text-lg font-semibold">{t('workCompleted')}</span>
               </div>
-              <p className="text-2xl font-bold text-foreground">
+              <p className="text-2xl font-bold text-[#1A1A1A]">
                 {formatMinutesToHM(today?.totalMinutes)}
               </p>
-              <div className="flex gap-6 text-sm text-muted-foreground">
+              <div className="flex gap-6 text-sm text-[#999]">
                 <span>
                   {t('clockIn')}: {formatTime(today?.clockIn ?? null)}
                 </span>
@@ -314,21 +311,17 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
                 </span>
               </div>
               {(today?.overtimeMinutes ?? 0) > 0 && (
-                <p className="text-sm text-ctr-warning">
+                <p className="text-sm text-[#FF9800] font-semibold">
                   {t('overtimeHours')}: {formatMinutesToHM(today?.overtimeMinutes)}
                 </p>
               )}
             </div>
           )}
-        </CardContent>
-      </Card>
+      </div>
 
       {/* ─── Section 2: Weekly Summary ─── */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">{t('weeklySummary')}</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+        <h3 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em] mb-4">{t('weeklySummary')}</h3>
           {weekly ? (
             <div className="space-y-3">
               {/* Day bars */}
@@ -339,24 +332,24 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
 
                 return (
                   <div key={day.date} className="flex items-center gap-3">
-                    <span className="w-6 shrink-0 text-center text-sm font-medium text-muted-foreground">
+                    <span className="w-6 shrink-0 text-center text-sm font-medium text-[#999]">
                       {DAY_LABELS[idx]}
                     </span>
-                    <div className="relative h-6 flex-1 rounded bg-gray-100">
+                    <div className="relative h-6 flex-1 rounded bg-[#F5F5F5]">
                       {/* Standard line at 8h */}
                       <div
-                        className="absolute top-0 h-full border-l-2 border-dashed border-gray-300"
+                        className="absolute top-0 h-full border-l-2 border-dashed border-[#E0E0E0]"
                         style={{ left: `${standardLinePct}%` }}
                       />
                       {/* Work bar */}
                       {hours > 0 && (
                         <div
-                          className="h-full rounded bg-ctr-primary transition-all duration-300"
+                          className="h-full rounded bg-[#00C853] transition-all duration-300"
                           style={{ width: `${barWidthPct}%` }}
                         />
                       )}
                     </div>
-                    <span className="w-14 shrink-0 text-right text-sm tabular-nums text-muted-foreground">
+                    <span className="w-14 shrink-0 text-right text-sm tabular-nums text-[#999]">
                       {hours > 0 ? `${hours.toFixed(1)}h` : '-'}
                     </span>
                   </div>
@@ -364,50 +357,49 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
               })}
 
               {/* Totals row */}
-              <div className="mt-4 flex justify-between border-t pt-3">
+              <div className="mt-4 flex justify-between border-t border-[#F0F0F0] pt-3">
                 <div className="text-sm">
-                  <span className="text-muted-foreground">{t('workHours')}: </span>
-                  <span className="font-semibold">
+                  <span className="text-[#999]">{t('workHours')}: </span>
+                  <span className="font-semibold text-[#1A1A1A]">
                     {formatMinutesToHM(weekly.totalMinutes)}
                   </span>
                 </div>
                 <div className="text-sm">
-                  <span className="text-muted-foreground">{t('overtimeHours')}: </span>
-                  <span className="font-semibold text-ctr-warning">
+                  <span className="text-[#999]">{t('overtimeHours')}: </span>
+                  <span className="font-semibold text-[#FF9800]">
                     {formatMinutesToHM(weekly.totalOvertimeMinutes)}
                   </span>
                 </div>
               </div>
             </div>
           ) : (
-            <p className="py-4 text-center text-sm text-muted-foreground">
+            <p className="py-4 text-center text-sm text-[#999]">
               {tc('noData')}
             </p>
           )}
-        </CardContent>
-      </Card>
+      </div>
 
       {/* ─── Section 3: Status Badges ─── */}
       {today && (
-        <Card>
-          <CardContent className="flex flex-wrap items-center gap-3 pt-6">
+        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+          <div className="flex flex-wrap items-center gap-3">
             {/* Attendance status badge */}
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">{t('status')}:</span>
-              <Badge className={STATUS_COLORS[today.status] ?? 'bg-gray-200 text-gray-700'}>
+              <span className="text-sm text-[#999]">{t('status')}:</span>
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_COLORS[today.status] ?? 'bg-[#F5F5F5] text-[#666]'}`}>
                 {STATUS_LABELS[today.status] ?? today.status}
-              </Badge>
+              </span>
             </div>
 
             {/* Work type badge */}
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">{t('workType')}:</span>
-              <Badge className={WORK_TYPE_COLORS[today.workType] ?? 'bg-gray-100 text-gray-700'}>
+              <span className="text-sm text-[#999]">{t('workType')}:</span>
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${WORK_TYPE_COLORS[today.workType] ?? 'bg-[#F5F5F5] text-[#666]'}`}>
                 {WORK_TYPE_LABELS[today.workType] ?? today.workType}
-              </Badge>
+              </span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   )

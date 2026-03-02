@@ -66,16 +66,26 @@ export const GET = withPermission(
     // Get all employees grouped by department
     const employees = await prisma.employee.findMany({
       where: {
-        ...effectiveCompanyFilter,
         deletedAt: null,
+        assignments: {
+          some: { companyId, isPrimary: true, endDate: null },
+        },
       },
-      select: { id: true, departmentId: true },
+      select: {
+        id: true,
+        assignments: {
+          where: { isPrimary: true, endDate: null },
+          take: 1,
+          select: { departmentId: true },
+        },
+      },
     })
 
     // Build employee → department map
     const empDeptMap = new Map<string, string>()
     for (const emp of employees) {
-      empDeptMap.set(emp.id, emp.departmentId)
+      const deptId = (emp.assignments?.[0] as any)?.departmentId as string | undefined // eslint-disable-line @typescript-eslint/no-explicit-any
+      if (deptId) empDeptMap.set(emp.id, deptId)
     }
 
     // Get all leave balances for the year

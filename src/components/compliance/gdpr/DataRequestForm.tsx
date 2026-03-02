@@ -131,11 +131,11 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
           {/* Employee — only for new */}
           {!isEdit && (
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                {tc('name')} <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-[#333] mb-1">
+                {tc('name')} <span className="text-[#EF4444]">*</span>
               </label>
               <select
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853]"
                 value={form.employee_id}
                 onChange={(e) => handleChange('employee_id', e.target.value)}
               >
@@ -151,11 +151,11 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
 
           {/* Request Type */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              {t('gdpr.requestType')} <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-[#333] mb-1">
+              {t('gdpr.requestType')} <span className="text-[#EF4444]">*</span>
             </label>
             <select
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853]"
               value={form.request_type}
               onChange={(e) => handleChange('request_type', e.target.value)}
             >
@@ -168,11 +168,11 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              {tc('description')} <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-[#333] mb-1">
+              {tc('description')} <span className="text-[#EF4444]">*</span>
             </label>
             <textarea
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853] resize-none"
               rows={3}
               placeholder="Describe the data subject request..."
               value={form.description}
@@ -182,10 +182,10 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
 
           {/* Deadline */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">{t('gdpr.deadline')}</label>
+            <label className="block text-sm font-medium text-[#333] mb-1">{t('gdpr.deadline')}</label>
             <input
               type="date"
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853]"
               value={form.deadline}
               onChange={(e) => handleChange('deadline', e.target.value)}
             />
@@ -194,9 +194,9 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
           {/* Status — only for edit */}
           {isEdit && (
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{tc('status')}</label>
+              <label className="block text-sm font-medium text-[#333] mb-1">{tc('status')}</label>
               <select
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853]"
                 value={form.status}
                 onChange={(e) => handleChange('status', e.target.value)}
               >
@@ -210,9 +210,9 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
           {/* Response Note — only for edit */}
           {isEdit && (
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('gdpr.responseNote')}</label>
+              <label className="block text-sm font-medium text-[#333] mb-1">{t('gdpr.responseNote')}</label>
               <textarea
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853] resize-none"
                 rows={3}
                 placeholder="Response or resolution notes..."
                 value={form.response_note}
@@ -221,20 +221,20 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
             </div>
           )}
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-[#DC2626]">{error}</p>}
         </div>
 
         <DialogFooter className="gap-2">
           <button
             onClick={onClose}
-            className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-lg font-medium text-sm"
+            className="bg-white border border-[#D4D4D4] hover:bg-[#FAFAFA] text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
           >
             {tc('cancel')}
           </button>
           <button
             onClick={handleSubmit}
             disabled={saving}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
+            className="bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
           >
             {saving ? tc('loading') : tc('save')}
           </button>

@@ -63,13 +63,13 @@ export default function CompensationClient() {
       {/* ─── 페이지 헤더 ─── */}
       <div className="flex items-center justify-between">
         <div>
-          <nav className="text-xs text-slate-400 mb-1">{tMenu('settings')} / {tMenu('compensation')}</nav>
-          <h1 className="text-2xl font-bold text-slate-900">{t('salaryAdjustment')}</h1>
+          <nav className="text-xs text-[#999] mb-1">{tMenu('settings')} / {tMenu('compensation')}</nav>
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('salaryAdjustment')}</h1>
         </div>
         <div className="flex items-center gap-3">
-          <label className="text-sm text-slate-600">{t('evaluationCycle')}:</label>
+          <label className="text-sm text-[#555]">{t('evaluationCycle')}:</label>
           <select
-            className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
             value={selectedCycleId}
             onChange={(e) => setSelectedCycleId(e.target.value)}
           >
@@ -94,7 +94,7 @@ export default function CompensationClient() {
             <CheckCircle2 className="mr-1.5 h-4 w-4" />
             {t('confirm')}
             {pendingAdjustments.length > 0 && (
-              <span className="ml-1.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700">
+              <span className="ml-1.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-xs bg-[#E8F5E9] text-[#00A844]">
                 {pendingAdjustments.length}
               </span>
             )}

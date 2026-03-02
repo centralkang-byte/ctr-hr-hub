@@ -23,8 +23,14 @@ export const GET = withPermission(
                 id: true,
                 name: true,
                 employeeNo: true,
-                department: { select: { id: true, name: true } },
-                jobGrade: { select: { id: true, name: true } },
+                assignments: {
+                  where: { isPrimary: true, endDate: null },
+                  take: 1,
+                  select: {
+                    department: { select: { id: true, name: true } },
+                    jobGrade: { select: { id: true, name: true } },
+                  },
+                },
               },
             },
           },

@@ -77,7 +77,7 @@ export default function AnalyticsOverviewClient() {
       {/* KPI Cards */}
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-[#999]" />
         </div>
       ) : kpi ? (
         <>
@@ -128,29 +128,29 @@ export default function AnalyticsOverviewClient() {
 
           {/* Sub-dashboard Navigation */}
           <div>
-            <h2 className="mb-4 text-lg font-semibold text-slate-900">{t('detailedAnalysis')}</h2>
+            <h2 className="mb-4 text-lg font-semibold text-[#1A1A1A]">{t('detailedAnalysis')}</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {SUB_DASHBOARDS.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href + (companyId ? `?company_id=${companyId}` : '')}
-                  className="group flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-blue-300 hover:shadow-md"
+                  className="group flex items-start gap-4 rounded-xl border border-[#E8E8E8] bg-white p-5 transition-all hover:border-[#E8F5E9] "
                 >
-                  <div className="rounded-lg bg-blue-50 p-2.5 text-blue-600 transition-colors group-hover:bg-blue-100">
+                  <div className="rounded-lg bg-[#E8F5E9] p-2.5 text-[#00C853] transition-colors group-hover:bg-[#E8F5E9]">
                     <item.icon className="h-5 w-5" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="text-sm font-semibold text-slate-900">{item.title}</h3>
-                    <p className="mt-0.5 text-xs text-slate-500">{item.description}</p>
+                    <h3 className="text-sm font-semibold text-[#1A1A1A]">{item.title}</h3>
+                    <p className="mt-0.5 text-xs text-[#666]">{item.description}</p>
                   </div>
-                  <BarChart3 className="h-4 w-4 shrink-0 text-slate-300 transition-colors group-hover:text-blue-400" />
+                  <BarChart3 className="h-4 w-4 shrink-0 text-[#D4D4D4] transition-colors group-hover:text-[#00C853]" />
                 </Link>
               ))}
             </div>
           </div>
         </>
       ) : (
-        <div className="py-20 text-center text-sm text-slate-500">
+        <div className="py-20 text-center text-sm text-[#666]">
           {t('dataLoadFailed')}
         </div>
       )}

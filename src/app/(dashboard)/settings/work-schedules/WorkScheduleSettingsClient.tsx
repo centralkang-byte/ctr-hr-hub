@@ -62,9 +62,9 @@ interface WorkScheduleLocal {
 // ─── Label / color maps ─────────────────────────────────
 
 const SCHEDULE_TYPE_COLORS: Record<string, string> = {
-  FIXED: 'bg-blue-100 text-blue-800',
+  FIXED: 'bg-[#E8F5E9] text-[#00A844]',
   FLEXIBLE: 'bg-green-100 text-green-800',
-  SHIFT: 'bg-purple-100 text-purple-800',
+  SHIFT: 'bg-[#F3E8FF] text-[#6B21A8]',
 }
 
 // ─── Default daily config (Mon–Sun, 09:00–18:00 weekdays) ──

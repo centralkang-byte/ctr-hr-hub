@@ -32,9 +32,9 @@ interface Props {
 
 const STATUS_COLORS: Record<string, string> = {
   ACTIVE: 'bg-green-100 text-green-800',
-  EXPIRED: 'bg-red-100 text-red-800',
-  REVOKED: 'bg-gray-100 text-gray-800',
-  PENDING_RENEWAL: 'bg-yellow-100 text-yellow-800',
+  EXPIRED: 'bg-[#FEE2E2] text-[#991B1B]',
+  REVOKED: 'bg-[#F5F5F5] text-[#1A1A1A]',
+  PENDING_RENEWAL: 'bg-[#FEF9C3] text-[#854D0E]',
 }
 
 export default function WorkPermitsClient({ employeeId, permissions }: Props) {
@@ -204,7 +204,7 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
       </div>
 
       {loading ? (
-        <p className="text-sm text-gray-500">{tc('loading')}</p>
+        <p className="text-sm text-[#666]">{tc('loading')}</p>
       ) : (
         <Table>
           <TableHeader>
@@ -222,7 +222,7 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
             {permits.map((p) => (
               <TableRow
                 key={p.id}
-                className={isExpiringSoon(p.expiryDate) && p.status === 'ACTIVE' ? 'bg-yellow-50' : ''}
+                className={isExpiringSoon(p.expiryDate) && p.status === 'ACTIVE' ? 'bg-[#FEFCE8]' : ''}
               >
                 <TableCell>{PERMIT_TYPE_LABELS[p.permitType] ?? p.permitType}</TableCell>
                 <TableCell className="font-mono text-sm">{p.permitNumber ?? '-'}</TableCell>
@@ -230,24 +230,24 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
                 <TableCell>{format(new Date(p.issueDate), 'yyyy-MM-dd')}</TableCell>
                 <TableCell>
                   {p.expiryDate ? (
-                    <span className={isExpiringSoon(p.expiryDate) && p.status === 'ACTIVE' ? 'font-medium text-yellow-700' : ''}>
+                    <span className={isExpiringSoon(p.expiryDate) && p.status === 'ACTIVE' ? 'font-medium text-[#A16207]' : ''}>
                       {format(new Date(p.expiryDate), 'yyyy-MM-dd')}
                     </span>
                   ) : (
-                    <span className="text-gray-400">-</span>
+                    <span className="text-[#999]">-</span>
                   )}
                 </TableCell>
                 <TableCell>
-                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[p.status] ?? 'bg-gray-100 text-gray-800'}`}>
+                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[p.status] ?? 'bg-[#F5F5F5] text-[#1A1A1A]'}`}>
                     {STATUS_LABELS[p.status] ?? p.status}
                   </span>
                 </TableCell>
-                <TableCell className="text-sm text-gray-500">{p.notes ?? '-'}</TableCell>
+                <TableCell className="text-sm text-[#666]">{p.notes ?? '-'}</TableCell>
               </TableRow>
             ))}
             {permits.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="text-center text-gray-400">
+                <TableCell colSpan={7} className="text-center text-[#999]">
                   {t('noWorkPermits')}
                 </TableCell>
               </TableRow>

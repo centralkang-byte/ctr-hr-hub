@@ -18,9 +18,14 @@ export async function calculateSeverance(
       id: true,
       name: true,
       hireDate: true,
-      companyId: true,
+      assignments: {
+        where: { isPrimary: true, endDate: null },
+        take: 1,
+        select: { companyId: true },
+      },
     },
   })
+  const companyId = employee.assignments?.[0]?.companyId ?? ''
 
   const tenureDays = differenceInDays(terminationDate, employee.hireDate)
   const tenureYears = tenureDays / 365
@@ -40,7 +45,7 @@ export async function calculateSeverance(
       where: {
         employeeId,
         run: {
-          companyId: employee.companyId,
+          companyId: companyId,
           yearMonth,
           status: 'PAID',
         },
@@ -63,7 +68,7 @@ export async function calculateSeverance(
       const comp = await prisma.compensationHistory.findFirst({
         where: {
           employeeId,
-          companyId: employee.companyId,
+          companyId: companyId,
           effectiveDate: { lte: monthEnd },
         },
         orderBy: { effectiveDate: 'desc' },
@@ -73,7 +78,7 @@ export async function calculateSeverance(
 
       // 해당 월 수당
       const allowanceRecords = await prisma.allowanceRecord.findMany({
-        where: { employeeId, companyId: employee.companyId, yearMonth },
+        where: { employeeId, companyId: companyId, yearMonth },
       })
       const totalAllowance = allowanceRecords.reduce(
         (sum, r) => sum + Number(r.amount),
@@ -84,7 +89,7 @@ export async function calculateSeverance(
       const attendances = await prisma.attendance.findMany({
         where: {
           employeeId,
-          companyId: employee.companyId,
+          companyId: companyId,
           workDate: { gte: monthStart, lte: monthEnd },
           overtimeMinutes: { gt: 0 },
         },

@@ -193,8 +193,14 @@ export async function generateEmployeeRegistry(
 ): Promise<EmployeeRegistry> {
   const employees = await prisma.employee.findMany({
     where: {
-      companyId,
-      status: { not: 'RESIGNED' },
+      assignments: {
+        some: {
+          companyId,
+          status: { not: 'RESIGNED' },
+          isPrimary: true,
+          endDate: null,
+        },
+      },
     },
     select: {
       employeeNo: true,
@@ -203,28 +209,37 @@ export async function generateEmployeeRegistry(
       gender: true,
       birthDate: true,
       hireDate: true,
-      employmentType: true,
-      status: true,
       email: true,
-      department: { select: { name: true } },
-      jobGrade: { select: { name: true } },
+      assignments: {
+        where: { isPrimary: true, endDate: null },
+        take: 1,
+        select: {
+          employmentType: true,
+          status: true,
+          department: { select: { name: true } },
+          jobGrade: { select: { name: true } },
+        },
+      },
     },
-    orderBy: [{ department: { name: 'asc' } }, { name: 'asc' }],
+    orderBy: [{ name: 'asc' }],
   })
 
-  const rows: EmployeeRegistryRow[] = employees.map((emp) => ({
-    employeeNo: emp.employeeNo,
-    name: emp.name,
-    nameEn: emp.nameEn ?? null,
-    gender: emp.gender ?? null,
-    birthDate: emp.birthDate ? emp.birthDate.toISOString().split('T')[0] : null,
-    hireDate: emp.hireDate.toISOString().split('T')[0],
-    department: emp.department.name,
-    jobGrade: emp.jobGrade.name,
-    employmentType: emp.employmentType,
-    status: emp.status,
-    email: emp.email,
-  }))
+  const rows: EmployeeRegistryRow[] = (employees as any[]).map((emp) => {
+    const assignment = emp.assignments?.[0]
+    return {
+      employeeNo: emp.employeeNo,
+      name: emp.name,
+      nameEn: emp.nameEn ?? null,
+      gender: emp.gender ?? null,
+      birthDate: emp.birthDate ? emp.birthDate.toISOString().split('T')[0] : null,
+      hireDate: emp.hireDate.toISOString().split('T')[0],
+      department: assignment?.department?.name ?? '-',
+      jobGrade: assignment?.jobGrade?.name ?? '-',
+      employmentType: assignment?.employmentType ?? '-',
+      status: assignment?.status ?? '-',
+      email: emp.email,
+    }
+  })
 
   return {
     companyId,
