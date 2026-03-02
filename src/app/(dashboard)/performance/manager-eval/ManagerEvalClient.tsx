@@ -6,6 +6,7 @@ import { Save, Send, Sparkles, Users, ChevronRight, CheckCircle2, Clock } from '
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import type { EvaluationSettings } from '@/types/settings'
+import AiDraftModal from '@/components/performance/AiDraftModal'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -68,6 +69,8 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
   const [performanceGrade, setPerformanceGrade] = useState('')
   const [competencyGrade, setCompetencyGrade] = useState('')
   const [beiChecks, setBeiChecks] = useState<BeiChecks>({})
+  const [currentEvaluationId, setCurrentEvaluationId] = useState<string | null>(null)
+  const [showAiDraft, setShowAiDraft] = useState(false)
 
   // ─── Fetch cycles ────────────────────────────────────
 
@@ -104,6 +107,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
   const loadEmployeeForm = useCallback(async (employeeId: string) => {
     setFormLoading(true)
     setSelectedEmployee(employeeId)
+    setCurrentEvaluationId(null)
     try {
       // Get employee's goals
       const goalsRes = await apiClient.getList<GoalItem>('/api/v1/performance/team-goals', { cycleId: selectedCycleId, employeeId })
@@ -120,9 +124,24 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
       setPerformanceGrade('')
       setCompetencyGrade('')
       setBeiChecks({})
+
+      // Track current manager evaluation ID if it exists
+      const tm = teamMembers.find((m) => m.employee.id === employeeId)
+      if (tm?.managerEval?.id) {
+        setCurrentEvaluationId(tm.managerEval.id)
+      }
     } catch { /* ignore */ }
     finally { setFormLoading(false) }
-  }, [selectedCycleId])
+  }, [selectedCycleId, teamMembers])
+
+  // ─── Apply AI Draft ──────────────────────────────────
+
+  const handleApplyDraft = (draft: { overallOpinion?: string; performanceComment?: string }) => {
+    // Apply overallOpinion to the overall comment field
+    if (draft.overallOpinion) {
+      setOverallComment(draft.overallOpinion)
+    }
+  }
 
   // ─── Save / Submit ──────────────────────────────────
 
@@ -131,7 +150,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
     if (status === 'SUBMITTED' && !confirm('제출하면 수정할 수 없습니다. 제출하시겠습니까?')) return
     setSubmitting(true)
     try {
-      await apiClient.post('/api/v1/performance/evaluations/manager', {
+      const res = await apiClient.post<{ id: string }>('/api/v1/performance/evaluations/manager', {
         cycleId: selectedCycleId,
         employeeId: selectedEmployee,
         goalScores: Object.values(goalScores),
@@ -145,6 +164,10 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
         overallComment,
         status,
       })
+      // Capture evaluation ID so AI draft can be generated
+      if (res.data?.id) {
+        setCurrentEvaluationId(res.data.id)
+      }
       await fetchTeam()
       alert(status === 'DRAFT' ? '임시 저장되었습니다.' : '제출 완료되었습니다.')
     } catch {
@@ -419,28 +442,48 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
               </div>
 
               {/* Actions */}
-              <div className="flex items-center justify-end gap-3">
+              <div className="flex items-center justify-between gap-3">
                 <button
-                  onClick={() => handleSave('DRAFT')}
-                  disabled={submitting}
-                  className="flex items-center gap-2 px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm font-medium text-[#333] hover:bg-[#FAFAFA] disabled:opacity-50"
+                  onClick={() => setShowAiDraft(true)}
+                  disabled={!currentEvaluationId}
+                  title={!currentEvaluationId ? '먼저 임시 저장 후 AI 초안을 생성할 수 있습니다' : undefined}
+                  className="flex items-center gap-1.5 px-3 py-2 border border-[#C7D2FE] bg-[#E0E7FF] text-[#4338CA] rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#C7D2FE] transition-colors"
                 >
-                  <Save className="w-4 h-4" />
-                  임시 저장
+                  <Sparkles className="w-4 h-4" />
+                  AI 초안 생성
                 </button>
-                <button
-                  onClick={() => handleSave('SUBMITTED')}
-                  disabled={submitting}
-                  className="flex items-center gap-2 px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium disabled:opacity-50"
-                >
-                  <Send className="w-4 h-4" />
-                  제출
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => handleSave('DRAFT')}
+                    disabled={submitting}
+                    className="flex items-center gap-2 px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm font-medium text-[#333] hover:bg-[#FAFAFA] disabled:opacity-50"
+                  >
+                    <Save className="w-4 h-4" />
+                    임시 저장
+                  </button>
+                  <button
+                    onClick={() => handleSave('SUBMITTED')}
+                    disabled={submitting}
+                    className="flex items-center gap-2 px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium disabled:opacity-50"
+                  >
+                    <Send className="w-4 h-4" />
+                    제출
+                  </button>
+                </div>
               </div>
             </>
           )}
         </div>
       </div>
+
+      {/* AI Draft Modal */}
+      {showAiDraft && currentEvaluationId && (
+        <AiDraftModal
+          evaluationId={currentEvaluationId}
+          onClose={() => setShowAiDraft(false)}
+          onApply={handleApplyDraft}
+        />
+      )}
     </div>
   )
 }

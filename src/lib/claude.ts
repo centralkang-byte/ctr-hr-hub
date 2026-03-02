@@ -670,6 +670,95 @@ JSON만 응답하세요.`
   }
 }
 
+// ─── Evaluation Draft Generation ─────────────────────────
+
+export interface EvalDraftInput {
+  employee: {
+    name: string
+    jobLevel?: string | null
+    department?: string | null
+    tenureMonths?: number
+  }
+  mboGoals: { title: string; achievementRate?: number | null }[]
+  oneOnOnes: { date: string; summary?: string | null; sentimentTag?: string | null }[]
+  beiScores?: { competency: string; score?: number | null }[]
+  previousEval?: { grade?: string | null; comment?: string | null } | null
+  evalType: 'SELF' | 'MANAGER'
+}
+
+export interface EvalDraftResult {
+  performanceComment: string
+  competencyComment?: string
+  strengths: string[]
+  developmentAreas: string[]
+  overallOpinion: string
+  recommendedGrade?: string
+  reviewNeededTags: string[]
+}
+
+export async function generateEvaluationDraft(
+  input: EvalDraftInput,
+  companyId: string,
+  reviewerId: string,
+): Promise<EvalDraftResult> {
+  const goalLines = input.mboGoals.length > 0
+    ? input.mboGoals.map((g) => `- ${g.title}: 달성률 ${g.achievementRate != null ? `${Math.round(g.achievementRate)}%` : '미입력'}`).join('\n')
+    : '- 목표 없음'
+
+  const oneOnOneLines = input.oneOnOnes.length > 0
+    ? input.oneOnOnes.map((o) => `- ${o.date}${o.sentimentTag ? ` [${o.sentimentTag}]` : ''}: ${o.summary ?? '요약 없음'}`).join('\n')
+    : '- 원온원 기록 없음'
+
+  const beiLines = input.beiScores && input.beiScores.length > 0
+    ? input.beiScores.map((b) => `- ${b.competency}: ${b.score != null ? `${b.score}/5` : '미평가'}`).join('\n')
+    : null
+
+  const prevEvalLine = input.previousEval
+    ? `전기 평가: ${input.previousEval.grade ?? '미기재'} / ${input.previousEval.comment ?? '코멘트 없음'}`
+    : null
+
+  const prompt = `당신은 CTR Holdings의 HR 전문가입니다. 아래 데이터를 바탕으로 공정하고 구체적인 평가 초안을 작성하세요.
+판단이 아닌 사실 기반으로 작성하고, 주관적 해석 또는 데이터 부족 부분은 "[매니저 검토 필요]" 태그를 붙여주세요.
+
+직원: ${input.employee.name}${input.employee.jobLevel ? ` (${input.employee.jobLevel})` : ''}${input.employee.department ? ` · ${input.employee.department}` : ''}${input.employee.tenureMonths != null ? ` · 재직 ${input.employee.tenureMonths}개월` : ''}
+평가 유형: ${input.evalType === 'MANAGER' ? '매니저 평가' : '자기 평가'}
+
+목표 달성 현황:
+${goalLines}
+
+최근 원온원 요약:
+${oneOnOneLines}
+
+${beiLines ? `BEI 역량 점수:\n${beiLines}\n` : ''}
+${prevEvalLine ? `${prevEvalLine}\n` : ''}
+
+아래 JSON 형식으로만 응답하세요:
+{
+  "performanceComment": "업적 평가 코멘트 (200자 이내)",
+  "competencyComment": "역량 평가 코멘트 (200자 이내, BEI 데이터 없으면 null)",
+  "strengths": ["강점 1", "강점 2", "강점 3"],
+  "developmentAreas": ["개발 영역 1", "개발 영역 2"],
+  "overallOpinion": "종합 소견 (300자 이내)",
+  "recommendedGrade": "추천 등급 코드 또는 null (참고용)",
+  "reviewNeededTags": ["[매니저 검토 필요] 태그가 붙은 항목 목록"]
+}`
+
+  const result = await callClaude({
+    feature: 'EVAL_DRAFT_GENERATION',
+    prompt,
+    systemPrompt: 'You are an HR performance evaluation specialist for CTR Holdings. Respond only in Korean with valid JSON.',
+    maxTokens: 1536,
+    companyId,
+    employeeId: reviewerId,
+  })
+
+  try {
+    return JSON.parse(result.content) as EvalDraftResult
+  } catch {
+    throw serviceUnavailable('AI 평가 초안 생성에 실패했습니다.')
+  }
+}
+
 // ─── Generate One-on-One Notes ─────────────────────────
 
 export interface OneOnOneNotesInput {
