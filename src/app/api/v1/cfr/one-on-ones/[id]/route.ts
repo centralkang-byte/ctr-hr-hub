@@ -27,6 +27,7 @@ const updateSchema = z.object({
   actionItems: z.array(actionItemSchema).optional(),
   status: z.enum(['SCHEDULED', 'COMPLETED', 'CANCELLED', 'NO_SHOW']).optional(),
   aiSummary: z.string().optional(),
+  sentimentTag: z.string().max(20).optional().nullable(),
 })
 
 // ─── GET /api/v1/cfr/one-on-ones/[id] ────────────────────
@@ -108,6 +109,7 @@ export const PUT = withPermission(
           ...(parsed.data.notes !== undefined ? { notes: parsed.data.notes } : {}),
           ...(parsed.data.actionItems ? { actionItems: parsed.data.actionItems } : {}),
           ...(parsed.data.aiSummary ? { aiSummary: parsed.data.aiSummary } : {}),
+          ...(parsed.data.sentimentTag !== undefined ? { sentimentTag: parsed.data.sentimentTag } : {}),
           ...(parsed.data.status ? {
             status: parsed.data.status as OneOnOneStatus,
             ...(parsed.data.status === 'COMPLETED' ? { completedAt: new Date() } : {}),

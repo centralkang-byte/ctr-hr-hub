@@ -26,6 +26,7 @@ interface MeetingDetail {
   agenda: string | null
   notes: string | null
   aiSummary: string | null
+  sentimentTag: string | null
   actionItems: ActionItem[] | null
   employee: { id: string; name: string; employeeNo: string; department?: { name: string }; jobGrade?: { name: string } }
   manager: { id: string; name: string }
@@ -58,6 +59,7 @@ export default function OneOnOneDetailClient() {
 
   // Editable fields
   const [notes, setNotes] = useState('')
+  const [sentimentTag, setSentimentTag] = useState<string | null>(null)
   const [actionItems, setActionItems] = useState<ActionItem[]>([])
   const [prevActions, setPrevActions] = useState<ActionItem[]>([])
 
@@ -67,6 +69,7 @@ export default function OneOnOneDetailClient() {
       const res = await apiClient.get<MeetingDetail>(`/api/v1/cfr/one-on-ones/${id}`)
       setMeeting(res.data)
       setNotes(res.data.notes ?? '')
+      setSentimentTag(res.data.sentimentTag ?? null)
       setActionItems(res.data.actionItems ?? [])
 
       // Collect previous action items
@@ -86,6 +89,7 @@ export default function OneOnOneDetailClient() {
     try {
       await apiClient.put(`/api/v1/cfr/one-on-ones/${id}`, {
         notes,
+        sentimentTag,
         actionItems,
         ...(complete ? { status: 'COMPLETED' } : {}),
       })
@@ -213,6 +217,33 @@ export default function OneOnOneDetailClient() {
           rows={8}
           className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"
         />
+      </div>
+
+      {/* 미팅 분위기 */}
+      <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <h2 className="text-base font-semibold text-[#1A1A1A] mb-3">미팅 분위기</h2>
+        <div className="flex gap-2">
+          {[
+            { value: 'positive', label: '긍정적', emoji: '😊' },
+            { value: 'neutral', label: '보통', emoji: '😐' },
+            { value: 'negative', label: '부정적', emoji: '😞' },
+            { value: 'concerned', label: '우려됨', emoji: '😟' },
+          ].map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => setSentimentTag(sentimentTag === opt.value ? null : opt.value)}
+              className={`flex flex-col items-center px-3 py-2 rounded-lg border text-xs transition-colors ${
+                sentimentTag === opt.value
+                  ? 'border-[#00C853] bg-[#E8F5E9] text-[#00A844]'
+                  : 'border-[#E8E8E8] hover:border-[#D4D4D4] text-[#666]'
+              }`}
+            >
+              <span className="text-base mb-0.5">{opt.emoji}</span>
+              {opt.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* New Action Items */}
