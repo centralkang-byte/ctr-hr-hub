@@ -208,3 +208,89 @@ export async function recordStatusChange(params: {
     status:     params.newStatus,
   })
 }
+
+// ── 포지션 기반 매니저 조회 (A2-2) ─────────────────────────────
+export async function getManagerByPosition(positionId: string): Promise<{
+  managerId: string | null
+  managerPositionId: string | null
+  managerPositionTitle: string | null
+} | null> {
+  const position = await prisma.position.findUnique({
+    where: { id: positionId },
+    select: {
+      reportsTo: {
+        select: {
+          id: true,
+          titleKo: true,
+          assignments: {
+            where: { isPrimary: true, endDate: null },
+            select: { employeeId: true },
+            take: 1,
+          },
+        },
+      },
+    },
+  })
+
+  if (!position?.reportsTo) return null
+
+  return {
+    managerId: position.reportsTo.assignments[0]?.employeeId ?? null,
+    managerPositionId: position.reportsTo.id,
+    managerPositionTitle: position.reportsTo.titleKo,
+  }
+}
+
+// ── 포지션의 직속 부하 조회 ──────────────────────────────────────
+export async function getDirectReports(
+  positionId: string
+): Promise<Array<{ positionId: string; titleKo: string; employeeId: string | null }>> {
+  const reports = await prisma.position.findMany({
+    where: { reportsToPositionId: positionId, isActive: true },
+    select: {
+      id: true,
+      titleKo: true,
+      assignments: {
+        where: { isPrimary: true, endDate: null },
+        select: { employeeId: true },
+        take: 1,
+      },
+    },
+    orderBy: { titleKo: 'asc' },
+  })
+
+  return reports.map((r: { id: string; titleKo: string; assignments: { employeeId: string }[] }) => ({
+    positionId: r.id,
+    titleKo: r.titleKo,
+    employeeId: r.assignments[0]?.employeeId ?? null,
+  }))
+}
+
+// ── 점선 라인 매니저 조회 ────────────────────────────────────────
+export async function getDottedLineManager(positionId: string): Promise<{
+  managerId: string | null
+  positionTitle: string
+} | null> {
+  const position = await prisma.position.findUnique({
+    where: { id: positionId },
+    select: {
+      dottedLineTo: {
+        select: {
+          titleKo: true,
+          assignments: {
+            where: { isPrimary: true, endDate: null },
+            select: { employeeId: true },
+            take: 1,
+          },
+        },
+      },
+    },
+  })
+
+  if (!position?.dottedLineTo) return null
+
+  return {
+    managerId: position.dottedLineTo.assignments[0]?.employeeId ?? null,
+    positionTitle: position.dottedLineTo.titleKo,
+  }
+}
