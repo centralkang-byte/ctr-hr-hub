@@ -5,11 +5,11 @@
 import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
-import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
+import { apiSuccess } from '@/lib/api'
 import { badRequest, handlePrismaError, notFound, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
-import { MODULE, ACTION, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
+import { MODULE, ACTION, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants' // DEFAULT_PAGE/SIZE used in searchSchema
 import { calculateEmsBlock, DEFAULT_BLOCK_DEFINITIONS } from '@/lib/ems'
 import type { SessionUser } from '@/types'
 import type { EvalType, EvalStatus, Prisma } from '@/generated/prisma/client'
@@ -39,6 +39,12 @@ const upsertSchema = z.object({
   employeeId: z.string(),
   goalScores: z.array(goalScoreSchema),
   competencyScores: z.array(competencyScoreSchema),
+  performanceGrade: z.string().max(20).optional(),
+  competencyGrade: z.string().max(20).optional(),
+  beiIndicatorScores: z.array(z.object({
+    indicatorId: z.string(),
+    checked: z.boolean(),
+  })).optional().default([]),
   overallComment: z.string().max(3000).optional(),
   status: z.enum(['DRAFT', 'SUBMITTED']),
 })
@@ -118,7 +124,38 @@ export const GET = withPermission(
       }
     })
 
-    return apiPaginated(result, buildPagination(page, limit, total > 0 ? total : teamMembers.length))
+    // 평가 설정 로드
+    const { getCompanySettings } = await import('@/lib/settings/getSettings')
+    const settingsRes = await getCompanySettings('evaluationSetting', user.companyId)
+    const evalSettings = settingsRes.data
+
+    // BEI 지표 로드 (methodology = MBO_BEI 일 때만)
+    let beiIndicators: Array<{
+      competencyId: string
+      competencyName: string
+      indicators: Array<{ id: string; indicatorText: string; displayOrder: number }>
+    }> = []
+
+    if (evalSettings?.methodology === 'MBO_BEI') {
+      const coreValueComps = await prisma.competency.findMany({
+        where: { category: { code: 'core_value' }, isActive: true },
+        orderBy: { displayOrder: 'asc' },
+        include: {
+          indicators: {
+            where: { isActive: true },
+            orderBy: { displayOrder: 'asc' },
+            select: { id: true, indicatorText: true, displayOrder: true },
+          },
+        },
+      })
+      beiIndicators = coreValueComps.map((c) => ({
+        competencyId: c.id,
+        competencyName: c.name,
+        indicators: c.indicators,
+      }))
+    }
+
+    return apiSuccess({ members: result, evalSettings, beiIndicators })
   },
   perm(MODULE.PERFORMANCE, ACTION.APPROVE),
 )
@@ -197,8 +234,17 @@ export const POST = withPermission(
         performanceScore,
         competencyScore,
         emsBlock: emsResult.block,
-        performanceDetail: goalScores as unknown as Prisma.InputJsonValue,
-        competencyDetail: competencyScores as unknown as Prisma.InputJsonValue,
+        performanceDetail: {
+          goalScores,
+          gradeCode: parsed.data.performanceGrade ?? null,
+        } as unknown as Prisma.InputJsonValue,
+        competencyDetail: {
+          competencyScores: parsed.data.competencyScores,
+          beiIndicatorScores: parsed.data.beiIndicatorScores,
+          gradeCode: parsed.data.competencyGrade ?? null,
+        } as unknown as Prisma.InputJsonValue,
+        performanceGrade: parsed.data.performanceGrade ?? null,
+        competencyGrade: parsed.data.competencyGrade ?? null,
         comment: overallComment ?? null,
         status: status as EvalStatus,
         submittedAt: status === 'SUBMITTED' ? new Date() : null,

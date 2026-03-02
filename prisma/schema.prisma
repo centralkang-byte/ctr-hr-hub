@@ -194,11 +194,20 @@ enum OnboardingTargetType {
   REHIRE
 }
 
+enum OnboardingPlanType {
+  ONBOARDING
+  OFFBOARDING
+  CROSSBOARDING_DEPARTURE
+  CROSSBOARDING_ARRIVAL
+}
+
 enum OnboardingAssignee {
   EMPLOYEE
   MANAGER
   HR
   BUDDY
+  IT
+  FINANCE
 }
 
 enum OnboardingTaskCategory {
@@ -207,12 +216,19 @@ enum OnboardingTaskCategory {
   SETUP
   INTRODUCTION
   OTHER
+  ADMIN
+  COMPLIANCE
+  ORIENTATION
+  CHECK_IN
+  HANDOVER
 }
 
 enum OnboardingProgressStatus {
   NOT_STARTED
   IN_PROGRESS
   COMPLETED
+  SUSPENDED
+  ARCHIVED
 }
 
 enum TaskProgressStatus {
@@ -710,6 +726,7 @@ model Company {
   holidays               Holiday[]
   jobPostings            JobPosting[]
   competencyLibrary      CompetencyLibrary[]
+  competencyRequirements CompetencyRequirement[]
   performanceCycles      PerformanceCycle[]
   emsBlockConfigs        EmsBlockConfig[]
   mboGoals               MboGoal[]
@@ -800,6 +817,9 @@ model Company {
   approvalFlows        ApprovalFlow[]
   requisitions         Requisition[]
 
+  // B5: 온보딩 플랜 법인 연결
+  employeeOnboardingPlans EmployeeOnboarding[] @relation("EmployeeOnboardingCompany")
+
   @@map("companies")
 }
 
@@ -876,10 +896,11 @@ model Job {
   titleKo   String     @map("title_ko")
   titleEn   String     @map("title_en")
   companyId String?    @map("company_id")
-  company   Company?   @relation(fields: [companyId], references: [id])
-  positions Position[]
-  createdAt DateTime   @default(now()) @map("created_at")
-  updatedAt DateTime   @updatedAt @map("updated_at")
+  company                Company?               @relation(fields: [companyId], references: [id])
+  positions              Position[]
+  competencyRequirements CompetencyRequirement[]
+  createdAt              DateTime               @default(now()) @map("created_at")
+  updatedAt              DateTime               @updatedAt @map("updated_at")
 
   @@index([companyId])
   @@map("jobs")
@@ -1450,9 +1471,13 @@ model ExitInterview {
   interviewerId         String     @map("interviewer_id")
   interviewDate         DateTime   @map("interview_date")
   primaryReason         ExitReason @map("primary_reason")
+  detailedReason        String?    @map("detailed_reason")  // B5 추가: 상세 퇴직 사유
   satisfactionScore     Int        @map("satisfaction_score")
+  satisfactionDetail    Json?      @map("satisfaction_detail")  // B5 추가: { overall, compensation, culture, management, growth }
   wouldRecommend        Boolean?   @map("would_recommend")
   feedbackText          String     @map("feedback_text")
+  suggestions           String?    @map("suggestions")     // B5 추가: 개선 제안
+  isConfidential        Boolean    @default(true) @map("is_confidential")  // B5 추가
   aiSummary             String?    @map("ai_summary")
   createdAt             DateTime   @default(now()) @map("created_at")
 
@@ -1534,15 +1559,16 @@ model RewardRecord {
 
 model OnboardingTemplate {
   id          String               @id @default(uuid())
-  companyId   String               @map("company_id")
+  companyId   String?              @map("company_id")     // NULL = 글로벌 기본 템플릿
   name        String
   description String?
-  targetType  OnboardingTargetType @map("target_type")
+  targetType  OnboardingTargetType @default(NEW_HIRE) @map("target_type")
+  planType    OnboardingPlanType   @default(ONBOARDING) @map("plan_type")  // 온보딩/오프보딩/크로스보딩 구분
   isActive    Boolean              @default(true) @map("is_active")
   createdAt   DateTime             @default(now()) @map("created_at")
   deletedAt   DateTime?            @map("deleted_at")
 
-  company             Company              @relation(fields: [companyId], references: [id])
+  company             Company?             @relation(fields: [companyId], references: [id])
   onboardingTasks     OnboardingTask[]
   employeeOnboardings EmployeeOnboarding[]
 
@@ -1567,19 +1593,26 @@ model OnboardingTask {
 }
 
 model EmployeeOnboarding {
-  id          String                   @id @default(uuid())
-  employeeId  String                   @map("employee_id")
-  templateId  String                   @map("template_id")
-  buddyId     String?                  @map("buddy_id")
-  status      OnboardingProgressStatus
-  startedAt   DateTime?                @map("started_at")
-  completedAt DateTime?                @map("completed_at")
-  createdAt   DateTime                 @default(now()) @map("created_at")
+  id              String                   @id @default(uuid())
+  employeeId      String                   @map("employee_id")
+  templateId      String                   @map("template_id")
+  companyId       String?                  @map("company_id")     // 법인 구분 (B5 추가)
+  buddyId         String?                  @map("buddy_id")
+  planType        OnboardingPlanType       @default(ONBOARDING) @map("plan_type")  // B5 추가
+  linkedPlanId    String?                  @map("linked_plan_id") // Cross-boarding 반대쪽 플랜 (B5 추가)
+  status          OnboardingProgressStatus
+  lastWorkingDate DateTime?                @map("last_working_date") @db.Date  // 오프보딩 최종 근무일 (B5 추가)
+  startedAt       DateTime?                @map("started_at")
+  completedAt     DateTime?                @map("completed_at")
+  createdAt       DateTime                 @default(now()) @map("created_at")
 
-  employee Employee                 @relation("OnboardingEmployee", fields: [employeeId], references: [id])
-  template OnboardingTemplate       @relation(fields: [templateId], references: [id])
-  buddy    Employee?                @relation("OnboardingBuddy", fields: [buddyId], references: [id])
-  tasks    EmployeeOnboardingTask[]
+  employee    Employee                 @relation("OnboardingEmployee", fields: [employeeId], references: [id])
+  template    OnboardingTemplate       @relation(fields: [templateId], references: [id])
+  buddy       Employee?                @relation("OnboardingBuddy", fields: [buddyId], references: [id])
+  company     Company?                 @relation("EmployeeOnboardingCompany", fields: [companyId], references: [id])
+  linkedPlan  EmployeeOnboarding?      @relation("CrossboardingLink", fields: [linkedPlanId], references: [id])
+  linkedPlans EmployeeOnboarding[]     @relation("CrossboardingLink")
+  tasks       EmployeeOnboardingTask[]
 
   @@map("employee_onboarding")
 }
@@ -1938,6 +1971,90 @@ model CompetencyLibrary {
 }
 
 // ================================================================
+// B3-1: Competency Framework — 3-tier 역량 라이브러리
+// ================================================================
+
+model CompetencyCategory {
+  id           String       @id @default(uuid())
+  code         String       @unique @db.VarChar(50)
+  name         String       @db.VarChar(100)
+  nameEn       String?      @db.VarChar(100) @map("name_en")
+  description  String?      @db.Text
+  displayOrder Int          @default(0) @map("display_order")
+  isActive     Boolean      @default(true) @map("is_active")
+  competencies Competency[]
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  @@map("competency_categories")
+}
+
+model Competency {
+  id           String              @id @default(uuid())
+  categoryId   String              @map("category_id")
+  category     CompetencyCategory  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  code         String              @db.VarChar(50)
+  name         String              @db.VarChar(100)
+  nameEn       String?             @db.VarChar(100) @map("name_en")
+  description  String?             @db.Text
+  displayOrder Int                 @default(0) @map("display_order")
+  isActive     Boolean             @default(true) @map("is_active")
+  levels       CompetencyLevel[]
+  indicators   CompetencyIndicator[]
+  requirements CompetencyRequirement[]
+  createdAt    DateTime            @default(now()) @map("created_at")
+  updatedAt    DateTime            @updatedAt @map("updated_at")
+
+  @@unique([categoryId, code])
+  @@map("competencies")
+}
+
+model CompetencyLevel {
+  id           String     @id @default(uuid())
+  competencyId String     @map("competency_id")
+  competency   Competency @relation(fields: [competencyId], references: [id], onDelete: Cascade)
+  level        Int
+  label        String     @db.VarChar(100)
+  description  String?    @db.Text
+  createdAt    DateTime   @default(now()) @map("created_at")
+
+  @@unique([competencyId, level])
+  @@map("competency_levels")
+}
+
+model CompetencyIndicator {
+  id              String     @id @default(uuid())
+  competencyId    String     @map("competency_id")
+  competency      Competency @relation(fields: [competencyId], references: [id], onDelete: Cascade)
+  indicatorText   String     @db.Text @map("indicator_text")
+  indicatorTextEn String?    @db.Text @map("indicator_text_en")
+  displayOrder    Int        @default(0) @map("display_order")
+  isActive        Boolean    @default(true) @map("is_active")
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
+
+  @@unique([competencyId, displayOrder])
+  @@map("competency_indicators")
+}
+
+model CompetencyRequirement {
+  id            String     @id @default(uuid())
+  competencyId  String     @map("competency_id")
+  competency    Competency @relation(fields: [competencyId], references: [id], onDelete: Cascade)
+  jobId         String?    @map("job_id")
+  job           Job?       @relation(fields: [jobId], references: [id])
+  jobLevelCode  String?    @db.VarChar(20) @map("job_level_code")
+  expectedLevel Int        @map("expected_level")
+  companyId     String?    @map("company_id")
+  company       Company?   @relation(fields: [companyId], references: [id])
+  createdAt     DateTime   @default(now()) @map("created_at")
+
+  @@index([competencyId])
+  @@index([companyId])
+  @@map("competency_requirements")
+}
+
+// ================================================================
 // 9. Performance — EMS 9-Block
 // ================================================================
 
@@ -2018,6 +2135,8 @@ model PerformanceEvaluation {
   emsBlock          String?    @map("ems_block")
   performanceDetail Json?      @map("performance_detail")
   competencyDetail  Json?      @map("competency_detail")
+  performanceGrade  String?    @db.VarChar(20) @map("performance_grade")
+  competencyGrade   String?    @db.VarChar(20) @map("competency_grade")
   comment           String?
   status            EvalStatus
   submittedAt       DateTime?  @map("submitted_at")

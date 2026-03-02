@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Save, Send, Sparkles, Users, ChevronRight, CheckCircle2, Clock } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import type { EvaluationSettings } from '@/types/settings'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -17,9 +18,22 @@ interface TeamMemberEval {
 }
 
 interface GoalItem { id: string; title: string; weight: number }
-interface CompetencyItem { id: string; name: string; category: string }
 interface GoalScore { goalId: string; score: number; comment: string }
 interface CompetencyScore { competencyId: string; score: number; comment: string }
+
+interface BeiIndicatorGroup {
+  competencyId: string
+  competencyName: string
+  indicators: { id: string; indicatorText: string; displayOrder: number }[]
+}
+
+type BeiChecks = Record<string, boolean>
+
+interface EvalPayload {
+  members: TeamMemberEval[]
+  evalSettings: EvaluationSettings | null
+  beiIndicators: BeiIndicatorGroup[]
+}
 
 const SCORE_LABELS = ['', '매우 부족', '부족', '보통', '우수', '탁월']
 
@@ -43,13 +57,17 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
 
   // Eval form state
   const [goals, setGoals] = useState<GoalItem[]>([])
-  const [competencies, setCompetencies] = useState<CompetencyItem[]>([])
   const [goalScores, setGoalScores] = useState<Record<string, GoalScore>>({})
   const [compScores, setCompScores] = useState<Record<string, CompetencyScore>>({})
   const [overallComment, setOverallComment] = useState('')
   const [formLoading, setFormLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [aiLoading, setAiLoading] = useState(false)
+  const [evalSettings, setEvalSettings] = useState<EvaluationSettings | null>(null)
+  const [beiIndicators, setBeiIndicators] = useState<BeiIndicatorGroup[]>([])
+  const [performanceGrade, setPerformanceGrade] = useState('')
+  const [competencyGrade, setCompetencyGrade] = useState('')
+  const [beiChecks, setBeiChecks] = useState<BeiChecks>({})
 
   // ─── Fetch cycles ────────────────────────────────────
 
@@ -71,8 +89,10 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
     if (!selectedCycleId) return
     setLoading(true)
     try {
-      const res = await apiClient.getList<TeamMemberEval>('/api/v1/performance/evaluations/manager', { cycleId: selectedCycleId })
-      setTeamMembers(res.data)
+      const res = await apiClient.get<EvalPayload>('/api/v1/performance/evaluations/manager', { cycleId: selectedCycleId })
+      setTeamMembers(res.data.members ?? [])
+      setEvalSettings(res.data.evalSettings)
+      setBeiIndicators(res.data.beiIndicators ?? [])
     } catch { /* ignore */ }
     finally { setLoading(false) }
   }, [selectedCycleId])
@@ -89,26 +109,17 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
       const goalsRes = await apiClient.getList<GoalItem>('/api/v1/performance/team-goals', { cycleId: selectedCycleId, employeeId })
       setGoals(goalsRes.data)
 
-      // Get competencies
-      const compRes = await apiClient.get<{ competencies: CompetencyItem[] }>('/api/v1/performance/evaluations/self', { cycleId: selectedCycleId })
-      if (compRes.data?.competencies) {
-        setCompetencies(compRes.data.competencies)
-      }
-
       // Init scores
       const gs: Record<string, GoalScore> = {}
       for (const g of goalsRes.data) {
         gs[g.id] = { goalId: g.id, score: 3, comment: '' }
       }
       setGoalScores(gs)
-
-      const cs: Record<string, CompetencyScore> = {}
-      const compList = compRes.data?.competencies ?? []
-      for (const c of compList) {
-        cs[c.id] = { competencyId: c.id, score: 3, comment: '' }
-      }
-      setCompScores(cs)
+      setCompScores({})
       setOverallComment('')
+      setPerformanceGrade('')
+      setCompetencyGrade('')
+      setBeiChecks({})
     } catch { /* ignore */ }
     finally { setFormLoading(false) }
   }, [selectedCycleId])
@@ -125,6 +136,12 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
         employeeId: selectedEmployee,
         goalScores: Object.values(goalScores),
         competencyScores: Object.values(compScores),
+        performanceGrade: performanceGrade || undefined,
+        competencyGrade: competencyGrade || undefined,
+        beiIndicatorScores: Object.entries(beiChecks).map(([indicatorId, checked]) => ({
+          indicatorId,
+          checked,
+        })),
         overallComment,
         status,
       })
@@ -150,10 +167,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
           score: goalScores[g.id]?.score ?? 3,
           weight: g.weight,
         })),
-        competencyScores: competencies.map((c) => ({
-          name: c.name,
-          score: compScores[c.id]?.score ?? 3,
-        })),
+        competencyScores: [],
         evalType: 'MANAGER',
       })
       setOverallComment(res.data.suggested_comment)
@@ -176,7 +190,13 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
         </div>
         <select
           value={selectedCycleId}
-          onChange={(e) => { setSelectedCycleId(e.target.value); setSelectedEmployee(null) }}
+          onChange={(e) => {
+            setSelectedCycleId(e.target.value)
+            setSelectedEmployee(null)
+            setPerformanceGrade('')
+            setCompetencyGrade('')
+            setBeiChecks({})
+          }}
           className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
         >
           {cycles.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -280,40 +300,99 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                 </div>
               )}
 
-              {/* Competency Scoring */}
-              {competencies.length > 0 && (
+              {/* 업적 등급 선택 */}
+              {evalSettings && evalSettings.mboGrades.length > 0 && (
+                <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
+                  <h3 className="text-base font-semibold text-[#1A1A1A] mb-3">업적 등급</h3>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {evalSettings.mboGrades.map((g) => (
+                      <button
+                        key={g.code}
+                        onClick={() => setPerformanceGrade(g.code)}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
+                          performanceGrade === g.code
+                            ? 'bg-[#00C853] text-white border-[#00C853]'
+                            : 'bg-white text-[#333] border-[#D4D4D4] hover:bg-[#FAFAFA]'
+                        }`}
+                      >
+                        {g.label} ({g.code})
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* BEI 역량 평가 — methodology = MBO_BEI일 때만 */}
+              {evalSettings?.methodology === 'MBO_BEI' && beiIndicators.length > 0 && (
                 <div className="rounded-xl border border-[#E8E8E8] bg-white">
                   <div className="px-5 py-4 border-b border-[#E8E8E8]">
-                    <h3 className="text-base font-semibold text-[#1A1A1A]">역량 평가</h3>
+                    <h3 className="text-base font-semibold text-[#1A1A1A]">역량 평가 (BEI)</h3>
+                    <p className="text-xs text-[#666] mt-0.5">
+                      관찰된 행동에 체크하고 역량 등급을 선택하세요
+                    </p>
                   </div>
                   <div className="divide-y divide-[#F5F5F5]">
-                    {competencies.map((comp) => (
-                      <div key={comp.id} className="px-5 py-3 flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-[#1A1A1A]">{comp.name}</p>
-                          <p className="text-xs text-[#999]">{comp.category}</p>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          {[1, 2, 3, 4, 5].map((score) => (
-                            <button
-                              key={score}
-                              onClick={() => setCompScores((prev) => ({
-                                ...prev,
-                                [comp.id]: { ...prev[comp.id], score },
-                              }))}
-                              className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
-                                compScores[comp.id]?.score === score
-                                  ? 'bg-[#00C853] text-white'
-                                  : 'bg-[#F5F5F5] text-[#666] hover:bg-[#E8E8E8]'
-                              }`}
-                            >
-                              {score}
-                            </button>
+                    {beiIndicators.map((group) => (
+                      <div key={group.competencyId} className="px-5 py-4 space-y-3">
+                        <p className="text-sm font-semibold text-[#1A1A1A]">{group.competencyName}</p>
+                        <div className="space-y-2 pl-2">
+                          {group.indicators.map((ind) => (
+                            <label key={ind.id} className="flex items-start gap-2.5 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={!!beiChecks[ind.id]}
+                                onChange={(e) =>
+                                  setBeiChecks((prev) => ({
+                                    ...prev,
+                                    [ind.id]: e.target.checked,
+                                  }))
+                                }
+                                className="mt-0.5 w-4 h-4 rounded border-[#D4D4D4] text-[#00C853]"
+                              />
+                              <span className="text-sm text-[#333]">{ind.indicatorText}</span>
+                            </label>
                           ))}
                         </div>
                       </div>
                     ))}
                   </div>
+                  {/* 역량 종합 등급 */}
+                  {evalSettings && evalSettings.beiGrades.length > 0 && (
+                    <div className="px-5 py-4 border-t border-[#E8E8E8]">
+                      <p className="text-sm font-medium text-[#333] mb-2">역량 종합 등급</p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {evalSettings.beiGrades.map((g) => (
+                          <button
+                            key={g.code}
+                            onClick={() => setCompetencyGrade(g.code)}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
+                              competencyGrade === g.code
+                                ? 'bg-[#4338CA] text-white border-[#4338CA]'
+                                : 'bg-white text-[#333] border-[#D4D4D4] hover:bg-[#FAFAFA]'
+                            }`}
+                          >
+                            {g.label} ({g.code})
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* 종합 등급 표시 — overallGradeEnabled=true일 때 */}
+              {evalSettings?.overallGradeEnabled && performanceGrade && (
+                <div className="rounded-xl border border-[#E8F5E9] bg-[#F0FDF4] p-4">
+                  <p className="text-sm font-semibold text-[#00A844]">종합 등급 (자동 산출)</p>
+                  <p className="text-xs text-[#047857] mt-1">
+                    업적 {evalSettings.mboWeight}% ({performanceGrade})
+                    {evalSettings.methodology === 'MBO_BEI' && competencyGrade
+                      ? ` + 역량 ${evalSettings.beiWeight}% (${competencyGrade})`
+                      : ''}
+                  </p>
+                  <p className="text-xs text-[#555] mt-1">
+                    최종 등급은 캘리브레이션 세션에서 확정됩니다.
+                  </p>
                 </div>
               )}
 

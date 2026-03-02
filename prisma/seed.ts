@@ -861,6 +861,155 @@ async function main() {
   console.log(`  ✅ 1 onboarding template + ${onboardingTasks.length} tasks`)
 
   // ----------------------------------------------------------
+  // B5: CTR-US 온보딩 템플릿 (영문)
+  // ----------------------------------------------------------
+  const ctrUsId = companyMap['CTR-US']
+  if (ctrUsId) {
+    const usObTplId = deterministicUUID('onbtpl', 'CTR-US:NEW_HIRE')
+    await prisma.onboardingTemplate.upsert({
+      where: { id: usObTplId },
+      update: { name: 'New Employee Onboarding', isActive: true },
+      create: {
+        id: usObTplId,
+        companyId: ctrUsId,
+        name: 'New Employee Onboarding',
+        description: 'CTR US standard onboarding process for new hires',
+        targetType: 'NEW_HIRE',
+        planType: 'ONBOARDING',
+        isActive: true,
+      },
+    })
+    const usTasks = [
+      { title: 'I-9 Employment Eligibility Verification', description: 'Complete Form I-9 with HR within 3 business days', assigneeType: 'HR' as const, dueDaysAfter: 1, sortOrder: 1, category: 'DOCUMENT' as const },
+      { title: 'W-4 Federal Tax Withholding', description: 'Submit W-4 form for payroll tax setup', assigneeType: 'HR' as const, dueDaysAfter: 1, sortOrder: 2, category: 'DOCUMENT' as const },
+      { title: 'Benefits Enrollment', description: 'Enroll in health, dental, vision, and 401(k) plans', assigneeType: 'HR' as const, dueDaysAfter: 7, sortOrder: 3, category: 'SETUP' as const },
+      { title: 'Equipment & System Setup', description: 'Laptop, badge, email, VPN access configuration', assigneeType: 'HR' as const, dueDaysAfter: 1, sortOrder: 4, category: 'SETUP' as const },
+      { title: 'Safety & Compliance Training', description: 'Complete mandatory OSHA and workplace safety modules', assigneeType: 'MANAGER' as const, dueDaysAfter: 5, sortOrder: 5, category: 'TRAINING' as const },
+      { title: 'Department Introduction & Tour', description: 'Meet team members and tour the facility', assigneeType: 'MANAGER' as const, dueDaysAfter: 1, sortOrder: 6, category: 'INTRODUCTION' as const },
+      { title: 'Job-Specific Training Plan', description: 'Review 90-day role training roadmap with manager', assigneeType: 'MANAGER' as const, dueDaysAfter: 3, sortOrder: 7, category: 'TRAINING' as const },
+      { title: 'Ethics & Code of Conduct', description: 'Complete ethics policy acknowledgment', assigneeType: 'HR' as const, dueDaysAfter: 3, sortOrder: 8, category: 'OTHER' as const },
+      { title: '30-Day Check-in with HR', description: 'Schedule and complete 30-day onboarding review', assigneeType: 'HR' as const, dueDaysAfter: 30, sortOrder: 9, category: 'OTHER' as const },
+      { title: '90-Day Performance Review', description: 'Complete 90-day review with direct manager', assigneeType: 'MANAGER' as const, dueDaysAfter: 90, sortOrder: 10, category: 'OTHER' as const },
+    ]
+    for (const t of usTasks) {
+      const tid = deterministicUUID('onbtask', `CTR-US:${t.title}`)
+      await prisma.onboardingTask.upsert({
+        where: { id: tid },
+        update: { title: t.title, description: t.description, assigneeType: t.assigneeType as any, dueDaysAfter: t.dueDaysAfter, sortOrder: t.sortOrder, category: t.category as any },
+        create: { id: tid, templateId: usObTplId, title: t.title, description: t.description, assigneeType: t.assigneeType as any, dueDaysAfter: t.dueDaysAfter, sortOrder: t.sortOrder, isRequired: true, category: t.category as any },
+      })
+    }
+    console.log(`  ✅ CTR-US onboarding template + ${usTasks.length} tasks`)
+  }
+
+  // ----------------------------------------------------------
+  // B5: 글로벌 기본 온보딩 템플릿 (companyId = null)
+  // ----------------------------------------------------------
+  const globalObTplId = deterministicUUID('onbtpl', 'GLOBAL:NEW_HIRE')
+  await prisma.onboardingTemplate.upsert({
+    where: { id: globalObTplId },
+    update: { name: '글로벌 표준 온보딩', isActive: true },
+    create: {
+      id: globalObTplId,
+      companyId: null,
+      name: '글로벌 표준 온보딩',
+      description: '법인 공통 적용 기본 온보딩 템플릿',
+      targetType: 'NEW_HIRE',
+      planType: 'ONBOARDING',
+      isActive: true,
+    },
+  })
+  const globalObTasks = [
+    { title: '입사 서류 제출', description: '재직증명서, 주민등록증 사본 등 필수 서류 제출', assigneeType: 'HR' as const, dueDaysAfter: 1, sortOrder: 1, category: 'DOCUMENT' as const },
+    { title: 'IT 계정 및 장비 설정', description: '이메일 계정, 사내 시스템 접근 권한, 노트북 지급', assigneeType: 'HR' as const, dueDaysAfter: 1, sortOrder: 2, category: 'SETUP' as const },
+    { title: '회사 정책 및 행동강령 교육', description: '윤리강령, 보안정책, 개인정보 처리방침 이수', assigneeType: 'HR' as const, dueDaysAfter: 3, sortOrder: 3, category: 'OTHER' as const },
+    { title: '조직 소개 및 주요 관계자 미팅', description: '부서 소개, 핵심 협업 부서 인사', assigneeType: 'MANAGER' as const, dueDaysAfter: 2, sortOrder: 4, category: 'INTRODUCTION' as const },
+    { title: '직무 교육 계획 수립', description: '30/60/90일 직무 로드맵 작성 및 공유', assigneeType: 'MANAGER' as const, dueDaysAfter: 5, sortOrder: 5, category: 'TRAINING' as const },
+    { title: '30일 온보딩 체크인', description: '온보딩 중간 점검 및 적응 지원', assigneeType: 'HR' as const, dueDaysAfter: 30, sortOrder: 6, category: 'OTHER' as const },
+    { title: '90일 수습 평가', description: '수습 기간 종료 성과 평가 및 정규직 전환 검토', assigneeType: 'MANAGER' as const, dueDaysAfter: 90, sortOrder: 7, category: 'OTHER' as const },
+  ]
+  for (const t of globalObTasks) {
+    const tid = deterministicUUID('onbtask', `GLOBAL:OB:${t.title}`)
+    await prisma.onboardingTask.upsert({
+      where: { id: tid },
+      update: { title: t.title, description: t.description, assigneeType: t.assigneeType as any, dueDaysAfter: t.dueDaysAfter, sortOrder: t.sortOrder, category: t.category as any },
+      create: { id: tid, templateId: globalObTplId, title: t.title, description: t.description, assigneeType: t.assigneeType as any, dueDaysAfter: t.dueDaysAfter, sortOrder: t.sortOrder, isRequired: true, category: t.category as any },
+    })
+  }
+  console.log(`  ✅ 글로벌 기본 온보딩 + ${globalObTasks.length} tasks`)
+
+  // ----------------------------------------------------------
+  // B5: Cross-boarding 출발 템플릿 (글로벌)
+  // ----------------------------------------------------------
+  const xdepTplId = deterministicUUID('onbtpl', 'GLOBAL:CROSSBOARDING_DEPARTURE')
+  await prisma.onboardingTemplate.upsert({
+    where: { id: xdepTplId },
+    update: { name: '크로스보딩 출발 체크리스트', isActive: true },
+    create: {
+      id: xdepTplId,
+      companyId: null,
+      name: '크로스보딩 출발 체크리스트',
+      description: '법인 간 이동 시 출발 법인 처리 절차',
+      targetType: 'NEW_HIRE',
+      planType: 'CROSSBOARDING_DEPARTURE',
+      isActive: true,
+    },
+  })
+  const xdepTasks = [
+    { title: '크로스보딩 발령 통보 수령', description: '이동 법인, 포지션, 발령일 공식 확인', assigneeType: 'HR' as const, dueDaysAfter: 0, sortOrder: 1, category: 'DOCUMENT' as const },
+    { title: '현 법인 급여/복리후생 정산', description: '급여 정산일 확인, 퇴직금 처리 (해당 시), 복리후생 종료', assigneeType: 'HR' as const, dueDaysAfter: -5, sortOrder: 2, category: 'OTHER' as const },
+    { title: 'IT 시스템 권한 이관 준비', description: '현 법인 시스템 접근 권한 목록 작성, IT 이관 요청', assigneeType: 'HR' as const, dueDaysAfter: -3, sortOrder: 3, category: 'SETUP' as const },
+    { title: '업무 인수인계 완료', description: '진행 업무, 주요 연락처, 미결 사항 문서화 및 후임자 인수인계', assigneeType: 'MANAGER' as const, dueDaysAfter: -1, sortOrder: 4, category: 'OTHER' as const },
+    { title: '출발 법인 물품 반납', description: '사원증, 장비, 사무용품 등 법인 자산 반납', assigneeType: 'MANAGER' as const, dueDaysAfter: 0, sortOrder: 5, category: 'OTHER' as const },
+    { title: '출발 법인 시스템 계정 비활성화', description: 'HR/IT 협력하여 현 법인 계정 전환 처리', assigneeType: 'HR' as const, dueDaysAfter: 0, sortOrder: 6, category: 'SETUP' as const },
+  ]
+  for (const t of xdepTasks) {
+    const tid = deterministicUUID('onbtask', `GLOBAL:XDEP:${t.title}`)
+    await prisma.onboardingTask.upsert({
+      where: { id: tid },
+      update: { title: t.title, description: t.description, assigneeType: t.assigneeType as any, dueDaysAfter: t.dueDaysAfter, sortOrder: t.sortOrder, category: t.category as any },
+      create: { id: tid, templateId: xdepTplId, title: t.title, description: t.description, assigneeType: t.assigneeType as any, dueDaysAfter: t.dueDaysAfter, sortOrder: t.sortOrder, isRequired: true, category: t.category as any },
+    })
+  }
+  console.log(`  ✅ 크로스보딩 출발 템플릿 + ${xdepTasks.length} tasks`)
+
+  // ----------------------------------------------------------
+  // B5: Cross-boarding 도착 템플릿 (글로벌)
+  // ----------------------------------------------------------
+  const xarrTplId = deterministicUUID('onbtpl', 'GLOBAL:CROSSBOARDING_ARRIVAL')
+  await prisma.onboardingTemplate.upsert({
+    where: { id: xarrTplId },
+    update: { name: '크로스보딩 도착 온보딩', isActive: true },
+    create: {
+      id: xarrTplId,
+      companyId: null,
+      name: '크로스보딩 도착 온보딩',
+      description: '법인 간 이동 시 도착 법인 적응 지원 절차',
+      targetType: 'NEW_HIRE',
+      planType: 'CROSSBOARDING_ARRIVAL',
+      isActive: true,
+    },
+  })
+  const xarrTasks = [
+    { title: '도착 법인 발령 수령 및 환영', description: '공식 발령장 수령, HR 담당자 및 팀 소개', assigneeType: 'HR' as const, dueDaysAfter: 0, sortOrder: 1, category: 'INTRODUCTION' as const },
+    { title: '도착 법인 IT 계정 및 장비 발급', description: '이메일, 사내 시스템, 노트북, 사원증 발급', assigneeType: 'HR' as const, dueDaysAfter: 0, sortOrder: 2, category: 'SETUP' as const },
+    { title: '급여/복리후생 신규 등록', description: '도착 법인 급여 체계, 복리후생 등록 및 안내', assigneeType: 'HR' as const, dueDaysAfter: 1, sortOrder: 3, category: 'OTHER' as const },
+    { title: '법인 특화 규정 및 컴플라이언스 교육', description: '현지 노동법, 취업규칙, 보안 정책 이수', assigneeType: 'HR' as const, dueDaysAfter: 3, sortOrder: 4, category: 'OTHER' as const },
+    { title: '버디 배정 및 첫 미팅', description: '도착 법인 적응 지원 버디 배정 및 초기 미팅', assigneeType: 'MANAGER' as const, dueDaysAfter: 1, sortOrder: 5, category: 'INTRODUCTION' as const },
+    { title: '30일 적응 체크인', description: '도착 법인 적응 현황 및 지원 필요 사항 점검', assigneeType: 'HR' as const, dueDaysAfter: 30, sortOrder: 6, category: 'OTHER' as const },
+    { title: '90일 크로스보딩 완료 평가', description: '새로운 법인 내 역할 안착 여부 최종 평가', assigneeType: 'MANAGER' as const, dueDaysAfter: 90, sortOrder: 7, category: 'OTHER' as const },
+  ]
+  for (const t of xarrTasks) {
+    const tid = deterministicUUID('onbtask', `GLOBAL:XARR:${t.title}`)
+    await prisma.onboardingTask.upsert({
+      where: { id: tid },
+      update: { title: t.title, description: t.description, assigneeType: t.assigneeType as any, dueDaysAfter: t.dueDaysAfter, sortOrder: t.sortOrder, category: t.category as any },
+      create: { id: tid, templateId: xarrTplId, title: t.title, description: t.description, assigneeType: t.assigneeType as any, dueDaysAfter: t.dueDaysAfter, sortOrder: t.sortOrder, isRequired: true, category: t.category as any },
+    })
+  }
+  console.log(`  ✅ 크로스보딩 도착 온보딩 + ${xarrTasks.length} tasks`)
+
+  // ----------------------------------------------------------
   // STEP 11: Seed Offboarding Checklist + Tasks (CTR-KR)
   // ----------------------------------------------------------
   console.log('📌 Seeding offboarding checklist...')
@@ -1635,6 +1784,361 @@ async function main() {
   console.log('  ✅ 3 CTR-KR employee position assignments')
 
   // ----------------------------------------------------------
+  // B1: 평가/승진/보상 설정 시드
+  // ----------------------------------------------------------
+  console.log('📌 Seeding B1 evaluation settings...')
+  let b1Count = 0
+  const krCompanyId = companyMap['CTR-KR']
+  const usCompanyId = companyMap['CTR-US']
+  const cnCompanyId = companyMap['CTR-CN']
+
+  // 헬퍼: companyId=null 포함 idempotent create
+  async function b1Create<T>(
+    model: 'evaluationSetting' | 'promotionSetting' | 'compensationSetting',
+    companyId: string | null,
+    data: Record<string, unknown>
+  ): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const existing = await (prisma[model] as any).findFirst({ where: { companyId } })
+    if (!existing) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (prisma[model] as any).create({ data: { ...data, companyId } })
+    }
+    b1Count++
+  }
+
+  // ── 평가 설정 ────────────────────────────────────────────────
+  await b1Create('evaluationSetting', null, {
+    id: deterministicUUID('evalsetting', 'global'),
+    methodology: 'MBO_BEI',
+    mboGrades: [
+      { code: 'O', label: '탁월', order: 1 },
+      { code: 'E', label: '우수', order: 2 },
+      { code: 'M', label: '보통', order: 3 },
+      { code: 'S', label: '미흡', order: 4 },
+    ],
+    beiGrades: [
+      { code: 'O', label: '탁월', order: 1 },
+      { code: 'E', label: '우수', order: 2 },
+      { code: 'M', label: '보통', order: 3 },
+      { code: 'S', label: '미흡', order: 4 },
+    ],
+    overallGradeEnabled: true,
+    overallGradeMethod: 'WEIGHTED',
+    mboWeight: 60,
+    beiWeight: 40,
+    forcedDistribution: true,
+    forcedDistributionType: 'SOFT',
+    distributionRules: [
+      { gradeCode: 'O', minPct: 0, maxPct: 10 },
+      { gradeCode: 'E', minPct: 15, maxPct: 30 },
+      { gradeCode: 'M', minPct: 40, maxPct: 60 },
+      { gradeCode: 'S', minPct: 10, maxPct: 30 },
+    ],
+    reviewProcessOrder: ['self', 'manager', 'calibration'],
+  })
+
+  if (krCompanyId) {
+    await b1Create('evaluationSetting', krCompanyId, {
+      id: deterministicUUID('evalsetting', 'CTR-KR'),
+      methodology: 'MBO_BEI',
+      mboGrades: [
+        { code: 'S', label: 'S', order: 1 },
+        { code: 'A', label: 'A', order: 2 },
+        { code: 'Bp', label: 'B+', order: 3 },
+        { code: 'B', label: 'B', order: 4 },
+        { code: 'C', label: 'C', order: 5 },
+      ],
+      beiGrades: [
+        { code: 'S', label: 'S', order: 1 },
+        { code: 'A', label: 'A', order: 2 },
+        { code: 'B', label: 'B', order: 3 },
+        { code: 'C', label: 'C', order: 4 },
+      ],
+      overallGradeEnabled: true,
+      overallGradeMethod: 'WEIGHTED',
+      mboWeight: 60,
+      beiWeight: 40,
+      forcedDistribution: true,
+      forcedDistributionType: 'SOFT',
+      distributionRules: [
+        { gradeCode: 'S', minPct: 0, maxPct: 5 },
+        { gradeCode: 'A', minPct: 10, maxPct: 25 },
+        { gradeCode: 'Bp', minPct: 25, maxPct: 40 },
+        { gradeCode: 'B', minPct: 30, maxPct: 45 },
+        { gradeCode: 'C', minPct: 5, maxPct: 15 },
+      ],
+      reviewProcessOrder: ['self', 'manager', 'peer', 'calibration'],
+    })
+  }
+
+  if (usCompanyId) {
+    await b1Create('evaluationSetting', usCompanyId, {
+      id: deterministicUUID('evalsetting', 'CTR-US'),
+      methodology: 'MBO_ONLY',
+      mboGrades: [
+        { code: '5', label: 'Outstanding', order: 1 },
+        { code: '4', label: 'Exceeds', order: 2 },
+        { code: '3', label: 'Meets', order: 3 },
+        { code: '2', label: 'Below', order: 4 },
+        { code: '1', label: 'Unsatisfactory', order: 5 },
+      ],
+      beiGrades: [],
+      overallGradeEnabled: false,
+      overallGradeMethod: 'WEIGHTED',
+      mboWeight: 100,
+      beiWeight: 0,
+      forcedDistribution: false,
+      forcedDistributionType: 'SOFT',
+      distributionRules: [],
+      reviewProcessOrder: ['self', 'manager'],
+    })
+  }
+
+  // ── 승진 설정 ────────────────────────────────────────────────
+  await b1Create('promotionSetting', null, {
+    id: deterministicUUID('promsetting', 'global'),
+    jobLevels: [
+      { code: 'S1', label: 'Junior', order: 1 },
+      { code: 'S2', label: 'Senior', order: 2 },
+      { code: 'S3', label: 'Lead', order: 3 },
+      { code: 'S4', label: 'Principal', order: 4 },
+    ],
+    promotionRules: [
+      { fromLevel: 'S1', toLevel: 'S2', minMonths: 36, requiredGrade: 'A' },
+      { fromLevel: 'S2', toLevel: 'S3', minMonths: 36, requiredGrade: 'A' },
+      { fromLevel: 'S3', toLevel: 'S4', minMonths: 48, requiredGrade: 'S' },
+    ],
+    promotionCycle: 'ANNUAL',
+    promotionMonth: 1,
+    approvalChain: [
+      { stepOrder: 1, approverRole: 'direct_manager' },
+      { stepOrder: 2, approverRole: 'hr_admin' },
+    ],
+  })
+
+  if (krCompanyId) {
+    await b1Create('promotionSetting', krCompanyId, {
+      id: deterministicUUID('promsetting', 'CTR-KR'),
+      jobLevels: [
+        { code: 'G6', label: '사원', order: 1 },
+        { code: 'G5', label: '대리', order: 2 },
+        { code: 'G4', label: '과장', order: 3 },
+        { code: 'G3', label: '차장', order: 4 },
+        { code: 'G2', label: '부장', order: 5 },
+        { code: 'G1', label: '임원', order: 6 },
+      ],
+      promotionRules: [
+        { fromLevel: 'G6', toLevel: 'G5', minMonths: 36, requiredGrade: 'B' },
+        { fromLevel: 'G5', toLevel: 'G4', minMonths: 48, requiredGrade: 'A' },
+        { fromLevel: 'G4', toLevel: 'G3', minMonths: 48, requiredGrade: 'A' },
+        { fromLevel: 'G3', toLevel: 'G2', minMonths: 60, requiredGrade: 'S' },
+      ],
+      promotionCycle: 'ANNUAL',
+      promotionMonth: 1,
+      approvalChain: [
+        { stepOrder: 1, approverRole: 'direct_manager' },
+        { stepOrder: 2, approverRole: 'dept_head' },
+        { stepOrder: 3, approverRole: 'hr_admin' },
+      ],
+    })
+  }
+
+  if (usCompanyId) {
+    await b1Create('promotionSetting', usCompanyId, {
+      id: deterministicUUID('promsetting', 'CTR-US'),
+      jobLevels: [
+        { code: 'L1', label: 'Associate', order: 1, trackType: 'IC' },
+        { code: 'L2', label: 'Professional', order: 2, trackType: 'IC' },
+        { code: 'L3', label: 'Senior', order: 3, trackType: 'IC' },
+        { code: 'M1', label: 'Manager', order: 4, trackType: 'MANAGER' },
+        { code: 'M2', label: 'Senior Manager', order: 5, trackType: 'MANAGER' },
+      ],
+      promotionRules: [
+        { fromLevel: 'L1', toLevel: 'L2', minMonths: 24, requiredGrade: 'Meets' },
+        { fromLevel: 'L2', toLevel: 'L3', minMonths: 36, requiredGrade: 'Exceeds' },
+      ],
+      promotionCycle: 'ANNUAL',
+      promotionMonth: 7,
+      approvalChain: [
+        { stepOrder: 1, approverRole: 'direct_manager' },
+        { stepOrder: 2, approverRole: 'hr_admin' },
+      ],
+    })
+  }
+
+  // ── 보상 설정 ────────────────────────────────────────────────
+  await b1Create('compensationSetting', null, {
+    id: deterministicUUID('compsetting', 'global'),
+    payComponents: [
+      { code: 'BASE', label: '기본급', type: 'BASE', taxable: true, required: true },
+      { code: 'POSITION', label: '직책수당', type: 'ALLOWANCE', taxable: true, required: false },
+    ],
+    salaryBands: [],
+    raiseMatrix: [
+      { grade: 'S', bandPosition: 'LOWER', raisePct: 8 },
+      { grade: 'S', bandPosition: 'MID', raisePct: 6 },
+      { grade: 'S', bandPosition: 'UPPER', raisePct: 4 },
+      { grade: 'A', bandPosition: 'LOWER', raisePct: 5 },
+      { grade: 'A', bandPosition: 'MID', raisePct: 4 },
+      { grade: 'A', bandPosition: 'UPPER', raisePct: 3 },
+      { grade: 'B', bandPosition: 'LOWER', raisePct: 3 },
+      { grade: 'B', bandPosition: 'MID', raisePct: 2.5 },
+      { grade: 'B', bandPosition: 'UPPER', raisePct: 2 },
+      { grade: 'C', bandPosition: 'LOWER', raisePct: 1 },
+      { grade: 'C', bandPosition: 'MID', raisePct: 0.5 },
+      { grade: 'C', bandPosition: 'UPPER', raisePct: 0 },
+    ],
+    bonusType: 'GRADE_BASED',
+    bonusRules: [
+      { grade: 'S', months: 3 },
+      { grade: 'A', months: 2 },
+      { grade: 'B', months: 1 },
+      { grade: 'C', months: 0 },
+    ],
+    currency: 'KRW',
+  })
+
+  if (krCompanyId) {
+    await b1Create('compensationSetting', krCompanyId, {
+      id: deterministicUUID('compsetting', 'CTR-KR'),
+      payComponents: [
+        { code: 'BASE', label: '기본급', type: 'BASE', taxable: true, required: true },
+        { code: 'POSITION', label: '직책수당', type: 'ALLOWANCE', taxable: true, required: false },
+        { code: 'MEAL', label: '식대', type: 'ALLOWANCE', taxable: false, required: true, maxNonTaxable: 200000 },
+        { code: 'VEHICLE', label: '차량유지비', type: 'ALLOWANCE', taxable: false, required: false, maxNonTaxable: 200000 },
+      ],
+      salaryBands: [],
+      raiseMatrix: [],
+      bonusType: 'GRADE_BASED',
+      bonusRules: [
+        { grade: 'S', months: 4 },
+        { grade: 'A', months: 3 },
+        { grade: 'Bp', months: 2 },
+        { grade: 'B', months: 1.5 },
+        { grade: 'C', months: 0.5 },
+      ],
+      currency: 'KRW',
+    })
+  }
+
+  if (usCompanyId) {
+    await b1Create('compensationSetting', usCompanyId, {
+      id: deterministicUUID('compsetting', 'CTR-US'),
+      payComponents: [
+        { code: 'BASE', label: 'Base Salary', type: 'BASE', taxable: true, required: true },
+        { code: 'BONUS', label: 'Annual Bonus', type: 'BONUS', taxable: true, required: false },
+      ],
+      salaryBands: [],
+      raiseMatrix: [],
+      bonusType: 'GRADE_BASED',
+      bonusRules: [
+        { grade: 'Outstanding', pct: 15 },
+        { grade: 'Exceeds', pct: 10 },
+        { grade: 'Meets', pct: 5 },
+      ],
+      currency: 'USD',
+    })
+  }
+
+  if (cnCompanyId) {
+    await b1Create('compensationSetting', cnCompanyId, {
+      id: deterministicUUID('compsetting', 'CTR-CN'),
+      payComponents: [
+        { code: 'BASE', label: '基本工资', type: 'BASE', taxable: true, required: true },
+        { code: 'HOUSING', label: '住房补贴', type: 'ALLOWANCE', taxable: false, required: false },
+        { code: 'TRANSPORT', label: '交通补贴', type: 'ALLOWANCE', taxable: false, required: false },
+      ],
+      salaryBands: [],
+      raiseMatrix: [],
+      bonusType: 'GRADE_BASED',
+      bonusRules: [],
+      currency: 'CNY',
+    })
+  }
+
+  // ----------------------------------------------------------
+  // B1: 환율 시드 (ExchangeRate)
+  // ----------------------------------------------------------
+  const rates = [
+    { from: 'KRW', to: 'USD', rate: '0.000732', source: 'seed' },
+    { from: 'KRW', to: 'CNY', rate: '0.005316', source: 'seed' },
+    { from: 'KRW', to: 'RUB', rate: '0.067', source: 'seed' },
+    { from: 'KRW', to: 'VND', rate: '18.5', source: 'seed' },
+    { from: 'KRW', to: 'MXN', rate: '0.012', source: 'seed' },
+    { from: 'USD', to: 'KRW', rate: '1366.0', source: 'seed' },
+  ]
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  for (const r of rates) {
+    const existing = await prisma.exchangeRate.findFirst({
+      where: { fromCurrency: r.from, toCurrency: r.to, effectiveDate: today },
+    })
+    if (!existing) {
+      await prisma.exchangeRate.create({
+        data: {
+          id: deterministicUUID('exrate', `${r.from}:${r.to}:${today.toISOString().slice(0, 10)}`),
+          fromCurrency: r.from,
+          toCurrency: r.to,
+          rate: r.rate,
+          effectiveDate: today,
+          source: r.source,
+        },
+      })
+    }
+    b1Count++
+  }
+
+  // ----------------------------------------------------------
+  // B1: 승인 플로우 시드 (ApprovalFlow + ApprovalFlowStep)
+  // ----------------------------------------------------------
+
+  const flowDefs = [
+    // 1단계: HR 확인
+    { name: '건강검진 신청', module: 'benefits', steps: [{ role: 'hr_admin' }] },
+    { name: '출산축하금 신청', module: 'benefits', steps: [{ role: 'hr_admin' }] },
+    // 2단계: 팀장 → HR
+    { name: '경조사 지원금', module: 'benefits', steps: [{ role: 'direct_manager' }, { role: 'hr_admin' }] },
+    { name: '자기개발비/학자금', module: 'benefits', steps: [{ role: 'direct_manager' }, { role: 'hr_admin' }] },
+    { name: '일반 채용 승인', module: 'recruitment', steps: [{ role: 'direct_manager' }, { role: 'hr_admin' }] },
+    { name: '휴가 신청', module: 'leave', steps: [{ role: 'direct_manager' }, { role: 'hr_admin' }] },
+    // 3단계: 팀장 → 경영관리 → HR
+    { name: '숙소 지원 신청', module: 'benefits', steps: [{ role: 'direct_manager' }, { role: 'finance' }, { role: 'hr_admin' }] },
+    // 4단계: 팀장 → 부서장 → HR → 대표
+    { name: '임원급 채용', module: 'recruitment', steps: [{ role: 'direct_manager' }, { role: 'dept_head' }, { role: 'hr_admin' }, { role: 'ceo' }] },
+    { name: '승진 심의', module: 'promotion', steps: [{ role: 'direct_manager' }, { role: 'dept_head' }, { role: 'hr_admin' }, { role: 'ceo' }] },
+  ]
+
+  for (const fd of flowDefs) {
+    const flowId = deterministicUUID('flow', `global:${fd.module}:${fd.name}`)
+    const existingFlow = await prisma.approvalFlow.findFirst({ where: { id: flowId } })
+    if (!existingFlow) {
+      await prisma.approvalFlow.create({
+        data: {
+          id: flowId,
+          name: fd.name,
+          companyId: null,
+          module: fd.module,
+          isActive: true,
+          steps: {
+            create: fd.steps.map((s, i) => ({
+              id: deterministicUUID('flowstep', `${flowId}:${i}`),
+              stepOrder: i + 1,
+              approverType: 'role',
+              approverRole: s.role,
+              isRequired: true,
+            })),
+          },
+        },
+      })
+    }
+    b1Count++
+  }
+
+  console.log(`  ✅ ${b1Count} B1 settings records (eval + promotion + compensation + exchange rates + approval flows)`)
+
+  // ----------------------------------------------------------
   // SUMMARY
   // ----------------------------------------------------------
   console.log('\n========================================')
@@ -1664,6 +2168,156 @@ async function main() {
   console.log(`  Global Jobs:         ${globalJobs.length}`)
   console.log(`  CTR-KR Positions:    ${krPositions.length}`)
   console.log(`  Other Co Positions:  ${otherPosCount}`)
+  // ================================================================
+  // B3-1: Competency Framework Seed
+  // ================================================================
+
+  // ── 카테고리 ────────────────────────────────────────────────────
+  const catCoreValue = await prisma.competencyCategory.upsert({
+    where: { code: 'core_value' },
+    update: {},
+    create: { code: 'core_value', name: '핵심가치 역량', nameEn: 'Core Value Competency', displayOrder: 1 },
+  })
+  const catLeadership = await prisma.competencyCategory.upsert({
+    where: { code: 'leadership' },
+    update: {},
+    create: { code: 'leadership', name: '리더십 역량', nameEn: 'Leadership Competency', displayOrder: 2 },
+  })
+  const catTechnical = await prisma.competencyCategory.upsert({
+    where: { code: 'technical' },
+    update: {},
+    create: { code: 'technical', name: '직무 전문 역량', nameEn: 'Technical Competency', displayOrder: 3 },
+  })
+
+  // ── 헬퍼: 역량 + 지표 + 레벨 생성 ──────────────────────────────
+  async function upsertCompetency(params: {
+    categoryId: string
+    code: string
+    name: string
+    nameEn: string
+    order: number
+    indicators: string[]
+  }) {
+    const comp = await prisma.competency.upsert({
+      where: { categoryId_code: { categoryId: params.categoryId, code: params.code } },
+      update: {},
+      create: { categoryId: params.categoryId, code: params.code, name: params.name, nameEn: params.nameEn, displayOrder: params.order },
+    })
+    // 행동지표
+    for (let i = 0; i < params.indicators.length; i++) {
+      await prisma.competencyIndicator.upsert({
+        where: { competencyId_displayOrder: { competencyId: comp.id, displayOrder: i + 1 } },
+        update: { indicatorText: params.indicators[i] },
+        create: { competencyId: comp.id, indicatorText: params.indicators[i], displayOrder: i + 1 },
+      })
+    }
+    // 숙련도 레벨 5단계
+    const levelLabels = ['기초', '보통', '우수', '탁월', '전문가']
+    for (let lvl = 1; lvl <= 5; lvl++) {
+      await prisma.competencyLevel.upsert({
+        where: { competencyId_level: { competencyId: comp.id, level: lvl } },
+        update: {},
+        create: { competencyId: comp.id, level: lvl, label: levelLabels[lvl - 1] },
+      })
+    }
+    return comp
+  }
+
+  // ── 핵심가치 역량 ────────────────────────────────────────────────
+  const challengeComp = await upsertCompetency({
+    categoryId: catCoreValue.id, code: 'challenge', name: '도전', nameEn: 'Challenge', order: 1,
+    indicators: [
+      '현재에 안주하지 않고 더 높은 목표를 설정한다',
+      '새로운 방법을 시도하며 실패를 학습 기회로 활용한다',
+      '변화에 능동적으로 대응하고 개선을 주도한다',
+      '도전적 과제를 자발적으로 수행한다',
+    ],
+  })
+  const trustComp = await upsertCompetency({
+    categoryId: catCoreValue.id, code: 'trust', name: '신뢰', nameEn: 'Trust', order: 2,
+    indicators: [
+      '약속을 지키고 일관된 행동으로 신뢰를 쌓는다',
+      '투명하게 정보를 공유하고 솔직하게 소통한다',
+      '동료의 역량을 믿고 적절히 위임한다',
+    ],
+  })
+  const responsComp = await upsertCompetency({
+    categoryId: catCoreValue.id, code: 'responsibility', name: '책임', nameEn: 'Responsibility', order: 3,
+    indicators: [
+      '맡은 업무에 대해 끝까지 책임지고 완수한다',
+      '문제 발생 시 원인을 찾고 해결책을 제시한다',
+      '조직의 목표를 개인 업무에 연결하여 실행한다',
+    ],
+  })
+  const respectComp = await upsertCompetency({
+    categoryId: catCoreValue.id, code: 'respect', name: '존중', nameEn: 'Respect', order: 4,
+    indicators: [
+      '다양한 의견을 경청하고 건설적으로 반응한다',
+      '동료의 기여를 인정하고 감사를 표현한다',
+      '다른 문화와 배경을 이해하고 존중한다',
+    ],
+  })
+
+  // 핵심가치 직급별 기대레벨 (전 법인 공통, companyId=null)
+  const coreValueComps = [challengeComp, trustComp, responsComp, respectComp]
+  const coreValueLevelMap: Record<string, number> = { S1: 2, S2: 3, S3: 4, S4: 4 }
+  for (const comp of coreValueComps) {
+    for (const [jlCode, expectedLevel] of Object.entries(coreValueLevelMap)) {
+      const existing = await prisma.competencyRequirement.findFirst({
+        where: { competencyId: comp.id, jobLevelCode: jlCode, companyId: null, jobId: null },
+      })
+      if (!existing) {
+        await prisma.competencyRequirement.create({
+          data: { competencyId: comp.id, jobLevelCode: jlCode, expectedLevel },
+        })
+      }
+    }
+  }
+
+  // ── 리더십 역량 ────────────────────────────────────────────────
+  const leadershipDefs = [
+    { code: 'strategic_thinking', name: '전략적 사고', nameEn: 'Strategic Thinking', order: 1 },
+    { code: 'team_building', name: '팀 빌딩', nameEn: 'Team Building', order: 2 },
+    { code: 'decision_making', name: '의사결정', nameEn: 'Decision Making', order: 3 },
+  ]
+  const leadershipComps = []
+  for (const ld of leadershipDefs) {
+    const comp = await upsertCompetency({ categoryId: catLeadership.id, ...ld, indicators: [] })
+    leadershipComps.push(comp)
+  }
+  // 리더십 직급별 기대레벨 (S3, S4만)
+  for (const comp of leadershipComps) {
+    for (const [jlCode, expectedLevel] of [['S3', 3], ['S4', 4]] as const) {
+      const existing = await prisma.competencyRequirement.findFirst({
+        where: { competencyId: comp.id, jobLevelCode: jlCode, companyId: null, jobId: null },
+      })
+      if (!existing) {
+        await prisma.competencyRequirement.create({
+          data: { competencyId: comp.id, jobLevelCode: jlCode, expectedLevel },
+        })
+      }
+    }
+  }
+
+  // ── 직무 전문 역량 ────────────────────────────────────────────────
+  const technicalDefs = [
+    { code: 'welding', name: '용접 기술', nameEn: 'Welding Technology', order: 1 },
+    { code: 'quality_mgmt', name: '품질 관리', nameEn: 'Quality Management', order: 2 },
+    { code: 'mold_design', name: '금형 설계', nameEn: 'Mold Design', order: 3 },
+    { code: 'injection_molding', name: '사출성형', nameEn: 'Injection Molding', order: 4 },
+    { code: 'plc_programming', name: 'PLC 프로그래밍', nameEn: 'PLC Programming', order: 5 },
+  ]
+  for (const td of technicalDefs) {
+    await upsertCompetency({ categoryId: catTechnical.id, ...td, indicators: [] })
+  }
+
+  const competencyCount = await prisma.competency.count()
+  const indicatorCount = await prisma.competencyIndicator.count()
+  const requirementCount = await prisma.competencyRequirement.count()
+  console.log(`  Competencies:        ${competencyCount}`)
+  console.log(`  Indicators:          ${indicatorCount}`)
+  console.log(`  Requirements:        ${requirementCount}`)
+
   console.log(`  Process Settings:    ${settingCount}`)
   console.log('========================================\n')
 }
