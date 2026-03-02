@@ -8,18 +8,21 @@ import { SettingsSideTabs } from '@/components/settings/SettingsSideTabs'
 import { SettingsPlaceholder } from '@/components/settings/SettingsPlaceholder'
 
 interface CategoryPageProps {
-  params: { category: string }
-  searchParams: { tab?: string }
+  params: Promise<{ category: string }>
+  searchParams: Promise<{ tab?: string }>
 }
 
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
   const session = await getServerSession(authOptions)
   if (!session?.user) redirect('/login')
 
-  const category = getCategoryById(params.category)
+  const { category: categoryId } = await params
+  const { tab } = await searchParams
+
+  const category = getCategoryById(categoryId)
   if (!category) redirect('/settings')
 
-  const requestedTabId = searchParams.tab ?? category.items[0]?.id ?? ''
+  const requestedTabId = tab ?? category.items[0]?.id ?? ''
   const activeItem = category.items.find((i) => i.id === requestedTabId) ?? category.items[0]
   const activeTabId = activeItem?.id ?? ''
 
