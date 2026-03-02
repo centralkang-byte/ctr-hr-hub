@@ -6,6 +6,7 @@ import { Plus, Sparkles, CheckCircle2, AlertTriangle, Grid3X3 } from 'lucide-rea
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import EmployeeInsightPanel from '@/components/performance/EmployeeInsightPanel'
+import BiasDetectionBanner from '@/components/performance/BiasDetectionBanner'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -431,6 +432,14 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
             </div>
           ) : (
             <>
+              {/* Bias Detection Banner */}
+              {selectedSession && selectedCycleId && (
+                <BiasDetectionBanner
+                  cycleId={selectedCycleId}
+                  onRunCheck={() => loadSession(selectedSession.id)}
+                />
+              )}
+
               {/* 9-Block Grid */}
               <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
                 {buildBlockGrid()}
