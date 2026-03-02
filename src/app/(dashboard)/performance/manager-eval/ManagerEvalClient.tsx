@@ -145,9 +145,17 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
     recommendedGrade?: string | null
     reviewNeededTags: string[]
   }) => {
-    // apply whatever fields exist in the form
+    // Apply overallOpinion → overallComment
     if (draft.overallOpinion) {
       setOverallComment(draft.overallOpinion)
+    } else if (draft.performanceComment) {
+      // Fall back to performanceComment if no overall opinion
+      setOverallComment(draft.performanceComment)
+    }
+
+    // Apply recommended grade → performanceGrade (if provided and a valid grade code)
+    if (draft.recommendedGrade) {
+      setPerformanceGrade(draft.recommendedGrade)
     }
   }
 

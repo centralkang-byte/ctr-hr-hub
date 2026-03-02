@@ -7,7 +7,7 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { forbidden, notFound } from '@/lib/errors'
+import { badRequest, forbidden, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { generateEvaluationDraft } from '@/lib/claude'
@@ -65,6 +65,11 @@ export const POST = withPermission(
     })
     if (!evaluation) throw notFound('평가를 찾을 수 없습니다.')
 
+    // 2a. Guard: PEER evaluations are not supported for AI draft generation
+    if (evaluation.evalType === 'PEER') {
+      throw badRequest('동료 평가에는 AI 초안을 생성할 수 없습니다.')
+    }
+
     // 2. Authorization: only evaluator or HR_ADMIN/SUPER_ADMIN
     const isEvaluator = evaluation.evaluatorId === user.employeeId
     const isHrAdmin = user.role === 'HR_ADMIN' || user.role === 'SUPER_ADMIN'
@@ -85,44 +90,48 @@ export const POST = withPermission(
       tenureMonths = Math.floor((now.getTime() - hire.getTime()) / (1000 * 60 * 60 * 24 * 30))
     }
 
-    // 3. Collect MBO goals for this employee and cycle
-    const mboGoals = await prisma.mboGoal.findMany({
-      where: {
-        employeeId: evaluation.employeeId,
-        cycleId: evaluation.cycleId,
-        companyId: user.companyId,
-      },
-      select: { title: true, achievementScore: true },
-    })
-
-    // 4. Collect recent 1:1s (last 6 months)
+    // 3-5. Collect MBO goals, 1:1s, and previous evaluation in parallel
     const sixMonthsAgo = new Date()
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
 
-    const oneOnOnes = await prisma.oneOnOne.findMany({
-      where: {
-        employeeId: evaluation.employeeId,
-        companyId: user.companyId,
-        scheduledAt: { gte: sixMonthsAgo },
-        status: 'COMPLETED',
-      },
-      orderBy: { scheduledAt: 'desc' },
-      take: 10,
-      select: { scheduledAt: true, aiSummary: true, sentimentTag: true, notes: true },
-    })
+    const [mboGoals, oneOnOnes, prevEval] = await Promise.all([
+      // 3. MBO goals for this employee and cycle
+      prisma.mboGoal.findMany({
+        where: {
+          employeeId: evaluation.employeeId,
+          cycleId: evaluation.cycleId,
+          companyId: user.companyId,
+        },
+        select: { title: true, achievementScore: true },
+      }),
 
-    // 5. Get previous evaluation (same employee, different cycle, most recent)
-    const prevEval = await prisma.performanceEvaluation.findFirst({
-      where: {
-        employeeId: evaluation.employeeId,
-        companyId: user.companyId,
-        evalType: evaluation.evalType,
-        id: { not: id },
-        status: 'SUBMITTED',
-      },
-      orderBy: { createdAt: 'desc' },
-      select: { performanceGrade: true, comment: true },
-    })
+      // 4. Recent 1:1s (last 6 months)
+      prisma.oneOnOne.findMany({
+        where: {
+          employeeId: evaluation.employeeId,
+          companyId: user.companyId,
+          scheduledAt: { gte: sixMonthsAgo },
+          status: 'COMPLETED',
+        },
+        orderBy: { scheduledAt: 'desc' },
+        take: 10,
+        select: { scheduledAt: true, aiSummary: true, sentimentTag: true, notes: true },
+      }),
+
+      // 5. Previous evaluation (same employee, different cycle, most recent)
+      prisma.performanceEvaluation.findFirst({
+        where: {
+          employeeId: evaluation.employeeId,
+          companyId: user.companyId,
+          evalType: evaluation.evalType,
+          cycleId: { not: evaluation.cycleId },
+          id: { not: id },
+          status: 'SUBMITTED',
+        },
+        orderBy: { createdAt: 'desc' },
+        select: { performanceGrade: true, comment: true },
+      }),
+    ])
 
     // 6. Call AI
     const draftResult = await generateEvaluationDraft(
@@ -145,7 +154,7 @@ export const POST = withPermission(
         previousEval: prevEval
           ? { grade: prevEval.performanceGrade ?? null, comment: prevEval.comment ?? null }
           : null,
-        evalType: evaluation.evalType as 'SELF' | 'MANAGER',
+        evalType: evaluation.evalType as 'SELF' | 'MANAGER', // safe: PEER guarded above
       },
       user.companyId,
       user.employeeId,
