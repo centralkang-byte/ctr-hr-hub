@@ -499,7 +499,7 @@ export const NAVIGATION: NavSection[] = [
         key: 'succession',
         labelKey: 'nav.talent.succession',
         label: '승계 계획',
-        href: '/succession',
+        href: '/talent/succession',
         icon: Crown,
         module: MODULE.SUCCESSION,
       },

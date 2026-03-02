@@ -1,9 +1,11 @@
 'use client'
 
+import { useState } from 'react'
 import { Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import type { CandidateData } from './PlanDetailDialog'
+import EmployeeInsightPanel from '@/components/performance/EmployeeInsightPanel'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -22,6 +24,7 @@ const READINESS_BADGE: Record<string, { label: string; className: string }> = {
 // ─── Component ───────────────────────────────────────────
 
 export default function CandidateCard({ candidate, onDelete }: CandidateCardProps) {
+  const [showInsight, setShowInsight] = useState(false)
   const readiness = READINESS_BADGE[candidate.readiness]
 
   return (
@@ -47,6 +50,9 @@ export default function CandidateCard({ candidate, onDelete }: CandidateCardProp
           ) : (
             <Badge variant="outline">{candidate.readiness}</Badge>
           )}
+          <Button variant="ghost" size="sm" className="text-xs text-[#4338CA]" onClick={() => setShowInsight(true)}>
+            상세 보기
+          </Button>
           <Button variant="ghost" size="sm" onClick={onDelete}>
             <Trash2 className="h-4 w-4 text-[#EF4444]" />
           </Button>
@@ -71,6 +77,14 @@ export default function CandidateCard({ candidate, onDelete }: CandidateCardProp
         <p className="text-xs text-[#666] mt-1.5 border-t border-[#F5F5F5] pt-1.5">
           {candidate.developmentNote}
         </p>
+      )}
+
+      {showInsight && (
+        <EmployeeInsightPanel
+          employeeId={candidate.employee.id}
+          employeeName={candidate.employee.name}
+          onClose={() => setShowInsight(false)}
+        />
       )}
     </div>
   )
