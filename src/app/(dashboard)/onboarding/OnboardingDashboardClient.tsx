@@ -2,12 +2,12 @@
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Onboarding Dashboard Client
-// 온보딩 현황: 진행률, 지연 여부, 강제 완료
+// B5 강화: 법인 필터, planType 탭, 감정 펄스, 지연 하이라이트
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { AlertTriangle, CheckCircle2, Clock } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Clock, Frown, Meh, Smile } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -31,20 +31,36 @@ interface OnboardingTask {
   task: { isRequired: boolean; dueDaysAfter: number }
 }
 
+interface EmotionPulse {
+  mood: 'GREAT' | 'GOOD' | 'NEUTRAL' | 'STRUGGLING' | 'BAD'
+  energy: number
+  belonging: number
+  submittedAt: string
+}
+
 interface OnboardingRow {
   id: string
   status: string
+  planType: string
   startedAt: string | null
-  employee: { id: string; name: string; hireDate: string | null; companyId: string }
+  employee: { id: string; name: string; hireDate: string | null }
   buddy: { id: string; name: string } | null
-  template: { id: string; name: string }
+  template: { id: string; name: string; planType: string }
   tasks: OnboardingTask[]
   progress: { total: number; completed: number }
   isDelayed: boolean
+  emotionPulse: EmotionPulse | null
+}
+
+interface Company {
+  id: string
+  code: string
+  name: string
 }
 
 interface OnboardingDashboardClientProps {
   user: SessionUser
+  companies?: Company[]
 }
 
 // ─── Constants ──────────────────────────────────────────────
@@ -54,16 +70,34 @@ const STATUS_BADGE_STYLES: Record<string, string> = {
   COMPLETED: 'bg-[#E8F5E9] text-[#2E7D32]',
 }
 
+const MOOD_CONFIG: Record<string, { icon: typeof Smile; color: string; label: string }> = {
+  GREAT: { icon: Smile, color: 'text-[#00C853]', label: '매우 좋음' },
+  GOOD: { icon: Smile, color: 'text-[#059669]', label: '좋음' },
+  NEUTRAL: { icon: Meh, color: 'text-[#B45309]', label: '보통' },
+  STRUGGLING: { icon: Frown, color: 'text-[#DC2626]', label: '힘듦' },
+  BAD: { icon: Frown, color: 'text-[#B91C1C]', label: '나쁨' },
+}
+
+const PLAN_TYPE_TABS = [
+  { value: '', label: '전체' },
+  { value: 'ONBOARDING', label: '온보딩' },
+  { value: 'OFFBOARDING', label: '오프보딩' },
+  { value: 'CROSSBOARDING_DEPARTURE', label: '크로스보딩 출발' },
+  { value: 'CROSSBOARDING_ARRIVAL', label: '크로스보딩 도착' },
+]
+
 const LIMIT_OPTIONS = [10, 20, 50]
 
 // ─── Component ──────────────────────────────────────────────
 
-export function OnboardingDashboardClient({ user }: OnboardingDashboardClientProps) {
+export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDashboardClientProps) {
   const t = useTranslations('onboarding')
   const tCommon = useTranslations('common')
 
   // ─── State ───
   const [filter, setFilter] = useState('__ALL__')
+  const [planType, setPlanType] = useState('')
+  const [companyIdFilter, setCompanyIdFilter] = useState('')
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(20)
   const [data, setData] = useState<OnboardingRow[]>([])
@@ -76,6 +110,7 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
   const [forceLoading, setForceLoading] = useState(false)
 
   const isHrAdmin = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
+  const isSuperAdmin = user.role === ROLE.SUPER_ADMIN
 
   const STATUS_LABELS: Record<string, string> = {
     IN_PROGRESS: t('inProgress'),
@@ -100,6 +135,8 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
     if (filter === 'DELAYED') {
       params.status = 'IN_PROGRESS'
     }
+    if (planType) params.planType = planType
+    if (companyIdFilter) params.companyId = companyIdFilter
 
     apiClient
       .getList<OnboardingRow>('/api/v1/onboarding/dashboard', params)
@@ -113,7 +150,7 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
       })
       .catch(() => setData([]))
       .finally(() => setLoading(false))
-  }, [page, limit, filter])
+  }, [page, limit, filter, planType, companyIdFilter])
 
   useEffect(() => {
     fetchData()
@@ -175,6 +212,26 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
         description={t('dashboardDescription')}
       />
 
+      {/* ─── Plan Type Tabs ─── */}
+      <div className="flex border-b border-[#E8E8E8]">
+        {PLAN_TYPE_TABS.map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => {
+              setPlanType(tab.value)
+              setPage(1)
+            }}
+            className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors ${
+              planType === tab.value
+                ? 'border-b-2 border-[#00C853] text-[#00C853]'
+                : 'text-[#666] hover:text-[#333]'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
       {/* ─── Filters ─── */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex flex-wrap gap-2">
@@ -195,6 +252,25 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
             </button>
           ))}
         </div>
+
+        {/* SUPER_ADMIN only: company filter */}
+        {isSuperAdmin && companies.length > 0 && (
+          <select
+            value={companyIdFilter}
+            onChange={(e) => {
+              setCompanyIdFilter(e.target.value)
+              setPage(1)
+            }}
+            className="text-sm border border-[#E0E0E0] rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+          >
+            <option value="">전체 법인</option>
+            {companies.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.code} — {c.name}
+              </option>
+            ))}
+          </select>
+        )}
 
         <select
           value={String(limit)}
@@ -219,7 +295,7 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
             <table className="w-full">
               <thead>
                 <tr className="border-b border-[#E8E8E8]">
-                  {[t('employeeName'), t('hireDate'), t('buddy'), t('templateLabel'), t('progress'), t('statusLabel'), t('delayed'), ''].map(
+                  {[t('employeeName'), t('hireDate'), t('buddy'), t('templateLabel'), t('progress'), t('statusLabel'), t('delayed'), '감정', ''].map(
                     (h) => (
                       <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{h}</th>
                     ),
@@ -261,6 +337,7 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
                     <th className="px-4 py-3 text-left text-xs font-semibold text-[#999] w-48">{t('progress')}</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('statusLabel')}</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('delayed')}</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">감정</th>
                     {isHrAdmin && <th className="px-4 py-3 text-left text-xs font-semibold text-[#999] w-24" />}
                   </tr>
                 </thead>
@@ -311,6 +388,24 @@ export function OnboardingDashboardClient({ user }: OnboardingDashboardClientPro
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-[#E8F5E9] text-[#2E7D32]">
                             {t('normal')}
                           </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        {row.emotionPulse ? (() => {
+                          const cfg = MOOD_CONFIG[row.emotionPulse.mood]
+                          if (!cfg) return <span className="text-xs text-[#999]">-</span>
+                          const Icon = cfg.icon
+                          return (
+                            <span
+                              className={`inline-flex items-center gap-1 text-xs font-medium ${cfg.color}`}
+                              title={cfg.label}
+                            >
+                              <Icon className="h-4 w-4" />
+                              {cfg.label}
+                            </span>
+                          )
+                        })() : (
+                          <span className="text-xs text-[#999]">-</span>
                         )}
                       </td>
                       {isHrAdmin && (

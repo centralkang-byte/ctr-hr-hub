@@ -40,6 +40,14 @@ export const GET = withPermission(
 
 // ─── POST: Create exit interview ────────────────────────────
 
+const satisfactionDetailSchema = z.object({
+  overall: z.number().int().min(1).max(5),
+  compensation: z.number().int().min(1).max(5),
+  culture: z.number().int().min(1).max(5),
+  management: z.number().int().min(1).max(5),
+  growth: z.number().int().min(1).max(5),
+})
+
 const exitInterviewSchema = z.object({
   interviewDate: z.string().datetime(),
   interviewerId: z.string().uuid().optional(),
@@ -53,9 +61,13 @@ const exitInterviewSchema = z.object({
     'PERSONAL',
     'OTHER',
   ]),
+  detailedReason: z.string().optional(),
   satisfactionScore: z.number().int().min(1).max(5),
+  satisfactionDetail: satisfactionDetailSchema.optional(),
   wouldRecommend: z.boolean().optional(),
   feedbackText: z.string().min(1),
+  suggestions: z.string().optional(),
+  isConfidential: z.boolean().optional(),
 })
 
 export const POST = withPermission(
@@ -113,9 +125,13 @@ export const POST = withPermission(
           interviewerId: data.interviewerId ?? user.employeeId,
           interviewDate: new Date(data.interviewDate),
           primaryReason: data.primaryReason,
+          detailedReason: data.detailedReason ?? null,
           satisfactionScore: data.satisfactionScore,
+          satisfactionDetail: data.satisfactionDetail ?? undefined,
           wouldRecommend: data.wouldRecommend ?? null,
           feedbackText: data.feedbackText,
+          suggestions: data.suggestions ?? null,
+          isConfidential: data.isConfidential ?? true,
           companyId: ((offboarding.employee.assignments?.[0] as any)?.companyId as string | undefined) ?? user.companyId, // eslint-disable-line @typescript-eslint/no-explicit-any
         },
         include: { interviewer: { select: { id: true, name: true } } },

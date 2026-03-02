@@ -90,13 +90,25 @@ interface OffboardingDetail {
   offboardingTasks: OffboardingTaskRow[]
 }
 
+interface SatisfactionDetail {
+  overall: number
+  compensation: number
+  culture: number
+  management: number
+  growth: number
+}
+
 interface ExitInterviewData {
   id: string
   interviewDate: string
   primaryReason: string
+  detailedReason: string | null
   satisfactionScore: number
+  satisfactionDetail: SatisfactionDetail | null
   wouldRecommend: boolean | null
   feedbackText: string
+  suggestions: string | null
+  isConfidential: boolean
   aiSummary: string | null
   interviewer: { id: string; name: string }
 }
@@ -189,9 +201,19 @@ export function OffboardingDetailClient({
     new Date().toISOString().slice(0, 10),
   )
   const [formReason, setFormReason] = useState('')
+  const [formDetailedReason, setFormDetailedReason] = useState('')
   const [formScore, setFormScore] = useState(0)
+  const [formSatisfactionDetail, setFormSatisfactionDetail] = useState({
+    overall: 0,
+    compensation: 0,
+    culture: 0,
+    management: 0,
+    growth: 0,
+  })
   const [formRecommend, setFormRecommend] = useState(false)
   const [formFeedback, setFormFeedback] = useState('')
+  const [formSuggestions, setFormSuggestions] = useState('')
+  const [formConfidential, setFormConfidential] = useState(true)
   const [formSubmitting, setFormSubmitting] = useState(false)
   const [formError, setFormError] = useState('')
 
@@ -274,12 +296,17 @@ export function OffboardingDetailClient({
     setFormError('')
     setFormSubmitting(true)
     try {
+      const hasDetailScores = Object.values(formSatisfactionDetail).some((v) => v > 0)
       const body = {
         interviewDate: new Date(formDate).toISOString(),
         primaryReason: formReason,
+        detailedReason: formDetailedReason.trim() || undefined,
         satisfactionScore: formScore,
+        satisfactionDetail: hasDetailScores ? formSatisfactionDetail : undefined,
         wouldRecommend: formRecommend,
         feedbackText: formFeedback,
+        suggestions: formSuggestions.trim() || undefined,
+        isConfidential: formConfidential,
       }
       await apiClient.post(
         `/api/v1/offboarding/${offboardingId}/exit-interview`,
@@ -295,9 +322,13 @@ export function OffboardingDetailClient({
     offboardingId,
     formDate,
     formReason,
+    formDetailedReason,
     formScore,
+    formSatisfactionDetail,
     formRecommend,
     formFeedback,
+    formSuggestions,
+    formConfidential,
     fetchInterview,
     t,
   ])
@@ -565,6 +596,9 @@ export function OffboardingDetailClient({
                       {EXIT_REASON_LABELS[interview.primaryReason] ??
                         interview.primaryReason}
                     </p>
+                    {interview.detailedReason && (
+                      <p className="text-sm text-[#666] mt-1">{interview.detailedReason}</p>
+                    )}
                   </div>
 
                   <div>
@@ -588,6 +622,35 @@ export function OffboardingDetailClient({
                     </div>
                   </div>
 
+                  {interview.satisfactionDetail && (
+                    <div className="rounded-lg border border-[#E8E8E8] p-3 space-y-2">
+                      <Label className="text-xs text-muted-foreground">{t('satisfactionDetail')}</Label>
+                      {(
+                        [
+                          ['compensation', t('satisfactionCompensation')],
+                          ['culture', t('satisfactionCulture')],
+                          ['management', t('satisfactionManagement')],
+                          ['growth', t('satisfactionGrowth')],
+                        ] as [keyof SatisfactionDetail, string][]
+                      ).map(([key, label]) => {
+                        const score = interview.satisfactionDetail![key]
+                        return (
+                          <div key={key} className="flex items-center justify-between">
+                            <span className="text-sm text-[#555]">{label}</span>
+                            <div className="flex gap-0.5">
+                              {[1, 2, 3, 4, 5].map((n) => (
+                                <Star
+                                  key={n}
+                                  className={`h-4 w-4 ${n <= score ? 'fill-[#FACC15] text-[#FACC15]' : 'text-[#D4D4D4]'}`}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+
                   <div>
                     <Label className="text-xs text-muted-foreground">
                       {t('wouldRecommend')}
@@ -609,6 +672,17 @@ export function OffboardingDetailClient({
                       {interview.feedbackText}
                     </p>
                   </div>
+
+                  {interview.suggestions && (
+                    <div>
+                      <Label className="text-xs text-muted-foreground">
+                        {t('suggestions')}
+                      </Label>
+                      <p className="mt-1 text-sm whitespace-pre-wrap rounded-md bg-gray-50 p-3">
+                        {interview.suggestions}
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -750,6 +824,17 @@ export function OffboardingDetailClient({
                 </div>
 
                 <div className="space-y-1.5">
+                  <Label htmlFor="detailed-reason">{t('detailedReason')}</Label>
+                  <Textarea
+                    id="detailed-reason"
+                    placeholder={t('detailedReasonPlaceholder')}
+                    rows={2}
+                    value={formDetailedReason}
+                    onChange={(e) => setFormDetailedReason(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
                   <Label>{t('satisfactionScore')} *</Label>
                   <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((n) => (
@@ -776,6 +861,41 @@ export function OffboardingDetailClient({
                   </div>
                 </div>
 
+                {/* Category satisfaction scores */}
+                <div className="space-y-3 rounded-lg border border-[#E8E8E8] p-4">
+                  <Label className="text-sm font-semibold">{t('satisfactionDetail')}</Label>
+                  {([
+                    ['compensation', t('satisfactionCompensation')],
+                    ['culture', t('satisfactionCulture')],
+                    ['management', t('satisfactionManagement')],
+                    ['growth', t('satisfactionGrowth')],
+                  ] as [keyof typeof formSatisfactionDetail, string][]).map(([key, label]) => (
+                    <div key={key} className="flex items-center justify-between">
+                      <span className="text-sm text-[#555]">{label}</span>
+                      <div className="flex gap-0.5">
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <button
+                            key={n}
+                            type="button"
+                            onClick={() =>
+                              setFormSatisfactionDetail((prev) => ({ ...prev, [key]: n }))
+                            }
+                            className="p-0.5 rounded hover:bg-[#F5F5F5] transition-colors"
+                          >
+                            <Star
+                              className={`h-5 w-5 ${
+                                n <= formSatisfactionDetail[key]
+                                  ? 'fill-[#FACC15] text-[#FACC15]'
+                                  : 'text-[#D4D4D4]'
+                              }`}
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
                 <div className="flex items-center justify-between">
                   <Label htmlFor="recommend-switch">{t('wouldRecommend')}</Label>
                   <Switch
@@ -793,6 +913,29 @@ export function OffboardingDetailClient({
                     rows={5}
                     value={formFeedback}
                     onChange={(e) => setFormFeedback(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="suggestions">{t('suggestions')}</Label>
+                  <Textarea
+                    id="suggestions"
+                    placeholder={t('suggestionsPlaceholder')}
+                    rows={3}
+                    value={formSuggestions}
+                    onChange={(e) => setFormSuggestions(e.target.value)}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="confidential-switch">{t('isConfidential')}</Label>
+                    <p className="text-xs text-[#999] mt-0.5">{t('isConfidentialDesc')}</p>
+                  </div>
+                  <Switch
+                    id="confidential-switch"
+                    checked={formConfidential}
+                    onCheckedChange={setFormConfidential}
                   />
                 </div>
 

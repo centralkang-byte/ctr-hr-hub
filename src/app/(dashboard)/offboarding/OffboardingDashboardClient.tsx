@@ -81,8 +81,15 @@ interface OffboardingRow {
   isD3: boolean
 }
 
+interface Company {
+  id: string
+  code: string
+  name: string
+}
+
 interface OffboardingDashboardClientProps {
   user: SessionUser
+  companies?: Company[]
 }
 
 // ─── Constants ──────────────────────────────────────────────
@@ -115,7 +122,7 @@ const LIMIT_OPTIONS = [10, 20, 50]
 
 // ─── Component ──────────────────────────────────────────────
 
-export function OffboardingDashboardClient({ user }: OffboardingDashboardClientProps) {
+export function OffboardingDashboardClient({ user, companies = [] }: OffboardingDashboardClientProps) {
   const t = useTranslations('offboarding')
   const tCommon = useTranslations('common')
 
@@ -150,6 +157,7 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
 
   // ─── State ───
   const [tab, setTab] = useState<'IN_PROGRESS' | 'COMPLETED'>('IN_PROGRESS')
+  const [companyIdFilter, setCompanyIdFilter] = useState('')
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(20)
   const [data, setData] = useState<OffboardingRow[]>([])
@@ -163,11 +171,13 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
   const [cancelLoading, setCancelLoading] = useState(false)
 
   const isHrAdmin = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
+  const isSuperAdmin = user.role === ROLE.SUPER_ADMIN
 
   // ─── Fetch ───
   const fetchData = useCallback(() => {
     setLoading(true)
     const params: Record<string, string | number> = { page, limit, status: tab }
+    if (companyIdFilter) params.companyId = companyIdFilter
 
     apiClient
       .getList<OffboardingRow>('/api/v1/offboarding/dashboard', params)
@@ -177,7 +187,7 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
       })
       .catch(() => setData([]))
       .finally(() => setLoading(false))
-  }, [page, limit, tab])
+  }, [page, limit, tab, companyIdFilter])
 
   useEffect(() => {
     fetchData()
@@ -300,6 +310,29 @@ export function OffboardingDashboardClient({ user }: OffboardingDashboardClientP
             <TabsTrigger value="COMPLETED">{t('completed')}</TabsTrigger>
           </TabsList>
         </Tabs>
+
+        {/* SUPER_ADMIN only: company filter */}
+        {isSuperAdmin && companies.length > 0 && (
+          <Select
+            value={companyIdFilter}
+            onValueChange={(v) => {
+              setCompanyIdFilter(v)
+              setPage(1)
+            }}
+          >
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="전체 법인" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">전체 법인</SelectItem>
+              {companies.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.code} — {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
 
         <Select
           value={String(limit)}

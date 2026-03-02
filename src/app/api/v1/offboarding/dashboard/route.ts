@@ -1,6 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — GET /api/v1/offboarding/dashboard
 // 퇴직처리 현황 대시보드: 진행률 + D-day 경고
+// B5 강화: 법인 필터 (SUPER_ADMIN)
 // ═══════════════════════════════════════════════════════════
 
 import { type NextRequest } from 'next/server'
@@ -28,9 +29,13 @@ export const GET = withPermission(
               in: ['IN_PROGRESS', 'COMPLETED'],
             },
           }),
-      employee: companyId
-        ? { assignments: { some: { companyId, isPrimary: true, endDate: null } } }
-        : {},
+      ...(companyId
+        ? {
+            employee: {
+              assignments: { some: { companyId, isPrimary: true, endDate: null } },
+            },
+          }
+        : {}),
     }
 
     const include = {

@@ -5,6 +5,8 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
+import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { OnboardingDashboardClient } from './OnboardingDashboardClient'
 
@@ -16,5 +18,14 @@ export default async function OnboardingPage() {
 
   const user = session.user as SessionUser
 
-  return <OnboardingDashboardClient user={user} />
+  // SUPER_ADMIN에게는 법인 목록 제공 (법인 필터용)
+  const companies =
+    user.role === ROLE.SUPER_ADMIN
+      ? await prisma.company.findMany({
+          select: { id: true, code: true, name: true },
+          orderBy: { code: 'asc' },
+        })
+      : []
+
+  return <OnboardingDashboardClient user={user} companies={companies} />
 }
