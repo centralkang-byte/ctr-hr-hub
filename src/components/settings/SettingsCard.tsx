@@ -20,7 +20,7 @@ export function SettingsCard({ category }: SettingsCardProps) {
       className={cn(
         'group w-full rounded-xl border border-gray-200 bg-white p-6 text-left',
         'shadow-sm transition-all duration-150',
-        'hover:border-l-4 hover:border-[#00C853] hover:shadow-md',
+        'hover:border-l-4 hover:border-l-[#00C853] hover:shadow-md',
         category.disabled && 'cursor-not-allowed opacity-50',
       )}
       disabled={category.disabled}
