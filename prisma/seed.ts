@@ -80,6 +80,7 @@ const roleData = [
 const modules = [
   'employees', 'org', 'attendance', 'leave', 'recruitment',
   'performance', 'payroll', 'compensation', 'offboarding', 'discipline', 'benefits',
+  'compliance',
 ]
 const actions = ['create', 'read', 'update', 'delete', 'export', 'manage']
 
@@ -737,32 +738,47 @@ async function main() {
       catId = jobCatMap[`CTR-KR:${conf.catCode}`]
     }
 
-    // Create / upsert employee
+    // Create / upsert employee (companyId/departmentId/status/employmentType are on EmployeeAssignment now)
     const emp = await prisma.employee.upsert({
       where: { employeeNo: acc.employeeNo },
       update: {
         name: acc.name,
         nameEn: acc.nameEn,
         email: acc.email,
-        status: 'ACTIVE',
-        employmentType: 'FULL_TIME',
       },
       create: {
         id: empId,
-        companyId: compId,
-        departmentId: deptId,
-        jobGradeId: gradeId,
-        jobCategoryId: catId,
         employeeNo: acc.employeeNo,
         name: acc.name,
         nameEn: acc.nameEn,
         email: acc.email,
-        employmentType: 'FULL_TIME',
-        status: 'ACTIVE',
         hireDate: new Date('2024-01-01'),
       },
     })
     employeeMap[acc.email] = emp.id
+
+    // Create EmployeeAssignment (primary, active)
+    const assignId = deterministicUUID('assignment', acc.email)
+    const existingAssign = await prisma.employeeAssignment.findFirst({
+      where: { employeeId: emp.id, isPrimary: true, endDate: null },
+    })
+    if (!existingAssign) {
+      await prisma.employeeAssignment.create({
+        data: {
+          id: assignId,
+          employeeId: emp.id,
+          companyId: compId,
+          departmentId: deptId,
+          jobGradeId: gradeId,
+          jobCategoryId: catId,
+          effectiveDate: new Date('2024-01-01'),
+          changeType: 'HIRE',
+          employmentType: 'FULL_TIME',
+          status: 'ACTIVE',
+          isPrimary: true,
+        },
+      })
+    }
 
     // EmployeeAuth
     const authId = deterministicUUID('auth', acc.email)
@@ -1108,6 +1124,494 @@ async function main() {
   console.log(`  ✅ ${exportTemplateData.length} export templates`)
 
   // ----------------------------------------------------------
+  // STEP 22: New CTR-KR Departments (5 more) + Other Company Departments
+  // ----------------------------------------------------------
+  console.log('📌 Seeding new departments...')
+  let newDeptCount = 0
+
+  // 5 new CTR-KR departments
+  const newKrDepts = [
+    { code: 'MFG',   name: '생산/제조팀', nameEn: 'Manufacturing Team',  level: 1, sortOrder: 5 },
+    { code: 'QA',    name: '품질관리팀',  nameEn: 'Quality Control Team', level: 1, sortOrder: 6 },
+    { code: 'FIN',   name: '재무/회계팀', nameEn: 'Finance & Accounting', level: 1, sortOrder: 7 },
+    { code: 'PUR',   name: '구매/조달팀', nameEn: 'Procurement Team',     level: 1, sortOrder: 8 },
+    { code: 'RANDD', name: '연구개발팀',  nameEn: 'R&D Team',             level: 1, sortOrder: 9 },
+  ]
+
+  for (const d of newKrDepts) {
+    const id = deterministicUUID('dept', `CTR-KR:${d.code}`)
+    await prisma.department.upsert({
+      where: { companyId_code: { companyId: ctrKrId, code: d.code } },
+      update: { name: d.name, nameEn: d.nameEn },
+      create: { id, companyId: ctrKrId, code: d.code, name: d.name, nameEn: d.nameEn, level: d.level, sortOrder: d.sortOrder },
+    })
+    deptMap[`CTR-KR:${d.code}`] = id
+    newDeptCount++
+  }
+
+  // Also normalize existing deptMap to use company-prefixed keys
+  // (existing deptMap uses code only: 'MGMT', 'HR', etc.)
+  deptMap['CTR-KR:MGMT']  = deterministicUUID('dept', 'CTR-KR:MGMT')
+  deptMap['CTR-KR:HR']    = deterministicUUID('dept', 'CTR-KR:HR')
+  deptMap['CTR-KR:DEV']   = deterministicUUID('dept', 'CTR-KR:DEV')
+  deptMap['CTR-KR:SALES'] = deterministicUUID('dept', 'CTR-KR:SALES')
+
+  // Other company departments (1-2 each)
+  const otherDepts = [
+    { companyCode: 'CTR-HQ', code: 'STRAT', name: 'Strategy & Planning',  nameEn: 'Strategy & Planning',  level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-MOB', code: 'ENG',  name: 'Engineering',          nameEn: 'Engineering',          level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-MOB', code: 'MFG',  name: 'Production',           nameEn: 'Production',           level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-ECO', code: 'ENG',  name: 'Engineering',          nameEn: 'Engineering',          level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-ECO', code: 'OPS',  name: 'Operations',           nameEn: 'Operations',           level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-ROB', code: 'ENG',  name: 'Robotics Engineering', nameEn: 'Robotics Engineering', level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-ROB', code: 'MFG',  name: 'Manufacturing',        nameEn: 'Manufacturing',        level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-ENG', code: 'ENG',  name: 'Engineering',          nameEn: 'Engineering',          level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-ENG', code: 'RD',   name: 'R&D',                  nameEn: 'R&D',                  level: 1, sortOrder: 2 },
+    { companyCode: 'FML',    code: 'OPS',   name: 'Operations',           nameEn: 'Operations',           level: 1, sortOrder: 1 },
+    { companyCode: 'FML',    code: 'FIN',   name: 'Finance',              nameEn: 'Finance',              level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-US', code: 'OPS',   name: 'Operations',           nameEn: 'Operations',           level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-US', code: 'SALES', name: 'Sales',                nameEn: 'Sales',                level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-CN', code: 'MFG',   name: '生产部',               nameEn: 'Manufacturing',        level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-CN', code: 'QA',    name: '质量部',               nameEn: 'Quality Assurance',    level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-RU', code: 'MFG',   name: 'Производство',         nameEn: 'Manufacturing',        level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-RU', code: 'ENG',   name: 'Инженерия',            nameEn: 'Engineering',          level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-VN', code: 'MFG',   name: 'Sản xuất',             nameEn: 'Manufacturing',        level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-VN', code: 'ASM',   name: 'Lắp ráp',              nameEn: 'Assembly',             level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-EU', code: 'ENG',   name: 'Engineering',          nameEn: 'Engineering',          level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-EU', code: 'SALES', name: 'Sales',                nameEn: 'Sales',                level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-MX', code: 'MFG',   name: 'Manufactura',          nameEn: 'Manufacturing',        level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-MX', code: 'ASM',   name: 'Ensamble',             nameEn: 'Assembly',             level: 1, sortOrder: 2 },
+  ]
+
+  for (const d of otherDepts) {
+    const compId = companyMap[d.companyCode]
+    const id = deterministicUUID('dept', `${d.companyCode}:${d.code}`)
+    await prisma.department.upsert({
+      where: { companyId_code: { companyId: compId, code: d.code } },
+      update: { name: d.name, nameEn: d.nameEn },
+      create: { id, companyId: compId, code: d.code, name: d.name, nameEn: d.nameEn, level: d.level, sortOrder: d.sortOrder },
+    })
+    deptMap[`${d.companyCode}:${d.code}`] = id
+    newDeptCount++
+  }
+  console.log(`  ✅ ${newDeptCount} new departments`)
+
+  // ----------------------------------------------------------
+  // STEP 23: Global Jobs (15, companyId: null)
+  // ----------------------------------------------------------
+  console.log('📌 Seeding global jobs...')
+  const jobMap: Record<string, string> = {} // code -> id
+
+  const globalJobs = [
+    { id: deterministicUUID('job', 'SW_ENG'),    code: 'SW_ENG',    titleKo: '소프트웨어 엔지니어', titleEn: 'Software Engineer' },
+    { id: deterministicUUID('job', 'HR_MGR'),    code: 'HR_MGR',    titleKo: 'HR 매니저',           titleEn: 'HR Manager' },
+    { id: deterministicUUID('job', 'HR_SPEC'),   code: 'HR_SPEC',   titleKo: 'HR 담당',             titleEn: 'HR Specialist' },
+    { id: deterministicUUID('job', 'MFG_OPS'),   code: 'MFG_OPS',   titleKo: '생산직',              titleEn: 'Manufacturing Operator' },
+    { id: deterministicUUID('job', 'MFG_SUP'),   code: 'MFG_SUP',   titleKo: '생산감독',            titleEn: 'Manufacturing Supervisor' },
+    { id: deterministicUUID('job', 'QA_ENG'),    code: 'QA_ENG',    titleKo: '품질 엔지니어',       titleEn: 'Quality Engineer' },
+    { id: deterministicUUID('job', 'FIN_MGR'),   code: 'FIN_MGR',   titleKo: '재무 매니저',         titleEn: 'Finance Manager' },
+    { id: deterministicUUID('job', 'SALES_MGR'), code: 'SALES_MGR', titleKo: '영업 매니저',         titleEn: 'Sales Manager' },
+    { id: deterministicUUID('job', 'RND_ENG'),   code: 'RND_ENG',   titleKo: '연구개발 엔지니어',   titleEn: 'R&D Engineer' },
+    { id: deterministicUUID('job', 'PUR_SPEC'),  code: 'PUR_SPEC',  titleKo: '구매 전문가',         titleEn: 'Procurement Specialist' },
+    { id: deterministicUUID('job', 'PLANT_MGR'), code: 'PLANT_MGR', titleKo: '공장장',              titleEn: 'Plant Manager' },
+    { id: deterministicUUID('job', 'OPS_MGR'),   code: 'OPS_MGR',   titleKo: '운영 매니저',         titleEn: 'Operations Manager' },
+    { id: deterministicUUID('job', 'IT_ENG'),    code: 'IT_ENG',    titleKo: 'IT 엔지니어',         titleEn: 'IT Engineer' },
+    { id: deterministicUUID('job', 'EXEC_ASST'), code: 'EXEC_ASST', titleKo: '임원 보좌',           titleEn: 'Executive Assistant' },
+    { id: deterministicUUID('job', 'ADMIN_MGR'), code: 'ADMIN_MGR', titleKo: '총무 매니저',         titleEn: 'Administrative Manager' },
+  ]
+
+  for (const j of globalJobs) {
+    await prisma.job.upsert({
+      where: { id: j.id },
+      update: { titleKo: j.titleKo, titleEn: j.titleEn },
+      create: { id: j.id, code: j.code, titleKo: j.titleKo, titleEn: j.titleEn, companyId: null },
+    })
+    jobMap[j.code] = j.id
+  }
+  console.log(`  ✅ ${globalJobs.length} global jobs`)
+
+  // ----------------------------------------------------------
+  // STEP 24: CTR-KR Positions (~55 across 9 departments)
+  // ----------------------------------------------------------
+  console.log('📌 Seeding CTR-KR positions...')
+  const posMap: Record<string, string> = {} // posCode -> id
+
+  // Helper to get grade id
+  const krGrade = (code: string) => gradeMap[`CTR-KR:${code}`]
+
+  // Get dept IDs (using normalized deptMap keys)
+  const d = {
+    MGMT:  deptMap['CTR-KR:MGMT'],
+    HR:    deptMap['CTR-KR:HR'],
+    DEV:   deptMap['CTR-KR:DEV'],
+    SALES: deptMap['CTR-KR:SALES'],
+    MFG:   deterministicUUID('dept', 'CTR-KR:MFG'),
+    QA:    deterministicUUID('dept', 'CTR-KR:QA'),
+    FIN:   deterministicUUID('dept', 'CTR-KR:FIN'),
+    PUR:   deterministicUUID('dept', 'CTR-KR:PUR'),
+    RANDD: deterministicUUID('dept', 'CTR-KR:RANDD'),
+  }
+
+  const krPositions = [
+    // ── MGMT (6) ─────────────────────────────────────────────
+    { code: 'CTR-KR-MGMT-001', titleKo: '대표이사',     titleEn: 'CEO',                     deptId: d.MGMT,  jobCode: 'ADMIN_MGR', gradeCode: 'G1' },
+    { code: 'CTR-KR-MGMT-002', titleKo: '경영지원본부장', titleEn: 'Head of Management',    deptId: d.MGMT,  jobCode: 'ADMIN_MGR', gradeCode: 'G2' },
+    { code: 'CTR-KR-MGMT-003', titleKo: '경영지원팀장', titleEn: 'Management Team Lead',    deptId: d.MGMT,  jobCode: 'ADMIN_MGR', gradeCode: 'G3' },
+    { code: 'CTR-KR-MGMT-004', titleKo: '경영지원선임', titleEn: 'Senior Admin Specialist', deptId: d.MGMT,  jobCode: 'ADMIN_MGR', gradeCode: 'G4' },
+    { code: 'CTR-KR-MGMT-005', titleKo: '경영지원담당', titleEn: 'Admin Specialist',        deptId: d.MGMT,  jobCode: 'EXEC_ASST', gradeCode: 'G5' },
+    { code: 'CTR-KR-MGMT-006', titleKo: '총무사원',     titleEn: 'Admin Staff',             deptId: d.MGMT,  jobCode: 'EXEC_ASST', gradeCode: 'G6' },
+    // ── HR (4) ───────────────────────────────────────────────
+    { code: 'CTR-KR-HR-001',   titleKo: '인사팀장',     titleEn: 'HR Team Lead',            deptId: d.HR,    jobCode: 'HR_MGR',    gradeCode: 'G3' },
+    { code: 'CTR-KR-HR-002',   titleKo: '인사담당선임', titleEn: 'Senior HR Specialist',    deptId: d.HR,    jobCode: 'HR_SPEC',   gradeCode: 'G4' },
+    { code: 'CTR-KR-HR-003',   titleKo: '인사담당',     titleEn: 'HR Specialist',           deptId: d.HR,    jobCode: 'HR_SPEC',   gradeCode: 'G5' },
+    { code: 'CTR-KR-HR-004',   titleKo: '인사사원',     titleEn: 'HR Staff',                deptId: d.HR,    jobCode: 'HR_SPEC',   gradeCode: 'G6' },
+    // ── DEV (7) ──────────────────────────────────────────────
+    { code: 'CTR-KR-DEV-001',  titleKo: '개발팀장',     titleEn: 'Dev Team Lead',           deptId: d.DEV,   jobCode: 'SW_ENG',    gradeCode: 'G3' },
+    { code: 'CTR-KR-DEV-002',  titleKo: '수석개발자A',  titleEn: 'Senior Developer A',      deptId: d.DEV,   jobCode: 'SW_ENG',    gradeCode: 'G4' },
+    { code: 'CTR-KR-DEV-003',  titleKo: '수석개발자B',  titleEn: 'Senior Developer B',      deptId: d.DEV,   jobCode: 'SW_ENG',    gradeCode: 'G4' },
+    { code: 'CTR-KR-DEV-004',  titleKo: '개발자A',      titleEn: 'Developer A',             deptId: d.DEV,   jobCode: 'SW_ENG',    gradeCode: 'G5' },
+    { code: 'CTR-KR-DEV-005',  titleKo: '개발자B',      titleEn: 'Developer B',             deptId: d.DEV,   jobCode: 'SW_ENG',    gradeCode: 'G5' },
+    { code: 'CTR-KR-DEV-006',  titleKo: '개발사원A',    titleEn: 'Dev Staff A',             deptId: d.DEV,   jobCode: 'SW_ENG',    gradeCode: 'G6' },
+    { code: 'CTR-KR-DEV-007',  titleKo: '개발사원B',    titleEn: 'Dev Staff B',             deptId: d.DEV,   jobCode: 'SW_ENG',    gradeCode: 'G6' },
+    // ── SALES (7) ────────────────────────────────────────────
+    { code: 'CTR-KR-SALES-001', titleKo: '영업팀장',    titleEn: 'Sales Team Lead',         deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G3' },
+    { code: 'CTR-KR-SALES-002', titleKo: '영업선임A',   titleEn: 'Senior Sales A',          deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G4' },
+    { code: 'CTR-KR-SALES-003', titleKo: '영업선임B',   titleEn: 'Senior Sales B',          deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G4' },
+    { code: 'CTR-KR-SALES-004', titleKo: '영업담당A',   titleEn: 'Sales Specialist A',      deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G5' },
+    { code: 'CTR-KR-SALES-005', titleKo: '영업담당B',   titleEn: 'Sales Specialist B',      deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G5' },
+    { code: 'CTR-KR-SALES-006', titleKo: '영업사원A',   titleEn: 'Sales Staff A',           deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G6' },
+    { code: 'CTR-KR-SALES-007', titleKo: '영업사원B',   titleEn: 'Sales Staff B',           deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G6' },
+    // ── MFG (10) ─────────────────────────────────────────────
+    { code: 'CTR-KR-MFG-001',  titleKo: '생산팀장',     titleEn: 'Manufacturing Team Lead', deptId: d.MFG,   jobCode: 'PLANT_MGR', gradeCode: 'G3' },
+    { code: 'CTR-KR-MFG-002',  titleKo: '생산감독A',    titleEn: 'Production Supervisor A', deptId: d.MFG,   jobCode: 'MFG_SUP',   gradeCode: 'G4' },
+    { code: 'CTR-KR-MFG-003',  titleKo: '생산감독B',    titleEn: 'Production Supervisor B', deptId: d.MFG,   jobCode: 'MFG_SUP',   gradeCode: 'G4' },
+    { code: 'CTR-KR-MFG-004',  titleKo: '생산반장A',    titleEn: 'Line Leader A',           deptId: d.MFG,   jobCode: 'MFG_SUP',   gradeCode: 'G5' },
+    { code: 'CTR-KR-MFG-005',  titleKo: '생산반장B',    titleEn: 'Line Leader B',           deptId: d.MFG,   jobCode: 'MFG_SUP',   gradeCode: 'G5' },
+    { code: 'CTR-KR-MFG-006',  titleKo: '생산반장C',    titleEn: 'Line Leader C',           deptId: d.MFG,   jobCode: 'MFG_SUP',   gradeCode: 'G5' },
+    { code: 'CTR-KR-MFG-007',  titleKo: '생산사원A',    titleEn: 'Operator A',              deptId: d.MFG,   jobCode: 'MFG_OPS',   gradeCode: 'G6' },
+    { code: 'CTR-KR-MFG-008',  titleKo: '생산사원B',    titleEn: 'Operator B',              deptId: d.MFG,   jobCode: 'MFG_OPS',   gradeCode: 'G6' },
+    { code: 'CTR-KR-MFG-009',  titleKo: '생산사원C',    titleEn: 'Operator C',              deptId: d.MFG,   jobCode: 'MFG_OPS',   gradeCode: 'G6' },
+    { code: 'CTR-KR-MFG-010',  titleKo: '생산사원D',    titleEn: 'Operator D',              deptId: d.MFG,   jobCode: 'MFG_OPS',   gradeCode: 'G6' },
+    // ── QA (7) ───────────────────────────────────────────────
+    { code: 'CTR-KR-QA-001',   titleKo: '품질팀장',     titleEn: 'QA Team Lead',            deptId: d.QA,    jobCode: 'QA_ENG',    gradeCode: 'G3' },
+    { code: 'CTR-KR-QA-002',   titleKo: '품질감독A',    titleEn: 'QA Supervisor A',         deptId: d.QA,    jobCode: 'QA_ENG',    gradeCode: 'G4' },
+    { code: 'CTR-KR-QA-003',   titleKo: '품질감독B',    titleEn: 'QA Supervisor B',         deptId: d.QA,    jobCode: 'QA_ENG',    gradeCode: 'G4' },
+    { code: 'CTR-KR-QA-004',   titleKo: '품질담당A',    titleEn: 'QA Specialist A',         deptId: d.QA,    jobCode: 'QA_ENG',    gradeCode: 'G5' },
+    { code: 'CTR-KR-QA-005',   titleKo: '품질담당B',    titleEn: 'QA Specialist B',         deptId: d.QA,    jobCode: 'QA_ENG',    gradeCode: 'G5' },
+    { code: 'CTR-KR-QA-006',   titleKo: '품질사원A',    titleEn: 'QA Staff A',              deptId: d.QA,    jobCode: 'QA_ENG',    gradeCode: 'G6' },
+    { code: 'CTR-KR-QA-007',   titleKo: '품질사원B',    titleEn: 'QA Staff B',              deptId: d.QA,    jobCode: 'QA_ENG',    gradeCode: 'G6' },
+    // ── FIN (5) ──────────────────────────────────────────────
+    { code: 'CTR-KR-FIN-001',  titleKo: '재무팀장',     titleEn: 'Finance Team Lead',       deptId: d.FIN,   jobCode: 'FIN_MGR',   gradeCode: 'G3' },
+    { code: 'CTR-KR-FIN-002',  titleKo: '재무선임',     titleEn: 'Senior Finance Specialist', deptId: d.FIN, jobCode: 'FIN_MGR',   gradeCode: 'G4' },
+    { code: 'CTR-KR-FIN-003',  titleKo: '재무담당A',    titleEn: 'Finance Specialist A',    deptId: d.FIN,   jobCode: 'FIN_MGR',   gradeCode: 'G5' },
+    { code: 'CTR-KR-FIN-004',  titleKo: '재무담당B',    titleEn: 'Finance Specialist B',    deptId: d.FIN,   jobCode: 'FIN_MGR',   gradeCode: 'G5' },
+    { code: 'CTR-KR-FIN-005',  titleKo: '재무사원',     titleEn: 'Finance Staff',           deptId: d.FIN,   jobCode: 'FIN_MGR',   gradeCode: 'G6' },
+    // ── PUR (5) ──────────────────────────────────────────────
+    { code: 'CTR-KR-PUR-001',  titleKo: '구매팀장',     titleEn: 'Procurement Team Lead',   deptId: d.PUR,   jobCode: 'PUR_SPEC',  gradeCode: 'G3' },
+    { code: 'CTR-KR-PUR-002',  titleKo: '구매선임',     titleEn: 'Senior Procurement Spec', deptId: d.PUR,   jobCode: 'PUR_SPEC',  gradeCode: 'G4' },
+    { code: 'CTR-KR-PUR-003',  titleKo: '구매담당A',    titleEn: 'Procurement Specialist A', deptId: d.PUR,  jobCode: 'PUR_SPEC',  gradeCode: 'G5' },
+    { code: 'CTR-KR-PUR-004',  titleKo: '구매담당B',    titleEn: 'Procurement Specialist B', deptId: d.PUR,  jobCode: 'PUR_SPEC',  gradeCode: 'G5' },
+    { code: 'CTR-KR-PUR-005',  titleKo: '구매사원',     titleEn: 'Procurement Staff',       deptId: d.PUR,   jobCode: 'PUR_SPEC',  gradeCode: 'G6' },
+    // ── RANDD (8) ────────────────────────────────────────────
+    { code: 'CTR-KR-RANDD-001', titleKo: '연구소장',    titleEn: 'R&D Director',            deptId: d.RANDD, jobCode: 'RND_ENG',   gradeCode: 'G2' },
+    { code: 'CTR-KR-RANDD-002', titleKo: '연구팀장',    titleEn: 'R&D Team Lead',           deptId: d.RANDD, jobCode: 'RND_ENG',   gradeCode: 'G3' },
+    { code: 'CTR-KR-RANDD-003', titleKo: '선임연구원A', titleEn: 'Senior Researcher A',     deptId: d.RANDD, jobCode: 'RND_ENG',   gradeCode: 'G4' },
+    { code: 'CTR-KR-RANDD-004', titleKo: '선임연구원B', titleEn: 'Senior Researcher B',     deptId: d.RANDD, jobCode: 'RND_ENG',   gradeCode: 'G4' },
+    { code: 'CTR-KR-RANDD-005', titleKo: '연구원A',     titleEn: 'Researcher A',            deptId: d.RANDD, jobCode: 'RND_ENG',   gradeCode: 'G5' },
+    { code: 'CTR-KR-RANDD-006', titleKo: '연구원B',     titleEn: 'Researcher B',            deptId: d.RANDD, jobCode: 'RND_ENG',   gradeCode: 'G5' },
+    { code: 'CTR-KR-RANDD-007', titleKo: '연구사원A',   titleEn: 'Research Staff A',        deptId: d.RANDD, jobCode: 'RND_ENG',   gradeCode: 'G6' },
+    { code: 'CTR-KR-RANDD-008', titleKo: '연구사원B',   titleEn: 'Research Staff B',        deptId: d.RANDD, jobCode: 'RND_ENG',   gradeCode: 'G6' },
+  ]
+
+  // First pass: create all positions without reportsToPositionId
+  for (const p of krPositions) {
+    const id = deterministicUUID('pos', p.code)
+    await prisma.position.upsert({
+      where: { id },
+      update: { titleKo: p.titleKo, titleEn: p.titleEn },
+      create: {
+        id,
+        code: p.code,
+        titleKo: p.titleKo,
+        titleEn: p.titleEn,
+        companyId: ctrKrId,
+        departmentId: p.deptId,
+        jobId: jobMap[p.jobCode],
+        jobGradeId: krGrade(p.gradeCode),
+      },
+    })
+    posMap[p.code] = id
+  }
+
+  // Second pass: set reportsToPositionId
+  const solidLineReporting: Array<[string, string]> = [
+    // code -> reportsTo code
+    // MGMT chain
+    ['CTR-KR-MGMT-002', 'CTR-KR-MGMT-001'], // 경영지원본부장 -> 대표이사
+    ['CTR-KR-MGMT-003', 'CTR-KR-MGMT-002'], // 경영지원팀장 -> 경영지원본부장
+    ['CTR-KR-MGMT-004', 'CTR-KR-MGMT-003'],
+    ['CTR-KR-MGMT-005', 'CTR-KR-MGMT-003'],
+    ['CTR-KR-MGMT-006', 'CTR-KR-MGMT-005'],
+    // HR chain (reports to 경영지원본부장)
+    ['CTR-KR-HR-001',   'CTR-KR-MGMT-002'],
+    ['CTR-KR-HR-002',   'CTR-KR-HR-001'],
+    ['CTR-KR-HR-003',   'CTR-KR-HR-002'],
+    ['CTR-KR-HR-004',   'CTR-KR-HR-003'],
+    // DEV chain
+    ['CTR-KR-DEV-001',  'CTR-KR-MGMT-002'],
+    ['CTR-KR-DEV-002',  'CTR-KR-DEV-001'],
+    ['CTR-KR-DEV-003',  'CTR-KR-DEV-001'],
+    ['CTR-KR-DEV-004',  'CTR-KR-DEV-002'],
+    ['CTR-KR-DEV-005',  'CTR-KR-DEV-003'],
+    ['CTR-KR-DEV-006',  'CTR-KR-DEV-004'],
+    ['CTR-KR-DEV-007',  'CTR-KR-DEV-005'],
+    // SALES chain
+    ['CTR-KR-SALES-001', 'CTR-KR-MGMT-002'],
+    ['CTR-KR-SALES-002', 'CTR-KR-SALES-001'],
+    ['CTR-KR-SALES-003', 'CTR-KR-SALES-001'],
+    ['CTR-KR-SALES-004', 'CTR-KR-SALES-002'],
+    ['CTR-KR-SALES-005', 'CTR-KR-SALES-003'],
+    ['CTR-KR-SALES-006', 'CTR-KR-SALES-004'],
+    ['CTR-KR-SALES-007', 'CTR-KR-SALES-005'],
+    // MFG chain
+    ['CTR-KR-MFG-001',  'CTR-KR-MGMT-002'],
+    ['CTR-KR-MFG-002',  'CTR-KR-MFG-001'],
+    ['CTR-KR-MFG-003',  'CTR-KR-MFG-001'],
+    ['CTR-KR-MFG-004',  'CTR-KR-MFG-002'],
+    ['CTR-KR-MFG-005',  'CTR-KR-MFG-002'],
+    ['CTR-KR-MFG-006',  'CTR-KR-MFG-003'],
+    ['CTR-KR-MFG-007',  'CTR-KR-MFG-004'],
+    ['CTR-KR-MFG-008',  'CTR-KR-MFG-005'],
+    ['CTR-KR-MFG-009',  'CTR-KR-MFG-006'],
+    ['CTR-KR-MFG-010',  'CTR-KR-MFG-006'],
+    // QA chain
+    ['CTR-KR-QA-001',  'CTR-KR-MGMT-002'],
+    ['CTR-KR-QA-002',  'CTR-KR-QA-001'],
+    ['CTR-KR-QA-003',  'CTR-KR-QA-001'],
+    ['CTR-KR-QA-004',  'CTR-KR-QA-002'],
+    ['CTR-KR-QA-005',  'CTR-KR-QA-003'],
+    ['CTR-KR-QA-006',  'CTR-KR-QA-004'],
+    ['CTR-KR-QA-007',  'CTR-KR-QA-005'],
+    // FIN chain
+    ['CTR-KR-FIN-001', 'CTR-KR-MGMT-002'],
+    ['CTR-KR-FIN-002', 'CTR-KR-FIN-001'],
+    ['CTR-KR-FIN-003', 'CTR-KR-FIN-002'],
+    ['CTR-KR-FIN-004', 'CTR-KR-FIN-002'],
+    ['CTR-KR-FIN-005', 'CTR-KR-FIN-003'],
+    // PUR chain
+    ['CTR-KR-PUR-001', 'CTR-KR-MGMT-002'],
+    ['CTR-KR-PUR-002', 'CTR-KR-PUR-001'],
+    ['CTR-KR-PUR-003', 'CTR-KR-PUR-002'],
+    ['CTR-KR-PUR-004', 'CTR-KR-PUR-002'],
+    ['CTR-KR-PUR-005', 'CTR-KR-PUR-003'],
+    // RANDD chain (연구소장 -> 대표이사, 연구팀장 -> 연구소장)
+    ['CTR-KR-RANDD-001', 'CTR-KR-MGMT-001'],
+    ['CTR-KR-RANDD-002', 'CTR-KR-RANDD-001'],
+    ['CTR-KR-RANDD-003', 'CTR-KR-RANDD-002'],
+    ['CTR-KR-RANDD-004', 'CTR-KR-RANDD-002'],
+    ['CTR-KR-RANDD-005', 'CTR-KR-RANDD-003'],
+    ['CTR-KR-RANDD-006', 'CTR-KR-RANDD-004'],
+    ['CTR-KR-RANDD-007', 'CTR-KR-RANDD-005'],
+    ['CTR-KR-RANDD-008', 'CTR-KR-RANDD-006'],
+  ]
+
+  for (const [posCode, reportsToCode] of solidLineReporting) {
+    await prisma.position.update({
+      where: { id: posMap[posCode] },
+      data: { reportsToPositionId: posMap[reportsToCode] },
+    })
+  }
+
+  console.log(`  ✅ ${krPositions.length} CTR-KR positions with reporting lines`)
+
+  // ----------------------------------------------------------
+  // STEP 25: Positions for Other Companies (simplified structure)
+  // ----------------------------------------------------------
+  console.log('📌 Seeding positions for other companies...')
+  let otherPosCount = 0
+
+  // Other companies' department structure:
+  const otherCompanyDeptConfig: Record<string, string[]> = {
+    'CTR-HQ':  ['STRAT'],
+    'CTR-MOB': ['ENG', 'MFG'],
+    'CTR-ECO': ['ENG', 'OPS'],
+    'CTR-ROB': ['ENG', 'MFG'],
+    'CTR-ENG': ['ENG', 'RD'],
+    'FML':     ['OPS', 'FIN'],
+    'CTR-US':  ['OPS', 'SALES'],
+    'CTR-CN':  ['MFG', 'QA'],
+    'CTR-RU':  ['MFG', 'ENG'],
+    'CTR-VN':  ['MFG', 'ASM'],
+    'CTR-EU':  ['ENG', 'SALES'],
+    'CTR-MX':  ['MFG', 'ASM'],
+  }
+
+  for (const [compCode, deptCodes] of Object.entries(otherCompanyDeptConfig)) {
+    const compId = companyMap[compCode]
+
+    // GM position (company-level, no department)
+    const gmCode = `${compCode}-GM-001`
+    const gmId = deterministicUUID('pos', gmCode)
+    await prisma.position.upsert({
+      where: { id: gmId },
+      update: { titleKo: 'General Manager', titleEn: 'General Manager' },
+      create: {
+        id: gmId,
+        code: gmCode,
+        titleKo: 'General Manager',
+        titleEn: 'General Manager',
+        companyId: compId,
+        jobId: jobMap['OPS_MGR'],
+      },
+    })
+    posMap[gmCode] = gmId
+    otherPosCount++
+
+    for (const deptCode of deptCodes) {
+      const deptId = deptMap[`${compCode}:${deptCode}`]
+
+      // Dept Head
+      const headCode = `${compCode}-${deptCode}-HEAD`
+      const headId = deterministicUUID('pos', headCode)
+      await prisma.position.upsert({
+        where: { id: headId },
+        update: { titleKo: `${deptCode} Head`, titleEn: `${deptCode} Head` },
+        create: {
+          id: headId,
+          code: headCode,
+          titleKo: `${deptCode} Head`,
+          titleEn: `${deptCode} Head`,
+          companyId: compId,
+          departmentId: deptId,
+          jobId: jobMap['OPS_MGR'],
+          reportsToPositionId: gmId,
+        },
+      })
+      posMap[headCode] = headId
+      otherPosCount++
+
+      // Senior
+      const srCode = `${compCode}-${deptCode}-SR`
+      const srId = deterministicUUID('pos', srCode)
+      await prisma.position.upsert({
+        where: { id: srId },
+        update: { titleKo: `Senior ${deptCode} Specialist`, titleEn: `Senior ${deptCode} Specialist` },
+        create: {
+          id: srId,
+          code: srCode,
+          titleKo: `Senior ${deptCode} Specialist`,
+          titleEn: `Senior ${deptCode} Specialist`,
+          companyId: compId,
+          departmentId: deptId,
+          reportsToPositionId: headId,
+        },
+      })
+      posMap[srCode] = srId
+      otherPosCount++
+
+      // Staff
+      const staffCode = `${compCode}-${deptCode}-STAFF`
+      const staffId = deterministicUUID('pos', staffCode)
+      await prisma.position.upsert({
+        where: { id: staffId },
+        update: { titleKo: `${deptCode} Staff`, titleEn: `${deptCode} Staff` },
+        create: {
+          id: staffId,
+          code: staffCode,
+          titleKo: `${deptCode} Staff`,
+          titleEn: `${deptCode} Staff`,
+          companyId: compId,
+          departmentId: deptId,
+          reportsToPositionId: srId,
+        },
+      })
+      posMap[staffCode] = staffId
+      otherPosCount++
+    }
+  }
+  console.log(`  ✅ ${otherPosCount} positions for other companies`)
+
+  // ----------------------------------------------------------
+  // STEP 26: CompanyProcessSettings (global defaults + CTR-KR overrides)
+  // ----------------------------------------------------------
+  console.log('📌 Seeding company process settings...')
+  let settingCount = 0
+
+  const globalSettings = [
+    { type: 'evaluation', key: 'cycle',              value: { type: 'SEMI_ANNUAL', months: [1, 7] } },
+    { type: 'evaluation', key: 'self_eval_weight',   value: { weight: 0.3 } },
+    { type: 'attendance', key: 'overtime_threshold', value: { hoursPerWeek: 40, alertAt: 36 } },
+    { type: 'attendance', key: 'work_modes',         value: { allowed: ['OFFICE', 'REMOTE', 'HYBRID'] } },
+    { type: 'leave',      key: 'annual_base_days',   value: { days: 15, accrual: 'MONTHLY' } },
+    { type: 'leave',      key: 'carry_over_max',     value: { days: 10 } },
+    { type: 'payroll',    key: 'pay_day',            value: { dayOfMonth: 25 } },
+    { type: 'recruitment',key: 'approval_flow',      value: { steps: ['HR', 'DEPT_HEAD', 'EXEC'] } },
+  ]
+
+  for (const s of globalSettings) {
+    const id = deterministicUUID('procsetting', `global:${s.type}:${s.key}`)
+    const existing = await prisma.companyProcessSetting.findFirst({
+      where: { companyId: null, settingType: s.type, settingKey: s.key },
+    })
+    if (existing) {
+      await prisma.companyProcessSetting.update({
+        where: { id: existing.id },
+        data: { settingValue: s.value },
+      })
+    } else {
+      await prisma.companyProcessSetting.create({
+        data: { id, companyId: null, settingType: s.type, settingKey: s.key, settingValue: s.value },
+      })
+    }
+    settingCount++
+  }
+
+  // CTR-KR overrides
+  const krOverrides = [
+    { type: 'attendance', key: 'overtime_threshold', value: { hoursPerWeek: 52, alertAt: 48, legalMax: 52 } },
+    { type: 'leave',      key: 'annual_base_days',   value: { days: 15, accrual: 'MONTHLY', lawMinimum: 15 } },
+  ]
+
+  for (const s of krOverrides) {
+    const id = deterministicUUID('procsetting', `CTR-KR:${s.type}:${s.key}`)
+    await prisma.companyProcessSetting.upsert({
+      where: { companyId_settingType_settingKey: { companyId: ctrKrId, settingType: s.type, settingKey: s.key } },
+      update: { settingValue: s.value },
+      create: { id, companyId: ctrKrId, settingType: s.type, settingKey: s.key, settingValue: s.value },
+    })
+    settingCount++
+  }
+  console.log(`  ✅ ${settingCount} process settings`)
+
+  // ----------------------------------------------------------
+  // Assign CTR-KR employees to positions
+  // ----------------------------------------------------------
+  console.log('📌 Assigning employees to positions...')
+
+  // hr@ctr.co.kr → 인사담당선임 (CTR-KR-HR-002, G4)
+  const hrEmpId = deterministicUUID('employee', 'hr@ctr.co.kr')
+  await prisma.employeeAssignment.updateMany({
+    where: { employeeId: hrEmpId, isPrimary: true, endDate: null },
+    data: { positionId: posMap['CTR-KR-HR-002'] },
+  })
+
+  // manager@ctr.co.kr → 개발팀장 (CTR-KR-DEV-001, G3)
+  const mgEmpId = deterministicUUID('employee', 'manager@ctr.co.kr')
+  await prisma.employeeAssignment.updateMany({
+    where: { employeeId: mgEmpId, isPrimary: true, endDate: null },
+    data: { positionId: posMap['CTR-KR-DEV-001'] },
+  })
+
+  // employee@ctr.co.kr → 영업사원A (CTR-KR-SALES-006, G6)
+  const empEmpId = deterministicUUID('employee', 'employee@ctr.co.kr')
+  await prisma.employeeAssignment.updateMany({
+    where: { employeeId: empEmpId, isPrimary: true, endDate: null },
+    data: { positionId: posMap['CTR-KR-SALES-006'] },
+  })
+
+  console.log('  ✅ 3 CTR-KR employee position assignments')
+
+  // ----------------------------------------------------------
   // SUMMARY
   // ----------------------------------------------------------
   console.log('\n========================================')
@@ -1134,6 +1638,10 @@ async function main() {
   console.log(`  Workflow Rules:      ${workflowData.length}`)
   console.log(`  Email Templates:     ${emailTemplateData.length}`)
   console.log(`  Export Templates:    ${exportTemplateData.length}`)
+  console.log(`  Global Jobs:         ${globalJobs.length}`)
+  console.log(`  CTR-KR Positions:    ${krPositions.length}`)
+  console.log(`  Other Co Positions:  ${otherPosCount}`)
+  console.log(`  Process Settings:    ${settingCount}`)
   console.log('========================================\n')
 }
 
