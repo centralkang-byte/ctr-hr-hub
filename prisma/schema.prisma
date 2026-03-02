@@ -902,6 +902,8 @@ model Position {
   @@map("positions")
   @@index([companyId])
   @@index([departmentId])
+  @@index([jobId])
+  @@index([jobGradeId])
   @@index([reportsToPositionId])
   @@index([dottedLinePositionId])
 }
