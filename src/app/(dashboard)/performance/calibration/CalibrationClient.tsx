@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Plus, Sparkles, CheckCircle2, AlertTriangle, Grid3X3 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import EmployeeInsightPanel from '@/components/performance/EmployeeInsightPanel'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -94,6 +95,10 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [newSessionName, setNewSessionName] = useState('')
 
+  const [insightEmployeeId, setInsightEmployeeId] = useState<string | null>(null)
+  const [insightEmployeeName, setInsightEmployeeName] = useState<string>('')
+  const [readinessMap, setReadinessMap] = useState<Record<string, string>>({})
+
   // Adjustment form
   const [adjEmployee, setAdjEmployee] = useState<EvalItem | null>(null)
   const [adjPerfScore, setAdjPerfScore] = useState(3)
@@ -128,6 +133,25 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
 
   useEffect(() => { fetchSessions() }, [fetchSessions])
 
+  // ─── Load readiness data ────────────────────────────
+
+  const loadReadinessData = useCallback(async (employeeIds: string[]) => {
+    if (employeeIds.length === 0) return
+    try {
+      const res = await apiClient.post<{ employeeId: string; readiness: string }[]>(
+        '/api/v1/succession/readiness-batch',
+        { employeeIds },
+      )
+      const map: Record<string, string> = {}
+      for (const item of (res.data ?? [])) {
+        map[item.employeeId] = item.readiness
+      }
+      setReadinessMap(map)
+    } catch {
+      // Readiness 없으면 뱃지 미표시 (graceful degradation)
+    }
+  }, [])
+
   // ─── Load session detail ────────────────────────────
 
   const loadSession = async (sessionId: string) => {
@@ -135,6 +159,10 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
     try {
       const res = await apiClient.get<SessionDetail>(`/api/v1/performance/calibration/sessions/${sessionId}`)
       setSelectedSession(res.data)
+      // Readiness 배지 데이터 로드
+      if (res.data.evaluations && res.data.evaluations.length > 0) {
+        loadReadinessData(res.data.evaluations.map((e: EvalItem) => e.employeeId))
+      }
     } catch { /* ignore */ }
     finally { setDetailLoading(false) }
   }
@@ -210,6 +238,13 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
     } finally { setAiLoading(false) }
   }
 
+  // ─── Employee chip click ────────────────────────────
+
+  const handleEmployeeChipClick = useCallback((ev: EvalItem) => {
+    setInsightEmployeeId(ev.employeeId)
+    setInsightEmployeeName(ev.employee.name)
+  }, [])
+
   // ─── Build 9-Block Grid ─────────────────────────────
 
   const buildBlockGrid = () => {
@@ -252,17 +287,27 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                 </div>
                 <div className="space-y-0.5">
                   {items.slice(0, 3).map((ev) => (
-                    <button
-                      key={ev.id}
-                      onClick={() => {
-                        setAdjEmployee(ev)
-                        setAdjPerfScore(ev.performanceScore ?? 3)
-                        setAdjCompScore(ev.competencyScore ?? 3)
-                      }}
-                      className="block w-full text-left text-xs text-[#555] hover:text-[#00C853] truncate"
+                    <div
+                      key={ev.employeeId}
+                      className="flex items-center gap-1 text-xs bg-white border border-[#E8E8E8] rounded-md px-1.5 py-0.5 cursor-pointer hover:border-[#00C853] hover:bg-[#E8F5E9] transition-colors"
+                      onClick={() => handleEmployeeChipClick(ev)}
                     >
-                      {ev.employee.name}
-                    </button>
+                      <span
+                        className="truncate max-w-[60px]"
+                        title={ev.employee.name}
+                        onClickCapture={(e) => {
+                          e.stopPropagation()
+                          setAdjEmployee(ev)
+                          setAdjPerfScore(ev.performanceScore ?? 3)
+                          setAdjCompScore(ev.competencyScore ?? 3)
+                        }}
+                      >
+                        {ev.employee.name}
+                      </span>
+                      {readinessMap[ev.employeeId] === 'READY_NOW' && <span className="flex-shrink-0">🟢</span>}
+                      {readinessMap[ev.employeeId] === 'READY_1_2_YEARS' && <span className="flex-shrink-0">🟡</span>}
+                      {readinessMap[ev.employeeId] === 'READY_3_PLUS_YEARS' && <span className="flex-shrink-0">🔴</span>}
+                    </div>
                   ))}
                   {items.length > 3 && (
                     <span className="text-xs text-[#999]">+{items.length - 3}명</span>
@@ -285,6 +330,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
   }
 
   return (
+    <>
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -510,5 +556,13 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
         </div>
       </div>
     </div>
+
+    {/* 직원 통합 사이드패널 */}
+    <EmployeeInsightPanel
+      employeeId={insightEmployeeId}
+      employeeName={insightEmployeeName}
+      onClose={() => setInsightEmployeeId(null)}
+    />
+    </>
   )
 }
