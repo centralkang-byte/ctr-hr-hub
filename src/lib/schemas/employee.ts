@@ -52,6 +52,9 @@ export const employeeSearchSchema = searchSchema.extend({
   jobCategoryId: z.string().uuid().optional(),
   status: z.enum(['ACTIVE', 'ON_LEAVE', 'RESIGNED', 'TERMINATED']).optional(),
   employmentType: z.enum(['FULL_TIME', 'CONTRACT', 'DISPATCH', 'INTERN']).optional(),
+  contractType: z.enum(['FULL_TIME', 'CONTRACT', 'DISPATCH', 'INTERN']).optional(),
+  hireDateFrom: z.string().date().optional(),
+  hireDateTo: z.string().date().optional(),
 })
 
 export type EmployeeSearchInput = z.infer<typeof employeeSearchSchema>
