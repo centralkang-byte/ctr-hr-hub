@@ -21,6 +21,7 @@ interface InsightOneOnOne {
   notes?: string | null
   aiSummary?: string | null
   meetingType: string
+  sentimentTag?: string | null
 }
 
 interface InsightEval {
@@ -37,7 +38,7 @@ interface InsightEval {
 interface InsightSuccession {
   readiness: string
   notes?: string | null
-  plan: { positionTitle: string }
+  plan: { positionTitle: string } | null
 }
 
 interface InsightData {
@@ -54,6 +55,13 @@ const READINESS_BADGE: Record<string, { label: string; color: string; icon: stri
   READY_NOW: { label: 'Ready Now', color: 'bg-[#D1FAE5] text-[#047857]', icon: '🟢' },
   READY_1_2_YEARS: { label: '1-2년 후', color: 'bg-[#FEF3C7] text-[#B45309]', icon: '🟡' },
   READY_3_PLUS_YEARS: { label: '개발 필요', color: 'bg-[#FEE2E2] text-[#B91C1C]', icon: '🔴' },
+}
+
+const SENTIMENT_ICON: Record<string, string> = {
+  positive: '😊',
+  neutral: '😐',
+  negative: '😞',
+  concerned: '😟',
 }
 
 // ─── Component ────────────────────────────────────────────
@@ -176,7 +184,9 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
                 <div className="space-y-1.5">
                   {data.oneOnOnes.map((o) => (
                     <div key={o.id} className="bg-[#FAFAFA] rounded-lg p-2.5 flex items-start gap-2">
-                      <span className="text-base flex-shrink-0">💬</span>
+                      <span className="text-base flex-shrink-0">
+                          {SENTIMENT_ICON[o.sentimentTag ?? ''] ?? '💬'}
+                        </span>
                       <div className="min-w-0">
                         <p className="text-xs text-[#999]">
                           {new Date(o.scheduledAt).toLocaleDateString('ko-KR', {
@@ -238,7 +248,7 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
                       {READINESS_BADGE[data.successionEntry.readiness]?.label ?? data.successionEntry.readiness}
                     </span>
                     <span className="text-xs text-[#999]">
-                      {data.successionEntry.plan.positionTitle}
+                      {data.successionEntry.plan?.positionTitle}
                     </span>
                   </div>
                   {data.successionEntry.notes && (

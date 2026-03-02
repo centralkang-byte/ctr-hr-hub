@@ -58,6 +58,7 @@ export const GET = withPermission(
         notes: true,
         aiSummary: true,
         meetingType: true,
+        sentimentTag: true,
       },
     })
 
