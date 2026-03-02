@@ -39,10 +39,14 @@ export const candidateAddSchema = z.object({
   readiness: z.enum(['READY_NOW', 'READY_1_2_YEARS', 'READY_3_PLUS_YEARS']),
   developmentAreas: z.any().optional(),
   notes: z.string().max(2000).optional(),
+  ranking: z.number().int().min(0).optional(),
+  developmentNote: z.string().max(2000).optional(),
 })
 
 export const candidateUpdateSchema = z.object({
   readiness: z.enum(['READY_NOW', 'READY_1_2_YEARS', 'READY_3_PLUS_YEARS']).optional(),
   developmentAreas: z.any().optional(),
   notes: z.string().max(2000).nullable().optional(),
+  ranking: z.number().int().min(0).nullable().optional(),
+  developmentNote: z.string().max(2000).nullable().optional(),
 })

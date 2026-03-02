@@ -34,6 +34,9 @@ export default function CandidateCard({ candidate, onDelete }: CandidateCardProp
           <div>
             <p className="text-sm font-medium text-[#1A1A1A]">
               {candidate.employee.name}
+              {candidate.ranking != null && candidate.ranking > 0 && (
+                <span className="text-xs text-[#999] ml-1">#{candidate.ranking}</span>
+              )}
             </p>
             <p className="text-xs text-[#666]">{candidate.employee.employeeNo}</p>
           </div>
@@ -62,6 +65,12 @@ export default function CandidateCard({ candidate, onDelete }: CandidateCardProp
 
       {candidate.notes && (
         <p className="mt-2 text-xs text-[#666]">{candidate.notes}</p>
+      )}
+
+      {candidate.developmentNote && (
+        <p className="text-xs text-[#666] mt-1.5 border-t border-[#F5F5F5] pt-1.5">
+          {candidate.developmentNote}
+        </p>
       )}
     </div>
   )

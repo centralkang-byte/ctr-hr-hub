@@ -32,6 +32,8 @@ export interface CandidateData {
   readiness: string
   developmentAreas: string[] | null
   notes: string | null
+  ranking?: number | null
+  developmentNote?: string | null
   employee: { id: string; name: string; employeeNo: string }
 }
 
