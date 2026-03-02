@@ -8,7 +8,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Plus } from 'lucide-react'
+import { Plus, Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -22,6 +22,7 @@ import { Badge } from '@/components/ui/badge'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { EmployeeFilterPanel, type FilterValues } from '@/components/employees/EmployeeFilterPanel'
+import { BulkUploadWizard } from '@/components/employees/BulkUploadWizard'
 import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser, PaginationInfo, SortDirection } from '@/types'
@@ -89,6 +90,7 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
   const [status, setStatus] = useState('')
   const [filters, setFilters] = useState<FilterValues>({})
   const [exportLoading, setExportLoading] = useState(false)
+  const [bulkUploadOpen, setBulkUploadOpen] = useState(false)
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(20)
   const [sortBy, setSortBy] = useState('name')
@@ -256,13 +258,23 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
         description={t('listDescription')}
         actions={
           isHrAdmin ? (
-            <Button
-              onClick={() => router.push('/employees/new')}
-              className="bg-ctr-primary hover:bg-ctr-primary-dark text-white"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              {t('newEmployee')}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setBulkUploadOpen(true)}
+                className="gap-2"
+              >
+                <Upload className="h-4 w-4" />
+                일괄 업로드
+              </Button>
+              <Button
+                onClick={() => router.push('/employees/new')}
+                className="bg-ctr-primary hover:bg-ctr-primary-dark text-white"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                {t('newEmployee')}
+              </Button>
+            </div>
           ) : undefined
         }
       />
@@ -390,6 +402,18 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
         }
         rowKey={(row) => row.id}
       />
+
+      {/* ─── Bulk Upload Wizard ─── */}
+      {isHrAdmin && (
+        <BulkUploadWizard
+          open={bulkUploadOpen}
+          onClose={() => setBulkUploadOpen(false)}
+          onSuccess={() => {
+            setBulkUploadOpen(false)
+            setPage(1)
+          }}
+        />
+      )}
     </div>
   )
 }
