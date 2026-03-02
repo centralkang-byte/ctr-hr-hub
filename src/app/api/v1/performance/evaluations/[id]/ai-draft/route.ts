@@ -7,7 +7,7 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, forbidden, notFound } from '@/lib/errors'
+import { forbidden, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { generateEvaluationDraft } from '@/lib/claude'

@@ -136,8 +136,16 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
 
   // ─── Apply AI Draft ──────────────────────────────────
 
-  const handleApplyDraft = (draft: { overallOpinion?: string; performanceComment?: string }) => {
-    // Apply overallOpinion to the overall comment field
+  const handleApplyDraft = (draft: {
+    performanceComment: string
+    competencyComment?: string | null
+    strengths: string[]
+    developmentAreas: string[]
+    overallOpinion: string
+    recommendedGrade?: string | null
+    reviewNeededTags: string[]
+  }) => {
+    // apply whatever fields exist in the form
     if (draft.overallOpinion) {
       setOverallComment(draft.overallOpinion)
     }
