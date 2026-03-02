@@ -28,7 +28,6 @@ export const POST = withPermission(
         plan: { companyId: user.companyId },
       },
       select: { employeeId: true, readiness: true, ranking: true },
-      orderBy: { ranking: 'asc' },
       distinct: ['employeeId' as const],
     })
 
