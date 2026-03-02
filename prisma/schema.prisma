@@ -860,7 +860,7 @@ model JobCategory {
 }
 
 model Job {
-  id         String     @id @default(cuid())
+  id         String     @id @default(uuid())
   code       String     @unique
   titleKo    String     @map("title_ko")
   titleEn    String     @map("title_en")
@@ -875,7 +875,7 @@ model Job {
 }
 
 model Position {
-  id                   String       @id @default(cuid())
+  id                   String       @id @default(uuid())
   code                 String       @unique
   titleKo              String       @map("title_ko")
   titleEn              String       @map("title_en")
@@ -903,10 +903,11 @@ model Position {
   @@index([companyId])
   @@index([departmentId])
   @@index([reportsToPositionId])
+  @@index([dottedLinePositionId])
 }
 
 model CompanyProcessSetting {
-  id           String   @id @default(cuid())
+  id           String   @id @default(uuid())
   companyId    String?  @map("company_id")
   company      Company? @relation(fields: [companyId], references: [id])
   settingType  String   @map("setting_type")
