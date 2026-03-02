@@ -197,3 +197,315 @@ id String @id @default(uuid())
 - B10-2: AI 평가 초안 사용률 → HR KPI 위젯
 - `AiEvaluationDraft.status` 값: draft|reviewed|applied|discarded
 - 편향 감지 현재 central_tendency, leniency 2가지 — severity/recency/tenure/gender 확장 예정
+
+---
+
+# Track A — B6-2: 휴가 고도화 (정책엔진 + 통합 승인함) 완료 보고
+
+> 완료일: 2026-03-03
+> 세션 수: 2 sessions (컨텍스트 초과로 분할)
+> 검증: `tsc --noEmit` ✅ 0 errors | `npm run build` ✅ 성공
+
+---
+
+## B6-2 구현 완료 항목
+
+### Task 1: DB Migration — 5개 신규 모델
+- `LeaveTypeDef` (leave_type_defs) — 법인별 휴가 유형 정의
+- `LeaveAccrualRule` (leave_accrual_rules) — 부여 규칙 (JSON 티어 구조)
+- `LeaveYearBalance` (leave_year_balances) — 직원 연도별 잔여 집계
+- `AttendanceApprovalRequest` (attendance_approval_requests) — 통합 승인 요청
+- `AttendanceApprovalStep` (attendance_approval_steps) — 다단계 승인 스텝
+- 마이그레이션 이름: `a_b6_leave_policy_engine`, `a_b6_varchar_fix`
+- VarChar(20) → VarChar(30) 수정 (accrualBasis = 'hire_date_anniversary' 21자)
+
+### Task 2: 시드 데이터
+- 6개 법인 LeaveTypeDef: KR(연차·경조사·병가·출산육아), US(Vacation·Sick·PTO), CN(연차·병가·출산)
+- 총 28개 LeaveTypeDef 생성
+- KR 연차 accrualRule: hire_date_anniversary + monthly (한국 근로기준법)
+- US Vacation accrualRule: calendar_year + annual
+- 총 4개 LeaveAccrualRule 생성
+
+### Task 3: Accrual Engine (`src/lib/leave/accrualEngine.ts`)
+- `calculateEntitlement(employeeId, leaveTypeDefId, year)` — 근속 구간별 부여일 계산
+- `processAnnualAccrual(companyId, year)` — 법인 전체 일괄 부여 처리
+- `getEmployeeLeaveBalance(employeeId, year)` — 잔여 조회 (remaining 계산 포함)
+- 한국 근로기준법: 첫 해 월 1일(최대 11일), 1년+ 15일/년, 3년+ 2년마다 +1일(최대 25일)
+- calendar_year / hire_date_anniversary 두 accrualBasis 지원
+
+### Task 4: Leave Settings Admin UI (`/settings/leave`)
+- `src/app/(dashboard)/settings/leave/page.tsx` — 서버 컴포넌트
+- `src/app/(dashboard)/settings/leave/LeaveSettingsClient.tsx` — 3탭 클라이언트
+  - 탭1 (휴가 유형): CRUD, 반일 허용 여부, 유급/무급, 법정휴가 표시
+  - 탭2 (부여 규칙): accrualBasis/Type 선택, 티어 편집, 연간 일괄 부여 실행
+  - 탭3 (이월·소멸): carryOverType (none/limited/unlimited), maxDays, expiryMonths
+- API 연동: LeaveTypeDef CRUD + LeaveAccrualRule upsert + 일괄 부여 POST
+
+### Task 5: 통합 승인 API
+- `GET/POST /api/v1/approvals/attendance` — 목록(view=mine|pending-approval|team) + 생성
+- `GET/PUT /api/v1/approvals/attendance/[id]` — 상세 조회 + 승인/반려 처리
+- `GET /api/v1/leave/type-defs`, `POST /api/v1/leave/type-defs`
+- `GET/PUT/DELETE /api/v1/leave/type-defs/[id]`
+- `GET/PUT /api/v1/leave/type-defs/[id]/accrual-rules`
+- `POST /api/v1/leave/accrual` — 연간 일괄 부여 실행
+- `GET /api/v1/leave/year-balances` — 직원 연도별 잔여 조회
+
+### Task 6: 통합 승인함 UI (`/approvals/attendance`)
+- `src/app/(dashboard)/approvals/attendance/page.tsx`
+- `src/app/(dashboard)/approvals/attendance/AttendanceApprovalClient.tsx`
+  - 뷰 토글: 결재 대기 / 내 신청 / 팀 전체
+  - 요청 유형 필터 칩 (leave/overtime/attendance_correction/shift_change)
+  - 좌측 목록 + 우측 상세 2-패널 레이아웃
+  - 승인/반려 액션 + 코멘트 입력
+
+### Task 7: 직원 휴가 현황 (`/my/leave`)
+- `src/app/(dashboard)/my/leave/page.tsx`
+- `src/app/(dashboard)/my/leave/MyLeaveClient.tsx`
+  - 연도 선택 (좌우 화살표)
+  - KPI 카드: 총 부여 / 사용 / 대기중 / 잔여
+  - 유형별 사용률 Progress Bar (green=사용, yellow=대기)
+  - 신청 이력 테이블 (기존 /api/v1/leave/requests 활용)
+
+---
+
+## 생성/수정된 파일 목록 (B6-2)
+
+### DB
+```
+prisma/schema.prisma                         — 5개 신규 모델 추가
+prisma/migrations/*/a_b6_leave_policy_engine/ — 신규 모델 마이그레이션
+prisma/migrations/*/a_b6_varchar_fix/         — VarChar 길이 수정
+```
+
+### 라이브러리
+```
+src/lib/leave/accrualEngine.ts               — 휴가 부여 엔진
+```
+
+### API
+```
+src/app/api/v1/leave/type-defs/route.ts
+src/app/api/v1/leave/type-defs/[id]/route.ts
+src/app/api/v1/leave/type-defs/[id]/accrual-rules/route.ts
+src/app/api/v1/leave/accrual/route.ts
+src/app/api/v1/leave/year-balances/route.ts
+src/app/api/v1/approvals/attendance/route.ts
+src/app/api/v1/approvals/attendance/[id]/route.ts
+```
+
+### UI
+```
+src/app/(dashboard)/settings/leave/page.tsx
+src/app/(dashboard)/settings/leave/LeaveSettingsClient.tsx
+src/app/(dashboard)/approvals/attendance/page.tsx
+src/app/(dashboard)/approvals/attendance/AttendanceApprovalClient.tsx
+src/app/(dashboard)/my/leave/page.tsx
+src/app/(dashboard)/my/leave/MyLeaveClient.tsx
+```
+
+---
+
+## 다음 세션 주의사항
+- `LeaveTypeDef` — 기존 `LeaveType` enum과 별개 (enum은 LeaveRequest.leaveType에서 사용)
+- `AttendanceApprovalRequest.requestType` — leave/overtime/attendance_correction/shift_change
+- `LeaveYearBalance.remaining` = entitled + carriedOver + adjusted - used - pending (DB 컬럼 아님, 계산값)
+- `ACTION.VIEW` = 'read', `ACTION.APPROVE` = 'manage' (ACTION.READ/MANAGE 존재하지 않음)
+- Zod v3: `z.record()` 는 `z.record(keySchema, valueSchema)` 2개 인자 필요
+- Prisma JSON 필드: `(data.details ?? {}) as object` 캐스트로 타입 오류 회피
+- `{ prisma }` named export (default export 아님)
+
+---
+
+# Track A — B7-1a: 한국법인 급여 계산 엔진 완료 보고
+
+> 완료일: 2026-03-03
+> 세션 수: 1 session
+> 검증: `tsc --noEmit` ✅ 0 errors | `npm run build` ✅ 성공
+
+---
+
+## B7-1a 구현 완료 항목
+
+### Task 1: DB Migration — 3개 신규 모델
+- `InsuranceRate` (insurance_rates) — 4대보험 요율 (연도별, @@unique([year, type]))
+- `NontaxableLimit` (nontaxable_limits) — 비과세 한도 (연도별, @@unique([year, code]))
+- `Payslip` (payslips) — 급여명세서 발급 추적 (@@unique([payrollItemId]))
+- Migration: `a_b7_payroll_kr`
+- Employee + Company 에 `payslips` 관계 추가
+
+### Task 2: 시드 데이터 (prisma/seed.ts)
+- 2025년 4대보험 5종: national_pension, health_insurance, long_term_care, employment_insurance, industrial_accident
+- 2025년 비과세 한도 4종: meal_allowance(20만), vehicle_allowance(20만), childcare(20만), research_allowance(20만)
+
+### Task 3: 계산 엔진 강화 (src/lib/payroll/kr-tax.ts)
+- `separateTaxableIncome()` — 비과세 한도 적용 후 과세/비과세 분리
+- `calculateProrated()` — 중도입사/퇴사 일할계산 (주 5일 기준 평일 수)
+- `detectPayrollAnomalies()` — 이상 항목 감지 (전월 >20% 변동, 초과근무 >기본급 50%)
+- `getWeekdaysInMonth()`, `getWeekdaysBetween()` — 평일 수 계산 유틸
+
+### Task 4: calculator.ts 업데이트 (src/lib/payroll/calculator.ts)
+- 비과세 한도 DB 조회 → `separateTaxableIncome()` 적용
+- 중도입사 일할계산: hireDate 기반 `calculateProrated()` 적용
+- 4대보험 계산 기준: 과세소득(taxableIncome) 기준으로 변경
+- 전월 PayrollItem 참조 → `detectPayrollAnomalies()` 실행
+- PayrollItemDetail에 `taxableIncome`, `nontaxableTotal`, `isProrated`, `prorateRatio`, `workDays`, `anomalies` 추가
+
+### Task 5: Payslip 생성 (approve route 강화)
+- `PUT /api/v1/payroll/runs/[id]/approve` — REVIEW→APPROVED 시 직원별 Payslip 자동 생성 (트랜잭션)
+- 이미 존재하는 경우 upsert로 중복 방지
+
+### Task 6: Payslip API (신규)
+- `GET /api/v1/payroll/payslips` — 급여명세서 목록 (?year, ?month, ?employeeId)
+  - HR: 법인 전체 / Employee: 본인만
+- `PATCH /api/v1/payroll/payslips/[id]` — 열람 처리 (isViewed, viewedAt 업데이트)
+
+### Task 7: 직원 명세서 접근 범위 확대
+- `GET /api/v1/payroll/me` — PAID → APPROVED|PAID 상태 모두 조회 가능으로 변경
+
+---
+
+## 생성/수정된 파일 목록 (B7-1a)
+
+### DB
+```
+prisma/schema.prisma           — InsuranceRate, NontaxableLimit, Payslip 모델 추가
+prisma/migrations/*/a_b7_payroll_kr/  — 마이그레이션
+prisma/seed.ts                 — 2025년 4대보험/비과세 한도 시드
+```
+
+### 핵심 라이브러리 (수정)
+```
+src/lib/payroll/kr-tax.ts      — separateTaxableIncome, calculateProrated, detectPayrollAnomalies 추가
+src/lib/payroll/calculator.ts  — 비과세 분리 + 일할계산 + 이상감지 통합
+src/lib/payroll/types.ts       — PayrollItemDetail에 B7-1a 필드 추가
+```
+
+### API Routes (수정)
+```
+src/app/api/v1/payroll/runs/[id]/approve/route.ts  — Payslip 자동 생성 추가
+src/app/api/v1/payroll/me/route.ts                 — APPROVED 상태 포함
+```
+
+### API Routes (신규)
+```
+src/app/api/v1/payroll/payslips/route.ts           — 급여명세서 목록
+src/app/api/v1/payroll/payslips/[id]/route.ts      — 열람 처리
+```
+
+---
+
+## 주요 설계 결정
+
+### 기존 인프라 재활용
+- PayrollRun, PayrollItem은 기존 스키마 그대로 활용 (필드 추가 없음)
+- 상세 데이터는 `PayrollItem.detail` (JSON)에 저장 — B7-1a 필드도 동일 JSON에 포함
+- 기존 `kr-tax.ts`의 하드코딩 요율(NATIONAL_PENSION_RATE 등) 유지 — DB에서 읽어오지 않고 fallback으로 사용
+
+### 비과세 분리 방식
+- AllowanceRecord.allowanceType === 'MEAL_ALLOWANCE' → code: 'meal_allowance'로 매핑
+- NontaxableLimit 테이블에서 연도별 한도 조회
+- 한도 초과분은 taxableIncome에 포함
+
+### 일할계산 기준
+- 주 5일(평일) 기준 — 공휴일 미반영 (추후 Holiday 테이블 연동 가능)
+- 입사월에만 적용 (퇴사월은 별도 처리 필요 시 resignDate 파라미터 추가)
+
+### 이상감지 저장
+- PayrollItem.detail.anomalies 배열에 저장
+- Review UI의 AnomalyPanel에서 summary.anomalies로 집계하여 표시
+
+---
+
+## 다음 세션 주의사항 (A 트랙)
+- B7-1b: payroll_items.detail.taxableIncome → 연말정산 총급여 계산에 활용
+- B7-1b: insurance_rates/nontaxable_limits 테이블을 연말정산에서도 참조 가능
+- B7-2: 해외 법인은 별도 계산 엔진 (InsuranceRate 테이블에 국가코드 추가 고려)
+- PayrollItem.detail의 anomalies 배열 → B10 애널리틱스에서 활용 가능
+- Payslip PDF 경로(pdfPath)는 현재 미구현 — B7-1b 또는 별도 세션에서 Supabase Storage 연동 필요
+
+---
+
+# Track A — B7-1b: 연말정산 완료 보고
+
+> 완료일: 2026-03-03
+> 세션 수: 1 session
+> 검증: `tsc --noEmit` ✅ 0 errors (new files) | `npm run build` ✅ 성공
+
+---
+
+## B7-1b 구현 완료 항목
+
+### Task 1+2: DB Migration + Seed Data
+- `YearEndDeductionConfig` (year_end_deduction_configs) — 공제항목 설정 (@@unique([year, code]))
+- `IncomeTaxRate` (income_tax_rates) — 과세표준 세율구간 (@@unique([year, minAmount]))
+- `YearEndSettlement` (year_end_settlements) — 직원별 연말정산 (@@unique([employeeId, year]))
+- `YearEndDependent` (year_end_dependents) — 부양가족
+- `YearEndDeduction` (year_end_deductions) — 공제항목 상세
+- `YearEndDocument` (year_end_documents) — 제출서류
+- `WithholdingReceipt` (withholding_receipts) — 원천징수영수증 (@@unique([settlementId]))
+- Migration: `a_b7_year_end_settlement`
+- 2025년 시드: 소득공제 6종 + 세액공제 6종 + 과세표준 8구간
+
+### Task 3+5: 계산 엔진 + 공제한도
+- `src/lib/payroll/yearEndCalculation.ts` — 11단계 연말정산 계산
+  - `calculateYearEndSettlement(settlementId, employeeId, year)` — 메인 계산
+  - `sumAnnualGross(employeeId, year)` — B7-1a payroll_items 집계
+  - `sumPrepaidTax(employeeId, year)` — 기납부세액 집계
+  - `calcEarnedIncomeDeduction(totalSalary)` — 근로소득공제 구간별
+- `src/lib/payroll/deductionCalculator.ts` — 항목별 한도 적용
+  - `calculateDeductibleAmount(code, inputAmount, totalSalary, year)` — DB rules 기반
+  - `calculateEarnedIncomeCredit(calculatedTax, totalSalary, rules)` — 근로소득세액공제
+  - `calculateChildCredit(childCount, rules)` — 자녀세액공제
+
+### Task 4: 직원용 연말정산 UI
+- `src/app/(dashboard)/my/year-end/page.tsx` — 서버 컴포넌트
+- `src/app/(dashboard)/my/year-end/YearEndWizardClient.tsx` — 4단계 위저드
+  - Step 1: 부양가족 확인 (CRUD)
+  - Step 2: 공제항목 입력 (직접입력 폼 + 홈택스 PDF 업로드)
+  - Step 3: 추가공제 (주택마련저축, 주택임차차입금)
+  - Step 4: 결과 확인 (11단계 계산 결과 + 제출)
+
+### Task 6+7: HR 관리 + 원천징수영수증
+- `src/app/(dashboard)/payroll/year-end/page.tsx` — 서버 컴포넌트
+- `src/app/(dashboard)/payroll/year-end/YearEndHRClient.tsx` — HR 대시보드
+  - 진행현황 카드 (상태별 카운트)
+  - 직원 목록 테이블 (검토/확정/영수증)
+  - 일괄 확정 기능
+- `src/lib/payroll/yearEndReceiptPdf.ts` — 원천징수영수증 HTML 생성
+
+### API Routes (신규)
+```
+src/app/api/v1/year-end/settlements/route.ts         — GET/POST
+src/app/api/v1/year-end/settlements/[id]/route.ts    — GET/PUT
+src/app/api/v1/year-end/settlements/[id]/submit/     — POST
+src/app/api/v1/year-end/settlements/[id]/dependents/ — GET/PUT
+src/app/api/v1/year-end/settlements/[id]/deductions/ — GET/PUT
+src/app/api/v1/year-end/settlements/[id]/documents/  — POST/DELETE
+src/app/api/v1/year-end/settlements/[id]/calculate/  — POST
+src/app/api/v1/year-end/hr/settlements/route.ts      — GET
+src/app/api/v1/year-end/hr/settlements/[id]/confirm/ — POST
+src/app/api/v1/year-end/hr/settlements/[id]/receipt/ — POST
+src/app/api/v1/year-end/hr/bulk-confirm/route.ts     — POST
+```
+
+### Navigation
+- 나의 공간: `/my/year-end` (연말정산, payroll module, countryFilter: KR, badge: new)
+- 인사 운영: `/payroll/year-end` (연말정산, payroll module, countryFilter: KR, badge: new)
+
+---
+
+## 다음 세션 주의사항 (A 트랙)
+- B7-2: 해외법인은 연말정산 없음 (CTR-KR only)
+- B10-2: HR KPI에 연말정산 완료율 위젯 추가 가능
+- finalSettlement 값이 양수=추가납부, 음수=환급 (주의)
+- WithholdingReceipt.pdfPath는 HTML 기반 (브라우저 인쇄용)
+- 홈택스 PDF 파싱은 미구현 — 직접 입력만 지원
+- 차감징수 → 급여반영은 B7-1a의 adjustments에 수동 추가 필요
+
+---
+
+## 설계 결정 사항
+- BigInt: 과세표준/세액 계산에 BigInt 사용 (API 응답 시 string 직렬화)
+- 공제항목 한도: `year_end_deduction_configs.rules` JSON에서 읽음 (코드 하드코딩 없음)
+- 연도별 세율: `income_tax_rates` 테이블 (2026년 추가 시 코드 변경 불필요)
+- 홈택스 간소화 PDF: 파싱 미지원, 수동입력 폼 대안 제공

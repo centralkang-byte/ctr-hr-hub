@@ -515,6 +515,8 @@ enum EnrollmentStatus {
   IN_PROGRESS
   ENROLLMENT_COMPLETED
   DROPPED
+  FAILED
+  EXPIRED
 
   @@map("EnrollmentStatus")
 }
@@ -825,6 +827,19 @@ model Company {
   aiEvaluationDrafts AiEvaluationDraft[]
   biasDetectionLogs  BiasDetectionLog[]
 
+  // B9-1: LMS Lite
+  mandatoryTrainingConfigs MandatoryTrainingConfig[]
+
+  // B6-2: 휴가 고도화
+  leaveTypeDefs              LeaveTypeDef[]              @relation("CompanyLeaveTypeDefs")
+  attendanceApprovalRequests AttendanceApprovalRequest[] @relation("CompanyAttApprovalRequests")
+
+  // B8-1: 조직 개편 플랜
+  orgRestructurePlans OrgRestructurePlan[]
+
+  // B7-1a: 한국 급여 계산 엔진
+  payslips Payslip[] @relation("CompanyPayslips")
+
   @@map("companies")
 }
 
@@ -1038,6 +1053,27 @@ model OrgChangeHistory {
   @@map("org_change_history")
 }
 
+// B8-1: 조직 개편 플랜
+model OrgRestructurePlan {
+  id            String    @id @default(uuid())
+  companyId     String    @map("company_id")
+  title         String    @db.VarChar(200)
+  description   String?   @db.Text
+  effectiveDate DateTime  @map("effective_date") @db.Date
+  status        String    @default("draft") @db.VarChar(20)
+  changes       Json
+  createdBy     String    @map("created_by")
+  approvedBy    String?   @map("approved_by")
+  approvedAt    DateTime? @map("approved_at")
+  appliedAt     DateTime? @map("applied_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  company  Company @relation(fields: [companyId], references: [id])
+
+  @@map("org_restructure_plans")
+}
+
 // ================================================================
 // 2. Employee Core
 // ================================================================
@@ -1165,11 +1201,18 @@ model Employee {
   // L&D
   trainingEnrollments TrainingEnrollment[]
 
+  // B9-1: LMS Lite — Skill Assessments
+  skillAssessments          EmployeeSkillAssessment[] @relation("EmployeeSkillAssessments")
+  skillAssessmentsAsAssessor EmployeeSkillAssessment[] @relation("SkillAssessmentAssessor")
+
   // Pulse
   pulseResponses      PulseResponse[]
   pulseSurveysCreated PulseSurvey[]
 
-  // Self-Service
+  // Self-Service (B8-2)
+  profileExtension      EmployeeProfileExtension?
+  emergencyContacts     EmergencyContact[]
+  profileVisibility     ProfileVisibility?
   profileChangeRequests ProfileChangeRequest[] @relation("ProfileChangeEmployee")
   profileChangeReviews  ProfileChangeRequest[] @relation("ProfileChangeReviewer")
 
@@ -1239,6 +1282,12 @@ model Employee {
   // B6-1: 52시간 경고
   workHourAlerts WorkHourAlert[]
 
+  // B6-2: 휴가 고도화 + 통합 승인함
+  leaveYearBalances          LeaveYearBalance[]        @relation("EmployeeLeaveYearBalances")
+  attendanceApprovalRequests AttendanceApprovalRequest[] @relation("AttApprovalRequester")
+  attendanceApprovalSteps    AttendanceApprovalStep[]  @relation("AttApprovalApprover")
+  payslips                   Payslip[]                 @relation("EmployeePayslips")
+
   // STEP 9-2: Compliance
   militaryRegistration      MilitaryRegistration?
   kedoDocuments             KedoDocument[]            @relation("KedoEmployee")
@@ -1258,6 +1307,10 @@ model Employee {
   aiDraftsAsEmployee   AiEvaluationDraft[] @relation("AiDraftEmployee")
   aiDraftsAsReviewer   AiEvaluationDraft[] @relation("AiDraftReviewer")
   biasLogsAsReviewer   BiasDetectionLog[]  @relation("BiasLogReviewer")
+
+  // B7-1b: Year-End Tax Settlement
+  yearEndSettlements  YearEndSettlement[]  @relation("EmployeeYearEndSettlements")
+  withholdingReceipts WithholdingReceipt[] @relation("EmployeeWithholdingReceipts")
 
   @@map("employees")
 }
@@ -2012,11 +2065,12 @@ model Competency {
   description  String?             @db.Text
   displayOrder Int                 @default(0) @map("display_order")
   isActive     Boolean             @default(true) @map("is_active")
-  levels       CompetencyLevel[]
-  indicators   CompetencyIndicator[]
-  requirements CompetencyRequirement[]
-  createdAt    DateTime            @default(now()) @map("created_at")
-  updatedAt    DateTime            @updatedAt @map("updated_at")
+  levels           CompetencyLevel[]
+  indicators       CompetencyIndicator[]
+  requirements     CompetencyRequirement[]
+  skillAssessments EmployeeSkillAssessment[] @relation("CompetencySkillAssessments")
+  createdAt        DateTime            @default(now()) @map("created_at")
+  updatedAt        DateTime            @updatedAt @map("updated_at")
 
   @@unique([categoryId, code])
   @@map("competencies")
@@ -2570,21 +2624,29 @@ model AiLog {
 model TrainingCourse {
   id                  String           @id @default(uuid())
   companyId           String?          @map("company_id")
+  code                String?          @db.VarChar(30)              // e.g. SAF-001
   title               String
+  titleEn             String?          @map("title_en")
   description         String?
   category            TrainingCategory
+  format              String           @default("offline") @db.VarChar(20) @map("format") // online | offline | blended | ojt
   isMandatory         Boolean          @default(false) @map("is_mandatory")
   targetJobCategories Json?            @map("target_job_categories")
+  targetJobLevels     String[]         @default([]) @map("target_job_levels") // e.g. ["S1","S2"]
+  linkedCompetencyIds String[]         @default([]) @map("linked_competency_ids")
+  expectedLevelGain   Int?             @map("expected_level_gain")
   durationHours       Decimal?         @map("duration_hours")
+  validityMonths      Int?             @map("validity_months")       // 법정교육 유효기간
   provider            String?
   externalUrl         String?          @map("external_url")
   isActive            Boolean          @default(true) @map("is_active")
   createdAt           DateTime         @default(now()) @map("created_at")
   deletedAt           DateTime?        @map("deleted_at")
 
-  company            Company?             @relation(fields: [companyId], references: [id])
-  enrollments        TrainingEnrollment[]
-  mandatoryTrainings MandatoryTraining[]
+  company              Company?               @relation(fields: [companyId], references: [id])
+  enrollments          TrainingEnrollment[]
+  mandatoryTrainings   MandatoryTraining[]
+  mandatoryConfigs     MandatoryTrainingConfig[]
 
   @@map("training_courses")
 }
@@ -2594,16 +2656,22 @@ model TrainingEnrollment {
   courseId       String           @map("course_id")
   employeeId     String           @map("employee_id")
   status         EnrollmentStatus
+  source         String           @default("manual") @db.VarChar(20) // manual | gap_recommendation | mandatory_auto | onboarding
   enrolledAt     DateTime         @map("enrolled_at")
+  startDate      DateTime?        @db.Date @map("start_date")
   completedAt    DateTime?        @map("completed_at")
+  expiresAt      DateTime?        @map("expires_at")  // 법정교육 유효기간 만료일
   score          Decimal?
   certificateKey String?          @map("certificate_key")
+  notes          String?          @db.Text
   createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
 
   course   TrainingCourse @relation(fields: [courseId], references: [id])
   employee Employee       @relation(fields: [employeeId], references: [id])
 
   @@unique([courseId, employeeId])
+  @@index([employeeId, status])
   @@map("training_enrollments")
 }
 
@@ -2679,6 +2747,8 @@ model ProfileChangeRequest {
   fieldName       String              @map("field_name")
   oldValue        String?             @map("old_value")
   newValue        String              @map("new_value")
+  reason          String?             @map("reason")
+  documentPath    String?             @map("document_path") @db.VarChar(500)
   status          ChangeRequestStatus
   reviewedBy      String?             @map("reviewed_by")
   reviewedAt      DateTime?           @map("reviewed_at")
@@ -2689,6 +2759,61 @@ model ProfileChangeRequest {
   reviewer Employee? @relation("ProfileChangeReviewer", fields: [reviewedBy], references: [id])
 
   @@map("profile_change_requests")
+}
+
+// ── B8-2: 직원 프로필 확장 (Self-Service) ──
+model EmployeeProfileExtension {
+  id             String   @id @default(uuid())
+  employeeId     String   @unique @map("employee_id")
+  bio            String?  @db.Text
+  skills         String[] @default([])
+  languages      Json?
+  certifications Json?
+  socialLinks    Json?
+  pronouns       String?  @db.VarChar(30)
+  timezone       String?  @db.VarChar(50)
+  avatarPath     String?  @map("avatar_path") @db.VarChar(500)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@map("employee_profile_extensions")
+}
+
+// ── B8-2: 비상연락처 ──
+model EmergencyContact {
+  id           String   @id @default(uuid())
+  employeeId   String   @map("employee_id")
+  name         String   @db.VarChar(50)
+  relationship String   @db.VarChar(30)
+  phone        String   @db.VarChar(20)
+  isPrimary    Boolean  @default(false) @map("is_primary")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@map("emergency_contacts")
+}
+
+// ── B8-2: 필드별 공개 범위 설정 ──
+model ProfileVisibility {
+  id               String   @id @default(uuid())
+  employeeId       String   @unique @map("employee_id")
+  personalPhone    String   @default("manager") @map("personal_phone") @db.VarChar(10)
+  personalEmail    String   @default("team") @map("personal_email") @db.VarChar(10)
+  birthDate        String   @default("team") @map("birth_date") @db.VarChar(10)
+  address          String   @default("private") @db.VarChar(10)
+  emergencyContact String   @default("manager") @map("emergency_contact") @db.VarChar(10)
+  bio              String   @default("public") @db.VarChar(10)
+  skills           String   @default("public") @db.VarChar(10)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@map("profile_visibilities")
 }
 
 // ================================================================
@@ -4666,4 +4791,375 @@ model BiasDetectionLog {
   @@index([reviewerId])
   @@index([companyId])
   @@map("bias_detection_logs")
+}
+
+// ================================================================
+// B9-1: LMS Lite — 의무교육 설정 + 스킬 갭 추천
+// ================================================================
+
+// 법인별 의무교육 자동 등록 설정
+model MandatoryTrainingConfig {
+  id            String          @id @default(uuid())
+  companyId     String?         @map("company_id")             // NULL = 전사 공통
+  courseId      String          @map("course_id")
+  targetGroup   String          @db.VarChar(30) @map("target_group")  // all | manager | new_hire | production
+  frequency     String          @db.VarChar(20)                // annual | biennial | once
+  deadlineMonth Int?            @map("deadline_month")         // 이수 마감 월 (12 = 12월)
+  isActive      Boolean         @default(true) @map("is_active")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+
+  company Company?        @relation(fields: [companyId], references: [id])
+  course  TrainingCourse  @relation(fields: [courseId], references: [id])
+
+  @@index([companyId])
+  @@index([courseId])
+  @@map("mandatory_training_configs")
+}
+
+// 직원 역량 평가 (B8-3 placeholder — 스킬 갭 추천용)
+model EmployeeSkillAssessment {
+  id           String     @id @default(uuid())
+  employeeId   String     @map("employee_id")
+  competencyId String     @map("competency_id")
+  currentLevel Int        @map("current_level")   // 1~5
+  assessedAt   DateTime   @default(now()) @map("assessed_at")
+  assessedById String?    @map("assessed_by_id")  // 평가자 (매니저)
+  notes        String?    @db.Text
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  employee   Employee   @relation("EmployeeSkillAssessments", fields: [employeeId], references: [id])
+  competency Competency @relation("CompetencySkillAssessments", fields: [competencyId], references: [id])
+  assessedBy Employee?  @relation("SkillAssessmentAssessor", fields: [assessedById], references: [id])
+
+  @@unique([employeeId, competencyId])
+  @@index([employeeId])
+  @@map("employee_skill_assessments")
+}
+
+// ================================================================
+// === TRACK A: B6-2 휴가 고도화 (정책엔진 + 통합 승인함) ===
+// ================================================================
+
+// ── 1. 법인별 휴가 유형 정의 ────────────────────────────────────
+model LeaveTypeDef {
+  id                 String   @id @default(uuid())
+  companyId          String?  @map("company_id")
+  code               String   @db.VarChar(30)
+  name               String   @db.VarChar(100)
+  nameEn             String?  @map("name_en") @db.VarChar(100)
+  isPaid             Boolean  @default(true) @map("is_paid")
+  allowHalfDay       Boolean  @default(true) @map("allow_half_day")
+  requiresProof      Boolean  @default(false) @map("requires_proof")
+  maxConsecutiveDays Int?     @map("max_consecutive_days")
+  isActive           Boolean  @default(true) @map("is_active")
+  displayOrder       Int      @default(0) @map("display_order")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  company      Company?           @relation("CompanyLeaveTypeDefs", fields: [companyId], references: [id])
+  accrualRules LeaveAccrualRule[]
+  yearBalances LeaveYearBalance[]
+
+  @@unique([companyId, code])
+  @@map("leave_type_defs")
+}
+
+// ── 2. 연차 부여/이월 규칙 ────────────────────────────────────────
+// rules JSON 구조 예시 (CTR-KR 연차):
+// [
+//   { "minTenureMonths": 0, "maxTenureMonths": 11, "daysPerMonth": 1, "type": "monthly" },
+//   { "minTenureMonths": 12, "maxTenureMonths": 35, "daysPerYear": 15, "type": "annual" },
+//   { "minTenureMonths": 36, "maxTenureMonths": null, "daysPerYear": 15, "bonusPerTwoYears": 1, "maxDays": 25, "type": "annual" }
+// ]
+model LeaveAccrualRule {
+  id                    String       @id @default(uuid())
+  leaveTypeDefId        String       @map("leave_type_def_id")
+  accrualType           String       @default("annual") @map("accrual_type") @db.VarChar(30)
+  accrualBasis          String       @default("calendar_year") @map("accrual_basis") @db.VarChar(30)
+  rules                 Json
+  carryOverType         String       @default("none") @map("carry_over_type") @db.VarChar(20)
+  carryOverMaxDays      Int?         @map("carry_over_max_days")
+  carryOverExpiryMonths Int?         @map("carry_over_expiry_months")
+  isActive              Boolean      @default(true) @map("is_active")
+  createdAt             DateTime     @default(now()) @map("created_at")
+  updatedAt             DateTime     @updatedAt @map("updated_at")
+
+  leaveTypeDef LeaveTypeDef @relation(fields: [leaveTypeDefId], references: [id], onDelete: Cascade)
+
+  @@map("leave_accrual_rules")
+}
+
+// ── 3. 직원별 연도별 휴가 잔여 (신 부여 엔진용) ──────────────────
+// 잔여 = entitled + carriedOver + adjusted - used - pending
+model LeaveYearBalance {
+  id             String   @id @default(uuid())
+  employeeId     String   @map("employee_id")
+  leaveTypeDefId String   @map("leave_type_def_id")
+  year           Int
+  entitled       Float    @default(0)
+  used           Float    @default(0)
+  carriedOver    Float    @default(0) @map("carried_over")
+  adjusted       Float    @default(0)
+  pending        Float    @default(0)
+  expiresAt      DateTime? @map("expires_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  employee     Employee     @relation("EmployeeLeaveYearBalances", fields: [employeeId], references: [id])
+  leaveTypeDef LeaveTypeDef @relation(fields: [leaveTypeDefId], references: [id])
+
+  @@unique([employeeId, leaveTypeDefId, year])
+  @@index([employeeId, year])
+  @@map("leave_year_balances")
+}
+
+// ── 4. 근태 도메인 통합 승인 요청 ────────────────────────────────
+// requestType: 'leave' | 'overtime' | 'attendance_correction' | 'shift_change'
+model AttendanceApprovalRequest {
+  id             String   @id @default(uuid())
+  companyId      String   @map("company_id")
+  requesterId    String   @map("requester_id")
+  requestType    String   @map("request_type") @db.VarChar(30)
+  referenceId    String?  @map("reference_id")
+  title          String   @db.VarChar(200)
+  details        Json?
+  status         String   @default("pending") @db.VarChar(20)
+  approvalFlowId String?  @map("approval_flow_id")
+  currentStep    Int      @default(1) @map("current_step")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  requester Employee                    @relation("AttApprovalRequester", fields: [requesterId], references: [id])
+  company   Company                     @relation("CompanyAttApprovalRequests", fields: [companyId], references: [id])
+  steps     AttendanceApprovalStep[]
+
+  @@index([requesterId, status])
+  @@index([companyId, status])
+  @@index([companyId, requestType, status])
+  @@map("attendance_approval_requests")
+}
+
+// ── 5. 통합 승인 단계 ─────────────────────────────────────────────
+model AttendanceApprovalStep {
+  id         String   @id @default(uuid())
+  requestId  String   @map("request_id")
+  stepOrder  Int      @map("step_order")
+  approverId String   @map("approver_id")
+  status     String   @default("pending") @db.VarChar(20)
+  comment    String?  @db.Text
+  decidedAt  DateTime? @map("decided_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  request  AttendanceApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  approver Employee                  @relation("AttApprovalApprover", fields: [approverId], references: [id])
+
+  @@index([requestId, stepOrder])
+  @@map("attendance_approval_steps")
+}
+
+// ================================================================
+// === TRACK A: B7-1a 한국법인 급여 계산 엔진 ===
+// ================================================================
+
+// ── 1. 4대보험 요율 (연도별, 매년 업데이트) ─────────────────────
+// type: 'national_pension' | 'health_insurance' | 'long_term_care'
+//       'employment_insurance' | 'industrial_accident'
+// long_term_care.employeeRate = 건강보험료 × rate (특수 계산 방식)
+model InsuranceRate {
+  id           String   @id @default(uuid())
+  year         Int
+  type         String   @db.VarChar(30)   // 보험 종류
+  employeeRate Float    @map("employee_rate")   // 근로자 부담률 (%)
+  employerRate Float    @map("employer_rate")   // 사업주 부담률 (%)
+  upperLimit   Float?   @map("upper_limit")     // 보수월액 상한 (원)
+  lowerLimit   Float?   @map("lower_limit")     // 보수월액 하한 (원)
+  notes        String?  @db.Text
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@unique([year, type])
+  @@map("insurance_rates")
+}
+
+// ── 2. 비과세 한도 (연도별) ──────────────────────────────────────
+// code: 'meal_allowance' | 'vehicle_allowance' | 'childcare' 등
+model NontaxableLimit {
+  id           String   @id @default(uuid())
+  year         Int
+  code         String   @db.VarChar(30)
+  name         String   @db.VarChar(100)
+  monthlyLimit Int      @map("monthly_limit")   // 월 한도 (원)
+  annualLimit  Int?     @map("annual_limit")    // 연 한도 (null이면 월×12)
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@unique([year, code])
+  @@map("nontaxable_limits")
+}
+
+// ── 3. 급여명세서 발급 추적 ──────────────────────────────────────
+model Payslip {
+  id            String    @id @default(uuid())
+  payrollItemId String    @map("payroll_item_id")
+  employeeId    String    @map("employee_id")
+  companyId     String    @map("company_id")
+  year          Int
+  month         Int
+  pdfPath       String?   @map("pdf_path") @db.VarChar(500)
+  isViewed      Boolean   @default(false) @map("is_viewed")
+  viewedAt      DateTime? @map("viewed_at")
+  sentViaEmail  Boolean   @default(false) @map("sent_via_email")
+  sentAt        DateTime? @map("sent_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  employee Employee @relation("EmployeePayslips", fields: [employeeId], references: [id])
+  company  Company  @relation("CompanyPayslips", fields: [companyId], references: [id])
+
+  @@unique([payrollItemId])
+  @@index([employeeId, year, month])
+  @@index([companyId, year, month])
+  @@map("payslips")
+}
+
+// ================================================================
+// B7-1b: 연말정산 (Year-End Tax Settlement)
+// ================================================================
+
+// ── 연말정산 공제 항목 설정 (매년 업데이트) ──
+model YearEndDeductionConfig {
+  id           String   @id @default(uuid())
+  year         Int
+  category     String   @db.VarChar(30)    // 'income_deduction' | 'tax_credit'
+  code         String   @db.VarChar(50)    // 'personal', 'pension', etc.
+  name         String   @db.VarChar(100)
+  rules        Json
+  displayOrder Int      @default(0) @map("display_order")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@unique([year, code])
+  @@map("year_end_deduction_configs")
+}
+
+// ── 과세표준 세율 구간 ──
+model IncomeTaxRate {
+  id                   String   @id @default(uuid())
+  year                 Int
+  minAmount            BigInt   @map("min_amount")
+  maxAmount            BigInt?  @map("max_amount")
+  rate                 Float
+  progressiveDeduction BigInt   @map("progressive_deduction")
+  createdAt            DateTime @default(now()) @map("created_at")
+
+  @@unique([year, minAmount])
+  @@index([year, minAmount])
+  @@map("income_tax_rates")
+}
+
+// ── 직원별 연말정산 ──
+model YearEndSettlement {
+  id                    String    @id @default(uuid())
+  employeeId            String    @map("employee_id")
+  year                  Int
+  status                String    @default("not_started") @db.VarChar(20)
+  totalSalary           BigInt    @default(0) @map("total_salary")
+  earnedIncomeDeduction BigInt    @default(0) @map("earned_income_deduction")
+  earnedIncome          BigInt    @default(0) @map("earned_income")
+  incomeDeductions      Json?     @map("income_deductions")
+  totalIncomeDeduction  BigInt    @default(0) @map("total_income_deduction")
+  taxableBase           BigInt    @default(0) @map("taxable_base")
+  taxRate               Float?    @map("tax_rate")
+  calculatedTax         BigInt    @default(0) @map("calculated_tax")
+  taxCredits            Json?     @map("tax_credits")
+  totalTaxCredit        BigInt    @default(0) @map("total_tax_credit")
+  determinedTax         BigInt    @default(0) @map("determined_tax")
+  prepaidTax            BigInt    @default(0) @map("prepaid_tax")
+  finalSettlement       BigInt    @default(0) @map("final_settlement")
+  localTaxSettlement    BigInt    @default(0) @map("local_tax_settlement")
+  submittedAt           DateTime? @map("submitted_at")
+  confirmedAt           DateTime? @map("confirmed_at")
+  confirmedBy           String?   @map("confirmed_by")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  employee           Employee           @relation("EmployeeYearEndSettlements", fields: [employeeId], references: [id])
+  dependents         YearEndDependent[]
+  deductions         YearEndDeduction[]
+  documents          YearEndDocument[]
+  withholdingReceipt WithholdingReceipt? @relation("SettlementWithholdingReceipt")
+
+  @@unique([employeeId, year])
+  @@map("year_end_settlements")
+}
+
+// ── 부양가족 ──
+model YearEndDependent {
+  id                  String    @id @default(uuid())
+  settlementId        String    @map("settlement_id")
+  relationship        String    @db.VarChar(20)
+  name                String    @db.VarChar(50)
+  residentNumber      String?   @map("resident_number") @db.VarChar(20)
+  birthDate           DateTime? @db.Date @map("birth_date")
+  isDisabled          Boolean   @default(false) @map("is_disabled")
+  isSenior            Boolean   @default(false) @map("is_senior")
+  isSingleParent      Boolean   @default(false) @map("is_single_parent")
+  deductionAmount     Int       @default(1500000) @map("deduction_amount")
+  additionalDeduction Int       @default(0) @map("additional_deduction")
+  createdAt           DateTime  @default(now()) @map("created_at")
+
+  settlement YearEndSettlement @relation(fields: [settlementId], references: [id], onDelete: Cascade)
+
+  @@map("year_end_dependents")
+}
+
+// ── 공제 항목 상세 (직원 입력) ──
+model YearEndDeduction {
+  id               String   @id @default(uuid())
+  settlementId     String   @map("settlement_id")
+  configCode       String   @map("config_code") @db.VarChar(50)
+  category         String   @db.VarChar(30)
+  name             String   @db.VarChar(100)
+  inputAmount      BigInt   @default(0) @map("input_amount")
+  deductibleAmount BigInt   @default(0) @map("deductible_amount")
+  details          Json?
+  source           String   @default("manual") @db.VarChar(20)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  settlement YearEndSettlement @relation(fields: [settlementId], references: [id], onDelete: Cascade)
+
+  @@map("year_end_deductions")
+}
+
+// ── 제출 서류 ──
+model YearEndDocument {
+  id           String   @id @default(uuid())
+  settlementId String   @map("settlement_id")
+  documentType String   @map("document_type") @db.VarChar(50)
+  fileName     String   @map("file_name") @db.VarChar(200)
+  filePath     String   @map("file_path") @db.VarChar(500)
+  parsedData   Json?    @map("parsed_data")
+  uploadedAt   DateTime @default(now()) @map("uploaded_at")
+
+  settlement YearEndSettlement @relation(fields: [settlementId], references: [id], onDelete: Cascade)
+
+  @@map("year_end_documents")
+}
+
+// ── 원천징수영수증 ──
+model WithholdingReceipt {
+  id           String   @id @default(uuid())
+  settlementId String   @map("settlement_id")
+  employeeId   String   @map("employee_id")
+  year         Int
+  pdfPath      String?  @map("pdf_path") @db.VarChar(500)
+  issuedAt     DateTime @default(now()) @map("issued_at")
+
+  settlement YearEndSettlement @relation("SettlementWithholdingReceipt", fields: [settlementId], references: [id])
+  employee   Employee          @relation("EmployeeWithholdingReceipts", fields: [employeeId], references: [id])
+
+  @@unique([settlementId])
+  @@map("withholding_receipts")
 }

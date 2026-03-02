@@ -2320,6 +2320,603 @@ async function main() {
 
   console.log(`  Process Settings:    ${settingCount}`)
   console.log('========================================\n')
+
+  // ═══════════════════════════════════════════════════════════
+  // B9-1: LMS Lite — 교육과정 + 의무교육 설정 시드
+  // ═══════════════════════════════════════════════════════════
+  console.log('📚 B9-1: Training Courses + Mandatory Configs ...')
+
+  // ── 법정 의무교육 (3개) ─────────────────────────────────────
+  const legalCourses = [
+    {
+      code: 'LEG-001',
+      title: '산업안전보건교육',
+      titleEn: 'Occupational Safety & Health Training',
+      category: 'SAFETY_TRAINING',
+      format: 'offline',
+      isMandatory: true,
+      durationHours: 8,
+      validityMonths: 12,
+      provider: 'CTR 안전보건팀',
+      description: '산업안전보건법 제29조에 따른 법정 의무교육',
+      isActive: true,
+    },
+    {
+      code: 'LEG-002',
+      title: '성희롱 예방교육',
+      titleEn: 'Sexual Harassment Prevention',
+      category: 'COMPLIANCE',
+      format: 'online',
+      isMandatory: true,
+      durationHours: 1,
+      validityMonths: 12,
+      provider: 'CTR HR팀',
+      description: '남녀고용평등법 제13조에 따른 법정 의무교육',
+      isActive: true,
+    },
+    {
+      code: 'LEG-003',
+      title: '개인정보보호 교육',
+      titleEn: 'Personal Data Protection Training',
+      category: 'COMPLIANCE',
+      format: 'online',
+      isMandatory: true,
+      durationHours: 2,
+      validityMonths: 12,
+      provider: 'CTR IT보안팀',
+      description: '개인정보보호법에 따른 임직원 의무교육',
+      isActive: true,
+    },
+  ]
+
+  // ── 직무 필수 과정 (5개) ───────────────────────────────────
+  const jobRequiredCourses = [
+    {
+      code: 'JOB-001',
+      title: '리더십 기본 과정',
+      titleEn: 'Leadership Fundamentals',
+      category: 'LEADERSHIP',
+      format: 'blended',
+      isMandatory: true,
+      durationHours: 16,
+      validityMonths: 36,
+      provider: 'CTR 인재개발팀',
+      description: '신임 관리자 필수 리더십 교육 프로그램',
+      isActive: true,
+    },
+    {
+      code: 'JOB-002',
+      title: '품질관리 심화 과정',
+      titleEn: 'Advanced Quality Management',
+      category: 'TECHNICAL',
+      format: 'offline',
+      isMandatory: true,
+      durationHours: 24,
+      validityMonths: 24,
+      provider: 'CTR 품질혁신팀',
+      description: 'ISO 9001 기반 품질관리 프로세스 교육',
+      isActive: true,
+    },
+    {
+      code: 'JOB-003',
+      title: '신입직원 온보딩 교육',
+      titleEn: 'New Employee Onboarding',
+      category: 'ONBOARDING_TRAINING',
+      format: 'blended',
+      isMandatory: true,
+      durationHours: 8,
+      validityMonths: null,
+      provider: 'CTR HR팀',
+      description: '입사 후 30일 이내 이수 필수',
+      isActive: true,
+    },
+    {
+      code: 'JOB-004',
+      title: '용접 안전 실무',
+      titleEn: 'Welding Safety Practice',
+      category: 'SAFETY_TRAINING',
+      format: 'offline',
+      isMandatory: true,
+      durationHours: 4,
+      validityMonths: 12,
+      provider: 'CTR 생산기술팀',
+      description: '용접 작업 전 필수 안전 교육',
+      isActive: true,
+    },
+    {
+      code: 'JOB-005',
+      title: '인사담당자 필수 과정',
+      titleEn: 'HR Practitioner Essentials',
+      category: 'COMPLIANCE',
+      format: 'online',
+      isMandatory: true,
+      durationHours: 8,
+      validityMonths: 24,
+      provider: 'CTR HR팀',
+      description: 'HR 담당자 법적 의무 및 실무 역량 교육',
+      isActive: true,
+    },
+  ]
+
+  // ── 자기개발 과정 (4개) ────────────────────────────────────
+  const selfDevCourses = [
+    {
+      code: 'DEV-001',
+      title: '데이터 분석 입문',
+      titleEn: 'Introduction to Data Analytics',
+      category: 'TECHNICAL',
+      format: 'self_paced',
+      isMandatory: false,
+      durationHours: 12,
+      validityMonths: null,
+      provider: 'Coursera',
+      description: 'Excel·Power BI 기반 데이터 분석 실습',
+      isActive: true,
+    },
+    {
+      code: 'DEV-002',
+      title: '글로벌 커뮤니케이션',
+      titleEn: 'Global Communication Skills',
+      category: 'LEADERSHIP',
+      format: 'online',
+      isMandatory: false,
+      durationHours: 6,
+      validityMonths: null,
+      provider: 'CTR 교육센터',
+      description: '영어 비즈니스 커뮤니케이션 및 이메일 작성',
+      isActive: true,
+    },
+    {
+      code: 'DEV-003',
+      title: 'PLC 프로그래밍 실무',
+      titleEn: 'PLC Programming Fundamentals',
+      category: 'TECHNICAL',
+      format: 'offline',
+      isMandatory: false,
+      durationHours: 20,
+      validityMonths: null,
+      provider: 'CTR 생산기술팀',
+      description: 'Siemens S7 기반 PLC 프로그래밍 실무 과정',
+      isActive: true,
+    },
+    {
+      code: 'DEV-004',
+      title: '코칭 리더십',
+      titleEn: 'Coaching Leadership',
+      category: 'LEADERSHIP',
+      format: 'blended',
+      isMandatory: false,
+      durationHours: 8,
+      validityMonths: null,
+      provider: 'CTR 인재개발팀',
+      description: '1:1 코칭 스킬 및 팀 성과관리 리더십 향상',
+      isActive: true,
+    },
+  ]
+
+  const allCourseDefs = [...legalCourses, ...jobRequiredCourses, ...selfDevCourses]
+  const createdCourseMap = new Map<string, string>() // code → id
+
+  for (const c of allCourseDefs) {
+    const existing = await prisma.trainingCourse.findFirst({ where: { code: c.code } })
+    let course
+    if (existing) {
+      course = await prisma.trainingCourse.update({
+        where: { id: existing.id },
+        data: {
+          title: c.title,
+          titleEn: c.titleEn,
+          format: c.format,
+          isMandatory: c.isMandatory,
+          durationHours: c.durationHours,
+          validityMonths: c.validityMonths,
+          provider: c.provider,
+          description: c.description,
+          isActive: c.isActive,
+        },
+      })
+    } else {
+      course = await prisma.trainingCourse.create({
+        data: {
+          code: c.code,
+          title: c.title,
+          titleEn: c.titleEn,
+          category: c.category as never,
+          format: c.format,
+          isMandatory: c.isMandatory,
+          durationHours: c.durationHours,
+          validityMonths: c.validityMonths,
+          provider: c.provider,
+          description: c.description,
+          isActive: c.isActive,
+          companyId: null,
+        },
+      })
+    }
+    createdCourseMap.set(c.code, course.id)
+  }
+
+  // ── 의무교육 설정 (MandatoryTrainingConfig) ────────────────
+  const mandatoryConfigs = [
+    { courseCode: 'LEG-001', targetGroup: 'all', frequency: 'annual', deadlineMonth: 12 },
+    { courseCode: 'LEG-002', targetGroup: 'all', frequency: 'annual', deadlineMonth: 12 },
+    { courseCode: 'LEG-003', targetGroup: 'all', frequency: 'annual', deadlineMonth: 6 },
+    { courseCode: 'JOB-001', targetGroup: 'manager', frequency: 'once', deadlineMonth: null },
+    { courseCode: 'JOB-003', targetGroup: 'new_hire', frequency: 'once', deadlineMonth: null },
+    { courseCode: 'JOB-004', targetGroup: 'production', frequency: 'annual', deadlineMonth: 3 },
+  ]
+
+  for (const cfg of mandatoryConfigs) {
+    const courseId = createdCourseMap.get(cfg.courseCode)
+    if (!courseId) continue
+    await prisma.mandatoryTrainingConfig.upsert({
+      where: {
+        // compound: courseId + targetGroup + frequency (no unique — use findFirst pattern)
+        // MandatoryTrainingConfig has no compound unique → use id-based upsert with create only
+        id: `seed-mtc-${cfg.courseCode}-${cfg.targetGroup}`,
+      },
+      update: {
+        targetGroup: cfg.targetGroup,
+        frequency: cfg.frequency,
+        deadlineMonth: cfg.deadlineMonth,
+        isActive: true,
+      },
+      create: {
+        id: `seed-mtc-${cfg.courseCode}-${cfg.targetGroup}`,
+        courseId,
+        companyId: null, // 전사 공통
+        targetGroup: cfg.targetGroup,
+        frequency: cfg.frequency,
+        deadlineMonth: cfg.deadlineMonth,
+        isActive: true,
+      },
+    })
+  }
+
+  const courseCount = await prisma.trainingCourse.count()
+  const configCount = await prisma.mandatoryTrainingConfig.count()
+  console.log(`  Training Courses:       ${courseCount}`)
+  console.log(`  Mandatory Configs:      ${configCount}`)
+  console.log('========================================\n')
+
+  // ═══════════════════════════════════════════════════════════
+  // B6-2: 법인별 휴가 유형 정의 + 연차 부여 규칙
+  // ═══════════════════════════════════════════════════════════
+  console.log('🏖 B6-2: Leave Type Defs + Accrual Rules ...')
+
+  // ── 법인 ID 조회 ───────────────────────────────────────────
+  const companies = await prisma.company.findMany({
+    select: { id: true, code: true },
+  })
+  const companyByCode = Object.fromEntries(companies.map(c => [c.code, c.id]))
+
+  // ── 글로벌 공통 휴가 유형 (companyId = null) ───────────────
+  const globalLeaveTypes = [
+    { code: 'annual', name: '연차휴가', nameEn: 'Annual Leave', isPaid: true, allowHalfDay: true, requiresProof: false, displayOrder: 1 },
+    { code: 'sick', name: '병가', nameEn: 'Sick Leave', isPaid: true, allowHalfDay: false, requiresProof: true, displayOrder: 2 },
+    { code: 'bereavement', name: '경조휴가', nameEn: 'Bereavement Leave', isPaid: true, allowHalfDay: false, requiresProof: true, maxConsecutiveDays: 5, displayOrder: 3 },
+    { code: 'maternity', name: '출산휴가', nameEn: 'Maternity Leave', isPaid: true, allowHalfDay: false, requiresProof: true, maxConsecutiveDays: 90, displayOrder: 4 },
+    { code: 'paternity', name: '배우자출산휴가', nameEn: 'Paternity Leave', isPaid: true, allowHalfDay: false, requiresProof: true, maxConsecutiveDays: 10, displayOrder: 5 },
+    { code: 'unpaid', name: '무급휴가', nameEn: 'Unpaid Leave', isPaid: false, allowHalfDay: true, requiresProof: false, displayOrder: 6 },
+  ]
+
+  for (const lt of globalLeaveTypes) {
+    const existing = await prisma.leaveTypeDef.findFirst({ where: { companyId: null, code: lt.code } })
+    if (!existing) {
+      await prisma.leaveTypeDef.create({
+        data: { ...lt, companyId: null, isActive: true },
+      })
+    }
+  }
+
+  // ── CTR-KR 전용 휴가 유형 ─────────────────────────────────
+  const krId = companyByCode['CTR-KR']
+  if (krId) {
+    const krTypes = [
+      { code: 'annual', name: '연차유급휴가', nameEn: 'Annual Paid Leave', isPaid: true, allowHalfDay: true, requiresProof: false, displayOrder: 1 },
+      { code: 'sick', name: '병가', nameEn: 'Sick Leave', isPaid: true, allowHalfDay: false, requiresProof: true, displayOrder: 2 },
+      { code: 'bereavement', name: '경조휴가', nameEn: 'Bereavement Leave', isPaid: true, allowHalfDay: false, requiresProof: true, maxConsecutiveDays: 5, displayOrder: 3 },
+      { code: 'maternity', name: '출산전후휴가', nameEn: 'Maternity Leave', isPaid: true, allowHalfDay: false, requiresProof: true, maxConsecutiveDays: 90, displayOrder: 4 },
+      { code: 'paternity', name: '배우자출산휴가', nameEn: 'Paternity Leave', isPaid: true, allowHalfDay: false, requiresProof: true, maxConsecutiveDays: 10, displayOrder: 5 },
+      { code: 'childcare', name: '육아휴직', nameEn: 'Childcare Leave', isPaid: true, allowHalfDay: false, requiresProof: true, maxConsecutiveDays: 365, displayOrder: 6 },
+      { code: 'special', name: '특별휴가', nameEn: 'Special Leave', isPaid: true, allowHalfDay: false, requiresProof: false, displayOrder: 7 },
+      { code: 'unpaid', name: '무급휴가', nameEn: 'Unpaid Leave', isPaid: false, allowHalfDay: true, requiresProof: false, displayOrder: 8 },
+    ]
+    for (const lt of krTypes) {
+      const existing = await prisma.leaveTypeDef.findFirst({ where: { companyId: krId, code: lt.code } })
+      if (!existing) {
+        await prisma.leaveTypeDef.create({ data: { ...lt, companyId: krId, isActive: true } })
+      }
+    }
+    // CTR-KR 연차 부여 규칙 (근로기준법)
+    const krAnnual = await prisma.leaveTypeDef.findFirst({ where: { companyId: krId, code: 'annual' } })
+    if (krAnnual) {
+      const existing = await prisma.leaveAccrualRule.findFirst({ where: { leaveTypeDefId: krAnnual.id } })
+      if (!existing) {
+        await prisma.leaveAccrualRule.create({
+          data: {
+            leaveTypeDefId: krAnnual.id,
+            accrualType: 'mixed',
+            accrualBasis: 'hire_date_anniversary',
+            rules: [
+              { minTenureMonths: 0, maxTenureMonths: 11, daysPerMonth: 1, type: 'monthly' },
+              { minTenureMonths: 12, maxTenureMonths: 35, daysPerYear: 15, type: 'annual' },
+              { minTenureMonths: 36, maxTenureMonths: null, daysPerYear: 15, bonusPerTwoYears: 1, maxDays: 25, type: 'annual' },
+            ],
+            carryOverType: 'none',
+          },
+        })
+      }
+    }
+  }
+
+  // ── CTR-US 전용 휴가 유형 (PTO 통합제) ─────────────────────
+  const usId = companyByCode['CTR-US']
+  if (usId) {
+    const usTypes = [
+      { code: 'pto', name: 'PTO', nameEn: 'Paid Time Off', isPaid: true, allowHalfDay: true, requiresProof: false, displayOrder: 1 },
+      { code: 'sick', name: 'Sick Leave', nameEn: 'Sick Leave', isPaid: true, allowHalfDay: true, requiresProof: false, displayOrder: 2 },
+      { code: 'bereavement', name: 'Bereavement Leave', nameEn: 'Bereavement Leave', isPaid: true, allowHalfDay: false, requiresProof: true, maxConsecutiveDays: 5, displayOrder: 3 },
+      { code: 'maternity', name: 'Maternity/FMLA', nameEn: 'Maternity/FMLA Leave', isPaid: false, allowHalfDay: false, requiresProof: true, maxConsecutiveDays: 84, displayOrder: 4 },
+      { code: 'paternity', name: 'Paternity Leave', nameEn: 'Paternity Leave', isPaid: false, allowHalfDay: false, requiresProof: true, maxConsecutiveDays: 14, displayOrder: 5 },
+      { code: 'unpaid', name: 'Unpaid Leave', nameEn: 'Unpaid Leave', isPaid: false, allowHalfDay: true, requiresProof: false, displayOrder: 6 },
+    ]
+    for (const lt of usTypes) {
+      const existing = await prisma.leaveTypeDef.findFirst({ where: { companyId: usId, code: lt.code } })
+      if (!existing) {
+        await prisma.leaveTypeDef.create({ data: { ...lt, companyId: usId, isActive: true } })
+      }
+    }
+    const usPto = await prisma.leaveTypeDef.findFirst({ where: { companyId: usId, code: 'pto' } })
+    if (usPto) {
+      const existing = await prisma.leaveAccrualRule.findFirst({ where: { leaveTypeDefId: usPto.id } })
+      if (!existing) {
+        await prisma.leaveAccrualRule.create({
+          data: {
+            leaveTypeDefId: usPto.id,
+            accrualType: 'annual',
+            accrualBasis: 'calendar_year',
+            rules: [
+              { minTenureMonths: 0, maxTenureMonths: null, daysPerYear: 20, type: 'annual' },
+            ],
+            carryOverType: 'limited',
+            carryOverMaxDays: 5,
+            carryOverExpiryMonths: 3,
+          },
+        })
+      }
+    }
+  }
+
+  // ── CTR-CN 전용 휴가 유형 ─────────────────────────────────
+  const cnId = companyByCode['CTR-CN']
+  if (cnId) {
+    const cnTypes = [
+      { code: 'annual', name: '年假', nameEn: 'Annual Leave', isPaid: true, allowHalfDay: false, requiresProof: false, displayOrder: 1 },
+      { code: 'sick', name: '病假', nameEn: 'Sick Leave', isPaid: true, allowHalfDay: false, requiresProof: true, displayOrder: 2 },
+      { code: 'marriage', name: '婚假', nameEn: 'Marriage Leave', isPaid: true, allowHalfDay: false, requiresProof: true, maxConsecutiveDays: 3, displayOrder: 3 },
+      { code: 'maternity', name: '产假', nameEn: 'Maternity Leave', isPaid: true, allowHalfDay: false, requiresProof: true, maxConsecutiveDays: 98, displayOrder: 4 },
+      { code: 'paternity', name: '陪产假', nameEn: 'Paternity Leave', isPaid: true, allowHalfDay: false, requiresProof: true, maxConsecutiveDays: 15, displayOrder: 5 },
+      { code: 'bereavement', name: '丧假', nameEn: 'Bereavement Leave', isPaid: true, allowHalfDay: false, requiresProof: true, maxConsecutiveDays: 3, displayOrder: 6 },
+      { code: 'spring_festival', name: '春节特别假', nameEn: 'Spring Festival Leave', isPaid: true, allowHalfDay: false, requiresProof: false, maxConsecutiveDays: 7, displayOrder: 7 },
+      { code: 'unpaid', name: '事假', nameEn: 'Unpaid Leave', isPaid: false, allowHalfDay: false, requiresProof: false, displayOrder: 8 },
+    ]
+    for (const lt of cnTypes) {
+      const existing = await prisma.leaveTypeDef.findFirst({ where: { companyId: cnId, code: lt.code } })
+      if (!existing) {
+        await prisma.leaveTypeDef.create({ data: { ...lt, companyId: cnId, isActive: true } })
+      }
+    }
+    const cnAnnual = await prisma.leaveTypeDef.findFirst({ where: { companyId: cnId, code: 'annual' } })
+    if (cnAnnual) {
+      const existing = await prisma.leaveAccrualRule.findFirst({ where: { leaveTypeDefId: cnAnnual.id } })
+      if (!existing) {
+        await prisma.leaveAccrualRule.create({
+          data: {
+            leaveTypeDefId: cnAnnual.id,
+            accrualType: 'annual',
+            accrualBasis: 'calendar_year',
+            rules: [
+              { minTenureMonths: 12, maxTenureMonths: 119, daysPerYear: 5, type: 'annual' },
+              { minTenureMonths: 120, maxTenureMonths: 239, daysPerYear: 10, type: 'annual' },
+              { minTenureMonths: 240, maxTenureMonths: null, daysPerYear: 15, type: 'annual' },
+            ],
+            carryOverType: 'none',
+          },
+        })
+      }
+    }
+  }
+
+  // ── CTR-RU 글로벌 기본 상속 + 28일 규칙 ─────────────────────
+  // ── CTR-VN 글로벌 기본 상속 + 12일 규칙 ─────────────────────
+  // ── CTR-MX 글로벌 기본 상속 + 12일 근속 규칙 ────────────────
+  const globalAnnual = await prisma.leaveTypeDef.findFirst({ where: { companyId: null, code: 'annual' } })
+  if (globalAnnual) {
+    const existingRule = await prisma.leaveAccrualRule.findFirst({ where: { leaveTypeDefId: globalAnnual.id } })
+    if (!existingRule) {
+      await prisma.leaveAccrualRule.create({
+        data: {
+          leaveTypeDefId: globalAnnual.id,
+          accrualType: 'annual',
+          accrualBasis: 'calendar_year',
+          rules: [
+            { minTenureMonths: 0, maxTenureMonths: null, daysPerYear: 15, type: 'annual' },
+          ],
+          carryOverType: 'limited',
+          carryOverMaxDays: 5,
+          carryOverExpiryMonths: 3,
+        },
+      })
+    }
+  }
+
+  const leaveTypeDefCount = await prisma.leaveTypeDef.count()
+  const accrualRuleCount = await prisma.leaveAccrualRule.count()
+  console.log(`  LeaveTypeDefs:          ${leaveTypeDefCount}`)
+  console.log(`  LeaveAccrualRules:      ${accrualRuleCount}`)
+  console.log('========================================\n')
+
+  // ─── B7-1a: 4대보험 요율 + 비과세 한도 시드 ─────────────────────────
+  console.log('💰 B7-1a: InsuranceRates + NontaxableLimits 2025 ...')
+
+  // 2025년 4대보험 요율
+  const insuranceRates2025 = [
+    {
+      year: 2025,
+      type: 'national_pension',
+      employeeRate: 4.5,
+      employerRate: 4.5,
+      upperLimit: 5_900_000,
+      lowerLimit: 370_000,
+      notes: '국민연금 (월 보수월액 상한 590만원, 하한 37만원)',
+    },
+    {
+      year: 2025,
+      type: 'health_insurance',
+      employeeRate: 3.545,
+      employerRate: 3.545,
+      upperLimit: null,
+      lowerLimit: null,
+      notes: '건강보험 (2025년 기준)',
+    },
+    {
+      year: 2025,
+      type: 'long_term_care',
+      employeeRate: 12.81,
+      employerRate: 12.81,
+      upperLimit: null,
+      lowerLimit: null,
+      notes: '장기요양보험 — 건강보험료의 12.81% (특수 계산: employeeRate를 배율로 사용)',
+    },
+    {
+      year: 2025,
+      type: 'employment_insurance',
+      employeeRate: 0.9,
+      employerRate: 1.15,
+      upperLimit: null,
+      lowerLimit: null,
+      notes: '고용보험 (150인 미만 기준)',
+    },
+    {
+      year: 2025,
+      type: 'industrial_accident',
+      employeeRate: 0,
+      employerRate: 1.47,
+      upperLimit: null,
+      lowerLimit: null,
+      notes: '산재보험 — 사업주 전액 부담 (제조업 기준)',
+    },
+  ]
+
+  for (const rate of insuranceRates2025) {
+    await prisma.insuranceRate.upsert({
+      where: { year_type: { year: rate.year, type: rate.type } },
+      update: { employeeRate: rate.employeeRate, employerRate: rate.employerRate, upperLimit: rate.upperLimit, lowerLimit: rate.lowerLimit, notes: rate.notes },
+      create: rate,
+    })
+  }
+
+  // 2025년 비과세 한도
+  const nontaxableLimits2025 = [
+    { year: 2025, code: 'meal_allowance', name: '식대', monthlyLimit: 200_000, annualLimit: null },
+    { year: 2025, code: 'vehicle_allowance', name: '자기차량 운전보조금', monthlyLimit: 200_000, annualLimit: null },
+    { year: 2025, code: 'childcare', name: '육아수당', monthlyLimit: 200_000, annualLimit: null },
+    { year: 2025, code: 'research_allowance', name: '연구활동비(기업연구소)', monthlyLimit: 200_000, annualLimit: null },
+  ]
+
+  for (const limit of nontaxableLimits2025) {
+    await prisma.nontaxableLimit.upsert({
+      where: { year_code: { year: limit.year, code: limit.code } },
+      update: { name: limit.name, monthlyLimit: limit.monthlyLimit, annualLimit: limit.annualLimit },
+      create: limit,
+    })
+  }
+
+  const insuranceRateCount = await prisma.insuranceRate.count()
+  const nontaxableLimitCount = await prisma.nontaxableLimit.count()
+  console.log(`  InsuranceRates:         ${insuranceRateCount}`)
+  console.log(`  NontaxableLimits:       ${nontaxableLimitCount}`)
+  console.log('========================================\n')
+
+  // ================================================================
+  // B7-1b: 연말정산 시드 데이터 (2025)
+  // ================================================================
+  console.log('Seeding Year-End Settlement configs (2025)...')
+
+  // YearEndDeductionConfig 2025
+  const yearEndDeductionConfigs2025 = [
+    // income_deduction
+    { year: 2025, category: 'income_deduction', code: 'personal', name: '인적공제', displayOrder: 1,
+      rules: { basePerPerson: 1500000, additionalSenior: 1000000, additionalDisabled: 2000000, additionalSingleParent: 1000000 } },
+    { year: 2025, category: 'income_deduction', code: 'national_pension', name: '국민연금 공제', displayOrder: 2,
+      rules: { rate: 1.0 } },
+    { year: 2025, category: 'income_deduction', code: 'health_insurance', name: '건강보험 공제', displayOrder: 3,
+      rules: { rate: 1.0 } },
+    { year: 2025, category: 'income_deduction', code: 'credit_card', name: '신용카드 등 소득공제', displayOrder: 4,
+      rules: {
+        thresholdRate: 0.25,
+        rates: { credit_card: 0.15, debit_card: 0.30, cash_receipt: 0.30, traditional_market: 0.40, public_transport: 0.40, culture: 0.30 },
+        limits: { salary_under_7000: 3000000, salary_7000_12000: 2500000, salary_over_12000: 2000000 },
+        additionalLimits: { traditional_market: 1000000, public_transport: 1000000, culture: 1000000 }
+      }
+    },
+    { year: 2025, category: 'income_deduction', code: 'housing_savings', name: '주택마련저축 공제', displayOrder: 5,
+      rules: { rate: 0.4, annualLimit: 2400000, salaryLimit: 70000000 } },
+    { year: 2025, category: 'income_deduction', code: 'housing_loan_interest', name: '주택임차차입금 이자 공제', displayOrder: 6,
+      rules: { limits: { lease_deposit: 3000000, mortgage_fixed_15y: 15000000, mortgage_fixed_10y: 3000000 } } },
+    // tax_credit
+    { year: 2025, category: 'tax_credit', code: 'earned_income_credit', name: '근로소득 세액공제', displayOrder: 10,
+      rules: {
+        brackets: [ { maxTax: 1300000, rate: 0.55 }, { minTax: 1300000, rate: 0.30, base: 715000 } ],
+        limits: { salary_under_3300: 740000, salary_3300_7000: 660000, salary_over_7000: 500000 }
+      }
+    },
+    { year: 2025, category: 'tax_credit', code: 'child_credit', name: '자녀 세액공제', displayOrder: 11,
+      rules: { first: 150000, second: 350000, thirdPlus: 300000 } },
+    { year: 2025, category: 'tax_credit', code: 'medical_credit', name: '의료비 세액공제', displayOrder: 12,
+      rules: { thresholdRate: 0.03, rate: 0.15, seniorDisabledRate: 0.15, limit: 7000000, seniorDisabledNoLimit: true } },
+    { year: 2025, category: 'tax_credit', code: 'education_credit', name: '교육비 세액공제', displayOrder: 13,
+      rules: { rate: 0.15, selfNoLimit: true, childLimit: 3000000, kindergartenLimit: 3000000 } },
+    { year: 2025, category: 'tax_credit', code: 'donation_credit', name: '기부금 세액공제', displayOrder: 14,
+      rules: { politicalLimit: 100000, rate15: 0.15, rate30threshold: 10000000, rate30: 0.30 } },
+    { year: 2025, category: 'tax_credit', code: 'rent_credit', name: '월세 세액공제', displayOrder: 15,
+      rules: { salaryLimit: 70000000, annualLimit: 7500000, rate_under_5500: 0.17, rate_5500_7000: 0.15 } },
+  ]
+
+  for (const config of yearEndDeductionConfigs2025) {
+    await prisma.yearEndDeductionConfig.upsert({
+      where: { year_code: { year: config.year, code: config.code } },
+      update: { rules: config.rules as any, name: config.name, displayOrder: config.displayOrder },
+      create: { ...config, rules: config.rules as any },
+    })
+  }
+
+  // IncomeTaxRate 2025
+  const taxRates2025 = [
+    { year: 2025, minAmount: BigInt(0),          maxAmount: BigInt(14000000),   rate: 6,  progressiveDeduction: BigInt(0) },
+    { year: 2025, minAmount: BigInt(14000000),   maxAmount: BigInt(50000000),   rate: 15, progressiveDeduction: BigInt(1260000) },
+    { year: 2025, minAmount: BigInt(50000000),   maxAmount: BigInt(88000000),   rate: 24, progressiveDeduction: BigInt(5760000) },
+    { year: 2025, minAmount: BigInt(88000000),   maxAmount: BigInt(150000000),  rate: 35, progressiveDeduction: BigInt(15440000) },
+    { year: 2025, minAmount: BigInt(150000000),  maxAmount: BigInt(300000000),  rate: 38, progressiveDeduction: BigInt(19940000) },
+    { year: 2025, minAmount: BigInt(300000000),  maxAmount: BigInt(500000000),  rate: 40, progressiveDeduction: BigInt(25940000) },
+    { year: 2025, minAmount: BigInt(500000000),  maxAmount: BigInt(1000000000), rate: 42, progressiveDeduction: BigInt(35940000) },
+    { year: 2025, minAmount: BigInt(1000000000), maxAmount: null,               rate: 45, progressiveDeduction: BigInt(65940000) },
+  ]
+
+  for (const rate of taxRates2025) {
+    await prisma.incomeTaxRate.upsert({
+      where: { year_minAmount: { year: rate.year, minAmount: rate.minAmount } },
+      update: { maxAmount: rate.maxAmount, rate: rate.rate, progressiveDeduction: rate.progressiveDeduction },
+      create: rate,
+    })
+  }
+
+  const yearEndDeductionConfigCount = await prisma.yearEndDeductionConfig.count()
+  const incomeTaxRateCount = await prisma.incomeTaxRate.count()
+  console.log(`  YearEndDeductionConfigs: ${yearEndDeductionConfigCount}`)
+  console.log(`  IncomeTaxRates:          ${incomeTaxRateCount}`)
+  console.log('========================================\n')
 }
 
 main()
