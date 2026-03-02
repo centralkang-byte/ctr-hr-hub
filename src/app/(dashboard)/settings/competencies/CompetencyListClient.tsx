@@ -1,570 +1,383 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — Competency Library Client
-// 역량 라이브러리 관리 (CRUD via Dialog)
+// CTR HR Hub — Competency Library Admin (B3-1)
+// 3-tier 역량 라이브러리 관리: 카테고리 탭 + 역량 CRUD
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
-import { useTranslations } from 'next-intl'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { Target, Plus, Pencil, Trash2, Loader2, Search, Check, X } from 'lucide-react'
-
-import type { SessionUser, PaginationInfo } from '@/types'
+import { BookOpen, Plus, Trash2, Loader2, ChevronRight, X } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import type { SessionUser } from '@/types'
 import { PageHeader } from '@/components/shared/PageHeader'
-import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Checkbox } from '@/components/ui/checkbox'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+import IndicatorEditor from './IndicatorEditor'
+import CompetencyLevelEditor from './CompetencyLevelEditor'
 
-// ─── Local types ─────────────────────────────────────────
+// ─── Types ─────────────────────────────────────────────────
 
-interface CompetencyLocal {
+interface CompetencyCategory {
   id: string
-  companyId: string | null
+  code: string
   name: string
-  category: string
-  description: string | null
-  behavioralIndicators: string[] | null
+  displayOrder: number
   isActive: boolean
-  createdAt: string
-  company: { id: string; name: string } | null
 }
 
-// ─── Active filter options ───────────────────────────────
+interface Competency {
+  id: string
+  categoryId: string
+  code: string
+  name: string
+  nameEn: string | null
+  description: string | null
+  displayOrder: number
+  isActive: boolean
+  category: { id: string; code: string; name: string }
+  _count: { indicators: number; levels: number }
+}
 
-type ActiveFilter = 'all' | 'active' | 'inactive'
+interface CompetencyDetail extends Competency {
+  indicators: Indicator[]
+  levels: Level[]
+}
 
-// ─── Component ───────────────────────────────────────────
+interface Indicator {
+  id: string
+  indicatorText: string
+  indicatorTextEn: string | null
+  displayOrder: number
+  isActive: boolean
+}
 
-export function CompetencyListClient(_props: { user: SessionUser }) {
-  const t = useTranslations('performance')
-  const tc = useTranslations('common')
+interface Level {
+  id: string
+  level: number
+  label: string
+  description: string | null
+}
 
-  // ─── Form schema (uses t for validation messages) ───
-  const formSchema = z.object({
-    name: z.string().min(1, t('competencyNameRequired')),
-    category: z.string().min(1, t('categoryRequired')),
-    description: z.string().optional(),
-    behavioralIndicatorsText: z.string().optional(),
-    isActive: z.boolean().default(true),
-  })
+type ActivePanel = 'none' | 'detail' | 'add'
 
-  type FormData = z.infer<typeof formSchema>
+// ─── Category tabs (synced with seed data) ─────────────────
 
-  const ACTIVE_FILTER_OPTIONS: { value: ActiveFilter; label: string }[] = [
-    { value: 'all', label: t('filterAll') },
-    { value: 'active', label: t('filterActive') },
-    { value: 'inactive', label: t('filterInactive') },
-  ]
+const CATEGORY_TABS = [
+  { code: 'core_value', label: '핵심가치 역량' },
+  { code: 'leadership', label: '리더십 역량' },
+  { code: 'technical', label: '직무 전문 역량' },
+]
 
-  // ─── State ───
-  const [competencies, setCompetencies] = useState<CompetencyLocal[]>([])
-  const [pagination, setPagination] = useState<PaginationInfo | undefined>()
-  const [page, setPage] = useState(1)
+// ─── Component ─────────────────────────────────────────────
+
+export function CompetencyListClient({ user: _user }: { user: SessionUser }) {
+  const [activeCategory, setActiveCategory] = useState('core_value')
+  const [competencies, setCompetencies] = useState<Competency[]>([])
   const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState('')
-  const [searchInput, setSearchInput] = useState('')
-  const [activeFilter, setActiveFilter] = useState<ActiveFilter>('all')
+  const [selectedCompetency, setSelectedCompetency] = useState<CompetencyDetail | null>(null)
+  const [panel, setPanel] = useState<ActivePanel>('none')
+  const [detailLoading, setDetailLoading] = useState(false)
 
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [editing, setEditing] = useState<CompetencyLocal | null>(null)
-  const [saving, setSaving] = useState(false)
+  // Add form state
+  const [addName, setAddName] = useState('')
+  const [addNameEn, setAddNameEn] = useState('')
+  const [addCode, setAddCode] = useState('')
+  const [addDesc, setAddDesc] = useState('')
+  const [addSaving, setAddSaving] = useState(false)
+  const [categoryId, setCategoryId] = useState<string | null>(null)
 
-  const [deleteTarget, setDeleteTarget] = useState<CompetencyLocal | null>(null)
-  const [deleting, setDeleting] = useState(false)
-
-  // ─── Form ───
-  const {
-    register,
-    handleSubmit,
-    reset,
-    control,
-    formState: { errors },
-  } = useForm<z.input<typeof formSchema>>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(formSchema) as any,
-    defaultValues: {
-      name: '',
-      category: '',
-      description: '',
-      behavioralIndicatorsText: '',
-      isActive: true,
-    },
-  })
-
-  // ─── Fetch ───
-  const fetchCompetencies = useCallback(async () => {
+  const fetchList = useCallback(async () => {
     setLoading(true)
     try {
-      const params: Record<string, string | number | undefined> = {
-        page,
-        limit: 20,
-      }
-      if (search) params.search = search
-      if (activeFilter === 'active') params.isActive = 'true'
-      if (activeFilter === 'inactive') params.isActive = 'false'
-
-      const res = await apiClient.getList<CompetencyLocal>(
-        '/api/v1/competencies',
-        params,
-      )
+      const res = await apiClient.getList<Competency>('/api/v1/competencies', {
+        categoryCode: activeCategory,
+        limit: 100,
+      })
       setCompetencies(res.data)
-      setPagination(res.pagination)
+      if (res.data.length > 0) {
+        setCategoryId(res.data[0].category.id)
+      } else {
+        // Fetch category info for empty categories
+        try {
+          const catRes = await apiClient.getList<CompetencyCategory>('/api/v1/competency-categories', { limit: 50 })
+          const found = (catRes.data ?? []).find((c) => c.code === activeCategory)
+          if (found) setCategoryId(found.id)
+        } catch {
+          /* ignore — add will show error if categoryId not found */
+        }
+      }
     } catch {
-      setCompetencies([])
-      setPagination(undefined)
+      /* ignore */
     } finally {
       setLoading(false)
     }
-  }, [page, search, activeFilter])
+  }, [activeCategory])
 
   useEffect(() => {
-    void fetchCompetencies()
-  }, [fetchCompetencies])
+    fetchList()
+  }, [fetchList])
 
-  // Reset page when filter changes
-  useEffect(() => {
-    setPage(1)
-  }, [search, activeFilter])
-
-  // ─── Search handler ───
-  const handleSearch = () => {
-    setSearch(searchInput.trim())
-  }
-
-  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSearch()
-    }
-  }
-
-  // ─── Open dialog ───
-  const openCreate = () => {
-    setEditing(null)
-    reset({
-      name: '',
-      category: '',
-      description: '',
-      behavioralIndicatorsText: '',
-      isActive: true,
-    })
-    setDialogOpen(true)
-  }
-
-  const openEdit = (row: CompetencyLocal) => {
-    setEditing(row)
-    const indicators = Array.isArray(row.behavioralIndicators)
-      ? row.behavioralIndicators.join('\n')
-      : ''
-    reset({
-      name: row.name,
-      category: row.category,
-      description: row.description ?? '',
-      behavioralIndicatorsText: indicators,
-      isActive: row.isActive,
-    })
-    setDialogOpen(true)
-  }
-
-  // ─── Submit ───
-  const onSubmit = async (data: FormData) => {
-    setSaving(true)
+  const openDetail = async (comp: Competency) => {
+    setPanel('detail')
+    setDetailLoading(true)
     try {
-      const behavioralIndicators = data.behavioralIndicatorsText
-        ? data.behavioralIndicatorsText
-            .split('\n')
-            .map((s) => s.trim())
-            .filter(Boolean)
-        : []
-
-      const payload = {
-        name: data.name,
-        category: data.category,
-        description: data.description || undefined,
-        behavioralIndicators,
-        isActive: data.isActive,
-      }
-
-      if (editing) {
-        await apiClient.put(`/api/v1/competencies/${editing.id}`, payload)
-      } else {
-        await apiClient.post('/api/v1/competencies', payload)
-      }
-      setDialogOpen(false)
-      void fetchCompetencies()
+      const res = await apiClient.get<CompetencyDetail>(`/api/v1/competencies/${comp.id}`)
+      setSelectedCompetency(res.data ?? null)
+    } catch {
+      /* ignore */
     } finally {
-      setSaving(false)
+      setDetailLoading(false)
     }
   }
 
-  // ─── Delete ───
-  const confirmDelete = async () => {
-    if (!deleteTarget) return
-    setDeleting(true)
+  const handleDelete = async (id: string) => {
+    if (!confirm('역량을 삭제하시겠습니까? 관련 행동지표와 레벨도 모두 삭제됩니다.')) return
     try {
-      await apiClient.delete(`/api/v1/competencies/${deleteTarget.id}`)
-      setDeleteTarget(null)
-      void fetchCompetencies()
-    } finally {
-      setDeleting(false)
+      await apiClient.delete(`/api/v1/competencies/${id}`)
+      await fetchList()
+      if (selectedCompetency?.id === id) {
+        setSelectedCompetency(null)
+        setPanel('none')
+      }
+    } catch {
+      alert('삭제에 실패했습니다.')
     }
   }
 
-  // ─── Columns ───
-  const columns: DataTableColumn<CompetencyLocal>[] = [
-    {
-      key: 'name',
-      header: t('competencyNameCol'),
-      render: (row: CompetencyLocal) => (
-        <div className="flex items-center gap-2">
-          <Target className="h-4 w-4 text-muted-foreground" />
-          <span className="font-medium">{row.name}</span>
-        </div>
-      ),
-    },
-    {
-      key: 'category',
-      header: t('categoryColLabel'),
-      render: (row: CompetencyLocal) => (
-        <Badge variant="outline">{row.category}</Badge>
-      ),
-    },
-    {
-      key: 'description',
-      header: t('descriptionColumn'),
-      render: (row: CompetencyLocal) => (
-        <span className="text-sm text-muted-foreground line-clamp-1">
-          {row.description ?? '-'}
-        </span>
-      ),
-    },
-    {
-      key: 'isActive',
-      header: t('activeStatusColumn'),
-      render: (row: CompetencyLocal) =>
-        row.isActive ? (
-          <Badge
-            className="border-0"
-            style={{
-              backgroundColor: 'rgba(0, 200, 83, 0.1)',
-              color: '#00C853',
-            }}
-          >
-            <Check className="mr-1 h-3 w-3" />
-            {t('activeLabel')}
-          </Badge>
-        ) : (
-          <Badge
-            variant="secondary"
-            className="border-0"
-            style={{
-              backgroundColor: 'rgba(158, 158, 158, 0.1)',
-              color: '#9E9E9E',
-            }}
-          >
-            <X className="mr-1 h-3 w-3" />
-            {t('inactiveLabel')}
-          </Badge>
-        ),
-    },
-    {
-      key: 'behavioralIndicators',
-      header: t('behavioralIndicatorsCol'),
-      render: (row: CompetencyLocal) => {
-        const indicators = Array.isArray(row.behavioralIndicators)
-          ? row.behavioralIndicators
-          : []
-        if (indicators.length === 0) return <span className="text-muted-foreground">-</span>
-        return (
-          <div className="flex flex-wrap gap-1">
-            {indicators.slice(0, 3).map((ind, idx) => (
-              <span
-                key={idx}
-                className="inline-flex items-center rounded px-1.5 py-0.5 text-xs"
-                style={{
-                  backgroundColor: 'rgba(33, 150, 243, 0.08)',
-                  color: '#2196F3',
-                }}
-              >
-                {ind}
-              </span>
-            ))}
-            {indicators.length > 3 && (
-              <span className="text-xs text-muted-foreground">
-                +{indicators.length - 3}
-              </span>
-            )}
-          </div>
-        )
-      },
-    },
-    {
-      key: 'actions',
-      header: tc('actions'),
-      render: (row: CompetencyLocal) => (
-        <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" onClick={() => openEdit(row)}>
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setDeleteTarget(row)}
-          >
-            <Trash2 className="h-4 w-4 text-destructive" />
-          </Button>
-        </div>
-      ),
-    },
-  ]
+  const handleAdd = async () => {
+    if (!addName || !addCode) return alert('이름과 코드를 입력하세요.')
 
-  // ─── Render ───
+    // If categoryId not loaded yet (empty list), fetch it from category endpoint
+    let catId = categoryId
+    if (!catId) {
+      try {
+        const res = await apiClient.getList<CompetencyCategory>('/api/v1/competency-categories', { limit: 10 })
+        const found = res.data.find((c) => c.code === activeCategory)
+        catId = found?.id ?? null
+      } catch {
+        /* ignore */
+      }
+    }
+    if (!catId) return alert('카테고리 정보를 불러올 수 없습니다. 페이지를 새로고침 후 시도하세요.')
+
+    setAddSaving(true)
+    try {
+      await apiClient.post('/api/v1/competencies', {
+        categoryId: catId,
+        code: addCode,
+        name: addName,
+        nameEn: addNameEn || undefined,
+        description: addDesc || undefined,
+      })
+      setAddName('')
+      setAddCode('')
+      setAddNameEn('')
+      setAddDesc('')
+      setPanel('none')
+      await fetchList()
+    } catch {
+      alert('추가에 실패했습니다.')
+    } finally {
+      setAddSaving(false)
+    }
+  }
+
+  const handleCategoryChange = (code: string) => {
+    setActiveCategory(code)
+    setPanel('none')
+    setSelectedCompetency(null)
+    setCategoryId(null)
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="p-6 space-y-6">
       <PageHeader
-        title={t('competencyLibraryTitle')}
-        description={t('competencyLibraryDescription')}
-        actions={
-          <Button
-            onClick={openCreate}
-            style={{ backgroundColor: '#00C853', color: '#fff' }}
-            className="hover:opacity-90"
-          >
-            <Plus className="mr-1 h-4 w-4" />
-            {t('addCompetency')}
-          </Button>
-        }
+        title="역량 라이브러리 관리"
+        description="CTR Value System 2.0 핵심가치 행동지표 및 리더십·직무 역량을 관리합니다."
       />
 
-      {/* ─── Filter bar ─── */}
-      <div
-        className="flex items-center gap-3 rounded-xl border p-4"
-        style={{
-          backgroundColor: '#FFFFFF',
-          borderColor: '#E8E8E8',
-        }}
-      >
-        {/* Search */}
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder={t('searchCompetencyPlaceholder')}
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onKeyDown={handleSearchKeyDown}
-            className="pl-9"
-          />
-        </div>
-        <Button variant="outline" size="sm" onClick={handleSearch}>
-          {tc('search')}
-        </Button>
-
-        {/* Active filter */}
-        <div className="flex items-center gap-1">
-          {ACTIVE_FILTER_OPTIONS.map((opt) => (
-            <Button
-              key={opt.value}
-              variant={activeFilter === opt.value ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setActiveFilter(opt.value)}
-              style={
-                activeFilter === opt.value
-                  ? { backgroundColor: '#003876', color: '#fff' }
-                  : {}
-              }
-            >
-              {opt.label}
-            </Button>
-          ))}
-        </div>
-      </div>
-
-      {/* ─── DataTable ─── */}
-      <div
-        className="rounded-xl border"
-        style={{
-          backgroundColor: '#FFFFFF',
-          borderColor: '#E8E8E8',
-        }}
-      >
-        <DataTable
-          columns={columns as unknown as DataTableColumn<Record<string, unknown>>[]}
-          data={competencies as unknown as Record<string, unknown>[]}
-          loading={loading}
-          pagination={pagination}
-          onPageChange={setPage}
-          emptyMessage={t('noCompetencies')}
-          rowKey={(row) => (row as unknown as CompetencyLocal).id}
-        />
-      </div>
-
-      {/* ─── Create / Edit Dialog ─── */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-[520px]" style={{ borderRadius: '16px' }}>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5" />
-              {editing ? t('editCompetency') : t('addCompetencyTitle')}
-            </DialogTitle>
-            <DialogDescription>
-              {editing
-                ? t('editCompetencyDesc')
-                : t('addCompetencyDesc')}
-            </DialogDescription>
-          </DialogHeader>
-
-          <form
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onSubmit={handleSubmit(onSubmit as any)}
-            className="space-y-4"
+      {/* Category tabs */}
+      <div className="flex border-b border-[#E8E8E8]">
+        {CATEGORY_TABS.map((tab) => (
+          <button
+            key={tab.code}
+            onClick={() => handleCategoryChange(tab.code)}
+            className={`px-4 py-2.5 text-sm font-medium transition-colors ${
+              activeCategory === tab.code
+                ? 'border-b-2 border-[#00C853] text-[#00C853]'
+                : 'text-[#666] hover:text-[#333]'
+            }`}
           >
-            {/* name */}
-            <div className="space-y-2">
-              <Label htmlFor="comp-name">{t('competencyNameInputLabel')}</Label>
-              <Input
-                id="comp-name"
-                placeholder={t('competencyNamePlaceholder')}
-                {...register('name')}
-              />
-              {errors.name && (
-                <p className="text-sm text-destructive">
-                  {String(errors.name.message)}
-                </p>
-              )}
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex gap-6">
+        {/* Competency list */}
+        <div className="flex-1">
+          <div className="rounded-xl border border-[#E8E8E8] bg-white">
+            <div className="px-5 py-4 border-b border-[#E8E8E8] flex items-center justify-between">
+              <h2 className="text-base font-semibold text-[#1A1A1A] flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-[#666]" />
+                {CATEGORY_TABS.find((t) => t.code === activeCategory)?.label}
+              </h2>
+              <Button
+                size="sm"
+                onClick={() => setPanel('add')}
+                className="bg-[#00C853] hover:bg-[#00A844] text-white text-xs"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                역량 추가
+              </Button>
             </div>
 
-            {/* category */}
-            <div className="space-y-2">
-              <Label htmlFor="comp-category">{t('categoryInputLabel')}</Label>
-              <Input
-                id="comp-category"
-                placeholder={t('categoryPlaceholder')}
-                {...register('category')}
-              />
-              {errors.category && (
-                <p className="text-sm text-destructive">
-                  {String(errors.category.message)}
-                </p>
-              )}
-            </div>
+            {loading ? (
+              <div className="flex items-center justify-center h-32">
+                <Loader2 className="w-5 h-5 animate-spin text-[#00C853]" />
+              </div>
+            ) : competencies.length === 0 ? (
+              <div className="px-5 py-8 text-center text-sm text-[#999]">
+                역량이 없습니다. 역량을 추가하세요.
+              </div>
+            ) : (
+              <div className="divide-y divide-[#F5F5F5]">
+                {competencies.map((comp) => (
+                  <div
+                    key={comp.id}
+                    className={`flex items-center justify-between px-5 py-4 hover:bg-[#FAFAFA] cursor-pointer transition-colors ${
+                      selectedCompetency?.id === comp.id ? 'bg-[#E8F5E9]' : ''
+                    }`}
+                    onClick={() => openDetail(comp)}
+                  >
+                    <div>
+                      <p className="text-sm font-medium text-[#1A1A1A]">
+                        {comp.name}
+                        {comp.nameEn && (
+                          <span className="text-[#999] font-normal ml-1">({comp.nameEn})</span>
+                        )}
+                      </p>
+                      <p className="text-xs text-[#999] mt-0.5">
+                        행동지표 {comp._count.indicators}개 | 숙련도 레벨 {comp._count.levels}단계
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        variant={comp.isActive ? 'default' : 'secondary'}
+                        className={comp.isActive ? 'bg-[#D1FAE5] text-[#047857] border-0' : ''}
+                      >
+                        {comp.isActive ? '활성' : '비활성'}
+                      </Badge>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleDelete(comp.id)
+                        }}
+                        className="p-1.5 rounded-lg hover:bg-[#FEE2E2] text-[#999] hover:text-[#DC2626] transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                      <ChevronRight className="w-4 h-4 text-[#999]" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
 
-            {/* description */}
-            <div className="space-y-2">
-              <Label htmlFor="comp-desc">{t('descriptionInputLabel')}</Label>
-              <textarea
-                id="comp-desc"
-                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                placeholder={t('descriptionInputPlaceholder')}
-                {...register('description')}
-              />
-            </div>
-
-            {/* behavioral indicators */}
-            <div className="space-y-2">
-              <Label htmlFor="comp-indicators">{t('behavioralIndicatorsLabel')}</Label>
-              <textarea
-                id="comp-indicators"
-                className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                placeholder={t('behavioralIndicatorsPlaceholder')}
-                {...register('behavioralIndicatorsText')}
-              />
-            </div>
-
-            {/* isActive */}
-            <Controller
-              control={control}
-              name="isActive"
-              render={({ field }) => (
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="comp-active"
-                    checked={field.value as boolean}
-                    onCheckedChange={(checked) =>
-                      field.onChange(checked === true)
-                    }
-                  />
-                  <Label htmlFor="comp-active" className="cursor-pointer">
-                    {t('activeState')}
-                  </Label>
+        {/* Side panel */}
+        {panel !== 'none' && (
+          <div className="w-96 shrink-0 space-y-4">
+            {panel === 'add' && (
+              <div className="rounded-xl border border-[#E8E8E8] bg-white p-5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base font-semibold text-[#1A1A1A]">역량 추가</h3>
+                  <button onClick={() => setPanel('none')}>
+                    <X className="w-4 h-4 text-[#999]" />
+                  </button>
                 </div>
-              )}
-            />
+                {[
+                  { label: '코드 (영문, 필수)', value: addCode, setter: setAddCode, placeholder: 'challenge' },
+                  { label: '이름 (한국어, 필수)', value: addName, setter: setAddName, placeholder: '도전' },
+                  { label: '이름 (영문, 선택)', value: addNameEn, setter: setAddNameEn, placeholder: 'Challenge' },
+                  { label: '설명 (선택)', value: addDesc, setter: setAddDesc, placeholder: '역량 설명...' },
+                ].map(({ label, value, setter, placeholder }) => (
+                  <div key={label}>
+                    <label className="text-xs font-medium text-[#333] mb-1 block">{label}</label>
+                    <input
+                      value={value}
+                      onChange={(e) => setter(e.target.value)}
+                      placeholder={placeholder}
+                      className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"
+                    />
+                  </div>
+                ))}
+                <div className="flex gap-2 pt-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setPanel('none')}
+                    className="flex-1"
+                  >
+                    취소
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={handleAdd}
+                    disabled={addSaving}
+                    className="flex-1 bg-[#00C853] hover:bg-[#00A844] text-white"
+                  >
+                    {addSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : '추가'}
+                  </Button>
+                </div>
+              </div>
+            )}
 
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setDialogOpen(false)}
-              >
-                {tc('cancel')}
-              </Button>
-              <Button
-                type="submit"
-                disabled={saving}
-                style={{ backgroundColor: '#00C853', color: '#fff' }}
-                className="hover:opacity-90"
-              >
-                {saving && (
-                  <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+            {panel === 'detail' && (
+              <>
+                <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
+                  <div className="flex items-center justify-between mb-1">
+                    <h3 className="text-base font-semibold text-[#1A1A1A]">
+                      {selectedCompetency?.name ?? '...'}
+                      {selectedCompetency?.nameEn && (
+                        <span className="text-sm font-normal text-[#999] ml-1">
+                          ({selectedCompetency.nameEn})
+                        </span>
+                      )}
+                    </h3>
+                    <button onClick={() => { setPanel('none'); setSelectedCompetency(null) }}>
+                      <X className="w-4 h-4 text-[#999]" />
+                    </button>
+                  </div>
+                  {detailLoading && (
+                    <div className="flex items-center justify-center h-16">
+                      <Loader2 className="w-4 h-4 animate-spin text-[#00C853]" />
+                    </div>
+                  )}
+                </div>
+
+                {selectedCompetency && !detailLoading && (
+                  <>
+                    <IndicatorEditor
+                      competencyId={selectedCompetency.id}
+                      competencyName={selectedCompetency.name}
+                      initialIndicators={selectedCompetency.indicators}
+                      onSaved={() => openDetail(selectedCompetency)}
+                    />
+                    <CompetencyLevelEditor
+                      competencyId={selectedCompetency.id}
+                      competencyName={selectedCompetency.name}
+                      initialLevels={selectedCompetency.levels}
+                      onSaved={() => openDetail(selectedCompetency)}
+                    />
+                  </>
                 )}
-                {tc('save')}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* ─── Delete AlertDialog ─── */}
-      <AlertDialog
-        open={!!deleteTarget}
-        onOpenChange={(open: boolean) => !open && setDeleteTarget(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('deleteCompetency')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('deleteCompetencyConfirm', { name: deleteTarget?.name ?? '' })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{tc('cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              disabled={deleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {deleting && (
-                <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-              )}
-              {tc('delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+              </>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
