@@ -2,7 +2,7 @@
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Employee Detail Client
-// 직원 프로필 5탭: 기본정보/인사이력/문서/징계상벌/연봉이력
+// 직원 프로필 5탭: 프로필/발령이력/급여정보/근태현황/평가결과
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useMemo, useState } from 'react'
@@ -11,14 +11,15 @@ import { useTranslations } from 'next-intl'
 import {
   ArrowUpDown,
   Building2,
-  Calendar,
   Check,
-  FileText,
+  Clock,
   Pencil,
-  Trophy,
+  TrendingUp,
   User,
   X,
 } from 'lucide-react'
+import { AssignmentHistoryTab } from '@/components/employees/tabs/AssignmentHistoryTab'
+import { CompensationTab } from '@/components/employees/tabs/CompensationTab'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -41,11 +42,9 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
-import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
-import { EmptyState } from '@/components/shared/EmptyState'
 import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'
-import type { SessionUser, PaginationInfo, DeptOption, RefOption } from '@/types'
+import type { SessionUser, DeptOption, RefOption } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -83,28 +82,6 @@ type EmployeeDetail = {
   companyId: string
 }
 
-type HistoryRow = {
-  id: string
-  changeType: string
-  notes: string | null
-  createdAt: string
-  fromDept: { name: string } | null
-  toDept: { name: string } | null
-  fromGrade: { name: string } | null
-  toGrade: { name: string } | null
-  approver: { name: string } | null
-}
-
-type DocumentRow = {
-  id: string
-  docType: string
-  title: string
-  fileKey: string
-  fileSize: number | null
-  mimeType: string | null
-  createdAt: string
-  uploader: { name: string } | null
-}
 
 interface EmployeeDetailClientProps {
   user: SessionUser
@@ -124,17 +101,6 @@ const STATUS_VARIANTS: Record<string, BadgeVariant> = {
   RESIGNED: 'outline',
   TERMINATED: 'destructive',
 }
-
-const HISTORY_TYPE_ICONS: Record<string, string> = {
-  HIRE: '🟢',
-  TRANSFER: '🔄',
-  PROMOTION: '⬆️',
-  DEMOTION: '⬇️',
-  RESIGN: '🔴',
-  TRANSFER_CROSS_COMPANY: '🌐',
-}
-
-const SENSITIVE_DOC_TYPES = ['CONTRACT', 'ID_CARD']
 
 // ─── Helpers ────────────────────────────────────────────────
 
@@ -160,12 +126,6 @@ function getInitials(name: string): string {
   return name.slice(0, 2)
 }
 
-function formatFileSize(bytes: number | null): string {
-  if (!bytes) return '-'
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-}
 
 // ─── Avatar ─────────────────────────────────────────────────
 
@@ -220,15 +180,6 @@ export function EmployeeDetailClient({
     ON_LEAVE: t('statusOnLeave'),
     RESIGNED: t('statusResigned'),
     TERMINATED: t('statusTerminated'),
-  }
-
-  const DOC_TYPE_LABELS: Record<string, string> = {
-    CONTRACT: t('docContract'),
-    ID_CARD: t('docIdCard'),
-    CERTIFICATE: t('docCertificate'),
-    RESUME: t('docResume'),
-    HANDOVER: t('docHandover'),
-    OTHER: t('docOther'),
   }
 
   const [employee, setEmployee] = useState(initialEmployee)
@@ -306,45 +257,6 @@ export function EmployeeDetailClient({
       setOffboardingSubmitting(false)
     }
   }, [employee.id, offboardingData, resetOffboarding, router, t])
-
-  // ─── Histories tab ───
-  const [histories, setHistories] = useState<HistoryRow[]>([])
-  const [historiesPag, setHistoriesPag] = useState<PaginationInfo | null>(null)
-  const [historiesLoading, setHistoriesLoading] = useState(false)
-
-  const loadHistories = useCallback((page: number) => {
-    setHistoriesLoading(true)
-    apiClient
-      .getList<HistoryRow>(`/api/v1/employees/${initialEmployee.id}/histories`, { page, limit: 20, orderBy: 'createdAt', order: 'desc' })
-      .then((res) => {
-        setHistories(res.data)
-        setHistoriesPag(res.pagination)
-      })
-      .catch(() => setHistories([]))
-      .finally(() => setHistoriesLoading(false))
-  }, [initialEmployee.id])
-
-  // ─── Documents tab ───
-  const [documents, setDocuments] = useState<DocumentRow[]>([])
-  const [documentsLoading, setDocumentsLoading] = useState(false)
-
-  const loadDocuments = useCallback(() => {
-    setDocumentsLoading(true)
-    apiClient
-      .get<DocumentRow[]>(`/api/v1/employees/${initialEmployee.id}/documents`)
-      .then((res) => setDocuments(res.data))
-      .catch(() => setDocuments([]))
-      .finally(() => setDocumentsLoading(false))
-  }, [initialEmployee.id])
-
-  // ─── Tab change handler ───
-  const handleTabChange = useCallback(
-    (tab: string) => {
-      if (tab === 'histories' && histories.length === 0 && !historiesLoading) loadHistories(1)
-      if (tab === 'documents' && documents.length === 0 && !documentsLoading) loadDocuments()
-    },
-    [histories.length, documents.length, loadHistories, loadDocuments],
-  )
 
   // ─── Save edit ───
   const handleSave = useCallback(async () => {
@@ -538,89 +450,6 @@ export function EmployeeDetailClient({
     )
   }
 
-  // ─── Tab 2: 인사이력 ────────────────────────────────────────
-
-  const historyColumns = useMemo<DataTableColumn<HistoryRow>[]>(() => [
-    {
-      key: 'changeType',
-      header: tc('type'),
-      render: (row) => (
-        <span className="flex items-center gap-1.5">
-          <span>{HISTORY_TYPE_ICONS[row.changeType] ?? '📋'}</span>
-          <span className="text-sm">{row.changeType}</span>
-        </span>
-      ),
-    },
-    {
-      key: 'detail',
-      header: t('historyDetail'),
-      render: (row) => {
-        const parts: string[] = []
-        if (row.fromDept && row.toDept) parts.push(`${row.fromDept.name} → ${row.toDept.name}`)
-        if (row.fromGrade && row.toGrade) parts.push(`${row.fromGrade.name} → ${row.toGrade.name}`)
-        if (row.notes) parts.push(row.notes)
-        return <span className="text-sm">{parts.join(' / ') || '-'}</span>
-      },
-    },
-    {
-      key: 'approver',
-      header: t('approver'),
-      render: (row) => <span className="text-sm">{row.approver?.name ?? '-'}</span>,
-    },
-    {
-      key: 'createdAt',
-      header: tc('date'),
-      sortable: true,
-      render: (row) => <span className="text-sm">{formatDate(row.createdAt)}</span>,
-    },
-  ], [t, tc])
-
-  // ─── Tab 3: 문서 ────────────────────────────────────────────
-
-  const docColumns = useMemo<DataTableColumn<DocumentRow>[]>(() => [
-    {
-      key: 'docType',
-      header: tc('type'),
-      render: (row) => (
-        <span className="flex items-center gap-1">
-          {DOC_TYPE_LABELS[row.docType] ?? row.docType}
-          {SENSITIVE_DOC_TYPES.includes(row.docType) && (
-            <Badge variant="outline" className="ml-1 text-xs">{t('sensitive')}</Badge>
-          )}
-        </span>
-      ),
-    },
-    { key: 'title', header: t('docTitle'), render: (row) => <span className="text-sm font-medium">{row.title}</span> },
-    {
-      key: 'uploader',
-      header: t('uploader'),
-      render: (row) => <span className="text-sm">{row.uploader?.name ?? '-'}</span>,
-    },
-    {
-      key: 'fileSize',
-      header: t('fileSize'),
-      render: (row) => <span className="text-sm">{formatFileSize(row.fileSize)}</span>,
-    },
-    { key: 'createdAt', header: t('uploadDate'), render: (row) => <span className="text-sm">{formatDate(row.createdAt)}</span> },
-    {
-      key: 'download',
-      header: '',
-      render: (row) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled={SENSITIVE_DOC_TYPES.includes(row.docType) && !isHrAdmin}
-          onClick={() => {
-            // TODO: S3 presigned URL download (STEP3)
-            window.open(`/api/v1/employees/${initialEmployee.id}/documents/${row.id}/download`, '_blank')
-          }}
-        >
-          {tc('download')}
-        </Button>
-      ),
-    },
-  ], [isHrAdmin, initialEmployee.id, t, tc, DOC_TYPE_LABELS])
-
   // ─── Render ─────────────────────────────────────────────────
 
   return (
@@ -669,108 +498,93 @@ export function EmployeeDetailClient({
 
         <div className="p-6">
         <div className="flex-1 min-w-0">
-          <Tabs defaultValue="basic" onValueChange={handleTabChange}>
+          <Tabs defaultValue="profile">
             <TabsList className="mb-4">
-              <TabsTrigger value="basic">
+              <TabsTrigger value="profile">
                 <User className="mr-1.5 h-4 w-4" />
-                {t('basicInfo')}
+                프로필
               </TabsTrigger>
-              <TabsTrigger value="histories">
+              <TabsTrigger value="assignment-history">
                 <ArrowUpDown className="mr-1.5 h-4 w-4" />
-                {t('hrHistory')}
-              </TabsTrigger>
-              <TabsTrigger value="documents">
-                <FileText className="mr-1.5 h-4 w-4" />
-                {t('documents')}
-              </TabsTrigger>
-              <TabsTrigger value="discipline">
-                <Trophy className="mr-1.5 h-4 w-4" />
-                {t('discipline')}
+                발령이력
               </TabsTrigger>
               {isHrAdmin && (
-                <TabsTrigger value="compensation">
+                <TabsTrigger value="compensation-info">
                   <Building2 className="mr-1.5 h-4 w-4" />
-                  {t('compensationHistory')}
+                  급여정보
                 </TabsTrigger>
               )}
+              <TabsTrigger value="attendance">
+                <Clock className="mr-1.5 h-4 w-4" />
+                근태현황
+              </TabsTrigger>
+              <TabsTrigger value="performance">
+                <TrendingUp className="mr-1.5 h-4 w-4" />
+                평가결과
+              </TabsTrigger>
             </TabsList>
 
-            {/* Tab 1: 기본정보 */}
-            <TabsContent value="basic" className="mt-0">
+            {/* Tab 1: 프로필 */}
+            <TabsContent value="profile" className="mt-0">
               <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
                 {isHrAdmin && !editing && (
                   <div className="mb-4 flex justify-end">
                     <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
                       <Pencil className="mr-1 h-4 w-4" />
-                      {t('inlineEdit')}
+                      편집
                     </Button>
+                  </div>
+                )}
+                {editing && (
+                  <div className="mb-4 rounded-lg bg-[#FEF3C7] border border-[#FCD34D] px-4 py-3">
+                    <p className="text-xs text-[#B45309]">
+                      ⚠️ 소속정보(부서/직급/고용형태)는 발령 프로세스를 통해서만 변경 가능합니다.
+                    </p>
                   </div>
                 )}
                 {renderBasicInfo()}
               </div>
             </TabsContent>
 
-            {/* Tab 2: 인사이력 */}
-            <TabsContent value="histories" className="mt-0">
-              <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
-                <h2 className="mb-4 text-base font-bold text-[#1A1A1A] tracking-ctr">{t('hrHistory')}</h2>
-                <DataTable<HistoryRow>
-                  columns={historyColumns}
-                  data={histories}
-                  pagination={historiesPag ?? undefined}
-                  onPageChange={loadHistories}
-                  loading={historiesLoading}
-                  emptyMessage={t('noHrHistory')}
-                  rowKey={(row) => row.id}
-                />
-              </div>
+            {/* Tab 2: 발령이력 */}
+            <TabsContent value="assignment-history" className="mt-0">
+              <AssignmentHistoryTab
+                employeeId={employee.id}
+                hireDate={employee.hireDate}
+                user={user}
+              />
             </TabsContent>
 
-            {/* Tab 3: 문서 */}
-            <TabsContent value="documents" className="mt-0">
-              <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
-                <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-base font-bold text-[#1A1A1A] tracking-ctr">{t('documents')}</h2>
-                  {isHrAdmin && (
-                    <Button size="sm" className="bg-ctr-primary hover:bg-ctr-primary-dark text-white">
-                      <FileText className="mr-1 h-4 w-4" />
-                      {t('uploadDocument')}
-                    </Button>
-                  )}
-                </div>
-                <DataTable<DocumentRow>
-                  columns={docColumns}
-                  data={documents}
-                  loading={documentsLoading}
-                  emptyMessage={t('noDocuments')}
-                  rowKey={(row) => row.id}
-                />
-              </div>
-            </TabsContent>
-
-            {/* Tab 4: 징계·상벌 */}
-            <TabsContent value="discipline" className="mt-0">
-              <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
-                <h2 className="mb-4 text-base font-bold text-[#1A1A1A] tracking-ctr">{t('discipline')}</h2>
-                <EmptyState
-                  title={t('noDiscipline')}
-                  description={t('disciplineComingSoon')}
-                />
-              </div>
-            </TabsContent>
-
-            {/* Tab 5: 연봉이력 (HR_ADMIN only) */}
+            {/* Tab 3: 급여정보 (HR Admin only) */}
             {isHrAdmin && (
-              <TabsContent value="compensation" className="mt-0">
+              <TabsContent value="compensation-info" className="mt-0">
                 <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
-                  <h2 className="mb-4 text-base font-bold text-[#1A1A1A] tracking-ctr">{t('compensationHistory')}</h2>
-                  <EmptyState
-                    title={t('noCompensationHistory')}
-                    description={t('compensationComingSoon')}
-                  />
+                  <CompensationTab employeeId={employee.id} />
                 </div>
               </TabsContent>
             )}
+
+            {/* Tab 4: 근태현황 (comingSoon - B6) */}
+            <TabsContent value="attendance" className="mt-0">
+              <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
+                <div className="flex flex-col items-center py-12 text-[#999]">
+                  <Clock className="h-10 w-10 mb-3 text-[#E8E8E8]" />
+                  <p className="text-sm font-medium text-[#666]">근태현황</p>
+                  <p className="text-xs mt-1">B6 세션에서 구현 예정입니다.</p>
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Tab 5: 평가결과 (comingSoon - B3) */}
+            <TabsContent value="performance" className="mt-0">
+              <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
+                <div className="flex flex-col items-center py-12 text-[#999]">
+                  <TrendingUp className="h-10 w-10 mb-3 text-[#E8E8E8]" />
+                  <p className="text-sm font-medium text-[#666]">평가결과</p>
+                  <p className="text-xs mt-1">B3 세션에서 구현 예정입니다.</p>
+                </div>
+              </div>
+            </TabsContent>
           </Tabs>
         </div>
 
