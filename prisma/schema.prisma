@@ -364,6 +364,13 @@ enum OneOnOneStatus {
   NO_SHOW
 }
 
+enum OneOnOneType {
+  REGULAR
+  AD_HOC
+  GOAL_REVIEW
+  DEVELOPMENT
+}
+
 enum CalibrationStatus {
   CALIBRATION_DRAFT
   CALIBRATION_IN_PROGRESS
@@ -468,6 +475,11 @@ enum AiFeature {
   ATTRITION_RISK_ASSESSMENT
   PAYROLL_ANOMALY_CHECK
   EXECUTIVE_REPORT
+  EVAL_COMMENT_SUGGESTION
+  CALIBRATION_ANALYSIS
+  ONE_ON_ONE_NOTES
+  PEER_REVIEW_SUMMARY
+  PULSE_ANALYSIS
 }
 
 enum TrainingCategory {
@@ -685,7 +697,7 @@ model Company {
   jobGrades              JobGrade[]
   jobCategories          JobCategory[]
   roles                  EmployeeRole[]
-  employees              Employee[]
+  assignments            EmployeeAssignment[]
   employeeDocuments      EmployeeDocument[]
   orgChangeHistories     OrgChangeHistory[]
   offboardingChecklists  OffboardingChecklist[]
@@ -746,6 +758,22 @@ model Company {
   teamsIntegration TeamsIntegration?
   teamsCardActions TeamsCardAction[]
 
+  // STEP 9-3: 기술부채
+  shiftPatterns              ShiftPattern[]
+  shiftGroups                ShiftGroup[]
+  shiftSchedules             ShiftSchedule[]
+  shiftChangeRequests        ShiftChangeRequest[]
+  payAllowanceTypes          PayAllowanceType[]
+  payDeductionTypes          PayDeductionType[]
+  employeePayItems           EmployeePayItem[]
+  transfersFrom              EntityTransfer[]       @relation("TransferFromCompany")
+  transfersTo                EntityTransfer[]       @relation("TransferToCompany")
+  bankTransferBatches        BankTransferBatch[]
+  taxBrackets                TaxBracket[]
+  migrationJobs              MigrationJob[]
+  m365ProvisioningLogs       M365ProvisioningLog[]
+  recruitmentCosts           RecruitmentCost[]
+
   // STEP 9-2: Compliance
   militaryRegistrations      MilitaryRegistration[]
   kedoDocuments              KedoDocument[]
@@ -758,6 +786,9 @@ model Company {
   piiAccessLogs              PiiAccessLog[]
   mandatoryTrainings         MandatoryTraining[]
   severanceInterimPayments   SeveranceInterimPayment[]
+  jobs            Job[]
+  positions       Position[]
+  processSettings CompanyProcessSetting[]
 
   @@map("companies")
 }
@@ -777,13 +808,15 @@ model Department {
   company             Company              @relation(fields: [companyId], references: [id])
   parent              Department?          @relation("DepartmentParent", fields: [parentId], references: [id])
   children            Department[]         @relation("DepartmentParent")
-  employees           Employee[]
+  assignments         EmployeeAssignment[]
   jobPostings         JobPosting[]
   calibrationSessions CalibrationSession[]
   successionPlans     SuccessionPlan[]
   pulseResponses      PulseResponse[]
   fromDeptHistories   EmployeeHistory[]    @relation("HistoryFromDept")
   toDeptHistories     EmployeeHistory[]    @relation("HistoryToDept")
+  entityTransfers     EntityTransfer[]
+  positions           Position[]
 
   @@unique([companyId, code])
   @@map("departments")
@@ -797,13 +830,15 @@ model JobGrade {
   rankOrder Int       @map("rank_order")
   deletedAt DateTime? @map("deleted_at")
 
-  company            Company           @relation(fields: [companyId], references: [id])
-  employees          Employee[]
+  company            Company              @relation(fields: [companyId], references: [id])
+  assignments        EmployeeAssignment[]
   salaryBands        SalaryBand[]
   jobPostings        JobPosting[]
   fromGradeHistories    EmployeeHistory[]    @relation("HistoryFromGrade")
   toGradeHistories      EmployeeHistory[]    @relation("HistoryToGrade")
   disciplinaryDemotions DisciplinaryAction[] @relation("DisciplinaryDemotionGrade")
+  entityTransfers       EntityTransfer[]
+  positions             Position[]
 
   @@map("job_grades")
 }
@@ -816,12 +851,75 @@ model JobCategory {
   description String?
   isActive    Boolean         @default(true) @map("is_active")
 
-  company     Company      @relation(fields: [companyId], references: [id])
-  employees   Employee[]
+  company     Company              @relation(fields: [companyId], references: [id])
+  assignments EmployeeAssignment[]
   salaryBands SalaryBand[]
   jobPostings JobPosting[]
 
   @@map("job_categories")
+}
+
+model Job {
+  id         String     @id @default(cuid())
+  code       String     @unique
+  titleKo    String     @map("title_ko")
+  titleEn    String     @map("title_en")
+  companyId  String?    @map("company_id")
+  company    Company?   @relation(fields: [companyId], references: [id])
+  positions  Position[]
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+
+  @@map("jobs")
+  @@index([companyId])
+}
+
+model Position {
+  id                   String       @id @default(cuid())
+  code                 String       @unique
+  titleKo              String       @map("title_ko")
+  titleEn              String       @map("title_en")
+  companyId            String       @map("company_id")
+  company              Company      @relation(fields: [companyId], references: [id])
+  departmentId         String?      @map("department_id")
+  department           Department?  @relation(fields: [departmentId], references: [id])
+  jobId                String?      @map("job_id")
+  job                  Job?         @relation(fields: [jobId], references: [id])
+  jobGradeId           String?      @map("job_grade_id")
+  jobGrade             JobGrade?    @relation(fields: [jobGradeId], references: [id])
+  reportsToPositionId  String?      @map("reports_to_position_id")
+  reportsTo            Position?    @relation("SolidLine", fields: [reportsToPositionId], references: [id])
+  directReports        Position[]   @relation("SolidLine")
+  dottedLinePositionId String?      @map("dotted_line_position_id")
+  dottedLineTo         Position?    @relation("DottedLine", fields: [dottedLinePositionId], references: [id])
+  dottedLineReports    Position[]   @relation("DottedLine")
+  isHeadcount          Boolean      @default(true) @map("is_headcount")
+  isActive             Boolean      @default(true) @map("is_active")
+  assignments          EmployeeAssignment[]
+  createdAt            DateTime     @default(now()) @map("created_at")
+  updatedAt            DateTime     @updatedAt @map("updated_at")
+
+  @@map("positions")
+  @@index([companyId])
+  @@index([departmentId])
+  @@index([reportsToPositionId])
+}
+
+model CompanyProcessSetting {
+  id           String   @id @default(cuid())
+  companyId    String?  @map("company_id")
+  company      Company? @relation(fields: [companyId], references: [id])
+  settingType  String   @map("setting_type")
+  settingKey   String   @map("setting_key")
+  settingValue Json     @map("setting_value")
+  description  String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@unique([companyId, settingType, settingKey])
+  @@map("company_process_settings")
+  @@index([companyId])
+  @@index([settingType])
 }
 
 model Role {
@@ -903,11 +1001,6 @@ model OrgChangeHistory {
 
 model Employee {
   id                    String         @id @default(uuid())
-  companyId             String         @map("company_id")
-  departmentId          String         @map("department_id")
-  jobGradeId            String         @map("job_grade_id")
-  jobCategoryId         String         @map("job_category_id")
-  managerId             String?        @map("manager_id")
   employeeNo            String         @unique @map("employee_no")
   name                  String
   nameEn                String?        @map("name_en")
@@ -918,8 +1011,6 @@ model Employee {
   phone                 String?
   emergencyContact      String?        @map("emergency_contact")
   emergencyContactPhone String?        @map("emergency_contact_phone")
-  employmentType        EmploymentType @map("employment_type")
-  status                EmployeeStatus
   hireDate              DateTime       @map("hire_date")
   resignDate            DateTime?      @map("resign_date")
   photoUrl              String?        @map("photo_url")
@@ -933,8 +1024,7 @@ model Employee {
   updatedAt             DateTime       @updatedAt @map("updated_at")
   deletedAt             DateTime?      @map("deleted_at")
 
-  // STEP 2.5 — 계약 관련 필드
-  contractType             ContractType?   @map("contract_type")
+  // STEP 2.5 — 계약 관련 필드 (contractType은 employee_assignments로 이관됨)
   contractNumber           Int             @default(1) @map("contract_number")
   contractStartDate        DateTime?       @map("contract_start_date")
   contractEndDate          DateTime?       @map("contract_end_date")
@@ -943,12 +1033,9 @@ model Employee {
   probationEndDate         DateTime?       @map("probation_end_date")
   probationStatus          ProbationStatus @default(IN_PROGRESS) @map("probation_status")
 
-  company      Company     @relation(fields: [companyId], references: [id])
-  department   Department  @relation(fields: [departmentId], references: [id])
-  jobGrade     JobGrade    @relation(fields: [jobGradeId], references: [id])
-  jobCategory  JobCategory @relation(fields: [jobCategoryId], references: [id])
-  manager      Employee?   @relation("EmployeeManager", fields: [managerId], references: [id])
-  subordinates Employee[]  @relation("EmployeeManager")
+  // A2-1: employee_assignments로 이관된 필드들은 아래 relation으로 접근
+  assignments         EmployeeAssignment[] @relation("EmployeeAssignments")
+  assignmentApprovals EmployeeAssignment[] @relation("AssignmentApprover")
 
   employeeAuth      EmployeeAuth?
   ssoIdentities     SsoIdentity[]
@@ -999,8 +1086,9 @@ model Employee {
   // CFR
   oneOnOnesAsEmployee  OneOnOne[]    @relation("OneOnOneEmployee")
   oneOnOnesAsManager   OneOnOne[]    @relation("OneOnOneManager")
-  recognitionsSent     Recognition[] @relation("RecognitionSender")
-  recognitionsReceived Recognition[] @relation("RecognitionReceiver")
+  recognitionsSent     Recognition[]     @relation("RecognitionSender")
+  recognitionsReceived Recognition[]     @relation("RecognitionReceiver")
+  recognitionLikes     RecognitionLike[]
 
   // Calibration
   calibrationRulesCreated    CalibrationRule[]
@@ -1089,6 +1177,19 @@ model Employee {
   leavePromotionLogs LeavePromotionLog[]
   pushSubscriptions  PushSubscription[]
 
+  // STEP 9-3: 기술부채
+  shiftGroupMemberships     ShiftGroupMember[]
+  shiftSchedules            ShiftSchedule[]        @relation("ShiftScheduleEmployee")
+  shiftChangeRequestsMade   ShiftChangeRequest[]   @relation("ShiftChangeRequester")
+  shiftChangeRequestsTarget ShiftChangeRequest[]   @relation("ShiftChangeTarget")
+  shiftChangeApprovals      ShiftChangeRequest[]   @relation("ShiftChangeApprover")
+  employeePayItems          EmployeePayItem[]
+  entityTransfers           EntityTransfer[]       @relation("TransferEmployee")
+  transferRequests          EntityTransfer[]       @relation("TransferRequester")
+  transferFromApprovals     EntityTransfer[]       @relation("TransferFromApprover")
+  transferToApprovals       EntityTransfer[]       @relation("TransferToApprover")
+  transferExecApprovals     EntityTransfer[]       @relation("TransferExecApprover")
+
   // STEP 9-2: Compliance
   militaryRegistration      MilitaryRegistration?
   kedoDocuments             KedoDocument[]            @relation("KedoEmployee")
@@ -1105,6 +1206,46 @@ model Employee {
   severanceInterimApprovals SeveranceInterimPayment[] @relation("SeveranceApprover")
 
   @@map("employees")
+}
+
+// ================================================================
+// A2-1: Employee Assignment (Effective Dating 기반 인사 변동 이력)
+// ================================================================
+
+model EmployeeAssignment {
+  id              String    @id @default(uuid())
+  employeeId      String    @map("employee_id")
+  effectiveDate   DateTime  @map("effective_date") @db.Date
+  endDate         DateTime? @map("end_date") @db.Date
+  changeType      String    @map("change_type")    // HIRE | TRANSFER | PROMOTION | DEMOTION | REORGANIZATION | STATUS_CHANGE | CONTRACT_CHANGE | COMPANY_TRANSFER
+  companyId       String    @map("company_id")
+  departmentId    String?   @map("department_id")
+  jobGradeId      String?   @map("job_grade_id")
+  jobCategoryId   String?   @map("job_category_id")
+  employmentType  String    @map("employment_type") // EmploymentType enum 값 (TEXT)
+  contractType    String?   @map("contract_type")   // ContractType enum 값 (TEXT, nullable)
+  status          String    @map("status")           // EmployeeStatus enum 값 (TEXT)
+  positionId      String?   @map("position_id")
+  isPrimary       Boolean   @default(true) @map("is_primary")
+  reason          String?
+  orderNumber     String?   @map("order_number")
+  approvedBy      String?   @map("approved_by")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  employee    Employee     @relation("EmployeeAssignments", fields: [employeeId], references: [id], onDelete: Cascade)
+  company     Company      @relation(fields: [companyId], references: [id])
+  department  Department?  @relation(fields: [departmentId], references: [id])
+  jobGrade    JobGrade?    @relation(fields: [jobGradeId], references: [id])
+  jobCategory JobCategory? @relation(fields: [jobCategoryId], references: [id])
+  position    Position?    @relation(fields: [positionId], references: [id])
+  approver    Employee?    @relation("AssignmentApprover", fields: [approvedBy], references: [id])
+
+  @@index([employeeId])
+  @@index([effectiveDate])
+  @@index([companyId])
+  @@index([departmentId])
+  @@map("employee_assignments")
 }
 
 model EmployeeAuth {
@@ -1515,6 +1656,7 @@ model Attendance {
   company   Company  @relation(fields: [companyId], references: [id])
   companyId String   @map("company_id")
 
+  @@index([employeeId, workDate])
   @@map("attendances")
 }
 
@@ -1602,6 +1744,7 @@ model LeaveRequest {
   company   Company     @relation(fields: [companyId], references: [id])
   companyId String      @map("company_id")
 
+  @@index([employeeId, status])
   @@map("leave_requests")
 }
 
@@ -1657,7 +1800,8 @@ model JobPosting {
   jobCategory  JobCategory?  @relation(fields: [jobCategoryId], references: [id])
   creator      Employee      @relation("JobPostingCreator", fields: [createdBy], references: [id])
   recruiter    Employee?     @relation("JobPostingRecruiter", fields: [recruiterId], references: [id])
-  applications Application[]
+  applications     Application[]
+  recruitmentCosts RecruitmentCost[]
 
   @@map("job_postings")
 }
@@ -1699,6 +1843,7 @@ model Application {
   convertedEmployee  Employee?           @relation("ApplicationConvertedEmployee", fields: [convertedEmployeeId], references: [id])
   interviewSchedules InterviewSchedule[]
 
+  @@index([postingId, stage])
   @@unique([postingId, applicantId])
   @@map("applications")
 }
@@ -1810,6 +1955,7 @@ model MboGoal {
   companyId String           @map("company_id")
   progress  MboProgress[]
 
+  @@index([employeeId, cycleId])
   @@map("mbo_goals")
 }
 
@@ -1881,6 +2027,7 @@ model OneOnOne {
   scheduledAt DateTime       @map("scheduled_at")
   completedAt DateTime?      @map("completed_at")
   status      OneOnOneStatus
+  meetingType OneOnOneType   @default(REGULAR) @map("meeting_type")
   agenda      String?
   notes       String?
   aiGuide     String?        @map("ai_guide")
@@ -1909,8 +2056,22 @@ model Recognition {
   sender   Employee @relation("RecognitionSender", fields: [senderId], references: [id])
   receiver Employee @relation("RecognitionReceiver", fields: [receiverId], references: [id])
   company  Company  @relation(fields: [companyId], references: [id])
+  likes    RecognitionLike[]
 
   @@map("recognitions")
+}
+
+model RecognitionLike {
+  id             String   @id @default(uuid())
+  recognitionId  String   @map("recognition_id")
+  employeeId     String   @map("employee_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  recognition Recognition @relation(fields: [recognitionId], references: [id])
+  employee    Employee    @relation(fields: [employeeId], references: [id])
+
+  @@unique([recognitionId, employeeId])
+  @@map("recognition_likes")
 }
 
 // ================================================================
@@ -2164,6 +2325,7 @@ model PayrollItem {
   run      PayrollRun @relation(fields: [runId], references: [id])
   employee Employee   @relation(fields: [employeeId], references: [id])
 
+  @@index([runId, employeeId])
   @@map("payroll_items")
 }
 
@@ -2205,6 +2367,7 @@ model Notification {
 
   teamsCardActions TeamsCardAction[]
 
+  @@index([employeeId, isRead])
   @@map("notifications")
 }
 
@@ -2428,20 +2591,25 @@ model AttritionRiskHistory {
 // ================================================================
 
 model AuditLog {
-  id           String   @id @default(uuid())
-  actorId      String   @map("actor_id")
-  action       String
-  resourceType String   @map("resource_type")
-  resourceId   String   @map("resource_id")
-  companyId    String?  @map("company_id")
-  changes      Json?
-  ipAddress    String?  @map("ip_address")
-  userAgent    String?  @map("user_agent")
-  createdAt    DateTime @default(now()) @map("created_at")
+  id               String   @id @default(uuid())
+  actorId          String   @map("actor_id")
+  action           String
+  resourceType     String   @map("resource_type")
+  resourceId       String   @map("resource_id")
+  companyId        String?  @map("company_id")
+  changes          Json?
+  ipAddress        String?  @map("ip_address")
+  userAgent        String?  @map("user_agent")
+  sensitivityLevel String?  @map("sensitivity_level") // HIGH, MEDIUM, LOW
+  createdAt        DateTime @default(now()) @map("created_at")
 
   actor   Employee @relation(fields: [actorId], references: [id])
   company Company? @relation(fields: [companyId], references: [id])
 
+  @@index([companyId, createdAt])
+  @@index([actorId])
+  @@index([resourceType, resourceId])
+  @@index([action])
   @@map("audit_logs")
 }
 
@@ -3304,4 +3472,617 @@ model SeveranceInterimPayment {
   @@index([companyId, status])
   @@index([employeeId])
   @@map("severance_interim_payments")
+}
+
+// ================================================================
+// STEP 9-3: 기술부채 해소 ENUMs
+// ================================================================
+
+enum ShiftPatternType {
+  TWO_SHIFT
+  THREE_SHIFT
+  DAY_NIGHT_OFF
+  FOUR_ON_TWO_OFF
+  CUSTOM
+}
+
+enum ShiftScheduleStatus {
+  SCHEDULED
+  WORKED
+  ABSENT
+  SWAPPED
+}
+
+enum ShiftChangeRequestStatus {
+  SCR_PENDING
+  SCR_APPROVED
+  SCR_REJECTED
+
+  @@map("ShiftChangeRequestStatus")
+}
+
+enum PayItemCategory {
+  FIXED
+  VARIABLE
+  INCENTIVE
+}
+
+enum DeductionCategory {
+  STATUTORY
+  VOLUNTARY
+}
+
+enum PayItemCalcMethod {
+  FIXED_AMOUNT
+  RATE
+  FORMULA
+  BRACKET
+}
+
+enum PayItemType {
+  ALLOWANCE
+  DEDUCTION
+}
+
+enum TransferType {
+  PERMANENT_TRANSFER
+  TEMPORARY_TRANSFER
+  SECONDMENT
+
+  @@map("TransferType")
+}
+
+enum EntityTransferStatus {
+  TRANSFER_REQUESTED
+  FROM_APPROVED
+  TO_APPROVED
+  EXEC_APPROVED
+  TRANSFER_PROCESSING
+  TRANSFER_COMPLETED
+  TRANSFER_CANCELLED
+
+  @@map("EntityTransferStatus")
+}
+
+enum TransferDataType {
+  HR_MASTER
+  PAYROLL
+  LEAVE
+  PERFORMANCE
+  TENURE
+}
+
+enum TransferDataStatus {
+  DATA_PENDING
+  DATA_MIGRATED
+  DATA_FAILED
+
+  @@map("TransferDataStatus")
+}
+
+// ================================================================
+// STEP 9-3: 교대근무 시스템
+// ================================================================
+
+model ShiftPattern {
+  id               String           @id @default(uuid())
+  companyId        String           @map("company_id")
+  code             String
+  name             String
+  patternType      ShiftPatternType @map("pattern_type")
+  slots            Json             // [{name, start, end, breakMin, nightPremium}]
+  cycleDays        Int              @map("cycle_days")
+  weeklyHoursLimit Decimal?         @map("weekly_hours_limit")
+  description      String?
+  isActive         Boolean          @default(true) @map("is_active")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+
+  company        Company         @relation(fields: [companyId], references: [id])
+  shiftGroups    ShiftGroup[]
+  shiftSchedules ShiftSchedule[]
+
+  @@unique([companyId, code])
+  @@map("shift_patterns")
+}
+
+model ShiftGroup {
+  id             String   @id @default(uuid())
+  companyId      String   @map("company_id")
+  shiftPatternId String   @map("shift_pattern_id")
+  name           String   // A조, B조, C조
+  color          String?  // UI 색상 코드
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  company      Company         @relation(fields: [companyId], references: [id])
+  shiftPattern ShiftPattern    @relation(fields: [shiftPatternId], references: [id])
+  members      ShiftGroupMember[]
+  schedules    ShiftSchedule[]
+
+  @@unique([companyId, shiftPatternId, name])
+  @@map("shift_groups")
+}
+
+model ShiftGroupMember {
+  id           String    @id @default(uuid())
+  shiftGroupId String    @map("shift_group_id")
+  employeeId   String    @map("employee_id")
+  assignedAt   DateTime  @default(now()) @map("assigned_at")
+  removedAt    DateTime? @map("removed_at")
+
+  shiftGroup ShiftGroup @relation(fields: [shiftGroupId], references: [id])
+  employee   Employee   @relation(fields: [employeeId], references: [id])
+
+  @@unique([shiftGroupId, employeeId])
+  @@map("shift_group_members")
+}
+
+model ShiftSchedule {
+  id             String              @id @default(uuid())
+  companyId      String              @map("company_id")
+  employeeId     String              @map("employee_id")
+  shiftPatternId String              @map("shift_pattern_id")
+  shiftGroupId   String?             @map("shift_group_id")
+  workDate       DateTime            @map("work_date")
+  slotIndex      Int                 @map("slot_index")
+  slotName       String?             @map("slot_name")
+  startTime      String              @map("start_time") // HH:mm
+  endTime        String              @map("end_time")
+  breakMinutes   Int                 @default(0) @map("break_minutes")
+  isNightShift   Boolean             @default(false) @map("is_night_shift")
+  status         ShiftScheduleStatus @default(SCHEDULED)
+  note           String?
+  createdAt      DateTime            @default(now()) @map("created_at")
+  updatedAt      DateTime            @updatedAt @map("updated_at")
+
+  company      Company      @relation(fields: [companyId], references: [id])
+  employee     Employee     @relation("ShiftScheduleEmployee", fields: [employeeId], references: [id])
+  shiftPattern ShiftPattern @relation(fields: [shiftPatternId], references: [id])
+  shiftGroup   ShiftGroup?  @relation(fields: [shiftGroupId], references: [id])
+
+  @@unique([employeeId, workDate])
+  @@index([companyId, workDate])
+  @@map("shift_schedules")
+}
+
+model ShiftChangeRequest {
+  id                 String                   @id @default(uuid())
+  companyId          String                   @map("company_id")
+  requesterId        String                   @map("requester_id")
+  targetEmployeeId   String?                  @map("target_employee_id") // 교대 교환 상대
+  originalDate       DateTime                 @map("original_date")
+  requestedDate      DateTime?                @map("requested_date")
+  originalSlotIndex  Int                      @map("original_slot_index")
+  requestedSlotIndex Int?                     @map("requested_slot_index")
+  reason             String
+  status             ShiftChangeRequestStatus @default(SCR_PENDING)
+  approvedBy         String?                  @map("approved_by")
+  approvedAt         DateTime?                @map("approved_at")
+  rejectionReason    String?                  @map("rejection_reason")
+  createdAt          DateTime                 @default(now()) @map("created_at")
+  updatedAt          DateTime                 @updatedAt @map("updated_at")
+
+  company        Company  @relation(fields: [companyId], references: [id])
+  requester      Employee @relation("ShiftChangeRequester", fields: [requesterId], references: [id])
+  targetEmployee Employee? @relation("ShiftChangeTarget", fields: [targetEmployeeId], references: [id])
+  approver       Employee? @relation("ShiftChangeApprover", fields: [approvedBy], references: [id])
+
+  @@index([companyId, status])
+  @@map("shift_change_requests")
+}
+
+// ================================================================
+// STEP 9-3: 급여 상세 — 수당/공제 세분화
+// ================================================================
+
+model PayAllowanceType {
+  id                String          @id @default(uuid())
+  companyId         String          @map("company_id")
+  code              String
+  name              String
+  category          PayItemCategory
+  isTaxExempt       Boolean         @default(false) @map("is_tax_exempt")
+  taxExemptLimit    Decimal?        @map("tax_exempt_limit")
+  isIncludedInAnnual Boolean        @default(true) @map("is_included_in_annual")
+  calculationMethod PayItemCalcMethod @default(FIXED_AMOUNT) @map("calculation_method")
+  defaultAmount     Decimal?        @map("default_amount")
+  description       String?
+  sortOrder         Int             @default(0) @map("sort_order")
+  isActive          Boolean         @default(true) @map("is_active")
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  company       Company          @relation(fields: [companyId], references: [id])
+  employeeItems EmployeePayItem[] @relation("PayItemAllowance")
+
+  @@unique([companyId, code])
+  @@map("pay_allowance_types")
+}
+
+model PayDeductionType {
+  id                String            @id @default(uuid())
+  companyId         String            @map("company_id")
+  code              String
+  name              String
+  category          DeductionCategory
+  countryCode       String?           @map("country_code")
+  calculationMethod PayItemCalcMethod @default(FIXED_AMOUNT) @map("calculation_method")
+  rate              Decimal?
+  description       String?
+  sortOrder         Int               @default(0) @map("sort_order")
+  isActive          Boolean           @default(true) @map("is_active")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  company       Company          @relation(fields: [companyId], references: [id])
+  employeeItems EmployeePayItem[] @relation("PayItemDeduction")
+
+  @@unique([companyId, code])
+  @@map("pay_deduction_types")
+}
+
+model EmployeePayItem {
+  id              String      @id @default(uuid())
+  employeeId      String      @map("employee_id")
+  companyId       String      @map("company_id")
+  itemType        PayItemType @map("item_type")
+  allowanceTypeId String?     @map("allowance_type_id")
+  deductionTypeId String?     @map("deduction_type_id")
+  amount          Decimal
+  currency        String      @default("KRW")
+  effectiveFrom   DateTime    @map("effective_from")
+  effectiveTo     DateTime?   @map("effective_to")
+  note            String?
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  employee      Employee          @relation(fields: [employeeId], references: [id])
+  company       Company           @relation(fields: [companyId], references: [id])
+  allowanceType PayAllowanceType? @relation("PayItemAllowance", fields: [allowanceTypeId], references: [id])
+  deductionType PayDeductionType? @relation("PayItemDeduction", fields: [deductionTypeId], references: [id])
+
+  @@index([employeeId, itemType])
+  @@index([companyId])
+  @@map("employee_pay_items")
+}
+
+// ================================================================
+// STEP 9-3: F5 — 글로벌 법인 간 전출/전입
+// ================================================================
+
+model EntityTransfer {
+  id                  String               @id @default(uuid())
+  employeeId          String               @map("employee_id")
+  fromCompanyId       String               @map("from_company_id")
+  toCompanyId         String               @map("to_company_id")
+  transferType        TransferType         @map("transfer_type")
+  transferDate        DateTime             @map("transfer_date")
+  returnDate          DateTime?            @map("return_date")
+  status              EntityTransferStatus @default(TRANSFER_REQUESTED)
+  dataOptions         Json?                @map("data_options") // {leavePolicy, tenurePolicy, performancePolicy}
+  newEmployeeNo       String?              @map("new_employee_no")
+  newDepartmentId     String?              @map("new_department_id")
+  newJobGradeId       String?              @map("new_job_grade_id")
+  requestedBy         String               @map("requested_by")
+  requestedAt         DateTime             @default(now()) @map("requested_at")
+  fromApprover        String?              @map("from_approver")
+  fromApprovedAt      DateTime?            @map("from_approved_at")
+  toApprover          String?              @map("to_approver")
+  toApprovedAt        DateTime?            @map("to_approved_at")
+  executiveApprover   String?              @map("executive_approver")
+  executiveApprovedAt DateTime?            @map("executive_approved_at")
+  cancellationReason  String?              @map("cancellation_reason")
+  completedAt         DateTime?            @map("completed_at")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+
+  employee          Employee                 @relation("TransferEmployee", fields: [employeeId], references: [id])
+  fromCompany       Company                  @relation("TransferFromCompany", fields: [fromCompanyId], references: [id])
+  toCompany         Company                  @relation("TransferToCompany", fields: [toCompanyId], references: [id])
+  requester         Employee                 @relation("TransferRequester", fields: [requestedBy], references: [id])
+  fromApproverEmp   Employee?                @relation("TransferFromApprover", fields: [fromApprover], references: [id])
+  toApproverEmp     Employee?                @relation("TransferToApprover", fields: [toApprover], references: [id])
+  execApproverEmp   Employee?                @relation("TransferExecApprover", fields: [executiveApprover], references: [id])
+  newDepartment     Department?              @relation(fields: [newDepartmentId], references: [id])
+  newJobGrade       JobGrade?                @relation(fields: [newJobGradeId], references: [id])
+  dataLogs          EntityTransferDataLog[]
+
+  @@index([employeeId])
+  @@index([fromCompanyId, status])
+  @@index([toCompanyId, status])
+  @@map("entity_transfers")
+}
+
+model EntityTransferDataLog {
+  id         String             @id @default(uuid())
+  transferId String             @map("transfer_id")
+  dataType   TransferDataType   @map("data_type")
+  status     TransferDataStatus @default(DATA_PENDING)
+  detail     Json?
+  migratedAt DateTime?          @map("migrated_at")
+  errorMsg   String?            @map("error_msg")
+  createdAt  DateTime           @default(now()) @map("created_at")
+
+  transfer EntityTransfer @relation(fields: [transferId], references: [id])
+
+  @@index([transferId])
+  @@map("entity_transfer_data_logs")
+}
+
+// ================================================================
+// STEP 9-3B: 은행 급여이체 + 해외 세금 + 데이터 마이그레이션
+// ================================================================
+
+enum BankTransferFormat {
+  CSV
+  XML
+  EBCDIC
+}
+
+enum BankTransferBatchStatus {
+  DRAFT
+  GENERATING
+  GENERATED
+  SUBMITTED
+  PARTIALLY_COMPLETED
+  COMPLETED
+  FAILED
+
+  @@map("BankTransferBatchStatus")
+}
+
+enum BankTransferItemStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  CANCELLED
+
+  @@map("BankTransferItemStatus")
+}
+
+enum TaxType {
+  INCOME_TAX
+  LOCAL_TAX
+  SOCIAL_INSURANCE
+  PENSION
+  HEALTH_INSURANCE
+  OTHER
+}
+
+enum MigrationJobStatus {
+  DRAFT
+  VALIDATING
+  VALIDATED
+  RUNNING
+  COMPLETED
+  FAILED
+  ROLLED_BACK
+
+  @@map("MigrationJobStatus")
+}
+
+enum MigrationDataScope {
+  EMPLOYEES
+  ATTENDANCE
+  PAYROLL
+  LEAVE
+  PERFORMANCE
+  ALL
+
+  @@map("MigrationDataScope")
+}
+
+enum MigrationLogLevel {
+  INFO
+  WARNING
+  ERROR
+}
+
+// ─── Bank Transfer Batch ─────────────────────────────────
+
+model BankTransferBatch {
+  id             String                 @id @default(uuid())
+  companyId      String                 @map("company_id")
+  payrollRunId   String?                @map("payroll_run_id")
+  bankCode       String                 @map("bank_code")
+  bankName       String                 @map("bank_name")
+  format         BankTransferFormat     @default(CSV)
+  status         BankTransferBatchStatus @default(DRAFT)
+  totalAmount    Decimal                @default(0) @map("total_amount") @db.Decimal(15, 2)
+  totalCount     Int                    @default(0) @map("total_count")
+  successCount   Int                    @default(0) @map("success_count")
+  failCount      Int                    @default(0) @map("fail_count")
+  fileUrl        String?                @map("file_url")
+  resultFileUrl  String?                @map("result_file_url")
+  generatedAt    DateTime?              @map("generated_at")
+  submittedAt    DateTime?              @map("submitted_at")
+  completedAt    DateTime?              @map("completed_at")
+  createdBy      String                 @map("created_by")
+  note           String?
+  createdAt      DateTime               @default(now()) @map("created_at")
+  updatedAt      DateTime               @updatedAt @map("updated_at")
+
+  company   Company              @relation(fields: [companyId], references: [id])
+  items     BankTransferItem[]
+
+  @@index([companyId])
+  @@index([payrollRunId])
+  @@map("bank_transfer_batches")
+}
+
+// ─── Bank Transfer Item ──────────────────────────────────
+
+model BankTransferItem {
+  id             String                  @id @default(uuid())
+  batchId        String                  @map("batch_id")
+  employeeId     String                  @map("employee_id")
+  employeeName   String                  @map("employee_name")
+  employeeNo     String                  @map("employee_no")
+  bankCode       String                  @map("bank_code")
+  accountNumber  String                  @map("account_number")
+  accountHolder  String                  @map("account_holder")
+  amount         Decimal                 @map("amount") @db.Decimal(15, 2)
+  status         BankTransferItemStatus  @default(PENDING)
+  errorMessage   String?                 @map("error_message")
+  transferredAt  DateTime?               @map("transferred_at")
+  createdAt      DateTime                @default(now()) @map("created_at")
+
+  batch BankTransferBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  @@index([batchId])
+  @@index([employeeId])
+  @@map("bank_transfer_items")
+}
+
+// ─── Tax Bracket (국가별 세금 구간) ───────────────────────
+
+model TaxBracket {
+  id             String   @id @default(uuid())
+  companyId      String   @map("company_id")
+  countryCode    String   @map("country_code")
+  taxType        TaxType  @map("tax_type")
+  name           String
+  bracketMin     Decimal  @map("bracket_min") @db.Decimal(15, 2)
+  bracketMax     Decimal? @map("bracket_max") @db.Decimal(15, 2)
+  rate           Decimal  @map("rate") @db.Decimal(8, 5)
+  fixedAmount    Decimal  @default(0) @map("fixed_amount") @db.Decimal(15, 2)
+  effectiveFrom  DateTime @map("effective_from")
+  effectiveTo    DateTime? @map("effective_to")
+  description    String?
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  company Company @relation(fields: [companyId], references: [id])
+
+  @@unique([companyId, countryCode, taxType, bracketMin, effectiveFrom])
+  @@index([companyId, countryCode])
+  @@index([countryCode, taxType])
+  @@map("tax_brackets")
+}
+
+// ─── Migration Job ───────────────────────────────────────
+
+model MigrationJob {
+  id              String              @id @default(uuid())
+  companyId       String              @map("company_id")
+  name            String
+  description     String?
+  sourceType      String              @map("source_type")
+  dataScope       MigrationDataScope  @map("data_scope")
+  status          MigrationJobStatus  @default(DRAFT)
+  config          Json?
+  totalRecords    Int                 @default(0) @map("total_records")
+  processedRecords Int                @default(0) @map("processed_records")
+  successRecords  Int                 @default(0) @map("success_records")
+  errorRecords    Int                 @default(0) @map("error_records")
+  validationErrors Json?              @map("validation_errors")
+  startedAt       DateTime?           @map("started_at")
+  completedAt     DateTime?           @map("completed_at")
+  createdBy       String              @map("created_by")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  company Company          @relation(fields: [companyId], references: [id])
+  logs    MigrationLog[]
+
+  @@index([companyId])
+  @@map("migration_jobs")
+}
+
+// ─── Migration Log ───────────────────────────────────────
+
+model MigrationLog {
+  id          String             @id @default(uuid())
+  jobId       String             @map("job_id")
+  level       MigrationLogLevel  @default(INFO)
+  message     String
+  recordRef   String?            @map("record_ref")
+  detail      Json?
+  createdAt   DateTime           @default(now()) @map("created_at")
+
+  job MigrationJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@map("migration_logs")
+}
+
+// ================================================================
+// STEP 9-3C: M365 프로비저닝 + 채용단가 + 성별급여격차
+// ================================================================
+
+enum M365ActionType {
+  PROVISION
+  DISABLE
+  LICENSE_REVOKE
+  SHARED_MAILBOX_CONVERT
+  REACTIVATE
+}
+
+enum M365ActionStatus {
+  M365_PENDING
+  M365_SUCCESS
+  M365_FAILED
+
+  @@map("M365ActionStatus")
+}
+
+enum RecruitmentCostType {
+  AD_FEE
+  AGENCY_FEE
+  REFERRAL_BONUS
+  ASSESSMENT_TOOL
+  TRAVEL
+  RELOCATION
+  SIGNING_BONUS
+  OTHER
+}
+
+// ─── M365 Provisioning Log ──────────────────────────────
+
+model M365ProvisioningLog {
+  id             String           @id @default(uuid())
+  companyId      String           @map("company_id")
+  employeeId     String           @map("employee_id")
+  email          String
+  actionType     M365ActionType   @map("action_type")
+  status         M365ActionStatus @default(M365_PENDING)
+  licensesRevoked String[]        @default([]) @map("licenses_revoked")
+  convertToSharedMailbox Boolean  @default(false) @map("convert_to_shared_mailbox")
+  errorMessage   String?          @map("error_message")
+  executedBy     String           @map("executed_by")
+  executedAt     DateTime         @default(now()) @map("executed_at")
+  createdAt      DateTime         @default(now()) @map("created_at")
+
+  company  Company  @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
+  @@index([employeeId])
+  @@map("m365_provisioning_logs")
+}
+
+// ─── Recruitment Cost ────────────────────────────────────
+
+model RecruitmentCost {
+  id             String               @id @default(uuid())
+  companyId      String               @map("company_id")
+  postingId      String?              @map("posting_id")
+  applicantSource ApplicantSource     @map("applicant_source")
+  costType       RecruitmentCostType  @map("cost_type")
+  amount         Decimal              @map("amount") @db.Decimal(15, 2)
+  currency       String               @default("KRW")
+  description    String?
+  vendorName     String?              @map("vendor_name")
+  invoiceDate    DateTime?            @map("invoice_date")
+  createdBy      String               @map("created_by")
+  createdAt      DateTime             @default(now()) @map("created_at")
+  updatedAt      DateTime             @updatedAt @map("updated_at")
+
+  company  Company     @relation(fields: [companyId], references: [id])
+  posting  JobPosting? @relation(fields: [postingId], references: [id])
+
+  @@index([companyId])
+  @@index([postingId])
+  @@map("recruitment_costs")
 }
