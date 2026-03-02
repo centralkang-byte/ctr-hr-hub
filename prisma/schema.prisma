@@ -2162,6 +2162,7 @@ model PerformanceEvaluation {
   companyId String           @map("company_id")
 
   calibrationAdjustments CalibrationAdjustment[]
+  aiEvaluationDrafts     AiEvaluationDraft[]
 
   @@map("performance_evaluations")
 }
@@ -4635,10 +4636,15 @@ model AiEvaluationDraft {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  employee Employee @relation("AiDraftEmployee", fields: [employeeId], references: [id])
-  reviewer Employee @relation("AiDraftReviewer", fields: [reviewerId], references: [id])
-  company  Company  @relation(fields: [companyId], references: [id])
+  employee   Employee              @relation("AiDraftEmployee", fields: [employeeId], references: [id])
+  reviewer   Employee              @relation("AiDraftReviewer", fields: [reviewerId], references: [id])
+  company    Company               @relation(fields: [companyId], references: [id])
+  evaluation PerformanceEvaluation @relation(fields: [evaluationId], references: [id])
 
+  @@index([evaluationId])
+  @@index([employeeId])
+  @@index([reviewerId])
+  @@index([companyId])
   @@map("ai_evaluation_drafts")
 }
 
@@ -4657,5 +4663,7 @@ model BiasDetectionLog {
   reviewer Employee @relation("BiasLogReviewer", fields: [reviewerId], references: [id])
   company  Company  @relation(fields: [companyId], references: [id])
 
+  @@index([reviewerId])
+  @@index([companyId])
   @@map("bias_detection_logs")
 }
