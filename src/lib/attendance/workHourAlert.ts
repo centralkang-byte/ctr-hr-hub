@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
+import { sendNotification } from '@/lib/notifications'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -134,6 +135,29 @@ export async function checkWorkHourAlert(
         resolveNote: null,
       },
     })
+
+    // Fire-and-forget notifications for 48h warning and 52h block
+    if (alertLevel === 'warning') {
+      void sendNotification({
+        employeeId,
+        triggerType: 'overtime_warning_48h',
+        title: '주 48시간 초과 경고',
+        body: '이번 주 근무시간이 48시간을 초과했습니다. 추가 초과근무에 주의하세요.',
+        link: `/my/attendance`,
+        priority: 'high',
+        metadata: { weeklyHours },
+      })
+    } else if (alertLevel === 'blocked') {
+      void sendNotification({
+        employeeId,
+        triggerType: 'overtime_blocked_52h',
+        title: '주 52시간 한도 도달',
+        body: '법정 최대 근무시간(52시간)에 도달했습니다. 추가 근무가 제한됩니다.',
+        link: `/my/attendance`,
+        priority: 'urgent',
+        metadata: { weeklyHours },
+      })
+    }
   }
 
   return {

@@ -5,6 +5,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { subWeeks, subMonths, subYears, differenceInMonths } from 'date-fns'
+import { sendNotification } from '@/lib/notifications'
 
 // ─── 타입 정의 ─────────────────────────────────────────────
 
@@ -407,6 +408,19 @@ export async function calculateTurnoverRisk(
     .slice(0, 3)
     .filter((s) => s.score > 0)
     .map((s) => s.signal)
+
+  // Fire-and-forget notification when turnover risk reaches critical level
+  if (riskLevel === 'critical') {
+    void sendNotification({
+      employeeId,
+      triggerType: 'turnover_risk_critical',
+      title: '이탈 위험 경보',
+      body: '직원의 이탈 위험도가 위험 수준입니다.',
+      link: `/insights/retention`,
+      priority: 'high',
+      metadata: { riskScore: Math.round(overallScore), riskLevel },
+    })
+  }
 
   return { overallScore: Math.round(overallScore), riskLevel, signals, topFactors }
 }

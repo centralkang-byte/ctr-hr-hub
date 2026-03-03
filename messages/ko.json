@@ -2095,7 +2095,37 @@
     "emailNotification": "이메일 알림",
     "pushNotification": "푸시 알림",
     "inAppNotification": "인앱 알림",
-    "teamsNotification": "Teams 알림"
+    "teamsNotification": "Teams 알림",
+    "types": {
+      "leave_approved": "휴가 승인",
+      "leave_rejected": "휴가 반려",
+      "overtime_warning_48h": "초과근무 경고 (48h)",
+      "overtime_blocked_52h": "근무 제한 (52h)",
+      "payslip_issued": "급여 명세서 발급",
+      "turnover_risk_critical": "이탈 위험 경보",
+      "benefit_approved": "복리후생 승인",
+      "onboarding_task_overdue": "온보딩 과제 미완료",
+      "evaluation_deadline": "평가 마감 임박"
+    },
+    "priority": {
+      "low": "낮음",
+      "normal": "보통",
+      "high": "높음",
+      "urgent": "긴급"
+    },
+    "channels": {
+      "IN_APP": "인앱",
+      "EMAIL": "이메일",
+      "TEAMS": "Teams"
+    },
+    "preference": {
+      "title": "알림 설정",
+      "quietHours": "방해금지 시간",
+      "quietHoursStart": "시작",
+      "quietHoursEnd": "종료",
+      "save": "저장",
+      "saved": "저장됨"
+    }
   },
   "succession": {
     "title": "후계자 관리",

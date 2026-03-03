@@ -9,6 +9,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, notFound } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
+import { sendNotifications } from '@/lib/notifications'
 
 export const PUT = withPermission(
   async (req, context, user) => {
@@ -40,20 +41,17 @@ export const PUT = withPermission(
         },
       })
 
-      // 2. Payslip 생성 (직원별)
-      for (const item of run.payrollItems) {
-        await tx.payslip.upsert({
-          where: { payrollItemId: item.id },
-          create: {
-            payrollItemId: item.id,
-            employeeId: item.employeeId,
-            companyId: run.companyId,
-            year,
-            month,
-          },
-          update: {},
-        })
-      }
+      // 2. Payslip 생성 (직원별) — createMany로 N+1 제거
+      await tx.payslip.createMany({
+        data: run.payrollItems.map((item) => ({
+          payrollItemId: item.id,
+          employeeId: item.employeeId,
+          companyId: run.companyId,
+          year,
+          month,
+        })),
+        skipDuplicates: true,
+      })
     })
 
     const updated = await prisma.payrollRun.findUniqueOrThrow({ where: { id } })
@@ -69,6 +67,19 @@ export const PUT = withPermission(
       ip,
       userAgent,
     })
+
+    // Fire-and-forget batch notifications to all employees with payslips
+    void sendNotifications(
+      run.payrollItems.map((item) => ({
+        employeeId: item.employeeId,
+        triggerType: 'payslip_issued',
+        title: '급여 명세서가 발급되었습니다',
+        body: `${year}년 ${month}월 급여 명세서를 확인하세요.`,
+        link: `/my/payroll/payslips`,
+        priority: 'normal' as const,
+        metadata: { year, month },
+      }))
+    )
 
     return apiSuccess({ ...updated, payslipsCreated: run.payrollItems.length })
   },

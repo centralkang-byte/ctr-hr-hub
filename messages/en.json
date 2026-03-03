@@ -2095,7 +2095,37 @@
     "emailNotification": "Email Notification",
     "pushNotification": "Push Notification",
     "inAppNotification": "In-App Notification",
-    "teamsNotification": "Teams Notification"
+    "teamsNotification": "Teams Notification",
+    "types": {
+      "leave_approved": "Leave Approved",
+      "leave_rejected": "Leave Rejected",
+      "overtime_warning_48h": "Overtime Warning (48h)",
+      "overtime_blocked_52h": "Work Hours Blocked (52h)",
+      "payslip_issued": "Payslip Issued",
+      "turnover_risk_critical": "Critical Turnover Risk",
+      "benefit_approved": "Benefit Approved",
+      "onboarding_task_overdue": "Onboarding Task Overdue",
+      "evaluation_deadline": "Evaluation Deadline"
+    },
+    "priority": {
+      "low": "Low",
+      "normal": "Normal",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "channels": {
+      "IN_APP": "In-App",
+      "EMAIL": "Email",
+      "TEAMS": "Teams"
+    },
+    "preference": {
+      "title": "Notification Settings",
+      "quietHours": "Quiet Hours",
+      "quietHoursStart": "Start",
+      "quietHoursEnd": "End",
+      "save": "Save",
+      "saved": "Saved"
+    }
   },
   "succession": {
     "title": "Succession Planning",

@@ -5,6 +5,7 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest, notFound, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { sendNotification } from '@/lib/notifications'
 import { z } from 'zod'
 import type { SessionUser } from '@/types'
 
@@ -92,6 +93,18 @@ export const PATCH = withPermission(
 
       return result
     })
+
+    // Fire-and-forget notification when benefit claim is approved
+    if (action === 'approve') {
+      void sendNotification({
+        employeeId: claim.employeeId,
+        triggerType: 'benefit_approved',
+        title: '복리후생 신청이 승인되었습니다',
+        body: `${claim.benefitPlan.name} 신청이 승인되었습니다.`,
+        link: `/my/benefits`,
+        priority: 'normal',
+      })
+    }
 
     return apiSuccess(updated)
   },

@@ -11,6 +11,7 @@ import { badRequest, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
+import { sendNotification } from '@/lib/notifications'
 import type { SessionUser } from '@/types'
 
 const rejectionSchema = z.object({
@@ -89,6 +90,16 @@ export const PUT = withPermission(
         approvedBy: user.employeeId,
       },
       ...meta,
+    })
+
+    // 6. Fire-and-forget notification to employee
+    void sendNotification({
+      employeeId: request.employeeId,
+      triggerType: 'leave_rejected',
+      title: '휴가 신청이 반려되었습니다',
+      body: `${request.startDate} ~ ${request.endDate} 휴가 신청이 반려되었습니다.`,
+      link: `/my/leave`,
+      priority: 'normal',
     })
 
     return apiSuccess(updated)
