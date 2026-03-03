@@ -57,6 +57,10 @@ import {
   ListChecks,
   Smile,
   Lock,
+  Layers,
+  Globe,
+  Calculator,
+  Upload,
   type LucideIcon,
 } from 'lucide-react'
 import { MODULE, ROLE } from '@/lib/constants'
@@ -194,7 +198,7 @@ export const NAVIGATION: NavSection[] = [
         key: 'my-benefits',
         labelKey: 'nav.mySpace.benefits',
         label: '복리후생',
-        href: '/benefits',
+        href: '/my/benefits',
         icon: Gift,
         module: MODULE.BENEFITS,
       },
@@ -229,6 +233,15 @@ export const NAVIGATION: NavSection[] = [
         href: '/performance/recognition',
         icon: Heart,
         module: MODULE.PERFORMANCE,
+      },
+      {
+        key: 'my-skills',
+        labelKey: 'nav.mySpace.skills',
+        label: '역량 자기평가',
+        href: '/my/skills',
+        icon: Layers,
+        module: MODULE.TRAINING,
+        badge: 'new' as const,
       },
       {
         key: 'my-training',
@@ -315,6 +328,15 @@ export const NAVIGATION: NavSection[] = [
         icon: MessageSquare,
         module: MODULE.PERFORMANCE,
       },
+      {
+        key: 'team-skills',
+        labelKey: 'nav.team.skills',
+        label: '팀원 역량 평가',
+        href: '/team/skills',
+        icon: Layers,
+        module: MODULE.TRAINING,
+        badge: 'new' as const,
+      },
     ],
   },
 
@@ -396,6 +418,38 @@ export const NAVIGATION: NavSection[] = [
         label: '급여 관리',
         href: '/payroll',
         icon: Wallet,
+        module: MODULE.PAYROLL,
+      },
+      {
+        key: 'payroll-global',
+        labelKey: 'nav.hrOps.payrollGlobal',
+        label: '글로벌 급여 현황',
+        href: '/payroll/global',
+        icon: Globe,
+        module: MODULE.PAYROLL,
+      },
+      {
+        key: 'payroll-import',
+        labelKey: 'nav.hrOps.payrollImport',
+        label: '해외 급여 업로드',
+        href: '/payroll/import',
+        icon: Upload,
+        module: MODULE.PAYROLL,
+      },
+      {
+        key: 'payroll-simulation',
+        labelKey: 'nav.hrOps.payrollSimulation',
+        label: '급여 시뮬레이션',
+        href: '/payroll/simulation',
+        icon: Calculator,
+        module: MODULE.PAYROLL,
+      },
+      {
+        key: 'payroll-anomalies',
+        labelKey: 'nav.hrOps.payrollAnomalies',
+        label: '급여 이상 탐지',
+        href: '/payroll/anomalies',
+        icon: AlertTriangle,
         module: MODULE.PAYROLL,
       },
       {
@@ -531,6 +585,15 @@ export const NAVIGATION: NavSection[] = [
         icon: Crown,
         module: MODULE.SUCCESSION,
       },
+      {
+        key: 'skill-matrix',
+        labelKey: 'nav.talent.skillMatrix',
+        label: '스킬 매트릭스',
+        href: '/organization/skill-matrix',
+        icon: Layers,
+        module: MODULE.TRAINING,
+        badge: 'new' as const,
+      },
     ],
   },
 
@@ -542,6 +605,14 @@ export const NAVIGATION: NavSection[] = [
     icon: BarChart3,
     visibleTo: MANAGER_UP, // MANAGER/EXECUTIVE see partial, HR_ADMIN/SUPER_ADMIN see all
     items: [
+      {
+        key: 'kpi-dashboard',
+        labelKey: 'nav.insights.kpiDashboard',
+        label: 'HR KPI 대시보드',
+        href: '/dashboard',
+        icon: LayoutDashboard,
+        module: 'analytics',
+      },
       {
         key: 'analytics-overview',
         labelKey: 'nav.insights.overview',
