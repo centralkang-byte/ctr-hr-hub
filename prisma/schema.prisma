@@ -775,8 +775,9 @@ model Company {
   orgSnapshots      OrgSnapshot[]
 
   // STEP 8-3: Teams 연동
-  teamsIntegration TeamsIntegration?
-  teamsCardActions TeamsCardAction[]
+  teamsIntegration    TeamsIntegration?
+  teamsCardActions    TeamsCardAction[]
+  teamsWebhookConfigs TeamsWebhookConfig[]
 
   // STEP 9-3: 기술부채
   shiftPatterns        ShiftPattern[]
@@ -1211,7 +1212,8 @@ model Employee {
   payrollSimulations  PayrollSimulation[]
 
   // Notifications
-  notifications Notification[]
+  notifications           Notification[]
+  notificationPreference  NotificationPreference?
 
   // AI
   aiLogs AiLog[]
@@ -1334,6 +1336,8 @@ model Employee {
   yearEndSettlements  YearEndSettlement[]  @relation("EmployeeYearEndSettlements")
   withholdingReceipts WithholdingReceipt[] @relation("EmployeeWithholdingReceipts")
 
+  @@index([deletedAt])
+  @@index([hireDate])
   @@map("employees")
 }
 
@@ -1616,6 +1620,8 @@ model DisciplinaryAction {
   issuer        Employee  @relation("DisciplinaryIssuer", fields: [issuedBy], references: [id])
   demotionGrade JobGrade? @relation("DisciplinaryDemotionGrade", fields: [demotionGradeId], references: [id])
 
+  @@index([companyId, employeeId])
+  @@index([companyId, status])
   @@map("disciplinary_actions")
 }
 
@@ -1952,6 +1958,8 @@ model JobPosting {
   recruitmentCosts  RecruitmentCost[]
   talentPoolEntries TalentPoolEntry[]
 
+  @@index([companyId, status])
+  @@index([companyId, deadlineDate])
   @@map("job_postings")
 }
 
@@ -2240,6 +2248,8 @@ model PerformanceEvaluation {
   calibrationAdjustments CalibrationAdjustment[]
   aiEvaluationDrafts     AiEvaluationDraft[]
 
+  @@index([employeeId, cycleId])
+  @@index([companyId, cycleId])
   @@map("performance_evaluations")
 }
 
@@ -2284,6 +2294,8 @@ model OneOnOne {
   company   Company  @relation(fields: [companyId], references: [id])
   companyId String   @map("company_id")
 
+  @@index([companyId, employeeId])
+  @@index([companyId, scheduledAt])
   @@map("one_on_ones")
 }
 
@@ -2619,6 +2631,8 @@ model PayrollRun {
   approver     Employee?     @relation("PayrollApprover", fields: [approvedBy], references: [id])
   payrollItems PayrollItem[]
 
+  @@index([companyId, yearMonth])
+  @@index([companyId, status])
   @@map("payroll_runs")
 }
 
@@ -2678,6 +2692,11 @@ model Notification {
   link        String?
   createdAt   DateTime            @default(now()) @map("created_at")
 
+  // B11 추가
+  priority  String   @default("normal") @db.VarChar(10)
+  metadata  Json?
+  channels  String[] @default([])
+
   employee  Employee             @relation(fields: [employeeId], references: [id])
   trigger   NotificationTrigger? @relation(fields: [triggerId], references: [id])
   triggerId String?              @map("trigger_id")
@@ -2686,6 +2705,36 @@ model Notification {
 
   @@index([employeeId, isRead])
   @@map("notifications")
+}
+
+model NotificationPreference {
+  id              String   @id @default(uuid())
+  employeeId      String   @unique @map("employee_id")
+  preferences     Json     @default("{}")
+  quietHoursStart String?  @map("quiet_hours_start") @db.VarChar(5)
+  quietHoursEnd   String?  @map("quiet_hours_end") @db.VarChar(5)
+  timezone        String   @default("Asia/Seoul") @db.VarChar(50)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id])
+
+  @@map("notification_preferences")
+}
+
+model TeamsWebhookConfig {
+  id          String   @id @default(uuid())
+  companyId   String   @map("company_id")
+  channelName String   @map("channel_name") @db.VarChar(100)
+  webhookUrl  String   @map("webhook_url") @db.VarChar(500)
+  eventTypes  String[] @default([]) @map("event_types")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  company Company @relation(fields: [companyId], references: [id])
+
+  @@map("teams_webhook_configs")
 }
 
 // ================================================================
