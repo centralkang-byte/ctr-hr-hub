@@ -819,6 +819,8 @@ model Company {
   onboardingSettings   OnboardingSetting[]
   approvalFlows        ApprovalFlow[]
   requisitions         Requisition[]
+  payrollImportMappings PayrollImportMapping[]
+  payrollImportLogs     PayrollImportLog[]
 
   // B5: 온보딩 플랜 법인 연결
   employeeOnboardingPlans EmployeeOnboarding[] @relation("EmployeeOnboardingCompany")
@@ -837,8 +839,20 @@ model Company {
   // B8-1: 조직 개편 플랜
   orgRestructurePlans OrgRestructurePlan[]
 
+  // B8-3: 스킬 갭 리포트
+  skillGapReports SkillGapReport[] @relation("CompanySkillGapReports")
+
   // B7-1a: 한국 급여 계산 엔진
   payslips Payslip[] @relation("CompanyPayslips")
+
+  // B9-2: Benefit Plans / Budgets
+  benefitPlans    BenefitPlan[]
+  benefitBudgets  BenefitBudget[]
+
+  // B10-1: 예측 애널리틱스
+  teamHealthScores   TeamHealthScore[]   @relation("CompanyTeamHealthScores")
+  analyticsSnapshots AnalyticsSnapshot[] @relation("CompanyAnalyticsSnapshots")
+  analyticsConfigs   AnalyticsConfig[]   @relation("CompanyAnalyticsConfigs")
 
   @@map("companies")
 }
@@ -868,6 +882,7 @@ model Department {
   entityTransfers     EntityTransfer[]
   positions           Position[]
   requisitions        Requisition[]
+  teamHealthScores    TeamHealthScore[] @relation("DepartmentTeamHealthScores")
 
   @@unique([companyId, code])
   @@map("departments")
@@ -1186,11 +1201,14 @@ model Employee {
   allowanceApprovals    AllowanceRecord[]     @relation("AllowanceApprover")
 
   // Benefits
-  employeeBenefits EmployeeBenefit[]
+  employeeBenefits      EmployeeBenefit[]
+  benefitClaims         BenefitClaim[] @relation("EmployeeBenefitClaims")
+  approvedBenefitClaims BenefitClaim[] @relation("BenefitClaimApprover")
 
   // Payroll
   payrollItems        PayrollItem[]
   payrollRunApprovals PayrollRun[]  @relation("PayrollApprover")
+  payrollSimulations  PayrollSimulation[]
 
   // Notifications
   notifications Notification[]
@@ -1227,6 +1245,10 @@ model Employee {
 
   // Audit
   auditLogs AuditLog[]
+
+  // B10-1: 예측 애널리틱스
+  turnoverRiskScores TurnoverRiskScore[] @relation("EmployeeTurnoverRiskScores")
+  burnoutScores      BurnoutScore[]      @relation("EmployeeBurnoutScores")
 
   // v3.2 Chatbot
   hrChatSessions      HrChatSession[]
@@ -2472,6 +2494,79 @@ model EmployeeBenefit {
   policy   BenefitPolicy @relation(fields: [policyId], references: [id])
 
   @@map("employee_benefits")
+}
+
+// ================================================================
+// 13-B. Benefit Plans / Claims / Budgets (B9-2)
+// ================================================================
+
+model BenefitPlan {
+  id              String   @id @default(uuid())
+  companyId       String?  @map("company_id")
+  company         Company? @relation(fields: [companyId], references: [id])
+  code            String   @db.VarChar(30)
+  name            String   @db.VarChar(100)
+  nameEn          String?  @db.VarChar(100) @map("name_en")
+  category        String   @db.VarChar(30)
+  description     String?  @db.Text
+  benefitType     String   @db.VarChar(20) @map("benefit_type")
+  amount          Int?
+  maxAmount       Int?     @map("max_amount")
+  currency        String   @default("KRW") @db.VarChar(3)
+  frequency       String   @default("once") @db.VarChar(20)
+  eligibility     Json?
+  requiresApproval Boolean @default(true) @map("requires_approval")
+  requiresProof   Boolean  @default(false) @map("requires_proof")
+  isActive        Boolean  @default(true) @map("is_active")
+  displayOrder    Int      @default(0) @map("display_order")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  claims          BenefitClaim[]
+
+  @@unique([companyId, code])
+  @@map("benefit_plans")
+}
+
+model BenefitClaim {
+  id             String      @id @default(uuid())
+  benefitPlanId  String      @map("benefit_plan_id")
+  benefitPlan    BenefitPlan @relation(fields: [benefitPlanId], references: [id])
+  employeeId     String      @map("employee_id")
+  claimAmount    Int         @map("claim_amount")
+  approvedAmount Int?        @map("approved_amount")
+  eventDate      DateTime?   @db.Date @map("event_date")
+  eventDetail    String?     @db.Text @map("event_detail")
+  proofPaths     String[]    @default([]) @map("proof_paths")
+  status         String      @default("pending") @db.VarChar(20)
+  approvedBy     String?     @map("approved_by")
+  approvedAt     DateTime?   @map("approved_at")
+  rejectedReason String?     @db.Text @map("rejected_reason")
+  paidAt         DateTime?   @map("paid_at")
+  notes          String?     @db.Text
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  employee       Employee    @relation("EmployeeBenefitClaims", fields: [employeeId], references: [id])
+  approver       Employee?   @relation("BenefitClaimApprover", fields: [approvedBy], references: [id])
+
+  @@index([employeeId, status])
+  @@map("benefit_claims")
+}
+
+model BenefitBudget {
+  id          String   @id @default(uuid())
+  companyId   String   @map("company_id")
+  company     Company  @relation(fields: [companyId], references: [id])
+  year        Int
+  category    String   @db.VarChar(30)
+  totalBudget Int      @map("total_budget")
+  usedAmount  Int      @default(0) @map("used_amount")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@unique([companyId, year, category])
+  @@map("benefit_budgets")
 }
 
 model AllowanceRecord {
@@ -4587,17 +4682,82 @@ model OnboardingSetting {
 // ─── 7. 환율 ──────────────────────────────────────────────────
 model ExchangeRate {
   id            String   @id @default(uuid())
+  year          Int      @map("year")
+  month         Int      @map("month")
   fromCurrency  String   @map("from_currency")
-  toCurrency    String   @map("to_currency")
+  toCurrency    String   @default("KRW") @map("to_currency")
   rate          Decimal  @map("rate") @db.Decimal(18, 6)
-  effectiveDate DateTime @map("effective_date") @db.Date
-  source        String?  @map("source")
+  source        String   @default("manual") @map("source")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@unique([year, month, fromCurrency, toCurrency])
+  @@index([fromCurrency, toCurrency])
+  @@index([year, month])
+  @@map("exchange_rates")
+}
+
+// ─── 7-B. 해외 급여 업로드 매핑 ───────────────────────────────
+model PayrollImportMapping {
+  id          String   @id @default(uuid())
+  companyId   String   @map("company_id")
+  name        String   @map("name")
+  fileType    String   @default("xlsx") @map("file_type")
+  headerRow   Int      @default(1) @map("header_row")
+  mappings    Json     @map("mappings")
+  currency    String   @map("currency")
+  isDefault   Boolean  @default(false) @map("is_default")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  company     Company  @relation(fields: [companyId], references: [id])
+  importLogs  PayrollImportLog[]
+
+  @@map("payroll_import_mappings")
+}
+
+// ─── 7-C. 업로드 이력 ─────────────────────────────────────────
+model PayrollImportLog {
+  id            String   @id @default(uuid())
+  companyId     String   @map("company_id")
+  mappingId     String   @map("mapping_id")
+  runId         String?  @map("run_id")
+  year          Int      @map("year")
+  month         Int      @map("month")
+  fileName      String   @map("file_name")
+  filePath      String?  @map("file_path")
+  employeeCount Int      @default(0) @map("employee_count")
+  totalGross    Decimal  @default(0) @map("total_gross") @db.Decimal(18, 2)
+  totalNet      Decimal  @default(0) @map("total_net") @db.Decimal(18, 2)
+  currency      String   @map("currency")
+  status        String   @default("uploaded") @map("status")
+  errorDetails  Json?    @map("error_details")
+  uploadedBy    String   @map("uploaded_by")
+  confirmedAt   DateTime? @map("confirmed_at")
   createdAt     DateTime @default(now()) @map("created_at")
 
-  @@unique([fromCurrency, toCurrency, effectiveDate])
-  @@index([fromCurrency, toCurrency])
-  @@index([effectiveDate])
-  @@map("exchange_rates")
+  company   Company              @relation(fields: [companyId], references: [id])
+  mapping   PayrollImportMapping @relation(fields: [mappingId], references: [id])
+
+  @@index([companyId, year, month])
+  @@map("payroll_import_logs")
+}
+
+// ─── 7-D. 급여 시뮬레이션 ─────────────────────────────────────
+model PayrollSimulation {
+  id         String   @id @default(uuid())
+  createdBy  String   @map("created_by")
+  type       String   @map("type")
+  title      String   @map("title")
+  employeeId String   @map("employee_id")
+  parameters Json     @map("parameters")
+  results    Json     @map("results")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id])
+
+  @@index([employeeId])
+  @@map("payroll_simulations")
 }
 
 // ─── 8. 승인 플로우 ───────────────────────────────────────────
@@ -4819,23 +4979,47 @@ model MandatoryTrainingConfig {
 
 // 직원 역량 평가 (B8-3 placeholder — 스킬 갭 추천용)
 model EmployeeSkillAssessment {
-  id           String     @id @default(uuid())
-  employeeId   String     @map("employee_id")
-  competencyId String     @map("competency_id")
-  currentLevel Int        @map("current_level")   // 1~5
-  assessedAt   DateTime   @default(now()) @map("assessed_at")
-  assessedById String?    @map("assessed_by_id")  // 평가자 (매니저)
-  notes        String?    @db.Text
-  createdAt    DateTime   @default(now()) @map("created_at")
-  updatedAt    DateTime   @updatedAt @map("updated_at")
+  id               String    @id @default(uuid())
+  employeeId       String    @map("employee_id")
+  competencyId     String    @map("competency_id")
+  assessmentPeriod String    @default("latest") @db.VarChar(20) @map("assessment_period") // '2025-H1', '2025-Q1', 'latest'
+  // B9-1 LMS 호환 — 단순 현재 레벨
+  currentLevel     Int?      @map("current_level")
+  // B8-3 스킬 매트릭스 — 자기평가 + 매니저 평가
+  selfLevel        Int?      @map("self_level")         // 자기평가 (1~5)
+  managerLevel     Int?      @map("manager_level")      // 매니저 평가 (1~5)
+  finalLevel       Int?      @map("final_level")        // 최종 (매니저 우선)
+  selfComment      String?   @db.Text @map("self_comment")
+  managerComment   String?   @db.Text @map("manager_comment")
+  assessedAt       DateTime  @default(now()) @map("assessed_at")
+  assessedById     String?   @map("assessed_by_id")
+  notes            String?   @db.Text
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
 
   employee   Employee   @relation("EmployeeSkillAssessments", fields: [employeeId], references: [id])
   competency Competency @relation("CompetencySkillAssessments", fields: [competencyId], references: [id])
   assessedBy Employee?  @relation("SkillAssessmentAssessor", fields: [assessedById], references: [id])
 
-  @@unique([employeeId, competencyId])
+  @@unique([employeeId, competencyId, assessmentPeriod])
   @@index([employeeId])
+  @@index([assessmentPeriod])
   @@map("employee_skill_assessments")
+}
+
+// === TRACK B: B8-3 스킬 매트릭스 + 갭 분석 ===
+model SkillGapReport {
+  id               String   @id @default(uuid())
+  companyId        String   @map("company_id")
+  departmentId     String?  @map("department_id")
+  assessmentPeriod String   @db.VarChar(20) @map("assessment_period")
+  reportData       Json     @map("report_data")
+  generatedAt      DateTime @default(now()) @map("generated_at")
+  generatedBy      String   @map("generated_by")
+
+  company    Company     @relation("CompanySkillGapReports", fields: [companyId], references: [id])
+
+  @@map("skill_gap_reports")
 }
 
 // ================================================================
@@ -5162,4 +5346,107 @@ model WithholdingReceipt {
 
   @@unique([settlementId])
   @@map("withholding_receipts")
+}
+
+// ================================================================
+// B10-1: HR 예측 애널리틱스 (이직위험 + 번아웃 + 팀 건강도)
+// ================================================================
+
+// 이직 위험 점수
+model TurnoverRiskScore {
+  id           String   @id @default(uuid())
+  employeeId   String   @map("employee_id")
+  calculatedAt DateTime @default(now()) @map("calculated_at")
+  overallScore Float    @map("overall_score") // 0~100 (높을수록 위험)
+  riskLevel    String   @db.VarChar(20) @map("risk_level") // 'low' | 'medium' | 'high' | 'critical' | 'insufficient_data'
+  signals      Json // [{ signal, weight, score, rawData, available }]
+  topFactors   String[] @default([]) @map("top_factors")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  employee Employee @relation("EmployeeTurnoverRiskScores", fields: [employeeId], references: [id])
+
+  @@index([employeeId, calculatedAt])
+  @@map("turnover_risk_scores")
+}
+
+// 번아웃 점수
+model BurnoutScore {
+  id           String   @id @default(uuid())
+  employeeId   String   @map("employee_id")
+  calculatedAt DateTime @default(now()) @map("calculated_at")
+  overallScore Float    @map("overall_score") // 0~100
+  riskLevel    String   @db.VarChar(20) @map("risk_level") // 'low' | 'medium' | 'high' | 'critical'
+  indicators   Json // [{ indicator, weight, score, available }]
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  employee Employee @relation("EmployeeBurnoutScores", fields: [employeeId], references: [id])
+
+  @@index([employeeId, calculatedAt])
+  @@map("burnout_scores")
+}
+
+// 팀 건강도 점수
+model TeamHealthScore {
+  id           String   @id @default(uuid())
+  departmentId String   @map("department_id")
+  companyId    String   @map("company_id")
+  calculatedAt DateTime @default(now()) @map("calculated_at")
+  overallScore Float    @map("overall_score") // 0~100 (높을수록 건강)
+  metrics      Json // { avgSentiment, turnoverRate, leaveUsageRate, overtimeVariance, exitSatisfaction }
+  riskLevel    String   @db.VarChar(20) @map("risk_level") // 'healthy' | 'caution' | 'at_risk'
+  memberCount  Int      @map("member_count")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  department Department @relation("DepartmentTeamHealthScores", fields: [departmentId], references: [id])
+  company    Company    @relation("CompanyTeamHealthScores", fields: [companyId], references: [id])
+
+  @@index([departmentId, calculatedAt])
+  @@map("team_health_scores")
+}
+
+// 분석 스냅샷 (추이 분석용)
+model AnalyticsSnapshot {
+  id           String   @id @default(uuid())
+  companyId    String   @map("company_id")
+  snapshotDate DateTime @db.Date @map("snapshot_date")
+  type         String   @db.VarChar(30) // 'turnover_risk' | 'burnout' | 'team_health'
+  data         Json // 스냅샷 데이터 (분포 집계 등)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  company Company @relation("CompanyAnalyticsSnapshots", fields: [companyId], references: [id])
+
+  @@unique([companyId, snapshotDate, type])
+  @@map("analytics_snapshots")
+}
+
+// 분석 가중치 설정 (법인별 조정 가능)
+model AnalyticsConfig {
+  id         String   @id @default(uuid())
+  companyId  String   @map("company_id")
+  configType String   @db.VarChar(30) @map("config_type") // 'turnover_weights' | 'burnout_weights' | 'team_health_weights'
+  config     Json // { signals: [{ key, weight, threshold }] }
+  isActive   Boolean  @default(true) @map("is_active")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  company Company @relation("CompanyAnalyticsConfigs", fields: [companyId], references: [id])
+
+  @@unique([companyId, configType])
+  @@map("analytics_configs")
+}
+
+// ═══════════════════════════════════════════════════════════
+// === TRACK A: B10-2 KPI Dashboard ===
+// ═══════════════════════════════════════════════════════════
+
+model KpiDashboardConfig {
+  id        String   @id @default(uuid())
+  userId    String
+  layout    Json
+  filters   Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId])
+  @@map("kpi_dashboard_configs")
 }
