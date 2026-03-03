@@ -1,25 +1,33 @@
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — Notification Helpers (multi-channel dispatcher)
-// IN_APP / EMAIL / TEAMS 3채널 fire-and-forget 발송
+// CTR HR Hub — Notification Dispatcher (B11 강화)
+// debounce(5분) + quiet hours + per-user prefs + 3채널
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
+import type { Prisma } from '@/generated/prisma/client'
 import { sendTeamsMessage } from '@/lib/microsoft-graph'
 import { sendEmail } from '@/lib/email'
+import { subMinutes } from 'date-fns'
 
-interface SendNotificationInput {
+export type NotificationPriority = 'low' | 'normal' | 'high' | 'urgent'
+
+export interface SendNotificationInput {
   employeeId: string
   triggerType: string
   title: string
   body: string
   link?: string
+  priority?: NotificationPriority
+  metadata?: Record<string, unknown>
   adaptiveCard?: Record<string, unknown>
+  companyId?: string
 }
+
+// ─── Public API ───────────────────────────────────────────
 
 /**
  * 알림을 fire-and-forget으로 발송합니다.
- * triggerType에 매핑된 NotificationTrigger의 channels를 조회하여
- * IN_APP / EMAIL / TEAMS 채널별로 분기 발송합니다.
+ * debounce(5분) + quiet hours + per-user prefs 지원
  */
 export function sendNotification(input: SendNotificationInput): void {
   dispatchNotification(input).catch(() => {
@@ -27,39 +35,120 @@ export function sendNotification(input: SendNotificationInput): void {
   })
 }
 
+/**
+ * 여러 직원에게 동시에 알림 발송
+ */
+export function sendNotifications(inputs: SendNotificationInput[]): void {
+  for (const input of inputs) {
+    sendNotification(input)
+  }
+}
+
+// ─── Core Dispatcher ─────────────────────────────────────
+
 async function dispatchNotification(input: SendNotificationInput): Promise<void> {
-  // 1. trigger channels 조회
-  const trigger = await prisma.notificationTrigger.findFirst({
+  const priority = input.priority ?? 'normal'
+
+  // 1. 5분 debounce: 동일 type + employee, 5분 이내 중복 방지
+  const recent = await prisma.notification.findFirst({
     where: {
-      eventType: input.triggerType,
-      isActive: true,
+      employeeId: input.employeeId,
+      triggerType: input.triggerType,
+      createdAt: { gte: subMinutes(new Date(), 5) },
     },
-    select: { channels: true },
+    select: { id: true },
+  })
+  if (recent) return
+
+  // 2. 사용자 알림 설정 조회
+  const prefs = await prisma.notificationPreference.findUnique({
+    where: { employeeId: input.employeeId },
   })
 
-  const channels: string[] = (trigger?.channels as string[]) ?? ['IN_APP']
-
-  // 2. 채널별 발송
-  const promises: Promise<void>[] = []
-
-  if (channels.includes('IN_APP')) {
-    promises.push(sendInAppNotification(input))
+  // 3. quiet hours 체크 (urgent는 예외)
+  if (priority !== 'urgent' && prefs && isQuietHours(prefs)) {
+    // Quiet hours 중이면 인앱만 (조용히 기록)
+    await createInAppRecord(input, priority)
+    return
   }
 
-  if (channels.includes('EMAIL')) {
+  // 4. 이벤트별 사용자 채널 설정 조회
+  const eventPrefs = prefs
+    ? ((prefs.preferences as Record<string, Record<string, boolean>>)[input.triggerType] ?? null)
+    : null
+
+  const inAppEnabled = eventPrefs?.in_app !== false   // default: true
+  const emailEnabled = eventPrefs?.email === true     // default: false
+  const teamsEnabled = eventPrefs?.teams === true     // default: false
+
+  // 5. Trigger 설정 조회 (전역 채널 설정)
+  const trigger = await prisma.notificationTrigger.findFirst({
+    where: { eventType: input.triggerType, isActive: true },
+    select: { channels: true },
+  })
+  const globalChannels: string[] = (trigger?.channels as string[]) ?? ['IN_APP']
+
+  const promises: Promise<void>[] = []
+
+  // 6. IN_APP
+  if (inAppEnabled || globalChannels.includes('IN_APP')) {
+    promises.push(createInAppRecord(input, priority))
+  }
+
+  // 7. EMAIL
+  if (emailEnabled || globalChannels.includes('EMAIL')) {
     promises.push(sendEmailNotification(input))
   }
 
-  if (channels.includes('TEAMS')) {
-    promises.push(sendTeamsNotification(input))
+  // 8. TEAMS (per-user 설정 또는 TeamsWebhookConfig)
+  if (teamsEnabled || globalChannels.includes('TEAMS')) {
+    promises.push(sendTeamsNotification(input, priority))
   }
 
   await Promise.allSettled(promises)
 }
 
-// ─── IN_APP ─────────────────────────────────────────────────
+// ─── Quiet Hours ──────────────────────────────────────────
 
-async function sendInAppNotification(input: SendNotificationInput): Promise<void> {
+function isQuietHours(prefs: {
+  quietHoursStart?: string | null
+  quietHoursEnd?: string | null
+  timezone?: string
+}): boolean {
+  if (!prefs.quietHoursStart || !prefs.quietHoursEnd) return false
+
+  const now = new Date()
+  const tz = prefs.timezone ?? 'Asia/Seoul'
+
+  const timeStr = now.toLocaleTimeString('en-GB', {
+    timeZone: tz,
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  })
+
+  const [nowH, nowM] = timeStr.split(':').map(Number)
+  const [startH, startM] = prefs.quietHoursStart.split(':').map(Number)
+  const [endH, endM] = prefs.quietHoursEnd.split(':').map(Number)
+
+  const nowTotal = nowH * 60 + nowM
+  const startTotal = startH * 60 + startM
+  const endTotal = endH * 60 + endM
+
+  if (startTotal <= endTotal) {
+    return nowTotal >= startTotal && nowTotal < endTotal
+  } else {
+    // 자정 걸침 (예: 22:00 ~ 08:00)
+    return nowTotal >= startTotal || nowTotal < endTotal
+  }
+}
+
+// ─── IN_APP ───────────────────────────────────────────────
+
+async function createInAppRecord(
+  input: SendNotificationInput,
+  priority: NotificationPriority,
+): Promise<void> {
   await prisma.notification.create({
     data: {
       employeeId: input.employeeId,
@@ -68,11 +157,14 @@ async function sendInAppNotification(input: SendNotificationInput): Promise<void
       body: input.body,
       channel: 'IN_APP',
       link: input.link ?? null,
+      priority,
+      metadata: input.metadata != null ? (input.metadata as unknown as Prisma.InputJsonValue) : undefined,
+      channels: ['IN_APP'],
     },
   })
 }
 
-// ─── EMAIL ──────────────────────────────────────────────────
+// ─── EMAIL ────────────────────────────────────────────────
 
 async function sendEmailNotification(input: SendNotificationInput): Promise<void> {
   const employee = await prisma.employee.findUnique({
@@ -87,58 +179,112 @@ async function sendEmailNotification(input: SendNotificationInput): Promise<void
     subject: input.title,
     htmlBody: `<p>${input.body}</p>${input.link ? `<p><a href="${input.link}">자세히 보기</a></p>` : ''}`,
   })
-
-  await prisma.notification.create({
-    data: {
-      employeeId: input.employeeId,
-      triggerType: input.triggerType,
-      title: input.title,
-      body: input.body,
-      channel: 'EMAIL',
-      link: input.link ?? null,
-    },
-  })
 }
 
-// ─── TEAMS ──────────────────────────────────────────────────
+// ─── TEAMS ────────────────────────────────────────────────
 
-async function sendTeamsNotification(input: SendNotificationInput): Promise<void> {
-  // SsoIdentity로 AAD ID 조회
+async function sendTeamsNotification(
+  input: SendNotificationInput,
+  priority: NotificationPriority,
+): Promise<void> {
+  const promises: Promise<void>[] = []
+
+  // 방법 1: 직접 DM (기존 SsoIdentity 기반)
   const ssoIdentity = await prisma.ssoIdentity.findFirst({
-    where: {
-      employeeId: input.employeeId,
-      provider: 'azure-ad',
-    },
+    where: { employeeId: input.employeeId, provider: 'azure-ad' },
     select: { providerAccountId: true },
   })
 
-  if (!ssoIdentity) return
+  if (ssoIdentity) {
+    const card = buildSimpleAdaptiveCard(input, priority)
+    promises.push(
+      sendTeamsMessage(
+        ssoIdentity.providerAccountId,
+        `**${input.title}**\n\n${input.body}`,
+        card,
+      ).then(() => undefined),
+    )
+  }
 
-  const result = await sendTeamsMessage(
-    ssoIdentity.providerAccountId,
-    `**${input.title}**\n\n${input.body}`,
-    input.adaptiveCard,
-  )
-
-  if (result.success) {
-    await prisma.notification.create({
-      data: {
-        employeeId: input.employeeId,
-        triggerType: input.triggerType,
-        title: input.title,
-        body: input.body,
-        channel: 'TEAMS',
-        link: input.link ?? null,
+  // 방법 2: Webhook 채널 (TeamsWebhookConfig 기반)
+  if (input.companyId) {
+    const webhooks = await prisma.teamsWebhookConfig.findMany({
+      where: {
+        companyId: input.companyId,
+        isActive: true,
+        eventTypes: { has: input.triggerType },
       },
     })
+
+    for (const webhook of webhooks) {
+      promises.push(postToWebhook(webhook.webhookUrl, input, priority))
+    }
   }
+
+  await Promise.allSettled(promises)
 }
 
-/**
- * 여러 직원에게 동시에 알림 발송
- */
-export function sendNotifications(inputs: SendNotificationInput[]): void {
-  for (const input of inputs) {
-    sendNotification(input)
+async function postToWebhook(
+  webhookUrl: string,
+  input: SendNotificationInput,
+  priority: NotificationPriority,
+): Promise<void> {
+  const card = buildSimpleAdaptiveCard(input, priority)
+
+  await fetch(webhookUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      type: 'message',
+      attachments: [
+        {
+          contentType: 'application/vnd.microsoft.card.adaptive',
+          content: card,
+        },
+      ],
+    }),
+  })
+}
+
+function buildSimpleAdaptiveCard(
+  input: SendNotificationInput,
+  priority: NotificationPriority,
+): Record<string, unknown> {
+  const priorityColor: Record<NotificationPriority, string> = {
+    urgent: 'Attention',
+    high: 'Warning',
+    normal: 'Default',
+    low: 'Default',
+  }
+
+  return {
+    type: 'AdaptiveCard',
+    $schema: 'http://adaptivecards.io/schemas/adaptive-card.json',
+    version: '1.4',
+    body: [
+      {
+        type: 'TextBlock',
+        text: `🔔 ${input.title}`,
+        weight: 'Bolder',
+        size: 'Medium',
+        color: priorityColor[priority],
+        wrap: true,
+      },
+      {
+        type: 'TextBlock',
+        text: input.body,
+        wrap: true,
+        color: 'Default',
+      },
+    ],
+    actions: input.link
+      ? [
+          {
+            type: 'Action.OpenUrl',
+            title: 'HR Hub에서 확인',
+            url: `${process.env.NEXTAUTH_URL ?? ''}${input.link}`,
+          },
+        ]
+      : [],
   }
 }
