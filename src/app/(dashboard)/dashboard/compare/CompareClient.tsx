@@ -124,7 +124,7 @@ export function CompareClient() {
                 />
                 <Tooltip
                   contentStyle={{ fontSize: 12, borderColor: '#E8E8E8' }}
-                  formatter={(v: number) => [`${v} ${kpiOption?.unit}`, kpiOption?.label]}
+                  formatter={(v: unknown) => [`${v} ${kpiOption?.unit}`, kpiOption?.label ?? '']}
                 />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                   {data.results.map((_: unknown, i: number) => (

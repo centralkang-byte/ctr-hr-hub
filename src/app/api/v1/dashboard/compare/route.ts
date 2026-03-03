@@ -62,10 +62,10 @@ async function calcKpiValue(kpi: KpiKey, companyId: string, year: number): Promi
       case 'payroll_cost': {
         const runs = await prisma.payrollRun.findMany({
           where: { companyId, yearMonth: { startsWith: year.toString() }, status: { in: ['APPROVED', 'PAID'] } },
-          include: { items: { select: { grossPay: true } } },
+          include: { payrollItems: { select: { grossPay: true } } },
         })
         const totalLocal = runs.reduce(
-          (s, r) => s + r.items.reduce((ss, i) => ss + Number(i.grossPay), 0),
+          (s, r) => s + r.payrollItems.reduce((ss: number, i: { grossPay: unknown }) => ss + Number(i.grossPay), 0),
           0
         )
         const company = await prisma.company.findUnique({ where: { id: companyId }, select: { currency: true } })
