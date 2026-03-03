@@ -19,6 +19,7 @@ import { useToast } from '@/hooks/use-toast'
 import { TeamsConnectionStatus } from './TeamsConnectionStatus'
 import { TeamsChannelSelector } from './TeamsChannelSelector'
 import { DigestPreview } from './DigestPreview'
+import { TeamsWebhookSection } from './TeamsWebhookSection'
 
 interface TeamsConfig {
   id?: string
@@ -287,6 +288,11 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
             <DigestPreview />
           </div>
         )}
+      </div>
+
+      {/* ─── Webhook Channels ─── */}
+      <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <TeamsWebhookSection />
       </div>
 
       {/* ─── Save Button ─── */}
