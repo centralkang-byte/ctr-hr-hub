@@ -509,3 +509,212 @@ src/app/api/v1/year-end/hr/bulk-confirm/route.ts     — POST
 - 공제항목 한도: `year_end_deduction_configs.rules` JSON에서 읽음 (코드 하드코딩 없음)
 - 연도별 세율: `income_tax_rates` 테이블 (2026년 추가 시 코드 변경 불필요)
 - 홈택스 간소화 PDF: 파싱 미지원, 수동입력 폼 대안 제공
+
+---
+
+# Track A — B9-2: 복리후생 신청·승인 완료 보고
+
+> 완료일: 2026-03-03
+> 검증: `tsc --noEmit` ✅ 0 errors (B9-2 파일) | `npm run build` ✅ 성공
+
+## B9-2 구현 완료 항목
+
+### Task 1: DB Migration
+- `BenefitPlan` (benefit_plans) — 법인별 복리후생 항목
+- `BenefitClaim` (benefit_claims) — 직원 신청 + 승인 워크플로
+- `BenefitBudget` (benefit_budgets) — 법인/카테고리별 연간 예산
+- 마이그레이션: `a_benefit_claims`
+
+### Task 2: 시드 데이터
+- CTR-KR: 10개 (family 5, education 2, health 2, lifestyle 1)
+- CTR-US: 5개 (financial 2, health 2, lifestyle 1)
+- 나머지 법인(CN/RU/VN/MX): 기본 2개씩 (health + family) = 8개
+- 합계: 23개 benefit_plans
+- 예산 2025: KR 4카테고리(₩50M), US 3카테고리($90K) = 7개 benefit_budgets
+
+### 직원용 UI
+- `/my/benefits` — 사용현황 프로그레스 + 신청 모달 + 이력 리스트
+- 네비게이션 "나의 공간 > 복리후생" → `/my/benefits`로 업데이트
+
+### HR 관리 UI
+- `/benefits` (기존 교체) — 승인대기/전체내역/예산관리 3탭 HR 뷰
+
+### API Routes (신규)
+- `GET /api/v1/benefit-plans` — 법인별 활성 플랜 목록
+- `GET/POST /api/v1/benefit-claims` — 직원 신청 + HR 목록(view=mine|pending|all)
+- `GET/PATCH /api/v1/benefit-claims/[id]` — 상세 + 승인/반려/취소
+- `GET /api/v1/benefit-claims/summary` — 직원 연간 사용 현황 집계
+- `GET/PUT /api/v1/benefit-budgets` — 예산 조회/수정
+
+### 핵심 비즈니스 로직
+- 승인 시 `BenefitBudget.usedAmount` 자동 증가 (트랜잭션)
+- 연간 한도 초과 신청 차단 (annual frequency 항목)
+- 증빙 필수 항목 검증 (서버사이드)
+- 예산 80% 초과 시 경고 배지 표시
+
+## 다음 세션 연동 포인트
+- B10-1 애널리틱스: 복리후생 활용률(`BenefitClaim` 집계) 데이터 참조
+- B10-2 HR KPI: 복리후생 활용률 위젯
+- B11 알림: 승인/반려 알림, 예산 80% 소진 알림, 연간 미사용 안내
+- B7-1b 연말정산: 과세 대상 복리후생(학자금 등) 참고 데이터 — 직접 포함 X
+
+## 주요 설계 결정
+- 복리후생 지급은 급여와 완전 분리 (별도 지급)
+- 파일 업로드: 경로 메타데이터만 저장 (S3 실제 업로드는 추후 연동)
+- 승인 플로우: 단순 1-step HR 직접 승인 (AttendanceApprovalRequest 패턴 미사용)
+- BenefitBudget.usedAmount: 승인 트랜잭션에서 자동 증가
+
+---
+
+# B7-2: 해외 급여 통합 + 글로벌 분析
+
+**완료일:** 2026-03-03
+**소요:** 2 세션 (컨텍스트 초과로 분리)
+
+## 구현 범위 (8개 Task)
+
+| Task | 내용 | 상태 |
+|------|------|------|
+| 1 | DB migration — Prisma 모델 5개 신규 추가 | ✅ |
+| 2 | 환율 관리 UI + API + 시드 (`/settings/exchange-rates`) | ✅ |
+| 3 | 해외 급여 업로드 + 매핑 설정 (`/payroll/import`) | ✅ |
+| 4 | 글로벌 급여 대시보드 (`/payroll/global`) | ✅ |
+| 5 | 급여 시뮬레이션 (전출/인상/승진) (`/payroll/simulation`) | ✅ |
+| 6 | 이상 탐지 4가지 규칙 (`/payroll/anomalies`) | ✅ |
+| 7 | 해외법인 시드 데이터 (5법인 × 30명) | ✅ |
+| 8 | TypeScript 검증 (tsc --noEmit) + Build | ✅ |
+
+## 신규 Prisma 모델
+
+```
+ExchangeRate         — 법인통화 → KRW 환율 (year, month, fromCurrency, toCurrency 복합 유니크)
+PayrollImportMapping — 파일 헤더 매핑 설정 (법인별, JSON mappings 필드)
+PayrollImportLog     — 업로드 이력 (파일명, 행수, 성공/실패 카운트)
+PayrollSimulation    — 시뮬레이션 결과 저장 (type: transfer|raise|promotion)
+PayrollAnomaly       — 이상 탐지 결과 (severity: low|medium|high|critical)
+```
+
+## 신규 파일 목록
+
+### API Routes
+```
+src/app/api/v1/payroll/exchange-rates/route.ts      — GET(조회) + PUT(일괄저장)
+src/app/api/v1/payroll/import-mappings/route.ts     — GET + POST + PATCH/DELETE [id]
+src/app/api/v1/payroll/import-logs/route.ts         — GET + POST(업로드 처리)
+src/app/api/v1/payroll/global/route.ts              — GET(글로벌 대시보드 집계)
+src/app/api/v1/payroll/simulation/route.ts          — GET(이력) + POST(시뮬레이션 실행)
+src/app/api/v1/payroll/anomalies/route.ts           — GET(목록) + POST(탐지 실행) + PATCH(상태변경)
+```
+
+### Pages & Clients
+```
+src/app/(dashboard)/settings/exchange-rates/page.tsx
+src/app/(dashboard)/settings/exchange-rates/ExchangeRateClient.tsx
+src/app/(dashboard)/payroll/import/page.tsx
+src/app/(dashboard)/payroll/import/PayrollImportClient.tsx
+src/app/(dashboard)/payroll/global/page.tsx
+src/app/(dashboard)/payroll/global/GlobalPayrollClient.tsx
+src/app/(dashboard)/payroll/simulation/page.tsx
+src/app/(dashboard)/payroll/simulation/PayrollSimulationClient.tsx
+src/app/(dashboard)/payroll/anomalies/page.tsx
+src/app/(dashboard)/payroll/anomalies/PayrollAnomaliesClient.tsx
+```
+
+### Seed
+```
+prisma/seeds/foreign-payroll.ts    — 5법인 × 30명 급여 시드 (환율 포함)
+```
+
+## TypeScript 에러 수정 (Task 8)
+
+25+ 에러를 9개 파일에서 수정:
+
+| 패턴 | 잘못된 코드 | 올바른 코드 |
+|------|-----------|-----------|
+| apiClient 반환 타입 | `setResult(res)` | `setResult(res.data)` — `apiClient.post<T>()` returns `ApiResponse<T>` |
+| ACTION 상수 | `ACTION.READ` | `ACTION.VIEW` — `constants.ts`에 `READ` 없음 |
+| apiError 인자 수 | `apiError(message, 400)` | `apiError(badRequest(message))` — 1 arg only |
+| Zod record | `z.record(z.string())` | `z.record(z.string(), z.string())` — v3는 2 arg 필수 |
+| Prisma 관계명 | `payrollRun: { companyId }` | `run: { companyId }` — 관계 이름이 `run` |
+| PayrollItem 필드 | `basePay` | `baseSalary` |
+| Employee 필드 | `nameKo`, `employeeNumber` | `name`, `employeeNo` |
+| Prisma JSON 필드 | `{ mappings: data.mappings }` | `{ mappings: JSON.parse(JSON.stringify(data.mappings)) }` |
+| aggregate _avg | `_avg.grossPay` | `_avg?.grossPay ?? 0` — possibly undefined |
+| Recharts PieLabel | `name: string` | `name?: string` — PieLabelRenderProps.name is `string \| undefined` |
+
+## 최종 검증 결과
+```
+npx tsc --noEmit  → 0 errors ✅
+npm run build     → success ✅ (Node.js 내부 deprecation warning만, 프로젝트 코드 오류 없음)
+```
+
+## 이상 탐지 4가지 규칙
+1. **급여 급등** — 전월 대비 50% 초과 증가
+2. **마이너스 급여** — netPay < 0
+3. **평균 이탈** — 법인 평균 ±3σ (표준편차 3배 초과)
+4. **중복 처리** — 같은 yearMonth, 같은 직원 2건 이상
+
+## 다음 세션 연동 포인트
+- B10 HR 애널리틱스: ExchangeRate + PayrollRun 데이터로 글로벌 인건비 KPI
+- B11 알림: PayrollAnomaly 생성 시 HR_ADMIN 알림
+- 해외법인 급여 실제 연동 시: PayrollImportLog → PayrollRun 자동 생성 파이프라인
+
+---
+
+# Track A — B10-2: HR KPI 대시보드 완료 보고
+
+> 완료일: 2026-03-03
+> 검증: `tsc --noEmit` ✅ 0 errors | `npm run build` ✅ 성공
+
+## DB 테이블
+- `kpi_dashboard_configs` — 사용자별 대시보드 레이아웃 저장
+- 마이그레이션: `a_kpi_dashboard`
+
+## 주요 라우트
+- `/dashboard` — HR KPI 메인 대시보드 (HR_ADMIN/SUPER_ADMIN/EXECUTIVE)
+- `/dashboard/compare` — 글로벌 법인 비교 뷰
+
+## API Routes
+- `GET /api/v1/dashboard/summary` — 6개 핵심 KPI (Promise.allSettled 방어 코딩)
+- `GET /api/v1/dashboard/widgets/[widgetId]` — 탭별 위젯 데이터 (15개 widgetId)
+- `GET /api/v1/dashboard/compare` — 법인 비교 + 추이
+
+## 위젯 목록 (widgetId: 데이터소스: 차트타입)
+- workforce-grade: EmployeeAssignment groupBy jobGradeId: bar-horizontal
+- workforce-company: EmployeeAssignment groupBy companyId: donut
+- workforce-trend: AnalyticsSnapshot (headcount): line
+- workforce-tenure: EmployeeAssignment + Employee.hireDate: bar
+- recruit-pipeline: Application groupBy stage: bar
+- recruit-ttr: Application (HIRED) avg sojourn: bar
+- recruit-talent-pool: TalentPoolEntry count: number
+- perf-grade: PerformanceEvaluation groupBy performanceGrade: bar
+- perf-skill-gap: EmployeeSkillAssessment gap 상위 5: bar-horizontal
+- attend-52h: WorkHourAlert groupBy alertLevel: bar
+- attend-leave-trend: LeaveRequest 월별 count: line
+- attend-burnout: BurnoutScore groupBy riskLevel: bar
+- payroll-cost: PayrollRun + ExchangeRate KRW 환산 (payrollItems relation): bar
+- training-mandatory: TrainingEnrollment (mandatory_auto): bar
+- training-benefit: BenefitClaim groupBy category: bar
+
+## 컴포넌트
+- `src/components/dashboard/KpiWidget.tsx` — 추상 위젯 (bar/bar-horizontal/line/donut/number)
+- `src/components/dashboard/KpiSummaryCard.tsx` — 숫자형 KPI 카드 + 전월 변동
+- `src/components/dashboard/WidgetSkeleton.tsx` — 로딩 스켈레톤
+- `src/components/dashboard/WidgetEmpty.tsx` — 빈 상태
+
+## 스키마 주의사항 (다음 세션용)
+- TalentPool 모델 = `TalentPoolEntry` (companyId 필드 없음)
+- TrainingEnrollment status enum = `ENROLLMENT_COMPLETED` (not 'COMPLETED')
+- EmployeeAssignment 시작일 = `effectiveDate` (not `startDate`)
+- PayrollRun → PayrollItem 관계명 = `payrollItems` (not `items`)
+
+## 설계 결정
+- 클라이언트 완전 독립 위젯 방식 (위젯별 독립 fetch, Promise.allSettled)
+- 탭별 lazy mount — 요약 탭 6개 KPI만 초기 로드
+- 법인 필터: SUPER_ADMIN → 전체, HR_ADMIN/EXECUTIVE → 자기 법인
+- 방어 코딩: 위젯 실패 시 null 반환 → WidgetEmpty 표시, 전체 영향 없음
+
+## 다음 세션 연동 포인트
+- B11 ([B] 트랙): 시스템 설정에 대시보드 위젯 설정 통합
+- B11 (후반부): 위험 KPI 알림 배지 (이직위험/번아웃 기준 초과 시)
+- 9-Block 위젯 (perf-9block): CalibrationSession 데이터 구조 확인 후 추가 예정
