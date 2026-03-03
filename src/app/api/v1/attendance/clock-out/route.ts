@@ -13,6 +13,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { clockOutSchema } from '@/lib/schemas/attendance'
 import type { SessionUser } from '@/types'
 import type { ClockMethod } from '@/generated/prisma/enums'
+import { checkWorkHourAlert } from '@/lib/attendance/workHourAlert'
 
 // ─── Zod method → Prisma ClockMethod 매핑 ─────────────────
 
@@ -106,7 +107,18 @@ export const POST = withPermission(
         userAgent: meta.userAgent,
       })
 
-      return apiSuccess(attendance)
+      // 52시간 경고 체크 (비동기, 실패해도 clock-out 응답에 영향 없음)
+      const alertResult = await checkWorkHourAlert(
+        user.employeeId,
+        user.companyId,
+      ).catch(() => null)
+
+      return apiSuccess({
+        ...attendance,
+        weeklyHours: alertResult?.weeklyHours ?? null,
+        alertLevel: alertResult?.alertLevel ?? null,
+        isBlocked: alertResult?.isBlocked ?? false,
+      })
     } catch (error) {
       if (isAppError(error)) throw error
       throw handlePrismaError(error)

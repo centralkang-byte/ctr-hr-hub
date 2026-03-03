@@ -8,8 +8,14 @@ import { laborConfig } from '@/lib/labor/kr'
 import {
   calculateHourlyWage,
   calculateTotalDeductions,
+  calculateSocialInsurance,
+  calculateIncomeTax,
+  separateTaxableIncome,
+  calculateProrated,
+  detectPayrollAnomalies,
   MONTHLY_STANDARD_HOURS,
 } from './kr-tax'
+import type { AllowanceItem } from './kr-tax'
 import type { PayrollItemDetail, PayrollEarnings, PayrollOvertime } from './types'
 
 // ─── Overtime Calculation ───────────────────────────────
@@ -112,7 +118,7 @@ export async function calculatePayrollForEmployee(
     }
   }
 
-  const { pay: overtimePay, overtime } = calculateOvertimePay(hourlyWage, overtimeBreakdown)
+  // overtimePay와 overtime은 일할 기준 hourlyWage로 아래에서 재계산됨
 
   // 3. 수당: AllowanceRecord (해당 월)
   const yearMonth = `${periodStart.getFullYear()}-${String(periodStart.getMonth() + 1).padStart(2, '0')}`
@@ -177,25 +183,71 @@ export async function calculatePayrollForEmployee(
     }
   }
 
-  // 4. 총 지급액 계산
+  // 4. 비과세 한도 로드
+  const year = periodStart.getFullYear()
+  const month = periodStart.getMonth() + 1
+
+  const nontaxableLimitRows = await prisma.nontaxableLimit.findMany({
+    where: { year, isActive: true },
+  })
+  const nontaxableLimitsMap: Record<string, number> = {}
+  for (const row of nontaxableLimitRows) {
+    nontaxableLimitsMap[row.code] = row.monthlyLimit
+  }
+
+  // 4-1. 비과세 분리를 위한 allowances 구성
+  const allowanceItems: AllowanceItem[] = [
+    { code: 'meal_allowance', name: '식대', amount: mealAllowance, isTaxable: false },
+    { code: 'vehicle_allowance', name: '차량유지비', amount: transportAllowance, isTaxable: false },
+    { code: 'overtime_allowance', name: '고정초과근무수당', amount: fixedOvertimeAllowance, isTaxable: true },
+    { code: 'other', name: '기타수당', amount: otherEarnings, isTaxable: true },
+  ]
+
+  // 5. 중도입사/퇴사 일할계산
+  const employee = await prisma.employee.findUnique({
+    where: { id: employeeId },
+    select: { hireDate: true },
+  })
+
+  const hireDate = employee?.hireDate ? new Date(employee.hireDate) : undefined
+  const prorateResult = calculateProrated(monthlySalary, year, month, hireDate, undefined)
+
+  const effectiveMonthlySalary = prorateResult.proratedAmount
+  const effectiveHourlyWage = calculateHourlyWage(effectiveMonthlySalary)
+
+  // 초과근무도 일할 적용 시 hourlyWage를 일할 기준으로 재계산
+  const { pay: effectiveOvertimePay, overtime } = calculateOvertimePay(effectiveHourlyWage, overtimeBreakdown)
+
+  // 6. 비과세 분리
+  const { taxableIncome, nontaxableTotal } = separateTaxableIncome(
+    effectiveMonthlySalary,
+    effectiveOvertimePay,
+    allowanceItems,
+    nontaxableLimitsMap,
+  )
+
   const totalAllowances = mealAllowance + transportAllowance + fixedOvertimeAllowance + otherEarnings
+  const grossPay = effectiveMonthlySalary + effectiveOvertimePay + totalAllowances
+
   const earnings: PayrollEarnings = {
-    baseSalary: monthlySalary,
+    baseSalary: effectiveMonthlySalary,
     fixedOvertimeAllowance,
     mealAllowance,
     transportAllowance,
-    overtimePay,
+    overtimePay: effectiveOvertimePay,
     nightShiftPay: 0,
     holidayPay: 0,
     bonuses: 0,
     otherEarnings,
   }
 
-  const grossPay = monthlySalary + overtimePay + totalAllowances
+  // 7. 4대보험 공제 (과세소득 기준)
+  const socialInsurance = calculateSocialInsurance(taxableIncome)
 
-  // 5. 공제 계산
-  const { socialInsurance, incomeTax, totalDeductions } = calculateTotalDeductions(grossPay)
+  // 8. 소득세
+  const incomeTax = calculateIncomeTax(taxableIncome)
 
+  const totalDeductions = socialInsurance.total + incomeTax.total
   const deductions = {
     nationalPension: socialInsurance.nationalPension,
     healthInsurance: socialInsurance.healthInsurance,
@@ -208,6 +260,31 @@ export async function calculatePayrollForEmployee(
 
   const netPay = grossPay - totalDeductions
 
+  // 9. 이상 항목 감지 (전월 PayrollItem 참조)
+  const prevYearMonth =
+    month === 1
+      ? `${year - 1}-12`
+      : `${year}-${String(month - 1).padStart(2, '0')}`
+
+  const prevItems = await prisma.payrollItem.findMany({
+    where: {
+      employeeId,
+      run: { companyId, yearMonth: prevYearMonth, status: { in: ['APPROVED', 'PAID'] } },
+    },
+    take: 1,
+  })
+  const prevItem = prevItems[0]
+
+  const anomalies = detectPayrollAnomalies(
+    {
+      grossPay,
+      overtimePay: effectiveOvertimePay,
+      baseSalary: effectiveMonthlySalary,
+      isProrated: prorateResult.isProrated,
+    },
+    prevItem ? { grossPay: Number(prevItem.grossPay) } : null,
+  )
+
   return {
     earnings,
     deductions,
@@ -215,5 +292,11 @@ export async function calculatePayrollForEmployee(
     grossPay,
     totalDeductions,
     netPay,
+    nontaxableTotal,
+    taxableIncome,
+    isProrated: prorateResult.isProrated,
+    prorateRatio: prorateResult.ratio,
+    workDays: prorateResult.workDays,
+    anomalies,
   }
 }

@@ -2058,36 +2058,43 @@ async function main() {
   }
 
   // ----------------------------------------------------------
-  // B1: 환율 시드 (ExchangeRate)
+  // B7-2: 환율 시드 (ExchangeRate) — year/month 기반 (3개월치)
   // ----------------------------------------------------------
-  const rates = [
-    { from: 'KRW', to: 'USD', rate: '0.000732', source: 'seed' },
-    { from: 'KRW', to: 'CNY', rate: '0.005316', source: 'seed' },
-    { from: 'KRW', to: 'RUB', rate: '0.067', source: 'seed' },
-    { from: 'KRW', to: 'VND', rate: '18.5', source: 'seed' },
-    { from: 'KRW', to: 'MXN', rate: '0.012', source: 'seed' },
-    { from: 'USD', to: 'KRW', rate: '1366.0', source: 'seed' },
+  const exchangeRateDefs = [
+    { from: 'USD', to: 'KRW', rates: ['1366.0', '1372.5', '1358.0'] },
+    { from: 'CNY', to: 'KRW', rates: ['185.5', '186.2', '184.8'] },
+    { from: 'RUB', to: 'KRW', rates: ['14.8', '15.1', '14.6'] },
+    { from: 'VND', to: 'KRW', rates: ['0.0540', '0.0542', '0.0538'] },
+    { from: 'MXN', to: 'KRW', rates: ['78.2', '79.0', '77.8'] },
   ]
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  // 2025년 1월~3월
+  const rateMonths = [
+    { year: 2025, month: 1 },
+    { year: 2025, month: 2 },
+    { year: 2025, month: 3 },
+  ]
 
-  for (const r of rates) {
-    const existing = await prisma.exchangeRate.findFirst({
-      where: { fromCurrency: r.from, toCurrency: r.to, effectiveDate: today },
-    })
-    if (!existing) {
-      await prisma.exchangeRate.create({
-        data: {
-          id: deterministicUUID('exrate', `${r.from}:${r.to}:${today.toISOString().slice(0, 10)}`),
-          fromCurrency: r.from,
-          toCurrency: r.to,
-          rate: r.rate,
-          effectiveDate: today,
-          source: r.source,
-        },
+  for (const def of exchangeRateDefs) {
+    for (let i = 0; i < rateMonths.length; i++) {
+      const { year, month } = rateMonths[i]
+      const existing = await prisma.exchangeRate.findFirst({
+        where: { year, month, fromCurrency: def.from, toCurrency: def.to },
       })
+      if (!existing) {
+        await prisma.exchangeRate.create({
+          data: {
+            id: deterministicUUID('exrate', `${def.from}:${def.to}:${year}:${month}`),
+            year,
+            month,
+            fromCurrency: def.from,
+            toCurrency: def.to,
+            rate: def.rates[i],
+            source: 'manual',
+          },
+        })
+      }
+      b1Count++
     }
-    b1Count++
   }
 
   // ----------------------------------------------------------
@@ -2916,6 +2923,574 @@ async function main() {
   const incomeTaxRateCount = await prisma.incomeTaxRate.count()
   console.log(`  YearEndDeductionConfigs: ${yearEndDeductionConfigCount}`)
   console.log(`  IncomeTaxRates:          ${incomeTaxRateCount}`)
+  console.log('========================================\n')
+
+  // ═══════════════════════════════════════════════════════════
+  // B8-3: 스킬 매트릭스 — 시드 데이터
+  // CTR-KR 생산팀 6명 + 역량 평가 (2026-H1)
+  // 시나리오: PLC 프로그래밍 큰 갭 / 도전 강점
+  // ═══════════════════════════════════════════════════════════
+  console.log('🔧 B8-3: Skill Matrix seed (CTR-KR MFG employees + assessments)...')
+
+  const SKILL_PERIOD = '2026-H1'
+  const mfgDeptId = deterministicUUID('dept', 'CTR-KR:MFG')
+  const productionCatId = jobCatMap['CTR-KR:PRODUCTION']
+
+  // ── 1. 직급별 역량 기대레벨 추가 (G3~G6) ────────────────────
+  // 핵심가치 (challenge, trust, responsibility, respect)
+  const coreValueGradeMap: Record<string, number> = { G3: 4, G4: 3, G5: 3, G6: 2 }
+  // 직무 전문 역량
+  const technicalGradeMap: Record<string, Record<string, number>> = {
+    welding:          { G3: 5, G4: 4, G5: 3, G6: 2 },
+    quality_mgmt:     { G3: 5, G4: 4, G5: 3, G6: 2 },
+    mold_design:      { G3: 4, G4: 3, G5: 2, G6: 1 },
+    injection_molding:{ G3: 4, G4: 3, G5: 3, G6: 2 },
+    plc_programming:  { G3: 5, G4: 4, G5: 3, G6: 2 },
+  }
+
+  const coreValueCodes = ['challenge', 'trust', 'responsibility', 'respect']
+  for (const code of coreValueCodes) {
+    const comp = await prisma.competency.findFirst({ where: { code } })
+    if (!comp) continue
+    for (const [gradeCode, expectedLevel] of Object.entries(coreValueGradeMap)) {
+      const existing = await prisma.competencyRequirement.findFirst({
+        where: { competencyId: comp.id, jobLevelCode: gradeCode, companyId: ctrKrId },
+      })
+      if (!existing) {
+        await prisma.competencyRequirement.create({
+          data: { competencyId: comp.id, jobLevelCode: gradeCode, companyId: ctrKrId, expectedLevel },
+        })
+      }
+    }
+  }
+
+  for (const [code, gradeMap2] of Object.entries(technicalGradeMap)) {
+    const comp = await prisma.competency.findFirst({ where: { code } })
+    if (!comp) continue
+    for (const [gradeCode, expectedLevel] of Object.entries(gradeMap2)) {
+      const existing = await prisma.competencyRequirement.findFirst({
+        where: { competencyId: comp.id, jobLevelCode: gradeCode, companyId: ctrKrId },
+      })
+      if (!existing) {
+        await prisma.competencyRequirement.create({
+          data: { competencyId: comp.id, jobLevelCode: gradeCode, companyId: ctrKrId, expectedLevel },
+        })
+      }
+    }
+  }
+
+  // ── 2. CTR-KR 생산팀 직원 6명 생성 ─────────────────────────
+  const mfgEmployees = [
+    { no: 'CTR-KR-2001', name: '김현식', nameEn: 'Kim Hyunshik', grade: 'G4', email: 'kim.hyunshik@ctr.co.kr',
+      scores: { challenge:5, trust:4, responsibility:4, respect:3, welding:4, quality_mgmt:4, mold_design:3, injection_molding:3, plc_programming:2 } },
+    { no: 'CTR-KR-2002', name: '이태준', nameEn: 'Lee Taejun', grade: 'G4', email: 'lee.taejun@ctr.co.kr',
+      scores: { challenge:4, trust:3, responsibility:3, respect:4, welding:4, quality_mgmt:3, mold_design:2, injection_molding:3, plc_programming:1 } },
+    { no: 'CTR-KR-2003', name: '박재홍', nameEn: 'Park Jaehong', grade: 'G5', email: 'park.jaehong@ctr.co.kr',
+      scores: { challenge:4, trust:3, responsibility:3, respect:3, welding:3, quality_mgmt:3, mold_design:2, injection_molding:2, plc_programming:2 } },
+    { no: 'CTR-KR-2004', name: '최민준', nameEn: 'Choi Minjun', grade: 'G5', email: 'choi.minjun@ctr.co.kr',
+      scores: { challenge:3, trust:4, responsibility:3, respect:3, welding:4, quality_mgmt:3, mold_design:1, injection_molding:3, plc_programming:1 } },
+    { no: 'CTR-KR-2005', name: '정수현', nameEn: 'Jeong Suhyun', grade: 'G6', email: 'jeong.suhyun@ctr.co.kr',
+      scores: { challenge:3, trust:3, responsibility:3, respect:2, welding:3, quality_mgmt:2, mold_design:1, injection_molding:2, plc_programming:1 } },
+    { no: 'CTR-KR-2006', name: '홍기영', nameEn: 'Hong Giyeong', grade: 'G6', email: 'hong.giyeong@ctr.co.kr',
+      scores: { challenge:3, trust:3, responsibility:2, respect:3, welding:2, quality_mgmt:2, mold_design:1, injection_molding:2, plc_programming:2 } },
+  ]
+
+  let skillEmpCount = 0
+  let skillAssessCount = 0
+
+  for (const m of mfgEmployees) {
+    const empId = deterministicUUID('employee', `mfg:${m.no}`)
+    const gradeId = gradeMap[`CTR-KR:${m.grade}`]
+
+    // Employee 생성
+    const emp = await prisma.employee.upsert({
+      where: { employeeNo: m.no },
+      update: { name: m.name, nameEn: m.nameEn },
+      create: { id: empId, employeeNo: m.no, name: m.name, nameEn: m.nameEn, email: m.email, hireDate: new Date('2023-03-01') },
+    })
+
+    // EmployeeAssignment 생성
+    const existingA = await prisma.employeeAssignment.findFirst({
+      where: { employeeId: emp.id, isPrimary: true, endDate: null },
+    })
+    if (!existingA) {
+      await prisma.employeeAssignment.create({
+        data: {
+          id: deterministicUUID('assignment', `mfg:${m.no}`),
+          employeeId: emp.id,
+          companyId: ctrKrId,
+          departmentId: mfgDeptId,
+          jobGradeId: gradeId,
+          jobCategoryId: productionCatId,
+          effectiveDate: new Date('2023-03-01'),
+          changeType: 'HIRE',
+          employmentType: 'FULL_TIME',
+          status: 'ACTIVE',
+          isPrimary: true,
+        },
+      })
+    }
+
+    // EmployeeRole (EMPLOYEE)
+    const empRoleId = deterministicUUID('emprole', `mfg:${m.no}:EMPLOYEE`)
+    const employeeRoleId = roleMap['EMPLOYEE']
+    if (employeeRoleId) {
+      await prisma.employeeRole.upsert({
+        where: { employeeId_roleId_companyId: { employeeId: emp.id, roleId: employeeRoleId, companyId: ctrKrId } },
+        update: {},
+        create: { id: empRoleId, employeeId: emp.id, roleId: employeeRoleId, companyId: ctrKrId, startDate: new Date('2023-03-01') },
+      })
+    }
+
+    skillEmpCount++
+
+    // ── 3. 역량 평가 생성 (2026-H1, 자기평가=매니저평가=최종) ──
+    for (const [code, level] of Object.entries(m.scores)) {
+      const comp = await prisma.competency.findFirst({ where: { code } })
+      if (!comp) continue
+      await prisma.employeeSkillAssessment.upsert({
+        where: {
+          employeeId_competencyId_assessmentPeriod: {
+            employeeId: emp.id,
+            competencyId: comp.id,
+            assessmentPeriod: SKILL_PERIOD,
+          },
+        },
+        update: { selfLevel: level, managerLevel: level, finalLevel: level },
+        create: {
+          employeeId: emp.id,
+          competencyId: comp.id,
+          assessmentPeriod: SKILL_PERIOD,
+          selfLevel: level,
+          managerLevel: level,
+          finalLevel: level,
+          assessedAt: new Date('2026-01-15'),
+        },
+      })
+      skillAssessCount++
+    }
+  }
+
+  console.log(`  ✅ ${skillEmpCount} MFG employees`)
+  console.log(`  ✅ ${skillAssessCount} skill assessments (period: ${SKILL_PERIOD})`)
+  console.log('========================================\n')
+
+  // ================================================================
+  // B7-2: 해외법인 급여 시드 (5법인 × 5~10명)
+  // ================================================================
+  console.log('🌍 B7-2: Foreign Payroll Seed (5 companies)...')
+  let foreignPayrollCount = 0
+
+  const foreignPayrollDefs = [
+    {
+      companyCode: 'CTR-US', currency: 'USD', yearMonth: '2025-03', year: 2025, month: 3,
+      employees: [
+        { num: 'US001', name: 'John Smith', base: 8500, allowances: 2000, deductions: 2100, net: 8400 },
+        { num: 'US002', name: 'Jane Doe', base: 7200, allowances: 1500, deductions: 1740, net: 6960 },
+        { num: 'US003', name: 'Michael Johnson', base: 12500, allowances: 3000, deductions: 3750, net: 11750 },
+        { num: 'US004', name: 'Emily Davis', base: 9800, allowances: 2200, deductions: 2640, net: 9360 },
+        { num: 'US005', name: 'Robert Wilson', base: 6500, allowances: 1200, deductions: 1500, net: 6200 },
+        { num: 'US006', name: 'Sarah Taylor', base: 11000, allowances: 2500, deductions: 3150, net: 10350 },
+        { num: 'US007', name: 'David Brown', base: 7800, allowances: 1600, deductions: 1920, net: 7480 },
+        { num: 'US008', name: 'Jennifer Martinez', base: 8200, allowances: 1800, deductions: 2100, net: 7900 },
+        { num: 'US009', name: 'James Anderson', base: 10200, allowances: 2300, deductions: 2880, net: 9620 },
+        { num: 'US010', name: 'Jessica Garcia', base: 6800, allowances: 1300, deductions: 1620, net: 6480 },
+      ],
+    },
+    {
+      companyCode: 'CTR-CN', currency: 'CNY', yearMonth: '2025-03', year: 2025, month: 3,
+      employees: [
+        { num: 'CN001', name: '王伟', base: 18000, allowances: 3500, deductions: 3780, net: 17720 },
+        { num: 'CN002', name: '李娜', base: 15000, allowances: 2800, deductions: 3000, net: 14800 },
+        { num: 'CN003', name: '张磊', base: 22000, allowances: 4200, deductions: 4800, net: 21400 },
+        { num: 'CN004', name: '刘芳', base: 12000, allowances: 2000, deductions: 2400, net: 11600 },
+        { num: 'CN005', name: '陈强', base: 16500, allowances: 3000, deductions: 3300, net: 16200 },
+        { num: 'CN006', name: '杨洋', base: 25000, allowances: 5000, deductions: 5500, net: 24500 },
+        { num: 'CN007', name: '赵静', base: 13500, allowances: 2500, deductions: 2700, net: 13300 },
+        { num: 'CN008', name: '黄明', base: 19000, allowances: 3800, deductions: 4100, net: 18700 },
+        { num: 'CN009', name: '周丽', base: 14000, allowances: 2600, deductions: 2800, net: 13800 },
+        { num: 'CN010', name: '吴刚', base: 20000, allowances: 4000, deductions: 4400, net: 19600 },
+      ],
+    },
+    {
+      companyCode: 'CTR-RU', currency: 'RUB', yearMonth: '2025-03', year: 2025, month: 3,
+      employees: [
+        { num: 'RU001', name: 'Иванов Алексей', base: 180000, allowances: 35000, deductions: 28600, net: 186400 },
+        { num: 'RU002', name: 'Петрова Мария', base: 150000, allowances: 28000, deductions: 23100, net: 154900 },
+        { num: 'RU003', name: 'Сидоров Игорь', base: 220000, allowances: 42000, deductions: 34060, net: 227940 },
+        { num: 'RU004', name: 'Козлова Наталья', base: 135000, allowances: 25000, deductions: 20800, net: 139200 },
+        { num: 'RU005', name: 'Морозов Дмитрий', base: 200000, allowances: 38000, deductions: 30940, net: 207060 },
+      ],
+    },
+    {
+      companyCode: 'CTR-VN', currency: 'VND', yearMonth: '2025-03', year: 2025, month: 3,
+      employees: [
+        { num: 'VN001', name: 'Nguyen Van An', base: 35000000, allowances: 7000000, deductions: 5040000, net: 36960000 },
+        { num: 'VN002', name: 'Tran Thi Binh', base: 28000000, allowances: 5500000, deductions: 3990000, net: 29510000 },
+        { num: 'VN003', name: 'Le Van Cuong', base: 42000000, allowances: 8500000, deductions: 6075000, net: 44425000 },
+        { num: 'VN004', name: 'Pham Thi Dung', base: 25000000, allowances: 4800000, deductions: 3570000, net: 26230000 },
+        { num: 'VN005', name: 'Hoang Van Em', base: 32000000, allowances: 6200000, deductions: 4578000, net: 33622000 },
+        { num: 'VN006', name: 'Dang Thi Phuong', base: 38000000, allowances: 7500000, deductions: 5415000, net: 40085000 },
+        { num: 'VN007', name: 'Bui Van Giang', base: 22000000, allowances: 4000000, deductions: 3120000, net: 22880000 },
+        { num: 'VN008', name: 'Vu Thi Hoa', base: 45000000, allowances: 9000000, deductions: 6480000, net: 47520000 },
+      ],
+    },
+    {
+      companyCode: 'CTR-MX', currency: 'MXN', yearMonth: '2025-03', year: 2025, month: 3,
+      employees: [
+        { num: 'MX001', name: 'Garcia Lopez Carlos', base: 45000, allowances: 9000, deductions: 9540, net: 44460 },
+        { num: 'MX002', name: 'Martinez Rodriguez Ana', base: 38000, allowances: 7500, deductions: 7980, net: 37520 },
+        { num: 'MX003', name: 'Hernandez Torres Luis', base: 55000, allowances: 11000, deductions: 11880, net: 54120 },
+        { num: 'MX004', name: 'Lopez Gonzalez Rosa', base: 32000, allowances: 6000, deductions: 6720, net: 31280 },
+        { num: 'MX005', name: 'Perez Sanchez Juan', base: 48000, allowances: 9500, deductions: 10185, net: 47315 },
+      ],
+    },
+  ]
+
+  const companyMapB7: Record<string, string> = {}
+  const allCompaniesB7 = await prisma.company.findMany({ select: { id: true, code: true } })
+  for (const c of allCompaniesB7) companyMapB7[c.code] = c.id
+
+  const hrAdminEmpB7 = await prisma.employee.findFirst({
+    where: { assignments: { some: { isPrimary: true, endDate: null } } },
+    select: { id: true },
+  })
+  const uploadedById = hrAdminEmpB7?.id ?? 'system'
+
+  for (const def of foreignPayrollDefs) {
+    const companyId = companyMapB7[def.companyCode]
+    if (!companyId) continue
+
+    // PayrollImportMapping
+    const mappingId = deterministicUUID('pim', `${def.companyCode}:default`)
+    const existingMapping = await prisma.payrollImportMapping.findFirst({ where: { id: mappingId } })
+    if (!existingMapping) {
+      const currencyMappings: Record<string, Array<{ sourceColumn: string; targetField: string }>> = {
+        USD: [
+          { sourceColumn: 'Employee ID', targetField: 'employeeId' },
+          { sourceColumn: 'Base Salary', targetField: 'baseSalary' },
+          { sourceColumn: 'Bonus', targetField: 'allowance:bonus' },
+          { sourceColumn: 'Federal Tax', targetField: 'incomeTax' },
+          { sourceColumn: 'Net Pay', targetField: 'netPay' },
+        ],
+        CNY: [
+          { sourceColumn: '工号', targetField: 'employeeId' },
+          { sourceColumn: '基本工资', targetField: 'baseSalary' },
+          { sourceColumn: '住房补贴', targetField: 'allowance:housing' },
+          { sourceColumn: '个人所得税', targetField: 'incomeTax' },
+          { sourceColumn: '实发工资', targetField: 'netPay' },
+        ],
+        RUB: [
+          { sourceColumn: 'Табельный номер', targetField: 'employeeId' },
+          { sourceColumn: 'Оклад', targetField: 'baseSalary' },
+          { sourceColumn: 'Премия', targetField: 'allowance:bonus' },
+          { sourceColumn: 'НДФЛ', targetField: 'incomeTax' },
+          { sourceColumn: 'К выплате', targetField: 'netPay' },
+        ],
+        VND: [
+          { sourceColumn: 'Ma NV', targetField: 'employeeId' },
+          { sourceColumn: 'Luong co ban', targetField: 'baseSalary' },
+          { sourceColumn: 'Phu cap', targetField: 'allowance:allowance' },
+          { sourceColumn: 'Thue TNCN', targetField: 'incomeTax' },
+          { sourceColumn: 'Thuc linh', targetField: 'netPay' },
+        ],
+        MXN: [
+          { sourceColumn: 'No. Empleado', targetField: 'employeeId' },
+          { sourceColumn: 'Sueldo Base', targetField: 'baseSalary' },
+          { sourceColumn: 'Bonos', targetField: 'allowance:bonus' },
+          { sourceColumn: 'ISR', targetField: 'incomeTax' },
+          { sourceColumn: 'Neto a Pagar', targetField: 'netPay' },
+        ],
+      }
+      await prisma.payrollImportMapping.create({
+        data: {
+          id: mappingId,
+          companyId,
+          name: `${def.companyCode} Monthly Payroll`,
+          fileType: 'xlsx',
+          headerRow: 1,
+          mappings: currencyMappings[def.currency] ?? [],
+          currency: def.currency,
+          isDefault: true,
+        },
+      })
+    }
+
+    // PayrollRun
+    const runId = deterministicUUID('prun', `${def.companyCode}:${def.yearMonth}`)
+    const existingRun = await prisma.payrollRun.findFirst({ where: { id: runId } })
+    if (!existingRun) {
+      const periodStart = new Date(`${def.yearMonth}-01`)
+      const periodEnd = new Date(def.year, def.month, 0)
+      const totalGross = def.employees.reduce((s, e) => s + e.base + e.allowances, 0)
+      const totalNet = def.employees.reduce((s, e) => s + e.net, 0)
+      const totalDed = def.employees.reduce((s, e) => s + e.deductions, 0)
+      await prisma.payrollRun.create({
+        data: {
+          id: runId,
+          companyId,
+          name: `${def.companyCode} ${def.yearMonth} 급여`,
+          runType: 'MONTHLY',
+          yearMonth: def.yearMonth,
+          frequency: 'MONTHLY',
+          periodStart,
+          periodEnd,
+          status: 'PAID',
+          currency: def.currency,
+          headcount: def.employees.length,
+          totalGross,
+          totalDeductions: totalDed,
+          totalNet,
+          paidAt: new Date(`${def.yearMonth}-25`),
+        },
+      })
+    }
+
+    // PayrollImportLog
+    const logId = deterministicUUID('plog', `${def.companyCode}:${def.yearMonth}`)
+    const existingLog = await prisma.payrollImportLog.findFirst({ where: { id: logId } })
+    if (!existingLog) {
+      await prisma.payrollImportLog.create({
+        data: {
+          id: logId,
+          companyId,
+          mappingId,
+          runId,
+          year: def.year,
+          month: def.month,
+          fileName: `${def.companyCode}_payroll_${def.yearMonth}.xlsx`,
+          employeeCount: def.employees.length,
+          totalGross: def.employees.reduce((s, e) => s + e.base + e.allowances, 0),
+          totalNet: def.employees.reduce((s, e) => s + e.net, 0),
+          currency: def.currency,
+          status: 'confirmed',
+          uploadedBy: uploadedById,
+          confirmedAt: new Date(`${def.yearMonth}-20`),
+        },
+      })
+    }
+
+    // PayrollItems
+    const jobGrade = await prisma.jobGrade.findFirst({ where: { code: 'S3' } })
+    for (const emp of def.employees) {
+      const existingEmployee = await prisma.employee.findFirst({
+        where: { employeeNo: emp.num },
+        select: { id: true },
+      })
+      let employeeId = existingEmployee?.id
+      if (!employeeId) {
+        const syntheticEmpId = deterministicUUID('emp-foreign', `${def.companyCode}:${emp.num}`)
+        const existingSynth = await prisma.employee.findFirst({ where: { id: syntheticEmpId } })
+        if (!existingSynth) {
+          await prisma.employee.create({
+            data: {
+              id: syntheticEmpId,
+              employeeNo: emp.num,
+              name: emp.name,
+              email: `${emp.num.toLowerCase()}@ctr-${def.companyCode.toLowerCase().replace('ctr-', '')}.com`,
+              hireDate: new Date('2022-01-01'),
+              assignments: {
+                create: {
+                  companyId,
+                  jobGradeId: jobGrade?.id,
+                  employmentType: 'FULL_TIME',
+                  status: 'ACTIVE',
+                  isPrimary: true,
+                  effectiveDate: new Date('2022-01-01'),
+                  changeType: 'HIRE',
+                },
+              },
+            },
+          })
+        }
+        employeeId = syntheticEmpId
+      }
+
+      const itemId = deterministicUUID('pitem', `${runId}:${emp.num}`)
+      const existingItem = await prisma.payrollItem.findFirst({ where: { id: itemId } })
+      if (!existingItem) {
+        await prisma.payrollItem.create({
+          data: {
+            id: itemId,
+            runId,
+            employeeId,
+            baseSalary: emp.base,
+            overtimePay: 0,
+            bonus: 0,
+            allowances: emp.allowances,
+            grossPay: emp.base + emp.allowances,
+            deductions: emp.deductions,
+            netPay: emp.net,
+            currency: def.currency,
+            detail: { source: 'import', employeeNumber: emp.num, employeeName: emp.name },
+          },
+        })
+        foreignPayrollCount++
+      }
+    }
+  }
+
+  console.log(`  ✅ ${foreignPayrollCount} PayrollItems (5 foreign companies)`)
+  console.log('========================================\n')
+
+  // ----------------------------------------------------------
+  // STEP 27: Seed BenefitPlans (B9-2)
+  // ----------------------------------------------------------
+  console.log('📌 Seeding benefit plans...')
+
+  const benefitPlansKR = [
+    { code: 'KR-FAM-WED-SELF', name: '결혼축하금(본인)', nameEn: 'Wedding Gift (Self)', category: 'family', benefitType: 'fixed_amount', amount: 500000, maxAmount: 500000, frequency: 'per_event', requiresProof: true },
+    { code: 'KR-FAM-WED-CHILD', name: '결혼축하금(자녀)', nameEn: 'Wedding Gift (Child)', category: 'family', benefitType: 'fixed_amount', amount: 300000, maxAmount: 300000, frequency: 'per_event', requiresProof: true },
+    { code: 'KR-FAM-OBT-PARENT', name: '조의금(부모/배우자부모)', nameEn: 'Condolence (Parent)', category: 'family', benefitType: 'fixed_amount', amount: 500000, maxAmount: 500000, frequency: 'per_event', requiresProof: true },
+    { code: 'KR-FAM-OBT-GRAND', name: '조의금(조부모)', nameEn: 'Condolence (Grandparent)', category: 'family', benefitType: 'fixed_amount', amount: 300000, maxAmount: 300000, frequency: 'per_event', requiresProof: true },
+    { code: 'KR-FAM-BIRTH', name: '출산축하금', nameEn: 'Birth Congratulation', category: 'family', benefitType: 'fixed_amount', amount: 300000, maxAmount: 300000, frequency: 'per_event', requiresProof: true },
+    { code: 'KR-EDU-TUITION', name: '대학학자금', nameEn: 'Tuition Support', category: 'education', benefitType: 'reimbursement', amount: null, maxAmount: 2000000, frequency: 'annual', requiresProof: true },
+    { code: 'KR-EDU-SELF-DEV', name: '자기개발비', nameEn: 'Self Development', category: 'education', benefitType: 'reimbursement', amount: null, maxAmount: 1000000, frequency: 'annual', requiresProof: true },
+    { code: 'KR-HLT-CHECKUP', name: '종합건강검진', nameEn: 'Health Checkup', category: 'health', benefitType: 'reimbursement', amount: null, maxAmount: 500000, frequency: 'annual', requiresProof: true },
+    { code: 'KR-HLT-GLASSES', name: '안경/렌즈 지원', nameEn: 'Glasses/Lens Support', category: 'health', benefitType: 'reimbursement', amount: null, maxAmount: 200000, frequency: 'annual', requiresProof: true },
+    { code: 'KR-LFS-CLUB', name: '사내동호회', nameEn: 'Club Activity', category: 'lifestyle', benefitType: 'subscription', amount: 50000, maxAmount: 50000, frequency: 'monthly', requiresProof: false },
+  ]
+
+  let bpCount = 0
+  for (let i = 0; i < benefitPlansKR.length; i++) {
+    const bp = benefitPlansKR[i]
+    const id = deterministicUUID('benefit-plan', `CTR-KR:${bp.code}`)
+    await prisma.benefitPlan.upsert({
+      where: { id },
+      update: { name: bp.name, isActive: true },
+      create: {
+        id,
+        companyId: ctrKrId,
+        code: bp.code,
+        name: bp.name,
+        nameEn: bp.nameEn,
+        category: bp.category,
+        benefitType: bp.benefitType,
+        amount: bp.amount,
+        maxAmount: bp.maxAmount,
+        currency: 'KRW',
+        frequency: bp.frequency,
+        requiresApproval: true,
+        requiresProof: bp.requiresProof,
+        isActive: true,
+        displayOrder: i,
+      },
+    })
+    bpCount++
+  }
+
+  // CTR-US benefit plans
+  const benefitPlansUS = [
+    { code: 'US-FIN-401K', name: '401k Matching', nameEn: '401k Matching', category: 'financial', benefitType: 'subscription', amount: null, maxAmount: null, frequency: 'monthly', requiresProof: false },
+    { code: 'US-FIN-ESPP', name: 'Stock Purchase Plan', nameEn: 'Employee Stock Purchase Plan', category: 'financial', benefitType: 'subscription', amount: null, maxAmount: null, frequency: 'monthly', requiresProof: false },
+    { code: 'US-HLT-INSURE', name: 'Health Insurance Subsidy', nameEn: 'Health Insurance Subsidy', category: 'health', benefitType: 'subscription', amount: 500, maxAmount: 500, frequency: 'monthly', requiresProof: false },
+    { code: 'US-HLT-GYM', name: 'Gym Membership', nameEn: 'Gym Membership Reimbursement', category: 'health', benefitType: 'reimbursement', amount: null, maxAmount: 50, frequency: 'monthly', requiresProof: true },
+    { code: 'US-LFS-EAP', name: 'Employee Assistance Program', nameEn: 'Employee Assistance Program', category: 'lifestyle', benefitType: 'subscription', amount: null, maxAmount: null, frequency: 'monthly', requiresProof: false },
+  ]
+
+  for (let i = 0; i < benefitPlansUS.length; i++) {
+    const bp = benefitPlansUS[i]
+    const id = deterministicUUID('benefit-plan', `CTR-US:${bp.code}`)
+    await prisma.benefitPlan.upsert({
+      where: { id },
+      update: { name: bp.name, isActive: true },
+      create: {
+        id,
+        companyId: ctrUsId,
+        code: bp.code,
+        name: bp.name,
+        nameEn: bp.nameEn,
+        category: bp.category,
+        benefitType: bp.benefitType,
+        amount: bp.amount,
+        maxAmount: bp.maxAmount,
+        currency: 'USD',
+        frequency: bp.frequency,
+        requiresApproval: true,
+        requiresProof: bp.requiresProof,
+        isActive: true,
+        displayOrder: i,
+      },
+    })
+    bpCount++
+  }
+
+  // 나머지 법인 (CN/RU/VN/MX) — 글로벌 기본 2개씩
+  const otherCompanies = ['CTR-CN', 'CTR-RU', 'CTR-VN', 'CTR-MX']
+  const globalBasePlans = [
+    { code: 'GLOBAL-HLT-CHECKUP', name: '건강검진', nameEn: 'Health Checkup', category: 'health', benefitType: 'reimbursement', maxAmount: 500 },
+    { code: 'GLOBAL-FAM-OBT', name: '경조금', nameEn: 'Condolence/Celebration', category: 'family', benefitType: 'fixed_amount', maxAmount: 300 },
+  ]
+  for (const compCode of otherCompanies) {
+    const compId = companyMap[compCode]
+    if (!compId) continue
+    for (let i = 0; i < globalBasePlans.length; i++) {
+      const bp = globalBasePlans[i]
+      const id = deterministicUUID('benefit-plan', `${compCode}:${bp.code}`)
+      await prisma.benefitPlan.upsert({
+        where: { id },
+        update: {},
+        create: {
+          id,
+          companyId: compId,
+          code: bp.code,
+          name: bp.name,
+          nameEn: bp.nameEn,
+          category: bp.category,
+          benefitType: bp.benefitType,
+          maxAmount: bp.maxAmount,
+          currency: 'USD',
+          frequency: 'per_event',
+          requiresApproval: true,
+          requiresProof: false,
+          isActive: true,
+          displayOrder: i,
+        },
+      })
+      bpCount++
+    }
+  }
+
+  console.log(`  ✅ ${bpCount} benefit plans`)
+
+  // ----------------------------------------------------------
+  // STEP 28: Seed BenefitBudgets 2025 (B9-2)
+  // ----------------------------------------------------------
+  console.log('📌 Seeding benefit budgets...')
+
+  const krBudgets = [
+    { category: 'family', totalBudget: 20000000 },
+    { category: 'education', totalBudget: 15000000 },
+    { category: 'health', totalBudget: 10000000 },
+    { category: 'lifestyle', totalBudget: 5000000 },
+  ]
+  const usBudgets = [
+    { category: 'financial', totalBudget: 50000 },
+    { category: 'health', totalBudget: 30000 },
+    { category: 'lifestyle', totalBudget: 10000 },
+  ]
+
+  let budgetCount = 0
+  for (const b of krBudgets) {
+    const id = deterministicUUID('benefit-budget', `CTR-KR:2025:${b.category}`)
+    await prisma.benefitBudget.upsert({
+      where: { companyId_year_category: { companyId: ctrKrId, year: 2025, category: b.category } },
+      update: { totalBudget: b.totalBudget },
+      create: { id, companyId: ctrKrId, year: 2025, category: b.category, totalBudget: b.totalBudget, usedAmount: 0 },
+    })
+    budgetCount++
+  }
+  for (const b of usBudgets) {
+    const id = deterministicUUID('benefit-budget', `CTR-US:2025:${b.category}`)
+    await prisma.benefitBudget.upsert({
+      where: { companyId_year_category: { companyId: ctrUsId, year: 2025, category: b.category } },
+      update: { totalBudget: b.totalBudget },
+      create: { id, companyId: ctrUsId, year: 2025, category: b.category, totalBudget: b.totalBudget, usedAmount: 0 },
+    })
+    budgetCount++
+  }
+
+  console.log(`  ✅ ${budgetCount} benefit budgets (2025)`)
   console.log('========================================\n')
 }
 

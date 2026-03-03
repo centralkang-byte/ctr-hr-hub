@@ -611,7 +611,7 @@ export const NAVIGATION: NavSection[] = [
         label: 'HR KPI 대시보드',
         href: '/dashboard',
         icon: LayoutDashboard,
-        module: 'analytics',
+        module: MODULE.ANALYTICS,
       },
       {
         key: 'analytics-overview',

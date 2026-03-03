@@ -143,6 +143,13 @@ class ApiClient {
     })
   }
 
+  async patch<T>(url: string, body?: unknown): Promise<ApiResponse<T>> {
+    return this.request<ApiResponse<T>>(url, {
+      method: 'PATCH',
+      body: body ? JSON.stringify(body) : undefined,
+    })
+  }
+
   async delete<T>(url: string): Promise<ApiResponse<T>> {
     return this.request<ApiResponse<T>>(url, { method: 'DELETE' })
   }

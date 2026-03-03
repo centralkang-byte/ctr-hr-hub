@@ -141,8 +141,17 @@ export function KpiWidget({
             <Legend iconSize={10} wrapperStyle={{ fontSize: 11 }} />
           </PieChart>
         ) : (
-          <div className="flex items-center justify-center h-full">
-            <span className="text-3xl font-bold text-[#1A1A1A]">{String(data)}</span>
+          <div className="flex flex-col items-center justify-center h-full gap-2">
+            {typeof data === 'object' && data !== null ? (
+              Object.entries(data as Record<string, unknown>).map(([k, v]) => (
+                <div key={k} className="text-center">
+                  <div className="text-3xl font-bold text-[#1A1A1A]">{String(v)}</div>
+                  <div className="text-xs text-[#666] mt-1">{k}</div>
+                </div>
+              ))
+            ) : (
+              <span className="text-3xl font-bold text-[#1A1A1A]">{String(data)}</span>
+            )}
           </div>
         )}
       </ResponsiveContainer>

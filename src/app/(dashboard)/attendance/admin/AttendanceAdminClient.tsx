@@ -7,6 +7,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
+import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable } from '@/components/shared/DataTable'
@@ -58,6 +59,15 @@ interface AdminAttendanceData {
   date: string
   kpi: AttendanceKpi
   anomalies: AnomalyRecord[]
+}
+
+interface WorkHourAlert {
+  id: string
+  alertLevel: 'caution' | 'warning' | 'blocked'
+  totalHours: number
+  weekStart: string
+  isResolved: boolean
+  employee?: { id: string; name: string; email: string }
 }
 
 interface CorrectionForm {
@@ -115,6 +125,10 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
   const [data, setData] = useState<AdminAttendanceData | null>(null)
   const [loading, setLoading] = useState(true)
 
+  // 52h alerts state
+  const [alerts, setAlerts] = useState<WorkHourAlert[]>([])
+  const [resolvingId, setResolvingId] = useState<string | null>(null)
+
   // Correction dialog state
   const [selectedAnomaly, setSelectedAnomaly] = useState<AnomalyRecord | null>(null)
   const [correction, setCorrection] = useState<CorrectionForm>(INITIAL_CORRECTION)
@@ -123,12 +137,28 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
   const fetchData = useCallback(async () => {
     setLoading(true)
     try {
-      const res = await apiClient.get<AdminAttendanceData>('/api/v1/attendance/admin')
-      setData(res.data)
+      const [adminRes, alertRes] = await Promise.all([
+        apiClient.get<AdminAttendanceData>('/api/v1/attendance/admin'),
+        apiClient.get<WorkHourAlert[]>('/api/v1/attendance/work-hour-alerts'),
+      ])
+      setData(adminRes.data)
+      setAlerts(alertRes.data ?? [])
     } catch {
       // TODO: error toast
     } finally {
       setLoading(false)
+    }
+  }, [])
+
+  const handleResolveAlert = useCallback(async (alertId: string) => {
+    setResolvingId(alertId)
+    try {
+      await apiClient.patch(`/api/v1/attendance/work-hour-alerts/${alertId}`, {})
+      setAlerts((prev) => prev.filter((a) => a.id !== alertId))
+    } catch {
+      // TODO: error toast
+    } finally {
+      setResolvingId(null)
     }
   }, [])
 
@@ -265,6 +295,71 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
           {kpi ? formatMinutes(kpi.avgTotalMinutes) : '—'}
         </p>
       </div>
+
+      {/* 52시간 모니터링 위젯 */}
+      {alerts.length > 0 && (
+        <div className="rounded-xl border border-[#FECACA] bg-white overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-3 bg-[#FEF2F2] border-b border-[#FECACA]">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-[#EF4444]" />
+              <span className="text-sm font-semibold text-[#B91C1C]">
+                52시간 초과 경고 ({alerts.length}명)
+              </span>
+            </div>
+            <div className="flex items-center gap-3 text-xs text-[#666]">
+              <span className="flex items-center gap-1">
+                <span className="h-2 w-2 rounded-full bg-[#F59E0B] inline-block" />
+                주의: {alerts.filter((a) => a.alertLevel === 'caution').length}
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="h-2 w-2 rounded-full bg-[#F97316] inline-block" />
+                경고: {alerts.filter((a) => a.alertLevel === 'warning').length}
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="h-2 w-2 rounded-full bg-[#EF4444] inline-block" />
+                차단: {alerts.filter((a) => a.alertLevel === 'blocked').length}
+              </span>
+            </div>
+          </div>
+          <div className="divide-y divide-[#F5F5F5]">
+            {alerts.map((alert) => (
+              <div key={alert.id} className="flex items-center justify-between px-5 py-3">
+                <div className="flex items-center gap-3">
+                  <span
+                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                      alert.alertLevel === 'blocked'
+                        ? 'bg-[#FEE2E2] text-[#B91C1C]'
+                        : alert.alertLevel === 'warning'
+                          ? 'bg-[#FFF7ED] text-[#C2410C]'
+                          : 'bg-[#FFFBEB] text-[#B45309]'
+                    }`}
+                  >
+                    {alert.alertLevel === 'blocked' ? '차단' : alert.alertLevel === 'warning' ? '경고' : '주의'}
+                  </span>
+                  <span className="text-sm font-medium text-[#1A1A1A]">
+                    {alert.employee?.name ?? '—'}
+                  </span>
+                  <span className="text-xs text-[#888]">
+                    {alert.totalHours.toFixed(1)}h / 주
+                  </span>
+                </div>
+                <button
+                  onClick={() => { void handleResolveAlert(alert.id) }}
+                  disabled={resolvingId === alert.id}
+                  className="flex items-center gap-1 text-xs text-[#059669] hover:text-[#047857] disabled:opacity-50"
+                >
+                  {resolvingId === alert.id ? (
+                    <XCircle className="h-4 w-4" />
+                  ) : (
+                    <CheckCircle2 className="h-4 w-4" />
+                  )}
+                  해제
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Anomaly table */}
       <DataTable

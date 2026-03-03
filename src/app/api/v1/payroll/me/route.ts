@@ -14,7 +14,7 @@ export const GET = withPermission(
         employeeId: user.employeeId,
         run: {
           companyId: user.companyId,
-          status: 'PAID',
+          status: { in: ['APPROVED', 'PAID'] },
         },
       },
       include: {

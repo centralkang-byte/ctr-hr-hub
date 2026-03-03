@@ -16,12 +16,13 @@ import type { SessionUser } from '@/types'
 
 // ─── Allowed employee fields for update ─────────────────────
 
-type UpdatableField = 'phone' | 'emergencyContact' | 'emergencyContactPhone'
+type UpdatableField = 'phone' | 'emergencyContact' | 'emergencyContactPhone' | 'name'
 
 const UPDATABLE_FIELDS: readonly string[] = [
   'phone',
   'emergencyContact',
   'emergencyContactPhone',
+  'name',
 ]
 
 // ─── Zod Schema ─────────────────────────────────────────────
@@ -37,6 +38,7 @@ const FIELD_LABELS: Record<string, string> = {
   phone: '전화번호',
   emergencyContact: '비상연락처 이름',
   emergencyContactPhone: '비상연락처 전화',
+  name: '이름',
 }
 
 // ─── PUT — 승인/반려 ────────────────────────────────────────

@@ -180,7 +180,10 @@ async function calcTrainingCompletionRate(companyId: string | null, year: number
 export const GET = withPermission(
   async (req: NextRequest, _ctx: { params: Promise<Record<string, string>> }, user: SessionUser) => {
     const { searchParams } = new URL(req.url)
-    const year = Number(searchParams.get('year') ?? new Date().getFullYear())
+    const parsedYear = parseInt(searchParams.get('year') ?? '', 10)
+    const year = !isNaN(parsedYear) && parsedYear >= 2000 && parsedYear <= 2100
+      ? parsedYear
+      : new Date().getFullYear()
     const requestedCompanyId = searchParams.get('companyId')
     const isGlobalRole =
       user.role === ROLE.SUPER_ADMIN || (user.role === ROLE.HR_ADMIN && !user.companyId)

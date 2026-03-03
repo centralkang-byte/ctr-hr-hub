@@ -14,7 +14,12 @@ import type { SessionUser } from '@/types'
 
 // ─── Allowed editable fields ────────────────────────────────
 
-const ALLOWED_FIELDS = ['phone', 'emergencyContact', 'emergencyContactPhone'] as const
+const ALLOWED_FIELDS = [
+  'phone',
+  'emergencyContact',
+  'emergencyContactPhone',
+  'name',
+] as const
 type AllowedField = (typeof ALLOWED_FIELDS)[number]
 
 // ─── Zod Schema ─────────────────────────────────────────────
@@ -22,6 +27,8 @@ type AllowedField = (typeof ALLOWED_FIELDS)[number]
 const createChangeRequestSchema = z.object({
   fieldName: z.enum(ALLOWED_FIELDS),
   newValue: z.string().min(1, '새 값을 입력해주세요.'),
+  reason: z.string().max(500).optional(),
+  documentPath: z.string().max(500).optional(),
 })
 
 // ─── GET — 내 변경 요청 목록 ──────────────────────────────────
@@ -61,15 +68,15 @@ export const POST = withPermission(
       })
     }
 
-    const { fieldName, newValue } = parsed.data
+    const { fieldName, newValue, reason, documentPath } = parsed.data
 
     // Look up current employee to get old value
     const employee = await prisma.employee.findUnique({
       where: { id: user.employeeId },
-      select: { phone: true, emergencyContact: true, emergencyContactPhone: true },
+      select: { phone: true, emergencyContact: true, emergencyContactPhone: true, name: true },
     })
 
-    const oldValue = employee?.[fieldName as AllowedField] ?? null
+    const oldValue = employee ? ((employee as Record<string, unknown>)[fieldName] as string | null) ?? null : null
 
     const request = await prisma.profileChangeRequest.create({
       data: {
@@ -77,6 +84,8 @@ export const POST = withPermission(
         fieldName,
         oldValue,
         newValue,
+        reason: reason ?? null,
+        documentPath: documentPath ?? null,
         status: 'CHANGE_PENDING',
       },
     })

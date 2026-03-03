@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { badRequest } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 
 // ─── Active assignment filter ──────────────────────────────
@@ -65,18 +65,20 @@ async function getWorkforceByCompany(companyId: string | null) {
   }))
 }
 
-async function getWorkforceTrend() {
-  const now = new Date()
-  const since = new Date(now.getFullYear() - 1, now.getMonth(), 1)
-  const snaps = await prisma.analyticsSnapshot.findMany({
+async function getWorkforceTrend(companyId: string | null) {
+  const start = new Date()
+  start.setMonth(start.getMonth() - 11)
+  start.setDate(1)
+  const snapshots = await prisma.analyticsSnapshot.findMany({
     where: {
       type: 'headcount',
-      snapshotDate: { gte: since },
+      snapshotDate: { gte: start },
+      ...(companyId ? { companyId } : {}),
     },
     orderBy: { snapshotDate: 'asc' },
-    select: { companyId: true, snapshotDate: true, data: true },
+    select: { snapshotDate: true, data: true, companyId: true },
   })
-  return snaps.map((s) => ({
+  return snapshots.map((s) => ({
     month: s.snapshotDate.toISOString().slice(0, 7),
     count: (s.data as { count?: number })?.count ?? 0,
     companyId: s.companyId,
@@ -196,24 +198,34 @@ async function getPerfGrade(companyId: string | null, year: number) {
 
 async function getSkillGapTop5(companyId: string | null) {
   // Use CompetencyRequirement.expectedLevel vs EmployeeSkillAssessment.finalLevel
+  // Remove assessmentPeriod: 'latest' — get ALL assessments and deduplicate
   const assessments = await prisma.employeeSkillAssessment.findMany({
     where: {
       finalLevel: { not: null },
-      assessmentPeriod: 'latest',
-      ...(companyId
-        ? { employee: activeAssignmentWhere(companyId) }
-        : {}),
+      ...(companyId ? { employee: activeAssignmentWhere(companyId) } : {}),
     },
     select: {
+      employeeId: true,
       competencyId: true,
       finalLevel: true,
+      createdAt: true,
       competency: { select: { name: true } },
     },
+    orderBy: { createdAt: 'desc' },
+  })
+
+  // Deduplicate: keep latest per employeeId + competencyId
+  const seen = new Set<string>()
+  const deduped = assessments.filter((a) => {
+    const key = `${a.employeeId}_${a.competencyId}`
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
   })
 
   // Group by competency and compute average finalLevel
   const byCompetency = new Map<string, { name: string; levels: number[] }>()
-  for (const a of assessments) {
+  for (const a of deduped) {
     if (a.finalLevel === null) continue
     if (!byCompetency.has(a.competencyId)) {
       byCompetency.set(a.competencyId, { name: a.competency.name, levels: [] })
@@ -372,45 +384,54 @@ async function getPayrollCost(companyId: string | null, year: number) {
 
 async function getTrainingMandatory(companyId: string | null, year: number) {
   const configs = await prisma.mandatoryTrainingConfig.findMany({
-    where: {
-      isActive: true,
-      ...(companyId ? { companyId } : { companyId: null }),
-    },
+    where: { isActive: true },
     include: { course: { select: { id: true, title: true } } },
   })
+  if (configs.length === 0) return []
 
+  const courseIds = configs.map((c) => c.courseId)
   const start = new Date(year, 0, 1)
   const end = new Date(year, 11, 31, 23, 59, 59)
+  const empFilter = companyId ? activeAssignmentWhere(companyId) : {}
 
-  const results = await Promise.all(
-    configs.map(async (cfg) => {
-      const [total, completed] = await Promise.all([
-        prisma.trainingEnrollment.count({
-          where: {
-            courseId: cfg.courseId,
-            enrolledAt: { gte: start, lte: end },
-            ...(companyId ? { employee: activeAssignmentWhere(companyId) } : {}),
-          },
-        }),
-        prisma.trainingEnrollment.count({
-          where: {
-            courseId: cfg.courseId,
-            status: 'ENROLLMENT_COMPLETED',
-            enrolledAt: { gte: start, lte: end },
-            ...(companyId ? { employee: activeAssignmentWhere(companyId) } : {}),
-          },
-        }),
-      ])
-      return {
-        courseTitle: cfg.course.title,
-        total,
-        completed,
-        rate: total > 0 ? Math.round((completed / total) * 1000) / 10 : 0,
-      }
-    })
-  )
+  // Batch: count total and completed in 2 queries instead of 2N
+  const [totals, completeds] = await Promise.all([
+    prisma.trainingEnrollment.groupBy({
+      by: ['courseId'],
+      where: {
+        courseId: { in: courseIds },
+        source: 'mandatory_auto',
+        enrolledAt: { gte: start, lte: end },
+        ...(companyId ? { employee: empFilter } : {}),
+      },
+      _count: { _all: true },
+    }),
+    prisma.trainingEnrollment.groupBy({
+      by: ['courseId'],
+      where: {
+        courseId: { in: courseIds },
+        source: 'mandatory_auto',
+        status: 'ENROLLMENT_COMPLETED',
+        enrolledAt: { gte: start, lte: end },
+        ...(companyId ? { employee: empFilter } : {}),
+      },
+      _count: { _all: true },
+    }),
+  ])
 
-  return results
+  const totalMap = new Map(totals.map((t) => [t.courseId, t._count._all]))
+  const completedMap = new Map(completeds.map((t) => [t.courseId, t._count._all]))
+
+  return configs.map((config) => {
+    const total = totalMap.get(config.courseId) ?? 0
+    const completed = completedMap.get(config.courseId) ?? 0
+    return {
+      courseTitle: config.course.title,
+      total,
+      completed,
+      rate: total > 0 ? Math.round((completed / total) * 1000) / 10 : null,
+    }
+  })
 }
 
 async function getBenefitUsage(companyId: string | null, year: number) {
@@ -456,7 +477,7 @@ const WIDGET_HANDLERS: Record<
 > = {
   'workforce-grade': (c) => getWorkforceGrade(c),
   'workforce-company': (c) => getWorkforceByCompany(c),
-  'workforce-trend': () => getWorkforceTrend(),
+  'workforce-trend': (c) => getWorkforceTrend(c),
   'workforce-tenure': (c) => getWorkforceTenure(c),
   'recruit-pipeline': (c) => getRecruitPipeline(c),
   'recruit-ttr': (c) => getRecruitTTR(c),
@@ -481,10 +502,19 @@ export const GET = withPermission(
   ) => {
     const { widgetId } = await ctx.params
     const { searchParams } = new URL(req.url)
-    const year = Number(searchParams.get('year') ?? new Date().getFullYear())
+    const parsedYear = parseInt(searchParams.get('year') ?? '', 10)
+    const year = !isNaN(parsedYear) && parsedYear >= 2000 && parsedYear <= 2100
+      ? parsedYear
+      : new Date().getFullYear()
     const requestedCompanyId = searchParams.get('companyId')
+    const isGlobalRole =
+      user.role === ROLE.SUPER_ADMIN || (user.role === ROLE.HR_ADMIN && !user.companyId)
     const companyId: string | null =
-      requestedCompanyId === 'all' ? null : requestedCompanyId ?? user.companyId ?? null
+      requestedCompanyId === 'all' || (!requestedCompanyId && isGlobalRole)
+        ? null
+        : isGlobalRole
+        ? (requestedCompanyId ?? null)
+        : (user.companyId ?? null)
 
     const handler = WIDGET_HANDLERS[widgetId]
     if (!handler) throw badRequest(`Unknown widgetId: ${widgetId}`)

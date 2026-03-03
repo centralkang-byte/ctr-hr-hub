@@ -19,6 +19,7 @@ import {
   X,
 } from 'lucide-react'
 import { AssignmentHistoryTab } from '@/components/employees/tabs/AssignmentHistoryTab'
+import { AttendanceTab } from '@/components/employees/tabs/AttendanceTab'
 import { CompensationTab } from '@/components/employees/tabs/CompensationTab'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -564,15 +565,9 @@ export function EmployeeDetailClient({
               </TabsContent>
             )}
 
-            {/* Tab 4: 근태현황 (comingSoon - B6) */}
+            {/* Tab 4: 근태현황 (B6-1) */}
             <TabsContent value="attendance" className="mt-0">
-              <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
-                <div className="flex flex-col items-center py-12 text-[#999]">
-                  <Clock className="h-10 w-10 mb-3 text-[#E8E8E8]" />
-                  <p className="text-sm font-medium text-[#666]">근태현황</p>
-                  <p className="text-xs mt-1">B6 세션에서 구현 예정입니다.</p>
-                </div>
-              </div>
+              <AttendanceTab employeeId={employee.id} />
             </TabsContent>
 
             {/* Tab 5: 평가결과 (comingSoon - B3) */}

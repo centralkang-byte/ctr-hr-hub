@@ -50,6 +50,13 @@ export interface PayrollItemDetail {
   grossPay: number
   totalDeductions: number
   netPay: number
+  // B7-1a: 비과세 분리 + 일할계산 + 이상감지
+  taxableIncome?: number
+  nontaxableTotal?: number
+  isProrated?: boolean
+  prorateRatio?: number
+  workDays?: number
+  anomalies?: Array<{ type: 'WARNING' | 'INFO'; code: string; message: string }>
   customAllowances?: CustomPayItem[]
   customDeductions?: CustomPayItem[]
   previousMonth?: {

@@ -2,7 +2,7 @@ import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 
 type KpiKey = 'turnover_rate' | 'leave_usage' | 'training_completion' | 'payroll_cost'
@@ -88,15 +88,30 @@ async function calcKpiValue(kpi: KpiKey, companyId: string, year: number): Promi
 }
 
 export const GET = withPermission(
-  async (req: NextRequest, _ctx: { params: Promise<Record<string, string>> }, _user: SessionUser) => {
+  async (req: NextRequest, _ctx: { params: Promise<Record<string, string>> }, user: SessionUser) => {
     const { searchParams } = new URL(req.url)
     const kpi = (searchParams.get('kpi') ?? 'turnover_rate') as KpiKey
-    const year = Number(searchParams.get('year') ?? new Date().getFullYear())
+    const parsedYear = parseInt(searchParams.get('year') ?? '', 10)
+    const year = !isNaN(parsedYear) && parsedYear >= 2000 && parsedYear <= 2100
+      ? parsedYear
+      : new Date().getFullYear()
 
-    const companies = await prisma.company.findMany({
-      select: { id: true, code: true, name: true },
-      orderBy: { code: 'asc' },
-    })
+    const isGlobalRole =
+      user.role === ROLE.SUPER_ADMIN || (user.role === ROLE.HR_ADMIN && !user.companyId)
+
+    // If not global role, only return their company
+    const companyFilter: string | null = isGlobalRole ? null : (user.companyId ?? null)
+
+    const companies = companyFilter
+      ? await prisma.company.findMany({
+          where: { id: companyFilter },
+          select: { id: true, code: true, name: true },
+          orderBy: { code: 'asc' },
+        })
+      : await prisma.company.findMany({
+          select: { id: true, code: true, name: true },
+          orderBy: { code: 'asc' },
+        })
 
     const results = await Promise.all(
       companies.map(async (c) => ({
@@ -109,12 +124,24 @@ export const GET = withPermission(
 
     const trendStart = new Date(year, 0, 1)
     const snapshots = await prisma.analyticsSnapshot.findMany({
-      where: { type: kpi, snapshotDate: { gte: trendStart } },
+      where: {
+        type: kpi,
+        snapshotDate: { gte: trendStart },
+        ...(companyFilter ? { companyId: companyFilter } : {}),
+      },
       orderBy: { snapshotDate: 'asc' },
       select: { companyId: true, snapshotDate: true, data: true },
     })
 
-    return apiSuccess({ results, trend: snapshots, kpi, year })
+    const trend = snapshots.map((s) => ({
+      month: (s.snapshotDate as Date).toISOString().slice(0, 7),
+      companyId: s.companyId,
+      value:
+        (s.data as { value?: number; rate?: number })?.value ??
+        (s.data as { rate?: number })?.rate ??
+        null,
+    }))
+    return apiSuccess({ results, trend, kpi, year })
   },
   perm(MODULE.ANALYTICS, ACTION.VIEW)
 )

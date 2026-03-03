@@ -155,3 +155,165 @@ export function calculateTotalDeductions(
     totalDeductions: socialInsurance.total + incomeTax.total,
   }
 }
+
+// ─── B7-1a: 비과세 분리 ────────────────────────────────────
+
+export interface AllowanceItem {
+  code: string
+  name: string
+  amount: number
+  isTaxable: boolean
+}
+
+export interface NontaxableSeparationResult {
+  taxableIncome: number
+  nontaxableTotal: number
+  nontaxableDetail: Array<{ code: string; name: string; amount: number; limit: number }>
+}
+
+/**
+ * 식대/차량 등 비과세 한도 적용 후 과세/비과세 분리
+ * limits: { code → monthlyLimit } 맵
+ */
+export function separateTaxableIncome(
+  baseSalary: number,
+  overtimePay: number,
+  allowances: AllowanceItem[],
+  nontaxableLimits: Record<string, number>,
+): NontaxableSeparationResult {
+  let nontaxableTotal = 0
+  const nontaxableDetail: NontaxableSeparationResult['nontaxableDetail'] = []
+  let taxableAllowances = 0
+
+  for (const item of allowances) {
+    if (!item.isTaxable) {
+      const limit = nontaxableLimits[item.code] ?? 0
+      const nontaxableAmount = Math.min(item.amount, limit)
+      const taxableOverflow = item.amount - nontaxableAmount
+      nontaxableTotal += nontaxableAmount
+      taxableAllowances += taxableOverflow
+      if (nontaxableAmount > 0) {
+        nontaxableDetail.push({ code: item.code, name: item.name, amount: nontaxableAmount, limit })
+      }
+    } else {
+      taxableAllowances += item.amount
+    }
+  }
+
+  const taxableIncome = baseSalary + overtimePay + taxableAllowances
+
+  return { taxableIncome, nontaxableTotal, nontaxableDetail }
+}
+
+// ─── B7-1a: 일할계산 ──────────────────────────────────────
+
+/**
+ * 주어진 연월의 평일(근무일) 수 계산
+ * 토/일을 제외한 단순 평일 기준 (공휴일 미반영)
+ */
+export function getWeekdaysInMonth(year: number, month: number): number {
+  const daysInMonth = new Date(year, month, 0).getDate()
+  let weekdays = 0
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dow = new Date(year, month - 1, d).getDay()
+    if (dow !== 0 && dow !== 6) weekdays++
+  }
+  return weekdays
+}
+
+export function getWeekdaysBetween(start: Date, end: Date): number {
+  let count = 0
+  const cur = new Date(start)
+  cur.setHours(0, 0, 0, 0)
+  const endD = new Date(end)
+  endD.setHours(0, 0, 0, 0)
+  while (cur <= endD) {
+    const dow = cur.getDay()
+    if (dow !== 0 && dow !== 6) count++
+    cur.setDate(cur.getDate() + 1)
+  }
+  return count
+}
+
+export interface ProrateResult {
+  proratedAmount: number
+  ratio: number
+  workDays: number
+  totalDays: number
+  isProrated: boolean
+}
+
+/**
+ * 중도입사/퇴사 일할계산
+ * hireDate: 입사일 (당월 이후면 일할), undefined면 일할 불필요
+ * resignDate: 퇴사일 (당월 이전이면 일할), undefined면 일할 불필요
+ */
+export function calculateProrated(
+  monthlyAmount: number,
+  year: number,
+  month: number,
+  hireDate?: Date,
+  resignDate?: Date,
+): ProrateResult {
+  const monthStart = new Date(year, month - 1, 1)
+  const monthEnd = new Date(year, month, 0) // 말일
+
+  const effectiveStart = hireDate && hireDate > monthStart ? hireDate : monthStart
+  const effectiveEnd = resignDate && resignDate < monthEnd ? resignDate : monthEnd
+
+  if (effectiveStart <= monthStart && effectiveEnd >= monthEnd) {
+    // 일할 불필요
+    const totalDays = getWeekdaysInMonth(year, month)
+    return { proratedAmount: monthlyAmount, ratio: 1, workDays: totalDays, totalDays, isProrated: false }
+  }
+
+  const totalDays = getWeekdaysInMonth(year, month)
+  const workDays = getWeekdaysBetween(effectiveStart, effectiveEnd)
+  const ratio = totalDays > 0 ? workDays / totalDays : 0
+  const proratedAmount = Math.round(monthlyAmount * ratio)
+
+  return { proratedAmount, ratio, workDays, totalDays, isProrated: true }
+}
+
+// ─── B7-1a: 이상 항목 감지 ────────────────────────────────
+
+export interface PayrollAnomalyCheck {
+  type: 'WARNING' | 'INFO'
+  code: string
+  message: string
+}
+
+export function detectPayrollAnomalies(
+  current: { grossPay: number; overtimePay: number; baseSalary: number; isProrated: boolean },
+  previous: { grossPay: number } | null,
+): PayrollAnomalyCheck[] {
+  const anomalies: PayrollAnomalyCheck[] = []
+
+  // 전월 대비 변동 > 20%
+  if (previous && previous.grossPay > 0) {
+    const changeRatio = Math.abs(current.grossPay - previous.grossPay) / previous.grossPay
+    if (changeRatio > 0.2) {
+      anomalies.push({
+        type: 'WARNING',
+        code: 'GROSS_CHANGE_OVER_20PCT',
+        message: `총지급액이 전월 대비 ${Math.round(changeRatio * 100)}% 변동`,
+      })
+    }
+  }
+
+  // 초과근무수당 > 기본급 50%
+  if (current.baseSalary > 0 && current.overtimePay > current.baseSalary * 0.5) {
+    anomalies.push({
+      type: 'WARNING',
+      code: 'OVERTIME_OVER_50PCT_BASE',
+      message: `초과근무수당(${current.overtimePay.toLocaleString()}원)이 기본급의 50%를 초과`,
+    })
+  }
+
+  // 중도입사/퇴사 일할계산 정보
+  if (current.isProrated) {
+    anomalies.push({ type: 'INFO', code: 'PRORATED', message: '중도입사/퇴사 일할계산 적용' })
+  }
+
+  return anomalies
+}

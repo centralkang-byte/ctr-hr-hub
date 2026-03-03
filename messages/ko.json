@@ -2971,6 +2971,7 @@
     },
     "mySpace": {
       "label": "나의 공간",
+      "home": "나의 공간 홈",
       "profile": "내 프로필",
       "attendance": "출퇴근/근태",
       "leave": "휴가",
@@ -2981,7 +2982,9 @@
       "feedback": "1:1/피드백",
       "selfEval": "자기평가",
       "recognition": "칭찬/인정",
-      "training": "내 교육"
+      "skills": "역량 자기평가",
+      "training": "내 교육",
+      "yearEnd": "연말 정산"
     },
     "team": {
       "label": "팀 관리",
@@ -2991,7 +2994,8 @@
       "goals": "팀 목표",
       "results": "팀 성과",
       "managerEval": "매니저 평가",
-      "oneOnOne": "1:1 미팅"
+      "oneOnOne": "1:1 미팅",
+      "skills": "팀원 역량 평가"
     },
     "hrOps": {
       "label": "인사 운영",
@@ -3020,7 +3024,8 @@
       "compensation": "보상 관리",
       "benefits": "복리후생 관리",
       "training": "교육/개발",
-      "succession": "승계 계획"
+      "succession": "승계 계획",
+      "skillMatrix": "스킬 매트릭스"
     },
     "insights": {
       "label": "인사이트",
@@ -3041,7 +3046,10 @@
       "dpia": "DPIA",
       "ruCompliance": "러시아 컴플라이언스",
       "cnCompliance": "중국 컴플라이언스",
-      "krCompliance": "한국 컴플라이언스"
+      "krCompliance": "한국 컴플라이언스",
+      "peopleDirectory": "구성원 디렉토리",
+      "hrChatbot": "HR 챗봇",
+      "aiAgent": "AI 에이전트"
     },
     "settings": {
       "label": "설정",

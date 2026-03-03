@@ -3,9 +3,10 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { GraduationCap, ListChecks } from 'lucide-react'
+import { GraduationCap, ListChecks, ShieldCheck } from 'lucide-react'
 import CoursesTab from '@/components/training/CoursesTab'
 import EnrollmentsTab from '@/components/training/EnrollmentsTab'
+import MandatoryConfigTab from '@/components/training/MandatoryConfigTab'
 
 export default function TrainingClient() {
   const t = useTranslations('training')
@@ -32,6 +33,10 @@ export default function TrainingClient() {
             <ListChecks className="mr-1.5 h-4 w-4" />
             {t('enrollmentList')}
           </TabsTrigger>
+          <TabsTrigger value="mandatory">
+            <ShieldCheck className="mr-1.5 h-4 w-4" />
+            법정 의무교육
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="courses" className="mt-0">
@@ -40,6 +45,10 @@ export default function TrainingClient() {
 
         <TabsContent value="enrollments" className="mt-0">
           <EnrollmentsTab />
+        </TabsContent>
+
+        <TabsContent value="mandatory" className="mt-0">
+          <MandatoryConfigTab />
         </TabsContent>
       </Tabs>
     </div>
