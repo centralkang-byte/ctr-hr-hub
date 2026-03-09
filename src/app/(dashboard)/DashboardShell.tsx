@@ -9,6 +9,7 @@ import { useCallback, type ReactNode } from 'react'
 import { signOut } from 'next-auth/react'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Header } from '@/components/layout/Header'
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav'
 import type { SessionUser } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -37,11 +38,14 @@ export function DashboardShell({ user, companies, children }: DashboardShellProp
 
   return (
     <>
-      <Sidebar user={user} onSignOut={handleSignOut} countryCode={currentCountryCode ?? undefined} />
+      <div className="hidden md:flex">
+        <Sidebar user={user} onSignOut={handleSignOut} countryCode={currentCountryCode ?? undefined} />
+      </div>
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header user={user} companies={companies} />
-        <main className="flex-1 overflow-auto p-6">{children}</main>
+        <main className="flex-1 overflow-auto bg-[#F5F5FA] p-6 pb-16 md:pb-6">{children}</main>
       </div>
+      <MobileBottomNav />
     </>
   )
 }

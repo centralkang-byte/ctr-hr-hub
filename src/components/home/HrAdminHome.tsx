@@ -19,6 +19,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { AiGeneratedBadge } from '@/components/shared/AiGeneratedBadge'
+import { WidgetSkeleton } from '@/components/shared/WidgetSkeleton'
 import { PendingActionsPanel } from './PendingActionsPanel'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
@@ -43,12 +44,14 @@ interface HrAdminSummary {
 
 export function HrAdminHome({ user }: HrAdminHomeProps) {
   const [summary, setSummary] = useState<HrAdminSummary | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     apiClient
       .get<HrAdminSummary>('/api/v1/home/summary')
       .then((res) => setSummary(res.data))
       .catch(() => {})
+      .finally(() => setLoading(false))
   }, [])
 
   return (
@@ -67,7 +70,14 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
       <PendingActionsPanel user={user} />
 
       {/* KPI Cards Row */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {loading ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <WidgetSkeleton key={i} height="h-28" lines={2} />
+          ))}
+        </div>
+      ) : null}
+      <div className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-4 ${loading ? 'hidden' : ''}`}>
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">

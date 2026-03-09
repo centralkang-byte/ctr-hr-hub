@@ -4,11 +4,12 @@
 // CTR HR Hub — 지원자 등록 폼 (Client)
 // ═══════════════════════════════════════════════════════════
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { ChevronLeft, UserPlus, Save, Loader2 } from 'lucide-react'
+import { ChevronLeft, UserPlus, Save, Loader2, AlertTriangle } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { useAutoSave } from '@/hooks/useAutoSave'
 import DuplicateWarningModal from '@/components/recruitment/DuplicateWarningModal'
 import type { SessionUser } from '@/types'
 
@@ -49,6 +50,9 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
   const [error, setError] = useState<string | null>(null)
   const [duplicates, setDuplicates] = useState<DuplicateMatch[]>([])
   const [pendingSubmit, setPendingSubmit] = useState(false)
+  const [emailWarning, setEmailWarning] = useState<string | null>(null)
+  const [phoneWarning, setPhoneWarning] = useState<string | null>(null)
+  const FORM_KEY = `applicant-form-${postingId}`
   const [form, setForm] = useState<FormData>({
     name: '',
     email: '',
@@ -58,6 +62,15 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
     memo: '',
     resumeKey: '',
   })
+
+  const { loadSaved, clearSaved, savedAt } = useAutoSave(FORM_KEY, form)
+
+  // 마운트 시 저장된 초안 복원
+  useEffect(() => {
+    const saved = loadSaved()
+    if (saved) setForm(saved)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // ─── Options (use t() for labels) ─────────────────────
   const SOURCE_OPTIONS = [
@@ -74,6 +87,43 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+    if (e.target.name === 'email') setEmailWarning(null)
+    if (e.target.name === 'phone') setPhoneWarning(null)
+  }
+
+  const checkFieldDuplicate = async (field: 'email' | 'phone', value: string) => {
+    if (!value.trim()) return
+    try {
+      const res = await apiClient.get<{
+        exists: boolean
+        candidate: { name: string; email: string; appliedJobTitle: string | null } | null
+      }>(`/api/v1/recruitment/candidates/check?${field}=${encodeURIComponent(value.trim())}`)
+      if (res.data.exists && res.data.candidate) {
+        const { name, appliedJobTitle } = res.data.candidate
+        const msg = appliedJobTitle
+          ? `이미 시스템에 존재하는 후보자입니다 (이름: ${name}, 최근 지원 공고: ${appliedJobTitle})`
+          : `이미 시스템에 존재하는 후보자입니다 (이름: ${name})`
+        if (field === 'email') setEmailWarning(msg)
+        else setPhoneWarning(msg)
+      } else {
+        if (field === 'email') setEmailWarning(null)
+        else setPhoneWarning(null)
+      }
+    } catch {
+      // 체크 실패 시 경고 없이 진행
+    }
+  }
+
+  const handleEmailBlur = () => {
+    checkFieldDuplicate('email', form.email)
+  }
+
+  const handlePhoneBlur = () => {
+    if (form.phone.trim()) {
+      checkFieldDuplicate('phone', form.phone)
+    } else {
+      setPhoneWarning(null)
+    }
   }
 
   const doSubmit = async () => {
@@ -89,6 +139,7 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
         memo: form.memo.trim() || null,
         resumeKey: form.resumeKey.trim() || null,
       })
+      clearSaved()
       router.push(`/recruitment/${postingId}/applicants`)
     } catch (err) {
       const message =
@@ -209,9 +260,16 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
                 name="email"
                 value={form.email}
                 onChange={handleChange}
+                onBlur={handleEmailBlur}
                 placeholder="example@email.com"
                 className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"
               />
+              {emailWarning && (
+                <p className="flex items-center gap-1.5 text-[#B45309] bg-[#F4BE5E]/10 px-2 py-1.5 rounded-md mt-1.5 text-sm font-medium">
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  {emailWarning}
+                </p>
+              )}
             </div>
 
             {/* 전화번호 */}
@@ -224,9 +282,16 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
                 name="phone"
                 value={form.phone}
                 onChange={handleChange}
+                onBlur={handlePhoneBlur}
                 placeholder="010-0000-0000"
                 className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"
               />
+              {phoneWarning && (
+                <p className="flex items-center gap-1.5 text-[#B45309] bg-[#F4BE5E]/10 px-2 py-1.5 rounded-md mt-1.5 text-sm font-medium">
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  {phoneWarning}
+                </p>
+              )}
             </div>
 
             {/* 지원경로 */}
@@ -318,6 +383,12 @@ export default function ApplicantFormClient({ user, postingId }: Props) {
               )}
               {t('registerSubmit')}
             </button>
+            {savedAt && (
+              <span className="text-xs text-[#8181A5]">
+                초안 자동 저장됨{' '}
+                {savedAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            )}
           </div>
         </div>
       </form>

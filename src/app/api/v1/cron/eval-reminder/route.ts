@@ -3,17 +3,17 @@
 // 평가 미이행 리마인더 (D-7/D-3/D-day)
 // ═══════════════════════════════════════════════════════════
 
-import { type NextRequest, NextResponse } from 'next/server'
+import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyCronSecret } from '@/lib/cron-auth'
 import { sendNotification } from '@/lib/notifications'
+import { apiSuccess, apiError } from '@/lib/api'
+import { unauthorized } from '@/lib/errors'
 
 const REMINDER_DAYS = [7, 3, 0] // D-7, D-3, D-day
 
 export async function POST(req: NextRequest) {
-  if (!verifyCronSecret(req)) {
-    return NextResponse.json({ error: '인증 실패' }, { status: 401 })
-  }
+  if (!verifyCronSecret(req)) return apiError(unauthorized('인증 실패'))
 
   const now = new Date()
   now.setHours(0, 0, 0, 0)
@@ -205,9 +205,5 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({
-    success: true,
-    cyclesChecked: cycles.length,
-    remindersSent: sentCount,
-  })
+  return apiSuccess({ cyclesChecked: cycles.length, remindersSent: sentCount })
 }

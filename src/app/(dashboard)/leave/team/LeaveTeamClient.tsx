@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Check, X } from 'lucide-react'
+import { toast } from '@/hooks/use-toast'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -72,6 +73,29 @@ function getCurrentMonth(): string {
   return `${y}-${m}`
 }
 
+function getTeamAbsenceCount(
+  members: TeamMember[],
+  excludeEmployeeId: string,
+  startDate: string,
+  endDate: string,
+): number {
+  const start = new Date(startDate)
+  const end = new Date(endDate)
+  let count = 0
+  for (const member of members) {
+    if (member.employeeId === excludeEmployeeId) continue
+    for (const req of member.requests) {
+      const reqStart = new Date(req.startDate)
+      const reqEnd = new Date(req.endDate)
+      if (reqStart <= end && reqEnd >= start) {
+        count++
+        break // count each member at most once
+      }
+    }
+  }
+  return count
+}
+
 // ─── Component ──────────────────────────────────────────────
 
 export function LeaveTeamClient({ user }: { user: SessionUser }) {
@@ -108,7 +132,10 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false)
   const [rejectTargetId, setRejectTargetId] = useState<string | null>(null)
   const [rejectionReason, setRejectionReason] = useState('')
-  const [actionLoading, setActionLoading] = useState<string | null>(null)
+
+  // Optimistic UI state
+  const [optimisticMap, setOptimisticMap] = useState<Partial<Record<string, 'APPROVED' | 'REJECTED'>>>({})
+  const [fadingIds, setFadingIds] = useState<Set<string>>(new Set())
 
   // ─── Fetch ───
   const fetchData = useCallback(async (m: string) => {
@@ -129,20 +156,55 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
     void fetchData(month)
   }, [month, fetchData])
 
+  // ─── Helpers ───
+  const scheduleRowFadeAndRefresh = useCallback(
+    (requestId: string) => {
+      setTimeout(() => setFadingIds((prev) => new Set(prev).add(requestId)), 1500)
+      setTimeout(() => {
+        void fetchData(month)
+        setFadingIds((prev) => {
+          const s = new Set(prev)
+          s.delete(requestId)
+          return s
+        })
+        setOptimisticMap((prev) => {
+          const next = { ...prev }
+          delete next[requestId]
+          return next
+        })
+      }, 2000)
+    },
+    [month, fetchData],
+  )
+
+  const revertOptimistic = useCallback((requestId: string) => {
+    setFadingIds((prev) => {
+      const s = new Set(prev)
+      s.delete(requestId)
+      return s
+    })
+    setOptimisticMap((prev) => {
+      const next = { ...prev }
+      delete next[requestId]
+      return next
+    })
+  }, [])
+
   // ─── Actions ───
   const handleApprove = useCallback(
     async (requestId: string) => {
-      setActionLoading(requestId)
+      // 1. Optimistic: immediately show green row
+      setOptimisticMap((prev) => ({ ...prev, [requestId]: 'APPROVED' }))
       try {
         await apiClient.put(`/api/v1/leave/requests/${requestId}/approve`)
-        await fetchData(month)
+        // 2. Success: fade out after 1.5s
+        scheduleRowFadeAndRefresh(requestId)
       } catch {
-        // Error handled by apiClient
-      } finally {
-        setActionLoading(null)
+        revertOptimistic(requestId)
+        toast({ title: '오류', description: '승인 처리 중 오류가 발생했습니다', variant: 'destructive' })
       }
     },
-    [month, fetchData],
+    [scheduleRowFadeAndRefresh, revertOptimistic],
   )
 
   const openRejectDialog = useCallback((requestId: string) => {
@@ -153,21 +215,24 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
 
   const handleReject = useCallback(async () => {
     if (!rejectTargetId) return
-    setActionLoading(rejectTargetId)
+    const requestId = rejectTargetId
+    const reason = rejectionReason
+
+    // 1. Close dialog + optimistic: immediately show red row
+    setRejectDialogOpen(false)
+    setRejectTargetId(null)
+    setRejectionReason('')
+    setOptimisticMap((prev) => ({ ...prev, [requestId]: 'REJECTED' }))
+
     try {
-      await apiClient.put(`/api/v1/leave/requests/${rejectTargetId}/reject`, {
-        rejectionReason,
-      })
-      setRejectDialogOpen(false)
-      setRejectTargetId(null)
-      setRejectionReason('')
-      await fetchData(month)
+      await apiClient.put(`/api/v1/leave/requests/${requestId}/reject`, { rejectionReason: reason })
+      // 2. Success: fade out after 1.5s
+      scheduleRowFadeAndRefresh(requestId)
     } catch {
-      // Error handled by apiClient
-    } finally {
-      setActionLoading(null)
+      revertOptimistic(requestId)
+      toast({ title: '오류', description: '반려 처리 중 오류가 발생했습니다', variant: 'destructive' })
     }
-  }, [rejectTargetId, rejectionReason, month, fetchData])
+  }, [rejectTargetId, rejectionReason, scheduleRowFadeAndRefresh, revertOptimistic])
 
   // ─── Loading skeleton ───
   if (loading) {
@@ -223,17 +288,30 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
               ) : (
                 <div className="space-y-3">
                   {member.requests.map((req) => {
-                    const isPending = req.status === 'PENDING'
-                    const isLoading = actionLoading === req.id
+                    const optimisticStatus = optimisticMap[req.id]
+                    const isFading = fadingIds.has(req.id)
+                    const displayStatus = optimisticStatus ?? req.status
+                    const isPending = displayStatus === 'PENDING'
+                    const absenceCount = getTeamAbsenceCount(
+                      members,
+                      member.employeeId,
+                      req.startDate as string,
+                      req.endDate as string,
+                    )
+
+                    const rowBorderBg = optimisticStatus === 'APPROVED'
+                      ? 'border-[#A7F3D0] bg-[#D1FAE5]/30'
+                      : optimisticStatus === 'REJECTED'
+                      ? 'border-[#FECACA] bg-[#FEE2E2]/30'
+                      : isPending
+                      ? 'border-[#FFE0B2] bg-[#FFF3E0]/30'
+                      : 'border-[#E8E8E8]'
 
                     return (
                       <div
                         key={req.id}
-                        className={`flex items-center justify-between rounded-lg border p-3 ${
-                          isPending
-                            ? 'border-[#FFE0B2] bg-[#FFF3E0]/30'
-                            : 'border-[#E8E8E8]'
-                        }`}
+                        className={`flex items-center justify-between rounded-lg border p-3 transition-opacity duration-500 ${rowBorderBg}`}
+                        style={{ opacity: isFading ? 0 : 1 }}
                       >
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-2">
@@ -242,38 +320,40 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                               {formatDate(req.endDate)}
                             </span>
                             <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-medium border border-[#E8E8E8] text-[#666]">
-                              {LEAVE_TYPE_LABEL[req.leaveType] ??
-                                req.leaveType}
+                              {LEAVE_TYPE_LABEL[req.leaveType] ?? req.leaveType}
                             </span>
                             <span
                               className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${
-                                STATUS_BADGE[req.status] ??
-                                'bg-[#F5F5F5] text-[#666]'
+                                STATUS_BADGE[displayStatus] ?? 'bg-[#F5F5F5] text-[#666]'
                               }`}
                             >
-                              {STATUS_LABEL[req.status] ?? req.status}
+                              {STATUS_LABEL[displayStatus] ?? displayStatus}
                             </span>
                           </div>
-                          <span className="text-xs text-[#999]">
-                            {req.days}
-                            {t('days')}
-                          </span>
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs text-[#999]">
+                              {req.days}{t('days')}
+                            </span>
+                            {isPending && absenceCount > 0 && (
+                              <span className="text-xs text-[#F59E0B] font-medium">
+                                해당 기간 팀 부재: {absenceCount}명
+                              </span>
+                            )}
+                          </div>
                         </div>
 
                         {isPending && (
                           <div className="flex items-center gap-2">
                             <button
-                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-[#00C853] text-[#00C853] hover:bg-[#E8F5E9] disabled:opacity-50 flex items-center"
+                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-[#00C853] text-[#00C853] hover:bg-[#E8F5E9] flex items-center"
                               onClick={() => handleApprove(req.id)}
-                              disabled={isLoading}
                             >
                               <Check className="mr-1 h-4 w-4" />
                               {t('approve')}
                             </button>
                             <button
-                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-[#F44336] text-[#F44336] hover:bg-[#FFEBEE] disabled:opacity-50 flex items-center"
+                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-[#F44336] text-[#F44336] hover:bg-[#FFEBEE] flex items-center"
                               onClick={() => openRejectDialog(req.id)}
-                              disabled={isLoading}
                             >
                               <X className="mr-1 h-4 w-4" />
                               {t('reject')}
@@ -315,13 +395,9 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
             <Button
               variant="destructive"
               onClick={handleReject}
-              disabled={
-                !rejectionReason.trim() || actionLoading === rejectTargetId
-              }
+              disabled={!rejectionReason.trim()}
             >
-              {actionLoading === rejectTargetId
-                ? tc('loading')
-                : t('reject')}
+              {t('reject')}
             </Button>
           </DialogFooter>
         </DialogContent>

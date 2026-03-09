@@ -71,51 +71,64 @@ export const GET = withPermission(
       .filter((g) => g.gap > 0)
       .sort((a, b) => b.gap - a.gap)
 
-    // 5. 갭 해소 과정 추천
-    const alreadyCompleted = await prisma.trainingEnrollment.findMany({
-      where: { employeeId, status: 'ENROLLMENT_COMPLETED' },
-      select: { courseId: true },
-    })
+    // 5. 갭 해소 과정 추천 — 단일 배치 쿼리로 N+1 제거
+    const allCompetencyIds = gaps.map((g) => g.competencyId)
+
+    const [alreadyCompleted, allCourses] = await Promise.all([
+      prisma.trainingEnrollment.findMany({
+        where: { employeeId, status: 'ENROLLMENT_COMPLETED' },
+        select: { courseId: true },
+      }),
+      prisma.trainingCourse.findMany({
+        where: {
+          linkedCompetencyIds: { hasSome: allCompetencyIds },
+          isActive: true,
+          deletedAt: null,
+          OR: [{ companyId }, { companyId: null }],
+        },
+        select: {
+          id: true,
+          code: true,
+          title: true,
+          category: true,
+          format: true,
+          durationHours: true,
+          expectedLevelGain: true,
+          provider: true,
+          linkedCompetencyIds: true,
+        },
+      }),
+    ])
     const completedCourseIds = new Set(alreadyCompleted.map((e) => e.courseId))
 
-    const recommendations = await Promise.all(
-      gaps.map(async (gap) => {
-        const courses = await prisma.trainingCourse.findMany({
-          where: {
-            linkedCompetencyIds: { has: gap.competencyId },
-            isActive: true,
-            deletedAt: null,
-            OR: [{ companyId }, { companyId: null }],
-          },
-          select: {
-            id: true,
-            code: true,
-            title: true,
-            category: true,
-            format: true,
-            durationHours: true,
-            expectedLevelGain: true,
-            provider: true,
-          },
-        })
+    const recommendations = gaps.map((gap) => {
+      const courses = allCourses
+        .filter(
+          (c) =>
+            Array.isArray(c.linkedCompetencyIds) &&
+            (c.linkedCompetencyIds as string[]).includes(gap.competencyId) &&
+            !completedCourseIds.has(c.id),
+        )
+        .map((c) => ({
+          id: c.id,
+          code: c.code,
+          title: c.title,
+          category: c.category,
+          format: c.format,
+          durationHours: c.durationHours ? Number(c.durationHours) : null,
+          expectedLevelGain: c.expectedLevelGain,
+          provider: c.provider,
+        }))
 
-        const uncompletedCourses = courses
-          .filter((c) => !completedCourseIds.has(c.id))
-          .map((c) => ({
-            ...c,
-            durationHours: c.durationHours ? Number(c.durationHours) : null,
-          }))
-
-        return {
-          competencyId: gap.competencyId,
-          competencyName: gap.competencyName,
-          currentLevel: gap.currentLevel,
-          expectedLevel: gap.expectedLevel,
-          gap: gap.gap,
-          recommendedCourses: uncompletedCourses,
-        }
-      }),
-    )
+      return {
+        competencyId: gap.competencyId,
+        competencyName: gap.competencyName,
+        currentLevel: gap.currentLevel,
+        expectedLevel: gap.expectedLevel,
+        gap: gap.gap,
+        recommendedCourses: courses,
+      }
+    })
 
     return apiSuccess({
       employeeId,

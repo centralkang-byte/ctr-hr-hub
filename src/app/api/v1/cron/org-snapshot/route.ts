@@ -3,15 +3,15 @@
 // 월별 조직도 스냅샷 (모든 활성 Company)
 // ═══════════════════════════════════════════════════════════
 
-import { type NextRequest, NextResponse } from 'next/server'
+import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyCronSecret } from '@/lib/cron-auth'
 import { buildOrgSnapshot } from '@/lib/org-snapshot-builder'
+import { apiSuccess, apiError } from '@/lib/api'
+import { unauthorized } from '@/lib/errors'
 
 export async function POST(req: NextRequest) {
-  if (!verifyCronSecret(req)) {
-    return NextResponse.json({ error: '인증 실패' }, { status: 401 })
-  }
+  if (!verifyCronSecret(req)) return apiError(unauthorized('인증 실패'))
 
   const companies = await prisma.company.findMany({
     where: { deletedAt: null },
@@ -29,8 +29,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({
-    success: true,
+  return apiSuccess({
     total: companies.length,
     succeeded: results.filter((r) => r.success).length,
     results,

@@ -89,51 +89,60 @@ export const POST = withPermission(
     try {
       for (const config of configs) {
         const employees = await getTargetEmployees(targetCompanyId, config.targetGroup)
+        if (employees.length === 0) continue
 
-        for (const emp of employees) {
-          // 유효한 이수 완료 이력이 있으면 스킵
-          const existing = await prisma.trainingEnrollment.findFirst({
-            where: {
-              courseId: config.courseId,
-              employeeId: emp.id,
-              status: 'ENROLLMENT_COMPLETED',
-              ...(config.course.validityMonths
-                ? { expiresAt: { gt: new Date() } }
-                : {}),
-            },
-          })
+        const employeeIds = employees.map((e) => e.id)
 
-          if (existing) {
-            totalSkipped++
-            continue
+        // 배치 조회로 N+1 제거: 해당 과정의 모든 등록 이력 한 번에 조회
+        const existingEnrollments = await prisma.trainingEnrollment.findMany({
+          where: {
+            courseId: config.courseId,
+            employeeId: { in: employeeIds },
+          },
+          select: {
+            employeeId: true,
+            status: true,
+            expiresAt: true,
+          },
+        })
+
+        const now = new Date()
+        const completedSet = new Set<string>()
+        const alreadyEnrolledSet = new Set<string>()
+
+        for (const e of existingEnrollments) {
+          alreadyEnrolledSet.add(e.employeeId)
+          if (
+            e.status === 'ENROLLMENT_COMPLETED' &&
+            (!config.course.validityMonths || !e.expiresAt || e.expiresAt > now)
+          ) {
+            completedSet.add(e.employeeId)
           }
+        }
 
-          // 이미 등록 중인지 확인 (unique constraint 회피)
-          const alreadyEnrolled = await prisma.trainingEnrollment.findUnique({
-            where: { courseId_employeeId: { courseId: config.courseId, employeeId: emp.id } },
-          })
+        const deadlineMonth = config.deadlineMonth ?? 12
+        const expiresAt = new Date(year, deadlineMonth - 1, 31)
 
-          if (alreadyEnrolled) {
-            totalSkipped++
-            continue
-          }
+        const toEnroll = employeeIds.filter(
+          (id) => !completedSet.has(id) && !alreadyEnrolledSet.has(id),
+        )
 
-          // 마감일 계산
-          const deadlineMonth = config.deadlineMonth ?? 12
-          const expiresAt = new Date(year, deadlineMonth - 1, 31)
-
-          await prisma.trainingEnrollment.create({
-            data: {
+        if (toEnroll.length > 0) {
+          await prisma.trainingEnrollment.createMany({
+            data: toEnroll.map((employeeId) => ({
               courseId: config.courseId,
-              employeeId: emp.id,
+              employeeId,
               status: 'ENROLLED',
               source: 'mandatory_auto',
-              enrolledAt: new Date(),
+              enrolledAt: now,
               expiresAt,
-            },
+            })),
+            skipDuplicates: true,
           })
-          totalEnrolled++
+          totalEnrolled += toEnroll.length
         }
+
+        totalSkipped += employeeIds.length - toEnroll.length
       }
 
       return apiSuccess({

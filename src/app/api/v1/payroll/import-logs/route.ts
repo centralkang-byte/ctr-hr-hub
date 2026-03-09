@@ -8,7 +8,9 @@ import { prisma } from '@/lib/prisma'
 import { withPermission } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess, apiError } from '@/lib/api'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 import { z } from 'zod'
+import type { SessionUser } from '@/types'
 
 const createSchema = z.object({
   companyId: z.string(),
@@ -24,15 +26,15 @@ const createSchema = z.object({
 })
 
 export const GET = withPermission(
-  async (req: NextRequest) => {
+  async (req: NextRequest, _ctx, user: SessionUser) => {
     const url = new URL(req.url)
-    const companyId = url.searchParams.get('companyId')
+    const companyId = resolveCompanyId(user, url.searchParams.get('companyId'))
     const year = url.searchParams.get('year') ? Number(url.searchParams.get('year')) : undefined
     const month = url.searchParams.get('month') ? Number(url.searchParams.get('month')) : undefined
 
     const logs = await prisma.payrollImportLog.findMany({
       where: {
-        ...(companyId && { companyId }),
+        companyId,
         ...(year && { year }),
         ...(month && { month }),
       },

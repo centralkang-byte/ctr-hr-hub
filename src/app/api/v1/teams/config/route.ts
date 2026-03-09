@@ -59,13 +59,15 @@ export const PUT = withPermission(
       })
 
       const { ip, userAgent } = extractRequestMeta(req.headers)
+      // webhookUrl은 채널 쓰기 권한을 가진 민감 데이터이므로 감사 로그에서 제거
+      const { webhookUrl: _webhookUrl, ...safeChanges } = parsed.data
       logAudit({
         actorId: user.employeeId,
         action: 'settings.teams.update',
         resourceType: 'teams_integration',
         resourceId: result.id,
         companyId: user.companyId,
-        changes: parsed.data,
+        changes: safeChanges,
         ip,
         userAgent,
       })

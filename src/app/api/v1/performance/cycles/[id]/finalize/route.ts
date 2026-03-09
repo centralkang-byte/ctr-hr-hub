@@ -9,7 +9,12 @@ import { badRequest, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
+import { eventBus } from '@/lib/events/event-bus'
+import { DOMAIN_EVENTS } from '@/lib/events/types'
+import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
 import type { SessionUser } from '@/types'
+
+bootstrapEventHandlers()
 
 // ─── POST /api/v1/performance/cycles/[id]/finalize ───────
 // Finalize cycle: CALIBRATION → CLOSED
@@ -54,6 +59,38 @@ export const POST = withPermission(
       changes: { previousStatus: 'CALIBRATION', newStatus: 'CLOSED' },
       ip,
       userAgent,
+    })
+
+    // ── Fire-and-forget: PHASE_CHANGED + FINALIZED ────────────────────────
+    const totalEvaluated = await prisma.performanceEvaluation.count({
+      where: { cycleId: id, companyId: user.companyId, status: 'SUBMITTED' },
+    })
+
+    const finalCtx = {
+      companyId:  user.companyId,
+      actorId:    user.employeeId,
+      occurredAt: new Date(),
+    }
+
+    void eventBus.publish(DOMAIN_EVENTS.PERFORMANCE_CYCLE_PHASE_CHANGED, {
+      ctx:       finalCtx,
+      cycleId:   updated.id,
+      companyId: updated.companyId,
+      fromPhase: 'CALIBRATION',
+      toPhase:   'CLOSED',
+      cycleName: updated.name,
+      year:      updated.year,
+      half:      updated.half,
+    })
+
+    void eventBus.publish(DOMAIN_EVENTS.PERFORMANCE_CYCLE_FINALIZED, {
+      ctx:            finalCtx,
+      cycleId:        updated.id,
+      companyId:      updated.companyId,
+      cycleName:      updated.name,
+      year:           updated.year,
+      half:           updated.half,
+      totalEvaluated,
     })
 
     return apiSuccess(updated)

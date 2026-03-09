@@ -3,9 +3,11 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — DataTable
 // 범용 테이블 컴포넌트 (pagination, sorting, loading, empty)
+// virtualScroll 옵션: @tanstack/react-virtual 기반 가상 스크롤
 // ═══════════════════════════════════════════════════════════
 
-import { type ReactNode, useCallback } from 'react'
+import { type ReactNode, useCallback, useRef } from 'react'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import { ArrowUpDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-react'
 import {
   Table,
@@ -64,6 +66,12 @@ interface DataTableProps<T> {
   emptyDescription?: string
   emptyAction?: { label: string; onClick: () => void }
   rowKey?: (row: T, index: number) => string
+  /** 가상 스크롤 활성화 (대용량 데이터, pagination 없이 전체 렌더링 시) */
+  virtualScroll?: boolean
+  /** 가상 스크롤 컨테이너 높이 (px, 기본값 520) */
+  virtualScrollHeight?: number
+  /** 가상 스크롤 예상 행 높이 (px, 기본값 52) */
+  estimatedRowHeight?: number
 }
 
 // ─── Component ──────────────────────────────────────────────
@@ -82,7 +90,12 @@ export function DataTable<T extends Record<string, unknown>>({
   emptyDescription,
   emptyAction,
   rowKey,
+  virtualScroll = false,
+  virtualScrollHeight = 520,
+  estimatedRowHeight = 52,
 }: DataTableProps<T>) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+
   const handleSort = useCallback(
     (key: string) => {
       onSort?.(key)
@@ -90,10 +103,18 @@ export function DataTable<T extends Record<string, unknown>>({
     [onSort],
   )
 
+  // ─── Virtual rows (only active when virtualScroll=true) ───
+  const virtualizer = useVirtualizer({
+    count: virtualScroll ? data.length : 0,
+    getScrollElement: () => scrollContainerRef.current,
+    estimateSize: () => estimatedRowHeight,
+    overscan: 5,
+  })
+
   // ─── Skeleton rows when loading ───
   if (loading) {
     return (
-      <div className="rounded-md border">
+      <div className="rounded-xl border border-[#F0F0F3] overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -121,7 +142,7 @@ export function DataTable<T extends Record<string, unknown>>({
   // ─── Empty state ───
   if (data.length === 0) {
     return (
-      <div className="rounded-md border">
+      <div className="rounded-xl border border-[#F0F0F3] overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -136,54 +157,150 @@ export function DataTable<T extends Record<string, unknown>>({
     )
   }
 
+  // ─── Shared header ───
+  const headerRow = (
+    <TableHeader>
+      <TableRow>
+        {columns.map((col) => (
+          <TableHead key={col.key}>
+            {col.sortable && onSort ? (
+              <button
+                type="button"
+                className="inline-flex items-center gap-1 font-bold text-[#8181A5] hover:text-[#1C1D21]"
+                onClick={() => handleSort(col.key)}
+              >
+                {col.header}
+                <SortIcon columnKey={col.key} sortBy={sortBy} sortDir={sortDir} />
+              </button>
+            ) : (
+              col.header
+            )}
+          </TableHead>
+        ))}
+      </TableRow>
+    </TableHeader>
+  )
+
+  // ─── Row renderer ───
+  const renderRow = (row: T, index: number) => (
+    <TableRow
+      key={rowKey ? rowKey(row, index) : index}
+      onClick={onRowClick ? () => onRowClick(row, index) : undefined}
+      className={onRowClick ? 'cursor-pointer hover:bg-[#F5F5FA]' : ''}
+    >
+      {columns.map((col) => (
+        <TableCell key={col.key}>
+          {col.render ? col.render(row, index) : String(row[col.key] ?? '')}
+        </TableCell>
+      ))}
+    </TableRow>
+  )
+
   return (
     <div className="space-y-4">
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {columns.map((col) => (
-                <TableHead key={col.key}>
-                  {col.sortable && onSort ? (
-                    <button
-                      type="button"
-                      className="inline-flex items-center gap-1 font-medium hover:text-foreground"
-                      onClick={() => handleSort(col.key)}
-                    >
-                      {col.header}
-                      <SortIcon columnKey={col.key} sortBy={sortBy} sortDir={sortDir} />
-                    </button>
-                  ) : (
-                    col.header
-                  )}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((row, index) => (
-              <TableRow
-              key={rowKey ? rowKey(row, index) : index}
-              onClick={onRowClick ? () => onRowClick(row, index) : undefined}
-              className={onRowClick ? 'cursor-pointer hover:bg-muted/50' : ''}
-            >
+      {virtualScroll ? (
+        /* ── Virtual scroll mode ── */
+        <div className="rounded-xl border border-[#F0F0F3] overflow-hidden">
+          <div
+            ref={scrollContainerRef}
+            style={{ height: virtualScrollHeight, overflowY: 'auto' }}
+          >
+            <Table>
+              {/* Sticky header inside scroll container */}
+              <thead className="sticky top-0 z-10 bg-white">
                 {columns.map((col) => (
-                  <TableCell key={col.key}>
-                    {col.render
-                      ? col.render(row, index)
-                      : String(row[col.key] ?? '')}
-                  </TableCell>
+                  <th
+                    key={col.key}
+                    className="px-4 py-3 text-left text-[13px] font-bold text-[#8181A5] border-b border-[#F0F0F3]"
+                  >
+                    {col.sortable && onSort ? (
+                      <button
+                        type="button"
+                        className="inline-flex items-center gap-1 font-bold text-[#8181A5] hover:text-[#1C1D21]"
+                        onClick={() => handleSort(col.key)}
+                      >
+                        {col.header}
+                        <SortIcon columnKey={col.key} sortBy={sortBy} sortDir={sortDir} />
+                      </button>
+                    ) : (
+                      col.header
+                    )}
+                  </th>
                 ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+              </thead>
+              <tbody>
+                {/* Top spacer row */}
+                {virtualizer.getVirtualItems().length > 0 && (
+                  <tr>
+                    <td
+                      colSpan={columns.length}
+                      style={{
+                        height: virtualizer.getVirtualItems()[0].start,
+                        padding: 0,
+                        border: 'none',
+                      }}
+                    />
+                  </tr>
+                )}
+                {/* Visible virtual rows */}
+                {virtualizer.getVirtualItems().map((virtualRow) => {
+                  const row = data[virtualRow.index]
+                  return (
+                    <tr
+                      key={rowKey ? rowKey(row, virtualRow.index) : virtualRow.index}
+                      data-index={virtualRow.index}
+                      ref={virtualizer.measureElement}
+                      onClick={onRowClick ? () => onRowClick(row, virtualRow.index) : undefined}
+                      className={`border-b border-[#F0F0F3] ${onRowClick ? 'cursor-pointer hover:bg-[#F5F5FA]' : ''}`}
+                    >
+                      {columns.map((col) => (
+                        <td
+                          key={col.key}
+                          className="px-4 py-3 text-sm text-[#1C1D21]"
+                        >
+                          {col.render
+                            ? col.render(row, virtualRow.index)
+                            : String(row[col.key] ?? '')}
+                        </td>
+                      ))}
+                    </tr>
+                  )
+                })}
+                {/* Bottom spacer row */}
+                {virtualizer.getVirtualItems().length > 0 && (
+                  <tr>
+                    <td
+                      colSpan={columns.length}
+                      style={{
+                        height:
+                          virtualizer.getTotalSize() -
+                          (virtualizer.getVirtualItems().at(-1)?.end ?? 0),
+                        padding: 0,
+                        border: 'none',
+                      }}
+                    />
+                  </tr>
+                )}
+              </tbody>
+            </Table>
+          </div>
+        </div>
+      ) : (
+        /* ── Normal (paginated) mode ── */
+        <div className="rounded-xl border border-[#F0F0F3] overflow-hidden">
+          <Table>
+            {headerRow}
+            <TableBody>
+              {data.map((row, index) => renderRow(row, index))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       {/* ─── Pagination ─── */}
       {pagination && pagination.totalPages > 1 && (
         <div className="flex items-center justify-between px-2">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-[#8181A5]">
             전체 {pagination.total.toLocaleString()}건 중{' '}
             {((pagination.page - 1) * pagination.limit + 1).toLocaleString()}–
             {Math.min(pagination.page * pagination.limit, pagination.total).toLocaleString()}건
@@ -194,11 +311,12 @@ export function DataTable<T extends Record<string, unknown>>({
               size="sm"
               disabled={pagination.page <= 1}
               onClick={() => onPageChange?.(pagination.page - 1)}
+              className="border-[#F0F0F3] text-[#1C1D21] hover:bg-[#F5F5FA]"
             >
               <ChevronLeft className="mr-1 h-4 w-4" />
               이전
             </Button>
-            <span className="text-sm text-muted-foreground">
+            <span className="text-sm text-[#8181A5]">
               {pagination.page} / {pagination.totalPages}
             </span>
             <Button
@@ -206,6 +324,7 @@ export function DataTable<T extends Record<string, unknown>>({
               size="sm"
               disabled={pagination.page >= pagination.totalPages}
               onClick={() => onPageChange?.(pagination.page + 1)}
+              className="border-[#F0F0F3] text-[#1C1D21] hover:bg-[#F5F5FA]"
             >
               다음
               <ChevronRight className="ml-1 h-4 w-4" />

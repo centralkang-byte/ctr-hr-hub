@@ -9,8 +9,13 @@ import { badRequest, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
+import { eventBus } from '@/lib/events/event-bus'
+import { DOMAIN_EVENTS } from '@/lib/events/types'
+import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
 import type { SessionUser } from '@/types'
 import type { GoalStatus } from '@/generated/prisma/client'
+
+bootstrapEventHandlers()
 
 // ─── PUT /api/v1/performance/goals/:id/submit ────────────
 // Submit all DRAFT goals for this employee+cycle for approval.
@@ -65,6 +70,20 @@ export const PUT = withPermission(
       changes: { cycleId: goal.cycleId, submittedCount: result.count, totalWeight },
       ip,
       userAgent,
+    })
+
+    // ── Fire-and-forget: PERFORMANCE_MBO_GOAL_SUBMITTED ───────────────────────
+    void eventBus.publish(DOMAIN_EVENTS.PERFORMANCE_MBO_GOAL_SUBMITTED, {
+      ctx: {
+        companyId:  user.companyId,
+        actorId:    user.employeeId,
+        occurredAt: new Date(),
+      },
+      employeeId:  user.employeeId,
+      companyId:   user.companyId,
+      cycleId:     goal.cycleId,
+      goalCount:   result.count,
+      totalWeight,
     })
 
     return apiSuccess({ submitted: result.count, totalWeight })

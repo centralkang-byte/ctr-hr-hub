@@ -5,6 +5,8 @@
 
 import { prisma } from '@/lib/prisma'
 import { sendNotification } from '@/lib/notifications'
+import { getStartOfDayTz } from '@/lib/timezone'
+import { formatInTimeZone } from 'date-fns-tz'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -22,29 +24,71 @@ const DEFAULT_THRESHOLDS: AlertThresholds = {
   blocked: 52,
 }
 
-// ─── 주 시작(월요일 00:00 KST) 계산 ──────────────────────────
+// ─── 타임존 해석 (Employee → AttendanceSetting → 기본값) ──
 
-function getWeekStart(date: Date = new Date()): Date {
-  const kstOffset = 9 * 60 * 60 * 1000
-  const kstNow = new Date(date.getTime() + kstOffset)
-  const dayOfWeek = kstNow.getUTCDay() // 0=Sun, 1=Mon … 6=Sat
+/**
+ * 직원 개인 timezone → 법인 AttendanceSetting timezone → 'Asia/Seoul' 순으로 폴백.
+ */
+async function resolveTimezone(employeeId: string, companyId: string): Promise<string> {
+  const employee = await prisma.employee.findUnique({
+    where: { id: employeeId },
+    select: { timezone: true },
+  })
+  if (employee?.timezone) return employee.timezone
+
+  const setting = await prisma.attendanceSetting.findUnique({
+    where: { companyId },
+    select: { timezone: true },
+  })
+  if (setting?.timezone) return setting.timezone
+
+  return 'Asia/Seoul'
+}
+
+// ─── 주 시작(월요일 00:00 현지 기준) → UTC 계산 ────────────
+
+/**
+ * 주어진 날짜가 속한 주의 월요일 00:00:00을 현지 타임존 기준으로 계산하여 UTC Date로 반환.
+ */
+function getWeekStartTz(date: Date, timezone: string): Date {
+  // 현지 타임존 기준 날짜 문자열 획득
+  const localDateStr = formatInTimeZone(date, timezone, 'yyyy-MM-dd')
+  const [year, month, day] = localDateStr.split('-').map(Number)
+
+  // 해당 날짜의 요일 (0=일, 1=월 … 6=토) — UTC로 파싱해 요일만 사용
+  const dayOfWeek = new Date(Date.UTC(year, month - 1, day)).getUTCDay()
   const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1
-  const mondayKst = new Date(
-    Date.UTC(kstNow.getUTCFullYear(), kstNow.getUTCMonth(), kstNow.getUTCDate() - daysFromMonday),
-  )
-  // KST Monday 00:00 → UTC
-  return new Date(mondayKst.getTime() - kstOffset)
+
+  // 현지 기준 월요일 날짜 (UTC Date 객체로 날짜 계산만 수행)
+  const mondayDate = new Date(Date.UTC(year, month - 1, day - daysFromMonday))
+
+  // 현지 타임존의 해당 월요일 00:00:00 → UTC
+  return getStartOfDayTz(mondayDate, timezone)
 }
 
 // ─── 이번 주 총 근무 시간(시간) 계산 ─────────────────────────
 
-async function getWeeklyHours(employeeId: string, weekStart: Date): Promise<number> {
-  const weekEnd = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000)
+async function getWeeklyHours(
+  employeeId: string,
+  weekStart: Date,
+  timezone: string,
+): Promise<number> {
+  // weekEnd = 다음 주 월요일 00:00 현지 기준 → UTC
+  // weekStart의 현지 날짜에 7일 더한 날짜로 계산
+  const mondayLocalStr = formatInTimeZone(weekStart, timezone, 'yyyy-MM-dd')
+  const [year, month, day] = mondayLocalStr.split('-').map(Number)
+  const nextMondayDate = new Date(Date.UTC(year, month - 1, day + 7))
+  const weekEnd = getStartOfDayTz(nextMondayDate, timezone)
 
+  // clockIn 기준 쿼리 (UTC 경계):
+  // - clockIn >= weekStart: 해당 주에 출근한 레코드만 포함
+  // - clockIn < weekEnd: 다음 주 출근 레코드 제외
+  // 심야 교대 처리: clockIn이 이번 주에 속하면 clockOut이 다음 날(또는 다음 주 초)
+  // 이어지더라도 totalMinutes 전체를 합산 → 경계 절단 없음
   const records = await prisma.attendance.findMany({
     where: {
       employeeId,
-      workDate: { gte: weekStart, lt: weekEnd },
+      clockIn: { gte: weekStart, lt: weekEnd },
       clockOut: { not: null },
     },
     select: { totalMinutes: true },
@@ -97,9 +141,11 @@ export async function checkWorkHourAlert(
   employeeId: string,
   companyId: string,
 ): Promise<{ alertLevel: AlertLevel | null; weeklyHours: number; isBlocked: boolean }> {
-  const weekStart = getWeekStart()
+  const timezone = await resolveTimezone(employeeId, companyId)
+  const weekStart = getWeekStartTz(new Date(), timezone)
+
   const [weeklyHours, thresholds] = await Promise.all([
-    getWeeklyHours(employeeId, weekStart),
+    getWeeklyHours(employeeId, weekStart, timezone),
     getThresholds(companyId),
   ])
 
@@ -171,7 +217,15 @@ export async function checkWorkHourAlert(
  * 특정 직원의 이번 주 경고 목록 조회 (미해결)
  */
 export async function getActiveAlerts(employeeId: string) {
-  const weekStart = getWeekStart()
+  // 직원의 현재 소속 법인을 통해 타임존 해석
+  const assignment = await prisma.employeeAssignment.findFirst({
+    where: { employeeId, isPrimary: true, endDate: null },
+    select: { companyId: true },
+  })
+  const companyId = assignment?.companyId ?? ''
+  const timezone = await resolveTimezone(employeeId, companyId)
+  const weekStart = getWeekStartTz(new Date(), timezone)
+
   return prisma.workHourAlert.findMany({
     where: {
       employeeId,
@@ -186,7 +240,14 @@ export async function getActiveAlerts(employeeId: string) {
  * 법인 전체 미해결 경고 목록 (HR Admin 대시보드용)
  */
 export async function getCompanyAlerts(companyId: string, resolvedOnly = false) {
-  const weekStart = getWeekStart()
+  // 법인 AttendanceSetting 타임존 사용 (개별 직원 타임존 아님)
+  const setting = await prisma.attendanceSetting.findUnique({
+    where: { companyId },
+    select: { timezone: true },
+  })
+  const timezone = setting?.timezone ?? 'Asia/Seoul'
+  const weekStart = getWeekStartTz(new Date(), timezone)
+
   return prisma.workHourAlert.findMany({
     where: {
       isResolved: resolvedOnly ? true : false,

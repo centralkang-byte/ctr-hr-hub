@@ -11,7 +11,7 @@ import { badRequest, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
-import { sendNotification } from '@/lib/notifications'
+import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
 import type { SessionUser } from '@/types'
 
 const rejectionSchema = z.object({
@@ -32,9 +32,9 @@ export const PUT = withPermission(
       })
     }
 
-    // 2. Find PENDING request
+    // 2. Find PENDING request — scope to caller's company (prevents IDOR)
     const request = await prisma.leaveRequest.findFirst({
-      where: { id, status: 'PENDING' },
+      where: { id, status: 'PENDING', companyId: user.companyId },
     })
 
     if (!request) {
@@ -45,8 +45,8 @@ export const PUT = withPermission(
     const balance = await prisma.employeeLeaveBalance.findFirst({
       where: {
         employeeId: request.employeeId,
-        policyId: request.policyId,
-        year: new Date(request.startDate).getFullYear(),
+        policyId:   request.policyId,
+        year:       new Date(request.startDate).getFullYear(),
       },
     })
 
@@ -54,55 +54,74 @@ export const PUT = withPermission(
       throw badRequest('해당 휴가 유형의 잔여일 정보를 찾을 수 없습니다.')
     }
 
-    // 4. Transaction: reject request + restore pendingDays
+    // 4. Transaction: reject request + event (pendingDays restore via handler)
+    const ctx = { companyId: user.companyId, actorId: user.employeeId, occurredAt: new Date() }
+    const eventPayload = {
+      ctx,
+      requestId:        request.id,
+      employeeId:       request.employeeId,
+      policyId:         request.policyId,
+      balanceId:        balance.id,
+      days:             Number(request.days),
+      rejectionReason:  parsed.data.rejectionReason,
+    }
+
     const updated = await prisma.$transaction(async (tx) => {
       const rejected = await tx.leaveRequest.update({
         where: { id },
         data: {
-          status: 'REJECTED',
+          status:          'REJECTED',
           rejectionReason: parsed.data.rejectionReason,
-          approvedBy: user.employeeId,
-          approvedAt: new Date(),
+          approvedBy:      user.employeeId,
+          approvedAt:      new Date(),
         },
       })
 
-      await tx.employeeLeaveBalance.update({
-        where: { id: balance.id },
-        data: {
-          pendingDays: { decrement: Number(request.days) },
-        },
-      })
+      // Side-effect: pendingDays-- (handled by leaveRejectedHandler)
+      await eventBus.publish(DOMAIN_EVENTS.LEAVE_REJECTED, eventPayload, tx)
 
       return rejected
     })
 
-    // 5. Audit log
+    // 5. Fetch updated balance for response
+    const updatedBalance = await prisma.employeeLeaveBalance.findUnique({
+      where: { id: balance.id },
+    })
+    const remaining = updatedBalance
+      ? Number(updatedBalance.grantedDays) +
+        Number(updatedBalance.carryOverDays) -
+        Number(updatedBalance.usedDays) -
+        Number(updatedBalance.pendingDays)
+      : 0
+
+    // 6. Audit log
     const meta = extractRequestMeta(req.headers)
     logAudit({
-      actorId: user.employeeId,
-      action: 'leave.request.reject',
+      actorId:      user.employeeId,
+      action:       'leave.request.reject',
       resourceType: 'LeaveRequest',
-      resourceId: id,
-      companyId: request.companyId,
+      resourceId:   id,
+      companyId:    request.companyId,
       changes: {
-        status: 'REJECTED',
+        status:          'REJECTED',
         rejectionReason: parsed.data.rejectionReason,
-        approvedBy: user.employeeId,
+        approvedBy:      user.employeeId,
       },
       ...meta,
     })
 
-    // 6. Fire-and-forget notification to employee
-    void sendNotification({
-      employeeId: request.employeeId,
-      triggerType: 'leave_rejected',
-      title: '휴가 신청이 반려되었습니다',
-      body: `${request.startDate} ~ ${request.endDate} 휴가 신청이 반려되었습니다.`,
-      link: `/my/leave`,
-      priority: 'normal',
-    })
+    // 7. Fire-and-forget notification (tx=undefined → handler sends notification only)
+    void eventBus.publish(DOMAIN_EVENTS.LEAVE_REJECTED, eventPayload)
 
-    return apiSuccess(updated)
+    return apiSuccess({
+      request: updated,
+      balance: {
+        granted:   Number(updatedBalance?.grantedDays ?? 0),
+        used:      Number(updatedBalance?.usedDays ?? 0),
+        pending:   Number(updatedBalance?.pendingDays ?? 0),
+        remaining,
+      },
+    })
   },
   perm(MODULE.LEAVE, ACTION.APPROVE),
 )

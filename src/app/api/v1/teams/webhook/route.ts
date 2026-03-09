@@ -8,28 +8,27 @@ import { verifyWebhookSignature } from '@/lib/teams-bot'
 import { executeCardAction } from '@/lib/teams-actions'
 import { teamsCardActionSchema } from '@/lib/schemas/teams'
 import { prisma } from '@/lib/prisma'
+import { apiError } from '@/lib/api'
+import { unauthorized, badRequest, notFound } from '@/lib/errors'
 
 export async function POST(req: NextRequest) {
   const rawBody = await req.text()
   const signature = req.headers.get('x-teams-signature')
 
   if (!verifyWebhookSignature(rawBody, signature)) {
-    return NextResponse.json({ error: '인증 실패' }, { status: 401 })
+    return apiError(unauthorized('인증 실패'))
   }
 
   let body: unknown
   try {
     body = JSON.parse(rawBody)
   } catch {
-    return NextResponse.json({ error: '잘못된 JSON' }, { status: 400 })
+    return apiError(badRequest('잘못된 JSON'))
   }
 
   const parsed = teamsCardActionSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: '잘못된 요청 데이터', details: parsed.error.issues },
-      { status: 400 },
-    )
+    return apiError(badRequest('잘못된 요청 데이터'))
   }
 
   const { action, cardType, referenceId } = parsed.data
@@ -41,10 +40,7 @@ export async function POST(req: NextRequest) {
   })
 
   if (!cardAction) {
-    return NextResponse.json(
-      { error: '처리 가능한 카드 액션이 없습니다.' },
-      { status: 404 },
-    )
+    return apiError(notFound('처리 가능한 카드 액션이 없습니다.'))
   }
 
   const result = await executeCardAction({
@@ -55,5 +51,6 @@ export async function POST(req: NextRequest) {
     companyId: cardAction.companyId,
   })
 
+  // Teams Adaptive Card 콜백 — result 원형 그대로 반환
   return NextResponse.json(result, { status: result.success ? 200 : 400 })
 }

@@ -1,0 +1,433 @@
+# CTR HR Hub - STEP 3: 온보딩 + 퇴직관리 + Self-Service
+# v3.1 (CTO 리뷰 반영)
+# ★ 반드시 STEP0_공통규칙.txt를 먼저 읽고 적용할 것
+
+
+================================================================
+★ STEP 3 시작 전 필수 사전 작업 (1회만 실행)
+================================================================
+
+v3.1: STEP 1에서 schema.prisma가 전체 테이블을 생성하므로
+CREATE TABLE SQL은 불필요. 아래 확인/적용 작업만 실행.
+
+---
+
+■ 1. CTR_VALUES 상수 확인
+lib/constants.ts에 아래 확인:
+```ts
+export const CTR_VALUES = ['CHALLENGE', 'TRUST', 'RESPONSIBILITY', 'RESPECT'] as const;
+```
+
+■ 2. CTR 아이콘 4개 SVG 확인
+components/icons/ 디렉토리에 4개 아이콘 컴포넌트 존재 확인:
+CtrChallengeIcon, CtrTrustIcon, CtrResponsibilityIcon, CtrRespectIcon
+
+■ 3. 추가 인덱스 적용
+schema.prisma에 없는 복합 인덱스. 별도 마이그레이션 SQL 실행:
+```sql
+CREATE INDEX IF NOT EXISTS idx_disciplinary_emp ON disciplinary_actions(employee_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_compensation_emp ON compensation_history(employee_id, effective_date DESC);
+CREATE INDEX IF NOT EXISTS idx_offboarding_emp ON employee_offboarding(employee_id);
+CREATE INDEX IF NOT EXISTS idx_org_change_company ON org_change_history(company_id, effective_date DESC);
+CREATE INDEX IF NOT EXISTS idx_attendance_terminal ON attendances(terminal_id);
+CREATE INDEX IF NOT EXISTS idx_recognition_receiver ON recognitions(receiver_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_one_on_one_emp ON one_on_ones(employee_id, scheduled_at DESC);
+CREATE INDEX IF NOT EXISTS idx_leave_req_emp ON leave_requests(employee_id, start_date DESC);
+```
+
+■ 4. MV UNIQUE INDEX 확인
+prisma/migrations/mv_analytics.sql에 8개 MV 모두 UNIQUE INDEX 존재 확인.
+없으면 STEP 1 mv_analytics.sql 참조하여 추가.
+
+■ 5. Seed 데이터 확인
+- companies 13개
+- ems_block_config 1개 (CTR 기본 9블록)
+- 온보딩 템플릿 1개 (태스크 6개)
+- 퇴직 체크리스트 1개 (태스크 8개)
+- 테스트 계정 4개
+
+
+================================================================
+STEP 3 프롬프트 — 온보딩 + 퇴직관리 + Self-Service
+================================================================
+
+## ★ 세션 시작: context.md 먼저 읽어줘
+
+이번 세션 목표: 온보딩 감성 체크인 + 퇴직 관리 프로세스 + Self-Service 정보수정 승인
+
+---
+
+
+================================================================
+기능
+================================================================
+
+### 1. 온보딩 템플릿 관리 (/settings/onboarding) — HR_ADMIN
+
+**템플릿 CRUD**
+- DataTable: 템플릿명 / 대상 유형 / 태스크 수 / 상태
+- 생성 폼: 이름, 설명, 대상 유형(NEW_HIRE/TRANSFER/REHIRE), 법인 선택
+- 수정/삭제(Soft Delete)
+
+**태스크 관리**
+- 태스크 목록: 드래그 정렬 (sort_order)
+- 태스크 추가: 제목, 설명, 담당자 유형(EMPLOYEE/MANAGER/HR/BUDDY), 기한(입사일+N일), 필수 여부, 카테고리(DOCUMENT/TRAINING/SETUP/INTRODUCTION/OTHER)
+- 태스크 수정/삭제
+
+---
+
+### 2. 온보딩 현황 (/onboarding) — HR_ADMIN
+
+**대시보드**
+- 진행 중 온보딩 목록 DataTable:
+  직원명 / 입사일 / 버디 / 템플릿 / 진행률(프로그레스 바) / 상태
+- 필터: 완료/진행 중/지연
+- 지연 기준: 기한 초과 태스크 1개 이상 → 행 bg-ctr-warning/5 하이라이트
+- 담당자별 필터: "내 담당 태스크만" 토글
+
+---
+
+### 3. 내 온보딩 (/onboarding/me) — EMPLOYEE (신규 입사자)
+
+**본인 온보딩 뷰**
+- 상단: 환영 메시지 + 버디 정보 + 전체 진행률 프로그레스 바
+- 체크리스트: 카테고리별 그룹핑 (📄 서류 / 🎓 교육 / 💻 장비 / 👋 소개 / 기타)
+- 각 태스크: 체크박스 + 제목 + 담당자 유형 뱃지 + 기한 + 상태
+- 체크 → PUT /api/v1/onboarding/tasks/:id/complete
+  → employee_onboarding_tasks.status = DONE, completed_at 기록
+
+**전체 완료 처리**
+- 모든 is_required 태스크가 DONE →
+  employee_onboarding.status = COMPLETED, completed_at 기록
+  employees.onboarded_at = NOW()
+
+---
+
+### 4. 온보딩 완료 처리 — HR_ADMIN
+
+- 전체 태스크 완료 시 자동 상태 변경 (위 로직)
+- HR Admin 수동 완료: 미완료 태스크 SKIPPED 처리 후 강제 완료 가능
+  → 사유 입력 필수
+
+---
+
+### 5. 감성 체크인 (/onboarding/checkin) — EMPLOYEE
+
+**자동 알림**
+- 입사 후 1주/2주/4주/8주/12주 시점에 자동 알림 발송
+  (알림 트리거: ONBOARDING_CHECKIN)
+- 알림 클릭 → 체크인 폼 이동
+
+**체크인 폼**
+- mood: 5단계 이모지 선택 (😃 GREAT / 🙂 GOOD / 😐 NEUTRAL / 😟 STRUGGLING / 😢 BAD)
+- energy: 슬라이더 1~5 (체력/활력)
+- belonging: 슬라이더 1~5 (소속감)
+- comment: 자유 코멘트 (선택)
+- 제출 → onboarding_checkins INSERT
+
+**HR_ADMIN 뷰 (/onboarding/checkins)**
+- 전체 체크인 현황 DataTable: 직원명 / 주차 / Mood / Energy / Belonging / 제출일
+- 추세 차트: 직원별 mood/energy/belonging 추이 (Line Chart, Recharts)
+- 위험 신호: mood=STRUGGLING/BAD 또는 belonging≤2 → 빨간 하이라이트
+
+**AI 요약**
+- HR_ADMIN → "AI 요약" 버튼 (직원별 전체 체크인 요약)
+- lib/claude.ts의 onboardingCheckinSummary 함수 호출
+```ts
+onboardingCheckinSummary(
+  employeeName: string,
+  checkins: Array<{
+    week: number,
+    mood: string,
+    energy: number,
+    belonging: number,
+    comment: string | null
+  }>
+): Promise<{
+  overall_sentiment: 'POSITIVE' | 'MIXED' | 'CONCERNING',
+  trend: 'IMPROVING' | 'STABLE' | 'DECLINING',
+  key_observations: string[],
+  recommended_actions: string[]
+}>
+prompt_version: "onboarding-checkin-summary-v1.0"
+```
+- 결과 → onboarding_checkins.ai_summary 저장 + AiGeneratedBadge 표시
+- ai_logs (ONBOARDING_CHECKIN_SUMMARY) 기록
+
+---
+
+### 6. ★ 퇴직 관리 프로세스 (/offboarding)
+
+#### 6-1. 퇴직 체크리스트 관리 (/settings/offboarding) — HR_ADMIN
+
+**체크리스트 CRUD**
+- DataTable: 이름 / 대상 유형 / 태스크 수 / 상태
+- 생성 폼: 이름, 대상 유형(VOLUNTARY/INVOLUNTARY/RETIREMENT/CONTRACT_END), 법인 선택
+- 태스크 관리: 드래그 정렬
+  - 제목, 설명, 담당자 유형(EMPLOYEE/MANAGER/HR/IT/FINANCE), 기한(퇴직일-N일), 필수 여부
+
+#### 6-2. 퇴직 처리 시작
+
+**진입 경로**: /employees/:id 프로필 → "퇴직 처리" 버튼 (HR_ADMIN, status=ACTIVE)
+
+**퇴직 처리 폼**
+- 퇴직 유형 선택: 자발적 퇴사 / 비자발적 퇴사 / 정년퇴직 / 계약만료 / 합의 퇴직
+- 최종 근무일 입력 (DatePicker)
+- 퇴직 사유 코드 + 상세 사유 (선택)
+- 인수인계 대상자 지정 (직원 검색, 선택)
+
+**처리 로직 ($transaction)**
+1. employees.status = RESIGNED (자발적/정년/계약/합의) 또는 TERMINATED (비자발적)
+2. employees.resign_date = 최종 근무일
+3. employee_histories INSERT:
+   - change_type = RESIGN 또는 TERMINATE
+   - reason = 상세 사유
+4. employee_offboarding INSERT:
+   - 퇴직 유형에 맞는 체크리스트 자동 매칭 (target_type 기준)
+   - status = IN_PROGRESS
+   - handover_to_id = 지정된 인수인계 대상자
+5. employee_offboarding_tasks: 매칭 체크리스트의 전체 태스크 자동 생성 (status=PENDING)
+6. 알림 발송:
+   - 매니저: "팀원 {{name}}님이 퇴직 처리되었습니다"
+   - IT: "계정 비활성화 필요 (D-{{days}})"
+   - 재무: "퇴직금 정산 필요"
+   - 인수인계 대상자: "업무 인수인계 요청"
+
+#### 6-3. 퇴직 진행 대시보드 (/offboarding) — HR_ADMIN
+
+**진행 중 퇴직 목록**
+- DataTable: 직원명 / 법인 / 퇴직유형 / 최종근무일 / 진행률 / 상태
+- 진행률: 완료 태스크 / 전체 태스크 (프로그레스 바)
+- 퇴직일 임박 경고: D-7=🟡, D-3=🔴 아이콘
+
+**필터**
+- 상태: IN_PROGRESS / COMPLETED / CANCELLED
+- 담당자 유형: "IT 미완료만" / "재무 미완료만" 토글
+- 법인별 (CompanySelector)
+
+**태스크 관리**
+- 퇴직 건 클릭 → 태스크 상세 뷰
+- 각 태스크: 담당자 유형 뱃지 + 상태 + 기한
+- 태스크 완료 처리: PUT /api/v1/offboarding/:id/tasks/:taskId/complete
+  → status=DONE, completed_by, completed_at
+- 전체 필수 태스크 완료 → employee_offboarding.status=COMPLETED, completed_at
+
+**완료된 퇴직 이력**
+- 별도 탭 또는 필터로 조회
+- 퇴직 면담 완료 여부 표시
+
+#### 6-4. 퇴직 면담 (Exit Interview)
+
+**면담 등록 — HR_ADMIN**
+- POST /api/v1/offboarding/:id/exit-interview
+- 폼:
+  - 면담 일자 (DatePicker)
+  - 면담자 (HR 담당자, 기본값=현재 로그인 사용자)
+  - 주된 퇴사 사유 (선택형):
+    COMPENSATION / CAREER_GROWTH / WORK_LIFE_BALANCE / MANAGEMENT / CULTURE / RELOCATION / PERSONAL / OTHER
+  - 만족도 (1~5, 별점 UI)
+  - 추천 의향 (Boolean, 토글)
+  - 자유 의견 (Textarea)
+- 저장 → exit_interviews INSERT
+- employee_offboarding.exit_interview_completed = true
+
+**AI 요약 버튼**
+- "AI 분석" 버튼 → POST /api/v1/offboarding/:id/exit-interview/ai-summary
+- lib/claude.ts:
+```ts
+exitInterviewSummary(
+  employeeName: string,
+  tenure_months: number,
+  resign_type: string,
+  primary_reason: string,
+  satisfaction_score: number,
+  feedback_text: string
+): Promise<{
+  sentiment: 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE',
+  key_issues: string[],
+  retention_insight: string,
+  action_needed: string | null
+}>
+prompt_version: "exit-interview-summary-v1.0"
+```
+- 결과 → exit_interviews.ai_summary 저장
+- AiGeneratedBadge 표시
+- ai_logs (EXIT_INTERVIEW_SUMMARY) 기록
+
+**퇴직 사유 통계**: Analytics 연동 (STEP 7)
+
+#### 6-5. 업무 인수인계 체크
+
+**인수인계 프로세스**
+- employee_offboarding.handover_to_id 지정 (퇴직 처리 시 또는 이후 수정)
+- 인수인계 문서 업로드:
+  - S3 Presigned URL 업로드
+  - employee_documents INSERT (doc_type='HANDOVER', employee_id=퇴직자)
+- 인수자 확인:
+  - 인수자가 "인수인계 확인" 버튼 클릭
+  - 해당 offboarding_task의 status=DONE으로 변경
+- 인수인계 미완료 경고: D-3까지 미완료 시 매니저 + HR 알림
+
+#### 6-6. IT 계정 비활성화
+
+**퇴직 완료 시 처리**
+- employee_offboarding의 모든 필수 태스크 완료 시:
+  - it_account_deactivated = true
+  - sso_sessions: 해당 직원의 모든 세션 revoked_at = NOW()
+  - employee_auth.locked_until = 무기한 (far future date)
+- 즉시 로그아웃 효과: revoked_at 설정된 세션 → 다음 요청 시 인증 실패
+
+**Phase 2**: M365 계정 자동 비활성화 API 연동 (기술 부채)
+
+#### 6-7. Attrition Risk 피드백 루프
+
+- 퇴직 확정 (employee_offboarding.status=COMPLETED) 시:
+  - 해당 직원의 attrition_risk_history 마지막 레코드의 score 조회
+  - 이 데이터는 STEP 7 Analytics에서 "예측 정확도" 지표로 활용
+  - 퇴직 직원 중 High Risk(70+)였던 비율 = 예측 적중률
+
+---
+
+### 7. Self-Service 정보수정 승인
+
+#### EMPLOYEE 뷰
+- /employees/me → 본인 프로필
+- 수정 가능 필드: 전화번호, 비상연락처 이름, 비상연락처 전화
+- "수정 요청" 버튼 → 폼:
+  - 변경 필드 선택
+  - 현재 값 (자동 표시) → 새 값 입력
+  - 제출 → profile_change_requests INSERT (status=PENDING)
+- 내 요청 이력 조회 (상태별 뱃지: PENDING=노랑, APPROVED=초록, REJECTED=빨강)
+
+#### HR_ADMIN 뷰
+- /settings/profile-requests
+- 미처리 요청 목록 DataTable: 직원명 / 필드 / 현재값 → 새값 / 요청일 / 상태
+- 승인/반려:
+  - 승인: employees 테이블 해당 필드 반영 + audit_logs 기록
+    → profile_change_requests.status=APPROVED, reviewed_by, reviewed_at
+    → 직원에게 "정보 수정이 승인되었습니다" 알림
+  - 반려: rejection_reason 입력 필수
+    → profile_change_requests.status=REJECTED
+    → 직원에게 "정보 수정이 반려되었습니다: {{사유}}" 알림
+
+
+================================================================
+API
+================================================================
+
+```
+# 온보딩 — 템플릿
+GET /POST         /api/v1/onboarding/templates
+GET /PUT /DELETE  /api/v1/onboarding/templates/:id
+GET /POST /PUT /DELETE  /api/v1/onboarding/templates/:id/tasks
+PUT               /api/v1/onboarding/templates/:id/tasks/reorder   # 드래그 정렬
+
+# 온보딩 — 현황
+GET               /api/v1/onboarding/dashboard            # HR_ADMIN 대시보드
+GET               /api/v1/onboarding/me                    # EMPLOYEE 본인
+PUT               /api/v1/onboarding/tasks/:id/complete    # 태스크 완료
+PUT               /api/v1/onboarding/:id/force-complete    # HR 강제 완료
+
+# 감성 체크인
+POST              /api/v1/onboarding/checkin               # 체크인 제출
+GET               /api/v1/onboarding/checkins              # HR 전체 조회
+GET               /api/v1/onboarding/checkins/:employeeId  # 직원별 조회
+POST              /api/v1/ai/onboarding-checkin-summary     # AI 요약
+
+# 퇴직 관리 — 체크리스트
+GET /POST         /api/v1/offboarding/checklists
+GET /PUT /DELETE  /api/v1/offboarding/checklists/:id
+GET /POST /PUT /DELETE  /api/v1/offboarding/checklists/:id/tasks
+
+# 퇴직 관리 — 프로세스
+POST              /api/v1/employees/:id/offboarding/start   # 퇴직 처리 시작
+GET               /api/v1/employees/:id/offboarding         # 직원 퇴직 현황
+PUT               /api/v1/offboarding/:id/tasks/:taskId/complete  # 태스크 완료
+PUT               /api/v1/offboarding/:id/cancel            # 퇴직 취소 (HR)
+GET               /api/v1/offboarding/dashboard             # 대시보드
+
+# 퇴직 면담
+POST              /api/v1/offboarding/:id/exit-interview
+GET               /api/v1/offboarding/:id/exit-interview
+POST              /api/v1/offboarding/:id/exit-interview/ai-summary
+
+# Self-Service
+GET /POST         /api/v1/profile/change-requests           # EMPLOYEE
+GET               /api/v1/profile/change-requests/pending    # HR_ADMIN
+PUT               /api/v1/profile/change-requests/:id/review # HR 승인/반려
+```
+
+
+================================================================
+완료 기준
+================================================================
+
+**사전 작업**
+- [ ] 추가 인덱스 8개 적용 확인
+- [ ] MV UNIQUE INDEX 8개 존재 확인
+- [ ] CTR_VALUES 상수 + 아이콘 4개 확인
+
+**온보딩 — 템플릿**
+- [ ] 템플릿 CRUD + 태스크 드래그 정렬 확인
+- [ ] 법인별 템플릿 관리 확인
+
+**온보딩 — 프로세스**
+- [ ] 온보딩 시작 → employee_onboarding + tasks 자동 생성 확인
+- [ ] 태스크 완료 체크 → status=DONE + completed_at 확인
+- [ ] 전체 필수 태스크 완료 → status=COMPLETED + onboarded_at 확인
+- [ ] HR 강제 완료 (SKIPPED + 사유) 확인
+- [ ] 진행 중 대시보드 진행률 프로그레스 바 확인
+- [ ] 지연 태스크 하이라이트 확인
+
+**감성 체크인**
+- [ ] 1주/2주/4주/8주/12주 체크인 알림 트리거 확인
+- [ ] 체크인 폼 제출 → onboarding_checkins 저장 확인
+- [ ] HR 전체 체크인 현황 + 추세 차트 렌더링 확인
+- [ ] 위험 신호 (STRUGGLING/BAD, belonging≤2) 하이라이트 확인
+- [ ] AI 요약 → ai_summary 저장 + AiGeneratedBadge + ai_logs 확인
+
+**퇴직 관리**
+- [ ] 퇴직 처리 시작 → $transaction 5단계 원자적 실행 확인
+- [ ] 퇴직 유형별 체크리스트 자동 매칭 확인
+- [ ] employee_offboarding + tasks 자동 생성 확인
+- [ ] 관련자(매니저, IT, 재무, 인수자) 알림 4건 발송 확인
+- [ ] 태스크 완료 → 전체 완료 시 status=COMPLETED 확인
+- [ ] 퇴직일 임박 경고 (D-7🟡, D-3🔴) 확인
+- [ ] 담당자 유형별 필터 (IT/재무 미완료) 확인
+
+**퇴직 면담**
+- [ ] 면담 기록 저장 → exit_interviews INSERT 확인
+- [ ] exit_interview_completed 플래그 업데이트 확인
+- [ ] AI 요약 → ai_summary + AiGeneratedBadge + ai_logs(EXIT_INTERVIEW_SUMMARY) 확인
+
+**인수인계**
+- [ ] handover_to_id 지정 확인
+- [ ] 인수인계 문서 S3 업로드 → employee_documents(HANDOVER) 확인
+- [ ] 인수자 확인 클릭 → 해당 태스크 DONE 확인
+- [ ] D-3 미완료 시 알림 확인
+
+**IT 계정 비활성화**
+- [ ] 퇴직 완료 → it_account_deactivated=true 확인
+- [ ] SSO 세션 revoke (revoked_at 설정) 확인
+- [ ] revoked 세션으로 API 호출 → 인증 실패 확인
+
+**Self-Service**
+- [ ] EMPLOYEE 수정 요청 → profile_change_requests(PENDING) 생성 확인
+- [ ] HR 승인 → employees 테이블 반영 + audit_logs 확인
+- [ ] HR 반려 → rejection_reason 저장 + 알림 확인
+- [ ] EMPLOYEE → 본인 요청 이력만 조회 확인
+
+**공통**
+- [ ] npx tsc --noEmit 에러 0개
+
+
+================================================================
+★ 세션 종료: context.md 업데이트
+================================================================
+
+반드시 포함:
+- 신규 파일 목록 (페이지, API 라우트, lib 파일)
+- lib/claude.ts 함수 추가: onboardingCheckinSummary, exitInterviewSummary
+- lib/prompts/ 디렉토리: exit-interview-summary-v1.0.ts, onboarding-checkin-summary-v1.0.ts
+- 퇴직 프로세스 상태 머신 (IN_PROGRESS → COMPLETED/CANCELLED)
+- 다음 세션(STEP 4) 시작 전 확인 사항

@@ -3,30 +3,24 @@
 // GET /api/v1/analytics/employee-risk?employee_id=xxx
 // ═══════════════════════════════════════════════════════════
 
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { withPermission, perm } from '@/lib/permissions'
+import { apiSuccess } from '@/lib/api'
+import { badRequest, forbidden, notFound } from '@/lib/errors'
+import { MODULE, ACTION } from '@/lib/constants'
 import { calculateTurnoverRisk } from '@/lib/analytics/predictive/turnoverRisk'
 import { calculateBurnoutScore } from '@/lib/analytics/predictive/burnout'
+import type { SessionUser } from '@/types'
 
-export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions)
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+export const GET = withPermission(
+  async (req: NextRequest, _ctx, user: SessionUser) => {
+    const { searchParams } = new URL(req.url)
+    const employeeId = searchParams.get('employee_id') ?? ''
+    const recalculate = searchParams.get('recalculate') === 'true'
 
-  const user = session.user as { role?: string; companyId?: string }
-  if (!['HR_ADMIN', 'SUPER_ADMIN'].includes(user.role ?? '')) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-  }
+    if (!employeeId) throw badRequest('employee_id required')
 
-  const { searchParams } = new URL(req.url)
-  const employeeId = searchParams.get('employee_id') ?? ''
-  const companyId = searchParams.get('company_id') ?? user.companyId ?? ''
-  const recalculate = searchParams.get('recalculate') === 'true'
-
-  if (!employeeId) return NextResponse.json({ error: 'employee_id required' }, { status: 400 })
-
-  try {
     // 직원 기본 정보
     const employee = await prisma.employee.findUnique({
       where: { id: employeeId },
@@ -45,9 +39,14 @@ export async function GET(req: NextRequest) {
         },
       },
     })
-    if (!employee) return NextResponse.json({ error: 'Employee not found' }, { status: 404 })
+    if (!employee) throw notFound('Employee not found')
 
-    const effectiveCompanyId = employee.assignments[0]?.company?.id ?? companyId
+    const effectiveCompanyId = employee.assignments[0]?.company?.id ?? user.companyId
+
+    // M-1: 법인 간 IDOR 차단 — SUPER_ADMIN만 타 법인 직원 조회 가능
+    if (user.role !== 'SUPER_ADMIN' && effectiveCompanyId !== user.companyId) {
+      throw forbidden()
+    }
 
     // 최신 스코어 조회 또는 재계산
     let turnoverScore = await prisma.turnoverRiskScore.findFirst({
@@ -87,23 +86,18 @@ export async function GET(req: NextRequest) {
       })
     }
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        employee: {
-          id: employee.id,
-          name: employee.name,
-          hireDate: employee.hireDate,
-          department: employee.assignments[0]?.department ?? null,
-          jobGrade: employee.assignments[0]?.jobGrade ?? null,
-          company: employee.assignments[0]?.company ?? null,
-        },
-        turnover: turnoverScore,
-        burnout: burnoutScore,
+    return apiSuccess({
+      employee: {
+        id: employee.id,
+        name: employee.name,
+        hireDate: employee.hireDate,
+        department: employee.assignments[0]?.department ?? null,
+        jobGrade: employee.assignments[0]?.jobGrade ?? null,
+        company: employee.assignments[0]?.company ?? null,
       },
+      turnover: turnoverScore,
+      burnout: burnoutScore,
     })
-  } catch (error) {
-    console.error('[employee-risk GET]', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
-}
+  },
+  perm(MODULE.ANALYTICS, ACTION.VIEW),
+)

@@ -1,5 +1,4 @@
 import { prisma } from '@/lib/prisma'
-import { Prisma } from '@/generated/prisma/client'
 
 // ─── pgvector Search & Insert ──────────────────────────
 
@@ -61,6 +60,7 @@ export async function insertChunkWithEmbedding(params: {
     ? JSON.stringify(params.metadata)
     : null
 
+  // metadataJson is passed as a bound parameter with ::jsonb cast — no raw injection
   await prisma.$executeRaw`
     INSERT INTO hr_document_chunks (id, document_id, chunk_index, content, embedding, token_count, metadata, created_at)
     VALUES (
@@ -70,7 +70,7 @@ export async function insertChunkWithEmbedding(params: {
       ${params.content},
       ${vectorStr}::vector,
       ${params.tokenCount},
-      ${metadataJson ? Prisma.raw(`'${metadataJson}'::jsonb`) : Prisma.raw('NULL')},
+      ${metadataJson}::jsonb,
       NOW()
     )
   `

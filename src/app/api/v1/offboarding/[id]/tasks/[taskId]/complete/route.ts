@@ -8,8 +8,13 @@ import { apiSuccess } from '@/lib/api'
 import { notFound, badRequest } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { deactivateItAccount } from '@/lib/offboarding-complete'
+import { eventBus } from '@/lib/events/event-bus'
+import { DOMAIN_EVENTS } from '@/lib/events/types'
+import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+
+bootstrapEventHandlers()
 
 export const PUT = withPermission(
   async (_req, ctx, user: SessionUser) => {
@@ -39,13 +44,15 @@ export const PUT = withPermission(
       throw badRequest('이미 완료된 태스크입니다.')
     }
 
+    const completedAt = new Date()
+
     await prisma.$transaction(async (tx) => {
       // Mark task as DONE
       await tx.employeeOffboardingTask.update({
         where: { id: taskId },
         data: {
           status: 'DONE',
-          completedAt: new Date(),
+          completedAt,
           completedBy: user.employeeId,
         },
       })
@@ -58,12 +65,43 @@ export const PUT = withPermission(
         .filter((t) => t.task.isRequired)
         .every((t) => t.status === 'DONE')
 
+      // Resolve companyId from employee assignment
+      const assignment = await tx.employeeAssignment.findFirst({
+        where: { employeeId: offboarding.employeeId, isPrimary: true, endDate: null },
+        select: { companyId: true },
+      })
+      const companyId = assignment?.companyId ?? user.companyId
+
+      // Publish OFFBOARDING_TASK_COMPLETED inside tx
+      await eventBus.publish(DOMAIN_EVENTS.OFFBOARDING_TASK_COMPLETED, {
+        ctx: { companyId, actorId: user.employeeId, occurredAt: completedAt },
+        employeeId:      offboarding.employeeId,
+        companyId,
+        offboardingId:   id,
+        taskId,
+        completedBy:     user.employeeId,
+        taskTitle:       targetTask.task.title,
+        allRequiredDone,
+      }, tx)
+
       if (allRequiredDone) {
+        const now = new Date()
         await tx.employeeOffboarding.update({
           where: { id },
-          data: { status: 'COMPLETED', completedAt: new Date() },
+          data: { status: 'COMPLETED', completedAt: now },
         })
         await deactivateItAccount(tx, offboarding.employeeId)
+
+        // Publish OFFBOARDING_COMPLETED inside tx
+        await eventBus.publish(DOMAIN_EVENTS.OFFBOARDING_COMPLETED, {
+          ctx: { companyId, actorId: user.employeeId, occurredAt: now },
+          employeeId:      offboarding.employeeId,
+          companyId,
+          offboardingId:   id,
+          lastWorkingDate: offboarding.lastWorkingDate,
+          resignType:      offboarding.resignType,
+          completedAt:     now,
+        }, tx)
       }
     })
 

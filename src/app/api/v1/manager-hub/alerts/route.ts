@@ -104,25 +104,35 @@ export const GET = withPermission(
         }
       }
 
-      // Burnout risk - consecutive days with overtime + no leave taken
-      for (const empId of teamIds) {
-        const recentAttendance = await prisma.attendance.findMany({
+      // Burnout risk — batch fetch attendance + leave to eliminate N+1
+      const [burnoutAttendance, approvedLeaves] = await Promise.all([
+        prisma.attendance.findMany({
           where: {
-            employeeId: empId,
+            employeeId: { in: teamIds },
             workDate: { gte: monthStart },
             overtimeMinutes: { gt: 60 },
           },
-        })
-
-        const recentLeave = await prisma.leaveRequest.count({
+          select: { employeeId: true },
+        }),
+        prisma.leaveRequest.findMany({
           where: {
-            employeeId: empId,
+            employeeId: { in: teamIds },
             status: 'APPROVED',
             startDate: { gte: monthStart },
           },
-        })
+          select: { employeeId: true },
+        }),
+      ])
 
-        if (recentAttendance.length > 15 && recentLeave === 0) {
+      const burnoutOvertimeCount = new Map<string, number>()
+      for (const r of burnoutAttendance) {
+        burnoutOvertimeCount.set(r.employeeId, (burnoutOvertimeCount.get(r.employeeId) ?? 0) + 1)
+      }
+      const hasLeaveSet = new Set(approvedLeaves.map((l) => l.employeeId))
+
+      for (const empId of teamIds) {
+        const overtimeDays = burnoutOvertimeCount.get(empId) ?? 0
+        if (overtimeDays > 15 && !hasLeaveSet.has(empId)) {
           alerts.push({
             id: `burnout-${empId}`,
             type: 'BURNOUT',

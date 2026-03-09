@@ -1,0 +1,264 @@
+// ═══════════════════════════════════════════════════════════
+// CTR HR Hub — EmployeeOffboardingTask → UnifiedTask Mapper
+// src/lib/unified-task/mappers/offboarding.mapper.ts
+// ═══════════════════════════════════════════════════════════
+//
+// Onboarding 매퍼와 구조적으로 동일하지만 핵심 차이:
+//   - dueDate 계산: lastWorkingDate - dueDaysBefore (역방향)
+//   - Priority: lastWorkingDate까지 남은 일수 기준
+//   - Title: "[Offboarding] {taskTitle}"
+//   - assigneeType: EMPLOYEE/MANAGER/HR/IT/FINANCE
+//   - MANAGER → skip (Position 계층 미구현, TODO)
+// ═══════════════════════════════════════════════════════════
+
+import type { Prisma } from '@/generated/prisma/client'
+import {
+  UnifiedTaskType,
+  UnifiedTaskStatus,
+  UnifiedTaskPriority,
+  type UnifiedTask,
+  type UnifiedTaskActor,
+  type UnifiedTaskMapper,
+} from '../types'
+
+// ─── Prisma 조회 타입 ──────────────────────────────────────
+
+export type OffboardingTaskWithRelations = Prisma.EmployeeOffboardingTaskGetPayload<{
+  include: {
+    task: {
+      select: {
+        id: true
+        title: true
+        description: true
+        assigneeType: true
+        dueDaysBefore: true
+        isRequired: true
+        sortOrder: true
+      }
+    }
+    employeeOffboarding: {
+      include: {
+        employee: {
+          select: {
+            id: true
+            name: true
+            assignments: {
+              where: { isPrimary: true; endDate: null }
+              take: 1
+              select: {
+                companyId: true
+                jobGrade: { select: { name: true } }
+                department: { select: { name: true } }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}>
+
+// ─── System Actors (HR/IT/FINANCE — 실제 employeeId 없음) ─
+
+const SYSTEM_ACTORS: Record<string, UnifiedTaskActor> = {
+  HR:      { employeeId: 'system:hr',      name: 'HR팀' },
+  IT:      { employeeId: 'system:it',      name: 'IT팀' },
+  FINANCE: { employeeId: 'system:finance', name: 'Finance팀' },
+}
+
+const UNASSIGNED_ACTOR: UnifiedTaskActor = {
+  employeeId: 'unassigned',
+  name: '미지정',
+}
+
+// ─── Status 매핑 ──────────────────────────────────────────
+// TaskStatus: PENDING / DONE / SKIPPED / BLOCKED
+
+function mapOffboardingStatus(status: string): UnifiedTaskStatus {
+  switch (status) {
+    case 'PENDING':  return UnifiedTaskStatus.PENDING
+    case 'BLOCKED':  return UnifiedTaskStatus.PENDING  // BLOCKED → PENDING (+ metadata에 blocked 표시)
+    case 'DONE':     return UnifiedTaskStatus.COMPLETED
+    case 'SKIPPED':  return UnifiedTaskStatus.CANCELLED
+    default:         return UnifiedTaskStatus.PENDING
+  }
+}
+
+// ─── Priority 추론 ─────────────────────────────────────────
+// Offboarding: lastWorkingDate까지 남은 일수 기반 (역방향)
+//   - 이미 overdue (due date 지남) → URGENT
+//   - due today → HIGH
+//   - 3일 이내 → MEDIUM
+//   - 그 외 → LOW
+
+function mapOffboardingPriority(
+  status: string,
+  dueDate: Date | null,
+): UnifiedTaskPriority {
+  if (status !== 'PENDING' && status !== 'BLOCKED') return UnifiedTaskPriority.LOW
+  if (!dueDate) return UnifiedTaskPriority.MEDIUM
+
+  const now = Date.now()
+  const dueTime = dueDate.getTime()
+  const diffDays = (dueTime - now) / 86_400_000   // 양수 = 아직 남음, 음수 = 지남
+
+  if (diffDays < 0)   return UnifiedTaskPriority.URGENT  // 이미 overdue
+  if (diffDays < 1)   return UnifiedTaskPriority.HIGH    // today
+  if (diffDays <= 3)  return UnifiedTaskPriority.MEDIUM  // 3일 이내
+  return UnifiedTaskPriority.LOW
+}
+
+// ─── Assignee Resolve ──────────────────────────────────────
+// OffboardingAssignee: EMPLOYEE / MANAGER / HR / IT / FINANCE
+
+function resolveOffboardingAssignee(
+  assigneeType: string,
+  offboarding: OffboardingTaskWithRelations['employeeOffboarding'],
+): UnifiedTaskActor {
+  const employee = offboarding.employee
+
+  switch (assigneeType) {
+    case 'EMPLOYEE':
+      return {
+        employeeId: employee.id,
+        name:       employee.name,
+        position:   employee.assignments?.[0]?.jobGrade?.name,
+        department: employee.assignments?.[0]?.department?.name,
+      }
+
+    case 'MANAGER':
+      // TODO: Position 계층 기반 매니저 ID 조회 미구현
+      // Onboarding mapper와 동일한 패턴 — Position hierarchy 구현 후 활성화
+      return UNASSIGNED_ACTOR
+
+    case 'HR':
+    case 'IT':
+    case 'FINANCE':
+      return SYSTEM_ACTORS[assigneeType] ?? UNASSIGNED_ACTOR
+
+    default:
+      return UNASSIGNED_ACTOR
+  }
+}
+
+// ─── Mapper 구현 ───────────────────────────────────────────
+
+class OffboardingTaskMapper
+  implements UnifiedTaskMapper<OffboardingTaskWithRelations>
+{
+  readonly type = UnifiedTaskType.OFFBOARDING_TASK
+
+  toUnifiedTask(source: OffboardingTaskWithRelations): UnifiedTask {
+    const offboarding   = source.employeeOffboarding
+    const task          = source.task
+    const employee      = offboarding.employee
+    const dueDaysBefore = task.dueDaysBefore
+
+    // dueDate = lastWorkingDate - dueDaysBefore (역방향 계산)
+    const lastWorkingDate = offboarding.lastWorkingDate
+    const dueDate = lastWorkingDate
+      ? new Date(lastWorkingDate.getTime() - dueDaysBefore * 86_400_000)
+      : null
+
+    const assignee  = resolveOffboardingAssignee(task.assigneeType, offboarding)
+    const status    = mapOffboardingStatus(source.status)
+    const priority  = mapOffboardingPriority(source.status, dueDate)
+    const companyId = employee.assignments?.[0]?.companyId ?? ''
+    const isBlocked = source.status === 'BLOCKED'
+
+    // 남은 일수 계산 (마감 기준)
+    const daysUntilDue = dueDate
+      ? Math.ceil((dueDate.getTime() - Date.now()) / 86_400_000)
+      : null
+
+    return {
+      id:       `offboarding_task:${source.id}`,
+      type:     UnifiedTaskType.OFFBOARDING_TASK,
+      status,
+      priority,
+
+      title:   `[Offboarding] ${task.title}`,
+      summary: task.description ?? `담당: ${task.assigneeType} · ${
+        daysUntilDue !== null
+          ? daysUntilDue < 0
+            ? `${Math.abs(daysUntilDue)}일 초과`
+            : `${daysUntilDue}일 후 마감`
+          : '기한 없음'
+      }`,
+
+      requester: {
+        employeeId: employee.id,
+        name:       employee.name,
+        position:   employee.assignments?.[0]?.jobGrade?.name,
+        department: employee.assignments?.[0]?.department?.name,
+      },
+      assignee,
+
+      createdAt: offboarding.startedAt.toISOString(),
+      updatedAt: source.completedAt?.toISOString() ?? offboarding.startedAt.toISOString(),
+      dueDate:   dueDate?.toISOString(),
+
+      sourceId:    source.id,
+      sourceModel: 'EmployeeOffboardingTask',
+      actionUrl:   `/offboarding/${offboarding.id}`,
+
+      companyId,
+
+      metadata: {
+        assigneeType:    task.assigneeType,
+        dueDaysBefore,
+        isRequired:      task.isRequired,
+        isBlocked,
+        sortOrder:       task.sortOrder,
+        offboardingId:   offboarding.id,
+        offboardingStatus: offboarding.status,
+        resignType:      offboarding.resignType,
+        lastWorkingDate: offboarding.lastWorkingDate.toISOString(),
+        handoverToId:    offboarding.handoverToId ?? null,
+        daysUntilDue,
+        completedBy:     source.completedBy ?? null,
+      },
+    }
+  }
+
+  toUnifiedTasks(sources: OffboardingTaskWithRelations[]): UnifiedTask[] {
+    return sources.map((s) => this.toUnifiedTask(s))
+  }
+}
+
+export const offboardingTaskMapper = new OffboardingTaskMapper()
+
+// ─── Prisma Include 상수 (route.ts에서 재사용) ──────────────
+
+export const OFFBOARDING_TASK_INCLUDE = {
+  task: {
+    select: {
+      id:           true,
+      title:        true,
+      description:  true,
+      assigneeType: true,
+      dueDaysBefore: true,
+      isRequired:   true,
+      sortOrder:    true,
+    },
+  },
+  employeeOffboarding: {
+    include: {
+      employee: {
+        select: {
+          id:   true,
+          name: true,
+          assignments: {
+            where: { isPrimary: true, endDate: null },
+            take: 1,
+            select: {
+              companyId:  true,
+              jobGrade:   { select: { name: true } },
+              department: { select: { name: true } },
+            },
+          },
+        },
+      },
+    },
+  },
+} as const

@@ -80,78 +80,65 @@ export const POST = withPermission(
       const monthEnd = endOfMonth(new Date(year, month - 1))
       const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd })
 
-      // 4. Generate schedule entries for each group and member
-      let createdCount = 0
-      let skippedCount = 0
+      // 4. Generate schedule entries — delete+createMany로 N+1 제거
+      const allEmployeeIds = groups.flatMap((g) => g.members.map((m) => m.employeeId))
 
-      await prisma.$transaction(async (tx) => {
-        for (let groupIndex = 0; groupIndex < groups.length; groupIndex++) {
-          const group = groups[groupIndex]
-          const memberEmployeeIds = group.members.map((m) => m.employeeId)
+      // Build all schedule records in memory first
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const scheduleRecords: any[] = []
 
-          if (memberEmployeeIds.length === 0) continue
+      for (let groupIndex = 0; groupIndex < groups.length; groupIndex++) {
+        const group = groups[groupIndex]
+        const memberEmployeeIds = group.members.map((m) => m.employeeId)
+        if (memberEmployeeIds.length === 0) continue
 
-          for (const day of daysInMonth) {
-            // Calculate the day's position in the cycle
-            // Each group is offset by groupIndex to stagger shifts
-            const dayOfYear = Math.floor(
-              (day.getTime() - new Date(year, 0, 1).getTime()) / (1000 * 60 * 60 * 24),
-            )
-            const cyclePosition = (dayOfYear + groupIndex) % cycleDays
+        for (const day of daysInMonth) {
+          const dayOfYear = Math.floor(
+            (day.getTime() - new Date(year, 0, 1).getTime()) / (1000 * 60 * 60 * 24),
+          )
+          const cyclePosition = (dayOfYear + groupIndex) % cycleDays
+          const isRestDay = cyclePosition >= slots.length
+          if (isRestDay) continue
 
-            // Determine which slot this day falls on
-            // If cycleDays > slots.length, extra days are rest days (no schedule)
-            const slotIndex = cyclePosition % slots.length
-            const isRestDay = cyclePosition >= slots.length
+          const slotIndex = cyclePosition % slots.length
+          const slot = slots[slotIndex]
+          const workDate = new Date(format(day, 'yyyy-MM-dd'))
 
-            if (isRestDay) continue
-
-            const slot = slots[slotIndex]
-            const workDate = new Date(format(day, 'yyyy-MM-dd'))
-
-            for (const employeeId of memberEmployeeIds) {
-              try {
-                await tx.shiftSchedule.upsert({
-                  where: {
-                    employeeId_workDate: {
-                      employeeId,
-                      workDate,
-                    },
-                  },
-                  update: {
-                    shiftPatternId: pattern.id,
-                    shiftGroupId: group.id,
-                    slotIndex,
-                    slotName: slot.name,
-                    startTime: slot.start,
-                    endTime: slot.end,
-                    breakMinutes: slot.breakMin ?? 0,
-                    isNightShift: slot.nightPremium ?? false,
-                    status: 'SCHEDULED',
-                  },
-                  create: {
-                    companyId: pattern.companyId,
-                    employeeId,
-                    shiftPatternId: pattern.id,
-                    shiftGroupId: group.id,
-                    workDate,
-                    slotIndex,
-                    slotName: slot.name,
-                    startTime: slot.start,
-                    endTime: slot.end,
-                    breakMinutes: slot.breakMin ?? 0,
-                    isNightShift: slot.nightPremium ?? false,
-                    status: 'SCHEDULED',
-                  },
-                })
-                createdCount++
-              } catch {
-                // Skip on unexpected conflicts
-                skippedCount++
-              }
-            }
+          for (const employeeId of memberEmployeeIds) {
+            scheduleRecords.push({
+              companyId: pattern.companyId,
+              employeeId,
+              shiftPatternId: pattern.id,
+              shiftGroupId: group.id,
+              workDate,
+              slotIndex,
+              slotName: slot.name,
+              startTime: slot.start,
+              endTime: slot.end,
+              breakMinutes: slot.breakMin ?? 0,
+              isNightShift: slot.nightPremium ?? false,
+              status: 'SCHEDULED',
+            })
           }
         }
+      }
+
+      let createdCount = 0
+      const skippedCount = 0
+
+      await prisma.$transaction(async (tx) => {
+        // 기존 스케줄 삭제 후 재생성 (upsert N+1 대체)
+        await tx.shiftSchedule.deleteMany({
+          where: {
+            employeeId: { in: allEmployeeIds },
+            workDate: { gte: monthStart, lte: monthEnd },
+          },
+        })
+        const result = await tx.shiftSchedule.createMany({
+          data: scheduleRecords,
+          skipDuplicates: true,
+        })
+        createdCount = result.count
       })
 
       return apiSuccess(

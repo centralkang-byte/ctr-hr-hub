@@ -4,28 +4,39 @@
 // HR_ADMIN / SUPER_ADMIN 전용
 // ═══════════════════════════════════════════════════════════
 
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { withPermission, perm } from '@/lib/permissions'
+import { apiSuccess, apiError } from '@/lib/api'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
+import { badRequest } from '@/lib/errors'
+import { MODULE, ACTION } from '@/lib/constants'
 import { calculateTurnoverRisk } from '@/lib/analytics/predictive/turnoverRisk'
 import { calculateBurnoutScore } from '@/lib/analytics/predictive/burnout'
 import { calculateTeamHealth } from '@/lib/analytics/predictive/teamHealth'
+import type { SessionUser } from '@/types'
 
-export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions)
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+const BATCH_SIZE = 50
 
-  const user = session.user as { role?: string; companyId?: string }
-  if (!['HR_ADMIN', 'SUPER_ADMIN'].includes(user.role ?? '')) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+async function batchAllSettled<T, R>(
+  items: T[],
+  fn: (item: T) => Promise<R>,
+): Promise<PromiseSettledResult<R>[]> {
+  const results: PromiseSettledResult<R>[] = []
+  for (let i = 0; i < items.length; i += BATCH_SIZE) {
+    const chunk = items.slice(i, i + BATCH_SIZE)
+    const chunkResults = await Promise.allSettled(chunk.map(fn))
+    results.push(...chunkResults)
   }
+  return results
+}
 
-  const { company_id } = await req.json().catch(() => ({}))
-  const companyId: string = company_id ?? user.companyId ?? ''
-  if (!companyId) return NextResponse.json({ error: 'company_id required' }, { status: 400 })
+export const POST = withPermission(
+  async (req: NextRequest, _ctx, user: SessionUser) => {
+    const body = await req.json().catch(() => ({}))
+    const companyId = resolveCompanyId(user, body.company_id as string | undefined)
+    if (!companyId) throw badRequest('company_id required')
 
-  try {
     // 해당 법인 활성 직원 조회
     const employees = await prisma.employee.findMany({
       where: {
@@ -38,14 +49,14 @@ export async function POST(req: NextRequest) {
 
     const employeeIds = employees.map((e) => e.id)
 
-    // 1. 이직 위험 일괄 계산
-    const turnoverResults = await Promise.allSettled(
-      employeeIds.map((id) => calculateTurnoverRisk(id, companyId))
+    // 1. 이직 위험 일괄 계산 (50명씩 배치)
+    const turnoverResults = await batchAllSettled(employeeIds, (id) =>
+      calculateTurnoverRisk(id, companyId),
     )
 
-    // 2. 번아웃 일괄 계산
-    const burnoutResults = await Promise.allSettled(
-      employeeIds.map((id) => calculateBurnoutScore(id, companyId))
+    // 2. 번아웃 일괄 계산 (50명씩 배치)
+    const burnoutResults = await batchAllSettled(employeeIds, (id) =>
+      calculateBurnoutScore(id, companyId),
     )
 
     // 3. DB 저장 (이직 위험)
@@ -101,7 +112,7 @@ export async function POST(req: NextRequest) {
 
     const teamHealthRows = (
       await Promise.allSettled(
-        departments.map((d) => calculateTeamHealth(d.id, companyId))
+        departments.map((d) => calculateTeamHealth(d.id, companyId)),
       )
     )
       .map((r, i) => ({ result: r, deptId: departments[i]!.id }))
@@ -153,19 +164,14 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        processed: {
-          employees: employeeIds.length,
-          turnover: turnoverRows.length,
-          burnout: burnoutRows.length,
-          teamHealth: teamHealthRows.length,
-        },
+    return apiSuccess({
+      processed: {
+        employees: employeeIds.length,
+        turnover: turnoverRows.length,
+        burnout: burnoutRows.length,
+        teamHealth: teamHealthRows.length,
       },
     })
-  } catch (error) {
-    console.error('[calculate]', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
-}
+  },
+  perm(MODULE.ANALYTICS, ACTION.CREATE),
+)

@@ -10,6 +10,7 @@ import { badRequest, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
+import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
 import type { SessionUser } from '@/types'
 
 export const PUT = withPermission(
@@ -33,43 +34,54 @@ export const PUT = withPermission(
       throw badRequest('이미 취소되었거나 반려된 신청은 취소할 수 없습니다.')
     }
 
-    // 3. Find corresponding balance
-    const balance = await prisma.employeeLeaveBalance.findFirst({
+    // FIX: Issue #2 — Year boundary: try startDate year first, then endDate year
+    //   for cross-year leaves (e.g., Dec 30 – Jan 2).
+    const startYear = new Date(request.startDate).getFullYear()
+    const endYear   = new Date(request.endDate).getFullYear()
+
+    let balance = await prisma.employeeLeaveBalance.findFirst({
       where: {
         employeeId: request.employeeId,
-        policyId: request.policyId,
-        year: new Date(request.startDate).getFullYear(),
+        policyId:   request.policyId,
+        year:       startYear,
       },
     })
+
+    if (!balance && endYear !== startYear) {
+      balance = await prisma.employeeLeaveBalance.findFirst({
+        where: {
+          employeeId: request.employeeId,
+          policyId:   request.policyId,
+          year:       endYear,
+        },
+      })
+    }
 
     if (!balance) {
       throw badRequest('해당 휴가 유형의 잔여일 정보를 찾을 수 없습니다.')
     }
 
-    // 4. Transaction: cancel request + adjust balance
+    // 4. Transaction: cancel request + event (balance restore via handler)
+    const previousStatus = request.status as 'PENDING' | 'APPROVED'
+    const ctx = { companyId: request.companyId, actorId: user.employeeId, occurredAt: new Date() }
+    const eventPayload = {
+      ctx,
+      requestId:      request.id,
+      employeeId:     request.employeeId,
+      policyId:       request.policyId,
+      balanceId:      balance.id,
+      days:           Number(request.days),
+      previousStatus,
+    }
+
     const updated = await prisma.$transaction(async (tx) => {
       const cancelled = await tx.leaveRequest.update({
         where: { id },
         data: { status: 'CANCELLED' },
       })
 
-      if (request.status === 'PENDING') {
-        // Pending request: restore pendingDays
-        await tx.employeeLeaveBalance.update({
-          where: { id: balance.id },
-          data: {
-            pendingDays: { decrement: Number(request.days) },
-          },
-        })
-      } else if (request.status === 'APPROVED') {
-        // Approved request: restore usedDays
-        await tx.employeeLeaveBalance.update({
-          where: { id: balance.id },
-          data: {
-            usedDays: { decrement: Number(request.days) },
-          },
-        })
-      }
+      // Side-effect: pendingDays-- or usedDays-- (handled by leaveCancelledHandler)
+      await eventBus.publish(DOMAIN_EVENTS.LEAVE_CANCELLED, eventPayload, tx)
 
       return cancelled
     })
@@ -77,19 +89,19 @@ export const PUT = withPermission(
     // 5. Audit log
     const meta = extractRequestMeta(req.headers)
     logAudit({
-      actorId: user.employeeId,
-      action: 'leave.request.cancel',
+      actorId:      user.employeeId,
+      action:       'leave.request.cancel',
       resourceType: 'LeaveRequest',
-      resourceId: id,
-      companyId: request.companyId,
+      resourceId:   id,
+      companyId:    request.companyId,
       changes: {
         previousStatus: request.status,
-        status: 'CANCELLED',
+        status:         'CANCELLED',
       },
       ...meta,
     })
 
     return apiSuccess(updated)
   },
-  perm(MODULE.LEAVE, ACTION.CREATE),
+  perm(MODULE.LEAVE, ACTION.VIEW),
 )

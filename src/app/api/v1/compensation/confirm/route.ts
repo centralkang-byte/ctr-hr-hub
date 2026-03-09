@@ -29,6 +29,73 @@ export const POST = withPermission(
     const { ip, userAgent } = extractRequestMeta(req.headers)
 
     try {
+      const employeeIds = adjustments.map((a) => a.employeeId)
+
+      // 배치 프리페치로 N+1 제거
+      const [latestComps, employees, evaluations] = await Promise.all([
+        // 각 직원의 최신 보상 이력 (최신순)
+        prisma.compensationHistory.findMany({
+          where: { employeeId: { in: employeeIds }, companyId },
+          orderBy: { effectiveDate: 'desc' },
+          select: { employeeId: true, newBaseSalary: true, currency: true, effectiveDate: true },
+        }),
+        // 직급 정보
+        prisma.employee.findMany({
+          where: { id: { in: employeeIds } },
+          select: {
+            id: true,
+            assignments: {
+              where: { isPrimary: true, endDate: null },
+              take: 1,
+              select: { jobGradeId: true },
+            },
+          },
+        }),
+        // 성과 평가 (cycleId 기준)
+        prisma.performanceEvaluation.findMany({
+          where: { employeeId: { in: employeeIds }, cycleId },
+          select: { employeeId: true, emsBlock: true },
+        }),
+      ])
+
+      // 최신 보상 이력 Map (employeeId → latest)
+      const latestCompMap = new Map<string, { newBaseSalary: unknown; currency: string }>()
+      for (const comp of latestComps) {
+        if (!latestCompMap.has(comp.employeeId)) {
+          latestCompMap.set(comp.employeeId, comp)
+        }
+      }
+
+      // 직급 Map
+      const jobGradeMap = new Map<string, string>()
+      for (const emp of employees) {
+        const jgId = emp.assignments?.[0]?.jobGradeId
+        if (jgId) jobGradeMap.set(emp.id, jgId)
+      }
+
+      // 성과 평가 Map
+      const evalMap = new Map<string, string | null>()
+      for (const e of evaluations) {
+        if (!evalMap.has(e.employeeId)) evalMap.set(e.employeeId, e.emsBlock)
+      }
+
+      // 직급별 급여 밴드 배치 조회
+      const uniqueJobGradeIds = [...new Set(jobGradeMap.values())]
+      const salaryBands = uniqueJobGradeIds.length > 0
+        ? await prisma.salaryBand.findMany({
+            where: { companyId, jobGradeId: { in: uniqueJobGradeIds }, deletedAt: null },
+            orderBy: { effectiveFrom: 'desc' },
+            select: { jobGradeId: true, midSalary: true },
+          })
+        : []
+
+      // 가장 최신 밴드 Map (jobGradeId → midSalary)
+      const bandMap = new Map<string, number>()
+      for (const band of salaryBands) {
+        if (!bandMap.has(band.jobGradeId)) bandMap.set(band.jobGradeId, Number(band.midSalary))
+      }
+
+      const effectiveDateObj = new Date(effectiveDate)
       const results = await prisma.$transaction(async (tx) => {
         const created: Array<{
           employeeId: string
@@ -37,69 +104,15 @@ export const POST = withPermission(
           changePct: number
         }> = []
 
-        for (const adj of adjustments) {
-          // Get employee's current salary from latest CompensationHistory
-          const latestComp = await tx.compensationHistory.findFirst({
-            where: { employeeId: adj.employeeId, companyId },
-            orderBy: { effectiveDate: 'desc' },
-          })
-          const previousBaseSalary = latestComp
-            ? Number(latestComp.newBaseSalary)
-            : 0
-
-          // Get employee's salary band for compa-ratio
-          const employee = await tx.employee.findUnique({
-            where: { id: adj.employeeId },
-            select: {
-              assignments: {
-                where: { isPrimary: true, endDate: null },
-                take: 1,
-                select: { jobGradeId: true },
-              },
-            },
-          })
-          const empJobGradeId = employee?.assignments?.[0]?.jobGradeId
-
-          let compaRatio: number | null = null
-          if (empJobGradeId) {
-            const band = await tx.salaryBand.findFirst({
-              where: {
-                companyId,
-                jobGradeId: empJobGradeId,
-                deletedAt: null,
-              },
-              orderBy: { effectiveFrom: 'desc' },
-            })
-            if (band) {
-              compaRatio = calculateCompaRatio(
-                adj.newBaseSalary,
-                Number(band.midSalary),
-              )
-            }
-          }
-
-          // Get emsBlock from latest evaluation for this cycle
-          const evaluation = await tx.performanceEvaluation.findFirst({
-            where: { employeeId: adj.employeeId, cycleId },
-          })
-
-          // Create CompensationHistory record
-          await tx.compensationHistory.create({
-            data: {
-              employeeId: adj.employeeId,
-              companyId,
-              changeType: adj.changeType ?? 'ANNUAL_INCREASE',
-              previousBaseSalary,
-              newBaseSalary: adj.newBaseSalary,
-              currency: latestComp?.currency ?? 'KRW',
-              changePct: adj.changePct,
-              effectiveDate: new Date(effectiveDate),
-              reason: adj.reason ?? null,
-              approvedBy: user.employeeId,
-              emsBlockAtTime: evaluation?.emsBlock ?? null,
-              compaRatio,
-            },
-          })
+        const historyData = adjustments.map((adj) => {
+          const latestComp = latestCompMap.get(adj.employeeId)
+          const previousBaseSalary = latestComp ? Number(latestComp.newBaseSalary) : 0
+          const jobGradeId = jobGradeMap.get(adj.employeeId)
+          const midSalary = jobGradeId ? bandMap.get(jobGradeId) : undefined
+          const compaRatio = midSalary != null
+            ? calculateCompaRatio(adj.newBaseSalary, midSalary)
+            : null
+          const emsBlock = evalMap.get(adj.employeeId) ?? null
 
           created.push({
             employeeId: adj.employeeId,
@@ -107,8 +120,24 @@ export const POST = withPermission(
             newSalary: adj.newBaseSalary,
             changePct: adj.changePct,
           })
-        }
 
+          return {
+            employeeId: adj.employeeId,
+            companyId,
+            changeType: adj.changeType ?? 'ANNUAL_INCREASE',
+            previousBaseSalary,
+            newBaseSalary: adj.newBaseSalary,
+            currency: (latestComp?.currency as string) ?? 'KRW',
+            changePct: adj.changePct,
+            effectiveDate: effectiveDateObj,
+            reason: adj.reason ?? null,
+            approvedBy: user.employeeId,
+            emsBlockAtTime: emsBlock,
+            compaRatio,
+          }
+        })
+
+        await tx.compensationHistory.createMany({ data: historyData })
         return created
       })
 

@@ -3,12 +3,21 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Employee List Client
 // 직원 목록: DataTable + 필터 + 검색 + 페이지네이션
+// P01 Master-Detail: URL deep linking (?selectedId=)
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Plus, Upload } from 'lucide-react'
+import {
+  Plus,
+  Upload,
+  User,
+  Building2,
+  Calendar,
+  ExternalLink,
+  Briefcase,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -21,6 +30,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
+import { DetailPanel } from '@/components/shared/DetailPanel'
 import { EmployeeFilterPanel, type FilterValues } from '@/components/employees/EmployeeFilterPanel'
 import { BulkUploadWizard } from '@/components/employees/BulkUploadWizard'
 import { apiClient } from '@/lib/api'
@@ -42,6 +52,13 @@ type EmployeeRow = {
   jobCategory: { id: string; name: string } | null
 }
 
+type EmployeeDetail = EmployeeRow & {
+  email: string | null
+  phone: string | null
+  photoUrl: string | null
+  manager?: { id: string; name: string } | null
+}
+
 interface EmployeeListClientProps {
   user: SessionUser
 }
@@ -60,12 +77,161 @@ const STATUS_VARIANTS: Record<string, BadgeVariant> = {
 const LIMIT_OPTIONS = [10, 20, 50, 100]
 const SENTINEL_ALL = '__ALL__'
 
+// ─── Employee Quick Panel ────────────────────────────────────
+
+function EmployeeQuickPanel({
+  employeeId,
+  onViewFull,
+}: {
+  employeeId: string
+  onViewFull: () => void
+}) {
+  const [employee, setEmployee] = useState<EmployeeDetail | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setLoading(true)
+    setEmployee(null)
+    apiClient
+      .get<EmployeeDetail>(`/api/v1/employees/${employeeId}`)
+      .then((res) => setEmployee(res.data))
+      .catch(() => setEmployee(null))
+      .finally(() => setLoading(false))
+  }, [employeeId])
+
+  if (loading) {
+    return (
+      <div className="p-5 space-y-4">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="h-5 rounded bg-[#F5F5FA] animate-pulse" />
+        ))}
+      </div>
+    )
+  }
+
+  if (!employee) {
+    return (
+      <div className="flex items-center justify-center h-40 text-sm text-[#8181A5]">
+        직원 정보를 불러올 수 없습니다.
+      </div>
+    )
+  }
+
+  const hireDate = employee.hireDate
+    ? new Date(employee.hireDate).toLocaleDateString('ko-KR')
+    : '-'
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Profile header */}
+      <div className="px-5 py-5 flex items-center gap-4 border-b border-[#F0F0F3]">
+        <div className="w-14 h-14 rounded-full bg-[#F0F0F3] flex items-center justify-center overflow-hidden flex-shrink-0">
+          {employee.photoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={employee.photoUrl}
+              alt={employee.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <User className="w-7 h-7 text-[#8181A5]" />
+          )}
+        </div>
+        <div className="min-w-0">
+          <p className="text-[15px] font-semibold text-[#1C1D21] truncate">{employee.name}</p>
+          {employee.nameEn && (
+            <p className="text-xs text-[#8181A5] truncate">{employee.nameEn}</p>
+          )}
+          <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+            <span className="text-xs font-mono text-[#8181A5]">{employee.employeeNo}</span>
+            {employee.jobGrade && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-[#F0F0F3] text-[#5E81F4]">
+                {employee.jobGrade.name}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Detail fields */}
+      <div className="px-5 py-4 space-y-3 flex-1">
+        {employee.department && (
+          <div className="flex items-center gap-3">
+            <Building2 className="w-4 h-4 text-[#8181A5] flex-shrink-0" />
+            <div>
+              <p className="text-[11px] text-[#8181A5]">부서</p>
+              <p className="text-sm text-[#1C1D21]">{employee.department.name}</p>
+            </div>
+          </div>
+        )}
+
+        {employee.jobCategory && (
+          <div className="flex items-center gap-3">
+            <Briefcase className="w-4 h-4 text-[#8181A5] flex-shrink-0" />
+            <div>
+              <p className="text-[11px] text-[#8181A5]">직무</p>
+              <p className="text-sm text-[#1C1D21]">{employee.jobCategory.name}</p>
+            </div>
+          </div>
+        )}
+
+        <div className="flex items-center gap-3">
+          <Calendar className="w-4 h-4 text-[#8181A5] flex-shrink-0" />
+          <div>
+            <p className="text-[11px] text-[#8181A5]">입사일</p>
+            <p className="text-sm text-[#1C1D21]">{hireDate}</p>
+          </div>
+        </div>
+
+        <div className="pt-1">
+          <p className="text-[11px] text-[#8181A5] mb-1.5">재직 상태</p>
+          <Badge variant={STATUS_VARIANTS[employee.status] ?? 'outline'}>
+            {employee.status}
+          </Badge>
+        </div>
+      </div>
+
+      {/* Footer action */}
+      <div className="px-5 py-4 border-t border-[#F0F0F3]">
+        <Button
+          onClick={onViewFull}
+          className="w-full bg-[#5E81F4] hover:bg-[#4B6EE0] text-white text-sm font-medium rounded-lg"
+        >
+          <ExternalLink className="w-4 h-4 mr-2" />
+          전체 프로필 보기
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 // ─── Component ──────────────────────────────────────────────
 
 export function EmployeeListClient({ user }: EmployeeListClientProps) {
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const t = useTranslations('employee')
   const tc = useTranslations('common')
+
+  // ─── URL deep link state ───
+  const selectedId = searchParams.get('selectedId')
+
+  const openPanel = useCallback(
+    (id: string) => {
+      const params = new URLSearchParams(searchParams.toString())
+      params.set('selectedId', id)
+      router.push(`${pathname}?${params.toString()}`, { scroll: false })
+    },
+    [router, pathname, searchParams],
+  )
+
+  const closePanel = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.delete('selectedId')
+    const query = params.toString()
+    router.push(query ? `${pathname}?${query}` : pathname, { scroll: false })
+  }, [router, pathname, searchParams])
 
   // ─── Translated label maps ───
   const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
@@ -171,7 +337,6 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
     const params = new URLSearchParams()
     if (debouncedSearch) params.set('search', debouncedSearch)
     Object.entries(filters).forEach(([k, v]) => { if (v) params.set(k, v) })
-    // Also include quick-filter bar values
     if (departmentId) params.set('departmentId', departmentId)
     if (employmentType) params.set('employmentType', employmentType)
     if (status) params.set('status', status)
@@ -184,12 +349,18 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
     setTimeout(() => setExportLoading(false), 1000)
   }, [filters, debouncedSearch, departmentId, employmentType, status])
 
-  // ─── Row click ───
+  // ─── Row click → URL deep link ───
   const handleRowClick = useCallback(
     (row: EmployeeRow) => {
-      router.push(`/employees/${row.id}`)
+      openPanel(row.id)
     },
-    [router],
+    [openPanel],
+  )
+
+  // ─── Selected employee name for panel subtitle ───
+  const selectedEmployee = useMemo(
+    () => employees.find((e) => e.id === selectedId) ?? null,
+    [employees, selectedId],
   )
 
   // ─── Columns ───
@@ -205,7 +376,9 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
       sortable: true,
       render: (row) => (
         <div>
-          <p className="font-medium">{row.name}</p>
+          <p className={`font-medium ${row.id === selectedId ? 'text-[#5E81F4]' : ''}`}>
+            {row.name}
+          </p>
           {row.nameEn && <p className="text-xs text-muted-foreground">{row.nameEn}</p>}
         </div>
       ),
@@ -247,7 +420,7 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
         </Badge>
       ),
     },
-  ], [t, EMPLOYMENT_TYPE_LABELS, STATUS_LABELS])
+  ], [t, EMPLOYMENT_TYPE_LABELS, STATUS_LABELS, selectedId])
 
   const isHrAdmin = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
 
@@ -402,6 +575,24 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
         }
         rowKey={(row) => row.id}
       />
+
+      {/* ─── P01 Master-Detail: URL Deep Link Panel ─── */}
+      <DetailPanel
+        open={!!selectedId}
+        onClose={closePanel}
+        title={selectedEmployee?.name ?? '직원 정보'}
+        subtitle={selectedEmployee?.department?.name ?? undefined}
+      >
+        {selectedId && (
+          <EmployeeQuickPanel
+            employeeId={selectedId}
+            onViewFull={() => {
+              closePanel()
+              router.push(`/employees/${selectedId}`)
+            }}
+          />
+        )}
+      </DetailPanel>
 
       {/* ─── Bulk Upload Wizard ─── */}
       {isHrAdmin && (

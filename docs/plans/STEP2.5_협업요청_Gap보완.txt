@@ -1,0 +1,756 @@
+# CTR HR Hub - STEP 2.5: 협업요청 Gap 보완 (스키마 확장)
+# v3.2 (HR기획팀 협업요청서 반영)
+# ★ 반드시 STEP0_공통규칙.txt를 먼저 읽고 전체 STEP에 적용할 것
+#
+# ═══════════════════════════════════════════════════════════
+# STEP 2.5 배경
+# ═══════════════════════════════════════════════════════════
+#
+# HR기획팀 협업요청서(2부 현황 파악)를 분석한 결과,
+# 기존 STEP0~7 스펙에 빠져 있는 항목 14건을 확인.
+# 이 중 영향도 높은 항목을 즉시 스키마에 반영하고,
+# 중기/장기 항목은 구조만 준비하여 STEP3+ 확장성을 확보한다.
+#
+# Gap Analysis 문서: CTR_HR_Hub_Gap_Analysis.docx 참조
+#
+# [즉시 반영 — 🔴 높음]
+# ▸ 계약 관리 (계약 차수 자동 추적, 무기계약 전환)
+# ▸ Work Permit / 비자 관리 모듈
+# ▸ 급여 주기 다중화 (Weekly / Biweekly / Semi-monthly / Monthly)
+# ▸ 폴란드(PL) 법인 추가 + 노동법 룰
+# ▸ 멕시코 법정 수당 (PTU / Aguinaldo / Prima Vacacional)
+#
+# [구조 준비 — 🟡 중간]
+# ▸ 수습기간 국가별 차등 (기존 고정 3개월 → 유연화)
+# ▸ 연차 사용 촉진 알림
+# ▸ 합격→직원 등록 원클릭 연계 API
+# ▸ 평가 미이행 자동 알림
+# ▸ 과거 시점 조직도 조회
+# ═══════════════════════════════════════════════════════════
+
+
+================================================================
+STEP 2.5 프롬프트 — 협업요청 Gap 보완
+================================================================
+
+## ★ 세션 시작: context.md 먼저 읽어줘
+
+이번 세션 목표: HR기획팀 협업요청서에서 확인된 Gap 항목을
+           Prisma 스키마 확장 + API + 시드 데이터 + UI 설정 페이지로 반영
+
+---
+
+
+================================================================
+1. 계약 관리 (Contract Management)
+================================================================
+
+### 1-1. employees 모델 확장
+
+기존 employees 테이블에 아래 필드를 **추가**한다 (기존 필드 수정 아님):
+
+```
+# 계약 관련 필드 추가
+contract_type(ENUM ContractType: PERMANENT/FIXED_TERM/DISPATCH/INTERN/PROBATION_ONLY)
+contract_number(Int default 1)              # 계약 차수 (1차, 2차, 3차...)
+contract_start_date(DateTime nullable)      # 현재 계약 시작일
+contract_end_date(DateTime nullable)        # 현재 계약 만료일 (PERMANENT는 null)
+contract_auto_convert_date(DateTime nullable) # 무기계약 자동 전환 예정일
+probation_start_date(DateTime nullable)     # 수습 시작일 (보통 = hire_date)
+probation_end_date(DateTime nullable)       # 수습 종료일 (국가·직무별 차등)
+probation_status(ENUM ProbationStatus: IN_PROGRESS/PASSED/FAILED/WAIVED default IN_PROGRESS)
+```
+
+### 1-2. contract_history (계약 이력 테이블 — 신규)
+
+**contract_history**
+id(uuid PK), employee_id(FK employees NOT NULL),
+company_id(FK companies NOT NULL),
+contract_number(Int NOT NULL),              # 몇 차 계약인지
+contract_type(ENUM ContractType),
+start_date(DateTime NOT NULL),
+end_date(DateTime nullable),
+probation_end_date(DateTime nullable),
+salary_amount(Decimal nullable),            # 해당 계약 시 연봉 (선택)
+terms_document_key(String nullable),        # 계약서 파일 key
+signed_at(DateTime nullable),               # 서명일
+signed_by(FK employees nullable),           # 서명 확인자 (HR)
+notes(String nullable),
+auto_convert_triggered(Boolean default false), # 무기계약 전환 여부
+created_at(DateTime), updated_at(DateTime)
+
+@@index([employee_id, contract_number])
+
+### 1-3. 계약 관리 비즈니스 로직
+
+**lib/contract/rules.ts**
+
+```ts
+interface ContractRule {
+  country_code: string;
+  max_fixed_term_count: number;       // 최대 기간제 횟수
+  max_fixed_term_months: number;      // 최대 기간제 기간 (개월)
+  auto_convert_to_permanent: boolean; // 초과 시 무기계약 자동 전환 여부
+  probation_range: { min_days: number; max_days: number }; // 수습 범위
+}
+```
+
+국가별 규칙:
+
+| 국가 | max_fixed_term_count | max_fixed_term_months | auto_convert | 수습 범위 |
+|------|---------------------|----------------------|-------------|----------|
+| KR   | 무제한 (but 24개월 후 전환) | 24 | true | 90일 고정 |
+| CN   | 2 | 무제한 (횟수 기준) | true | 30~180일 (계약기간 연동) |
+| RU   | 무제한 | 60 | false | 90일 (관리직 180일) |
+| VN   | 2 | 72 (36×2) | true | 6~180일 (직무별) |
+| MX   | 무제한 | 무제한 | false | 30일 (관리직 180일) |
+| US   | 무제한 (At-will) | 무제한 | false | 관행적 90일 |
+| PL   | 3 | 33 | true | 90일 |
+
+**자동 알림 이벤트:**
+- CONTRACT_EXPIRING_90D: 계약 만료 90일 전
+- CONTRACT_EXPIRING_30D: 계약 만료 30일 전
+- CONTRACT_EXPIRING_7D: 계약 만료 7일 전
+- CONTRACT_AUTO_CONVERT: 무기계약 전환 대상 발생
+- PROBATION_ENDING_14D: 수습 종료 14일 전
+- PROBATION_ENDING_7D: 수습 종료 7일 전
+
+→ notifications 테이블의 event_type ENUM에 위 6개 추가
+
+
+================================================================
+2. Work Permit / 비자 관리
+================================================================
+
+### 2-1. work_permits (신규 테이블)
+
+**work_permits**
+id(uuid PK), employee_id(FK employees NOT NULL),
+company_id(FK companies NOT NULL),
+permit_type(ENUM WorkPermitType: WORK_VISA/WORK_PERMIT/RESIDENCE_PERMIT/I9_VERIFICATION/OTHER),
+permit_number(String nullable),
+issuing_country(String NOT NULL),           # ISO 3166-1 alpha-2
+issuing_authority(String nullable),         # 발급 기관
+issue_date(DateTime NOT NULL),
+expiry_date(DateTime nullable),             # null = 무기한
+status(ENUM WorkPermitStatus: ACTIVE/EXPIRED/REVOKED/PENDING_RENEWAL),
+document_key(String nullable),              # 파일 첨부 key
+notes(String nullable),
+created_by(FK employees nullable),
+created_at(DateTime), updated_at(DateTime), deleted_at(DateTime nullable)
+
+@@index([employee_id])
+@@index([expiry_date])
+
+### 2-2. Work Permit 알림 규칙
+
+- WORK_PERMIT_EXPIRING_90D: 만료 90일 전 → HR_ADMIN + 해당 직원
+- WORK_PERMIT_EXPIRING_60D: 만료 60일 전
+- WORK_PERMIT_EXPIRING_30D: 만료 30일 전
+- WORK_PERMIT_EXPIRED: 만료일 당일 → HR_ADMIN + MANAGER + 직원
+
+→ notifications event_type ENUM에 위 4개 추가
+
+### 2-3. 미국 I-9 특별 규칙
+
+```ts
+// lib/labor/us.ts에 추가
+const I9_RETENTION_RULES = {
+  // 퇴직 후 1년 또는 고용 시작일로부터 3년 중 늦은 날짜까지 보관
+  getRetentionEndDate: (hireDate: Date, terminationDate: Date) => {
+    const threeYearsFromHire = addYears(hireDate, 3);
+    const oneYearFromTermination = addYears(terminationDate, 1);
+    return max([threeYearsFromHire, oneYearFromTermination]);
+  }
+};
+```
+
+### 2-4. UI — 직원 프로필 탭 추가
+
+직원 상세 (/employees/:id) 에 **"비자/체류"** 탭 추가:
+- DataTable: 타입 / 번호 / 발급국 / 발급일 / 만료일 / 상태 / 첨부
+- 상태별 Badge: ACTIVE(초록), PENDING_RENEWAL(노란), EXPIRED(빨강), REVOKED(회색)
+- 만료 D-30 이내: 행 배경 노란색 경고
+- 생성/수정 폼: permit_type 선택, 번호, 날짜, 파일 업로드
+- 권한: HR_ADMIN + SUPER_ADMIN만 CRUD, 본인은 READ
+
+
+================================================================
+3. 급여 주기 다중화 (Payroll Frequency)
+================================================================
+
+### 3-1. companies 모델 확장
+
+```
+# 기존 companies에 추가
+payroll_frequencies(JSONB default '["MONTHLY"]')
+# 가능 값: "WEEKLY", "BIWEEKLY", "SEMI_MONTHLY", "MONTHLY"
+# 멕시코 예시: ["WEEKLY", "BIWEEKLY", "MONTHLY"]
+```
+
+### 3-2. payroll_runs 모델 수정
+
+```
+# 기존 year_month(String) → 유지하되, 아래 추가
+frequency(ENUM PayrollFrequency: WEEKLY/BIWEEKLY/SEMI_MONTHLY/MONTHLY default MONTHLY)
+period_start(DateTime NOT NULL)          # 급여 기간 시작일
+period_end(DateTime NOT NULL)            # 급여 기간 종료일
+pay_date(DateTime nullable)              # 실 지급일
+```
+
+### 3-3. 법인별 급여 주기 시드
+
+| 법인 | payroll_frequencies | 비고 |
+|------|-------------------|------|
+| CTR(주) 외 한국 법인 | ["MONTHLY"] | 월 1회 |
+| CTR China | ["MONTHLY"] | 월 1회 |
+| CTR Vietnam | ["MONTHLY"] | 월 1회 |
+| CTR Mexico | ["WEEKLY", "BIWEEKLY", "MONTHLY"] | 생산직 W, 사무직 BW, 주재원 M |
+| CTR Russia | ["BIWEEKLY"] | 월 2회 이상 의무 (러시아 노동법) |
+| CTR America | ["BIWEEKLY"] | 격주 |
+| CTR Europe (PL) | ["MONTHLY"] | 월 1회 (KPMG 위탁) |
+
+### 3-4. 멕시코 법정 수당 항목 추가
+
+tenant_enum_options의 allowance_type 그룹에 아래 추가 (is_system=true):
+
+```
+| option_key           | label                    | 법적 근거 |
+|---------------------|--------------------------|----------|
+| MX_PTU              | PTU (이익분배금)            | 순이익 10%, 5월 지급 |
+| MX_AGUINALDO        | Aguinaldo (연말 상여)       | 최소 15일분, 12/20 전 |
+| MX_PRIMA_VACACIONAL | Prima Vacacional (휴가 보너스) | 연차 사용 시 25% 추가 |
+| MX_SUNDAY_PREMIUM   | 일요일 근무 가산금             | 기본급 25% 추가 |
+```
+
+→ CTR Mexico 법인에만 자동 활성화
+→ payroll_items.detail JSON에 해당 항목 포함 가능하도록 스키마 유지
+
+### 3-5. 러시아 13월 상여
+
+tenant_enum_options의 allowance_type 그룹에 추가:
+
+```
+| option_key      | label              | 비고 |
+|----------------|--------------------|----|
+| RU_13TH_SALARY | 13월 상여 (연말 보너스) | 관행적 지급 |
+```
+
+→ CTR Russia 법인에만 활성화
+
+
+================================================================
+4. 폴란드(PL) 법인 추가
+================================================================
+
+### 4-1. 기존 CTR Europe 법인 업데이트 (신규 추가 아님)
+
+★ CTR Europe = 폴란드 법인 (동일 법인). 이미 13개 법인에 포함되어 있음.
+   시드 데이터에서 CTR Europe 레코드를 업데이트하여 폴란드 특화 설정 반영.
+
+```
+UPDATE companies SET ... WHERE code = 'CTR-EU';
+
+# 확인/보정할 필드:
+{
+  code: "CTR-EU",
+  name: "씨티알유럽",
+  name_en: "CTR Europe Sp. z o.o.",
+  country_code: "PL",          # ★ 폴란드
+  timezone: "Europe/Warsaw",
+  locale: "en",                # v3.1: pl → en
+  currency: "PLN",
+  parent_company_id: <CTR(주) id>,
+  payroll_mode: "IMPORT",      # KPMG 위탁이므로 IMPORT 모드
+  payroll_frequencies: ["MONTHLY"]  # 신규 추가 필드
+}
+```
+
+→ 법인 수 변동 없음 (기존 13개 유지)
+
+### 4-2. lib/labor/pl.ts (신규 — eu.ts에서 분리)
+
+v3.1에서 lib/labor/eu.ts로 통합했으나,
+폴란드 고유 규칙이 많아 pl.ts로 분리한다.
+
+```ts
+// lib/labor/pl.ts
+export const PL_LABOR_RULES = {
+  country_code: 'PL',
+  standard_hours_weekly: 40,
+  standard_hours_daily: 8,
+  overtime_rates: {
+    weekday: 1.5,     // 50% 가산
+    weekend: 2.0,     // 100% 가산
+    night: 1.2,       // 야간 가산 20%
+  },
+  leave_types: {
+    ANNUAL: {
+      // 근속 10년 미만: 20일, 10년 이상: 26일
+      days_by_tenure: [
+        { min_years: 0, max_years: 10, days: 20 },
+        { min_years: 10, max_years: 999, days: 26 },
+      ],
+      // 학력 기간도 근속에 포함 (대졸 +8년)
+      education_credit_years: { high_school: 4, bachelor: 8 },
+    },
+    SICK: {
+      employer_paid_days: 33,  // 33일까지 고용주 부담 (80%)
+      rate: 0.8,
+      after_33_days: 'ZUS',    // 이후 사회보험(ZUS)에서 지급
+    },
+    MATERNITY: { days: 140 },  // 20주 (첫째), 쌍둥이 +6주
+    PATERNITY: { days: 14 },
+    CHILDCARE: { months: 36 }, # 최대 36개월
+    ON_DEMAND: { days: 4 },    # 긴급 휴가 (w trybie na żądanie)
+  },
+  contract_rules: {
+    max_fixed_term_count: 3,
+    max_fixed_term_months: 33,
+    auto_convert_to_permanent: true,
+    probation_max_months: 3,
+    notice_period: [
+      { tenure_months: 0, period_weeks: 2 },    # 6개월 미만
+      { tenure_months: 6, period_months: 1 },    # 6개월~3년
+      { tenure_months: 36, period_months: 3 },   # 3년 이상
+    ],
+  },
+  social_insurance: {
+    // ZUS (사회보험) 요율
+    employer: {
+      pension: 0.0976,        # 연금 9.76%
+      disability: 0.065,      # 장애 6.5%
+      accident: 0.0167,       # 산재 1.67% (업종별 상이)
+      labor_fund: 0.0245,     # 노동기금 2.45%
+      fgsp: 0.001,            # 직원보증기금 0.1%
+    },
+    employee: {
+      pension: 0.0976,        # 연금 9.76%
+      disability: 0.015,      # 장애 1.5%
+      health: 0.09,           # 건강보험 9%
+    },
+    ppk: {
+      employer_min: 0.015,    # PPK 고용주 최소 1.5%
+      employer_max: 0.04,     # PPK 고용주 최대 4%
+      employee_min: 0.02,     # PPK 직원 최소 2%
+      employee_max: 0.04,     # PPK 직원 최대 4%
+      auto_enroll: true,      # 자동 가입 (opt-out 방식)
+    },
+  },
+  record_retention_years: 10,   # 근무시간 기록부 10년 보관 의무
+  public_holidays_count: 13,
+  sunday_work_restriction: true, # 일요일 근무 원칙적 금지
+};
+```
+
+### 4-3. tenant_settings 시드 (CTR Europe)
+
+```
+{
+  company_id: <CTR-EU id>,
+  probation_months: 3,
+  max_overtime_weekly_hours: 40,
+  timezone: 'Europe/Warsaw',
+  default_locale: 'en',
+  fiscal_year_start_month: 1,
+  enabled_modules: ["CORE_HR", "ATTENDANCE", "LEAVE", "PERFORMANCE"],
+  # PAYROLL은 KPMG 위탁이므로 IMPORT 모드로만 사용
+}
+```
+
+### 4-4. KPMG 급여 연동 인터페이스 (구조만 정의)
+
+```ts
+// lib/payroll/kpmg-interface.ts
+// Phase 2에서 구현. 여기서는 인터페이스만 정의.
+
+interface KpmgPayrollImport {
+  employee_no: string;
+  period_start: string;     // YYYY-MM-DD
+  period_end: string;
+  gross_salary: number;
+  zus_employer: number;     // 사회보험 고용주분
+  zus_employee: number;     // 사회보험 직원분
+  ppk_employer: number;     // PPK 고용주분
+  ppk_employee: number;     // PPK 직원분
+  pit_tax: number;          # 소득세
+  net_salary: number;
+  currency: 'PLN';
+}
+
+// 예상 연동 방식: Excel/CSV 업로드 → 파싱 → payroll_items INSERT
+```
+
+
+================================================================
+5. 수습기간 유연화
+================================================================
+
+### 5-1. tenant_settings 수정
+
+기존 `probation_months(Int default 3)` 를 유지하되,
+의미를 "기본 수습 기간"으로 한정.
+
+**추가 필드:**
+```
+# tenant_settings에 추가
+probation_rules(JSONB nullable)
+# 구조:
+# {
+#   "default_days": 90,
+#   "by_job_category": {
+#     "MANAGEMENT": { "days": 180 },
+#     "PRODUCTION": { "days": 30 },
+#     "R_AND_D": { "days": 90 }
+#   },
+#   "by_employment_type": {
+#     "DISPATCH": { "days": 0 },
+#     "INTERN": { "days": 0 }
+#   }
+# }
+```
+
+→ 직원 등록 시 자동 계산:
+1. by_job_category 매칭 → 해당 days 적용
+2. by_employment_type 매칭 → 해당 days 적용 (우선)
+3. 매칭 없으면 → default_days 적용
+4. 결과를 employees.probation_end_date에 자동 기록
+
+
+================================================================
+6. 연차 사용 촉진 알림
+================================================================
+
+### 6-1. 한국 연차 사용 촉진 3단계
+
+lib/labor/kr.ts에 추가:
+
+```ts
+export const KR_LEAVE_PROMOTION = {
+  enabled: true,
+  // 근로기준법 제61조 기준
+  steps: [
+    {
+      step: 1,
+      trigger: 'ANNIVERSARY_MINUS_2M',  // 입사 기념일 2개월 전
+      action: 'NOTIFY_EMPLOYEE',
+      message_key: 'LEAVE_PROMOTION_STEP1', // "미사용 연차가 {{remaining}}일 있습니다"
+    },
+    {
+      step: 2,
+      trigger: 'ANNIVERSARY_MINUS_1M',  // 입사 기념일 1개월 전
+      action: 'REQUEST_SCHEDULE',       // 직원이 사용 시기 지정
+      message_key: 'LEAVE_PROMOTION_STEP2',
+    },
+    {
+      step: 3,
+      trigger: 'ANNIVERSARY_MINUS_10D', // 10일 전
+      action: 'EMPLOYER_DESIGNATE',     // 회사가 사용 시기 지정 가능
+      message_key: 'LEAVE_PROMOTION_STEP3',
+    },
+  ],
+  // 3단계 모두 이행 시 → 미사용 연차 수당 지급 의무 면제
+  exemption_on_completion: true,
+};
+```
+
+### 6-2. 알림 이벤트 추가
+
+→ notifications event_type:
+- LEAVE_PROMOTION_STEP1
+- LEAVE_PROMOTION_STEP2
+- LEAVE_PROMOTION_STEP3
+
+
+================================================================
+7. 합격→직원 등록 원클릭 연계
+================================================================
+
+### 7-1. API 엔드포인트
+
+```
+POST /api/v1/recruitment/applications/:id/convert-to-employee
+```
+
+**요청:**
+```ts
+{
+  company_id: string;        // 입사 법인
+  department_id: string;     // 배치 부서
+  job_grade_id: string;      // 직급
+  job_category_id: string;   // 직군
+  hire_date: string;         // 입사일
+  employment_type: EmploymentType;
+  contract_type?: ContractType;
+  manager_id?: string;       // 직속 상사
+  start_onboarding?: boolean; // true면 온보딩 체크리스트 자동 생성
+}
+```
+
+**처리:**
+1. applications.stage가 HIRED인지 확인 (아니면 400 에러)
+2. applicant 정보에서 employees INSERT:
+   - name = applicant.name
+   - email = applicant.email
+   - phone = applicant.phone
+   - 나머지 = 요청 body에서
+3. employees.status = ACTIVE
+4. contract_history INSERT (1차 계약)
+5. employee_history INSERT (HIRE)
+6. start_onboarding=true면 → 온보딩 체크리스트 자동 생성
+7. applications.converted_employee_id = 신규 직원 id (추적용)
+8. 알림: EMPLOYEE_CONVERTED (HR_ADMIN)
+
+### 7-2. applications 모델 확장
+
+```
+# 기존 applications에 추가
+converted_employee_id(FK employees nullable)  # 직원 전환 시 연결
+converted_at(DateTime nullable)
+```
+
+### 7-3. UI — 채용 상세에 "직원 등록" 버튼
+
+채용 파이프라인에서 HIRED 단계 도달 시:
+- "직원으로 등록" 버튼 활성화 (초록색)
+- 클릭 → 모달: 부서/직급/직군/입사일/계약유형 선택
+- 확인 → API 호출 → 성공 시 직원 프로필로 이동
+
+
+================================================================
+8. 평가 미이행 자동 알림
+================================================================
+
+### 8-1. 성과 평가 사이클 내 알림 규칙
+
+lib/performance/reminders.ts:
+
+```ts
+export const EVAL_REMINDER_RULES = {
+  GOAL_SETTING: {
+    // 목표 설정 기간 내 미설정 직원 대상
+    triggers: [
+      { days_before_deadline: 7, target: 'EMPLOYEE', event: 'EVAL_GOAL_REMINDER_7D' },
+      { days_before_deadline: 3, target: 'EMPLOYEE', event: 'EVAL_GOAL_REMINDER_3D' },
+      { days_before_deadline: 0, target: ['EMPLOYEE', 'MANAGER'], event: 'EVAL_GOAL_OVERDUE' },
+    ],
+  },
+  SELF_EVAL: {
+    // 자기평가 미제출 직원 대상
+    triggers: [
+      { days_before_deadline: 7, target: 'EMPLOYEE', event: 'EVAL_SELF_REMINDER_7D' },
+      { days_before_deadline: 3, target: 'EMPLOYEE', event: 'EVAL_SELF_REMINDER_3D' },
+      { days_before_deadline: 0, target: ['EMPLOYEE', 'MANAGER', 'HR_ADMIN'], event: 'EVAL_SELF_OVERDUE' },
+    ],
+  },
+  MANAGER_EVAL: {
+    // 매니저 평가 미완료 대상
+    triggers: [
+      { days_before_deadline: 7, target: 'MANAGER', event: 'EVAL_MGR_REMINDER_7D' },
+      { days_before_deadline: 3, target: 'MANAGER', event: 'EVAL_MGR_REMINDER_3D' },
+      { days_before_deadline: 0, target: ['MANAGER', 'HR_ADMIN'], event: 'EVAL_MGR_OVERDUE' },
+    ],
+  },
+};
+```
+
+### 8-2. 알림 이벤트 추가 (총 9개)
+
+→ notifications event_type에 추가:
+- EVAL_GOAL_REMINDER_7D, EVAL_GOAL_REMINDER_3D, EVAL_GOAL_OVERDUE
+- EVAL_SELF_REMINDER_7D, EVAL_SELF_REMINDER_3D, EVAL_SELF_OVERDUE
+- EVAL_MGR_REMINDER_7D, EVAL_MGR_REMINDER_3D, EVAL_MGR_OVERDUE
+
+### 8-3. 이메일 템플릿 추가
+
+email_templates 시드에 추가 (is_system=true):
+- EVAL_GOAL_OVERDUE: "{{employee_name}}님, {{cycle_name}} 목표 설정 기한이 지났습니다"
+- EVAL_SELF_OVERDUE: "{{employee_name}}님, 자기평가 제출 기한이 지났습니다"
+- EVAL_MGR_OVERDUE: "{{manager_name}}님, {{count}}명의 평가가 미완료 상태입니다"
+
+
+================================================================
+9. 과거 시점 조직도 조회 (구조 준비)
+================================================================
+
+### 9-1. org_snapshots (신규 테이블)
+
+**org_snapshots**
+id(uuid PK), company_id(FK companies NOT NULL),
+snapshot_date(DateTime NOT NULL),
+snapshot_data(JSONB NOT NULL),
+# 구조: {
+#   "departments": [{ id, name, parent_id, head_count, manager_name }],
+#   "total_headcount": 250,
+#   "created_reason": "monthly_auto" | "manual" | "reorg"
+# }
+created_by(FK employees nullable),
+created_at(DateTime)
+
+@@unique([company_id, snapshot_date])
+
+### 9-2. 자동 스냅샷 (Cron)
+
+```sql
+-- 매월 1일 자정에 실행
+SELECT cron.schedule(
+  'monthly-org-snapshot',
+  '0 0 1 * *',
+  $$SELECT create_org_snapshot()$$
+);
+```
+
+→ 실제 함수는 STEP3+에서 구현. 여기서는 테이블만 준비.
+
+### 9-3. UI — 조직도 페이지에 날짜 선택기
+
+/org 조직도 페이지 상단에:
+- "시점 선택" 달력 아이콘 + DatePicker
+- 과거 날짜 선택 시 → org_snapshots에서 해당 날짜 이하 최근 스냅샷 조회
+- 스냅샷 없으면 "해당 시점의 스냅샷이 없습니다" 표시
+- 현재 날짜 선택 시 → 실시간 조직도 (기존 동작)
+
+→ Phase 2에서 UI 구현. 여기서는 API 엔드포인트만 정의:
+
+```
+GET /api/v1/org/snapshots?company_id=xxx&date=2024-06-01
+GET /api/v1/org/snapshots/list?company_id=xxx  # 사용 가능한 스냅샷 목록
+```
+
+
+================================================================
+10. Prisma 마이그레이션 요약
+================================================================
+
+이번 STEP 2.5에서 변경되는 Prisma 스키마:
+
+### 신규 ENUM
+- ContractType: PERMANENT/FIXED_TERM/DISPATCH/INTERN/PROBATION_ONLY
+- ProbationStatus: IN_PROGRESS/PASSED/FAILED/WAIVED
+- WorkPermitType: WORK_VISA/WORK_PERMIT/RESIDENCE_PERMIT/I9_VERIFICATION/OTHER
+- WorkPermitStatus: ACTIVE/EXPIRED/REVOKED/PENDING_RENEWAL
+- PayrollFrequency: WEEKLY/BIWEEKLY/SEMI_MONTHLY/MONTHLY
+
+### 기존 모델 수정
+- employees: +8 필드 (contract_type~probation_status)
+- companies: +1 필드 (payroll_frequencies)
+- payroll_runs: +3 필드 (frequency, period_start, period_end, pay_date)
+- applications: +2 필드 (converted_employee_id, converted_at)
+- tenant_settings: +1 필드 (probation_rules)
+- notifications event_type ENUM: +19개 이벤트 추가
+
+### 신규 테이블
+- contract_history
+- work_permits
+- org_snapshots
+
+### 신규 시드 데이터
+- CTR Europe(PL) 법인 설정 업데이트 (payroll_frequencies 등)
+- 멕시코 법정 수당 4개 (tenant_enum_options)
+- 러시아 13월 상여 (tenant_enum_options)
+- 평가 알림 이메일 템플릿 3개
+- 계약 관련 알림 이메일 템플릿 3개
+- Work Permit 알림 이메일 템플릿 2개
+
+### 신규 lib 파일
+- lib/contract/rules.ts (계약 관리 비즈니스 로직)
+- lib/labor/pl.ts (폴란드 노동법 — eu.ts에서 분리)
+- lib/payroll/kpmg-interface.ts (인터페이스 정의만)
+- lib/performance/reminders.ts (평가 미이행 알림)
+
+
+================================================================
+11. API 엔드포인트 요약
+================================================================
+
+### 계약 관리
+GET    /api/v1/employees/:id/contracts              # 계약 이력 목록
+POST   /api/v1/employees/:id/contracts              # 신규 계약 등록
+PUT    /api/v1/employees/:id/contracts/:contractId   # 계약 수정
+GET    /api/v1/contracts/expiring                    # 만료 임박 계약 목록
+
+### Work Permit
+GET    /api/v1/employees/:id/work-permits            # 직원별 Work Permit 목록
+POST   /api/v1/employees/:id/work-permits            # Work Permit 등록
+PUT    /api/v1/work-permits/:id                      # 수정
+DELETE /api/v1/work-permits/:id                      # 삭제 (soft delete)
+GET    /api/v1/work-permits/expiring                 # 만료 임박 목록 (HR 대시보드용)
+
+### 채용 → 직원 전환
+POST   /api/v1/recruitment/applications/:id/convert-to-employee
+
+### 조직 스냅샷
+GET    /api/v1/org/snapshots                         # 스냅샷 목록
+GET    /api/v1/org/snapshots/:id                     # 특정 스냅샷 상세
+POST   /api/v1/org/snapshots                         # 수동 스냅샷 생성 (HR_ADMIN)
+
+
+================================================================
+12. UI 페이지 요약
+================================================================
+
+### 신규 페이지
+- /employees/:id/contracts — 계약 관리 탭 (기존 프로필 내 탭 추가)
+- /employees/:id/work-permits — 비자/체류 탭 (기존 프로필 내 탭 추가)
+- /settings/contract-rules — 계약 관리 규칙 설정 (HR_ADMIN)
+
+### 기존 페이지 수정
+- /employees/new — 직원 등록 폼에 계약 정보 섹션 추가
+- /employees/:id — 프로필에 계약 만료일·수습 상태 Badge 표시
+- /recruitment/:id — HIRED 단계 시 "직원으로 등록" 버튼
+- /org — 상단에 시점 선택 DatePicker (Phase 2 구현)
+- /settings/payroll — 법인별 급여 주기 설정 추가
+
+
+================================================================
+13. 체크리스트 (세션 종료 전 확인)
+================================================================
+
+### Prisma 스키마
+- [ ] ContractType, ProbationStatus ENUM 추가
+- [ ] WorkPermitType, WorkPermitStatus ENUM 추가
+- [ ] PayrollFrequency ENUM 추가
+- [ ] employees 모델 계약 관련 8개 필드 추가
+- [ ] companies 모델 payroll_frequencies 추가
+- [ ] payroll_runs 모델 frequency + period 필드 추가
+- [ ] applications 모델 converted 필드 추가
+- [ ] tenant_settings 모델 probation_rules 추가
+- [ ] contract_history 테이블 생성
+- [ ] work_permits 테이블 생성
+- [ ] org_snapshots 테이블 생성
+- [ ] notification event_type ENUM 19개 추가
+
+### 시드 데이터
+- [ ] 폴란드 법인(CTR-EU) 설정 UPDATE (payroll_frequencies 등)
+- [ ] CTR Mexico payroll_frequencies 업데이트
+- [ ] CTR Russia payroll_frequencies 업데이트
+- [ ] CTR America payroll_frequencies 업데이트
+- [ ] 멕시코 법정 수당 4개 tenant_enum_options INSERT
+- [ ] 러시아 13월 상여 tenant_enum_options INSERT
+- [ ] 알림 이메일 템플릿 8개 INSERT
+
+### lib 파일
+- [ ] lib/contract/rules.ts 생성
+- [ ] lib/labor/pl.ts 생성 (eu.ts에서 분리)
+- [ ] lib/payroll/kpmg-interface.ts 생성
+- [ ] lib/performance/reminders.ts 생성
+- [ ] lib/labor/kr.ts에 연차 사용 촉진 규칙 추가
+
+### API
+- [ ] /api/v1/employees/:id/contracts CRUD
+- [ ] /api/v1/employees/:id/work-permits CRUD
+- [ ] /api/v1/contracts/expiring GET
+- [ ] /api/v1/work-permits/expiring GET
+- [ ] /api/v1/recruitment/applications/:id/convert-to-employee POST
+- [ ] /api/v1/org/snapshots CRUD
+
+### UI
+- [ ] 직원 프로필 — 계약 탭 추가
+- [ ] 직원 프로필 — 비자/체류 탭 추가
+- [ ] 직원 등록 폼 — 계약 정보 섹션
+- [ ] 채용 상세 — "직원으로 등록" 버튼 (HIRED 단계)
+- [ ] 설정 — 계약 관리 규칙 페이지
+
+### context.md 업데이트
+- [ ] STEP 2.5 완료 항목 기록
+- [ ] STEP 3에서 할 것: 조직 스냅샷 UI, Outlook 캘린더 연동, 다국어(Phase 3)

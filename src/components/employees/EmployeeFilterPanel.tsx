@@ -36,9 +36,9 @@ interface EmployeeFilterPanelProps {
 
 function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <Badge variant="outline" className="flex items-center gap-1 pl-2.5 pr-1.5 py-0.5 text-xs bg-[#E8F5E9] border-[#A7F3D0] text-[#047857]">
+    <Badge variant="outline" className="flex items-center gap-1 pl-2.5 pr-1.5 py-0.5 text-xs bg-[#5E81F4]/10 border-[#5E81F4]/20 text-[#5E81F4]">
       {label}
-      <button onClick={onRemove} className="ml-0.5 rounded-full hover:bg-[#A7F3D0] p-0.5">
+      <button onClick={onRemove} className="ml-0.5 rounded-full hover:bg-[#5E81F4]/20 p-0.5">
         <X className="h-3 w-3" />
       </button>
     </Badge>
@@ -101,7 +101,7 @@ export function EmployeeFilterPanel({
   const hasFilters = chips.length > 0
 
   return (
-    <div className="rounded-xl border border-[#E8E8E8] bg-white p-4 space-y-3">
+    <div className="rounded-xl border border-[#F0F0F3] bg-white p-4 space-y-3">
       <div className="flex items-center justify-between">
         <button
           onClick={() => setExpanded((v) => !v)}
@@ -110,7 +110,7 @@ export function EmployeeFilterPanel({
           <SlidersHorizontal className="h-4 w-4 text-[#666]" />
           고급 검색 필터
           {hasFilters && (
-            <span className="rounded-full bg-[#00C853] text-white text-xs px-1.5 py-0.5">
+            <span className="rounded-full bg-[#5E81F4] text-white text-xs px-1.5 py-0.5">
               {chips.length}
             </span>
           )}
@@ -155,7 +155,7 @@ export function EmployeeFilterPanel({
       )}
 
       {expanded && (
-        <div className="grid grid-cols-2 gap-3 pt-2 border-t border-[#F5F5F5] md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 pt-2 border-t border-[#F0F0F3] md:grid-cols-3 lg:grid-cols-4">
           <div className="space-y-1">
             <Label className="text-xs text-[#666]">법인</Label>
             <Select value={filters.companyId ?? '__ALL__'} onValueChange={(v) => set('companyId', v === '__ALL__' ? undefined : v)}>

@@ -1,0 +1,615 @@
+# CTR HR Hub - STEP 7: Payroll + HR Analytics + 전체 QA
+# v3.1 (CTO 리뷰 반영)
+# ★ 반드시 STEP0_공통규칙.txt를 먼저 읽고 적용할 것
+
+
+================================================================
+STEP 7 프롬프트 — Payroll + HR Analytics + 전체 QA
+================================================================
+
+## ★ 세션 시작: context.md 먼저 읽어줘
+
+이번 세션 목표: Payroll 급여 처리 + HR Analytics 대시보드 +
+              AI Executive Summary + 전체 시스템 QA
+
+★ 이 세션이 최종 STEP. 전체 시스템 통합 + QA 검증.
+
+---
+
+
+================================================================
+기능 — Payroll (급여 관리)
+================================================================
+
+### 1. 급여 처리 프로세스 (/payroll)
+
+#### 1-1. 급여 실행 관리 — HR_ADMIN
+
+**급여 실행 목록**
+- DataTable: 실행명 / 법인 / 급여 기간 / 대상 인원 / 총액 / 상태
+- 상태: DRAFT → CALCULATING → REVIEW → APPROVED → PAID → CANCELLED
+
+**급여 실행 생성**
+- 폼:
+  - 실행명 (예: "2025년 3월 급여")
+  - 법인 선택
+  - 급여 기간: 시작일 ~ 종료일 (예: 2025-03-01 ~ 2025-03-31)
+  - 지급 예정일
+  - 유형: MONTHLY / BONUS / SEVERANCE / SPECIAL
+- payroll_runs INSERT (status=DRAFT)
+
+#### 1-2. 급여 계산 — "계산 실행" 버튼
+
+**자동 계산 로직 ($transaction)**
+
+대상: 해당 법인의 ACTIVE + 해당 기간 재직 직원
+
+직원별 계산:
+1. **기본급** — compensation_history 최신 레코드 기반 (월 환산)
+2. **초과근무 수당** — attendances 기간 내 overtime_hours 합산
+   - lib/labor/{country}.ts의 overtime_rates 적용
+   - 시간당 기본급 × overtime_hours × multiplier
+3. **수당** — allowance_records 기간 내 합산
+   - 또는 benefit_policies의 MONTHLY 자동 산출
+4. **공제**:
+   - 국민연금 (한국: 4.5%)
+   - 건강보험 (한국: 3.545%)
+   - 장기요양 (건강보험의 12.81%)
+   - 고용보험 (한국: 0.9%)
+   - 소득세 (간이세액표 기반 — Phase 1: 고정 비율 근사)
+   - 지방소득세 (소득세의 10%)
+   ★ 해외법인: 각국 법정 공제는 Phase 2 (Phase 1은 총액만)
+5. **순지급액** = 기본급 + 초과근무 + 수당 - 공제
+
+**payroll_items 생성 (직원별)**
+- employee_id, payroll_run_id
+- base_salary, overtime_pay, allowances (JSON 상세)
+- gross_pay = base + overtime + allowances
+- deductions (JSON: 항목별 공제액)
+- net_pay = gross - total_deductions
+- currency
+
+**계산 완료** → payroll_runs.status = CALCULATING → REVIEW
+
+#### 1-3. 급여 검토 — HR_ADMIN
+
+**검토 화면 (/payroll/:runId/review)**
+- 요약 카드: 대상 인원 / 총 지급액 / 총 공제액 / 총 순지급액
+- DataTable:
+  직원명 / 부서 / 기본급 / 초과근무 / 수당 / 총 지급 / 공제 / 순 지급
+- 이상 항목 하이라이트:
+  - 초과근무 > 월 60시간 → 🟡
+  - 전월 대비 급여 차이 > 20% → 🔴
+  - 신규 입사자 (일할 계산) → ℹ️
+- 개별 수정: 행 클릭 → 항목별 수동 조정 + 사유 입력
+
+**AI 급여 이상 감지**
+- "AI 검증" 버튼 → lib/claude.ts:
+```ts
+payrollAnomalyCheck(
+  payroll_summary: {
+    period: string,
+    company: string,
+    total_employees: number,
+    total_gross: number,
+    total_net: number
+  },
+  anomalies: Array<{
+    employee_name: string,
+    item: string,
+    current_value: number,
+    previous_value: number,
+    change_pct: number
+  }>,
+  new_hires: number,
+  resignations: number
+): Promise<{
+  risk_level: 'LOW' | 'MEDIUM' | 'HIGH',
+  findings: string[],
+  items_to_review: Array<{
+    employee_name: string,
+    issue: string,
+    severity: 'INFO' | 'WARNING' | 'ERROR'
+  }>,
+  recommendation: string
+}>
+prompt_version: "payroll-anomaly-v1.0"
+```
+- AiGeneratedBadge + ai_logs (PAYROLL_ANOMALY_CHECK)
+
+#### 1-4. 승인 + 지급
+
+**승인 — HR_ADMIN 또는 EXECUTIVE**
+- "승인" 버튼 → payroll_runs.status = APPROVED
+- approved_by, approved_at 기록
+- audit_logs (PAYROLL_APPROVED)
+
+**지급 완료 처리**
+- 실제 이체 후 → "지급 완료" 버튼 → status = PAID
+- paid_at 기록
+- Phase 2: 은행 API 연동 자동 이체
+
+#### 1-5. 급여 명세서 — EMPLOYEE
+
+**내 급여 명세서 (/payroll/me)**
+- 월별 명세서 목록 (최신순)
+- 명세서 카드:
+  - 기본급 / 초과근무 / 수당 / 총 지급
+  - 공제 항목별 내역
+  - 순 지급액 (큰 폰트)
+- PDF 다운로드 (자동 생성)
+  - 법인명 + 직원정보 + 급여 기간 + 항목별 내역 + 서명란
+  - lib/pdf.ts → PDFKit 또는 Puppeteer HTML→PDF
+
+---
+
+### 2. 퇴직금 정산 (한국)
+
+**퇴직 처리 시 자동 계산 (STEP 3 연동)**
+- 퇴직금 = (최근 3개월 평균 임금) × (근속 연수)
+- lib/labor/kr.ts의 severance 규칙 적용
+- 1년 미만 근무: 퇴직금 없음
+- payroll_runs 유형 = SEVERANCE로 별도 실행
+- payroll_items에 severance_pay 항목 포함
+
+
+================================================================
+기능 — HR Analytics
+================================================================
+
+### 3. Analytics 대시보드 (/analytics)
+
+**접근 권한**: HR_ADMIN + EXECUTIVE
+
+**전사 KPI 카드 (상단 6개)**
+1. 총 인원 (법인별 breakdown)
+2. 이번 달 입사/퇴사
+3. 월간 이직률 (퇴사 / 평균 인원 × 100)
+4. 평균 근속 연수
+5. 평균 초과근무 시간/주
+6. Pulse 평균 참여도 점수
+
+**CompanySelector**: "그룹 전체" 또는 법인별 필터
+
+---
+
+### 4. 인력 분석 (/analytics/workforce)
+
+**인원 현황**
+- mv_headcount_daily 활용
+- 일별/월별 인원 추이 라인 차트
+- 부서별 인원 바 차트
+- 고용형태별 분포 도넛 (정규직/계약직/파견/인턴)
+- 직군별 분포 도넛 (사무직/생산직/R&D/관리직)
+- 직급별 피라미드 차트
+
+**인구통계 (Phase 1 기본)**
+- 성별 분포
+- 연령대 분포 (10년 단위)
+- 근속 연수 분포 히스토그램
+- 국적별 분포 (해외법인 포함)
+
+---
+
+### 5. 이직 분석 (/analytics/turnover)
+
+**이직률 추이**
+- 월별 이직률 라인 차트 (전체 + 자발적/비자발적 분리)
+- 목표 이직률 기준선 표시 (설정 가능)
+
+**퇴직 사유 분석**
+- mv_exit_reason_monthly 활용
+- 사유별 분포 도넛 (COMPENSATION/CAREER_GROWTH/WORK_LIFE_BALANCE 등)
+- 법인별 비교 바 차트
+- 분기별 추이 (Stacked Bar)
+
+**퇴직 면담 인사이트**
+- exit_interviews AI 요약 집계
+- 키워드 클라우드 (자유 의견에서 추출) — Phase 2
+- 만족도 분포 히스토그램
+
+**Attrition Risk 예측 정확도** (STEP 6B 연동)
+- True Positive Rate: 실제 퇴직 중 HIGH 비율
+- False Positive Rate: HIGH 중 미퇴직 비율
+- 월별 추이 차트
+
+---
+
+### 6. 성과 분석 (/analytics/performance)
+
+**EMS 9블록 분포**
+- mv_performance_summary 활용
+- 전사 9블록 매트릭스 (인원 + 비율)
+- 부서별 9블록 비교 히트맵
+- 사이클별 추이 (연도별 블록 분포 변화)
+- 블록별 이직률 교차 분석 (블록 6/8/9의 이직률 모니터링)
+
+**MBO 달성률**
+- 부서별 평균 목표 달성률
+- 목표 카테고리별 달성률 (BUSINESS/DEVELOPMENT/INNOVATION/TEAM)
+
+---
+
+### 7. 근태 분석 (/analytics/attendance)
+
+**초과근무 현황**
+- mv_attendance_weekly 활용
+- 부서별 평균 주당 근무시간 바 차트
+- 법정 기준선 표시 (한국 52시간, 터키 45시간 등)
+- 초과근무 Top 10 직원 (개인정보 주의: HR_ADMIN만)
+
+**번아웃 위험**
+- mv_burnout_risk 활용
+- WARNING/CRITICAL 인원 수 KPI
+- 부서별 번아웃 위험 분포
+
+**휴가 사용률**
+- 부서별 연차 사용률 (사용/부여 × 100)
+- 미사용 연차 잔여 분포
+
+---
+
+### 8. 채용 분석 (/analytics/recruitment)
+
+**채용 퍼널**
+- mv_recruitment_funnel 활용
+- 단계별 전환율 퍼널 차트
+- 공고별 전환율 비교
+
+**채용 효율**
+- 평균 채용 소요일 (APPLIED → HIRED)
+- 오퍼 수락률
+- 채용 단가 (Phase 2: 비용 데이터 필요)
+
+---
+
+### 9. 보상 분석 (/analytics/compensation)
+
+**Compa-Ratio 분석**
+- mv_compa_ratio_distribution 활용
+- 직급×직군별 compa-ratio 히트맵
+- 법인별 평균 compa-ratio 비교
+- 저보상 직원 수 추이
+
+**급여 분포**
+- 직급별 연봉 박스플롯 (min/Q1/median/Q3/max)
+- 성별 급여 격차 분석 (Phase 1: 기본 통계)
+
+---
+
+### 10. 팀 건강 분석 (/analytics/team-health)
+
+**팀 건강 지표**
+- mv_team_health 활용
+- 부서별 건강 지표 히트맵:
+  - 심리적 안전감 (Pulse Q2)
+  - 매니저 지원 (Pulse Q3)
+  - 참여도 (응답률 × 평균)
+  - 이직 위험 (Attrition HIGH 비율)
+  - 1:1 빈도
+- 종합 점수 = 5개 지표 가중 평균
+- 색상: 🟢 건강 / 🟡 주의 / 🔴 위험
+
+---
+
+### 11. AI Executive Summary
+
+**월간 HR 리포트 자동 생성 — HR_ADMIN + EXECUTIVE**
+
+**트리거**: HR_ADMIN → "월간 리포트 생성" 버튼 (/analytics/report)
+또는 매월 1일 자동 생성 (cron)
+
+**lib/claude.ts:**
+```ts
+generateExecutiveSummary(
+  period: string,                    // "2025년 3월"
+  company: string,                   // 법인명 또는 "그룹 전체"
+  metrics: {
+    headcount: { total: number, hires: number, exits: number },
+    turnover_rate: number,
+    avg_overtime_hours: number,
+    overtime_compliance: boolean,     // 법정 기준 초과 여부
+    avg_pulse_score: number,
+    pulse_trend: 'UP' | 'STABLE' | 'DOWN',
+    high_risk_attrition_count: number,
+    ems_distribution: Array<{ block: number, count: number }>,
+    recruitment_active: number,
+    recruitment_hired: number,
+    avg_compa_ratio: number,
+    training_completion_rate: number,
+    key_departures: Array<{ name: string, department: string, ems_block: number }>,
+    recognition_count: number,
+    discipline_count: number
+  }
+): Promise<{
+  executive_summary: string,        // 3~5문장 요약
+  highlights: string[],             // 긍정 하이라이트 3~5개
+  concerns: string[],               // 주의 사항 3~5개
+  action_items: Array<{
+    priority: 'HIGH' | 'MEDIUM' | 'LOW',
+    action: string,
+    owner: string                    // 담당 부서/역할
+  }>,
+  trend_analysis: string,           // 전월 대비 추세 분석
+  ctr_value_spotlight: {             // CTR 핵심가치 활동 하이라이트
+    most_recognized_value: string,
+    recognition_trend: string
+  }
+}>
+prompt_version: "executive-summary-v1.0"
+```
+
+**결과 표시**
+- 리포트 페이지 (/analytics/report/:period):
+  - 헤더: CTR 로고 + 기간 + 법인
+  - Executive Summary 카드
+  - Highlights (🟢) + Concerns (🔴) 리스트
+  - Action Items 테이블 (우선순위 뱃지)
+  - 추세 분석 본문
+  - CTR 핵심가치 스포트라이트
+- PDF 다운로드: 전체 리포트 PDF 생성
+- AiGeneratedBadge + ai_logs (EXECUTIVE_SUMMARY)
+
+---
+
+### 12. 알림 설정 (/settings/notifications) — HR_ADMIN
+
+**알림 트리거 관리**
+- notification_triggers CRUD:
+  - DataTable: 이벤트명 / 유형 / 채널 / 대상 / 상태
+  - 수정: 활성/비활성 토글 + 알림 템플릿 편집
+
+**알림 채널**
+- IN_APP: 앱 내 알림 (벨 아이콘 + 드롭다운)
+- EMAIL: SES 이메일
+- PUSH: FCM 푸시 (Phase 2)
+
+**알림 목록 (벨 아이콘) — 전체 사용자**
+- 헤더 우측 벨 아이콘 + 미읽음 뱃지
+- 드롭다운: 최근 알림 20개 (무한 스크롤)
+- 읽음 처리: 클릭 시 is_read=true
+- 전체 알림 페이지: /notifications
+
+
+================================================================
+전체 QA 체크리스트
+================================================================
+
+### ★ 이 섹션은 전체 STEP 0~7 완료 후 최종 검증
+
+---
+
+#### A. 빌드 + 타입 검증
+- [ ] npx tsc --noEmit 에러 0개
+- [ ] npm run build 성공 (0 errors, 0 warnings)
+- [ ] npm run lint 통과
+
+#### B. 인증 + 권한
+- [ ] NextAuth M365 SSO 로그인 성공
+- [ ] 테스트 계정 4개 로그인 확인 (admin/hr/manager/employee)
+- [ ] RBAC 역할별 메뉴 표시/숨김 확인
+- [ ] 권한 없는 API 호출 → 403 응답 확인
+- [ ] 권한 없는 페이지 접근 → 리다이렉트 확인
+- [ ] SSO 세션 만료 → 재로그인 유도 확인
+
+#### C. 다법인 데이터 격리
+- [ ] CompanySelector 법인 전환 → 해당 법인 데이터만 표시 확인
+- [ ] API에서 company_id 필터 누락 없음 확인
+- [ ] 법인 A 직원이 법인 B 직원 데이터 접근 불가 확인
+- [ ] "그룹 전체" 모드 → SUPER_ADMIN/EXECUTIVE만 가능 확인
+
+#### D. 감사 로그
+- [ ] 직원 생성/수정/삭제 → audit_logs 기록 확인
+- [ ] 발령 (전입/승진/강등) → audit_logs 확인
+- [ ] 휴가 승인/반려 → audit_logs 확인
+- [ ] 성과 평가 제출/확정 → audit_logs 확인
+- [ ] 캘리브레이션 조정 → audit_logs 확인
+- [ ] Payroll 승인 → audit_logs 확인
+- [ ] 징계 등록 → audit_logs 확인
+- [ ] 연봉 조정 확정 → audit_logs 확인
+- [ ] 조직 개편 → audit_logs 확인
+- [ ] 근태 수동 수정 → audit_logs 확인
+
+#### E. AI 기능 (총 10개)
+- [ ] 1. 온보딩 체크인 AI 요약 (onboardingCheckinSummary)
+- [ ] 2. 퇴직 면담 AI 요약 (exitInterviewSummary)
+- [ ] 3. 채용 공고 AI 초안 (generateJobDescription)
+- [ ] 4. 이력서 AI 분석 (analyzeResume)
+- [ ] 5. 성과 AI 코멘트 (suggestEvalComment)
+- [ ] 6. 캘리브레이션 AI 분석 (calibrationAnalysis)
+- [ ] 7. 1:1 AI 노트 (generateOneOnOneNotes)
+- [ ] 8. Pulse AI 분석 (pulseSurveyAnalysis)
+- [ ] 9. Attrition Risk AI 보정 (attritionRiskAssessment)
+- [ ] 10. 급여 AI 이상 감지 (payrollAnomalyCheck)
+- [ ] 11. 연봉 조정 AI 추천 (compensationRecommendation)
+- [ ] 12. Executive Summary (generateExecutiveSummary)
+- 각 AI 기능: AiGeneratedBadge 표시 + ai_logs 기록 + graceful degradation 확인
+
+#### F. MV (Materialized View) 8개
+- [ ] mv_headcount_daily — 인원 현황 → Analytics 인력 분석 반영 확인
+- [ ] mv_attendance_weekly — 근태 요약 → Analytics 근태 분석 반영 확인
+- [ ] mv_performance_summary — 성과 분포 → Analytics 성과 분석 반영 확인
+- [ ] mv_recruitment_funnel — 채용 퍼널 → Analytics 채용 분석 반영 확인
+- [ ] mv_burnout_risk — 번아웃 위험 → Analytics + 근태 대시보드 반영 확인
+- [ ] mv_team_health — 팀 건강 → Analytics 팀 건강 분석 반영 확인
+- [ ] mv_exit_reason_monthly — 퇴직 사유 → Analytics 이직 분석 반영 확인
+- [ ] mv_compa_ratio_distribution — Compa 분포 → Analytics 보상 분석 반영 확인
+- [ ] 8개 MV 모두 UNIQUE INDEX 존재 확인 (REFRESH CONCURRENTLY 가능)
+- [ ] pg_cron 8개 스케줄 동작 확인
+
+#### G. 알림 시스템
+- [ ] 휴가 신청 → 매니저 알림 확인
+- [ ] 휴가 승인/반려 → 직원 알림 확인
+- [ ] 초과근무 경고 → 직원+매니저 알림 확인
+- [ ] 면접 예약 → 면접관 알림 확인
+- [ ] 성과 사이클 단계 전환 → 관련자 알림 확인
+- [ ] 퇴직 처리 → 4자 알림 (매니저/IT/재무/인수자) 확인
+- [ ] 온보딩 체크인 → 자동 알림 확인
+- [ ] Pulse Survey → 직원 알림 확인
+- [ ] 정보수정 승인/반려 → 직원 알림 확인
+- [ ] 벨 아이콘 미읽음 뱃지 + 읽음 처리 확인
+
+#### H. 핵심 플로우 E2E 검증
+
+**플로우 1: 채용 → 입사 → 온보딩**
+1. 채용 공고 생성 (AI 초안)
+2. 지원자 등록 + AI 이력서 분석
+3. 면접 일정 + 평가
+4. 오퍼 발행 → 수락
+5. 직원 등록 (사전 채움)
+6. 온보딩 자동 시작
+7. 체크리스트 진행 + 감성 체크인
+
+**플로우 2: 성과 평가 사이클**
+1. 사이클 생성 (DRAFT)
+2. 목표 설정 (EMPLOYEE)
+3. 매니저 목표 승인
+4. 진행률 기록
+5. 자기평가 (SELF_EVAL)
+6. 매니저 평가 (MANAGER_EVAL) + AI 코멘트
+7. EMS 9블록 산출
+8. 캘리브레이션 세션 + AI 분석
+9. 결과 확정 (FINALIZED)
+10. 연봉 조정 매트릭스 연계
+
+**플로우 3: 퇴직 프로세스**
+1. 퇴직 처리 시작 (HR)
+2. 체크리스트 자동 생성
+3. 인수인계 지정 + 문서 업로드
+4. 퇴직 면담 + AI 요약
+5. 태스크 완료 → IT 계정 비활성화
+6. SSO 세션 revoke
+7. Attrition Risk 피드백 루프
+
+**플로우 4: 급여 처리**
+1. Payroll 실행 생성
+2. 자동 계산 (기본급 + 초과근무 + 수당 - 공제)
+3. AI 이상 감지
+4. HR 검토 + 수동 조정
+5. 승인 → 지급 완료
+6. 직원 급여 명세서 PDF
+
+**플로우 5: 법인 간 전입**
+1. 직원 프로필 → 전입 처리
+2. TRANSFER_CROSS_COMPANY 이력 기록
+3. 이전 법인 역할 종료 + 새 법인 역할 시작
+4. CompanySelector 전환 → 새 법인에서 조회
+
+#### I. 반응형 + 접근성
+- [ ] 모바일 (375px) 사이드바 접힘 + 햄버거 메뉴 확인
+- [ ] 태블릿 (768px) 레이아웃 확인
+- [ ] 데스크톱 (1280px+) 전체 레이아웃 확인
+- [ ] 출퇴근 버튼 모바일에서 터치 편의성 확인
+- [ ] DataTable 모바일 스크롤 확인
+
+#### J. 성능
+- [ ] 직원 목록 1000건 페이지네이션 정상 확인
+- [ ] 조직도 트리 100부서 렌더링 확인
+- [ ] Analytics 대시보드 로딩 3초 이내 확인 (MV 활용)
+- [ ] AI 호출 타임아웃 30초 + graceful degradation 확인
+
+
+================================================================
+API
+================================================================
+
+```
+# Payroll
+GET /POST          /api/v1/payroll/runs                       # 실행 관리
+GET                /api/v1/payroll/runs/:id                   # 상세
+POST               /api/v1/payroll/runs/:id/calculate          # 계산 실행
+GET                /api/v1/payroll/runs/:id/review             # 검토 데이터
+PUT                /api/v1/payroll/runs/:id/items/:itemId      # 개별 수정
+PUT                /api/v1/payroll/runs/:id/approve             # 승인
+PUT                /api/v1/payroll/runs/:id/paid                # 지급 완료
+GET                /api/v1/payroll/me                           # 내 급여 명세
+GET                /api/v1/payroll/me/:runId/pdf                # 명세서 PDF
+POST               /api/v1/ai/payroll-anomaly                   # AI 이상 감지
+
+# 퇴직금
+POST               /api/v1/payroll/severance/:employeeId        # 퇴직금 계산
+
+# Analytics
+GET                /api/v1/analytics/overview                   # 전사 KPI
+GET                /api/v1/analytics/workforce                  # 인력 분석
+GET                /api/v1/analytics/turnover                   # 이직 분석
+GET                /api/v1/analytics/performance                # 성과 분석
+GET                /api/v1/analytics/attendance                 # 근태 분석
+GET                /api/v1/analytics/recruitment                # 채용 분석
+GET                /api/v1/analytics/compensation               # 보상 분석
+GET                /api/v1/analytics/team-health                # 팀 건강
+POST               /api/v1/ai/executive-summary                 # AI 리포트
+GET                /api/v1/analytics/report/:period             # 리포트 조회
+
+# 알림
+GET                /api/v1/notifications                        # 내 알림
+PUT                /api/v1/notifications/:id/read               # 읽음 처리
+PUT                /api/v1/notifications/read-all                # 전체 읽음
+GET /PUT           /api/v1/settings/notification-triggers        # 트리거 관리
+```
+
+
+================================================================
+완료 기준 (STEP 7 고유)
+================================================================
+
+**Payroll**
+- [ ] 급여 실행 CRUD + 상태 머신 6단계 확인
+- [ ] 자동 계산: 기본급 + 초과근무(국가별 할증) + 수당 - 공제 확인
+- [ ] 한국 4대보험 + 소득세 공제 계산 확인
+- [ ] 이상 항목 하이라이트 (60h초과근무, 20%급여변동) 확인
+- [ ] AI 이상 감지 → AiGeneratedBadge + ai_logs 확인
+- [ ] 개별 수동 조정 + 사유 입력 확인
+- [ ] 승인 → audit_logs 기록 확인
+- [ ] EMPLOYEE 급여 명세서 조회 + PDF 다운로드 확인
+- [ ] 퇴직금 계산 (한국 3개월 평균임금 × 근속연수) 확인
+
+**Analytics**
+- [ ] 전사 KPI 6개 카드 렌더링 확인
+- [ ] 인력 분석: 인원 추이 + 부서별 + 직군별 + 직급별 차트 확인
+- [ ] 이직 분석: 이직률 추이 + 퇴직 사유 + Attrition 정확도 확인
+- [ ] 성과 분석: 9블록 분포 + 부서 히트맵 + MBO 달성률 확인
+- [ ] 근태 분석: 초과근무 + 번아웃 + 휴가 사용률 확인
+- [ ] 채용 분석: 퍼널 + 채용 소요일 + 오퍼 수락률 확인
+- [ ] 보상 분석: Compa 히트맵 + 급여 분포 확인
+- [ ] 팀 건강: 5개 지표 히트맵 + 종합 점수 확인
+- [ ] 모든 Analytics에서 CompanySelector + "그룹 전체" 필터 확인
+
+**AI Executive Summary**
+- [ ] 월간 리포트 생성 → 12개 메트릭 입력 확인
+- [ ] executive_summary + highlights + concerns + action_items 출력 확인
+- [ ] CTR 핵심가치 스포트라이트 확인
+- [ ] PDF 다운로드 확인
+- [ ] ai_logs (EXECUTIVE_SUMMARY) 기록 확인
+
+**알림**
+- [ ] 벨 아이콘 + 미읽음 뱃지 확인
+- [ ] 알림 드롭다운 최근 20개 확인
+- [ ] 읽음 처리 확인
+- [ ] 알림 트리거 활성/비활성 토글 확인
+
+**전체 QA**: 위 체크리스트 A~J 전체 항목 통과
+
+
+================================================================
+★ 최종 세션 종료: context.md 최종 업데이트
+================================================================
+
+반드시 포함:
+- 전체 시스템 완성 상태
+- lib/claude.ts 전체 함수 목록 (12개 AI 함수)
+- lib/prompts/ 전체 프롬프트 버전 목록
+- 전체 API 엔드포인트 수
+- 전체 페이지 수
+- MV 8개 + cron 현황
+- Phase 2 기술 부채 목록:
+  1. IPO 컴플라이언스 (임원 보수, ICFR)
+  2. F5 프레임워크 (Recognition 행동 태그)
+  3. 기존 시스템 연동 (더존/SAP/SWIT/eformsign)
+  4. 교대근무 자동 순환
+  5. 은행 API 자동 이체
+  6. M365 계정 자동 비활성화
+  7. 급여 구성 상세 분리 (기본급/수당/인센티브)
+  8. 해외법인 세금 공제 상세
+  9. 채용 단가 분석
+  10. 성별 급여 격차 상세 분석

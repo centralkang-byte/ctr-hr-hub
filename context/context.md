@@ -1,7 +1,7 @@
 # CTR HR Hub — 세션 컨텍스트
 
 **최종 업데이트:** 2026-03-02 (B1 완료)
-**프로젝트 경로:** `/Users/sangwoo/Documents/VibeCoding/GHR/ctr-hr-hub`
+**프로젝트 경로:** `/Users/sangwoo/Documents/VibeCoding/HR_Hub/ctr-hr-hub`
 
 ---
 

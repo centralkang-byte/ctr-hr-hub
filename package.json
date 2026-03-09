@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 3002",
     "build": "next build && node -e \"const fs=require('fs');const src='.next/server/app/page_client-reference-manifest.js';const dst='.next/server/app/(dashboard)/page_client-reference-manifest.js';if(fs.existsSync(src))fs.copyFileSync(src,dst);\"",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seed:dev": "npx tsx prisma/seed-dev.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
@@ -34,11 +35,13 @@
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-toast": "^1.2.15",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@tanstack/react-virtual": "^3.13.19",
     "@xyflow/react": "^12.10.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "ioredis": "^5.9.3",
     "lucide-react": "^0.575.0",
     "next": "^15.5.12",

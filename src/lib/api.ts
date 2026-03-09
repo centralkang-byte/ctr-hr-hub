@@ -129,24 +129,40 @@ class ApiClient {
     return this.request<PaginatedResponse<T>>(fullUrl)
   }
 
+  /** Recursively convert Date instances to ISO 8601 strings before sending */
+  private serializeDates(value: unknown): unknown {
+    if (value instanceof Date) {
+      return value.toISOString()
+    }
+    if (Array.isArray(value)) {
+      return value.map((item) => this.serializeDates(item))
+    }
+    if (value !== null && typeof value === 'object') {
+      return Object.fromEntries(
+        Object.entries(value as Record<string, unknown>).map(([k, v]) => [k, this.serializeDates(v)]),
+      )
+    }
+    return value
+  }
+
   async post<T>(url: string, body?: unknown): Promise<ApiResponse<T>> {
     return this.request<ApiResponse<T>>(url, {
       method: 'POST',
-      body: body ? JSON.stringify(body) : undefined,
+      body: body ? JSON.stringify(this.serializeDates(body)) : undefined,
     })
   }
 
   async put<T>(url: string, body?: unknown): Promise<ApiResponse<T>> {
     return this.request<ApiResponse<T>>(url, {
       method: 'PUT',
-      body: body ? JSON.stringify(body) : undefined,
+      body: body ? JSON.stringify(this.serializeDates(body)) : undefined,
     })
   }
 
   async patch<T>(url: string, body?: unknown): Promise<ApiResponse<T>> {
     return this.request<ApiResponse<T>>(url, {
       method: 'PATCH',
-      body: body ? JSON.stringify(body) : undefined,
+      body: body ? JSON.stringify(this.serializeDates(body)) : undefined,
     })
   }
 

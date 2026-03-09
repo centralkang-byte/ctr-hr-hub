@@ -1,0 +1,46 @@
+// ═══════════════════════════════════════════════════════════
+// CTR HR Hub — LEAVE_APPROVED Handler
+// src/lib/events/handlers/leave-approved.handler.ts
+// ═══════════════════════════════════════════════════════════
+//
+// Side-effects on LEAVE_APPROVED:
+//   1. [TX] EmployeeLeaveBalance: usedDays++, pendingDays--
+//   2. [ASYNC] Notification to employee
+//
+// 현재 approve/route.ts에 hardcode된 로직을 이벤트 핸들러로 추출.
+// (실제 route 교체는 별도 세션에서 진행 — 이 파일은 핸들러 stub)
+// ═══════════════════════════════════════════════════════════
+
+import { prisma } from '@/lib/prisma'
+import { sendNotification } from '@/lib/notifications'
+import type { DomainEventHandler, LeaveApprovedPayload, TxClient } from '../types'
+import { DOMAIN_EVENTS } from '../types'
+
+export const leaveApprovedHandler: DomainEventHandler<'LEAVE_APPROVED'> = {
+  eventName: DOMAIN_EVENTS.LEAVE_APPROVED,
+
+  async handle(payload: LeaveApprovedPayload, tx?: TxClient): Promise<void> {
+    const db = tx ?? prisma
+
+    // 1. [TX] Balance deduction: pending → used
+    await db.employeeLeaveBalance.update({
+      where: { id: payload.balanceId },
+      data: {
+        usedDays:    { increment: payload.days },
+        pendingDays: { decrement: payload.days },
+      },
+    })
+
+    // 2. [ASYNC] Employee notification (fire-and-forget — tx 외부에서 실행)
+    if (!tx) {
+      void sendNotification({
+        employeeId:  payload.employeeId,
+        triggerType: 'leave_approved',
+        title:       '휴가 신청이 승인되었습니다',
+        body:        `${payload.startDate.toISOString().slice(0, 10)} ~ ${payload.endDate.toISOString().slice(0, 10)} 휴가가 승인되었습니다.`,
+        link:        '/my/leave',
+        priority:    'normal',
+      })
+    }
+  },
+}

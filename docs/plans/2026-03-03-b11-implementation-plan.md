@@ -13,7 +13,7 @@
 ## 사전 확인 (시작 전 체크)
 
 ```bash
-cd /Users/sangwoo/Documents/VibeCoding/GHR/ctr-hr-hub
+cd /Users/sangwoo/Documents/VibeCoding/HR_Hub/ctr-hr-hub
 npx tsc --noEmit 2>&1 | tail -5   # 0 errors 확인
 ```
 

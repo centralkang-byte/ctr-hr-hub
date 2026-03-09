@@ -9,8 +9,13 @@ import { badRequest, notFound, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
+import { eventBus } from '@/lib/events/event-bus'
+import { DOMAIN_EVENTS } from '@/lib/events/types'
+import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
 import type { SessionUser } from '@/types'
 import type { CycleStatus } from '@/generated/prisma/client'
+
+bootstrapEventHandlers()
 
 // ─── State Machine ────────────────────────────────────────
 
@@ -70,6 +75,41 @@ export const PUT = withPermission(
         ip,
         userAgent,
       })
+
+      // ── Fire-and-forget: PERFORMANCE_CYCLE_PHASE_CHANGED ───────────────
+      const phaseCtx = {
+        companyId:  updated.companyId,
+        actorId:    user.employeeId,
+        occurredAt: new Date(),
+      }
+
+      void eventBus.publish(DOMAIN_EVENTS.PERFORMANCE_CYCLE_PHASE_CHANGED, {
+        ctx:       phaseCtx,
+        cycleId:   updated.id,
+        companyId: updated.companyId,
+        fromPhase: currentStatus,
+        toPhase:   nextStatus,
+        cycleName: updated.name,
+        year:      updated.year,
+        half:      updated.half,
+      })
+
+      // 진입 단계가 CLOSED면 PERFORMANCE_CYCLE_FINALIZED도 추가 발행
+      if (nextStatus === 'CLOSED') {
+        const totalEvaluated = await prisma.performanceEvaluation.count({
+          where: { cycleId: updated.id, companyId: updated.companyId, status: 'SUBMITTED' },
+        })
+
+        void eventBus.publish(DOMAIN_EVENTS.PERFORMANCE_CYCLE_FINALIZED, {
+          ctx:            phaseCtx,
+          cycleId:        updated.id,
+          companyId:      updated.companyId,
+          cycleName:      updated.name,
+          year:           updated.year,
+          half:           updated.half,
+          totalEvaluated,
+        })
+      }
 
       return apiSuccess(updated)
     } catch (error) {

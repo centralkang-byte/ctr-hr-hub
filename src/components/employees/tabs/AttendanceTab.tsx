@@ -6,8 +6,9 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
-import { Clock, AlertTriangle, CheckCircle2, MinusCircle } from 'lucide-react'
+import { Clock, AlertTriangle, CheckCircle2, MinusCircle, CalendarClock } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { ScheduleAdjustmentModal } from '@/components/attendance/ScheduleAdjustmentModal'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -90,6 +91,7 @@ interface Props {
 export function AttendanceTab({ employeeId }: Props) {
   const [data, setData] = useState<AttendanceTabData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [adjustModalOpen, setAdjustModalOpen] = useState(false)
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -185,29 +187,53 @@ export function AttendanceTab({ employeeId }: Props) {
         />
       </div>
 
-      {/* 52시간 경고 배너 */}
+      {/* 52시간 경고 배너 (Actionable) */}
       {data.weeklyHours >= 44 && (
-        <div className={`flex items-center gap-2 rounded-lg border px-4 py-3 ${
+        <div className={`flex items-center justify-between gap-3 rounded-xl border px-4 py-3 ${
           data.weeklyHours >= 52
-            ? 'border-[#FECACA] bg-[#FEF2F2]'
-            : data.weeklyHours >= 48
-              ? 'border-[#FED7AA] bg-[#FFF7ED]'
-              : 'border-[#FCD34D] bg-[#FFFBEB]'
+            ? 'border-[#FF808B]/30 bg-[#FF808B]/10'
+            : 'border-[#F4BE5E]/40 bg-[#F4BE5E]/10'
         }`}>
-          <AlertTriangle className={`h-4 w-4 shrink-0 ${
-            data.weeklyHours >= 52 ? 'text-[#EF4444]' : data.weeklyHours >= 48 ? 'text-[#F97316]' : 'text-[#F59E0B]'
-          }`} />
-          <span className={`text-sm font-medium ${
-            data.weeklyHours >= 52 ? 'text-[#B91C1C]' : data.weeklyHours >= 48 ? 'text-[#C2410C]' : 'text-[#B45309]'
-          }`}>
-            {data.weeklyHours >= 52
-              ? `주 52시간 초과 — 현재 ${data.weeklyHours}h (차단 대상)`
-              : data.weeklyHours >= 48
-                ? `주 48시간 초과 — 현재 ${data.weeklyHours}h (경고)`
-                : `주 44시간 초과 — 현재 ${data.weeklyHours}h (주의)`}
-          </span>
+          <div className="flex items-center gap-2.5">
+            <AlertTriangle className={`h-4 w-4 shrink-0 ${
+              data.weeklyHours >= 52 ? 'text-[#E11D48]' : 'text-[#B45309]'
+            }`} />
+            <div>
+              <p className={`text-sm font-semibold ${
+                data.weeklyHours >= 52 ? 'text-[#E11D48]' : 'text-[#B45309]'
+              }`}>
+                {data.weeklyHours >= 52
+                  ? `주 52시간 초과 — 현재 ${data.weeklyHours}h (차단 대상)`
+                  : data.weeklyHours >= 48
+                    ? `주 48시간 초과 — 현재 ${data.weeklyHours}h (경고)`
+                    : `주 44시간 초과 — 현재 ${data.weeklyHours}h (주의)`}
+              </p>
+              <p className="text-xs text-[#8181A5] mt-0.5">
+                일정 조정으로 초과근무 위험을 해소하세요.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setAdjustModalOpen(true)}
+            className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+              data.weeklyHours >= 52
+                ? 'bg-[#E11D48] text-white hover:bg-[#BE1239]'
+                : 'bg-[#B45309] text-white hover:bg-[#92400E]'
+            }`}
+          >
+            <CalendarClock className="h-3.5 w-3.5" />
+            근무 일정 조정
+          </button>
         </div>
       )}
+
+      {/* Schedule Adjustment Modal */}
+      <ScheduleAdjustmentModal
+        open={adjustModalOpen}
+        onClose={() => setAdjustModalOpen(false)}
+        weeklyHours={data.weeklyHours}
+        employeeId={employeeId}
+      />
 
       {/* 최근 근태 기록 테이블 */}
       <div className="rounded-xl border border-[#E8E8E8] bg-white overflow-hidden">

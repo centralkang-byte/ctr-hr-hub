@@ -158,6 +158,19 @@ export function calculateTotalDeductions(
 
 // ─── B7-1a: 비과세 분리 ────────────────────────────────────
 
+// FIX: Issue #3 — Statutory non-taxable defaults (2025 기준 법정 한도)
+// DB에 NontaxableLimit 레코드가 없을 때 사용하는 fallback 값.
+// 항목 코드는 calculator.ts의 AllowanceItem.code와 일치해야 함.
+const STATUTORY_NON_TAXABLE_DEFAULTS: Record<string, number> = {
+  meal_allowance:    200_000,  // 식대 비과세 한도 (소득세법 §12 ②)
+  vehicle_allowance: 200_000,  // 자가운전보조금 (소득세법 §12 ②)
+  childcare:         100_000,  // 보육수당
+  MEAL:              200_000,  // BenefitPolicy.category 코드 대응
+  VEHICLE:           200_000,
+  CHILDCARE:         100_000,
+}
+
+
 export interface AllowanceItem {
   code: string
   name: string
@@ -187,7 +200,22 @@ export function separateTaxableIncome(
 
   for (const item of allowances) {
     if (!item.isTaxable) {
-      const limit = nontaxableLimits[item.code] ?? 0
+      // FIX: Issue #3 — Non-taxable limit returns 0 when config missing.
+      //   Use statutory defaults (2025 기준) instead of silently defaulting to 0.
+      //   This prevents entire allowance from becoming taxable due to missing config.
+      const configuredLimit = nontaxableLimits[item.code]
+      const limit = configuredLimit !== undefined
+        ? configuredLimit
+        : STATUTORY_NON_TAXABLE_DEFAULTS[item.code] ?? 0
+
+      if (configuredLimit === undefined && item.amount > 0) {
+        console.warn(
+          `[Payroll] Non-taxable limit not configured for '${item.code}' (${item.name}). ` +
+          `Using statutory default: ${limit.toLocaleString()}원. ` +
+          `Please configure NontaxableLimit record to remove this warning.`,
+        )
+      }
+
       const nontaxableAmount = Math.min(item.amount, limit)
       const taxableOverflow = item.amount - nontaxableAmount
       nontaxableTotal += nontaxableAmount
@@ -198,6 +226,7 @@ export function separateTaxableIncome(
     } else {
       taxableAllowances += item.amount
     }
+
   }
 
   const taxableIncome = baseSalary + overtimePay + taxableAllowances
@@ -210,27 +239,32 @@ export function separateTaxableIncome(
 /**
  * 주어진 연월의 평일(근무일) 수 계산
  * 토/일을 제외한 단순 평일 기준 (공휴일 미반영)
+ * UTC 기반 Date 연산으로 서버 로컬 타임존 영향 제거
  */
 export function getWeekdaysInMonth(year: number, month: number): number {
-  const daysInMonth = new Date(year, month, 0).getDate()
+  const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate()
   let weekdays = 0
   for (let d = 1; d <= daysInMonth; d++) {
-    const dow = new Date(year, month - 1, d).getDay()
+    const dow = new Date(Date.UTC(year, month - 1, d)).getUTCDay()
     if (dow !== 0 && dow !== 6) weekdays++
   }
   return weekdays
 }
 
+/**
+ * 두 날짜 사이(포함)의 평일 수 계산
+ * UTC 기반으로 요일 판정 — parseDateOnly / Date.UTC 기반 날짜와 안전하게 비교됨
+ */
 export function getWeekdaysBetween(start: Date, end: Date): number {
   let count = 0
   const cur = new Date(start)
-  cur.setHours(0, 0, 0, 0)
+  cur.setUTCHours(0, 0, 0, 0)
   const endD = new Date(end)
-  endD.setHours(0, 0, 0, 0)
+  endD.setUTCHours(0, 0, 0, 0)
   while (cur <= endD) {
-    const dow = cur.getDay()
+    const dow = cur.getUTCDay()
     if (dow !== 0 && dow !== 6) count++
-    cur.setDate(cur.getDate() + 1)
+    cur.setUTCDate(cur.getUTCDate() + 1)
   }
   return count
 }
@@ -255,8 +289,9 @@ export function calculateProrated(
   hireDate?: Date,
   resignDate?: Date,
 ): ProrateResult {
-  const monthStart = new Date(year, month - 1, 1)
-  const monthEnd = new Date(year, month, 0) // 말일
+  // UTC 기반으로 월 경계 생성 — parseDateOnly / Date.UTC 기반 날짜와 정확히 비교됨
+  const monthStart = new Date(Date.UTC(year, month - 1, 1))
+  const monthEnd = new Date(Date.UTC(year, month, 0)) // 말일
 
   const effectiveStart = hireDate && hireDate > monthStart ? hireDate : monthStart
   const effectiveEnd = resignDate && resignDate < monthEnd ? resignDate : monthEnd

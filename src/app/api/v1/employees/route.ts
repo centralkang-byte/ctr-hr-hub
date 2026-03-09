@@ -14,6 +14,7 @@ import {
   employeeCreateSchema,
 } from '@/lib/schemas/employee'
 import { createAssignment } from '@/lib/assignments'
+import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/employees ────────────────────────────────
@@ -169,6 +170,21 @@ export const POST = withPermission(
         companyId: empCompanyId,
         ip,
         userAgent,
+      })
+
+      // Fire-and-forget: EMPLOYEE_HIRED → Session B handler
+      // (EmployeeOnboarding + tasks 자동 생성은 handler에서 처리)
+      void eventBus.publish(DOMAIN_EVENTS.EMPLOYEE_HIRED, {
+        ctx: {
+          companyId: empCompanyId,
+          actorId:   user.employeeId,
+          occurredAt: new Date(),
+        },
+        employeeId:   employee.id,
+        companyId:    empCompanyId,
+        hireDate:     employee.hireDate,
+        departmentId: departmentId ?? undefined,
+        positionId:   jobGradeId   ?? undefined,
       })
 
       return apiSuccess(employee, 201)

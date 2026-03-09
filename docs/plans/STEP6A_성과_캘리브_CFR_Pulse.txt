@@ -1,0 +1,932 @@
+# CTR HR Hub - STEP 6A: 성과 관리 (EMS 9블록 + 캘리브레이션 + CFR + Pulse)
+# v3.1 (CTO 리뷰 반영 — STEP 6 분리: 6A/6B)
+# ★ 반드시 STEP0_공통규칙.txt를 먼저 읽고 적용할 것
+
+
+================================================================
+STEP 6A 프롬프트 — 성과 관리 (EMS 9블록 + 캘리브레이션 + CFR + Pulse)
+================================================================
+
+## ★ 세션 시작: context.md 먼저 읽어줘
+
+이번 세션 목표: EMS 9블록 성과평가 + MBO 목표관리 + 캘리브레이션 +
+              CFR (1:1 + Recognition) + Pulse Survey
+
+★ v3.1: STEP 6을 6A/6B로 분리 — 세션 과부하 방지
+  - 6A: 성과 코어 (이번 세션)
+  - 6B: 연봉·보상 + 복리후생 + Attrition Risk + L&D + Succession
+
+---
+
+
+================================================================
+EMS 9블록 모델 개요
+================================================================
+
+CTR 성과 평가 = EMS (Evaluation & Management System)
+
+2축 평가:
+- X축: 성과 (Performance) — MBO 달성률 기반 (1~5)
+- Y축: 역량 (Competency) — 행동 역량 평가 (1~5)
+
+9블록 매핑:
+```
+역량 ↑
+  5 │ 7-Rising Star  │ 8-Strong       │ 9-Top Talent
+    │                │ Contributor    │ (Star)
+  ──┼────────────────┼────────────────┼────────────────
+    │ 4-Development  │ 5-Core         │ 6-High
+    │ Needed         │ Contributor    │ Performer
+  ──┼────────────────┼────────────────┼────────────────
+  1 │ 1-Under        │ 2-Inconsistent │ 3-Specialist
+    │ Performer      │                │
+    └────────────────┴────────────────┴────────────────→ 성과
+      1                               5
+```
+
+블록 번호 1~9, 각 블록에 라벨 + 색상 + 설명 + 권장 액션:
+- 1 (Under Performer): 🔴 PIP 검토, 코칭 강화
+- 2 (Inconsistent): 🟠 성과 원인 분석, 목표 재설정
+- 3 (Specialist): 🟡 역량 개발 프로그램 투입
+- 4 (Development Needed): 🟠 역량+성과 코칭
+- 5 (Core Contributor): 🟢 유지, 점진적 성장 지원
+- 6 (High Performer): 🔵 승진 검토, 도전적 목표 부여
+- 7 (Rising Star): 🟡 성과 코칭, 잠재력 활용
+- 8 (Strong Contributor): 🔵 핵심 인재풀 편입
+- 9 (Top Talent / Star): 🟣 후계자 후보, 리텐션 집중
+
+**ems_block_config (STEP 1 Seed)**
+- thresholds: [0, 2.33, 3.67, 5.01]
+  → Low: 0 ≤ score < 2.33
+  → Mid: 2.33 ≤ score < 3.67
+  → High: 3.67 ≤ score < 5.01
+- 성과 Low + 역량 Low = 블록 1
+- 성과 Mid + 역량 High = 블록 8
+- 성과 High + 역량 High = 블록 9
+- ... (총 9가지 조합)
+
+
+================================================================
+기능
+================================================================
+
+### 1. 평가 사이클 관리 (/settings/performance-cycles) — HR_ADMIN
+
+**사이클 CRUD**
+- DataTable: 이름 / 연도 / 유형 / 기간 / 상태 / 법인
+- 생성 폼:
+  - 이름 (예: "2025년 상반기 평가")
+  - 연도
+  - 유형: ANNUAL / SEMI_ANNUAL / QUARTERLY / PROBATION
+  - 기간: 시작일 ~ 종료일
+  - MBO 목표 설정 기간: 시작 ~ 마감
+  - 자기평가 기간: 시작 ~ 마감
+  - 매니저 평가 기간: 시작 ~ 마감
+  - 캘리브레이션 기간: 시작 ~ 마감
+  - 결과 확정일
+  - 법인 선택 (다중 가능 — 전사 사이클)
+- performance_cycles INSERT
+
+**사이클 상태 머신**
+```
+DRAFT → GOAL_SETTING → IN_PROGRESS → SELF_EVAL → MANAGER_EVAL → CALIBRATION → FINALIZED
+```
+- 각 단계 전환: HR_ADMIN 수동 또는 기간 도달 시 자동
+- 전환 시 관련자 알림 발송
+
+---
+
+### 2. MBO 목표 관리
+
+#### 2-1. 목표 설정 (/performance/goals) — EMPLOYEE
+
+**내 목표**
+- 현재 사이클의 내 MBO 목표 목록
+- 목표 추가 (사이클 상태 = GOAL_SETTING 시만):
+  - 목표명 (필수)
+  - 설명 (Textarea)
+  - 카테고리: BUSINESS / DEVELOPMENT / INNOVATION / TEAM
+  - 가중치 (%, 전체 합 = 100)
+  - 측정 지표 (KPI)
+  - 목표값 (숫자 또는 텍스트)
+  - 기한
+  - CTR 핵심가치 연결 (선택, CtrValue 태그)
+- mbo_goals INSERT
+
+**목표 승인 플로우**
+1. EMPLOYEE 목표 입력 → status=DRAFT
+2. "제출" → status=SUBMITTED → 매니저 알림
+3. MANAGER 검토:
+   - 승인 → status=APPROVED
+   - 수정 요청 → 코멘트 + status=REVISION_REQUESTED → 직원 알림
+4. EMPLOYEE 수정 후 재제출 → status=SUBMITTED
+5. 가중치 합계 ≠ 100% → 제출 불가 (프론트 + 백엔드 검증)
+
+#### 2-2. 목표 진행률 관리 — EMPLOYEE
+
+**진행률 업데이트**
+- 목표별 "진행 기록 추가" 버튼
+- 폼: 현재 달성값, 메모, 날짜
+- mbo_progress INSERT
+- 진행률 자동 계산: (current_value / target_value) × 100
+  → mbo_goals.current_value, achievement_rate 업데이트
+
+**진행률 차트**
+- 목표별 라인 차트 (X: 날짜, Y: 달성률)
+- 마감 기한 점선 표시
+
+#### 2-3. 매니저 목표 관리 (/performance/team-goals) — MANAGER
+
+**팀 목표 현황**
+- DataTable: 직원명 / 목표 수 / 평균 달성률 / 제출 상태
+- 직원 클릭 → 해당 직원의 목표 상세
+- 인라인 승인/수정요청 액션
+
+---
+
+### 3. 성과 평가
+
+#### 3-1. 자기평가 (/performance/self-eval) — EMPLOYEE
+
+**사이클 상태 = SELF_EVAL 시 진입 가능**
+
+**평가 폼**
+- 목표별 섹션:
+  - 목표명 + 가중치 표시
+  - 자기 달성도 점수 (1~5, 라디오 또는 슬라이더)
+  - 자기 평가 코멘트 (Textarea)
+  - 증빙/성과물 첨부 (S3 업로드, 선택)
+
+- 역량 평가 섹션:
+  - 역량 항목 5개 (회사 공통):
+    1. 전문성 (Expertise)
+    2. 리더십/협업 (Leadership/Collaboration)
+    3. 문제해결 (Problem Solving)
+    4. 커뮤니케이션 (Communication)
+    5. CTR 핵심가치 실천 (Core Values)
+  - 항목별 자기 점수 (1~5) + 코멘트
+
+- 종합 자기평가 코멘트 (Textarea)
+
+**제출**
+- "제출" → performance_evaluations INSERT:
+  - evaluator_id = self
+  - eval_type = SELF
+  - 각 목표 점수 + 역량 점수 JSON 저장
+  - status = SUBMITTED
+- 제출 전 임시저장 가능 (status=DRAFT)
+
+#### 3-2. 매니저 평가 (/performance/manager-eval) — MANAGER
+
+**사이클 상태 = MANAGER_EVAL 시 진입 가능**
+
+**팀원 평가 목록**
+- DataTable: 직원명 / 자기평가 완료 여부 / 매니저 평가 상태
+- 직원 클릭 → 평가 폼
+
+**평가 폼**
+- 좌측: 직원의 자기평가 내용 표시 (읽기 전용)
+- 우측: 매니저 평가 입력
+
+- 목표별 섹션:
+  - 자기평가 점수 표시 (참고)
+  - 매니저 달성도 점수 (1~5)
+  - 매니저 코멘트
+
+- 역량 평가:
+  - 자기평가 점수 표시 (참고)
+  - 매니저 점수 (1~5)
+  - 매니저 코멘트
+
+- **성과 종합 점수**: 목표별 (매니저 점수 × 가중치) 합산 → 1~5
+- **역량 종합 점수**: 역량 5개 평균 → 1~5
+- **EMS 블록 자동 산출**: performance_score + competency_score → 9블록 매핑
+  - ems_block_config의 thresholds 적용
+  - 예: performance=4.2(High), competency=3.0(Mid) → 블록 6 (High Performer)
+
+- 종합 코멘트 (Textarea)
+- EMS 블록 결과 미리보기 (블록 번호 + 라벨 + 색상 + 권장 액션)
+
+**AI 평가 코멘트 보조**
+- "AI 코멘트 제안" 버튼 → lib/claude.ts:
+```ts
+suggestEvalComment(
+  employee_name: string,
+  goals: Array<{
+    title: string,
+    weight: number,
+    self_score: number,
+    manager_score: number,
+    achievement_rate: number
+  }>,
+  competency_scores: Array<{
+    name: string,
+    self_score: number,
+    manager_score: number
+  }>,
+  ems_block: number,
+  ems_label: string
+): Promise<{
+  overall_comment: string,      // 종합 평가 코멘트 초안
+  strengths: string[],
+  development_areas: string[],
+  recommended_actions: string[]
+}>
+prompt_version: "eval-comment-v1.0"
+```
+- AiGeneratedBadge + HR이 수정 가능
+- ai_logs (EVAL_COMMENT_SUGGESTION) 기록
+
+**제출**
+- performance_evaluations INSERT:
+  - evaluator_id = manager
+  - eval_type = MANAGER
+  - performance_score, competency_score, ems_block
+  - status = SUBMITTED
+
+---
+
+### 4. 캘리브레이션
+
+#### 4-1. 캘리브레이션 규칙 (/settings/calibration) — HR_ADMIN
+
+**규칙 설정**
+- calibration_rules CRUD:
+  - 사이클 선택
+  - 법인 선택
+  - 블록별 비율 가이드라인 (선택):
+    - 블록 9: ≤5%
+    - 블록 8: ≤10%
+    - 블록 6: ≤15%
+    - 블록 5: 40~50%
+    - 블록 1: ≤5%
+    - (나머지는 자율)
+  - 강제 배분 여부 (Boolean):
+    - true → 비율 초과 시 경고 (저장은 허용, Phase 1)
+    - false → 가이드라인만 참고
+
+#### 4-2. 캘리브레이션 세션 (/performance/calibration) — HR_ADMIN + EXECUTIVE
+
+**사이클 상태 = CALIBRATION 시 진입 가능**
+
+**세션 관리**
+- calibration_sessions CRUD:
+  - 이름, 사이클, 대상 부서(들), 참석자 (HR + 임원)
+  - 상태: SCHEDULED / IN_PROGRESS / COMPLETED
+
+**9블록 매트릭스 시각화**
+- 3×3 그리드 (인터랙티브):
+  - 각 셀: 블록 번호 + 라벨 + 인원 수 + 비율(%)
+  - 셀 클릭 → 해당 블록 직원 목록 드롭다운
+  - 직원 카드: 이름 + 부서 + 점수 + 현재 블록
+- 비율 가이드라인 vs 실제 비교 바 차트 (옆에 표시)
+- 초과 블록: 🔴 경고 배지
+
+**조정 (Adjustment)**
+- 직원 카드 드래그 → 다른 블록으로 이동
+- 또는 직원 클릭 → 조정 모달:
+  - 기존 블록 → 변경 블록
+  - 조정 사유 (Textarea, 필수)
+  - "적용" → calibration_adjustments INSERT:
+    - from_block, to_block, reason, adjusted_by
+  - performance_evaluations.ems_block 업데이트
+
+**AI 캘리브레이션 보조**
+- "AI 분석" 버튼 → lib/claude.ts:
+```ts
+calibrationAnalysis(
+  session_name: string,
+  department: string,
+  distribution: Array<{
+    block: number,
+    label: string,
+    count: number,
+    percentage: number,
+    guideline_percentage: number | null
+  }>,
+  outliers: Array<{
+    employee_name: string,
+    block: number,
+    performance_score: number,
+    competency_score: number,
+    tenure_months: number
+  }>
+): Promise<{
+  distribution_assessment: string,
+  potential_biases: string[],
+  adjustment_suggestions: Array<{
+    employee_name: string,
+    current_block: number,
+    suggested_block: number,
+    reason: string
+  }>,
+  overall_recommendation: string
+}>
+prompt_version: "calibration-analysis-v1.0"
+```
+- AiGeneratedBadge 표시
+- ai_logs (CALIBRATION_ANALYSIS) 기록
+
+#### 4-3. 결과 확정
+
+**HR_ADMIN → "결과 확정" 버튼**
+- 사이클 상태 → FINALIZED
+- 전 직원에게 결과 공개 알림 (PERFORMANCE_RESULT 트리거)
+- 확정 후 수정 불가 (읽기 전용)
+
+---
+
+### 5. 성과 결과 조회
+
+#### EMPLOYEE 뷰 (/performance/results)
+- 사이클 선택 드롭다운
+- 내 성과 결과:
+  - EMS 블록 (큰 카드: 블록 번호 + 라벨 + 색상 + 설명)
+  - 성과 점수 / 역량 점수 게이지
+  - 목표별 달성률 리스트
+  - 역량별 점수 (자기 vs 매니저 비교 Radar Chart)
+  - 매니저 종합 코멘트
+  - 권장 액션 (블록별 기본 + AI 제안)
+
+#### MANAGER 뷰 (/performance/team-results)
+- 팀원 EMS 9블록 매트릭스 (미니 버전, 읽기 전용)
+- 팀원별 결과 목록 DataTable
+
+#### HR_ADMIN 뷰 (/performance/admin)
+- CompanySelector + 법인별 대시보드
+- 전사 9블록 분포 매트릭스 + 부서별 비교
+- mv_performance_summary MV 활용
+- 사이클별 추이 차트 (연도별 블록 분포 변화)
+
+---
+
+### 6. CFR — 1:1 미팅
+
+#### 6-1. 1:1 일정 관리 (/cfr/one-on-ones)
+
+**매니저 뷰**
+- 팀원별 1:1 목록 + "새 1:1 예약" 버튼
+- 예약 폼:
+  - 팀원 선택
+  - 일시 (DateTimePicker)
+  - 유형: REGULAR / AD_HOC / GOAL_REVIEW / DEVELOPMENT
+  - 아젠다 사전 입력 (Textarea)
+- one_on_ones INSERT (status=SCHEDULED)
+- 팀원에게 알림
+
+**직원 뷰**
+- 내 1:1 목록 (예정 + 완료)
+- 다가오는 1:1 카드 (상단)
+
+#### 6-2. 1:1 기록
+
+**미팅 후 기록 (MANAGER 또는 양측)**
+- 폼:
+  - 논의 내용 요약 (Rich Text, Tiptap)
+  - 액션 아이템 (체크리스트):
+    - 항목명, 담당자(MANAGER/EMPLOYEE), 기한
+  - 다음 1:1 예약 (퀵 버튼)
+- one_on_ones UPDATE: notes, action_items(JSON), status=COMPLETED, completed_at
+
+**AI 미팅 노트 생성**
+- "AI 요약 생성" 버튼 → 이전 1:1 내용 + 현재 노트 기반:
+```ts
+generateOneOnOneNotes(
+  employee_name: string,
+  meeting_type: string,
+  previous_action_items: Array<{item: string, status: string}>,
+  current_notes: string,
+  employee_goals: Array<{title: string, achievement_rate: number}>
+): Promise<{
+  structured_notes: string,
+  follow_up_items: string[],
+  coaching_tip: string
+}>
+prompt_version: "one-on-one-notes-v1.0"
+```
+- AiGeneratedBadge + ai_logs (ONE_ON_ONE_NOTES)
+
+#### 6-3. 1:1 대시보드 — MANAGER
+
+- 팀원별 1:1 빈도 (월별 바 차트)
+- 미진행 팀원 하이라이트 (30일+ 미실시 → 🔴)
+- 액션 아이템 추적 (미완료 건수)
+
+---
+
+### 7. CFR — Recognition (칭찬/인정)
+
+#### 7-1. Recognition 피드 (/cfr/recognition)
+
+**전사 피드 (소셜 피드 스타일)**
+- 카드: 보낸 사람 → 받는 사람 + CTR 핵심가치 태그 + 메시지 + 시간
+- CTR 핵심가치 아이콘 + 색상 표시
+- 좋아요 (👍) 카운트
+- 법인별 필터
+
+**Recognition 보내기**
+- "칭찬 보내기" 버튼 → 모달:
+  - 받는 사람 선택 (직원 검색, 같은 법인 또는 전체)
+  - CTR 핵심가치 선택 (CHALLENGE/TRUST/RESPONSIBILITY/RESPECT) — 필수
+  - 메시지 (Textarea, 10~500자)
+  - 공개 범위: TEAM / DEPARTMENT / COMPANY / ALL
+- recognitions INSERT
+- 받는 사람 알림: "{{sender}}님이 {{value}} 핵심가치로 칭찬을 보냈습니다"
+
+#### 7-2. Recognition 통계
+
+**개인 프로필에 표시**
+- 직원 프로필 → 받은 Recognition 수 + 핵심가치별 분포 (도넛 차트)
+- 보낸 Recognition 수
+
+**팀/전사 통계 (HR_ADMIN)**
+- 핵심가치별 Recognition 분포 (4개 값 비교)
+- 부서별 활성도 (보낸+받은 합계)
+- 월별 추이 차트
+- Top Recognizers / Top Recognized 랭킹
+
+---
+
+### 8. Pulse Survey
+
+#### 8-1. 설문 관리 (/settings/pulse-surveys) — HR_ADMIN
+
+**설문 CRUD**
+- DataTable: 설문명 / 질문 수 / 대상 / 빈도 / 상태
+- 생성 폼:
+  - 설문명
+  - 설명
+  - 대상: COMPANY / DEPARTMENT / ALL
+  - 대상 법인 또는 부서 선택
+  - 빈도: WEEKLY / BI_WEEKLY / MONTHLY / QUARTERLY / ONE_TIME
+  - 익명 여부 (Boolean)
+  - 시작일 / 종료일
+- pulse_surveys INSERT
+
+**질문 관리**
+- 질문 추가 (드래그 정렬):
+  - 질문 텍스트
+  - 유형: RATING_1_5 / RATING_1_10 / YES_NO / TEXT / MULTIPLE_CHOICE
+  - 카테고리: ENGAGEMENT / SATISFACTION / WELLBEING / MANAGEMENT / CULTURE / CTR_VALUES
+  - 필수 여부
+  - 선택지 (MULTIPLE_CHOICE일 때)
+- pulse_questions INSERT
+
+**기본 질문 템플릿**
+- HR_ADMIN이 "기본 템플릿 불러오기" 클릭 시 사전 정의 질문 10개 로드:
+  1. 이번 주 업무 만족도는? (RATING_1_5, SATISFACTION)
+  2. 팀 내 심리적 안전감을 느끼나요? (RATING_1_5, CULTURE)
+  3. 매니저로부터 충분한 지원을 받고 있나요? (RATING_1_5, MANAGEMENT)
+  4. 성장 기회가 있다고 느끼나요? (RATING_1_5, ENGAGEMENT)
+  5. 업무량이 적절한가요? (RATING_1_5, WELLBEING)
+  6. CTR 핵심가치가 일상 업무에 반영되고 있나요? (RATING_1_5, CTR_VALUES)
+  7. 동료와의 협업은 원활한가요? (RATING_1_5, CULTURE)
+  8. 회사의 방향성을 이해하고 있나요? (RATING_1_5, ENGAGEMENT)
+  9. 이직을 고려하고 있나요? (YES_NO, ENGAGEMENT)
+  10. 개선이 필요한 점이 있다면? (TEXT, 선택)
+
+#### 8-2. 설문 응답 (/pulse) — EMPLOYEE
+
+**알림 → 설문 진입**
+- 빈도에 따라 자동 알림 (PULSE_SURVEY 트리거)
+- 설문 카드: 설문명 + 마감일 + "응답하기" 버튼
+
+**응답 폼**
+- 질문별 UI:
+  - RATING_1_5: 별점 5개
+  - RATING_1_10: 슬라이더
+  - YES_NO: 토글
+  - TEXT: Textarea
+  - MULTIPLE_CHOICE: 라디오
+- 익명 설문: employee_id = null (또는 별도 anonymous flag)
+- 제출 → pulse_responses INSERT (질문별 각각)
+
+#### 8-3. Pulse 결과 분석 (/pulse/results) — HR_ADMIN
+
+**대시보드**
+- 설문별 응답률 (프로그레스 바)
+- 카테고리별 평균 점수 Radar Chart
+- 질문별 점수 분포 (히스토그램)
+- 추이 차트: 주/월별 평균 점수 변화 (Line Chart)
+- 부서별 비교 Bar Chart
+
+**AI Pulse 분석**
+- "AI 인사이트" 버튼 → lib/claude.ts:
+```ts
+pulseSurveyAnalysis(
+  survey_name: string,
+  response_rate: number,
+  category_averages: Array<{
+    category: string,
+    avg_score: number,
+    prev_avg_score: number | null
+  }>,
+  low_score_questions: Array<{
+    question: string,
+    avg_score: number,
+    response_count: number
+  }>,
+  text_responses: string[]   // 자유 응답 텍스트 (익명 처리된)
+): Promise<{
+  overall_sentiment: 'POSITIVE' | 'MIXED' | 'CONCERNING',
+  key_findings: string[],
+  risk_areas: string[],
+  improvement_suggestions: string[],
+  trend_analysis: string
+}>
+prompt_version: "pulse-analysis-v1.0"
+```
+- AiGeneratedBadge + ai_logs (PULSE_ANALYSIS)
+
+**팀 건강 지표 연동**
+- Pulse 결과 → mv_team_health MV에 반영
+  - 심리적 안전감 = 질문 2 평균
+  - 매니저 지원 = 질문 3 평균
+  - 전체 참여도 = 응답률 × 평균 점수
+
+
+================================================================
+API
+================================================================
+
+```
+# 평가 사이클
+GET /POST          /api/v1/performance/cycles                   # 사이클 관리
+GET /PUT           /api/v1/performance/cycles/:id               # 상세/수정
+PUT                /api/v1/performance/cycles/:id/advance        # 다음 단계 전환
+
+# MBO 목표
+GET /POST          /api/v1/performance/goals                     # 내 목표
+GET /PUT /DELETE   /api/v1/performance/goals/:id                 # 상세/수정/삭제
+PUT                /api/v1/performance/goals/:id/submit           # 제출
+PUT                /api/v1/performance/goals/:id/approve          # 승인 (MANAGER)
+PUT                /api/v1/performance/goals/:id/request-revision # 수정요청 (MANAGER)
+POST               /api/v1/performance/goals/:id/progress         # 진행률 기록
+GET                /api/v1/performance/team-goals                  # 팀 목표 (MANAGER)
+
+# 성과 평가
+POST               /api/v1/performance/evaluations/self            # 자기평가
+POST               /api/v1/performance/evaluations/manager         # 매니저 평가
+GET                /api/v1/performance/evaluations/:employeeId/:cycleId  # 평가 조회
+POST               /api/v1/ai/eval-comment                         # AI 코멘트 제안
+
+# 캘리브레이션
+GET /POST          /api/v1/performance/calibration/rules           # 규칙 관리
+GET /POST          /api/v1/performance/calibration/sessions        # 세션 관리
+GET                /api/v1/performance/calibration/sessions/:id    # 세션 상세
+POST               /api/v1/performance/calibration/adjustments     # 블록 조정
+PUT                /api/v1/performance/cycles/:id/finalize          # 결과 확정
+POST               /api/v1/ai/calibration-analysis                  # AI 캘리브레이션
+
+# 성과 결과
+GET                /api/v1/performance/results/me                   # 내 결과
+GET                /api/v1/performance/results/team                  # 팀 결과 (MANAGER)
+GET                /api/v1/performance/results/admin                 # 전사 (HR)
+
+# 1:1
+GET /POST          /api/v1/cfr/one-on-ones                         # 1:1 목록/예약
+GET /PUT           /api/v1/cfr/one-on-ones/:id                     # 상세/기록 저장
+POST               /api/v1/ai/one-on-one-notes                     # AI 미팅 노트
+
+# Recognition
+GET /POST          /api/v1/cfr/recognitions                        # 피드/보내기
+POST               /api/v1/cfr/recognitions/:id/like               # 좋아요
+GET                /api/v1/cfr/recognitions/stats                   # 통계
+
+# Pulse Survey
+GET /POST          /api/v1/pulse/surveys                           # 설문 관리
+GET /PUT /DELETE   /api/v1/pulse/surveys/:id                       # 상세/수정/삭제
+GET /POST          /api/v1/pulse/surveys/:id/questions              # 질문 관리
+POST               /api/v1/pulse/respond                            # 응답 제출
+GET                /api/v1/pulse/results/:surveyId                  # 결과 조회
+POST               /api/v1/ai/pulse-analysis                        # AI 분석
+```
+
+
+================================================================
+완료 기준
+================================================================
+
+**EMS 9블록**
+- [ ] ems_block_config Seed 로드 확인
+- [ ] 9블록 매트릭스 3×3 그리드 렌더링 확인
+- [ ] 블록별 라벨 + 색상 + 인원 수 표시 확인
+- [ ] thresholds 기반 블록 자동 산출 로직 확인
+  (performance=4.2, competency=3.0 → 블록 6)
+
+**사이클/MBO**
+- [ ] 사이클 CRUD + 상태 머신 7단계 전환 확인
+- [ ] MBO 목표 CRUD + 가중치 합계=100% 검증 확인
+- [ ] 목표 승인 플로우 (DRAFT→SUBMITTED→APPROVED/REVISION) 확인
+- [ ] 진행률 기록 + 차트 렌더링 확인
+
+**성과 평가**
+- [ ] 자기평가 폼 (목표별 + 역량별) 제출 확인
+- [ ] 매니저 평가 좌우 분할 (자기평가 vs 매니저 입력) 확인
+- [ ] performance_score + competency_score → ems_block 자동 산출 확인
+- [ ] AI 코멘트 제안 → AiGeneratedBadge + ai_logs 확인
+
+**캘리브레이션**
+- [ ] 캘리브레이션 규칙 (블록별 비율 가이드) 설정 확인
+- [ ] 9블록 매트릭스 인터랙티브 (셀 클릭 → 직원 목록) 확인
+- [ ] 직원 드래그 블록 이동 → calibration_adjustments 기록 확인
+- [ ] 비율 초과 경고 배지 확인
+- [ ] AI 캘리브레이션 분석 → ai_logs 확인
+- [ ] 결과 확정 → FINALIZED + 알림 확인
+
+**성과 결과**
+- [ ] EMPLOYEE 결과 조회 (EMS 카드 + Radar Chart) 확인
+- [ ] MANAGER 팀 결과 미니 매트릭스 확인
+- [ ] HR_ADMIN 전사 분포 + 부서 비교 + mv_performance_summary 확인
+
+**1:1 미팅**
+- [ ] 1:1 예약 + 알림 확인
+- [ ] 미팅 기록 (노트 + 액션 아이템) 저장 확인
+- [ ] AI 미팅 노트 → AiGeneratedBadge + ai_logs 확인
+- [ ] 30일+ 미실시 팀원 하이라이트 확인
+
+**Recognition**
+- [ ] 소셜 피드 UI (카드 + CTR 아이콘 + 좋아요) 확인
+- [ ] CTR 핵심가치 필수 선택 확인
+- [ ] 받는 사람 알림 확인
+- [ ] 프로필 핵심가치 분포 도넛 차트 확인
+- [ ] 전사 통계 (핵심가치별, 부서별, 랭킹) 확인
+
+**Pulse Survey**
+- [ ] 설문 CRUD + 질문 드래그 정렬 확인
+- [ ] 기본 템플릿 10문항 로드 확인
+- [ ] 직원 응답 폼 (5가지 질문 유형) 확인
+- [ ] 익명 응답 (employee_id=null) 확인
+- [ ] 결과 대시보드 (Radar + 히스토그램 + 추이) 확인
+- [ ] AI Pulse 분석 → AiGeneratedBadge + ai_logs 확인
+- [ ] mv_team_health 연동 확인
+
+**공통**
+- [ ] npx tsc --noEmit 에러 0개
+
+
+================================================================
+★ v3.2 추가 — 다면평가 (360° Feedback)
+================================================================
+
+### 개요
+기존 성과 관리(자기평가+매니저 평가)에 "다면평가" 레이어 추가.
+핵심 혁신: **AI 기반 평가자 자동 추천** — 협업 데이터로 적합한 피어 선정.
+
+### 다면평가 유형
+- 90°: 상사 → 부하 (기존 매니저 평가)
+- 180°: 상사 ↔ 부하 (역평가)
+- 270°: 상사 + 동료
+- **360°**: 상사 + 동료 + 부하 + 자기 (CTR 기본값)
+
+### 다면평가 설정 (/settings/peer-review)
+**권한**: HR_ADMIN
+
+- 평가 사이클 연결: 기존 performance_cycles에 peer_review_enabled(Boolean) 추가
+- 평가자 수 설정:
+  - 동료(Peer): 최소 2명, 최대 5명
+  - 부하(Direct Report): 부하 전원 또는 최대 N명
+  - 상사: 직속 상사 자동 배정
+- 익명 설정: 동료/부하 평가는 기본 익명 (anonymous_peer_review=true)
+- 평가 질문 템플릿: 관계 유형별 질문 세트
+
+### 평가 질문 템플릿
+**동료 (Peer) 기본 질문 8개:**
+1. 이 동료와의 협업 경험은 어떠했습니까? (RATING 1~5)
+2. 업무 전문성은 어떻습니까? (RATING 1~5)
+3. 커뮤니케이션 능력은 어떻습니까? (RATING 1~5)
+4. 팀워크와 협조성은 어떻습니까? (RATING 1~5)
+5. CTR 핵심가치(도전/신뢰/책임/존중) 중 가장 잘 실천하는 것은? (SELECT)
+6. 이 동료의 가장 큰 강점은? (TEXT)
+7. 개선이 필요한 영역은? (TEXT)
+8. 추가 의견 (TEXT, optional)
+
+**부하 → 상사 (Upward) 기본 질문 6개:**
+1. 명확한 방향과 기대치를 제시합니까? (RATING 1~5)
+2. 피드백과 코칭을 적절히 제공합니까? (RATING 1~5)
+3. 의사결정 과정에 팀원 의견을 반영합니까? (RATING 1~5)
+4. 팀원의 성장과 개발을 지원합니까? (RATING 1~5)
+5. 리더로서 가장 큰 강점은? (TEXT)
+6. 개선이 필요한 영역은? (TEXT)
+
+
+================================================================
+★ v3.2 핵심 — 평가자 자동 추천 엔진
+================================================================
+
+### 2단계 접근: 기본 규칙 + 협업 점수
+
+#### Phase 1A: 기본 규칙 (시스템 초기부터 작동)
+
+**동료(Peer) 후보 풀 생성 규칙:**
+1. 같은 법인 (company_id 일치) — 필수
+2. 같은 부서 또는 인접 부서 (같은 상위 부서 하위)
+3. 비슷한 직급 (±1 등급)
+4. 본인 제외, 직속 상사/부하 제외 (이미 별도 평가)
+5. ACTIVE 상태
+
+**기본 점수 산출:**
+```
+base_score = 
+  (같은 부서 ? 30 : 같은 상위 부서 ? 15 : 0) +
+  (직급 차이 0 ? 20 : 직급 차이 1 ? 10 : 0) +
+  (같은 직군 ? 15 : 0) +
+  (재직 기간 6개월 이상 ? 10 : 0)
+```
+
+#### Phase 1B: 협업 데이터 점수 (데이터 축적 시 활성화)
+
+**collaboration_scores 산출 — pg_cron 매일 새벽 4시**
+
+5가지 협업 신호:
+1. **Recognition 주고받기** (가중치 30%)
+   - recognitions 테이블에서 지난 12개월 간 sender↔receiver 쌍 카운트
+   - 양방향 합산 (A→B + B→A)
+
+2. **1:1 미팅** (가중치 25%)
+   - one_on_ones 테이블에서 지난 12개월 간 manager↔employee 쌍 카운트
+   - 직속이 아닌 1:1도 포함 (크로스 펑셔널)
+
+3. **같은 부서** (가중치 20%)
+   - employees.department_id 일치 → 고정 점수
+
+4. **면접 동석** (가중치 15%)
+   - interview_evaluations에서 같은 지원자를 평가한 면접관 쌍 카운트
+
+5. **법인 간 전입 이력 공유** (가중치 10%)
+   - employee_histories에서 TRANSFER_CROSS_COMPANY 시 from_company=to_company 관계
+
+**산출 수식:**
+```
+collaboration_total = 
+  (recognition_count / max_recognition * 0.30) +
+  (one_on_one_count / max_one_on_one * 0.25) +
+  (same_department ? 1 : 0) * 0.20 +
+  (interview_panel_count / max_panel * 0.15) +
+  (cross_transfer_shared ? 1 : 0) * 0.10
+
+→ 정규화 0~100
+```
+
+**Fallback 규칙:**
+- Recognition 0건 + 1:1 0건 → Phase 1A 기본 점수만 사용
+- 데이터 충분 기준: 해당 직원의 collaboration_scores 레코드 3개 이상
+
+#### 최종 추천 점수
+```
+final_score = 
+  IF 협업데이터 충분:
+    base_score * 0.3 + collaboration_total * 0.7
+  ELSE:
+    base_score * 1.0
+```
+→ 상위 N명 (설정값, 기본 5명) 추천
+
+#### API
+
+**GET /api/v1/peer-review/recommend/:employeeId**
+```
+Request params:
+  cycle_id: string
+  max_count: number (default 5)
+
+Response:
+  recommendations: [
+    {
+      employee_id, name, department, job_grade,
+      final_score: number (0~100),
+      score_breakdown: {
+        base_score, recognition_score, one_on_one_score,
+        same_department_score, interview_panel_score, cross_transfer_score
+      },
+      data_sufficient: boolean,
+      nomination_source: "AI_RECOMMENDED"
+    }
+  ]
+  fallback_used: boolean
+  data_coverage: "FULL" | "PARTIAL" | "BASE_ONLY"
+```
+
+
+================================================================
+다면평가 프로세스 플로우
+================================================================
+
+### 단계 1: 평가자 선정 (/performance/:cycleId/peer-review/setup)
+**권한**: HR_ADMIN
+
+**UI:**
+- 좌측: 직원 목록 (대상자)
+- 우측: 선택된 직원의 추천 평가자 패널
+  - AI 추천 평가자 (상위 5명, final_score 막대 표시)
+  - "데이터 기반" / "규칙 기반" 뱃지 (data_coverage에 따라)
+  - 각 추천자 옆: ✅ 승인 / ❌ 제외 버튼
+  - "+ 수동 추가" 버튼 (직원 검색 모달)
+  - score_breakdown 툴팁 (hover 시)
+- AiGeneratedBadge: "🤖 AI 추천 평가자"
+
+**플로우 옵션 (설정에서 선택):**
+A) **HR 일괄 배정**: HR이 AI 추천 검토 후 일괄 확정
+B) **본인 지명 + 매니저 승인**: 직원이 3~5명 지명 → 매니저 승인/수정
+C) **혼합**: AI 추천 2명 자동 + 본인 지명 2~3명
+
+### 단계 2: 평가 실시 (/performance/:cycleId/peer-review)
+**권한**: ALL (본인에게 배정된 평가)
+
+**EMPLOYEE 뷰:**
+- "내가 평가해야 할 동료" 목록
+- 각 평가: 질문 폼 (위 템플릿), 마감일 표시
+- 저장(DRAFT) → 제출(SUBMITTED)
+- 익명 안내 문구: "귀하의 평가는 익명으로 처리됩니다"
+
+### 단계 3: 결과 집계
+**자동 처리 (전원 제출 또는 마감 시):**
+- 동료 평가 RATING 평균 산출
+- 부하 평가 RATING 평균 산출
+- AI 다면평가 요약: generatePeerReviewSummary
+  - prompt_version: "peer-review-summary-v1.0"
+  - 입력: 모든 피어 평가 결과 (익명화), 자기평가, 매니저 평가
+  - 출력:
+    - peer_rating_avg (0~5)
+    - upward_rating_avg (0~5, 리더만)
+    - key_strengths: string[] (동료가 공통으로 언급한 강점)
+    - development_areas: string[] (개선 영역)
+    - blind_spots: string[] (자기평가와 동료평가 간 갭)
+    - ctr_value_most_recognized: string (가장 많이 선택된 핵심가치)
+
+### 단계 4: 결과 피드백 (/performance/:cycleId/peer-review/results/:employeeId)
+
+**직원 본인 뷰:**
+- 종합 점수 (동료 평균, 부하 평균)
+- 항목별 Radar 차트 (내 점수 vs 전사 평균)
+- AI 요약 (강점, 개선 영역, 사각지대)
+- 개별 코멘트 (익명, 평가자명 미노출)
+- CTR 핵심가치 인정 분포
+
+**매니저 뷰:**
+- 팀원별 다면평가 결과 요약
+- 매니저 평가와 동료 평가 비교 차트
+- 사각지대(Blind Spots) 하이라이트
+
+**HR_ADMIN 뷰:**
+- 전체 직원 다면평가 결과 DataTable
+- 평균 점수 분포 히스토그램
+- 자기평가-동료평가 갭이 큰 직원 목록 (잠재적 사각지대)
+
+
+================================================================
+다면평가 — 기존 성과관리와 통합
+================================================================
+
+### EMS 9블록 확장 (선택적)
+기존: performance_score(MBO) × competency_score → 9블록
+v3.2 옵션: peer_review_avg를 competency_score에 가중 반영
+
+```
+adjusted_competency = 
+  competency_score * (1 - peer_weight) + peer_review_avg * peer_weight
+
+기본 peer_weight = 0.3 (설정 가능)
+→ 매니저 역량 평가 70% + 동료 평가 30%
+```
+
+HR_ADMIN이 사이클별로 peer_weight 설정 (0=미반영, 0.3=기본, 0.5=동등)
+
+### 캘리브레이션 연동
+- 캘리브레이션 세션에 다면평가 결과 표시
+- 9블록 매트릭스 셀 클릭 → 해당 직원 카드에 "동료 평가 avg" 추가 표시
+- AI 캘리브레이션 분석에 peer review 데이터 포함
+
+
+================================================================
+다면평가 QA 체크리스트
+================================================================
+
+**평가자 추천 엔진**
+- [ ] Phase 1A 기본 규칙: 같은 법인+부서+직급 유사 후보 정상 생성
+- [ ] Phase 1B 협업 점수: Recognition/1:1/면접 동석 카운트 정상
+- [ ] Fallback: 협업 데이터 부족 시 기본 규칙만 사용 확인
+- [ ] 본인/직속 상사/부하 제외 확인
+- [ ] score_breakdown 툴팁 표시 확인
+
+**다면평가 프로세스**
+- [ ] 평가자 선정 3가지 모드 (HR 배정/본인 지명/혼합) 작동
+- [ ] 평가 폼 (동료/부하) 질문 렌더링 + DRAFT/SUBMITTED
+- [ ] 익명 처리: 결과에 평가자명 미노출 확인
+- [ ] AI 다면평가 요약 → AiGeneratedBadge + ai_logs 확인
+- [ ] EMS 9블록 peer_weight 반영 선택 기능 확인
+- [ ] 캘리브레이션 연동 확인
+
+
+================================================================
+★ 세션 종료: context.md 업데이트
+================================================================
+
+반드시 포함:
+- lib/claude.ts 함수 추가: suggestEvalComment, calibrationAnalysis, generateOneOnOneNotes, pulseSurveyAnalysis, ★ generatePeerReviewSummary
+- lib/prompts/: eval-comment-v1.0.ts, calibration-analysis-v1.0.ts, one-on-one-notes-v1.0.ts, pulse-analysis-v1.0.ts, ★ peer-review-summary-v1.0.ts
+- EMS 9블록 산출 유틸: lib/ems.ts (calculateBlock 함수, ★ adjustWithPeerReview 함수)
+- ★ lib/collaboration-score.ts (협업 점수 산출 유틸)
+- ★ lib/peer-recommend.ts (평가자 추천 엔진)
+- 신규 페이지 및 API 라우트 목록
+- 다음 세션(STEP 6B) 시작 전 확인 사항

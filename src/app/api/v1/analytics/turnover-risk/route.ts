@@ -3,26 +3,20 @@
 // GET /api/v1/analytics/turnover-risk
 // ═══════════════════════════════════════════════════════════
 
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { withPermission, perm } from '@/lib/permissions'
+import { apiSuccess } from '@/lib/api'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
+import { MODULE, ACTION } from '@/lib/constants'
+import type { SessionUser } from '@/types'
 
-export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions)
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+export const GET = withPermission(
+  async (req: NextRequest, _ctx, user: SessionUser) => {
+    const { searchParams } = new URL(req.url)
+    const companyId = resolveCompanyId(user, searchParams.get('company_id'))
+    const riskLevelFilter = searchParams.get('risk_level') ?? undefined
 
-  const user = session.user as { role?: string; companyId?: string }
-  if (!['HR_ADMIN', 'SUPER_ADMIN'].includes(user.role ?? '')) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-  }
-
-  const { searchParams } = new URL(req.url)
-  const companyId = searchParams.get('company_id') ?? user.companyId ?? ''
-  const riskLevelFilter = searchParams.get('risk_level') ?? undefined
-
-  try {
-    // 각 직원의 최신 스코어 조회 (calculatedAt 기준 정렬 후 take:1)
     const employees = await prisma.employee.findMany({
       where: {
         assignments: {
@@ -69,9 +63,7 @@ export async function GET(req: NextRequest) {
       })
       .sort((a, b) => (b.latestScore?.overallScore ?? 0) - (a.latestScore?.overallScore ?? 0))
 
-    return NextResponse.json({ success: true, data })
-  } catch (error) {
-    console.error('[turnover-risk GET]', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
-}
+    return apiSuccess(data)
+  },
+  perm(MODULE.ANALYTICS, ACTION.VIEW),
+)

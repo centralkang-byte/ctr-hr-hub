@@ -1,0 +1,461 @@
+# CTR HR Hub - STEP 5: 채용 ATS + 징계·상벌
+# v3.1 (CTO 리뷰 반영)
+# ★ 반드시 STEP0_공통규칙.txt를 먼저 읽고 적용할 것
+
+
+================================================================
+STEP 5 프롬프트 — 채용 ATS + 징계·상벌
+================================================================
+
+## ★ 세션 시작: context.md 먼저 읽어줘
+
+이번 세션 목표: 채용 ATS 파이프라인 + AI 이력서 분석 + 면접 평가 + 징계·상벌 관리
+
+---
+
+
+================================================================
+기능 — 채용 ATS
+================================================================
+
+### 1. 채용 공고 관리 (/recruitment)
+
+**공고 목록 — HR_ADMIN**
+- DataTable: 공고명 / 부서 / 직급 / 직군 / 상태 / 지원자 수 / 게시일
+- 상태 필터: DRAFT / OPEN / CLOSED / CANCELLED
+- 법인 필터 (CompanySelector)
+
+**공고 생성 (/recruitment/new)**
+- 폼 필드:
+  - 공고명 (필수)
+  - 법인 선택
+  - 부서 선택 (법인별 필터)
+  - 직급 선택
+  - 직군 선택 (job_categories JOIN)
+  - 고용형태: FULL_TIME / CONTRACT / DISPATCH / INTERN
+  - 모집 인원
+  - 업무 설명 (Rich Text Editor — Tiptap)
+  - 자격 요건 (Rich Text)
+  - 우대 사항 (Rich Text)
+  - 급여 범위: min ~ max (선택, 비공개 옵션)
+  - 근무 형태: OFFICE / REMOTE / HYBRID
+  - 근무지 (텍스트)
+  - 게시 시작일 / 마감일
+  - 담당 리크루터 (직원 검색)
+  - 필요 역량 태그 (competency_library에서 선택)
+
+**AI 공고 작성 보조**
+- "AI 초안 생성" 버튼 → lib/claude.ts:
+```ts
+generateJobDescription(
+  title: string,
+  department: string,
+  grade: string,
+  category: string,
+  requirements: string,     // HR이 입력한 키워드
+  company_info: string      // CTR 회사 소개 상수
+): Promise<{
+  description: string,      // 업무 설명 마크다운
+  qualifications: string,   // 자격 요건
+  preferred: string         // 우대 사항
+}>
+prompt_version: "job-description-v1.0"
+```
+- 결과 → 에디터에 삽입 (HR이 수정 가능)
+- AiGeneratedBadge 표시
+- ai_logs (JOB_DESCRIPTION_GENERATION) 기록
+
+**공고 상태 관리**
+- DRAFT → OPEN: "게시" 버튼 (게시 시작일 도달 시 자동 또는 수동)
+- OPEN → CLOSED: 마감일 도달 시 자동 또는 수동 마감
+- OPEN → CANCELLED: 채용 취소
+
+---
+
+### 2. 지원자 관리
+
+#### 2-1. 지원서 접수 (/recruitment/:postingId/applicants)
+
+**지원자 등록 — HR_ADMIN 수동 입력**
+- 폼: 이름, 이메일, 전화, 이력서 업로드(S3), 포트폴리오 URL, 메모
+- applicants INSERT + applications INSERT (stage=APPLIED)
+
+**지원자 목록**
+- DataTable: 이름 / 이메일 / 현재 단계 / AI 점수 / 지원일 / 담당자
+- 단계 필터: APPLIED → SCREENING → INTERVIEW_1 → INTERVIEW_2 → FINAL → OFFER → HIRED → REJECTED
+- AI 점수 컬럼: 0~100 점수 + 색상 (80+=🟢, 50~79=🟡, <50=🔴)
+
+#### 2-2. 파이프라인 칸반 보드 (/recruitment/:postingId/pipeline)
+
+**Kanban 레이아웃**
+- 열: APPLIED | SCREENING | INTERVIEW_1 | INTERVIEW_2 | FINAL | OFFER | HIRED | REJECTED
+- 카드: 지원자명 + AI 점수 뱃지 + 지원일
+- 드래그 앤 드롭:
+  - 카드를 다음 단계 열로 이동 → applications.current_stage 업데이트
+  - REJECTED 열로 이동 → 탈락 사유 입력 모달
+  - OFFER 열 → 오퍼 정보 입력 모달 (연봉, 입사 예정일)
+  - HIRED 열 → 직원 등록 연계 (STEP 2 직원 등록 폼으로 이동, 정보 사전 채움)
+- 단계 변경 시 알림: 담당 리크루터에게 알림
+
+#### 2-3. AI 이력서 분석
+
+**분석 트리거**
+- 지원자 상세 페이지 → "AI 분석" 버튼 (HR_ADMIN)
+- 또는 SCREENING 단계 진입 시 자동 분석 (설정 가능)
+
+**lib/claude.ts:**
+```ts
+analyzeResume(
+  resume_text: string,        // 이력서 텍스트 (PDF→텍스트 변환 후)
+  job_posting: {
+    title: string,
+    description: string,
+    qualifications: string,
+    preferred: string,
+    required_competencies: string[]
+  }
+): Promise<{
+  overall_score: number,       // 0~100
+  fit_assessment: 'STRONG_FIT' | 'GOOD_FIT' | 'MODERATE_FIT' | 'WEAK_FIT',
+  strengths: string[],         // 강점 3~5개
+  concerns: string[],          // 우려사항 0~3개
+  experience_match: number,    // 경력 매칭 0~100
+  skill_match: number,         // 스킬 매칭 0~100
+  culture_fit_indicators: string[],  // CTR 핵심가치 연관 신호
+  summary: string              // 2~3문장 종합 평가
+}>
+prompt_version: "resume-analysis-v1.0"
+```
+
+**결과 표시**
+- 지원자 상세 → "AI 분석" 탭
+- 종합 점수 (큰 원형 게이지) + fit_assessment 뱃지
+- 강점/우려 리스트
+- 경력 매칭 + 스킬 매칭 진행 바
+- CTR 핵심가치 연관 신호 (CtrValue 아이콘 + 텍스트)
+- AiGeneratedBadge + 분석 일시
+- applications.ai_screening_score = overall_score 저장
+- ai_logs (RESUME_ANALYSIS) 기록
+
+**이력서 텍스트 추출**
+- S3에서 PDF 다운로드 → pdf-parse 라이브러리로 텍스트 추출
+- 추출 실패 시: "이력서 텍스트를 추출할 수 없습니다. 수동 입력해주세요." + 텍스트 입력 폼
+
+---
+
+### 3. 면접 관리
+
+#### 3-1. 면접 일정 (/recruitment/:postingId/interviews)
+
+**일정 등록 — HR_ADMIN**
+- 폼:
+  - 지원자 선택 (해당 공고 지원자 중 INTERVIEW 단계)
+  - 면접 유형: PHONE / VIDEO / ONSITE / PANEL
+  - 면접 라운드: 1차 / 2차 / 최종
+  - 일시 (DateTimePicker)
+  - 면접관 다중 선택 (직원 검색)
+  - 장소 또는 화상회의 링크
+  - 메모
+- interview_schedules INSERT
+- 면접관에게 알림 (INTERVIEW_SCHEDULED 트리거)
+
+**일정 목록**
+- DataTable: 지원자 / 유형 / 라운드 / 일시 / 면접관 / 상태
+- 상태: SCHEDULED / COMPLETED / CANCELLED / NO_SHOW
+- 캘린더 뷰 (월간, 면접 일정 표시)
+
+#### 3-2. 면접 평가
+
+**평가 폼 — 면접관 (MANAGER 이상)**
+- 면접 상세 페이지 → "평가 입력" 버튼
+- 평가 항목:
+  - 전문성 (1~5)
+  - 문제해결력 (1~5)
+  - 커뮤니케이션 (1~5)
+  - 조직적합성 (1~5)
+  - CTR 핵심가치 적합성 (1~5) — 어떤 핵심가치가 두드러지는지 태그 선택
+  - 종합 점수 (1~5)
+  - 추천 의견: STRONG_YES / YES / NEUTRAL / NO / STRONG_NO
+  - 서술 평가 (Textarea)
+- interview_evaluations INSERT
+
+**면접 종합 — HR_ADMIN**
+- 면접관별 평가 비교 테이블 (항목별 점수 나란히)
+- 평균 점수 자동 계산
+- 추천 의견 분포 (막대 차트)
+
+---
+
+### 4. 오퍼 관리
+
+**오퍼 발행 — HR_ADMIN**
+- 지원자를 OFFER 단계로 이동 시 모달:
+  - 제안 연봉
+  - 직급 / 직군
+  - 입사 예정일
+  - 추가 조건 (Textarea)
+- applications.offered_salary, offered_date, expected_start_date 업데이트
+
+**오퍼 추적**
+- 오퍼 수락: applications.current_stage = HIRED
+  → 직원 등록 연계 (사전 채움 데이터: 이름, 이메일, 직급, 직군, 연봉)
+- 오퍼 거절: applications.current_stage = REJECTED, rejection_reason = "OFFER_DECLINED"
+
+---
+
+### 5. 채용 대시보드 (/recruitment/dashboard)
+
+**KPI 카드 4개**
+- 진행 중 공고 수
+- 전체 지원자 수
+- 평균 채용 소요일 (APPLIED → HIRED)
+- 오퍼 수락률
+
+**파이프라인 퍼널 차트**
+- Recharts Funnel: APPLIED → SCREENING → INTERVIEW → OFFER → HIRED
+- 단계별 전환율 표시
+- mv_recruitment_funnel MV 활용
+
+**공고별 현황**
+- DataTable: 공고명 / 지원자 수 / 현재 단계별 분포 / 진행일수
+
+---
+
+### 6. 역량 라이브러리 (/settings/competencies) — HR_ADMIN
+
+**역량 CRUD**
+- DataTable: 역량명 / 카테고리 / 설명 / 사용 공고 수
+- 카테고리: TECHNICAL / BEHAVIORAL / LEADERSHIP / CTR_VALUE
+- 생성: 이름, 카테고리, 설명
+- competency_library 테이블 CRUD
+
+**채용 공고 연결**
+- 공고 생성 시 역량 태그 선택 → 다대다 관계 (job_posting_competencies 또는 JSON)
+- AI 이력서 분석 시 해당 역량 기준으로 매칭 점수 산출
+
+
+================================================================
+기능 — 징계·상벌
+================================================================
+
+### 7. 징계 관리 (/discipline)
+
+#### 7-1. 징계 목록 — HR_ADMIN
+
+**DataTable**
+- 직원명 / 법인 / 징계유형 / 사유 / 일자 / 상태
+- 필터: 유형 / 법인 / 상태(ACTIVE/EXPIRED/OVERTURNED)
+- CompanySelector 법인별 필터
+
+#### 7-2. 징계 등록
+
+**폼 — HR_ADMIN**
+- 대상 직원 검색/선택
+- 징계 유형:
+  - VERBAL_WARNING (구두 경고)
+  - WRITTEN_WARNING (서면 경고)
+  - REPRIMAND (견책)
+  - SUSPENSION (정직) → 정직 시작일/종료일 추가 입력
+  - DEMOTION (강등) → 변경 직급 선택
+  - SALARY_REDUCTION (감봉) → 감봉 비율(%) + 기간(개월)
+  - TERMINATION (해고) → 퇴직 처리 연계
+- 사유 코드:
+  ATTENDANCE / PERFORMANCE / MISCONDUCT / POLICY_VIOLATION / HARASSMENT / SAFETY / FRAUD / OTHER
+- 상세 사유 (Textarea, 필수)
+- 증빙 자료 업로드 (S3, 다중)
+- 징계 일자
+- 유효 기간 (개월, 선택 — 만료 시 자동 EXPIRED)
+
+**처리 로직 ($transaction)**
+1. disciplinary_actions INSERT
+2. employee_histories INSERT:
+   - DEMOTION → change_type=DEMOTION, from_grade + to_grade
+   - TERMINATION → change_type=TERMINATE
+3. employees 테이블 업데이트:
+   - DEMOTION → grade_id 변경
+   - SUSPENSION → status=ON_LEAVE (또는 별도 SUSPENDED 상태)
+   - TERMINATION → 퇴직 처리 프로세스 연계 (STEP 3)
+4. 관련자 알림:
+   - 대상 직원: "징계 처분이 등록되었습니다"
+   - 매니저: "팀원에 대한 징계가 등록되었습니다"
+5. audit_logs (DISCIPLINARY_CREATE) 기록
+
+#### 7-3. 징계 상세/이의신청
+
+**상세 뷰**
+- 징계 정보 전체 + 증빙 자료 다운로드
+- 상태: ACTIVE / EXPIRED / OVERTURNED
+- 유효 기간 만료 → 자동 EXPIRED (cron 또는 조회 시 체크)
+
+**이의신청 (Phase 2 — v3.1에서는 UI만 준비)**
+- 대상 직원이 "이의신청" 버튼 → 사유 입력 → disciplinary_actions.appeal_status = PENDING
+- HR_ADMIN이 검토 → ACCEPTED (OVERTURNED) 또는 DISMISSED
+- Phase 1: 이의신청 텍스트 필드 + 상태만 관리, 워크플로우는 수동
+
+#### 7-4. 징계 이력 조회
+
+**직원 프로필 탭 4 (징계·상벌)**
+- 타임라인 뷰 (유형별 아이콘 + 색상)
+- EMPLOYEE: 본인 것만 조회
+- MANAGER: 직속 부하 것만 조회
+- HR_ADMIN: 전체 조회
+
+**징계 통계 (Analytics 연동, STEP 7)**
+- 유형별 분포, 사유별 분포, 법인별 분포
+
+---
+
+### 8. 포상 관리
+
+#### 8-1. 포상 목록 — HR_ADMIN
+
+**DataTable**
+- 직원명 / 법인 / 포상유형 / 사유 / 일자
+- 필터: 유형 / 법인
+
+#### 8-2. 포상 등록 — HR_ADMIN
+
+**폼**
+- 대상 직원 검색/선택
+- 포상 유형:
+  - COMMENDATION (표창)
+  - BONUS (포상금) → 금액 입력
+  - PROMOTION_REWARD (승진 포상)
+  - INNOVATION (혁신상)
+  - LONG_SERVICE (장기근속상) → 근속 연수 입력
+  - CTR_VALUE_AWARD (핵심가치상) → CTR 핵심가치 선택
+  - OTHER
+- 사유 (Textarea, 필수)
+- 포상일
+
+**처리 로직**
+1. reward_records INSERT
+2. 대상 직원 알림: "축하합니다! 포상이 등록되었습니다"
+3. CTR_VALUE_AWARD → ctr_value 필드 저장 (CHALLENGE/TRUST/RESPONSIBILITY/RESPECT)
+4. audit_logs (REWARD_CREATE) 기록
+
+#### 8-3. 포상 이력 조회
+- 직원 프로필 탭 4 (징계·상벌) 내 포상 섹션
+- 전사 포상 공지 페이지 (Phase 2)
+
+
+================================================================
+API
+================================================================
+
+```
+# 채용 — 공고
+GET /POST          /api/v1/recruitment/postings               # 공고 목록/생성
+GET /PUT /DELETE   /api/v1/recruitment/postings/:id            # 상세/수정/삭제
+PUT                /api/v1/recruitment/postings/:id/publish     # 게시
+PUT                /api/v1/recruitment/postings/:id/close       # 마감
+
+# 채용 — 지원자
+GET /POST          /api/v1/recruitment/postings/:id/applicants  # 지원자 목록/등록
+GET /PUT           /api/v1/recruitment/applicants/:appId        # 지원자 상세/수정
+PUT                /api/v1/recruitment/applications/:id/stage    # 단계 변경
+POST               /api/v1/recruitment/applications/:id/offer    # 오퍼 발행
+
+# 채용 — AI
+POST               /api/v1/ai/job-description                   # AI 공고 초안
+POST               /api/v1/ai/resume-analysis                   # AI 이력서 분석
+
+# 채용 — 면접
+GET /POST          /api/v1/recruitment/interviews                # 면접 일정
+GET /PUT /DELETE   /api/v1/recruitment/interviews/:id            # 상세/수정/취소
+POST               /api/v1/recruitment/interviews/:id/evaluate   # 면접 평가
+
+# 채용 — 대시보드
+GET                /api/v1/recruitment/dashboard                 # KPI + 퍼널
+
+# 역량
+GET /POST          /api/v1/competencies                          # 역량 목록/생성
+GET /PUT /DELETE   /api/v1/competencies/:id                      # 상세/수정/삭제
+
+# 징계
+GET /POST          /api/v1/disciplinary                          # 징계 목록/등록
+GET /PUT           /api/v1/disciplinary/:id                      # 상세/수정
+PUT                /api/v1/disciplinary/:id/appeal               # 이의신청 (EMPLOYEE)
+PUT                /api/v1/disciplinary/:id/appeal/review        # 이의 검토 (HR)
+
+# 포상
+GET /POST          /api/v1/rewards                               # 포상 목록/등록
+GET /PUT /DELETE   /api/v1/rewards/:id                           # 상세/수정/삭제
+```
+
+
+================================================================
+완료 기준
+================================================================
+
+**채용 공고**
+- [ ] 공고 CRUD + Rich Text Editor (Tiptap) 확인
+- [ ] 직군 선택 job_categories JOIN 확인
+- [ ] AI 공고 초안 생성 → 에디터 삽입 + AiGeneratedBadge 확인
+- [ ] 상태 전환 (DRAFT→OPEN→CLOSED/CANCELLED) 확인
+- [ ] 마감일 자동 CLOSED 로직 확인
+
+**지원자/파이프라인**
+- [ ] 지원자 등록 + 이력서 S3 업로드 확인
+- [ ] Kanban 보드 8단계 열 렌더링 확인
+- [ ] 드래그 앤 드롭 → current_stage 업데이트 확인
+- [ ] REJECTED 이동 시 탈락 사유 모달 확인
+- [ ] HIRED 이동 시 직원 등록 연계 (사전 채움) 확인
+
+**AI 이력서 분석**
+- [ ] PDF→텍스트 변환 (pdf-parse) 확인
+- [ ] AI 분석 결과 6개 필드 표시 확인 (score/fit/strengths/concerns/match/summary)
+- [ ] CTR 핵심가치 연관 신호 + 아이콘 표시 확인
+- [ ] ai_screening_score 저장 확인
+- [ ] ai_logs (RESUME_ANALYSIS) 기록 확인
+- [ ] 추출 실패 시 수동 입력 폼 fallback 확인
+
+**면접**
+- [ ] 면접 일정 등록 → 면접관 알림 확인
+- [ ] 면접 평가 폼 (6항목 + 추천의견 + 서술) 확인
+- [ ] 면접관별 평가 비교 테이블 확인
+- [ ] CTR 핵심가치 적합성 태그 선택 확인
+
+**오퍼**
+- [ ] 오퍼 발행 → offered_salary/date 저장 확인
+- [ ] 오퍼 수락 → HIRED + 직원 등록 연계 확인
+- [ ] 오퍼 거절 → REJECTED + 사유 저장 확인
+
+**채용 대시보드**
+- [ ] KPI 카드 4개 표시 확인
+- [ ] 퍼널 차트 (mv_recruitment_funnel) 렌더링 확인
+- [ ] 공고별 현황 DataTable 확인
+
+**징계**
+- [ ] 징계 등록 7유형 폼 확인
+- [ ] SUSPENSION → 정직 기간 입력 확인
+- [ ] DEMOTION → 직급 변경 + employee_histories 기록 확인
+- [ ] TERMINATION → 퇴직 처리 연계 확인
+- [ ] $transaction (disciplinary + history + employees + 알림 + audit) 확인
+- [ ] 유효 기간 만료 → 자동 EXPIRED 확인
+- [ ] 이의신청 UI (텍스트 + 상태) 확인
+- [ ] EMPLOYEE → 본인 징계만 조회 확인
+- [ ] 증빙 자료 S3 업로드/다운로드 확인
+
+**포상**
+- [ ] 포상 등록 7유형 확인
+- [ ] CTR_VALUE_AWARD → ctr_value 저장 + 핵심가치 아이콘 표시 확인
+- [ ] LONG_SERVICE → 근속 연수 입력 확인
+- [ ] 대상 직원 알림 확인
+- [ ] audit_logs (REWARD_CREATE) 확인
+
+**공통**
+- [ ] npx tsc --noEmit 에러 0개
+
+
+================================================================
+★ 세션 종료: context.md 업데이트
+================================================================
+
+반드시 포함:
+- 신규 파일 목록 (페이지, API 라우트, lib 파일)
+- lib/claude.ts 함수 추가: generateJobDescription, analyzeResume
+- lib/prompts/: job-description-v1.0.ts, resume-analysis-v1.0.ts
+- Kanban 컴포넌트 (재사용 가능 여부)
+- 징계 상태 머신 (ACTIVE → EXPIRED/OVERTURNED)
+- 다음 세션(STEP 6A) 시작 전 확인 사항

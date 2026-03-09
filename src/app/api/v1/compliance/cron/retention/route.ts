@@ -3,15 +3,16 @@
 // Runs retention policies automatically
 // ═══════════════════════════════════════════════════════════
 
-import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { enforceRetention } from '@/lib/compliance/gdpr'
+import { apiSuccess, apiError } from '@/lib/api'
+import { unauthorized } from '@/lib/errors'
 
 export async function GET(req: Request) {
   // Verify cron secret
   const authHeader = req.headers.get('authorization')
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return apiError(unauthorized())
   }
 
   const policies = await prisma.dataRetentionPolicy.findMany({
@@ -29,5 +30,5 @@ export async function GET(req: Request) {
     })
   }
 
-  return NextResponse.json({ ok: true, results })
+  return apiSuccess({ results })
 }

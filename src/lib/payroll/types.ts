@@ -59,6 +59,9 @@ export interface PayrollItemDetail {
   anomalies?: Array<{ type: 'WARNING' | 'INFO'; code: string; message: string }>
   customAllowances?: CustomPayItem[]
   customDeductions?: CustomPayItem[]
+  // GP#2: 무급휴가 / 결근 공제 감사 추적
+  unpaidLeaveDays?: number
+  absentDays?: number
   previousMonth?: {
     grossPay: number
     totalDeductions: number
@@ -67,6 +70,7 @@ export interface PayrollItemDetail {
     deductions: PayrollDeductions
   }
 }
+
 
 // ─── Anomaly Detection ──────────────────────────────────
 

@@ -1,0 +1,732 @@
+# CTR HR Hub - API 설계서 v3.2
+# Base URL: /api/v1
+# v2.2 → v3.2 변경사항:
+#   [v3.1] 퇴직관리, 징계/상벌, 연봉/보상, 복리후생, 캘리브레이션,
+#          Pulse Survey, 근태 단말기, L&D, Succession, Payroll 확장,
+#          Attrition Risk AI, 온보딩 체크인, 프로필 변경, 교대근무 등
+#   [v3.2] HR 챗봇(RAG), Command Palette 검색, 다면평가(360°),
+#          Manager Hub, Task-Centric 홈, HR 규정 문서 관리
+
+## 공통 규칙
+# - 인증: Bearer JWT (NextAuth.js 발급)
+# - 응답: { data } / { data, pagination } / { error: { code, message } }
+# - 날짜: ISO 8601
+# - Soft Delete: DELETE는 deleted_at 기록
+# - 모바일: X-Platform: WEB/MOBILE_IOS/MOBILE_ANDROID 헤더
+# - 파일: S3 Presigned URL 방식 (서버 미경유)
+# - 다법인: company_id 쿼리 파라미터 (CompanySelector 연동)
+
+## ─────────────────────────────────
+## 1. 인증 (AUTH)
+## ─────────────────────────────────
+
+# ── M365 SSO (메인 로그인) ────────
+GET    /auth/sso/microsoft                # Microsoft OAuth 진입점
+GET    /auth/sso/microsoft/callback       # Azure AD OAuth callback
+
+# ── 공통 ──────────────────────────
+POST   /auth/refresh                      # JWT 갱신
+POST   /auth/logout                       # 세션 종료 + sso_sessions.revoked_at
+GET    /auth/me                           # 내 정보 + 권한 + 홈 레이아웃
+
+# ── 로컬 로그인 (Super Admin 비상 전용) ──
+POST   /auth/login                        # [Super Admin ONLY]
+
+# ── MFA (로컬 전용) ──────────────
+POST   /auth/mfa/setup
+POST   /auth/mfa/verify
+
+## ─────────────────────────────────
+## 2. 파일 업로드 (S3 Presigned URL)
+## ─────────────────────────────────
+
+POST   /files/presigned-url               # Presigned URL 발급
+GET    /files/:file_key/download-url      # 다운로드 URL 발급
+
+## ─────────────────────────────────
+## 3. 직원 마스터 (EMPLOYEES)
+## ─────────────────────────────────
+
+GET    /employees                         # [EMPLOYEE:READ]
+GET    /employees/:id                     # [EMPLOYEE:READ]
+POST   /employees                         # [EMPLOYEE:CREATE]
+PUT    /employees/:id                     # [EMPLOYEE:UPDATE]
+DELETE /employees/:id                     # [EMPLOYEE:DELETE] soft delete
+
+GET    /employees/:id/histories           # [EMPLOYEE:READ]
+POST   /employees/:id/transfers           # [EMPLOYEE:UPDATE] 부서/법인 간 전입
+POST   /employees/:id/promotions          # [EMPLOYEE:UPDATE]
+POST   /employees/:id/resign              # [EMPLOYEE:UPDATE]
+
+GET    /employees/:id/documents           # [EMPLOYEE:READ]
+POST   /employees/:id/documents           # [EMPLOYEE:UPDATE] file_key 전달
+DELETE /employees/:id/documents/:docId    # [EMPLOYEE:UPDATE]
+
+POST   /employees/import                  # [EMPLOYEE:CREATE] 엑셀 업로드
+GET    /employees/import/:jobId/status
+
+# v3.1: 프로필 변경 요청 (Self-Service)
+POST   /employees/:id/profile-change-requests   # [본인] 전화/비상연락처 변경 요청
+GET    /profile-change-requests                  # [EMPLOYEE:APPROVE] 대기 목록
+PUT    /profile-change-requests/:id/approve      # [EMPLOYEE:APPROVE]
+PUT    /profile-change-requests/:id/reject       # [EMPLOYEE:APPROVE]
+
+# v3.1: 이직 위험 (AI)
+GET    /employees/:id/attrition-risk      # [PERFORMANCE:READ]
+
+## ─────────────────────────────────
+## 4. 조직 (ORGANIZATION)
+## ─────────────────────────────────
+
+GET    /org/tree                          # [EMPLOYEE:READ] 전체 조직 트리
+GET    /org/departments                   # [EMPLOYEE:READ]
+POST   /org/departments                   # [SYSTEM:CREATE]
+PUT    /org/departments/:id               # [SYSTEM:UPDATE]
+DELETE /org/departments/:id               # [SYSTEM:DELETE]
+PUT    /org/departments/:id/move          # [SYSTEM:UPDATE] 트리 이동
+
+GET    /org/job-grades
+POST   /org/job-grades                    # [SYSTEM:CREATE]
+PUT    /org/job-grades/:id                # [SYSTEM:UPDATE]
+
+# v3.1: 직군
+GET    /org/job-categories
+POST   /org/job-categories                # [SYSTEM:CREATE]
+PUT    /org/job-categories/:id            # [SYSTEM:UPDATE]
+
+# v3.1: 조직 개편
+POST   /org/restructure                   # [SYSTEM:CREATE] 일괄 조직 개편
+GET    /org/change-history                # [SYSTEM:READ] 개편 이력
+
+## ─────────────────────────────────
+## 5. 권한 관리 (RBAC)
+## ─────────────────────────────────
+
+GET    /roles                             # [SYSTEM:READ]
+POST   /roles                             # [SYSTEM:CREATE]
+GET    /roles/:id/permissions             # [SYSTEM:READ]
+PUT    /roles/:id/permissions             # [SYSTEM:UPDATE]
+
+GET    /permissions                       # [SYSTEM:READ]
+
+GET    /employees/:id/roles               # [SYSTEM:READ]
+POST   /employees/:id/roles               # [SYSTEM:UPDATE]
+DELETE /employees/:id/roles/:roleId       # [SYSTEM:UPDATE]
+
+## ─────────────────────────────────
+## 6. 온보딩 (ONBOARDING)
+## ─────────────────────────────────
+
+# 템플릿 관리
+GET    /onboarding/templates              # [SYSTEM:READ]
+POST   /onboarding/templates              # [SYSTEM:CREATE]
+PUT    /onboarding/templates/:id          # [SYSTEM:UPDATE]
+GET    /onboarding/templates/:id/tasks    # [SYSTEM:READ]
+POST   /onboarding/templates/:id/tasks    # [SYSTEM:CREATE]
+PUT    /onboarding/tasks/:id              # [SYSTEM:UPDATE]
+DELETE /onboarding/tasks/:id              # [SYSTEM:DELETE]
+
+# 직원 온보딩
+GET    /employees/:id/onboarding          # [EMPLOYEE:READ]
+POST   /employees/:id/onboarding/start    # [SYSTEM:CREATE]
+PUT    /onboarding/:id/tasks/:taskId/complete  # [본인/MANAGER/HR]
+
+# 대시보드
+GET    /onboarding/dashboard              # [SYSTEM:READ]
+
+# v3.1: 감성 체크인
+POST   /employees/:id/onboarding-checkins    # [본인] 1/2/4/8/12주
+GET    /employees/:id/onboarding-checkins    # [EMPLOYEE:READ]
+POST   /onboarding-checkins/:id/ai-summary   # [SYSTEM] AI 요약 트리거
+
+## ─────────────────────────────────
+## 7. 퇴직 관리 (OFFBOARDING) — v3.1 신규
+## ─────────────────────────────────
+
+# 체크리스트 관리
+GET    /offboarding/checklists            # [SYSTEM:READ]
+POST   /offboarding/checklists            # [SYSTEM:CREATE]
+PUT    /offboarding/checklists/:id        # [SYSTEM:UPDATE]
+GET    /offboarding/checklists/:id/tasks  # [SYSTEM:READ]
+POST   /offboarding/checklists/:id/tasks  # [SYSTEM:CREATE]
+
+# 퇴직 처리
+POST   /employees/:id/offboarding/start   # [EMPLOYEE:UPDATE] 퇴직 처리 시작 → $transaction
+GET    /offboarding/dashboard             # [SYSTEM:READ] 진행 대시보드
+PUT    /offboarding/:id/tasks/:taskId/complete  # [본인/MANAGER/HR/IT]
+
+# 퇴직 면담
+POST   /employees/:id/exit-interview      # [EMPLOYEE:UPDATE]
+GET    /employees/:id/exit-interview      # [EMPLOYEE:READ]
+POST   /exit-interviews/:id/ai-summary    # [SYSTEM] AI 요약 트리거
+
+## ─────────────────────────────────
+## 8. 근태 (ATTENDANCE)
+## ─────────────────────────────────
+
+# 출퇴근 — 모바일/웹
+POST   /attendance/clock-in               # [본인]
+POST   /attendance/clock-out              # [본인]
+GET    /attendance/today                  # [본인]
+
+# 조회
+GET    /employees/:id/attendance          # [ATTENDANCE:READ]
+GET    /employees/:id/attendance/summary  # [ATTENDANCE:READ] 월별 요약
+GET    /attendance/team                   # [ATTENDANCE:READ]
+GET    /attendance/overtime-alert         # [ATTENDANCE:READ] 초과근무 경고
+GET    /attendance/reports                # [ATTENDANCE:EXPORT]
+
+# QR (모바일)
+POST   /attendance/qr/generate            # [SYSTEM]
+POST   /attendance/qr/scan                # [본인]
+
+# v3.1: 근태 단말기
+POST   /terminals/clock                   # [Terminal Auth] X-Terminal-ID + Secret
+GET    /terminals                         # [SYSTEM:READ]
+POST   /terminals                         # [SYSTEM:CREATE]
+PUT    /terminals/:id                     # [SYSTEM:UPDATE]
+POST   /terminals/:id/regenerate-secret   # [SYSTEM:UPDATE]
+DELETE /terminals/:id                     # [SYSTEM:DELETE]
+
+# v3.1: 근태 수동 수정 (HR)
+PUT    /attendance/:id/adjust             # [ATTENDANCE:UPDATE] 사유 필수 → audit_logs
+
+# 스케줄
+GET    /work-schedules
+POST   /work-schedules                    # [SYSTEM:CREATE]
+POST   /employees/:id/schedule            # [ATTENDANCE:UPDATE]
+
+GET    /holidays
+POST   /holidays                          # [SYSTEM:CREATE]
+
+## ─────────────────────────────────
+## 9. 휴가 (LEAVE)
+## ─────────────────────────────────
+
+GET    /employees/:id/leave-balances      # [ATTENDANCE:READ]
+GET    /leave-requests                    # [ATTENDANCE:READ]
+GET    /leave-requests/:id                # [ATTENDANCE:READ]
+POST   /leave-requests                    # [본인]
+PUT    /leave-requests/:id/approve        # [ATTENDANCE:APPROVE]
+PUT    /leave-requests/:id/reject         # [ATTENDANCE:APPROVE]
+DELETE /leave-requests/:id                # [본인] PENDING만
+
+GET    /leave-policies
+POST   /leave-policies                    # [SYSTEM:CREATE]
+PUT    /leave-policies/:id                # [SYSTEM:UPDATE]
+
+# v3.1: 잔여 일괄 부여/이월
+POST   /leave-balances/bulk-grant         # [SYSTEM:CREATE] 연초 일괄
+POST   /leave-balances/carryover          # [SYSTEM:CREATE] 이월 처리
+
+# v3.1: 팀 휴가 달력
+GET    /leave/team-calendar               # [ATTENDANCE:READ]
+
+## ─────────────────────────────────
+## 10. 교대근무 (SHIFT) — v3.1 신규
+## ─────────────────────────────────
+
+GET    /shifts/monthly                    # [ATTENDANCE:READ] 월간 시프트표
+POST   /shifts/assign                     # [ATTENDANCE:UPDATE] 셀 배정
+PUT    /shifts/:id                        # [ATTENDANCE:UPDATE]
+GET    /shifts/conflicts                  # [ATTENDANCE:READ] 연속 근무 경고
+
+## ─────────────────────────────────
+## 11. 채용 (RECRUITMENT)
+## ─────────────────────────────────
+
+GET    /job-postings                      # [RECRUITMENT:READ]
+GET    /job-postings/:id                  # [RECRUITMENT:READ]
+POST   /job-postings                      # [RECRUITMENT:CREATE]
+PUT    /job-postings/:id                  # [RECRUITMENT:UPDATE]
+PUT    /job-postings/:id/publish          # [RECRUITMENT:UPDATE]
+PUT    /job-postings/:id/close            # [RECRUITMENT:UPDATE]
+DELETE /job-postings/:id                  # [RECRUITMENT:DELETE]
+
+GET    /job-postings/:id/applications     # [RECRUITMENT:READ]
+GET    /applications/:id                  # [RECRUITMENT:READ]
+PUT    /applications/:id/stage            # [RECRUITMENT:UPDATE] Kanban 이동
+PUT    /applications/:id/result           # [RECRUITMENT:UPDATE]
+
+POST   /interviews                        # [RECRUITMENT:CREATE]
+PUT    /interviews/:id                    # [RECRUITMENT:UPDATE]
+DELETE /interviews/:id                    # [RECRUITMENT:UPDATE]
+POST   /interviews/:id/evaluation         # [RECRUITMENT:UPDATE]
+
+# v3.1: AI 채용
+POST   /applications/:id/ai-screen       # [RECRUITMENT:UPDATE] AI 이력서 분석
+POST   /job-postings/:id/ai-description   # [RECRUITMENT:UPDATE] AI 공고 초안
+
+# 오퍼
+POST   /applications/:id/offer            # [RECRUITMENT:UPDATE] 오퍼 발행
+PUT    /applications/:id/offer/accept     # [RECRUITMENT:UPDATE]
+PUT    /applications/:id/offer/reject     # [RECRUITMENT:UPDATE]
+POST   /applications/:id/convert-to-employee  # [EMPLOYEE:CREATE] HIRED → 직원 등록
+
+GET    /competencies                      # [RECRUITMENT:READ]
+POST   /competencies                      # [SYSTEM:CREATE]
+PUT    /competencies/:id                  # [SYSTEM:UPDATE]
+DELETE /competencies/:id                  # [SYSTEM:DELETE]
+
+## ─────────────────────────────────
+## 12. 징계 / 상벌 — v3.1 신규
+## ─────────────────────────────────
+
+# 징계
+GET    /employees/:id/disciplinary-actions    # [DISCIPLINE:READ]
+POST   /employees/:id/disciplinary-actions    # [DISCIPLINE:CREATE] → $transaction
+PUT    /disciplinary-actions/:id              # [DISCIPLINE:UPDATE]
+PUT    /disciplinary-actions/:id/revoke       # [DISCIPLINE:UPDATE] 철회
+
+# 포상
+GET    /employees/:id/rewards                 # [DISCIPLINE:READ]
+POST   /employees/:id/rewards                 # [DISCIPLINE:CREATE]
+
+## ─────────────────────────────────
+## 13. 성과 관리 (PERFORMANCE)
+## ─────────────────────────────────
+
+GET    /performance-cycles                # [PERFORMANCE:READ]
+POST   /performance-cycles                # [SYSTEM:CREATE]
+PUT    /performance-cycles/:id            # [SYSTEM:UPDATE]
+PUT    /performance-cycles/:id/activate   # [SYSTEM:UPDATE] 상태 변경
+
+# MBO 목표
+GET    /employees/:id/goals               # [PERFORMANCE:READ]
+POST   /employees/:id/goals               # [본인/MANAGER]
+PUT    /goals/:id                         # [본인/MANAGER]
+PUT    /goals/:id/approve                 # [PERFORMANCE:APPROVE]
+PUT    /goals/:id/request-revision        # [PERFORMANCE:APPROVE]
+POST   /goals/:id/progress                # [본인]
+
+# 평가
+GET    /evaluations                       # [PERFORMANCE:READ]
+POST   /evaluations                       # [본인/MANAGER]
+PUT    /evaluations/:id                   # [본인/MANAGER]
+PUT    /evaluations/:id/submit            # [본인]
+PUT    /evaluations/:id/confirm           # [PERFORMANCE:APPROVE]
+
+# v3.1: AI 평가 코멘트
+POST   /evaluations/:id/ai-comment       # [PERFORMANCE:UPDATE] AI 코멘트 제안
+
+# v3.1: EMS 9블록
+GET    /ems-blocks/config                 # [PERFORMANCE:READ]
+PUT    /ems-blocks/config                 # [SYSTEM:UPDATE]
+GET    /ems-blocks/distribution           # [PERFORMANCE:READ] 부서/법인별 분포
+
+## ─────────────────────────────────
+## 14. 캘리브레이션 — v3.1 신규
+## ─────────────────────────────────
+
+GET    /calibration/rules                 # [PERFORMANCE:READ]
+POST   /calibration/rules                 # [SYSTEM:CREATE]
+PUT    /calibration/rules/:id             # [SYSTEM:UPDATE]
+
+GET    /calibration/sessions              # [PERFORMANCE:READ]
+POST   /calibration/sessions              # [SYSTEM:CREATE]
+PUT    /calibration/sessions/:id          # [PERFORMANCE:UPDATE]
+POST   /calibration/sessions/:id/adjust   # [PERFORMANCE:APPROVE] 블록 조정
+POST   /calibration/sessions/:id/finalize # [PERFORMANCE:APPROVE] 확정
+POST   /calibration/sessions/:id/ai-analysis  # [PERFORMANCE:READ] AI 분석
+
+## ─────────────────────────────────
+## 15. 다면평가 (360° Peer Review) — v3.2 신규
+## ─────────────────────────────────
+
+# 평가자 추천
+GET    /peer-review/recommend/:employeeId     # [PERFORMANCE:READ] AI 추천 평가자
+# Response: { recommendations: [{ employee_id, name, final_score, score_breakdown, data_sufficient }], fallback_used, data_coverage }
+
+# 후보 관리
+GET    /peer-review/nominations               # [PERFORMANCE:READ] 사이클별 목록
+POST   /peer-review/nominations               # [PERFORMANCE:CREATE] 후보 등록 (AI/수동)
+POST   /peer-review/nominations/bulk          # [PERFORMANCE:CREATE] HR 일괄 배정
+PUT    /peer-review/nominations/:id/approve   # [PERFORMANCE:APPROVE]
+PUT    /peer-review/nominations/:id/reject    # [PERFORMANCE:APPROVE]
+
+# 평가 실시
+GET    /peer-review/my-assignments            # [본인] 내가 평가해야 할 목록
+POST   /peer-review/evaluations               # [본인] 평가 제출 (DRAFT/SUBMITTED)
+PUT    /peer-review/evaluations/:id           # [본인] 수정 (DRAFT만)
+
+# 결과
+GET    /peer-review/results/:employeeId       # [PERFORMANCE:READ] 직원별 결과
+POST   /peer-review/results/:employeeId/ai-summary  # [PERFORMANCE:READ] AI 요약
+
+# 협업 점수
+GET    /collaboration-scores/:employeeId      # [PERFORMANCE:READ] 협업 점수 상세
+POST   /collaboration-scores/refresh          # [SYSTEM] cron 수동 실행
+
+## ─────────────────────────────────
+## 16. CFR — 1:1 미팅
+## ─────────────────────────────────
+
+GET    /one-on-ones                       # [PERFORMANCE:READ]
+POST   /one-on-ones                       # [MANAGER]
+PUT    /one-on-ones/:id                   # [MANAGER]
+POST   /one-on-ones/:id/complete          # [MANAGER] AI 요약 트리거
+PUT    /one-on-ones/:id/summary           # [MANAGER] AI 요약 수정
+GET    /one-on-ones/:id/ai-guide          # [MANAGER] AI 사전 가이드
+
+## ─────────────────────────────────
+## 17. CFR — Recognition
+## ─────────────────────────────────
+
+GET    /recognitions                      # [PERFORMANCE:READ]
+POST   /recognitions                      # [본인]
+GET    /employees/:id/recognitions        # [PERFORMANCE:READ]
+POST   /recognitions/:id/like             # [본인]
+GET    /recognitions/stats                # [PERFORMANCE:READ] 핵심가치별/부서별 통계
+
+## ─────────────────────────────────
+## 18. Pulse Survey — v3.1 신규
+## ─────────────────────────────────
+
+GET    /pulse-surveys                     # [SYSTEM:READ]
+POST   /pulse-surveys                     # [SYSTEM:CREATE]
+PUT    /pulse-surveys/:id                 # [SYSTEM:UPDATE]
+PUT    /pulse-surveys/:id/activate        # [SYSTEM:UPDATE]
+PUT    /pulse-surveys/:id/close           # [SYSTEM:UPDATE]
+
+GET    /pulse-surveys/:id/questions       # [SYSTEM:READ]
+POST   /pulse-surveys/:id/questions       # [SYSTEM:CREATE]
+PUT    /pulse-questions/:id               # [SYSTEM:UPDATE]
+
+POST   /pulse-surveys/:id/respond         # [본인] 응답 제출
+GET    /pulse-surveys/:id/results         # [ANALYTICS:READ] 결과
+POST   /pulse-surveys/:id/ai-analysis     # [ANALYTICS:READ] AI 분석
+
+## ─────────────────────────────────
+## 19. 연봉 / 보상 — v3.1 신규
+## ─────────────────────────────────
+
+# 급여 밴드
+GET    /salary-bands                      # [COMPENSATION:READ]
+POST   /salary-bands                      # [SYSTEM:CREATE]
+PUT    /salary-bands/:id                  # [SYSTEM:UPDATE]
+DELETE /salary-bands/:id                  # [SYSTEM:DELETE]
+
+# 연봉 이력
+GET    /employees/:id/compensation-history    # [COMPENSATION:READ]
+
+# 연봉 조정 매트릭스
+GET    /salary-adjustment-matrix              # [COMPENSATION:READ]
+POST   /salary-adjustment-matrix              # [SYSTEM:CREATE]
+PUT    /salary-adjustment-matrix/:id          # [SYSTEM:UPDATE]
+POST   /salary-adjustment-matrix/copy         # [SYSTEM:CREATE] 전년도 복사
+
+# 연봉 조정 시뮬레이션
+POST   /compensation/simulate                 # [COMPENSATION:UPDATE] 매트릭스 자동 추천
+PUT    /compensation/simulate/:id/adjust      # [COMPENSATION:UPDATE] 수동 조정
+POST   /compensation/simulate/:id/ai-recommend    # [COMPENSATION:UPDATE] AI 추천
+POST   /compensation/confirm                  # [COMPENSATION:APPROVE] 확정 → $transaction
+
+# Compa-Ratio 분석
+GET    /compensation/compa-analysis           # [ANALYTICS:READ]
+
+## ─────────────────────────────────
+## 20. 복리후생 — v3.1 신규
+## ─────────────────────────────────
+
+GET    /benefit-policies                  # [SYSTEM:READ]
+POST   /benefit-policies                  # [SYSTEM:CREATE]
+PUT    /benefit-policies/:id              # [SYSTEM:UPDATE]
+
+GET    /employees/:id/benefits            # [EMPLOYEE:READ]
+POST   /employees/:id/benefits/enroll     # [본인/HR]
+PUT    /employee-benefits/:id             # [EMPLOYEE:UPDATE]
+
+# 수당
+GET    /employees/:id/allowances          # [COMPENSATION:READ]
+POST   /employees/:id/allowances          # [COMPENSATION:CREATE]
+
+## ─────────────────────────────────
+## 21. Payroll
+## ─────────────────────────────────
+
+# ── 공통 조회 ──────────────────────
+GET    /employees/:id/payroll             # [PAYROLL:READ]
+GET    /employees/:id/payroll/:year/:month    # [PAYROLL:READ] 월별 명세서
+GET    /employees/:id/payslip/:year/:month/pdf    # [본인/PAYROLL:READ] PDF
+
+# ── IMPORT 모드 (해외) ─────────────
+POST   /payroll/sync                      # [SYSTEM:CREATE] CSV 업로드/외부 API
+GET    /payroll/sync/status
+GET    /payroll/sync/history
+
+# ── MANAGED 모드 (v3.1 확장) ───────
+GET    /payroll/runs                      # [PAYROLL:READ]
+POST   /payroll/runs                      # [PAYROLL:CREATE] 신규 실행
+PUT    /payroll/runs/:id/calculate        # [PAYROLL:UPDATE] 자동 계산
+GET    /payroll/runs/:id/items            # [PAYROLL:READ] 직원별 항목
+PUT    /payroll/items/:id/adjust          # [PAYROLL:UPDATE] 개별 수정 + 사유
+POST   /payroll/runs/:id/ai-check         # [PAYROLL:READ] AI 이상 감지
+PUT    /payroll/runs/:id/approve          # [PAYROLL:APPROVE]
+PUT    /payroll/runs/:id/pay              # [PAYROLL:APPROVE] 지급 완료
+
+# 퇴직금 (한국)
+POST   /payroll/severance/calculate       # [PAYROLL:READ] 퇴직금 계산
+
+# ── 기존 KR 전용 (하위 호환) ─────────
+POST   /payroll/kr/:year/:month/draft
+GET    /payroll/kr/:year/:month/entries
+POST   /payroll/kr/:year/:month/entries
+PUT    /payroll/kr/entries/:id
+DELETE /payroll/kr/entries/:id
+POST   /payroll/kr/:year/:month/calculate
+GET    /payroll/kr/:year/:month/preview
+POST   /payroll/kr/:year/:month/confirm
+GET    /payroll/kr/:year/:month/payslips
+
+## ─────────────────────────────────
+## 22. L&D (교육) — v3.1 신규
+## ─────────────────────────────────
+
+GET    /training/courses                  # [SYSTEM:READ]
+POST   /training/courses                  # [SYSTEM:CREATE]
+PUT    /training/courses/:id              # [SYSTEM:UPDATE]
+
+GET    /employees/:id/training            # [EMPLOYEE:READ]
+POST   /training/enroll                   # [SYSTEM:CREATE] 일괄 등록
+PUT    /training/enrollments/:id          # [EMPLOYEE:UPDATE] 상태 변경
+GET    /training/dashboard                # [SYSTEM:READ] 필수 미완료 현황
+
+## ─────────────────────────────────
+## 23. Succession Planning — v3.1 신규
+## ─────────────────────────────────
+
+GET    /succession/plans                  # [PERFORMANCE:READ]
+POST   /succession/plans                  # [SYSTEM:CREATE]
+PUT    /succession/plans/:id              # [SYSTEM:UPDATE]
+
+GET    /succession/plans/:id/candidates   # [PERFORMANCE:READ]
+POST   /succession/plans/:id/candidates   # [SYSTEM:CREATE]
+PUT    /succession/candidates/:id         # [SYSTEM:UPDATE]
+GET    /succession/dashboard              # [PERFORMANCE:READ] 위험 직책 + 준비도
+
+## ─────────────────────────────────
+## 24. Attrition Risk — v3.1 신규
+## ─────────────────────────────────
+
+GET    /attrition/dashboard               # [ANALYTICS:READ] HIGH/MEDIUM 현황
+GET    /attrition/department-heatmap      # [ANALYTICS:READ] 부서별 히트맵
+GET    /employees/:id/attrition-history   # [PERFORMANCE:READ] 점수 추이
+POST   /attrition/refresh                 # [SYSTEM] cron 수동 실행
+POST   /attrition/:id/ai-assessment       # [PERFORMANCE:READ] AI 심층 분석 (v3.1)
+
+## ─────────────────────────────────
+## 25. 알림 (NOTIFICATIONS)
+## ─────────────────────────────────
+
+GET    /notifications                     # [본인]
+PUT    /notifications/:id/read
+PUT    /notifications/read-all
+DELETE /notifications/:id
+
+# 트리거 관리
+GET    /notification-triggers             # [SYSTEM:READ]
+POST   /notification-triggers             # [SYSTEM:CREATE]
+PUT    /notification-triggers/:id         # [SYSTEM:UPDATE]
+PUT    /notification-triggers/:id/toggle  # [SYSTEM:UPDATE]
+
+## ─────────────────────────────────
+## 26. Analytics (MV 기반)
+## ─────────────────────────────────
+
+GET    /analytics/headcount               # [ANALYTICS:READ] mv_headcount_daily
+GET    /analytics/turnover                # [ANALYTICS:READ]
+GET    /analytics/attendance-summary      # [ANALYTICS:READ] mv_attendance_weekly
+GET    /analytics/performance-dist        # [ANALYTICS:READ] mv_performance_summary
+GET    /analytics/recruitment-funnel      # [ANALYTICS:READ] mv_recruitment_funnel
+GET    /analytics/labor-cost              # [ANALYTICS:READ]
+GET    /analytics/recognition-heatmap     # [ANALYTICS:READ]
+GET    /analytics/attrition-risk-dist     # [ANALYTICS:READ]
+
+# v3.1 신규
+GET    /analytics/burnout-risk            # [ANALYTICS:READ] mv_burnout_risk
+GET    /analytics/exit-reasons            # [ANALYTICS:READ] mv_exit_reason_monthly
+GET    /analytics/compa-distribution      # [ANALYTICS:READ] mv_compa_ratio_distribution
+GET    /analytics/team-health             # [ANALYTICS:READ] mv_team_health
+POST   /analytics/executive-summary       # [ANALYTICS:READ] AI Executive Summary
+
+POST   /analytics/mv/refresh              # [SYSTEM] MV 수동 갱신
+
+## ─────────────────────────────────
+## 27. AI 관리
+## ─────────────────────────────────
+
+GET    /ai/logs                           # [SYSTEM:READ]
+GET    /ai/logs/summary                   # [SYSTEM:READ] 기능별 토큰/비용
+PUT    /ai/logs/:id/feedback              # [본인] 피드백 (1~5)
+
+## ─────────────────────────────────
+## 28. 시스템
+## ─────────────────────────────────
+
+GET    /audit-logs                        # [SYSTEM:READ]
+GET    /system/health                     # 인증 불필요
+
+## ─────────────────────────────────
+## 29. HR 챗봇 (RAG) — v3.2 신규
+## ─────────────────────────────────
+
+# HR 규정 문서 관리 (HR_ADMIN)
+GET    /hr-documents                      # [SYSTEM:READ]
+POST   /hr-documents                      # [SYSTEM:CREATE] 업로드 + 임베딩
+PUT    /hr-documents/:id                  # [SYSTEM:UPDATE]
+DELETE /hr-documents/:id                  # [SYSTEM:DELETE]
+POST   /hr-documents/:id/re-embed         # [SYSTEM:UPDATE] 재임베딩
+
+# 챗봇
+POST   /hr-chatbot/ask                    # [본인] 질문 → RAG 답변
+POST   /hr-chatbot/escalate              # [본인] HR 담당자에게 에스컬레이션
+GET    /hr-chatbot/sessions               # [본인] 내 대화 세션 목록
+GET    /hr-chatbot/sessions/:id/messages  # [본인] 세션 메시지
+PUT    /hr-chatbot/messages/:id/feedback  # [본인] 👍/👎
+
+# 챗봇 분석 (HR_ADMIN)
+GET    /hr-chatbot/analytics              # [SYSTEM:READ] FAQ 패턴/에스컬 비율
+GET    /hr-chatbot/escalations            # [SYSTEM:READ] 에스컬레이션 목록
+PUT    /hr-chatbot/escalations/:id/resolve    # [SYSTEM:UPDATE] 해결 처리
+
+## ─────────────────────────────────
+## 30. Command Palette 검색 — v3.2 신규
+## ─────────────────────────────────
+
+GET    /search/employees                  # [EMPLOYEE:READ] 직원 검색 (RBAC 범위)
+GET    /search/documents                  # [본인] HR 규정 검색 (company_id 필터)
+GET    /search/menu                       # [본인] 메뉴 검색 (권한 필터)
+# → 최근 방문은 클라이언트 localStorage
+
+## ─────────────────────────────────
+## 31. Manager Insights Hub — v3.2 신규
+## ─────────────────────────────────
+
+GET    /manager-hub/summary               # [MANAGER+] KPI 5개
+GET    /manager-hub/pending-approvals     # [MANAGER+] 승인 대기
+POST   /manager-hub/bulk-approve          # [MANAGER+] 벌크 승인
+GET    /manager-hub/team-health           # [MANAGER+] Radar 데이터
+GET    /manager-hub/alerts                # [MANAGER+] 주의 필요 인원
+GET    /manager-hub/performance           # [MANAGER+] 팀 성과 요약
+
+## ─────────────────────────────────
+## 32. Task-Centric 홈 — v3.2 신규
+## ─────────────────────────────────
+
+GET    /dashboard/pending-actions         # [본인] 역할별 대기 항목
+
+## ─────────────────────────────────
+## 33. 설정 커스터마이제이션 — v3.2 신규
+## ─────────────────────────────────
+
+# 법인 관리 (SUPER_ADMIN)
+GET    /companies                             # [SYSTEM:READ] 법인 목록
+POST   /companies                             # [SYSTEM:CREATE] 법인 추가 → +tenant_settings 자동생성
+PUT    /companies/:id                         # [SYSTEM:UPDATE] 법인 수정
+PUT    /companies/:id/deactivate              # [SYSTEM:UPDATE] 법인 비활성화
+
+# 테넌트 설정
+GET    /settings/tenant                       # [SYSTEM:READ] 현재 법인 설정
+PUT    /settings/tenant                       # [SYSTEM:UPDATE] 브랜딩/핵심가치/기본설정/모듈/대시보드
+
+# 용어 커스터마이징
+GET    /settings/terms                        # [SYSTEM:READ]
+PUT    /settings/terms                        # [SYSTEM:UPDATE] 일괄 UPSERT
+DELETE /settings/terms/:key                   # [SYSTEM:UPDATE] 초기화
+
+# 동적 ENUM 옵션
+GET    /settings/enum-options/:group          # [SYSTEM:READ]
+POST   /settings/enum-options                 # [SYSTEM:CREATE]
+PUT    /settings/enum-options/:id             # [SYSTEM:UPDATE]
+DELETE /settings/enum-options/:id             # [SYSTEM:DELETE] is_system=false만
+PUT    /settings/enum-options/reorder         # [SYSTEM:UPDATE]
+
+# 커스텀 필드
+GET    /settings/custom-fields                # [SYSTEM:READ] ?entity_type=EMPLOYEE
+POST   /settings/custom-fields                # [SYSTEM:CREATE]
+PUT    /settings/custom-fields/:id            # [SYSTEM:UPDATE]
+DELETE /settings/custom-fields/:id            # [SYSTEM:DELETE] soft delete
+GET    /custom-field-values/:entityType/:entityId   # [EMPLOYEE:READ]
+PUT    /custom-field-values/:entityType/:entityId   # [EMPLOYEE:UPDATE]
+
+# 워크플로우
+GET    /settings/workflows                    # [SYSTEM:READ]
+POST   /settings/workflows                    # [SYSTEM:CREATE] rules + steps
+PUT    /settings/workflows/:id                # [SYSTEM:UPDATE]
+DELETE /settings/workflows/:id                # [SYSTEM:DELETE]
+
+# 이메일/알림 템플릿
+GET    /settings/email-templates              # [SYSTEM:READ]
+PUT    /settings/email-templates/:id          # [SYSTEM:UPDATE]
+POST   /settings/email-templates/:id/reset    # [SYSTEM:UPDATE] 기본값 초기화
+POST   /settings/email-templates/:id/preview  # [SYSTEM:READ] 변수 치환 프리뷰
+
+# 내보내기 템플릿
+GET    /settings/export-templates             # [SYSTEM:READ] ?entity_type=EMPLOYEE
+POST   /settings/export-templates             # [SYSTEM:CREATE]
+PUT    /settings/export-templates/:id         # [SYSTEM:UPDATE]
+DELETE /settings/export-templates/:id         # [SYSTEM:DELETE]
+
+## ─────────────────────────────────
+## 모바일 전용 엔드포인트
+## ─────────────────────────────────
+
+GET    /mobile/home                       # 역할별 홈 (경량)
+POST   /mobile/attendance/clock-in        # GPS + QR
+POST   /mobile/attendance/clock-out
+GET    /mobile/attendance/status
+GET    /mobile/notifications              # 경량 알림
+GET    /mobile/leave/balance
+POST   /mobile/leave/request              # 간소화 휴가 신청
+
+## ─────────────────────────────────
+## 역할별 홈 화면 API
+## ─────────────────────────────────
+
+GET    /home                              # 역할 자동 감지
+
+# v3.2: pending_actions 포함
+# EMPLOYEE 홈:
+# { layout, pending_actions: [...], today_attendance, leave_balance, my_goals, recent_recognitions, onboarding }
+#
+# MANAGER 홈:
+# { layout, pending_actions: [...], team_today, pending_approvals, overtime_alerts, upcoming_one_on_ones, team_eval_status }
+#
+# HR_ADMIN 홈:
+# { layout, pending_actions: [...], headcount, this_month, onboarding_in_progress, pending_items, attrition_risk_high, chatbot_escalations }
+
+## ─────────────────────────────────
+## 알림 트리거 이벤트 정의
+## ─────────────────────────────────
+
+# LEAVE_PENDING_REMINDER — PENDING 1일+ → MANAGER (PUSH+EMAIL)
+# OVERTIME_WARNING — 주간 >= 45h → EMPLOYEE+MANAGER (PUSH)
+# OVERTIME_CRITICAL — 주간 >= 52h → ALL (PUSH+EMAIL)
+# EVAL_DEADLINE_REMINDER — 마감 3일전 미제출 → EMPLOYEE (PUSH+EMAIL)
+# ONBOARDING_TASK_DUE — 기한 도달 미완료 → EMPLOYEE+MANAGER (PUSH)
+# LEAVE_APPROVED / LEAVE_REJECTED → EMPLOYEE (PUSH+EMAIL)
+# ONE_ON_ONE_REMINDER — 1시간 전 → MANAGER+EMPLOYEE (PUSH)
+# ATTRITION_RISK_HIGH — score >= 70 → MANAGER+HR_ADMIN (EMAIL)
+# v3.1: OFFBOARDING_D7_WARNING — D-7 → HR_ADMIN (EMAIL)
+# v3.1: OFFBOARDING_D3_WARNING — D-3 → HR_ADMIN (PUSH+EMAIL)
+# v3.2: CHATBOT_ESCALATION — 에스컬레이션 → HR_ADMIN (PUSH)
+# v3.2: PEER_REVIEW_ASSIGNED — 평가자 배정 → EMPLOYEE (PUSH+EMAIL)
+# v3.2: PEER_REVIEW_DEADLINE — 마감 3일전 → EMPLOYEE (PUSH+EMAIL)
+
+## ─────────────────────────────────
+## 에러 코드
+## ─────────────────────────────────
+
+# 400 VALIDATION_ERROR
+# 401 TOKEN_EXPIRED / TOKEN_INVALID
+# 403 PERMISSION_DENIED { required: "PAYROLL:READ" }
+# 403 USE_SSO — 일반 직원 로컬 로그인 시도
+# 404 NOT_FOUND
+# 409 LEAVE_BALANCE_INSUFFICIENT / DUPLICATE_ATTENDANCE / DUPLICATE_CLOCK_IN
+# 422 OVERTIME_LIMIT_EXCEEDED / GOAL_WEIGHT_EXCEEDS_100 / PEER_REVIEW_DUPLICATE
+# 422 SYSTEM_ENUM_UNDELETABLE / CUSTOM_FIELD_HAS_VALUES
+# 403 MODULE_DISABLED { module: "RECRUITMENT", message: "이 모듈은 비활성화되어 있습니다" }
+# 429 RATE_LIMIT_EXCEEDED { retry_after: 60 }
+# 500 INTERNAL_ERROR
+# 503 AI_SERVICE_UNAVAILABLE { fallback: "AI 기능을 일시적으로 사용할 수 없습니다" }
+# 503 EMBEDDING_SERVICE_UNAVAILABLE { fallback: "검색 기능을 일시적으로 사용할 수 없습니다" }

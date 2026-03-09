@@ -141,24 +141,28 @@ export const PUT = withPermission(
           })
         }
 
-        // Add new members (upsert to handle previously removed members)
-        for (const employeeId of toAdd) {
-          await tx.shiftGroupMember.upsert({
-            where: {
-              shiftGroupId_employeeId: {
-                shiftGroupId: id,
-                employeeId,
-              },
-            },
-            update: {
-              removedAt: null,
-              assignedAt: new Date(),
-            },
-            create: {
-              shiftGroupId: id,
-              employeeId,
-            },
+        if (toAdd.length > 0) {
+          // Split toAdd into reactivate (soft-deleted) vs truly new — N+1 제거
+          const existingRemoved = await tx.shiftGroupMember.findMany({
+            where: { shiftGroupId: id, employeeId: { in: toAdd } },
+            select: { employeeId: true },
           })
+          const existingSet = new Set(existingRemoved.map((m) => m.employeeId))
+          const toReactivate = toAdd.filter((eid) => existingSet.has(eid))
+          const toCreate = toAdd.filter((eid) => !existingSet.has(eid))
+
+          if (toReactivate.length > 0) {
+            await tx.shiftGroupMember.updateMany({
+              where: { shiftGroupId: id, employeeId: { in: toReactivate } },
+              data: { removedAt: null, assignedAt: new Date() },
+            })
+          }
+          if (toCreate.length > 0) {
+            await tx.shiftGroupMember.createMany({
+              data: toCreate.map((employeeId) => ({ shiftGroupId: id, employeeId })),
+              skipDuplicates: true,
+            })
+          }
         }
       })
 

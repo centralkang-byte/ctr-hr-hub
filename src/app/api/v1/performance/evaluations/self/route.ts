@@ -11,8 +11,13 @@ import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { calculateEmsBlock, DEFAULT_BLOCK_DEFINITIONS } from '@/lib/ems'
+import { eventBus } from '@/lib/events/event-bus'
+import { DOMAIN_EVENTS } from '@/lib/events/types'
+import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
 import type { SessionUser } from '@/types'
 import type { EvalType, EvalStatus, Prisma } from '@/generated/prisma/client'
+
+bootstrapEventHandlers()
 
 // ─── Schemas ──────────────────────────────────────────────
 
@@ -198,6 +203,23 @@ export const POST = withPermission(
         ip,
         userAgent,
       })
+
+      // ── Fire-and-forget: PERFORMANCE_SELF_EVAL_SUBMITTED (status=SUBMITTED 일 때만) ──
+      if (status === 'SUBMITTED') {
+        void eventBus.publish(DOMAIN_EVENTS.PERFORMANCE_SELF_EVAL_SUBMITTED, {
+          ctx: {
+            companyId:  user.companyId,
+            actorId:    user.employeeId,
+            occurredAt: new Date(),
+          },
+          employeeId:       user.employeeId,
+          companyId:        user.companyId,
+          cycleId,
+          evaluationId:     evaluation.id,
+          performanceScore: Number(evaluation.performanceScore),
+          competencyScore:  Number(evaluation.competencyScore),
+        })
+      }
 
       return apiSuccess({
         ...evaluation,

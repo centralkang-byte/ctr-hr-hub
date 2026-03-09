@@ -3039,7 +3039,12 @@
       "offboarding": "퇴직관리",
       "payroll": "급여 관리",
       "discipline": "징계관리",
-      "rewards": "포상관리"
+      "rewards": "포상관리",
+      "payrollGlobal": "글로벌 급여 현황",
+      "payrollImport": "해외 급여 업로드",
+      "payrollSimulation": "급여 시뮬레이션",
+      "payrollAnomalies": "급여 이상 탐지",
+      "yearEndSettlement": "연말정산"
     },
     "talent": {
       "label": "인재 관리",
@@ -3055,7 +3060,8 @@
       "benefits": "복리후생 관리",
       "training": "교육/개발",
       "succession": "승계 계획",
-      "skillMatrix": "스킬 매트릭스"
+      "skillMatrix": "스킬 매트릭스",
+      "recruitmentBoard": "칸반 보드"
     },
     "insights": {
       "label": "인사이트",
@@ -3079,7 +3085,8 @@
       "krCompliance": "한국 컴플라이언스",
       "peopleDirectory": "구성원 디렉토리",
       "hrChatbot": "HR 챗봇",
-      "aiAgent": "AI 에이전트"
+      "aiAgent": "AI 에이전트",
+      "kpiDashboard": "HR KPI 대시보드"
     },
     "settings": {
       "label": "설정",
@@ -3119,7 +3126,8 @@
       "orgChanges": "조직변경",
       "monitoring": "모니터링",
       "m365": "M365 연동",
-      "auditLogs": "감사로그"
+      "auditLogs": "감사로그",
+      "hub": "설정"
     }
   }
 }

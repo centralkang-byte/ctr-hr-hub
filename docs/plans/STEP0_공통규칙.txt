@@ -1,0 +1,381 @@
+# CTR HR Hub - STEP 0: 공통 코딩 규칙 + 기술 스택
+# v3.1 (CTO 리뷰 반영)
+# ★ 이 파일은 모든 STEP에서 항상 적용되는 규칙입니다.
+#
+# ═══════════════════════════════════════════════════════════
+# v3.1 변경사항 요약 (v3.0 대비)
+# ═══════════════════════════════════════════════════════════
+#
+# [P0 — 세션 실패/빌드 실패 방지]
+# ▸ STEP 6 → STEP 6A + STEP 6B 분리 (세션 과부하 방지)
+#   6A: EMS 9블록 + 캘리브레이션 + CFR + Recognition + Pulse
+#   6B: 연봉·보상 + 복리후생 + Attrition Risk 통합 + L&D + Succession
+# ▸ "기존 v2.5 동일" 제거 → 핵심 테이블 컬럼 목록 전부 명시
+# ▸ employees.job_category_id(FK) + job_category_code(ENUM) 중복 해소
+#   → job_category_id(FK NOT NULL) 하나만 유지, code는 JOIN
+#
+# [P1 — 이중작업/혼란 방지]
+# ▸ STEP 3 사전작업: CREATE TABLE SQL 삭제 (STEP 1 schema.prisma가 처리)
+#   인덱스 + 상수 확인만 남김
+# ▸ lib/labor-kr.ts 제거 → lib/labor/kr.ts만 유지
+# ▸ lib/labor/pl.ts → lib/labor/eu.ts (CTR Europe)
+#
+# [P2 — 운영 안정성/품질]
+# ▸ MV REFRESH CONCURRENTLY 위한 UNIQUE INDEX 전체 추가
+# ▸ Attrition Risk AI 보정 프롬프트에 정성 정보 추가
+#   (department, grade, recent_history, discipline_count)
+#
+# [확인 반영]
+# ▸ 해외법인 parent = CTR(주) 확정 유지
+# ▸ CTR Europe locale: pl → en 수정
+# ═══════════════════════════════════════════════════════════
+
+
+================================================================
+공통 코딩 규칙 (전체 STEP 항상 적용)
+================================================================
+
+## 코드 스타일
+- TypeScript strict 모드. any 타입 사용 금지
+- Server Component 우선, 클라이언트 상태 필요 시만 'use client'
+- 절대경로 import만 사용 (@/...)
+- 파일명: 컴포넌트 PascalCase, 유틸/훅 camelCase
+
+## API 응답 형식 (반드시 통일)
+성공(목록): { "data": [...], "pagination": { "page", "limit", "total" } }
+성공(단건): { "data": { ... } }
+에러:       { "error": { "code", "message", "details"? } }
+
+## 에러 처리
+- lib/errors.ts의 AppError 클래스로 통일
+- 모든 API Route는 try-catch 필수
+- Prisma P2002(unique), P2025(not found) 중앙 핸들러 처리
+
+## 유효성 검사
+- zod 스키마 각 라우트 상단 정의
+- 프론트엔드 폼: zod + react-hook-form
+
+## DB / Prisma
+- lib/prisma.ts 싱글톤만 사용
+- 날짜: date-fns (moment/dayjs 금지)
+- 환경변수: lib/env.ts 통해서만 (process.env 직접 접근 금지)
+- 복합 변경(발령, 휴가 승인 등): 반드시 $transaction 사용
+- Soft Delete: 모든 테이블 deleted_at 컬럼, DELETE는 deleted_at 기록
+- Analytics 집계 쿼리: Materialized View 조회만 (OLTP 직접 집계 금지)
+
+## 다법인 데이터 격리
+- 모든 법인별 데이터 조회 시 company_id 필터 필수
+- 그룹 합산 뷰는 별도 API (GROUP_VIEW 권한 필요)
+- 해외법인 데이터: 현지 timezone + locale + currency 적용
+- 법인 간 전출/전입: employee_histories TRANSFER_CROSS_COMPANY 타입
+
+## RBAC 권한
+- 모든 API Route 최상단 requirePermission() 호출
+- 프론트: 서버 컴포넌트에서 세션 + 권한 확인 후 렌더링
+- 권한 없으면 API 403, 페이지 /403 redirect
+- 역할에 company_id 바인딩 (동일인이 법인별 다른 역할 가능)
+
+## 파일 업로드
+- S3 Presigned URL 방식 (서버 미경유)
+- 파일 경로: S3 key만 DB 저장, 접근 시 Presigned URL 발급
+- 민감 문서(계약서, 신분증): 다운로드 URL 발급 시 권한 재검증
+
+## 감사 로그
+- lib/audit.ts의 logAudit() 사용
+- 필수 기록: 직원 생성/수정/삭제, 발령, 휴가 승인/반려, 평가 제출/확정,
+  Payroll 조회, 파일 다운로드, 징계 기록, 연봉 변경, 조직 개편
+
+## AI 관련
+- lib/claude.ts로 분리, 모든 Claude API 호출 이 파일 통해서만
+- 모든 호출 후 ai_logs 테이블에 기록 (feature, prompt_version, tokens, latency)
+- AI 생성 데이터에는 ai_generated: true 표시
+- AI 서비스 장애 시 503 반환, 기능 graceful degradation
+
+## i18n 준비 (Phase 1은 한국어만, Phase 3 대비)
+- 하드코딩 문자열 금지. lib/i18n/ko.ts에 상수 정의
+- API 에러 메시지도 i18n 키 사용
+
+## 금지 사항
+- console.log 운영 코드 금지
+- TODO 주석 남기고 미완성 커밋 금지
+- 하드코딩 문자열 금지
+- 직접 fetch() 금지 → lib/api.ts 클라이언트 함수 사용
+
+
+================================================================
+기술 스택
+================================================================
+
+- Frontend: Next.js 14 App Router, TypeScript strict, Tailwind CSS, shadcn/ui
+- Backend: Next.js API Routes
+- DB: PostgreSQL 16 + Prisma ORM + pg_cron (MV 갱신)
+- 인증: NextAuth.js (M365 SSO 전용 / Microsoft Entra ID Provider)
+- 캐시: Redis (출퇴근 중복 방지, 세션)
+- 유효성: zod + react-hook-form
+- 날짜: date-fns
+- 파일: AWS S3 (Presigned URL, 로컬: minio)
+- 알림: Firebase FCM + AWS SES
+- 배포: AWS ECS + RDS + ElastiCache
+
+
+================================================================
+폴더 구조 (v3.1)
+================================================================
+
+ctr-hr-hub/
+├── app/
+│   ├── (auth)/login/
+│   ├── (dashboard)/
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   ├── employees/
+│   │   ├── org/
+│   │   ├── attendance/
+│   │   ├── leave/
+│   │   ├── recruitment/
+│   │   ├── performance/
+│   │   ├── payroll/
+│   │   ├── compensation/            # 연봉·수당 관리
+│   │   ├── analytics/
+│   │   ├── onboarding/
+│   │   ├── offboarding/             # 퇴직 관리
+│   │   ├── discipline/              # 징계·상벌
+│   │   ├── benefits/                # 복리후생
+│   │   └── settings/
+│   ├── 403/page.tsx
+│   ├── error.tsx
+│   └── api/
+│       ├── auth/
+│       └── v1/
+│           ├── employees/
+│           ├── org/
+│           ├── attendance/
+│           │   └── terminal/        # 지문/카드리더기 연동 API
+│           ├── leave/
+│           ├── recruitment/
+│           ├── performance/
+│           ├── payroll/
+│           ├── compensation/
+│           ├── analytics/
+│           ├── onboarding/
+│           ├── offboarding/
+│           ├── discipline/
+│           ├── benefits/
+│           ├── notifications/
+│           ├── files/
+│           ├── ai/
+│           └── home/
+├── components/
+│   ├── ui/
+│   ├── layout/
+│   ├── home/
+│   ├── icons/                       # CTR 핵심가치 아이콘 4개
+│   └── shared/
+│       ├── DataTable.tsx
+│       ├── PageHeader.tsx
+│       ├── EmptyState.tsx
+│       ├── AiGeneratedBadge.tsx
+│       ├── PermissionGate.tsx
+│       ├── CompanySelector.tsx      # 법인 전환 컴포넌트
+│       └── LoadingSpinner.tsx
+├── lib/
+│   ├── auth.ts
+│   ├── prisma.ts
+│   ├── permissions.ts
+│   ├── errors.ts
+│   ├── audit.ts
+│   ├── api.ts
+│   ├── env.ts
+│   ├── constants.ts
+│   ├── claude.ts
+│   ├── labor/                       # 국가별 노동법 모듈 (v3.1: labor-kr.ts 없음, 여기만)
+│   │   ├── index.ts
+│   │   ├── kr.ts
+│   │   ├── us.ts
+│   │   ├── cn.ts
+│   │   ├── ru.ts
+│   │   ├── vn.ts
+│   │   ├── eu.ts                    # v3.1: pl.ts → eu.ts (CTR Europe)
+│   │   └── mx.ts
+│   ├── attrition.ts
+│   ├── s3.ts
+│   ├── redis.ts
+│   ├── terminal.ts                  # 근태 단말기 연동
+│   └── i18n/ko.ts
+├── hooks/
+├── types/index.ts
+├── prisma/
+│   ├── schema.prisma
+│   ├── seed.ts
+│   └── migrations/mv_analytics.sql
+└── context.md
+
+
+================================================================
+v3.2 추가 — AI HR 챗봇 (RAG) 공통 규칙
+================================================================
+
+### pgvector 설정
+- PostgreSQL 16 + pgvector 확장 활성화 (CREATE EXTENSION vector;)
+- 임베딩 차원: 1536 (text-embedding-3-small) 또는 1024 (voyage-3-lite)
+- 유사도 검색: cosine distance (<=>)
+- 청킹 전략: 규정 문서를 500토큰 단위로 분할, 100토큰 오버랩
+- HNSW 인덱스: ivfflat 대신 HNSW 사용 (소규모 데이터에 더 적합)
+
+### HR 규정 챗봇 규칙
+- 전 페이지 우측 하단 플로팅 버튼 (z-index: 50)
+- 답변 시 반드시 출처 규정명 + 조항 번호 인라인 표시
+- 법인별 규정 격리: 직원의 company_id에 해당하는 규정만 검색
+- 검색 top_k=5, 유사도 threshold=0.7
+- 신뢰도 < 0.7 → "정확한 답변이 어렵습니다. HR 담당자에게 문의를 전달할까요?"
+  → 사용자 확인 시 에스컬레이션 (hr_chat_messages.escalated=true + HR_ADMIN 알림)
+- 대화 이력 저장: FAQ 패턴 분석 + HR 규정 개선 참고
+- AI 장애 시: "현재 AI 답변이 불가합니다." + HR 연락처 표시
+- 답변 하단: 👍/👎 피드백 버튼 → hr_chat_messages.feedback 저장
+
+### Command Palette 규칙
+- 단축키: Cmd+O (Mac) / Ctrl+O (Win)
+- 전역 모달 (어느 페이지에서든 실행, z-index: 60)
+- 검색 대상 4종:
+  1. 👤 직원 (이름, 사번, 이메일) — 권한 범위 내
+  2. 📋 메뉴/페이지 (직원 관리, 휴가 신청 등) — PermissionGate 적용
+  3. 📖 HR 규정 (규정명, 키워드) — 법인별 필터
+  4. 🕐 최근 방문 (최근 5개 페이지) — localStorage
+- 결과 카테고리별 그룹핑, 각 최대 3개 (총 12개)
+- 디바운스 200ms
+- 키보드 내비게이션: ↑↓ 이동, Enter 선택, Esc 닫기
+- 컴포넌트: components/command-palette/CommandPalette.tsx
+
+
+================================================================
+v3.2 추가 — Workday UX 개선 공통 규칙
+================================================================
+
+### Task-Centric 홈 원칙
+- 역할별 홈 화면 최상단: "오늘 할 일" (Pending Actions) 섹션
+- 승인 대기, 마감 임박 평가, 미읽은 알림 등 → 우선순위 정렬
+- 빈 상태: "처리할 항목이 없습니다 🎉" + 핵심가치 아이콘
+
+### Guided Experience 원칙
+- 복잡한 프로세스 (퇴직 처리, 채용, 평가 사이클)에 Step Wizard 필수
+- 각 스텝: 좌측 사이드 패널에 현재 단계 설명 + 다음 단계 미리보기
+- 진행률 인디케이터 (1/4, 2/4 등) 상단 표시
+
+
+================================================================
+v3.2 추가 — 설정 커스터마이제이션 공통 규칙
+================================================================
+
+### 설정 참조 우선순위 (모든 STEP 공통)
+1. tenant_settings (고객/법인별 설정) → 최우선
+2. DB ENUM / seed 기본값 → fallback
+3. 하드코딩 상수 → 절대 금지 (v3.2부터)
+
+### 동적 ENUM 원칙
+- leave_type, employment_type, disciplinary_type 등 기존 고정 ENUM은
+  "기본값 시드"로만 남기고, 실제 런타임에는 tenant_enum_options 테이블 참조
+- 기본 옵션 삭제 불가 (is_system=true), 고객 추가 옵션만 CRUD
+- UI의 모든 Select/Dropdown: tenant_enum_options API에서 옵션 로드
+
+### 용어 오버라이드 원칙
+- term_overrides 테이블: 기본 용어 키 → 고객별 표시 라벨
+- UI 전체: 하드코딩 텍스트 금지, t('department') 형태의 헬퍼 함수 사용
+- lib/terms.ts: getTermLabel(companyId, key) → override 있으면 override, 없으면 기본
+- 기본 용어 키: department, job_grade, employee_code, manager, team, position 등
+
+### 워크플로우 엔진 원칙
+- workflow_rules + workflow_steps로 승인 단계 동적 구성
+- 모든 승인 API: workflow_rules에서 현재 단계 조회 → 다음 승인자 결정
+- 기본 워크플로우: 단일 승인 (직속 상사) — seed로 생성
+- 고객이 2단계 (상사 → 부서장), 3단계 (상사 → 부서장 → HR) 등 설정 가능
+
+### 커스텀 필드 원칙
+- custom_fields: 엔티티(employee/applicant 등)에 동적 필드 정의
+- custom_field_values: 실제 값 저장
+- UI: 프로필/등록 폼 하단에 \"추가 정보\" 섹션으로 자동 렌더링
+- 타입: TEXT / NUMBER / DATE / SELECT / MULTI_SELECT / BOOLEAN
+- 검색/필터에 포함 가능 (indexed 옵션)
+
+### 모듈 토글 원칙
+- tenant_settings.enabled_modules: JSON 배열
+- 기본 활성: ["CORE_HR", "ATTENDANCE", "LEAVE", "PERFORMANCE"]
+- 선택 활성: "RECRUITMENT", "PAYROLL", "OFFBOARDING", "DISCIPLINE",
+              "COMPENSATION", "BENEFITS", "PULSE", "PEER_REVIEW",
+              "SUCCESSION", "L_AND_D", "HR_CHATBOT"
+- 사이드바/라우터: enabled_modules에 없는 모듈은 메뉴 숨김 + API 403
+
+### 브랜딩 원칙
+- tenant_settings: logo_url, favicon_url, primary_color, secondary_color, accent_color
+- CSS 변수로 런타임 주입: --brand-primary, --brand-secondary
+- 기존 ctr-primary/ctr-accent → CSS 변수 참조로 전환
+- 핵심가치(core_values): 고정 4개 → tenant_settings.core_values JSON 배열
+  - 기본값: ["CHALLENGE", "TRUST", "RESPONSIBILITY", "RESPECT"]
+  - 각 항목: { key, label, icon, color }
+
+### 알림 템플릿 원칙
+- email_templates: 이벤트별 제목/본문 템플릿 (Handlebars 문법)
+- 변수: {{employee_name}}, {{company_name}}, {{leave_days}}, {{link}} 등
+- 고객이 편집 가능, 기본 템플릿 리셋 버튼 제공
+- 언어별 템플릿 지원 (locale 컬럼)
+
+### 평가 척도 원칙
+- tenant_settings.rating_scale: { min: 1, max: 5, labels: ["매우 부족", ..., "탁월"] }
+- tenant_settings.grade_labels: { S: "최우수", A: "우수", B: "보통", C: "미흡", D: "부진" }
+- 모든 평가 UI: rating_scale에서 min/max/labels 동적 로드
+
+### 대시보드 커스터마이징 원칙
+- tenant_settings.dashboard_layout: 역할별 위젯 배치 JSON
+- 위젯 목록 (enabled_widgets): 고객이 보이기/숨기기 설정
+- 위젯 순서: sort_order로 드래그-드롭 지원
+
+### 내보내기 템플릿 원칙
+- export_templates: 엔티티별 컬럼 선택/순서/헤더명 저장
+- 기본 템플릿 제공, 고객이 복사 후 커스터마이즈
+- 커스텀 필드도 내보내기 컬럼에 포함 가능
+
+
+================================================================
+.env.example
+================================================================
+
+```env
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/ctr_hr_hub"
+
+# NextAuth
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-nextauth-secret"
+
+# Microsoft Entra ID (M365 SSO)
+AZURE_AD_CLIENT_ID="your-client-id"
+AZURE_AD_CLIENT_SECRET="your-client-secret"
+AZURE_AD_TENANT_ID="your-tenant-id"
+
+# Redis
+REDIS_URL="redis://localhost:6379"
+
+# AWS S3
+AWS_ACCESS_KEY_ID="your-access-key"
+AWS_SECRET_ACCESS_KEY="your-secret-key"
+AWS_REGION="ap-northeast-2"
+S3_BUCKET="ctr-hr-hub"
+
+# Claude AI
+ANTHROPIC_API_KEY="your-api-key"
+
+# v3.2: 임베딩 (HR 챗봇 RAG)
+EMBEDDING_PROVIDER="openai"          # openai 또는 voyageai
+OPENAI_API_KEY="your-openai-key"     # text-embedding-3-small용
+
+# Firebase (Push Notification)
+FIREBASE_PROJECT_ID=""
+FIREBASE_PRIVATE_KEY=""
+FIREBASE_CLIENT_EMAIL=""
+
+# AWS SES (Email)
+SES_FROM_EMAIL="noreply@ctr.co.kr"
+
+# 근태 단말기 연동
+TERMINAL_API_SECRET="terminal-auth-secret"
+TERMINAL_HEARTBEAT_INTERVAL=60
+```

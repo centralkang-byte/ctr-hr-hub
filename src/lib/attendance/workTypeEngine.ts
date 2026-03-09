@@ -26,6 +26,12 @@ export interface AttendanceInput {
   standardMinutes?: number
   /** 휴식시간 (분), 기본 60 */
   breakMinutes?: number
+  // FIX: Issue #7 — Add workDate for calendar-based weekend/holiday classification.
+  //   Without this, SHIFT workers' weekend duty was treated as regular weekday.
+  /** 근무 날짜 (KST 날짜 기준) — 주말/공휴일 여부 판단에 사용 */
+  workDate?: Date
+  /** 공휴일 여부 (날짜 조회 후 caller가 직접 제공) */
+  isHoliday?: boolean
 }
 
 export interface AttendanceResult {
@@ -38,6 +44,11 @@ export interface AttendanceResult {
   workType: WorkType
   /** 유연근무 코어타임 내 근무 여부 */
   coreTimeCompliant?: boolean
+  // FIX: Issue #7 — Expose weekend/holiday classification for overtime premium calculation.
+  /** 주말 근무 여부 (교대근무자의 주말 교대 포함) */
+  isWeekend?: boolean
+  /** 공휴일 근무 여부 */
+  isHoliday?: boolean
 }
 
 // ─── 유틸 ─────────────────────────────────────────────────
@@ -179,6 +190,14 @@ function processShift(input: AttendanceInput): AttendanceResult {
   const { clockIn, clockOut, shiftStartMinutes, shiftEndMinutes } = input
   const breakMinutes = input.breakMinutes ?? 60
 
+  // FIX: Issue #7 — Calendar-based weekend classification for shift workers.
+  //   Previously: shift work date classification ignored calendar day.
+  //   Now: check workDate.getDay() to detect Sat(6)/Sun(0) regardless of shift schedule.
+  const isWeekend = input.workDate
+    ? (() => { const d = input.workDate.getDay(); return d === 0 || d === 6 })()
+    : false
+  const isHoliday = input.isHoliday ?? false
+
   const LATE_TOLERANCE = 10  // 10분 지각 허용
 
   const totalMs = clockOut.getTime() - clockIn.getTime()
@@ -196,6 +215,8 @@ function processShift(input: AttendanceInput): AttendanceResult {
       isEarlyLeave: false,
       isAbsent: false,
       workType: 'SHIFT',
+      isWeekend,
+      isHoliday,
     }
   }
 
@@ -218,6 +239,8 @@ function processShift(input: AttendanceInput): AttendanceResult {
     isEarlyLeave,
     isAbsent: false,
     workType: 'SHIFT',
+    isWeekend,
+    isHoliday,
   }
 }
 

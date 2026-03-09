@@ -1,15 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { locales, type Locale } from '@/i18n/config'
+import { apiError } from '@/lib/api'
+import { badRequest } from '@/lib/errors'
 
 export async function POST(req: NextRequest) {
   try {
     const { locale } = (await req.json()) as { locale: string }
 
     if (!locales.includes(locale as Locale)) {
-      return NextResponse.json({ error: 'Invalid locale' }, { status: 400 })
+      return apiError(badRequest('Invalid locale'))
     }
 
-    const res = NextResponse.json({ locale })
+    // Cookie 설정이 필요해 NextResponse 직접 사용
+    const res = NextResponse.json({ data: { locale } })
     res.cookies.set('NEXT_LOCALE', locale, {
       path: '/',
       sameSite: 'lax',
@@ -18,6 +21,6 @@ export async function POST(req: NextRequest) {
 
     return res
   } catch {
-    return NextResponse.json({ error: 'Bad request' }, { status: 400 })
+    return apiError(badRequest('Bad request'))
   }
 }

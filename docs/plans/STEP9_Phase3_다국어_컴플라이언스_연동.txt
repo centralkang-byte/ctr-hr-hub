@@ -1,0 +1,899 @@
+# CTR HR Hub - STEP 9: Phase 3 — 다국어·컴플라이언스·외부 연동
+# v3.2 (최종 단계)
+# ★ 반드시 STEP0_공통규칙.txt를 먼저 읽고 전체 STEP에 적용할 것
+#
+# ═══════════════════════════════════════════════════════════
+# STEP 9 배경
+# ═══════════════════════════════════════════════════════════
+#
+# STEP1~7: 코어 HR 기능 완성
+# STEP2.5: 협업요청 Gap 보완 (계약/Work Permit/급여주기/폴란드)
+# STEP8: Phase 2 — 설정 고도화 + 채용 연동 + 챗봇 + 모바일 PWA
+#
+# STEP 9는 세 가지 축:
+# A) 다국어 i18n (7개 언어)
+# B) 국가별 컴플라이언스 (법정 보고서 + 전자서명)
+# C) 외부 시스템 연동 + STEP7 기술 부채 해소
+#
+# ═══════════════════════════════════════════════════════════
+
+
+================================================================
+STEP 9 프롬프트 — Phase 3: 다국어·컴플라이언스·외부 연동
+================================================================
+
+## ★ 세션 시작: context.md 먼저 읽어줘
+
+이번 세션 목표:
+1. 다국어 i18n (7개 언어)
+2. 러시아 법정 보고서 + 전자서명(КЭДО)
+3. 중국 법정 보고서
+4. 외부 시스템 연동 (더존/SAP/eformsign)
+5. STEP7 기술 부채 10개 해소
+6. IPO 컴플라이언스 (임원 보수·ICFR)
+7. 최종 보안 감사 + 성능 최적화
+
+
+================================================================
+Part A: 다국어 i18n
+================================================================
+
+
+================================================================
+A-1. i18n 아키텍처
+================================================================
+
+### 라이브러리: next-intl
+
+```bash
+npm install next-intl
+```
+
+### 지원 언어 (7개)
+| 코드 | 언어 | 대상 법인 |
+|------|------|----------|
+| ko   | 한국어 | CTR(주), CTR오토, CTR전자, CTR제주 |
+| en   | 영어   | CTR America, CTR Europe (기본) |
+| zh   | 중국어(간체) | CTR Qingdao, CTR Nanjing |
+| ru   | 러시아어 | CTR Russia |
+| vi   | 베트남어 | CTR Vietnam |
+| es   | 스페인어 | CTR Mexico |
+| pl   | 폴란드어 | CTR Europe (선택) |
+
+### 파일 구조
+```
+lib/i18n/
+├── config.ts            # next-intl 설정
+├── request.ts           # 서버 컴포넌트용 locale 감지
+├── messages/
+│   ├── ko.json          # 한국어 (기준 언어, 가장 상세)
+│   ├── en.json          # 영어
+│   ├── zh.json          # 중국어
+│   ├── ru.json          # 러시아어
+│   ├── vi.json          # 베트남어
+│   ├── es.json          # 스페인어
+│   └── pl.json          # 폴란드어
+└── utils.ts             # 번역 유틸
+```
+
+### 번역 키 구조 (네임스페이스 기반)
+
+```json
+// ko.json (예시)
+{
+  "common": {
+    "save": "저장",
+    "cancel": "취소",
+    "delete": "삭제",
+    "edit": "수정",
+    "search": "검색",
+    "filter": "필터",
+    "loading": "로딩 중...",
+    "noData": "데이터가 없습니다",
+    "confirm": "확인",
+    "back": "뒤로",
+    "next": "다음",
+    "submit": "제출",
+    "approve": "승인",
+    "reject": "반려",
+    "export": "내보내기",
+    "import": "가져오기"
+  },
+  "nav": {
+    "dashboard": "홈",
+    "employees": "직원 관리",
+    "org": "조직도",
+    "attendance": "근태 관리",
+    "leave": "휴가 관리",
+    "recruitment": "채용",
+    "performance": "성과 관리",
+    "payroll": "급여",
+    "analytics": "분석",
+    "settings": "설정",
+    "managerHub": "매니저 허브",
+    "chatbot": "HR 상담"
+  },
+  "employee": {
+    "list": {
+      "title": "직원 목록",
+      "addNew": "직원 등록",
+      "employeeNo": "사번",
+      "name": "이름",
+      "department": "부서",
+      "grade": "직급",
+      "category": "직군",
+      "employmentType": "고용형태",
+      "status": "상태",
+      "hireDate": "입사일"
+    },
+    "profile": {
+      "title": "직원 프로필",
+      "basicInfo": "기본 정보",
+      "employment": "고용 정보",
+      "contract": "계약 정보",
+      "workPermit": "비자/체류",
+      "history": "인사 이력",
+      "documents": "문서"
+    },
+    "status": {
+      "ACTIVE": "재직",
+      "ON_LEAVE": "휴직",
+      "RESIGNED": "퇴직",
+      "TERMINATED": "해고"
+    },
+    "employmentType": {
+      "FULL_TIME": "정규직",
+      "CONTRACT": "계약직",
+      "DISPATCH": "파견직",
+      "INTERN": "인턴"
+    }
+  },
+  "attendance": { ... },
+  "leave": { ... },
+  "recruitment": { ... },
+  "performance": { ... },
+  "payroll": { ... },
+  "analytics": { ... },
+  "settings": { ... },
+  "notifications": { ... },
+  "errors": {
+    "required": "{{field}}은(는) 필수입니다",
+    "invalidEmail": "올바른 이메일 형식이 아닙니다",
+    "unauthorized": "접근 권한이 없습니다",
+    "notFound": "{{resource}}을(를) 찾을 수 없습니다",
+    "serverError": "서버 오류가 발생했습니다",
+    "duplicateEntry": "이미 존재하는 {{field}}입니다"
+  }
+}
+```
+
+### 예상 번역 키 수: 약 500~700개
+
+### next-intl 설정
+
+```ts
+// lib/i18n/config.ts
+export const locales = ['ko', 'en', 'zh', 'ru', 'vi', 'es', 'pl'] as const;
+export type Locale = (typeof locales)[number];
+export const defaultLocale: Locale = 'ko';
+
+// 날짜/숫자 포맷
+export const formats = {
+  dateTime: {
+    short: { day: 'numeric', month: 'short', year: 'numeric' },
+    long: { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' },
+  },
+  number: {
+    currency: { style: 'currency', minimumFractionDigits: 0 },
+    percent: { style: 'percent', minimumFractionDigits: 1 },
+  },
+};
+```
+
+### locale 결정 우선순위
+1. 사용자 설정 (employees.locale)
+2. 법인 기본 (tenant_settings.default_locale)
+3. 브라우저 Accept-Language
+4. 시스템 기본 (ko)
+
+### 통화·날짜·숫자 포맷 자동화
+
+```ts
+// lib/i18n/utils.ts
+export function formatCurrency(amount: number, currency: string, locale: string) {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
+export function formatDate(date: Date, locale: string, format: 'short' | 'long' = 'short') {
+  // locale별 날짜 형식 자동 적용
+  // ko: 2024. 6. 1.
+  // en: Jun 1, 2024
+  // zh: 2024年6月1日
+  // ru: 1 июня 2024 г.
+}
+```
+
+### Server Component에서 사용
+
+```tsx
+// app/[locale]/employees/page.tsx
+import { useTranslations } from 'next-intl';
+
+export default function EmployeesPage() {
+  const t = useTranslations('employee.list');
+  return (
+    <div>
+      <h1>{t('title')}</h1>
+      <button>{t('addNew')}</button>
+    </div>
+  );
+}
+```
+
+### Client Component에서 사용
+
+```tsx
+'use client';
+import { useTranslations } from 'next-intl';
+
+export function EmployeeForm() {
+  const t = useTranslations('employee.profile');
+  const tCommon = useTranslations('common');
+  return (
+    <form>
+      <label>{t('basicInfo')}</label>
+      <button type="submit">{tCommon('save')}</button>
+    </form>
+  );
+}
+```
+
+### API 에러 메시지 다국어
+
+```ts
+// lib/errors.ts 수정
+export class AppError extends Error {
+  constructor(
+    public code: string,
+    public messageKey: string,        // i18n 키
+    public messageParams?: Record<string, string>,  // 변수
+    public statusCode: number = 400,
+  ) {
+    super(messageKey);
+  }
+}
+
+// API 응답 시:
+// { "error": { "code": "DUPLICATE_ENTRY", "messageKey": "errors.duplicateEntry", "params": { "field": "사번" } } }
+// → 프론트에서 t(error.messageKey, error.params)로 렌더링
+```
+
+### 라우팅 전략
+- URL 접두사 방식: /ko/employees, /en/employees
+- middleware.ts에서 locale 감지 → redirect
+- 사용자 locale 변경 시 → employees.locale UPDATE + 쿠키 설정
+
+### UI — 언어 선택기
+- 헤더 우측: 🌐 아이콘 + 현재 언어 표시
+- 클릭 → 드롭다운: 7개 언어 목록 (국기 아이콘 + 언어명)
+- 선택 → locale 변경 + 페이지 새로고침
+
+
+================================================================
+A-2. 번역 작업 프로세스
+================================================================
+
+### Phase 3-1: 기계 번역 초안 (자동)
+1. ko.json을 기준으로 Claude API 호출하여 6개 언어 번역 생성
+2. lib/scripts/translate.ts 스크립트:
+   - ko.json 읽기
+   - 네임스페이스별로 Claude에 번역 요청
+   - 각 언어 JSON 파일 생성
+3. 컨텍스트 제공: "HR 시스템 UI에서 사용되는 용어"임을 명시
+4. HR 전문 용어 사전 제공 (glossary.json)
+
+### HR 전문 용어 사전 (lib/i18n/glossary.json)
+
+```json
+{
+  "연차": { "en": "Annual Leave", "zh": "年假", "ru": "Ежегодный отпуск", "vi": "Phép năm", "es": "Vacaciones anuales", "pl": "Urlop wypoczynkowy" },
+  "수습": { "en": "Probation", "zh": "试用期", "ru": "Испытательный срок", "vi": "Thử việc", "es": "Período de prueba", "pl": "Okres próbny" },
+  "기간제": { "en": "Fixed-term", "zh": "固定期限", "ru": "Срочный договор", "vi": "Hợp đồng có thời hạn", "es": "Contrato temporal", "pl": "Umowa na czas określony" },
+  "직급": { "en": "Job Grade", "zh": "职级", "ru": "Должностной разряд", "vi": "Cấp bậc", "es": "Nivel de puesto", "pl": "Stopień stanowiska" },
+  "직군": { "en": "Job Category", "zh": "职类", "ru": "Категория должности", "vi": "Nhóm công việc", "es": "Categoría laboral", "pl": "Kategoria stanowiska" },
+  "정규직": { "en": "Full-time", "zh": "正式员工", "ru": "Штатный сотрудник", "vi": "Nhân viên chính thức", "es": "Tiempo completo", "pl": "Pracownik etatowy" },
+  "인사발령": { "en": "Personnel Transfer", "zh": "人事调令", "ru": "Кадровое назначение", "vi": "Điều chuyển nhân sự", "es": "Transferencia de personal", "pl": "Przeniesienie kadrowe" },
+  "평가": { "en": "Evaluation", "zh": "评估", "ru": "Оценка", "vi": "Đánh giá", "es": "Evaluación", "pl": "Ocena" },
+  "성과": { "en": "Performance", "zh": "绩效", "ru": "Эффективность", "vi": "Hiệu suất", "es": "Desempeño", "pl": "Wyniki" },
+  "급여명세서": { "en": "Pay Slip", "zh": "工资条", "ru": "Расчётный листок", "vi": "Phiếu lương", "es": "Recibo de nómina", "pl": "Pasek wynagrodzenia" }
+}
+```
+
+### Phase 3-2: 현지 법인 검수
+- 각 법인 HR 담당자에게 번역 파일 전달
+- 검수 도구: Google Sheets 공유 (키/원문/번역/수정안)
+- 수정안 반영 → 최종 JSON 업데이트
+
+### Phase 3-3: 지속적 번역 관리
+- 새 키 추가 시 → ko.json에만 추가
+- CI/CD에서 누락 키 자동 감지 (ko.json 기준)
+- 누락 키 → 기계 번역 폴백 → 검수 알림
+
+
+================================================================
+Part B: 국가별 컴플라이언스
+================================================================
+
+
+================================================================
+B-1. 러시아 법정 보고서
+================================================================
+
+### B-1-1. 군복무 대상자 명단 (Воинский учёт)
+
+러시아 노동법: 고용주는 군복무 대상자 명단을 군 등록 사무소(военкомат)에 보고 의무
+
+**employees 모델 확장 (러시아 법인만 해당)**
+```
+# 커스텀 필드로 관리 (custom_fields 활용)
+# entity_type: EMPLOYEE, 러시아 법인 전용
+military_registration_number: TEXT     # 군등록 번호
+military_category: SELECT              # 카테고리 (예비역/현역/면제)
+military_rank: TEXT                     # 군 계급
+military_specialty: TEXT               # 군사 전문 분야
+military_district: TEXT                # 소속 군구
+```
+
+**보고서 생성 (/reports/ru/military)**
+- 필터: 성별=남, 나이 18~50, 러시아 법인, ACTIVE
+- 양식: T-2(군복무 기록 카드) 형식
+- 출력: Excel (.xlsx)
+- 주기: 반기 1회 (1월, 7월) + 신규 채용/퇴직 시 수시
+
+### B-1-2. 연간 인원 보고 (Статистическая отчётность)
+
+**보고서: P-4 양식 (분기별)**
+- 평균 인원수 (분기)
+- 급여 총액
+- 근로시간 총계
+- 출력: Excel 템플릿 기반
+
+**보고서: 57-T 양식 (격년)**
+- 직종별 급여 분포
+- 남녀별 인원/급여 비교
+- 출력: Excel 템플릿 기반
+
+### API
+- GET  /api/v1/reports/ru/military          # 군복무 대상자 목록
+- GET  /api/v1/reports/ru/military/export    # T-2 양식 Excel 다운로드
+- GET  /api/v1/reports/ru/p4?quarter=2024Q3  # P-4 분기 보고
+- GET  /api/v1/reports/ru/57t?year=2024      # 57-T 격년 보고
+
+
+================================================================
+B-2. 러시아 전자서명 (КЭДО)
+================================================================
+
+### 배경
+2022년 러시아 연방법 377-ФЗ: 인사 문서 전자화 가능
+КЭДО (Кадровый электронный документооборот) = 인사 전자 문서 관리
+
+### 구현 방향 (Phase 3는 인터페이스 정의 + 외부 연동 준비)
+
+**전자서명 수준 3가지:**
+1. ПЭП (простая электронная подпись) — 단순 전자서명 (로그인+확인)
+2. УНЭП (усиленная неквалифицированная) — 강화 비인증 서명
+3. УКЭП (усиленная квалифицированная) — 강화 인증 서명 (공인)
+
+→ CTR Russia: ПЭП (단순) + УНЭП (강화 비인증) 수준으로 시작
+
+### 인터페이스 정의
+
+```ts
+// lib/esign/kedo-interface.ts
+
+interface KedoDocument {
+  id: string;
+  employee_id: string;
+  doc_type: KedoDocType;
+  title: string;
+  content_url: string;            // 문서 파일 URL
+  signature_required: SignatureLevel;
+  status: KedoStatus;
+  signed_at?: string;
+  signature_data?: string;        // 서명 데이터 (해시)
+}
+
+type KedoDocType =
+  | 'EMPLOYMENT_CONTRACT'         // 근로계약서
+  | 'SUPPLEMENTARY_AGREEMENT'     // 추가 합의서
+  | 'TRANSFER_ORDER'              // 전보 명령
+  | 'VACATION_ORDER'              // 휴가 명령
+  | 'DISMISSAL_ORDER'             // 해고 명령
+  | 'WORK_SCHEDULE'               // 근무 일정 통보
+  | 'PAYSLIP'                     // 급여명세서
+  | 'OTHER';
+
+type SignatureLevel = 'PEP' | 'UNEP' | 'UKEP';
+type KedoStatus = 'DRAFT' | 'PENDING_SIGNATURE' | 'SIGNED' | 'REJECTED' | 'EXPIRED';
+```
+
+### 문서 서명 플로우 (ПЭП 단순 전자서명)
+1. HR이 문서 생성/업로드
+2. 직원에게 서명 요청 알림
+3. 직원: 문서 확인 → "서명" 버튼 클릭
+4. 2차 인증 (비밀번호 재입력 또는 SMS OTP)
+5. 서명 기록: 타임스탬프 + IP + User Agent + 해시값
+6. 양측 서명 완료 → 문서 확정 (수정 불가)
+7. 보관: 최소 50년 (러시아 법)
+
+### kedo_documents (신규 테이블)
+```
+id(uuid PK), employee_id(FK employees NOT NULL),
+company_id(FK companies NOT NULL),
+doc_type(ENUM KedoDocType),
+title(String NOT NULL),
+file_key(String NOT NULL),
+signature_level(ENUM SignatureLevel: PEP/UNEP/UKEP),
+status(ENUM KedoStatus: DRAFT/PENDING_SIGNATURE/SIGNED/REJECTED/EXPIRED),
+requested_at(DateTime nullable),
+signed_at(DateTime nullable),
+signer_ip(String nullable),
+signer_user_agent(String nullable),
+signature_hash(String nullable),
+rejected_reason(String nullable),
+expires_at(DateTime nullable),
+created_by(FK employees),
+created_at(DateTime), updated_at(DateTime)
+
+@@index([employee_id, status])
+```
+
+### UI — 문서 서명 (/documents/sign)
+- EMPLOYEE: 서명 대기 문서 목록 → 문서 미리보기 → 서명 버튼
+- HR_ADMIN: 문서 생성 → 대상 직원 선택 → 서명 요청 발송
+- 서명 현황 대시보드: 서명완료/대기/거부/만료 통계
+
+
+================================================================
+B-3. 중국 법정 보고서
+================================================================
+
+### B-3-1. 노동국 인원 보고 (劳动用工备案)
+
+중국: 신규 채용/퇴직 시 지역 노동국(人力资源和社会保障局)에 보고
+
+**보고 양식 — 종업원 명부 (员工花名册)**
+- 필드: 성명, 성별, 신분증번호, 입사일, 직위, 계약유형, 계약기간
+- 출력: Excel 양식 (지역별 상이 → 칭다오/남경 2개 법인 각각)
+
+**보고 트리거:**
+- 신규 채용 (입사 30일 이내 보고)
+- 퇴직 (퇴직 15일 이내 보고)
+- 계약 갱신
+
+### B-3-2. 사회보험 신고 (社保申报)
+
+**월별 신고 데이터:**
+- 직원별: 기본급, 사회보험 기준 급여, 각 보험료 (양로/의료/실업/산재/출산)
+- 법인합계: 총 납부액
+
+### API
+- GET  /api/v1/reports/cn/employee-roster?company_id=xxx         # 종업원 명부
+- GET  /api/v1/reports/cn/employee-roster/export                  # Excel 다운로드
+- GET  /api/v1/reports/cn/social-insurance?year_month=2024-06     # 사회보험 신고 데이터
+- GET  /api/v1/reports/cn/new-hires?from=2024-06-01&to=2024-06-30 # 신규 채용 보고
+- GET  /api/v1/reports/cn/terminations?from=...&to=...            # 퇴직 보고
+
+
+================================================================
+Part C: 외부 시스템 연동 + 기술 부채
+================================================================
+
+
+================================================================
+C-1. 외부 시스템 연동
+================================================================
+
+### C-1-1. 더존 ERP 연동 (CTR(주) 한국 법인)
+
+**연동 범위:**
+- 급여 데이터 가져오기 (더존 → HR Hub)
+- 인사 마스터 동기화 (HR Hub → 더존)
+
+**인터페이스:**
+```ts
+// lib/integrations/douzone.ts
+interface DouZoneSync {
+  // 급여 가져오기: 더존 CSV/Excel → payroll_items
+  importPayroll(file: Buffer, yearMonth: string): Promise<PayrollImportResult>;
+
+  // 인사 마스터 내보내기: employees → 더존 양식
+  exportEmployeeMaster(companyId: string): Promise<Buffer>;
+
+  // 퇴직금 계산 데이터 동기화
+  syncSeveranceData(employeeId: string): Promise<SeveranceData>;
+}
+```
+
+### C-1-2. SAP 연동 (해외 법인)
+
+**연동 범위:**
+- SAP HR 모듈과 직원 마스터 동기화
+- SAP FI 모듈과 급여 데이터 연동
+
+**인터페이스:**
+```ts
+// lib/integrations/sap.ts
+interface SapSync {
+  // RFC/BAPI 호출 방식 또는 IDoc 파일 교환
+  syncEmployeeMaster(companyId: string, direction: 'PUSH' | 'PULL'): Promise<SyncResult>;
+  syncPayrollData(companyId: string, yearMonth: string): Promise<SyncResult>;
+  syncCostCenter(companyId: string): Promise<SyncResult>; // 코스트센터 동기화
+}
+```
+
+### C-1-3. (SWIT 연동 → 제외)
+
+★ SWIT는 외부 연동 API 제약으로 제외.
+  사내 메신저/결재 기능은 STEP8 B-5에서 Teams Hub로 이관 완료.
+  - 알림: Teams 3-Channel (IN_APP + EMAIL + TEAMS)
+  - 결재: Teams Adaptive Card 인라인 승인
+  - HR 챗봇: Teams 봇 배포
+  - 프로젝트 관리: Teams 범위 아님 (별도 도구)
+
+### C-1-4. eformsign 연동 (전자서명 — 한국 법인)
+
+**연동 범위:**
+- 한국 법인 인사 문서 전자서명 (근로계약서, 연봉계약서 등)
+- eformsign API로 서명 요청 발송 → 완료 콜백 수신
+
+**인터페이스:**
+```ts
+// lib/integrations/eformsign.ts
+interface EformSignIntegration {
+  // 문서 생성 + 서명 요청
+  createAndRequestSign(params: {
+    template_id: string;       // eformsign 템플릿 ID
+    signers: { name: string; email: string; role: string }[];
+    fields: Record<string, string>;  // 템플릿 필드 값
+  }): Promise<{ document_id: string; sign_url: string }>;
+
+  // 서명 상태 확인
+  getStatus(documentId: string): Promise<SignStatus>;
+
+  // 서명 완료 콜백 처리
+  handleCallback(payload: EformSignCallback): Promise<void>;
+}
+```
+
+### 연동 설정 UI (/settings/integrations)
+- 연동 서비스별 카드:
+  - Teams: STEP8에서 구현 완료 (참조: /settings/teams)
+  - 더존: API 키 / 엔드포인트 / 동기화 주기
+  - SAP: RFC 접속 정보 / IDoc 경로
+  - eformsign: API 키 / 콜백 URL
+- 연결 테스트 버튼
+- 최근 동기화 이력
+
+
+================================================================
+C-2. STEP7 기술 부채 해소
+================================================================
+
+### C-2-1. IPO 컴플라이언스
+
+**임원 보수 공시:**
+- 등기임원 보수 현황 페이지 (/payroll/executive-compensation)
+- 임원별: 급여, 상여, 주식매수선택권, 퇴직급여
+- 연간 보수 총액 보고서
+- 권한: EXECUTIVE + SUPER_ADMIN만 접근
+
+**ICFR (내부회계관리제도):**
+- 급여 변경 이력 완전 추적 (audit_logs 활용)
+- 권한 분리: 급여 입력자 ≠ 확정자 ≠ 지급자
+- 급여 데이터 수정 시 사유 필수 입력 + 승인 워크플로우
+
+### C-2-2. 교대근무 자동 순환
+
+```ts
+// lib/attendance/shift-rotation.ts
+interface ShiftRotation {
+  pattern: ShiftPattern;        // 주간→야간→비번 등
+  cycle_days: number;           // 순환 주기
+  auto_assign: boolean;         // 자동 배정 여부
+  start_date: string;
+}
+
+type ShiftPattern = 'DAY_NIGHT_OFF' | 'FOUR_ON_TWO_OFF' | 'CUSTOM';
+```
+
+- 교대근무 패턴 설정 (/settings/shift-patterns)
+- 자동 일정 생성 Cron (주 단위)
+- 교대 일정 캘린더 뷰
+
+### C-2-3. 급여 구성 상세 분리
+
+payroll_items.detail JSON → 구조화된 서브 항목:
+
+```ts
+interface PayrollDetail {
+  base_salary: number;
+  allowances: {
+    position_allowance?: number;    // 직책 수당
+    meal_allowance?: number;        // 식대
+    transport_allowance?: number;   // 교통비
+    overtime_allowance?: number;    // 초과근무 수당
+    night_shift_allowance?: number; // 야간 수당
+    custom?: Record<string, number>; // 법인별 추가 수당
+  };
+  incentives: {
+    performance_bonus?: number;
+    project_bonus?: number;
+    sales_commission?: number;
+  };
+  deductions: {
+    income_tax?: number;
+    national_pension?: number;
+    health_insurance?: number;
+    employment_insurance?: number;
+    long_term_care?: number;
+    custom?: Record<string, number>;
+  };
+  // 해외법인 추가
+  local_tax?: Record<string, number>;
+}
+```
+
+### C-2-4. 은행 API 자동 이체 (구조만)
+
+```ts
+// lib/integrations/bank-transfer.ts
+interface BankTransferInterface {
+  // 급여 이체 파일 생성 (은행별 양식)
+  generateTransferFile(params: {
+    bank_code: string;         // 'SHINHAN' | 'KOOKMIN' | 'WOORI' | ...
+    payroll_run_id: string;
+    format: 'EBCDIC' | 'CSV' | 'XML';
+  }): Promise<Buffer>;
+
+  // 이체 결과 파일 파싱
+  parseResultFile(file: Buffer, bankCode: string): Promise<TransferResult[]>;
+}
+```
+
+### C-2-5. M365 계정 자동 비활성화
+
+퇴직 처리 시 → Microsoft Graph API로 계정 비활성화:
+
+```ts
+// lib/integrations/m365-account.ts
+async function disableM365Account(email: string) {
+  // 1. Azure AD에서 사용자 비활성화
+  // 2. 라이선스 회수
+  // 3. 공유 사서함으로 전환 (선택)
+  // 4. audit_logs에 기록
+}
+```
+
+→ 오프보딩 체크리스트의 IT 단계에 자동 연계
+
+### C-2-6. 기타 기술 부채
+
+**F5 프레임워크 (Recognition 행동 태그)**
+- Recognition 보내기 시 핵심가치 태그 선택
+- 태그별 통계 → 조직 문화 분석
+
+**채용 단가 분석**
+- 채용 비용 입력 (recruitment_costs 테이블)
+- Cost-per-hire 자동 계산
+- 채용 소스별 효율 분석 (추천/공고/헤드헌팅 등)
+
+**성별 급여 격차 분석**
+- Analytics 대시보드에 Gender Pay Gap 섹션 추가
+- 동일 직급/직군 내 남녀 평균 급여 비교
+- Compa-ratio 성별 분포
+
+**해외법인 세금 공제 상세**
+- 국가별 세금 항목 세분화
+- lib/tax/ 디렉토리: kr.ts, cn.ts, ru.ts, vn.ts, mx.ts, us.ts, pl.ts
+
+
+================================================================
+D. 최종 보안 감사 + 성능 최적화
+================================================================
+
+
+================================================================
+D-1. 보안 감사
+================================================================
+
+### 체크리스트
+
+**인증/권한**
+- [ ] RBAC 전 API 엔드포인트 적용 확인
+- [ ] JWT 토큰 만료·갱신 정상 동작
+- [ ] rate limiting (express-rate-limit) 전 API 적용
+- [ ] CORS 설정 (허용 도메인만)
+- [ ] CSP (Content Security Policy) 헤더
+- [ ] SQL Injection 방지 (Prisma parameterized queries 확인)
+- [ ] XSS 방지 (React 자동 이스케이프 + DOMPurify)
+
+**데이터 보호**
+- [ ] 개인정보 암호화 (주민번호, 급여 등): AES-256 at rest
+- [ ] 파일 업로드: 확장자/MIME 검증, 크기 제한 (10MB)
+- [ ] audit_logs: 삭제 불가 (append-only)
+- [ ] 퇴직자 데이터: 법정 보존 기간 경과 시 자동 삭제 스케줄러
+- [ ] GDPR 대응 (유럽 법인): 개인정보 삭제 요청 처리 API
+
+**인프라**
+- [ ] HTTPS 전용 (HTTP → redirect)
+- [ ] 환경변수 관리: .env 파일 git 제외 확인
+- [ ] DB 백업 정책: 일일 자동 백업 + 30일 보관
+- [ ] 로그 레벨 분리: production = error + warn만
+
+### GDPR 대응 (CTR Europe)
+
+```ts
+// lib/gdpr/data-subject-rights.ts
+interface GdprHandler {
+  // 정보 접근 요청 (Article 15)
+  handleAccessRequest(employeeId: string): Promise<PersonalDataExport>;
+
+  // 삭제 요청 (Article 17 — Right to be forgotten)
+  handleDeletionRequest(employeeId: string): Promise<DeletionResult>;
+
+  // 데이터 이동 요청 (Article 20)
+  handlePortabilityRequest(employeeId: string): Promise<Buffer>; // JSON export
+
+  // 동의 관리
+  recordConsent(employeeId: string, purpose: string, granted: boolean): Promise<void>;
+}
+```
+
+
+================================================================
+D-2. 성능 최적화
+================================================================
+
+### 데이터베이스
+- [ ] 쿼리 실행 계획 점검 (EXPLAIN ANALYZE) — 주요 페이지 API
+- [ ] Materialized View REFRESH 시간 모니터링 (8개 MV)
+- [ ] Connection pooling 설정 (Prisma: connection_limit)
+- [ ] 인덱스 추가 검토: employees(company_id, status), attendance(employee_id, date)
+
+### 프론트엔드
+- [ ] Next.js bundle 분석 (next/bundle-analyzer)
+- [ ] 동적 import: 설정 페이지, 차트 컴포넌트
+- [ ] 이미지 최적화: next/image, WebP 변환
+- [ ] React Query cacheTime 설정: 목록 5분, 설정 30분
+
+### API
+- [ ] Redis 캐시: tenant_settings (5분), 조직도 (10분), 대시보드 KPI (1분)
+- [ ] 페이지네이션 최적화: cursor 기반 (offset 대신)
+- [ ] 대용량 Excel 내보내기: 스트리밍 방식
+
+### 모니터링
+- [ ] 에러 트래킹: Sentry 연동
+- [ ] APM: 응답 시간 > 2초 알림
+- [ ] DB 쿼리 > 1초 로깅
+- [ ] 리소스 사용량 대시보드 (CPU/Memory/Disk)
+
+
+================================================================
+E. 전체 API 엔드포인트 추가분
+================================================================
+
+### 법정 보고서 (8개)
+GET    /api/v1/reports/ru/military, /military/export
+GET    /api/v1/reports/ru/p4, /57t
+GET    /api/v1/reports/cn/employee-roster, /employee-roster/export
+GET    /api/v1/reports/cn/social-insurance
+GET    /api/v1/reports/cn/new-hires, /terminations
+
+### 전자서명 КЭДО (4개)
+POST   /api/v1/kedo/documents
+GET    /api/v1/kedo/documents?employee_id=xxx
+PUT    /api/v1/kedo/documents/:id/sign
+PUT    /api/v1/kedo/documents/:id/reject
+
+### 외부 연동 (8개)
+POST   /api/v1/integrations/douzone/import-payroll
+GET    /api/v1/integrations/douzone/export-master
+POST   /api/v1/integrations/sap/sync
+POST   /api/v1/integrations/eformsign/create
+GET    /api/v1/integrations/eformsign/:id/status
+POST   /api/v1/integrations/eformsign/callback
+GET    /api/v1/integrations/settings
+
+### IPO 컴플라이언스 (3개)
+GET    /api/v1/payroll/executive-compensation
+GET    /api/v1/payroll/executive-compensation/report
+GET    /api/v1/audit/payroll-changes
+
+### GDPR (3개)
+POST   /api/v1/gdpr/access-request
+POST   /api/v1/gdpr/deletion-request
+POST   /api/v1/gdpr/portability-request
+
+
+================================================================
+F. Prisma 마이그레이션 요약
+================================================================
+
+### 신규 ENUM
+- KedoDocType: EMPLOYMENT_CONTRACT/SUPPLEMENTARY_AGREEMENT/TRANSFER_ORDER/...
+- SignatureLevel: PEP/UNEP/UKEP
+- KedoStatus: DRAFT/PENDING_SIGNATURE/SIGNED/REJECTED/EXPIRED
+- ShiftPattern: DAY_NIGHT_OFF/FOUR_ON_TWO_OFF/CUSTOM
+
+### 신규 테이블
+- kedo_documents (러시아 전자서명)
+- integration_configs (외부 시스템 연결 설정)
+- integration_sync_logs (동기화 이력)
+- recruitment_costs (채용 비용 — 채용 단가 분석)
+- shift_rotation_patterns (교대근무 패턴)
+- gdpr_requests (GDPR 요청 이력)
+- gdpr_consents (동의 기록)
+
+### 신규 lib 파일
+- lib/i18n/ (전체 디렉토리)
+- lib/integrations/douzone.ts
+- lib/integrations/sap.ts
+- lib/integrations/eformsign.ts
+- lib/integrations/m365-account.ts
+- lib/integrations/bank-transfer.ts
+- lib/esign/kedo-interface.ts
+- lib/attendance/shift-rotation.ts
+- lib/tax/ (국가별 세금 계산)
+- lib/gdpr/data-subject-rights.ts
+- lib/scripts/translate.ts
+
+
+================================================================
+G. 체크리스트 (세션 종료 전 확인)
+================================================================
+
+### Part A: 다국어
+- [ ] next-intl 설치 + 설정
+- [ ] ko.json 기준 언어 파일 작성 (500~700키)
+- [ ] en/zh/ru/vi/es/pl.json 기계 번역 초안 생성
+- [ ] 언어 선택기 UI (헤더)
+- [ ] middleware.ts locale 감지 + 리다이렉트
+- [ ] 날짜/통화/숫자 자동 포맷
+- [ ] API 에러 메시지 i18n 키 전환
+- [ ] 전체 페이지 하드코딩 문자열 → i18n 키 교체
+
+### Part B: 컴플라이언스
+- [ ] 러시아 군복무 보고서 + P-4/57-T
+- [ ] 러시아 КЭДО 전자서명 (ПЭП + kedo_documents)
+- [ ] 중국 종업원 명부 + 사회보험 신고
+- [ ] GDPR 데이터 주체 권리 API
+
+### Part C: 외부 연동 + 기술 부채
+- [ ] 더존/SAP/eformsign 인터페이스 + 설정 UI (SWIT 제외 — Teams로 이관)
+- [ ] 임원 보수 공시 + ICFR 권한 분리
+- [ ] 교대근무 자동 순환
+- [ ] 급여 구성 상세 분리
+- [ ] M365 계정 자동 비활성화
+- [ ] 채용 단가 + 성별 급여 격차 분석
+
+### Part D: 보안 + 성능
+- [ ] 보안 감사 체크리스트 전체 통과
+- [ ] DB 쿼리 성능 점검
+- [ ] Bundle 최적화
+- [ ] Redis 캐시 적용
+- [ ] 모니터링 설정
+
+### context.md 최종 업데이트
+- [ ] 전체 시스템 완성 상태 기록
+- [ ] 전체 API 수 / 페이지 수 / MV 수 / Cron 수
+- [ ] 지원 언어 7개 상태
+- [ ] 외부 연동 현황 (Teams Hub + 더존 + SAP + eformsign)
+- [ ] CTR 업무 도구 구조: Teams(허브) + HR Hub(인사) + 더존/SAP(ERP)
+- [ ] 운영 이관 체크리스트 (DB 백업, 모니터링, 배포 파이프라인)

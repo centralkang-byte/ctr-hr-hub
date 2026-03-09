@@ -6,26 +6,26 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { verifyBotSignature, routeBotCommand } from '@/lib/teams-bot'
 import { botActivitySchema } from '@/lib/schemas/teams'
+import { apiError } from '@/lib/api'
+import { unauthorized, badRequest } from '@/lib/errors'
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get('authorization')
 
   if (!verifyBotSignature(authHeader)) {
-    return NextResponse.json({ error: '인증 실패' }, { status: 401 })
+    return apiError(unauthorized('인증 실패'))
   }
 
   const body: unknown = await req.json()
 
   const parsed = botActivitySchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: '잘못된 Activity 데이터', details: parsed.error.issues },
-      { status: 400 },
-    )
+    return apiError(badRequest('잘못된 Activity 데이터'))
   }
 
   const activity = parsed.data
 
+  // Bot Framework Activity 응답 — Teams 포맷 그대로 반환
   // conversationUpdate: 봇 설치 시 환영 메시지
   if (activity.type === 'conversationUpdate') {
     return NextResponse.json({

@@ -77,7 +77,7 @@ export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
     <TooltipProvider delayDuration={0}>
       <aside
         className={cn(
-          'flex h-screen flex-col bg-[#111] text-[#CCC] transition-all duration-300',
+          'flex h-screen flex-col bg-white text-[#1C1D21] border-r border-[#F0F0F3] transition-all duration-300',
           collapsed ? 'w-16' : 'w-64',
         )}
       >
@@ -93,7 +93,7 @@ export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
           </div>
           {!collapsed && (
             <div className="min-w-0 flex-1">
-              <h1 className="truncate text-sm font-bold tracking-tight text-white">
+              <h1 className="truncate text-sm font-bold tracking-tight text-[#1C1D21]">
                 CTR HR Hub
               </h1>
             </div>
@@ -122,34 +122,34 @@ export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
         <button
           type="button"
           onClick={toggleCollapsed}
-          className="flex items-center justify-center border-t border-[#333] py-2 hover:bg-[#222]"
+          className="flex items-center justify-center border-t border-[#F0F0F3] py-2 hover:bg-[#F5F5FA]"
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {collapsed ? (
-            <ChevronRight className="h-4 w-4 text-[#888]" />
+            <ChevronRight className="h-4 w-4 text-[#8181A5]" />
           ) : (
-            <ChevronLeft className="h-4 w-4 text-[#888]" />
+            <ChevronLeft className="h-4 w-4 text-[#8181A5]" />
           )}
         </button>
 
         {/* ─── User Profile Section ─── */}
         <div
           className={cn(
-            'flex items-center gap-3 border-t border-[#333] px-3 py-3',
+            'flex items-center gap-3 border-t border-[#F0F0F3] px-3 py-3',
             collapsed && 'flex-col gap-1 px-1',
           )}
         >
-          <Avatar className="h-8 w-8 shrink-0 border border-[#555]">
+          <Avatar className="h-8 w-8 shrink-0 border border-[#F0F0F3]">
             <AvatarFallback className="bg-ctr-primary text-xs text-white">
               {userInitial}
             </AvatarFallback>
           </Avatar>
           {!collapsed && (
             <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-medium text-white">
+              <p className="truncate text-xs font-medium text-[#1C1D21]">
                 {user.name}
               </p>
-              <p className="truncate text-[10px] text-[#888]">{user.role}</p>
+              <p className="truncate text-[10px] text-[#8181A5]">{user.role}</p>
             </div>
           )}
           <Tooltip>
@@ -157,10 +157,10 @@ export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
               <button
                 type="button"
                 onClick={onSignOut}
-                className="shrink-0 rounded p-1 hover:bg-[#222]"
+                className="shrink-0 rounded p-1 hover:bg-[#F5F5FA]"
                 aria-label={tAuth('logout')}
               >
-                <LogOut className="h-4 w-4 text-[#888]" />
+                <LogOut className="h-4 w-4 text-[#8181A5]" />
               </button>
             </TooltipTrigger>
             <TooltipContent side="right" className="text-xs">
@@ -209,7 +209,7 @@ function SidebarSection({
   if (collapsed) {
     return (
       <>
-        {showDivider && <div className="mx-3 mt-2 border-t border-[#333]" />}
+        {showDivider && <div className="mx-3 mt-2 border-t border-[#F0F0F3]" />}
         <div className="flex flex-col items-center gap-1 py-1">
           {section.items.map((item) => (
             <CollapsedNavItem
@@ -227,7 +227,7 @@ function SidebarSection({
   return (
     <>
       {showDivider && (
-        <div className="mx-3 mt-4 border-t border-[#333] pt-4" />
+        <div className="mx-3 mt-4 border-t border-[#F0F0F3] pt-4" />
       )}
 
       {/* Section header (skip for home — render items directly) */}
@@ -235,18 +235,18 @@ function SidebarSection({
         <button
           type="button"
           onClick={onToggle}
-          className="flex w-full items-center justify-between px-4 py-2 hover:bg-[#222]"
+          className="flex w-full items-center justify-between px-4 py-2 hover:bg-[#F5F5FA]"
         >
           <div className="flex items-center gap-2">
-            <section.icon className="h-[18px] w-[18px] text-[#888]" />
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#888]">
+            <section.icon className="h-[18px] w-[18px] text-[#8181A5]" />
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#8181A5]">
               {getLabel(section.labelKey, section.label)}
             </span>
           </div>
           {expanded ? (
-            <ChevronUp className="h-3 w-3 text-[#666]" />
+            <ChevronUp className="h-3 w-3 text-[#8181A5]" />
           ) : (
-            <ChevronDown className="h-3 w-3 text-[#666]" />
+            <ChevronDown className="h-3 w-3 text-[#8181A5]" />
           )}
         </button>
       )}
@@ -286,7 +286,7 @@ function ExpandedNavItem({ item, pathname, getLabel }: NavItemProps) {
     return (
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="mx-2 flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-sm text-[#666]">
+          <div className="mx-2 flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-sm text-[#8181A5]">
             <item.icon className="h-[18px] w-[18px]" />
             <span className="truncate">{label}</span>
             <Lock className="ml-auto h-3 w-3" />
@@ -305,8 +305,8 @@ function ExpandedNavItem({ item, pathname, getLabel }: NavItemProps) {
       className={cn(
         'mx-2 flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
         isActive
-          ? 'bg-ctr-primary text-white'
-          : 'text-[#CCC] hover:bg-[#222]',
+          ? 'bg-[#F5F5FA] text-[#5E81F4] font-bold'
+          : 'text-[#8181A5] hover:bg-[#F5F5FA] hover:text-[#1C1D21]',
       )}
     >
       <item.icon className="h-[18px] w-[18px] shrink-0" />
@@ -316,8 +316,8 @@ function ExpandedNavItem({ item, pathname, getLabel }: NavItemProps) {
           className={cn(
             'ml-auto rounded-full px-1.5 py-0.5 text-[10px] font-medium',
             item.badge === 'new'
-              ? 'bg-ctr-primary text-white'
-              : 'bg-[#333] text-[#CCC]',
+              ? 'bg-[#5E81F4] text-white'
+              : 'bg-[#F5F5FA] text-[#8181A5]',
           )}
         >
           {item.badge.toUpperCase()}
@@ -339,7 +339,7 @@ function CollapsedNavItem({ item, pathname, getLabel }: NavItemProps) {
     return (
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-lg text-[#666]">
+          <div className="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-lg text-[#8181A5]">
             <item.icon className="h-[18px] w-[18px]" />
           </div>
         </TooltipTrigger>
@@ -358,8 +358,8 @@ function CollapsedNavItem({ item, pathname, getLabel }: NavItemProps) {
           className={cn(
             'flex h-10 w-10 items-center justify-center rounded-lg transition-colors',
             isActive
-              ? 'bg-ctr-primary text-white'
-              : 'text-[#CCC] hover:bg-[#222]',
+              ? 'bg-[#F5F5FA] text-[#5E81F4]'
+              : 'text-[#8181A5] hover:bg-[#F5F5FA]',
           )}
         >
           <item.icon className="h-[18px] w-[18px]" />

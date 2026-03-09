@@ -11,6 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Plus, Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { toast } from '@/hooks/use-toast'
 
 import type { SessionUser, PaginationInfo } from '@/types'
 import { apiClient } from '@/lib/api'
@@ -139,6 +140,19 @@ export function LeaveClient({ user }: { user: SessionUser }) {
   })
 
   const watchedDays = watch('days')
+  const watchedPolicyId = watch('policyId')
+
+  // ─── Balance preview calculation ───
+  const selectedBalance = balances.find((b) => b.policy.id === watchedPolicyId) ?? null
+  const selectedRemaining = selectedBalance
+    ? Number(selectedBalance.grantedDays) +
+      Number(selectedBalance.carryOverDays) -
+      Number(selectedBalance.usedDays) -
+      Number(selectedBalance.pendingDays)
+    : null
+  const requestedDaysNum = Number(watchedDays) || 0
+  const projectedRemaining =
+    selectedRemaining !== null ? selectedRemaining - requestedDaysNum : null
 
   // ─── Fetch balances ───
   const fetchBalances = useCallback(async () => {
@@ -227,8 +241,12 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       }
       await apiClient.post('/api/v1/leave/requests', payload)
       setDialogOpen(false)
+      toast({ title: '휴가 신청이 완료되었습니다', description: '담당자 승인 후 확정됩니다.' })
       void fetchBalances()
       void fetchRequests()
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : '휴가 신청 중 오류가 발생했습니다.'
+      toast({ title: '신청 실패', description: msg, variant: 'destructive' })
     } finally {
       setSaving(false)
     }
@@ -441,6 +459,34 @@ export function LeaveClient({ user }: { user: SessionUser }) {
               )}
             </div>
 
+            {/* ─── Balance preview ─── */}
+            {selectedBalance && selectedRemaining !== null && (
+              <div className="rounded-lg border border-[#E8E8E8] bg-[#FAFAFA] px-4 py-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-[#666]">
+                    현재 잔여:{' '}
+                    <strong className="text-[#1A1A1A]">{selectedRemaining}{t('fullDay')}</strong>
+                  </span>
+                  {requestedDaysNum > 0 && projectedRemaining !== null && (
+                    <span
+                      className={`text-sm font-semibold ${
+                        projectedRemaining < 0
+                          ? 'text-[#EF4444]'
+                          : projectedRemaining <= 3
+                          ? 'text-[#F59E0B]'
+                          : 'text-[#00C853]'
+                      }`}
+                    >
+                      신청: {requestedDaysNum}{t('fullDay')} | 잔여: {projectedRemaining}{t('fullDay')}
+                    </span>
+                  )}
+                </div>
+                {projectedRemaining !== null && projectedRemaining < 0 && (
+                  <p className="mt-1 text-xs text-[#EF4444]">잔여 휴가가 부족합니다.</p>
+                )}
+              </div>
+            )}
+
             {/* startDate */}
             <div className="space-y-2">
               <Label htmlFor="leave-start">{t('startDate')}</Label>
@@ -522,7 +568,10 @@ export function LeaveClient({ user }: { user: SessionUser }) {
               >
                 {tc('cancel')}
               </Button>
-              <Button type="submit" disabled={saving}>
+              <Button
+                type="submit"
+                disabled={saving || (projectedRemaining !== null && projectedRemaining < 0)}
+              >
                 {saving && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
                 {t('request')}
               </Button>

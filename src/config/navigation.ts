@@ -506,6 +506,15 @@ export const NAVIGATION: NavSection[] = [
         module: MODULE.RECRUITMENT,
       },
       {
+        key: 'recruitment-board',
+        labelKey: 'nav.talent.recruitmentBoard',
+        label: '칸반 보드',
+        href: '/recruitment/board',
+        icon: LayoutGrid,
+        module: MODULE.RECRUITMENT,
+        badge: 'new' as const,
+      },
+      {
         key: 'performance-admin',
         labelKey: 'nav.talent.performance',
         label: '성과 관리',

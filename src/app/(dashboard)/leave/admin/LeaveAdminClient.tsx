@@ -29,6 +29,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
+import { toast } from '@/hooks/use-toast'
 import type { SessionUser } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -155,14 +156,14 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
     setBulkLoading(true)
     try {
       // Fetch employees in the selected department
-      const empRes = await apiClient.get<{ employeeId: string }[]>(
+      const empRes = await apiClient.get<{ id: string }[]>(
         '/api/v1/employees',
         {
           departmentId: bulkForm.departmentId,
           limit: 500,
         },
       )
-      const employeeIds = (empRes.data ?? []).map((e) => e.employeeId)
+      const employeeIds = (empRes.data ?? []).map((e) => e.id)
 
       if (employeeIds.length === 0) {
         setBulkLoading(false)
@@ -177,9 +178,22 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
       })
 
       setBulkDialogOpen(false)
-      await fetchStats(year)
-    } catch {
-      // Error handled by apiClient
+      void fetchStats(year)
+      // FIX: Issue #6 — Show success feedback (previously silent)
+      toast({
+        title: tc('success'),
+        description: `${employeeIds.length}명에게 연차가 부여되었습니다.`,
+      })
+    } catch (error) {
+      // FIX: Issue #6 — Replace empty catch with explicit error handling.
+      //   Previously: errors were silently swallowed (empty catch block).
+      //   Now: log error + show toast so admin knows the operation failed.
+      console.error('[LeaveAdmin] Bulk grant failed:', error)
+      toast({
+        title: '일괄 부여 실패',
+        description: '일괄 부여 중 오류가 발생했습니다. 일부 직원의 연차가 미부여되었을 수 있습니다.',
+        variant: 'destructive',
+      })
     } finally {
       setBulkLoading(false)
     }

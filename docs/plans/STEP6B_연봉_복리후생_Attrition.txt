@@ -1,0 +1,578 @@
+# CTR HR Hub - STEP 6B: 연봉·보상 + 복리후생 + Attrition Risk + L&D + Succession
+# v3.1 (CTO 리뷰 반영 — STEP 6 분리: 6A/6B)
+# ★ 반드시 STEP0_공통규칙.txt를 먼저 읽고 적용할 것
+
+
+================================================================
+STEP 6B 프롬프트 — 연봉·보상 + 복리후생 + Attrition Risk + L&D + Succession
+================================================================
+
+## ★ 세션 시작: context.md 먼저 읽어줘
+
+이번 세션 목표: 연봉 관리 + 보상 체계 + 복리후생 + Attrition Risk 통합 +
+              L&D 교육 + Succession Planning
+
+★ v3.1: STEP 6B는 6A(성과 코어) 완료 후 진행
+  - 6A: EMS 9블록 + 캘리브레이션 + CFR + Pulse (완료)
+  - 6B: 이번 세션
+
+---
+
+
+================================================================
+기능 — 연봉·보상
+================================================================
+
+### 1. 급여 밴드 관리 (/settings/salary-bands) — HR_ADMIN
+
+**급여 밴드 CRUD**
+- DataTable: 법인 / 직급 / 직군 / 최소 / 중간값 / 최대 / 통화
+- 필터: 법인(CompanySelector) / 직급 / 직군
+- 생성/수정 폼:
+  - 법인 선택
+  - 직급 선택 (job_grades)
+  - 직군 선택 (job_categories JOIN)
+  - 최소 금액 (min_salary)
+  - 중간값 (mid_salary)
+  - 최대 금액 (max_salary)
+  - 통화 코드 (KRW/USD/CNY/INR/PLN/TRY/MXN)
+- salary_bands INSERT/UPDATE
+
+**Compa-Ratio 개념**
+- compa_ratio = 직원 현재 연봉 / 해당 밴드 mid_salary
+- 1.0 = 중간값 수준
+- < 0.8 = 저보상 🔴
+- 0.8~0.95 = 시장 대비 낮음 🟡
+- 0.95~1.05 = 적정 🟢
+- 1.05~1.20 = 높음 🔵
+- > 1.20 = 과보상 🟣
+
+---
+
+### 2. 연봉 조정 매트릭스 (/settings/salary-matrix) — HR_ADMIN
+
+**인상률 매트릭스 설정**
+- salary_adjustment_matrix CRUD
+- 3×3 매트릭스 (EMS 블록 기반):
+  - 행: 성과 등급 (Low/Mid/High → EMS 블록 그룹)
+  - 열: compa-ratio 구간 (Below/At/Above)
+  - 셀: 인상률 범위 (min% ~ max%)
+
+예시 매트릭스:
+```
+                 Compa < 0.9   0.9~1.1    Compa > 1.1
+ ───────────────────────────────────────────────────────
+ 성과 High        8~12%        5~8%        2~4%
+ (블록 6,8,9)
+ ───────────────────────────────────────────────────────
+ 성과 Mid         5~8%         3~5%        1~3%
+ (블록 2,5,7)
+ ───────────────────────────────────────────────────────
+ 성과 Low         0~3%         0~2%        0%
+ (블록 1,3,4)
+ ───────────────────────────────────────────────────────
+```
+
+- 법인별 + 연도별 설정
+- 매트릭스 복사 기능 (전년도 → 올해)
+
+---
+
+### 3. 연봉 조정 프로세스 (/compensation)
+
+#### 3-1. 연봉 조정 시뮬레이션 — HR_ADMIN
+
+**시뮬레이션 뷰 (/compensation/simulation)**
+- 대상: 해당 법인의 ACTIVE 직원 전체 (또는 부서별 필터)
+- DataTable:
+  직원명 / 부서 / 직급 / 직군 / EMS 블록 / 현재 연봉 / Compa-Ratio /
+  매트릭스 권장 인상률 / 시뮬레이션 인상률 / 시뮬레이션 신규 연봉 / 신규 Compa-Ratio
+
+- **매트릭스 자동 추천**:
+  - 직원의 EMS 블록 → 성과 등급 매핑
+  - 직원의 현재 compa-ratio → 구간 매핑
+  - 매트릭스에서 인상률 범위 추출 → 중간값을 기본 추천
+
+- **수동 조정**:
+  - HR_ADMIN이 개별 직원의 인상률 수정 가능 (인라인 편집)
+  - 매트릭스 범위 벗어남 → 🟡 경고 아이콘 (저장은 허용)
+
+- **총 예산 요약**:
+  - 총 인상 금액 합계
+  - 평균 인상률
+  - 부서별 인상률 분포
+
+**AI 연봉 조정 보조**
+- "AI 추천" 버튼 → lib/claude.ts:
+```ts
+compensationRecommendation(
+  employees: Array<{
+    name: string,
+    department: string,
+    grade: string,
+    ems_block: number,
+    current_salary: number,
+    compa_ratio: number,
+    tenure_months: number,
+    matrix_range: { min: number, max: number },
+    attrition_risk_score: number | null
+  }>,
+  budget_constraint: number | null,  // 총 예산 한도 (선택)
+  company_avg_raise: number          // 전사 평균 인상률 가이드
+): Promise<{
+  recommendations: Array<{
+    name: string,
+    suggested_raise_pct: number,
+    reason: string
+  }>,
+  budget_summary: {
+    total_increase: number,
+    avg_raise_pct: number,
+    within_budget: boolean
+  },
+  equity_notes: string[]
+}>
+prompt_version: "compensation-recommendation-v1.0"
+```
+- AiGeneratedBadge + ai_logs (COMPENSATION_RECOMMENDATION)
+
+#### 3-2. 연봉 조정 확정 — HR_ADMIN
+
+**확정 프로세스**
+1. 시뮬레이션 → "확정" 버튼
+2. 확정 확인 모달: "총 {{N}}명의 연봉이 조정됩니다. 진행하시겠습니까?"
+3. $transaction:
+   - 대상 직원별 compensation_history INSERT:
+     - change_type: ANNUAL_RAISE / PROMOTION_RAISE / MARKET_ADJUSTMENT / OTHER
+     - previous_salary, new_salary, change_percentage
+     - compa_ratio (신규 기준)
+     - effective_date
+     - approved_by
+   - employees.current_salary 업데이트 (Phase 1: employees에 current_salary 컬럼 없으면 최신 compensation_history에서 조회)
+4. audit_logs (COMPENSATION_ADJUSTMENT) 기록
+5. 알림: 각 직원에게 "연봉이 조정되었습니다" (금액은 알림에 미포함, 상세는 프로필에서 확인)
+
+#### 3-3. 연봉 이력 조회
+
+**직원 프로필 → 탭 5 (연봉이력)** — HR_ADMIN만
+- 타임라인: 변경일 / 유형 / 이전→변경 / 인상률 / compa-ratio / 승인자
+- 연봉 추이 라인 차트
+
+**Compa-Ratio 분포 — HR_ADMIN**
+- /compensation/analysis
+- 법인별 compa-ratio 분포 히스토그램
+- 직급×직군별 compa-ratio 히트맵
+- mv_compa_ratio_distribution MV 활용
+- 저보상 직원 목록 (compa < 0.8) 🔴 하이라이트
+
+---
+
+### 4. 보상 구조 (Phase 1 기본)
+
+**급여 구성 표시 (정보성)**
+- 직원 프로필 또는 Payroll 연계:
+  - 기본급
+  - 고정수당 (직책수당, 자격수당 등)
+  - 변동수당 (성과급, 인센티브)
+  - 총 연봉 = 기본급 + 고정수당 (× 12) + 변동수당
+- Phase 1: compensation_history에 총 연봉만 관리
+- Phase 2: 급여 구성 상세 분리 (기본급/수당/인센티브 별도 테이블)
+
+
+================================================================
+기능 — 복리후생
+================================================================
+
+### 5. 복리후생 정책 관리 (/settings/benefits) — HR_ADMIN
+
+**정책 CRUD**
+- DataTable: 정책명 / 유형 / 금액 / 법인 / 적용 대상 / 상태
+- 유형:
+  - MEAL (식대)
+  - TRANSPORT (교통비)
+  - HEALTH_CHECK (건강검진)
+  - CHILDCARE (보육수당)
+  - HOUSING (주거지원)
+  - EDUCATION (학자금)
+  - CULTURE (문화생활비)
+  - FLEXIBLE (선택적 복리후생)
+  - OTHER
+
+- 생성 폼:
+  - 이름 (예: "월 식대 지원")
+  - 유형 선택
+  - 금액 (월/연)
+  - 통화
+  - 법인 선택
+  - 적용 대상: ALL / FULL_TIME_ONLY / BY_GRADE / BY_TENURE
+  - 적용 조건 (BY_GRADE: 특정 직급 이상 / BY_TENURE: N개월 이상)
+  - 지급 주기: MONTHLY / QUARTERLY / ANNUALLY / ONE_TIME
+  - 시작일 / 종료일 (선택)
+- benefit_policies INSERT
+
+---
+
+### 6. 직원 복리후생 현황
+
+#### EMPLOYEE 뷰 (/benefits/me)
+- 내 복리후생 목록 카드:
+  - 정책명 + 유형 아이콘 + 금액 + 지급 주기
+  - 사용 현황 (해당되는 경우)
+- 복리후생 신청 (FLEXIBLE 유형):
+  - 신청 폼 → employee_benefits INSERT (status=PENDING)
+  - 승인 후 status=APPROVED
+
+#### HR_ADMIN 뷰 (/benefits/admin)
+- 법인별 복리후생 현황 DataTable
+- 직원별 수혜 내역 조회
+- 총 복리후생 비용 요약 (법인별, 유형별)
+
+---
+
+### 7. 수당 기록
+
+**allowance_records — 수당 지급 내역**
+- Payroll 연동용 (STEP 7)
+- HR_ADMIN이 수동 등록 또는 benefit_policies 기반 자동 생성 (cron)
+- 필드: employee_id, type, amount, currency, pay_period, description
+- DataTable: /compensation/allowances
+
+
+================================================================
+기능 — Attrition Risk 통합
+================================================================
+
+### 8. Attrition Risk 통합 모듈
+
+#### 8-1. 위험 점수 산출 로직
+
+**6요인 모델 (0~100 가중 합산)**
+
+| 요인 | 가중치 | 데이터 소스 | 산출 방식 |
+|------|--------|-----------|----------|
+| 근속 위험 | 15% | employees.hire_date | 1~2년 = 높음, 3~5년 = 중간, 5년+ = 낮음 |
+| 보상 불만족 | 25% | compa-ratio | < 0.85 = 높음, 0.85~0.95 = 중간, 0.95+ = 낮음 |
+| 성과 불일치 | 20% | EMS 블록 + compa | 고성과+저보상 = 높음, 저성과+고보상 = 중간 |
+| 매니저 관계 | 15% | 1:1 빈도 + Pulse 매니저 점수 | 30일+ 미실시 = 높음, 낮은 Pulse = 높음 |
+| 참여도 | 15% | Pulse 응답 + Recognition | 미응답 연속 = 높음, 이직 고려 YES = 매우 높음 |
+| 근태 패턴 | 10% | 지각률 + 결근 + 초과근무 | 지각 증가 추세 = 높음, 번아웃 = 높음 |
+
+**산출 실행**
+- pg_cron: 매일 새벽 3시 실행
+- SQL 함수 또는 Edge Function:
+  1. ACTIVE 직원 전체 순회
+  2. 6요인 각각 0~100 산출
+  3. 가중 합산 → total_score (0~100)
+  4. 리스크 레벨: LOW(0~39) / MEDIUM(40~69) / HIGH(70~100)
+  5. attrition_risk_history INSERT (snapshot)
+
+**v3.1 보강: AI 보정 프롬프트**
+- total_score 70+ (HIGH) 직원에 대해 AI 보정 실행
+- lib/claude.ts:
+```ts
+attritionRiskAssessment(
+  employee_name: string,
+  department: string,
+  grade: string,
+  tenure_months: number,
+  factor_scores: {
+    tenure_risk: number,
+    compensation_dissatisfaction: number,
+    performance_mismatch: number,
+    manager_relationship: number,
+    engagement: number,
+    attendance_pattern: number
+  },
+  total_score: number,
+  recent_history_summary: string,   // v3.1: 최근 6개월 인사이력 요약
+  discipline_count: number,         // v3.1: 활성 징계 건수
+  compa_ratio: number,
+  ems_block: number | null
+): Promise<{
+  adjusted_score: number,           // AI 보정 점수
+  adjusted_level: 'LOW' | 'MEDIUM' | 'HIGH',
+  risk_drivers: string[],           // 핵심 위험 요인
+  contextual_risks: string[],       // v3.1: 맥락적 위험 (강등+급여하락 조합 등)
+  retention_actions: string[],      // 권장 리텐션 액션
+  confidence: 'HIGH' | 'MEDIUM' | 'LOW'
+}>
+prompt_version: "attrition-risk-v1.1"   // v3.1 보강 버전
+```
+- AI 보정 결과 → attrition_risk_history.ai_assessment 저장
+- ai_logs (ATTRITION_RISK_ASSESSMENT) 기록
+
+#### 8-2. Attrition Risk 대시보드 (/analytics/attrition) — HR_ADMIN
+
+**전사 위험 현황**
+- KPI 카드 3개:
+  - HIGH 위험 직원 수 (🔴)
+  - MEDIUM 위험 직원 수 (🟡)
+  - 전월 대비 증감
+- 위험 분포 도넛 차트 (LOW/MEDIUM/HIGH)
+
+**HIGH 위험 직원 목록**
+- DataTable: 직원명 / 부서 / 직급 / 점수 / 레벨 / 핵심 요인 / 권장 액션
+- 행 클릭 → 상세 패널:
+  - 6요인 레이더 차트
+  - AI 보정 결과 (contextual_risks 포함)
+  - 최근 인사이력 타임라인
+  - 권장 리텐션 액션 체크리스트
+
+**부서별 히트맵**
+- 부서 × 리스크 레벨 히트맵 (색상 강도)
+- 위험 집중 부서 식별
+
+**추이 차트**
+- 월별 HIGH/MEDIUM/LOW 인원 추이 (Stacked Area Chart)
+
+#### 8-3. 매니저 뷰
+
+**직원 프로필 → Attrition Risk (HR_ADMIN만)**
+- 현재 점수 + 레벨 뱃지
+- 6요인 레이더 차트
+- AI 인사이트 (있는 경우)
+- 이력 추이 (최근 6개월 라인 차트)
+
+**MANAGER**: 직속 부하의 위험 수준만 간접 표시
+- 홈 대시보드: "팀 이직 위험 알림" (HIGH 직원 수만, 구체 점수 미표시)
+- 상세 점수는 HR_ADMIN만 열람
+
+#### 8-4. 예측 정확도 피드백 (STEP 3 퇴직 연동)
+
+- 퇴직 확정 시 해당 직원의 마지막 attrition_risk_history.total_score 조회
+- Analytics에서:
+  - 실제 퇴직자 중 HIGH 였던 비율 = True Positive Rate
+  - HIGH였으나 미퇴직 비율 = False Positive Rate
+  - STEP 7 Analytics 대시보드에 표시
+
+
+================================================================
+기능 — L&D (Learning & Development)
+================================================================
+
+### 9. 교육 과정 관리 (/settings/training) — HR_ADMIN
+
+**과정 CRUD**
+- DataTable: 과정명 / 유형 / 시간 / 법인 / 필수 여부 / 상태
+- 생성 폼:
+  - 과정명
+  - 설명 (Rich Text)
+  - 유형: ONBOARDING / COMPLIANCE / TECHNICAL / LEADERSHIP / SOFT_SKILL / CTR_VALUE / SAFETY
+  - 총 교육 시간
+  - 교육 방식: ONLINE / OFFLINE / BLENDED
+  - 필수 여부 (Boolean)
+  - 대상: ALL / BY_GRADE / BY_CATEGORY / BY_DEPARTMENT
+  - 적용 조건 (대상 상세)
+  - 법인 선택
+  - 강사 (텍스트)
+  - 교육 자료 URL 또는 파일 업로드
+- training_courses INSERT
+
+---
+
+### 10. 교육 수강 관리
+
+#### HR_ADMIN 뷰 (/training/admin)
+- 과정별 수강 현황 DataTable: 과정명 / 등록 인원 / 완료 인원 / 완료율
+- 직원별 수강 현황 검색
+- 일괄 등록: 과정 선택 → 대상 직원 다중 선택 → training_enrollments 일괄 INSERT
+
+#### EMPLOYEE 뷰 (/training/me)
+- 내 교육 목록:
+  - 필수 과정 (미완료 → 🔴 하이라이트)
+  - 선택 과정
+  - 완료 과정
+- 수강 상태: ENROLLED → IN_PROGRESS → COMPLETED / FAILED
+- 과정 클릭 → 상세 (설명 + 자료 링크)
+- "완료 처리" 버튼 (자기 신고) 또는 HR이 일괄 완료 처리
+
+#### MANAGER 뷰 (/training/team)
+- 팀원 교육 현황: 직원명 / 필수 과정 완료율 / 전체 과정 수
+
+---
+
+### 11. 교육 이력 + 성과 연계
+
+- training_enrollments.completed_at → 직원 프로필에 교육 이력 표시
+- EMS 역량 평가 시 참고 데이터: "올해 완료 교육 N건"
+- L&D Analytics (STEP 7): 부서별 교육 시간, 필수 과정 이수율
+
+
+================================================================
+기능 — Succession Planning
+================================================================
+
+### 12. 후계자 계획 (/succession) — HR_ADMIN + EXECUTIVE
+
+#### 12-1. 핵심 직책 관리
+
+**핵심 직책 목록**
+- DataTable: 직책명 / 부서 / 현 재직자 / 후보 수 / 준비도
+- 생성 폼:
+  - 직책명 (예: "생산본부장", "R&D 센터장")
+  - 대상 부서
+  - 현 재직자 (직원 선택)
+  - 중요도: CRITICAL / HIGH / MEDIUM
+  - 비고
+- succession_plans INSERT
+
+#### 12-2. 후계자 후보 관리
+
+**후보 등록**
+- 핵심 직책 선택 → "후보 추가" 버튼
+- 후보 선택 (직원 검색)
+- 준비도: READY_NOW / READY_1_2_YEARS / READY_3_5_YEARS / DEVELOPMENT_NEEDED
+- 개발 계획 (Textarea)
+- 강점 / 개발 영역 (Textarea 각각)
+- succession_candidates INSERT
+
+**후보 목록**
+- 핵심 직책별 후보 카드:
+  - 이름 + 직급 + 부서 + EMS 블록 + 준비도 뱃지
+  - 준비도 색상: READY_NOW=🟢, 1~2Y=🔵, 3~5Y=🟡, DEV=🟠
+
+**9블록 연계**
+- 후보의 EMS 블록 자동 표시 (블록 8, 9 = 핵심 인재)
+- 블록 8/9 직원 → "후계자 후보 추천" 자동 배너 (HR_ADMIN 홈)
+
+#### 12-3. Succession 대시보드
+
+- 핵심 직책 현황: 직책 수 / 후보 없는 직책 (🔴) / 평균 후보 수
+- 준비도 분포 파이 차트
+- 위험 직책 목록 (후보 0명 또는 전체 DEV_NEEDED)
+
+
+================================================================
+API
+================================================================
+
+```
+# 급여 밴드
+GET /POST          /api/v1/compensation/salary-bands            # 밴드 관리
+GET /PUT /DELETE   /api/v1/compensation/salary-bands/:id
+
+# 연봉 매트릭스
+GET /POST          /api/v1/compensation/matrix                  # 매트릭스 관리
+GET /PUT           /api/v1/compensation/matrix/:id
+POST               /api/v1/compensation/matrix/:id/copy          # 복사
+
+# 연봉 조정
+GET                /api/v1/compensation/simulation               # 시뮬레이션 데이터
+POST               /api/v1/compensation/simulation/calculate      # 매트릭스 기반 계산
+POST               /api/v1/compensation/confirm                   # 확정
+GET                /api/v1/compensation/history/:employeeId       # 이력
+GET                /api/v1/compensation/analysis                  # Compa 분석
+POST               /api/v1/ai/compensation-recommendation         # AI 추천
+
+# 복리후생
+GET /POST          /api/v1/benefits/policies                     # 정책 관리
+GET /PUT /DELETE   /api/v1/benefits/policies/:id
+GET                /api/v1/benefits/me                            # 내 복리후생
+GET                /api/v1/benefits/admin                         # 전사 현황
+POST               /api/v1/benefits/apply                         # 복리후생 신청
+PUT                /api/v1/benefits/:id/approve                   # 승인
+
+# 수당
+GET /POST          /api/v1/allowances                            # 수당 기록
+GET                /api/v1/allowances/:employeeId                 # 직원별
+
+# Attrition Risk
+GET                /api/v1/attrition/dashboard                   # 전사 대시보드
+GET                /api/v1/attrition/employees/:id               # 직원별 상세
+GET                /api/v1/attrition/department-heatmap           # 부서 히트맵
+GET                /api/v1/attrition/trend                        # 추이
+POST               /api/v1/attrition/recalculate                  # 수동 재계산 (HR)
+GET                /api/v1/attrition/accuracy                     # 예측 정확도
+
+# L&D
+GET /POST          /api/v1/training/courses                      # 과정 관리
+GET /PUT /DELETE   /api/v1/training/courses/:id
+GET                /api/v1/training/me                            # 내 교육
+GET                /api/v1/training/team                          # 팀 교육 (MANAGER)
+GET                /api/v1/training/admin                         # 전사 (HR)
+POST               /api/v1/training/enroll                        # 등록 (HR 일괄)
+PUT                /api/v1/training/enrollments/:id/complete       # 완료 처리
+
+# Succession
+GET /POST          /api/v1/succession/plans                      # 핵심 직책
+GET /PUT /DELETE   /api/v1/succession/plans/:id
+GET /POST          /api/v1/succession/plans/:id/candidates        # 후보 관리
+GET /PUT /DELETE   /api/v1/succession/candidates/:id
+GET                /api/v1/succession/dashboard                   # 대시보드
+```
+
+
+================================================================
+완료 기준
+================================================================
+
+**급여 밴드**
+- [ ] 급여 밴드 CRUD + 법인별/직급별/직군별 필터 확인
+- [ ] 통화 코드 7개 (KRW/USD/CNY/INR/PLN/TRY/MXN) 확인
+- [ ] Compa-Ratio 계산 로직 확인 (현재 연봉 / mid_salary)
+- [ ] Compa 색상 구분 5단계 확인
+
+**연봉 매트릭스**
+- [ ] 3×3 매트릭스 UI (성과 × compa 구간) 확인
+- [ ] 매트릭스 CRUD + 법인별/연도별 확인
+- [ ] 매트릭스 복사 기능 확인
+
+**연봉 조정**
+- [ ] 시뮬레이션 DataTable + 매트릭스 자동 추천 확인
+- [ ] 인라인 수동 조정 + 범위 이탈 경고 확인
+- [ ] 총 예산 요약 (인상 합계, 평균 인상률) 확인
+- [ ] AI 추천 → AiGeneratedBadge + ai_logs 확인
+- [ ] 확정 → $transaction (compensation_history + employees + audit) 확인
+- [ ] 직원 알림 발송 확인
+- [ ] 연봉 이력 타임라인 + 추이 차트 확인
+- [ ] Compa-Ratio 분포 히스토그램 + 히트맵 + mv_compa_ratio_distribution 확인
+
+**복리후생**
+- [ ] 정책 CRUD (9가지 유형) 확인
+- [ ] 적용 대상 조건 (ALL/FULL_TIME/BY_GRADE/BY_TENURE) 확인
+- [ ] EMPLOYEE 내 복리후생 조회 확인
+- [ ] FLEXIBLE 유형 신청/승인 플로우 확인
+- [ ] 수당 기록 CRUD 확인
+
+**Attrition Risk**
+- [ ] 6요인 가중 합산 로직 확인 (합계 가중치=100%)
+- [ ] pg_cron 매일 새벽 3시 실행 확인
+- [ ] 리스크 레벨 분류 (LOW/MEDIUM/HIGH) 확인
+- [ ] HIGH 직원 AI 보정 실행 확인
+- [ ] v3.1: recent_history_summary + discipline_count 포함 확인
+- [ ] v3.1: contextual_risks 결과 필드 확인
+- [ ] prompt_version: "attrition-risk-v1.1" 확인
+- [ ] 대시보드 KPI + 도넛 + 히트맵 + 추이 확인
+- [ ] 직원별 6요인 레이더 차트 확인
+- [ ] MANAGER: 팀 위험 알림만 (구체 점수 미노출) 확인
+- [ ] 예측 정확도 (TPR/FPR) 산출 로직 확인
+
+**L&D**
+- [ ] 교육 과정 CRUD (7가지 유형) 확인
+- [ ] 일괄 등록 (HR → 직원 다중 선택) 확인
+- [ ] EMPLOYEE 내 교육 목록 + 필수 미완료 하이라이트 확인
+- [ ] MANAGER 팀 교육 현황 확인
+- [ ] 수강 상태 전환 (ENROLLED→IN_PROGRESS→COMPLETED) 확인
+
+**Succession**
+- [ ] 핵심 직책 CRUD + 중요도 뱃지 확인
+- [ ] 후보 등록 + 준비도 4단계 확인
+- [ ] EMS 블록 연계 자동 표시 확인
+- [ ] 블록 8/9 → 후계자 추천 배너 확인
+- [ ] 대시보드 (위험 직책 + 준비도 분포) 확인
+
+**공통**
+- [ ] npx tsc --noEmit 에러 0개
+
+
+================================================================
+★ 세션 종료: context.md 업데이트
+================================================================
+
+반드시 포함:
+- lib/claude.ts 함수 추가: compensationRecommendation, attritionRiskAssessment
+- lib/prompts/: compensation-recommendation-v1.0.ts, attrition-risk-v1.1.ts
+- lib/attrition.ts: 6요인 산출 유틸
+- 신규 페이지 및 API 라우트 목록
+- Attrition Risk cron 설정 확인
+- 다음 세션(STEP 7) 시작 전 확인 사항

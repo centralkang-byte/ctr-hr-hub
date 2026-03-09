@@ -13,7 +13,9 @@ import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 import { z } from 'zod'
+import type { SessionUser } from '@/types'
 
 const querySchema = z.object({
   year: z.coerce.number().int().min(2020).max(2100),
@@ -31,16 +33,18 @@ interface Anomaly {
 }
 
 export const GET = withPermission(
-  async (req: NextRequest) => {
-    const params = Object.fromEntries(new URL(req.url).searchParams)
+  async (req: NextRequest, _ctx, user: SessionUser) => {
+    const searchParams = new URL(req.url).searchParams
+    const params = Object.fromEntries(searchParams)
     const { year, month } = querySchema.parse(params)
     const yearMonthStr = `${year}-${String(month).padStart(2, '0')}`
+    const companyId = resolveCompanyId(user, searchParams.get('companyId'))
 
     const anomalies: Anomaly[] = []
 
     // ── 공통 데이터 로드 ───────────────────────────────────
     const payrollItems = await prisma.payrollItem.findMany({
-      where: { run: { yearMonth: yearMonthStr } },
+      where: { run: { yearMonth: yearMonthStr, companyId } },
       include: {
         employee: {
           include: {
@@ -199,7 +203,7 @@ export const GET = withPermission(
     const prevDate = new Date(year, month - 2, 1)
     const prevYM = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, '0')}`
     const prevItems = await prisma.payrollItem.findMany({
-      where: { run: { yearMonth: prevYM } },
+      where: { run: { yearMonth: prevYM, companyId } },
       select: { employeeId: true, grossPay: true },
     })
     const prevMap = new Map(prevItems.map(i => [i.employeeId, Number(i.grossPay ?? 0)]))

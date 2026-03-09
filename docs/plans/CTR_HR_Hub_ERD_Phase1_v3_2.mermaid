@@ -1,0 +1,1496 @@
+erDiagram
+
+%% ============================================================
+%% CTR HR Hub - Phase 1 ERD v3.2
+%% v2.2 → v3.2 변경사항:
+%%   [v3.1] 퇴직관리, 징계/상벌, 연봉/보상, 복리후생, 캘리브레이션,
+%%          Pulse Survey, 근태 단말기, L&D, Succession, Payroll 확장,
+%%          Attrition Risk, EMS 9블록, 온보딩 체크인, 조직 개편 등
+%%   [v3.2] HR 챗봇(RAG/pgvector), Command Palette, 다면평가(360°),
+%%          협업 점수, Manager Insights Hub, Task-Centric 홈
+%%   테이블: 47개 → 85개 / MV: 4개 → 8개
+%% ============================================================
+
+%% ─────────────────────────────────
+%% 1. 조직 / 권한
+%% ─────────────────────────────────
+
+companies {
+  uuid      id PK
+  string    code UK
+  string    name
+  string    country_code       "KR / US / CN / IN / EU / TR / MX"
+  string    timezone           "Asia/Seoul 등"
+  string    locale             "ko / en / zh 등"
+  string    payroll_mode       "IMPORT / MANAGED"
+  boolean   is_active
+  timestamp created_at
+  timestamp deleted_at         "soft delete"
+}
+
+departments {
+  uuid      id PK
+  uuid      company_id FK
+  uuid      parent_id FK       "자기참조"
+  string    code UK
+  string    name
+  int       level
+  int       sort_order
+  boolean   is_active
+  timestamp deleted_at
+}
+
+job_grades {
+  uuid      id PK
+  uuid      company_id FK
+  string    code
+  string    name
+  int       rank_order
+  timestamp deleted_at
+}
+
+%% v3.1 신규
+job_categories {
+  uuid      id PK
+  string    code UK            "OFFICE / PRODUCTION / R_AND_D / MANAGEMENT"
+  string    name
+  string    description
+  timestamp created_at
+  timestamp deleted_at
+}
+
+%% v3.1 신규
+org_change_history {
+  uuid      id PK
+  uuid      company_id FK
+  string    change_type        "CREATE / MERGE / SPLIT / CLOSE / RENAME"
+  jsonb     before_state
+  jsonb     after_state
+  uuid      performed_by FK
+  timestamp performed_at
+}
+
+roles {
+  uuid      id PK
+  string    name UK
+  string    description
+  boolean   is_system          "기본 역할 삭제 불가"
+  timestamp deleted_at
+}
+
+permissions {
+  uuid      id PK
+  string    resource           "EMPLOYEE / ATTENDANCE 등"
+  string    action             "READ / CREATE / UPDATE / DELETE / APPROVE / EXPORT"
+  string    description
+}
+
+role_permissions {
+  uuid      id PK
+  uuid      role_id FK
+  uuid      permission_id FK
+}
+
+employee_roles {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      role_id FK
+  uuid      company_id FK
+  timestamp assigned_at
+  timestamp revoked_at
+}
+
+%% ─────────────────────────────────
+%% 2. 직원 마스터
+%% ─────────────────────────────────
+
+employees {
+  uuid      id PK
+  uuid      company_id FK
+  uuid      department_id FK
+  uuid      job_grade_id FK
+  uuid      job_category_id FK "v3.1: job_categories FK"
+  uuid      manager_id FK      "직속 상사 자기참조"
+  string    employee_code UK
+  string    first_name
+  string    last_name
+  string    name_local         "현지 이름"
+  string    work_email UK
+  string    personal_email     "ENC"
+  string    phone              "ENC"
+  string    emergency_contact  "ENC"
+  string    photo_url
+  date      birth_date         "ENC"
+  string    gender
+  string    nationality
+  string    employment_type    "FULL_TIME / CONTRACT / DISPATCH / INTERN"
+  string    status             "ACTIVE / ON_LEAVE / RESIGNED / TERMINATED"
+  date      hire_date
+  date      resignation_date
+  date      termination_date
+  timestamp onboarded_at       "v3.1: 온보딩 완료 시각"
+  decimal   attrition_risk_score "v3.1: AI 이직 위험 0~100"
+  string    attrition_risk_level "v3.1: LOW/MEDIUM/HIGH"
+  timestamp created_at
+  timestamp updated_at
+  timestamp deleted_at
+}
+
+employee_auth {
+  uuid      id PK
+  uuid      employee_id FK UK
+  string    password_hash      "Super Admin 전용"
+  boolean   mfa_enabled
+  string    mfa_secret
+  int       failed_attempts
+  timestamp locked_until
+  timestamp last_login_at
+}
+
+sso_identities {
+  uuid      id PK
+  uuid      employee_id FK
+  string    provider           "microsoft"
+  string    provider_uid
+  string    email
+  timestamp linked_at
+}
+
+sso_sessions {
+  uuid      id PK
+  uuid      employee_id FK
+  string    provider
+  string    session_token
+  string    ip_address
+  string    user_agent
+  string    device_type        "WEB / MOBILE"
+  timestamp created_at
+  timestamp revoked_at
+}
+
+employee_histories {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      company_id FK
+  string    change_type        "HIRE / PROMOTION / TRANSFER / DEMOTION / GRADE_CHANGE / DEPT_CHANGE / STATUS_CHANGE / TRANSFER_CROSS_COMPANY"
+  jsonb     before_snapshot
+  jsonb     after_snapshot
+  uuid      from_company_id FK "v3.1: 법인간 전입 시"
+  uuid      to_company_id FK   "v3.1: 법인간 전입 시"
+  string    reason
+  uuid      performed_by FK
+  timestamp effective_date
+  timestamp created_at
+}
+
+employee_documents {
+  uuid      id PK
+  uuid      employee_id FK
+  string    doc_type           "CONTRACT / CERT / ID / OTHER"
+  string    title
+  string    file_key           "S3 key"
+  timestamp uploaded_at
+  timestamp deleted_at
+}
+
+%% v3.1 신규
+profile_change_requests {
+  uuid      id PK
+  uuid      employee_id FK
+  string    field_name
+  string    old_value
+  string    new_value
+  string    status             "PENDING / APPROVED / REJECTED"
+  string    rejection_reason
+  uuid      reviewed_by FK
+  timestamp reviewed_at
+  timestamp created_at
+}
+
+%% ─────────────────────────────────
+%% 3. 온보딩 / 퇴직
+%% ─────────────────────────────────
+
+onboarding_templates {
+  uuid      id PK
+  uuid      company_id FK
+  string    name
+  string    target_type        "NEW_HIRE / TRANSFER / REHIRE"
+  boolean   is_active
+  timestamp deleted_at
+}
+
+onboarding_tasks {
+  uuid      id PK
+  uuid      template_id FK
+  string    title
+  string    description
+  string    category           "HR / IT / TEAM / COMPLIANCE"
+  string    assignee_type      "EMPLOYEE / MANAGER / HR / IT"
+  int       due_days           "입사 후 N일"
+  int       sort_order
+  timestamp deleted_at
+}
+
+employee_onboarding {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      template_id FK
+  string    status             "IN_PROGRESS / COMPLETED"
+  timestamp started_at
+  timestamp completed_at
+}
+
+employee_onboarding_tasks {
+  uuid      id PK
+  uuid      onboarding_id FK
+  uuid      task_id FK
+  string    status             "PENDING / IN_PROGRESS / DONE / SKIPPED"
+  uuid      completed_by FK
+  timestamp completed_at
+  string    note
+}
+
+%% v3.1 신규
+onboarding_checkins {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      company_id FK
+  int       week_number        "1 / 2 / 4 / 8 / 12"
+  int       mood               "1~5"
+  int       energy             "1~5"
+  int       belonging          "1~5"
+  text      comment
+  text      ai_summary
+  string    prompt_version
+  timestamp created_at
+}
+
+%% v3.1 신규
+offboarding_checklists {
+  uuid      id PK
+  uuid      company_id FK
+  string    name
+  string    target_type        "VOLUNTARY / INVOLUNTARY / RETIREMENT / CONTRACT_END"
+  boolean   is_active
+  timestamp deleted_at
+}
+
+%% v3.1 신규
+offboarding_tasks {
+  uuid      id PK
+  uuid      checklist_id FK
+  string    title
+  string    assignee_type      "EMPLOYEE / MANAGER / HR / IT"
+  int       sort_order
+  timestamp deleted_at
+}
+
+%% v3.1 신규
+employee_offboarding {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      checklist_id FK
+  string    offboarding_type
+  date      last_working_date
+  string    reason
+  uuid      handover_to_id FK
+  string    status             "IN_PROGRESS / COMPLETED"
+  timestamp started_at
+  timestamp completed_at
+}
+
+%% v3.1 신규
+employee_offboarding_tasks {
+  uuid      id PK
+  uuid      offboarding_id FK
+  uuid      task_id FK
+  string    status             "PENDING / IN_PROGRESS / DONE / SKIPPED"
+  uuid      completed_by FK
+  timestamp completed_at
+}
+
+%% v3.1 신규
+exit_interviews {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      company_id FK
+  string    primary_reason     "8가지 사유"
+  int       satisfaction       "1~5"
+  int       recommend_score    "1~10"
+  text      feedback
+  text      ai_summary
+  string    prompt_version
+  uuid      conducted_by FK
+  timestamp conducted_at
+}
+
+%% ─────────────────────────────────
+%% 4. 근태 / 휴가 / 단말기
+%% ─────────────────────────────────
+
+work_schedules {
+  uuid      id PK
+  uuid      company_id FK
+  string    name
+  time      start_time
+  time      end_time
+  int       break_minutes
+  string    type               "FIXED / FLEXIBLE / SHIFT"
+  boolean   is_default
+  timestamp deleted_at
+}
+
+employee_schedules {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      schedule_id FK
+  date      effective_from
+  date      effective_to
+}
+
+attendances {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      company_id FK
+  date      work_date
+  timestamp clock_in
+  timestamp clock_out
+  string    clock_in_method    "WEB / MOBILE_GPS / QR / TERMINAL"
+  string    clock_out_method
+  decimal   total_hours
+  decimal   overtime_hours
+  string    status             "NORMAL / LATE / EARLY_LEAVE / ABSENT / HOLIDAY_WORK"
+  uuid      terminal_id FK     "v3.1: 단말기 출퇴근 시"
+  string    note
+  timestamp created_at
+  timestamp updated_at
+}
+
+%% v3.1 신규
+attendance_terminals {
+  uuid      id PK
+  uuid      company_id FK
+  string    terminal_code UK
+  string    name
+  string    location
+  string    secret_hash
+  boolean   is_active
+  timestamp last_heartbeat
+  timestamp created_at
+}
+
+leave_policies {
+  uuid      id PK
+  uuid      company_id FK
+  string    leave_type         "ANNUAL / SICK / MATERNITY / PATERNITY / BEREAVEMENT / MARRIAGE / PUBLIC_DUTY / STUDY / UNPAID / OTHER"
+  string    name
+  decimal   default_days
+  boolean   is_paid
+  boolean   is_statutory
+  string    accrual_type       "FRONT_LOADED / MONTHLY_ACCRUAL"
+  decimal   max_carryover_days
+  timestamp deleted_at
+}
+
+employee_leave_balances {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      policy_id FK
+  int       year
+  decimal   entitled_days
+  decimal   used_days
+  decimal   carried_days
+  decimal   remaining_days
+}
+
+leave_requests {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      policy_id FK
+  uuid      company_id FK
+  date      start_date
+  date      end_date
+  decimal   days
+  string    day_type           "FULL_DAY / HALF_DAY_AM / HALF_DAY_PM"
+  string    reason
+  string    status             "PENDING / APPROVED / REJECTED / CANCELLED"
+  uuid      approved_by FK
+  timestamp approved_at
+  string    rejection_reason
+  timestamp created_at
+  timestamp deleted_at
+}
+
+holidays {
+  uuid      id PK
+  uuid      company_id FK
+  string    name
+  date      holiday_date
+  boolean   is_recurring
+}
+
+%% ─────────────────────────────────
+%% 5. 채용 (ATS)
+%% ─────────────────────────────────
+
+job_postings {
+  uuid      id PK
+  uuid      company_id FK
+  uuid      department_id FK
+  uuid      job_grade_id FK
+  uuid      job_category_id FK "v3.1"
+  string    title
+  text      description
+  text      requirements
+  string    employment_type
+  string    status             "DRAFT / OPEN / CLOSED / CANCELLED"
+  int       headcount
+  date      deadline
+  text      ai_generated_description "v3.1"
+  string    prompt_version
+  uuid      created_by FK
+  timestamp created_at
+  timestamp deleted_at
+}
+
+applicants {
+  uuid      id PK
+  string    name
+  string    email
+  string    phone              "ENC"
+  string    resume_file_key
+  string    source             "DIRECT / REFERRAL / AGENCY / JOB_BOARD"
+  timestamp created_at
+}
+
+applications {
+  uuid      id PK
+  uuid      posting_id FK
+  uuid      applicant_id FK
+  string    current_stage      "APPLIED / SCREENING / INTERVIEW_1 / INTERVIEW_2 / FINAL / OFFER / HIRED / REJECTED"
+  decimal   ai_match_score     "v3.1: AI 이력서 분석 점수"
+  text      ai_screen_summary
+  jsonb     ai_analysis        "v3.1: strengths, concerns, fit_assessment"
+  string    prompt_version
+  string    rejection_reason
+  decimal   offered_salary
+  date      offer_date
+  date      expected_start_date
+  string    status             "ACTIVE / WITHDRAWN / HIRED / REJECTED"
+  timestamp created_at
+}
+
+interview_schedules {
+  uuid      id PK
+  uuid      application_id FK
+  string    interview_type     "PHONE / VIDEO / ONSITE / PANEL"
+  timestamp scheduled_at
+  int       duration_minutes
+  string    location
+  string    status             "SCHEDULED / COMPLETED / CANCELLED / NO_SHOW"
+}
+
+interview_evaluations {
+  uuid      id PK
+  uuid      schedule_id FK
+  uuid      evaluator_id FK
+  int       technical_score    "1~5"
+  int       problem_solving    "1~5"
+  int       communication      "1~5"
+  int       culture_fit        "1~5"
+  int       ctr_values         "v3.1: 1~5"
+  int       overall_score      "1~5"
+  string    recommendation     "STRONG_YES / YES / NEUTRAL / NO / STRONG_NO"
+  text      comments
+  timestamp created_at
+}
+
+competency_library {
+  uuid      id PK
+  string    name
+  string    category
+  string    description
+  timestamp deleted_at
+}
+
+%% ─────────────────────────────────
+%% 6. 성과 관리 / EMS 9블록 / 다면평가
+%% ─────────────────────────────────
+
+performance_cycles {
+  uuid      id PK
+  uuid      company_id FK
+  string    name
+  int       year
+  string    half               "H1 / H2 / ANNUAL"
+  string    status             "DRAFT / GOAL_SETTING / IN_PROGRESS / SELF_EVAL / MANAGER_EVAL / CALIBRATION / FINALIZED"
+  date      goal_start
+  date      goal_end
+  date      eval_start
+  date      eval_end
+  boolean   peer_review_enabled "v3.2"
+  int       peer_min_count      "v3.2: 동료 평가자 최소 수"
+  int       peer_max_count      "v3.2: 동료 평가자 최대 수"
+  boolean   anonymous_peer_review "v3.2: 동료 익명 여부"
+  decimal   peer_weight         "v3.2: EMS 반영 가중치 0~1"
+  timestamp created_at
+}
+
+%% v3.1 신규
+ems_block_config {
+  uuid      id PK
+  uuid      company_id FK
+  string    block_label        "1~9"
+  string    performance_level  "LOW / MID / HIGH"
+  string    competency_level   "LOW / MID / HIGH"
+  string    color
+  string    recommended_action
+}
+
+mbo_goals {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      cycle_id FK
+  uuid      company_id FK
+  string    title
+  text      description
+  int       weight             "가중치 %"
+  string    status             "DRAFT / SUBMITTED / APPROVED / REVISION_REQUESTED"
+  uuid      approved_by FK
+  timestamp approved_at
+  decimal   achievement_pct
+  timestamp created_at
+  timestamp updated_at
+}
+
+mbo_progress {
+  uuid      id PK
+  uuid      goal_id FK
+  decimal   progress_pct
+  text      note
+  timestamp recorded_at
+}
+
+performance_evaluations {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      cycle_id FK
+  uuid      company_id FK
+  string    evaluator_type     "SELF / MANAGER"
+  uuid      evaluator_id FK
+  decimal   performance_score  "MBO 가중 평균 1~5"
+  decimal   competency_score   "행동 역량 평균 1~5"
+  string    ems_block          "1~9"
+  text      strengths
+  text      improvements
+  text      overall_comment
+  text      ai_suggested_comment "v3.1"
+  string    prompt_version
+  string    status             "DRAFT / SUBMITTED / CONFIRMED"
+  decimal   peer_review_avg    "v3.2: 다면평가 평균"
+  decimal   adjusted_competency "v3.2: peer_weight 반영"
+  timestamp created_at
+  timestamp updated_at
+}
+
+%% v3.1 신규
+calibration_rules {
+  uuid      id PK
+  uuid      company_id FK
+  uuid      cycle_id FK
+  string    ems_block
+  decimal   target_pct
+  decimal   min_pct
+  decimal   max_pct
+  boolean   forced_distribution
+}
+
+%% v3.1 신규
+calibration_sessions {
+  uuid      id PK
+  uuid      cycle_id FK
+  uuid      company_id FK
+  uuid      department_id FK
+  string    status             "DRAFT / IN_PROGRESS / COMPLETED"
+  text      ai_analysis
+  string    prompt_version
+  uuid      facilitator_id FK
+  timestamp created_at
+  timestamp completed_at
+}
+
+%% v3.1 신규
+calibration_adjustments {
+  uuid      id PK
+  uuid      session_id FK
+  uuid      evaluation_id FK
+  string    original_block
+  string    adjusted_block
+  string    reason
+  uuid      adjusted_by FK
+  timestamp adjusted_at
+}
+
+%% v3.2 신규
+peer_review_nominations {
+  uuid      id PK
+  uuid      cycle_id FK
+  uuid      employee_id FK     "피평가자"
+  uuid      nominee_id FK      "평가자 후보"
+  string    nomination_source  "AI_RECOMMENDED / SELF_NOMINATED / MANAGER_ASSIGNED / HR_ASSIGNED"
+  decimal   collaboration_total_score
+  string    status             "PROPOSED / APPROVED / REJECTED / COMPLETED"
+  uuid      approved_by FK
+  timestamp approved_at
+  timestamp created_at
+}
+
+%% v3.2 신규
+collaboration_scores {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      peer_id FK
+  uuid      company_id FK
+  string    score_type         "RECOGNITION / ONE_ON_ONE / SAME_DEPARTMENT / INTERVIEW_PANEL / CROSS_TRANSFER"
+  int       raw_count
+  decimal   weighted_score
+  date      period_start
+  date      period_end
+  timestamp created_at
+}
+
+%% ─────────────────────────────────
+%% 7. CFR (1:1 / Recognition / Pulse)
+%% ─────────────────────────────────
+
+one_on_ones {
+  uuid      id PK
+  uuid      manager_id FK
+  uuid      employee_id FK
+  uuid      company_id FK
+  string    meeting_type       "REGULAR / AD_HOC / GOAL_REVIEW / DEVELOPMENT"
+  timestamp scheduled_at
+  text      agenda
+  text      notes
+  text      action_items       "JSON array"
+  text      ai_summary
+  boolean   ai_summary_edited
+  string    prompt_version
+  string    status             "SCHEDULED / COMPLETED / CANCELLED"
+  timestamp completed_at
+}
+
+recognitions {
+  uuid      id PK
+  uuid      sender_id FK
+  uuid      receiver_id FK
+  uuid      company_id FK
+  string    ctr_value          "CHALLENGE / TRUST / RESPONSIBILITY / RESPECT"
+  text      message
+  string    visibility         "TEAM / DEPARTMENT / COMPANY / ALL"
+  int       like_count
+  timestamp created_at
+}
+
+%% v3.1 신규
+pulse_surveys {
+  uuid      id PK
+  uuid      company_id FK
+  string    title
+  string    target_scope       "COMPANY / DEPARTMENT / ALL"
+  uuid      target_department_id FK
+  string    frequency          "WEEKLY / BI_WEEKLY / MONTHLY / QUARTERLY / ONE_TIME"
+  boolean   is_anonymous
+  string    status             "DRAFT / ACTIVE / CLOSED"
+  timestamp start_date
+  timestamp end_date
+  timestamp created_at
+}
+
+%% v3.1 신규
+pulse_questions {
+  uuid      id PK
+  uuid      survey_id FK
+  string    question_text
+  string    question_type      "RATING_1_5 / RATING_1_10 / YES_NO / TEXT / MULTIPLE_CHOICE"
+  jsonb     options            "MULTIPLE_CHOICE 보기"
+  string    category           "SATISFACTION / SAFETY / MANAGER / GROWTH / WORKLOAD / VALUES / COLLABORATION / DIRECTION / RETENTION / OPEN"
+  int       sort_order
+}
+
+%% v3.1 신규
+pulse_responses {
+  uuid      id PK
+  uuid      question_id FK
+  uuid      employee_id FK     "익명 시 null"
+  uuid      company_id FK
+  string    answer_value
+  text      answer_text
+  timestamp created_at
+}
+
+%% ─────────────────────────────────
+%% 8. 징계 / 상벌
+%% ─────────────────────────────────
+
+%% v3.1 신규
+disciplinary_actions {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      company_id FK
+  string    action_type        "VERBAL_WARNING / WRITTEN_WARNING / REPRIMAND / SUSPENSION / DEMOTION / SALARY_REDUCTION / TERMINATION"
+  text      description
+  date      action_date
+  date      expiry_date
+  int       suspension_days    "SUSPENSION 시"
+  decimal   reduction_pct      "SALARY_REDUCTION 시"
+  int       reduction_months
+  string    status             "ACTIVE / EXPIRED / APPEALED / REVOKED"
+  uuid      issued_by FK
+  uuid      approved_by FK
+  timestamp created_at
+}
+
+%% v3.1 신규
+reward_records {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      company_id FK
+  string    reward_type        "COMMENDATION / BONUS / PROMOTION_REWARD / INNOVATION / LONG_SERVICE / CTR_VALUE_AWARD / OTHER"
+  text      description
+  decimal   amount
+  string    ctr_value          "CTR_VALUE_AWARD 시"
+  int       service_years      "LONG_SERVICE 시"
+  date      reward_date
+  uuid      issued_by FK
+  timestamp created_at
+}
+
+%% ─────────────────────────────────
+%% 9. 연봉 / 보상 / 복리후생
+%% ─────────────────────────────────
+
+%% v3.1 신규
+salary_bands {
+  uuid      id PK
+  uuid      company_id FK
+  uuid      job_grade_id FK
+  uuid      job_category_id FK
+  string    currency           "KRW / USD / CNY / INR / PLN / TRY / MXN"
+  decimal   min_salary
+  decimal   mid_salary
+  decimal   max_salary
+  date      effective_from
+  date      effective_to
+  timestamp created_at
+  timestamp deleted_at
+}
+
+%% v3.1 신규
+compensation_history {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      company_id FK
+  string    change_type        "HIRE / ANNUAL_INCREASE / PROMOTION / MARKET_ADJUSTMENT / DEMOTION / TRANSFER / OTHER"
+  decimal   previous_base_salary
+  decimal   new_base_salary
+  string    currency
+  decimal   change_pct
+  date      effective_date
+  string    reason
+  uuid      approved_by FK
+  string    ems_block_at_time
+  decimal   compa_ratio
+  timestamp created_at
+}
+
+%% v3.1 신규
+salary_adjustment_matrix {
+  uuid      id PK
+  uuid      company_id FK
+  uuid      cycle_id FK
+  string    ems_block
+  decimal   recommended_increase_pct
+  decimal   min_increase_pct
+  decimal   max_increase_pct
+  timestamp created_at
+}
+
+%% v3.1 신규
+benefit_policies {
+  uuid      id PK
+  uuid      company_id FK
+  string    name
+  string    category           "MEAL / TRANSPORT / EDUCATION / HEALTH / HOUSING / CHILDCARE / CULTURE / FLEXIBLE / OTHER"
+  decimal   amount
+  string    frequency          "MONTHLY / QUARTERLY / ANNUAL / ONE_TIME"
+  string    eligibility        "ALL / FULL_TIME_ONLY / BY_GRADE / BY_TENURE"
+  boolean   requires_approval
+  boolean   is_active
+  timestamp deleted_at
+}
+
+%% v3.1 신규
+employee_benefits {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      policy_id FK
+  string    status             "ACTIVE / PENDING / EXPIRED"
+  date      enrolled_date
+  date      expiry_date
+}
+
+%% v3.1 신규
+allowance_records {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      company_id FK
+  string    allowance_type
+  decimal   amount
+  string    currency
+  date      effective_from
+  date      effective_to
+  string    reason
+  uuid      approved_by FK
+  timestamp created_at
+}
+
+%% ─────────────────────────────────
+%% 10. Payroll
+%% ─────────────────────────────────
+
+%% v3.1 확장 (v2.2 payroll_records → payroll_runs + payroll_items)
+payroll_runs {
+  uuid      id PK
+  uuid      company_id FK
+  int       year
+  int       month
+  string    run_type           "REGULAR / BONUS / SEVERANCE"
+  string    status             "DRAFT / CALCULATING / REVIEW / APPROVED / PAID / CANCELLED"
+  decimal   total_gross
+  decimal   total_deductions
+  decimal   total_net
+  text      ai_anomaly_summary "v3.1"
+  string    prompt_version
+  uuid      approved_by FK
+  timestamp approved_at
+  timestamp paid_at
+  timestamp created_at
+}
+
+%% v3.1 신규
+payroll_items {
+  uuid      id PK
+  uuid      run_id FK
+  uuid      employee_id FK
+  decimal   base_salary
+  decimal   overtime_pay
+  decimal   allowances
+  decimal   gross_pay
+  decimal   deduction_national_pension  "한국 4대보험"
+  decimal   deduction_health_insurance
+  decimal   deduction_employment_insurance
+  decimal   deduction_income_tax
+  decimal   deduction_local_tax
+  decimal   total_deductions
+  decimal   net_pay
+  boolean   is_anomaly
+  string    anomaly_type
+  jsonb     adjustment
+  string    adjustment_reason
+  uuid      adjusted_by FK
+  timestamp created_at
+}
+
+%% 기존 유지 (해외 IMPORT용)
+payroll_records {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      company_id FK
+  int       year
+  int       month
+  string    payroll_mode       "IMPORT / MANAGED"
+  string    source_system
+  decimal   gross_salary
+  decimal   deductions
+  decimal   net_salary
+  jsonb     details
+  string    status             "DRAFT / CONFIRMED"
+  uuid      confirmed_by FK
+  timestamp confirmed_at
+  timestamp created_at
+}
+
+payroll_entries {
+  uuid      id PK
+  uuid      payroll_record_id FK
+  string    entry_type
+  string    entry_name
+  decimal   amount
+  int       sort_order
+}
+
+payroll_insurance_kr {
+  uuid      id PK
+  uuid      payroll_record_id FK
+  decimal   national_pension
+  decimal   health_insurance
+  decimal   long_term_care
+  decimal   employment_insurance
+  decimal   industrial_accident
+  decimal   income_tax
+  decimal   local_income_tax
+}
+
+%% ─────────────────────────────────
+%% 11. Attrition Risk / L&D / Succession
+%% ─────────────────────────────────
+
+%% v3.1 신규
+attrition_risk_history {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      company_id FK
+  decimal   tenure_score
+  decimal   compensation_score
+  decimal   performance_score
+  decimal   manager_score
+  decimal   engagement_score
+  decimal   attendance_score
+  decimal   total_score
+  string    risk_level         "LOW / MEDIUM / HIGH"
+  text      ai_assessment
+  string    prompt_version
+  date      snapshot_date
+  timestamp created_at
+}
+
+%% v3.1 신규
+training_courses {
+  uuid      id PK
+  uuid      company_id FK
+  string    title
+  string    course_type        "ONBOARDING / COMPLIANCE / TECHNICAL / LEADERSHIP / SOFT_SKILL / CTR_VALUE / SAFETY"
+  text      description
+  int       duration_hours
+  boolean   is_mandatory
+  boolean   is_active
+  timestamp created_at
+  timestamp deleted_at
+}
+
+%% v3.1 신규
+training_enrollments {
+  uuid      id PK
+  uuid      course_id FK
+  uuid      employee_id FK
+  string    status             "ENROLLED / IN_PROGRESS / COMPLETED / FAILED"
+  date      enrolled_date
+  date      completed_date
+  decimal   score
+  timestamp created_at
+}
+
+%% v3.1 신규
+succession_plans {
+  uuid      id PK
+  uuid      company_id FK
+  uuid      position_department_id FK
+  uuid      position_job_grade_id FK
+  string    position_title
+  string    criticality        "CRITICAL / HIGH / MEDIUM"
+  uuid      current_holder_id FK
+  string    status             "ACTIVE / FILLED / CLOSED"
+  timestamp created_at
+  timestamp updated_at
+}
+
+%% v3.1 신규
+succession_candidates {
+  uuid      id PK
+  uuid      plan_id FK
+  uuid      candidate_id FK
+  string    readiness          "READY_NOW / READY_1_2_YEARS / READY_3_5_YEARS / DEVELOPMENT_NEEDED"
+  string    ems_block
+  text      development_notes
+  uuid      nominated_by FK
+  timestamp created_at
+}
+
+%% ─────────────────────────────────
+%% 12. HR 챗봇 (RAG) — v3.2 신규
+%% ─────────────────────────────────
+
+%% ─────────────────────────────────
+%% 11B. 설정 커스터마이제이션 — v3.2 신규
+%% ─────────────────────────────────
+
+tenant_settings {
+  uuid      id PK
+  uuid      company_id FK UK
+  string    logo_url
+  string    favicon_url
+  string    primary_color      "기본 #1B3A5C"
+  string    secondary_color
+  string    accent_color
+  jsonb     core_values        "핵심가치 배열"
+  jsonb     enabled_modules    "활성 모듈 배열"
+  int       rating_scale_min   "기본 1"
+  int       rating_scale_max   "기본 5"
+  jsonb     rating_labels
+  jsonb     grade_labels       "S/A/B/C/D 라벨"
+  jsonb     dashboard_layout   "역할별 위젯 배치"
+  string    default_locale     "ko"
+  int       fiscal_year_start_month "1~12"
+  int       probation_months   "기본 3"
+  decimal   max_overtime_weekly_hours "기본 52"
+  string    timezone
+  timestamp created_at
+  timestamp updated_at
+}
+
+term_overrides {
+  uuid      id PK
+  uuid      company_id FK
+  string    term_key           "department / job_grade 등"
+  string    label_ko
+  string    label_en
+  string    label_local
+  timestamp created_at
+  timestamp updated_at
+}
+
+tenant_enum_options {
+  uuid      id PK
+  uuid      company_id FK
+  string    enum_group         "leave_type / employment_type 등"
+  string    option_key
+  string    label
+  string    color
+  string    icon
+  int       sort_order
+  boolean   is_system          "true면 삭제 불가"
+  boolean   is_active
+  timestamp created_at
+}
+
+custom_fields {
+  uuid      id PK
+  uuid      company_id FK
+  string    entity_type        "EMPLOYEE / APPLICANT / JOB_POSTING / LEAVE_REQUEST / EVALUATION"
+  string    field_key
+  string    field_label
+  string    field_type         "TEXT / NUMBER / DATE / SELECT / MULTI_SELECT / BOOLEAN / FILE"
+  jsonb     options
+  boolean   is_required
+  boolean   is_searchable
+  boolean   is_visible_to_employee
+  int       sort_order
+  string    section_label
+  timestamp created_at
+  timestamp updated_at
+  timestamp deleted_at
+}
+
+custom_field_values {
+  uuid      id PK
+  uuid      field_id FK
+  uuid      entity_id          "employees.id 등"
+  string    value_text
+  decimal   value_number
+  timestamp value_date
+  jsonb     value_json
+  boolean   value_boolean
+  timestamp created_at
+  timestamp updated_at
+}
+
+workflow_rules {
+  uuid      id PK
+  uuid      company_id FK
+  string    workflow_type      "LEAVE_APPROVAL / PROFILE_CHANGE 등"
+  string    name
+  int       total_steps
+  boolean   is_active
+  jsonb     conditions         "적용 조건"
+  timestamp created_at
+  timestamp updated_at
+  timestamp deleted_at
+}
+
+workflow_steps {
+  uuid      id PK
+  uuid      rule_id FK
+  int       step_order
+  string    approver_type      "DIRECT_MANAGER / DEPARTMENT_HEAD / HR_ADMIN / SPECIFIC_ROLE / SPECIFIC_EMPLOYEE"
+  uuid      approver_role_id FK
+  uuid      approver_employee_id FK
+  int       auto_approve_after_hours
+  boolean   can_skip
+  timestamp created_at
+}
+
+email_templates {
+  uuid      id PK
+  uuid      company_id FK
+  string    event_type         "LEAVE_APPROVED 등"
+  string    channel            "EMAIL / PUSH / IN_APP"
+  string    locale             "ko / en"
+  string    subject
+  text      body               "Handlebars 템플릿"
+  jsonb     variables          "사용 가능 변수 목록"
+  boolean   is_active
+  boolean   is_system
+  timestamp created_at
+  timestamp updated_at
+}
+
+export_templates {
+  uuid      id PK
+  uuid      company_id FK
+  string    entity_type        "EMPLOYEE / ATTENDANCE 등"
+  string    name
+  jsonb     columns            "컬럼 정의 배열"
+  string    file_format        "XLSX / CSV"
+  boolean   is_default
+  uuid      created_by FK
+  timestamp created_at
+  timestamp updated_at
+  timestamp deleted_at
+}
+
+%% ─────────────────────────────────
+%% 12. HR 챗봇 (RAG) — v3.2 신규
+%% ─────────────────────────────────
+
+hr_documents {
+  uuid      id PK
+  uuid      company_id FK
+  string    title
+  string    doc_type           "EMPLOYMENT_RULES / HR_POLICY / BENEFIT_GUIDE / SAFETY_MANUAL / EMPLOYEE_HANDBOOK / OTHER"
+  string    file_url
+  text      content_text
+  string    version
+  string    locale
+  uuid      uploaded_by FK
+  boolean   is_active
+  timestamp created_at
+  timestamp updated_at
+  timestamp deleted_at
+}
+
+hr_document_chunks {
+  uuid      id PK
+  uuid      document_id FK
+  int       chunk_index
+  text      content
+  vector    embedding          "vector(1536)"
+  int       token_count
+  jsonb     metadata
+  timestamp created_at
+}
+
+hr_chat_sessions {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      company_id FK
+  string    title
+  boolean   is_active
+  timestamp created_at
+  timestamp updated_at
+}
+
+hr_chat_messages {
+  uuid      id PK
+  uuid      session_id FK
+  string    role               "USER / ASSISTANT"
+  text      content
+  jsonb     sources
+  decimal   confidence_score
+  boolean   escalated
+  uuid      escalated_to FK
+  timestamp escalated_at
+  boolean   escalation_resolved
+  string    feedback           "POSITIVE / NEGATIVE"
+  timestamp created_at
+}
+
+%% ─────────────────────────────────
+%% 13. 알림 / AI / 감사
+%% ─────────────────────────────────
+
+notification_triggers {
+  uuid      id PK
+  uuid      company_id FK
+  string    event_type
+  string    channel            "IN_APP / EMAIL / PUSH"
+  string    target_role
+  boolean   is_active
+  jsonb     condition
+  timestamp deleted_at
+}
+
+notifications {
+  uuid      id PK
+  uuid      employee_id FK
+  uuid      trigger_id FK
+  string    channel
+  string    title
+  text      body
+  string    link_url
+  boolean   is_read
+  timestamp read_at
+  timestamp created_at
+}
+
+ai_logs {
+  uuid      id PK
+  uuid      employee_id FK
+  string    function_name
+  string    prompt_version
+  jsonb     input_summary
+  jsonb     output_summary
+  int       input_tokens
+  int       output_tokens
+  decimal   cost_usd
+  int       latency_ms
+  int       feedback_score     "1~5"
+  string    error_message
+  timestamp created_at
+}
+
+audit_logs {
+  uuid      id PK
+  uuid      actor_id FK
+  string    action             "CREATE / UPDATE / DELETE / VIEW / EXPORT"
+  string    resource_type
+  string    resource_id
+  uuid      company_id FK
+  jsonb     changes
+  string    ip_address
+  string    user_agent
+  string    device_type        "WEB / MOBILE"
+  timestamp created_at
+}
+
+%% ─────────────────────────────────
+%% 14. Materialized Views (8개)
+%% ─────────────────────────────────
+
+mv_headcount_daily {
+  date      snapshot_date
+  uuid      company_id
+  uuid      department_id
+  string    employment_type
+  uuid      job_category_id
+  int       headcount
+  timestamp refreshed_at
+}
+
+mv_attendance_weekly {
+  uuid      employee_id
+  date      week_start
+  decimal   total_hours
+  decimal   overtime_hours
+  int       late_count
+  int       absent_count
+  timestamp refreshed_at
+}
+
+mv_performance_summary {
+  uuid      cycle_id
+  uuid      department_id
+  string    ems_block
+  int       employee_count
+  decimal   avg_performance
+  decimal   avg_competency
+  timestamp refreshed_at
+}
+
+mv_recruitment_funnel {
+  uuid      posting_id
+  string    stage
+  int       count
+  decimal   conversion_rate
+  timestamp refreshed_at
+}
+
+%% v3.1 신규
+mv_burnout_risk {
+  uuid      employee_id
+  uuid      company_id
+  decimal   weekly_avg_hours
+  int       consecutive_overtime_weeks
+  decimal   leave_usage_pct
+  string    risk_level         "WARNING / CRITICAL"
+  timestamp refreshed_at
+}
+
+%% v3.1 신규
+mv_exit_reason_monthly {
+  uuid      company_id
+  int       year
+  int       month
+  string    primary_reason
+  int       count
+  timestamp refreshed_at
+}
+
+%% v3.1 신규
+mv_compa_ratio_distribution {
+  uuid      company_id
+  uuid      job_grade_id
+  uuid      job_category_id
+  decimal   avg_compa_ratio
+  decimal   min_compa_ratio
+  decimal   max_compa_ratio
+  int       employee_count
+  timestamp refreshed_at
+}
+
+%% v3.1 신규
+mv_team_health {
+  uuid      department_id
+  uuid      company_id
+  decimal   psychological_safety
+  decimal   manager_support
+  decimal   engagement_score
+  decimal   attrition_risk_avg
+  decimal   one_on_one_frequency
+  decimal   overall_score
+  timestamp refreshed_at
+}
+
+
+%% ─────────────────────────────────
+%% 관계 정의
+%% ─────────────────────────────────
+
+%% 조직
+companies ||--o{ departments : ""
+companies ||--o{ job_grades : ""
+companies ||--o{ work_schedules : ""
+companies ||--o{ leave_policies : ""
+companies ||--o{ performance_cycles : ""
+companies ||--o{ onboarding_templates : ""
+companies ||--o{ notification_triggers : ""
+companies ||--o{ offboarding_checklists : ""
+companies ||--o{ salary_bands : ""
+companies ||--o{ benefit_policies : ""
+companies ||--o{ ems_block_config : ""
+companies ||--o{ org_change_history : ""
+companies ||--o{ hr_documents : ""
+companies ||--o{ pulse_surveys : ""
+companies ||--o{ training_courses : ""
+companies ||--o{ tenant_settings : ""
+companies ||--o{ term_overrides : ""
+companies ||--o{ tenant_enum_options : ""
+companies ||--o{ custom_fields : ""
+companies ||--o{ workflow_rules : ""
+companies ||--o{ email_templates : ""
+companies ||--o{ export_templates : ""
+
+departments ||--o{ departments : "parent"
+departments ||--o{ employees : ""
+departments ||--o{ job_postings : ""
+
+%% 권한
+roles ||--o{ role_permissions : ""
+permissions ||--o{ role_permissions : ""
+roles ||--o{ employee_roles : ""
+employees ||--o{ employee_roles : ""
+
+%% 직원 코어
+employees ||--|| employee_auth : ""
+employees ||--o{ sso_identities : ""
+employees ||--o{ sso_sessions : ""
+employees ||--o{ employee_histories : ""
+employees ||--o{ employee_documents : ""
+employees ||--o{ employee_schedules : ""
+employees ||--o{ attendances : ""
+employees ||--o{ employee_leave_balances : ""
+employees ||--o{ leave_requests : ""
+employees ||--o{ mbo_goals : ""
+employees ||--o{ performance_evaluations : ""
+employees ||--o{ one_on_ones : ""
+employees ||--o{ recognitions : ""
+employees ||--o{ notifications : ""
+employees ||--o{ ai_logs : ""
+employees ||--o{ employee_onboarding : ""
+employees ||--o{ profile_change_requests : ""
+employees ||--o{ disciplinary_actions : ""
+employees ||--o{ reward_records : ""
+employees ||--o{ compensation_history : ""
+employees ||--o{ employee_benefits : ""
+employees ||--o{ allowance_records : ""
+employees ||--o{ training_enrollments : ""
+employees ||--o{ attrition_risk_history : ""
+employees ||--o{ hr_chat_sessions : ""
+employees ||--o{ collaboration_scores : ""
+employees ||--o{ peer_review_nominations : ""
+employees ||--o{ audit_logs : ""
+
+%% 온보딩
+onboarding_templates ||--o{ onboarding_tasks : ""
+onboarding_templates ||--o{ employee_onboarding : ""
+employee_onboarding ||--o{ employee_onboarding_tasks : ""
+onboarding_tasks ||--o{ employee_onboarding_tasks : ""
+
+%% 퇴직
+offboarding_checklists ||--o{ offboarding_tasks : ""
+offboarding_checklists ||--o{ employee_offboarding : ""
+employee_offboarding ||--o{ employee_offboarding_tasks : ""
+offboarding_tasks ||--o{ employee_offboarding_tasks : ""
+
+%% 근태
+work_schedules ||--o{ employee_schedules : ""
+leave_policies ||--o{ employee_leave_balances : ""
+leave_policies ||--o{ leave_requests : ""
+attendance_terminals ||--o{ attendances : ""
+
+%% 채용
+job_postings ||--o{ applications : ""
+applicants ||--o{ applications : ""
+applications ||--o{ interview_schedules : ""
+interview_schedules ||--o{ interview_evaluations : ""
+
+%% 성과
+performance_cycles ||--o{ mbo_goals : ""
+performance_cycles ||--o{ performance_evaluations : ""
+performance_cycles ||--o{ calibration_sessions : ""
+performance_cycles ||--o{ calibration_rules : ""
+performance_cycles ||--o{ peer_review_nominations : ""
+mbo_goals ||--o{ mbo_progress : ""
+calibration_sessions ||--o{ calibration_adjustments : ""
+
+%% 급여
+payroll_runs ||--o{ payroll_items : ""
+payroll_records ||--o{ payroll_entries : ""
+payroll_records ||--o{ payroll_insurance_kr : ""
+
+%% 복리후생
+benefit_policies ||--o{ employee_benefits : ""
+
+%% Pulse
+pulse_surveys ||--o{ pulse_questions : ""
+pulse_questions ||--o{ pulse_responses : ""
+
+%% Succession
+succession_plans ||--o{ succession_candidates : ""
+
+%% 챗봇
+hr_documents ||--o{ hr_document_chunks : ""
+hr_chat_sessions ||--o{ hr_chat_messages : ""
+
+%% 알림
+notification_triggers ||--o{ notifications : ""
+
+%% 커스터마이제이션
+workflow_rules ||--o{ workflow_steps : ""
+custom_fields ||--o{ custom_field_values : ""
+
+%% 직군
+job_categories ||--o{ employees : ""
+job_categories ||--o{ job_postings : ""
+job_categories ||--o{ salary_bands : ""

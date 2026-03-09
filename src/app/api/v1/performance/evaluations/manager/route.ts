@@ -11,8 +11,13 @@ import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants' // DEFAULT_PAGE/SIZE used in searchSchema
 import { calculateEmsBlock, DEFAULT_BLOCK_DEFINITIONS } from '@/lib/ems'
+import { eventBus } from '@/lib/events/event-bus'
+import { DOMAIN_EVENTS } from '@/lib/events/types'
+import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
 import type { SessionUser } from '@/types'
 import type { EvalType, EvalStatus, Prisma } from '@/generated/prisma/client'
+
+bootstrapEventHandlers()
 
 // ─── Schemas ──────────────────────────────────────────────
 
@@ -283,6 +288,25 @@ export const POST = withPermission(
         ip,
         userAgent,
       })
+
+      // ── Fire-and-forget: PERFORMANCE_MANAGER_EVAL_SUBMITTED (status=SUBMITTED 일 때만) ──
+      if (status === 'SUBMITTED') {
+        void eventBus.publish(DOMAIN_EVENTS.PERFORMANCE_MANAGER_EVAL_SUBMITTED, {
+          ctx: {
+            companyId:  user.companyId,
+            actorId:    user.employeeId,
+            occurredAt: new Date(),
+          },
+          employeeId:       employeeId,
+          companyId:        user.companyId,
+          cycleId,
+          evaluatorId:      user.employeeId,
+          evaluationId:     evaluation.id,
+          performanceScore: Number(evaluation.performanceScore),
+          competencyScore:  Number(evaluation.competencyScore),
+          emsBlock:         emsResult.block,
+        })
+      }
 
       return apiSuccess({
         ...evaluation,

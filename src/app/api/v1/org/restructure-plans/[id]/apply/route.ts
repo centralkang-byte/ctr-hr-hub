@@ -117,7 +117,7 @@ export const POST = withPermission(
             case 'merge': {
               if (!change.sourceDeptId || !change.targetDeptId) break
 
-              // Move all active employees from source to target via new Assignment record
+              // Move all active employees from source to target — updateMany + createMany로 N+1 제거
               const sourceEmployees = await tx.employeeAssignment.findMany({
                 where: {
                   departmentId: change.sourceDeptId,
@@ -126,19 +126,17 @@ export const POST = withPermission(
                 },
               })
 
-              for (const assignment of sourceEmployees) {
-                // End current assignment
-                await tx.employeeAssignment.update({
-                  where: { id: assignment.id },
+              if (sourceEmployees.length > 0) {
+                await tx.employeeAssignment.updateMany({
+                  where: { id: { in: sourceEmployees.map((a) => a.id) } },
                   data: { endDate: effectiveDate },
                 })
-                // Create new assignment with target dept
-                await tx.employeeAssignment.create({
-                  data: {
+                await tx.employeeAssignment.createMany({
+                  data: sourceEmployees.map((assignment) => ({
                     employeeId: assignment.employeeId,
                     effectiveDate,
                     companyId: assignment.companyId,
-                    departmentId: change.targetDeptId,
+                    departmentId: change.targetDeptId!,
                     jobGradeId: assignment.jobGradeId,
                     jobCategoryId: assignment.jobCategoryId,
                     employmentType: assignment.employmentType,
@@ -148,7 +146,7 @@ export const POST = withPermission(
                     isPrimary: true,
                     changeType: 'REORGANIZATION',
                     reason: `조직 개편: ${plan.title}`,
-                  },
+                  })),
                 })
               }
 
@@ -184,7 +182,7 @@ export const POST = withPermission(
                 select: { parentId: true },
               })
 
-              // Move employees to parent dept
+              // Move employees to parent dept — updateMany + createMany로 N+1 제거
               const closingEmployees = await tx.employeeAssignment.findMany({
                 where: {
                   departmentId: change.closeDeptId,
@@ -193,13 +191,13 @@ export const POST = withPermission(
                 },
               })
 
-              for (const assignment of closingEmployees) {
-                await tx.employeeAssignment.update({
-                  where: { id: assignment.id },
+              if (closingEmployees.length > 0) {
+                await tx.employeeAssignment.updateMany({
+                  where: { id: { in: closingEmployees.map((a) => a.id) } },
                   data: { endDate: effectiveDate },
                 })
-                await tx.employeeAssignment.create({
-                  data: {
+                await tx.employeeAssignment.createMany({
+                  data: closingEmployees.map((assignment) => ({
                     employeeId: assignment.employeeId,
                     effectiveDate,
                     companyId: assignment.companyId,
@@ -213,7 +211,7 @@ export const POST = withPermission(
                     isPrimary: true,
                     changeType: 'REORGANIZATION',
                     reason: `조직 개편(폐지): ${plan.title}`,
-                  },
+                  })),
                 })
               }
 

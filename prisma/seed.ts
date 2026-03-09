@@ -15,6 +15,13 @@ dotenv.config({ path: path.resolve(__dirname, '..', '.env') })
 
 import { PrismaClient } from '../src/generated/prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
+import { seedNewEmployees } from './seeds/02-employees'
+import { seedAttendance } from './seeds/03-attendance'
+import { seedLeave } from './seeds/04-leave'
+import { seedPerformance } from './seeds/05-performance'
+import { seedPayroll } from './seeds/06-payroll'
+import { seedLifecycle } from './seeds/07-lifecycle'
+import { seedNotifications } from './seeds/08-notifications'
 
 // Load DATABASE_URL from .env.local or .env
 const DATABASE_URL = process.env.DATABASE_URL
@@ -3492,6 +3499,29 @@ async function main() {
 
   console.log(`  ✅ ${budgetCount} benefit budgets (2025)`)
   console.log('========================================\n')
+
+  // ─────────────────────────────────────────────────────────
+  // SESSION 1: New Employee Expansion (KR +70, CN +18)
+  // ─────────────────────────────────────────────────────────
+  await seedNewEmployees(prisma)
+
+  // ─────────────────────────────────────────────────────────
+  // SESSION 2: Attendance + Leave (2025-09 ~ 2026-02)
+  // ─────────────────────────────────────────────────────────
+  await seedAttendance(prisma)
+  await seedLeave(prisma)
+
+  // ─────────────────────────────────────────────────────────
+  // SESSION 3: Performance + Payroll
+  // ─────────────────────────────────────────────────────────
+  await seedPerformance(prisma)
+  await seedPayroll(prisma)
+
+  // ─────────────────────────────────────────────────────────
+  // SESSION 4: Lifecycle + Notifications
+  // ─────────────────────────────────────────────────────────
+  await seedLifecycle(prisma)
+  await seedNotifications(prisma)
 }
 
 main()

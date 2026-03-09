@@ -4,7 +4,28 @@
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
+import { parseDateOnly, formatToTz } from '@/lib/timezone'
 import type { ChangeType, CreateAssignmentParams } from '@/types/assignment'
+
+// ── 날짜 유틸: YYYY-MM-DD 문자열을 UTC 자정 Date로 안전하게 변환 ──
+// new Date('2026-03-05')는 YYYY-MM-DD에서 UTC 자정을 반환하지만,
+// new Date('2026-03-05T00:00:00') 같은 datetime 문자열은
+// Node.js의 로컬 타임존을 적용해 UTC 오프셋이 발생할 수 있음.
+// parseDateOnly()는 항상 Date.UTC()를 사용하므로 안전.
+function toCalendarDate(date: Date | string): Date {
+  if (typeof date === 'string') return parseDateOnly(date)
+  // Date 객체도 UTC 자정으로 정규화 (시/분/초 제거)
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()))
+}
+
+// ── 특정 타임존의 오늘 날짜를 UTC 자정 Date로 반환 ────────────────
+// new Date()는 UTC "지금"이므로, 서버 UTC 기준 날짜가 법인 로컬 달력과
+// 어긋날 수 있음. (예: Asia/Seoul UTC+9에서 UTC 23:00 = 다음날 08:00)
+// timezone 파라미터를 전달하면 해당 법인의 달력 날짜 기준으로 "오늘"을 산출.
+export function getTodayForTimezone(timezone: string): Date {
+  const todayStr = formatToTz(new Date(), timezone, 'yyyy-MM-dd')
+  return parseDateOnly(todayStr)
+}
 
 // ── 현재 유효한 assignment 조회 ──────────────────────────────
 export async function getCurrentAssignment(employeeId: string) {
@@ -24,8 +45,25 @@ export async function getCurrentAssignment(employeeId: string) {
 }
 
 // ── 특정 시점의 assignment 조회 (Effective Dating 핵심) ─────
-export async function getAssignmentAtDate(employeeId: string, targetDate: Date | string) {
-  const date = typeof targetDate === 'string' ? new Date(targetDate) : targetDate
+// timezone: 선택적. Date 객체로 전달 시 해당 타임존의 달력 날짜로 재해석.
+//   → API에서 new Date()를 전달할 때 반드시 법인 timezone을 함께 전달해야
+//     UTC 날짜와 로컬 달력 날짜 간의 off-by-one을 방지할 수 있음.
+export async function getAssignmentAtDate(
+  employeeId: string,
+  targetDate: Date | string,
+  timezone?: string,
+) {
+  let date: Date
+  if (typeof targetDate === 'string') {
+    date = parseDateOnly(targetDate)
+  } else if (timezone) {
+    // Date 객체를 타임존 기준 달력 날짜로 재해석 (off-by-one 방지)
+    // 예: new Date()가 UTC 2026-03-05T23:00Z여도 Asia/Seoul에서는 2026-03-06
+    const localDateStr = formatToTz(targetDate, timezone, 'yyyy-MM-dd')
+    date = parseDateOnly(localDateStr)
+  } else {
+    date = toCalendarDate(targetDate)
+  }
   return prisma.employeeAssignment.findFirst({
     where: {
       employeeId,
@@ -65,7 +103,9 @@ export async function createAssignment(params: CreateAssignmentParams) {
     approvedBy,
   } = params
 
-  const date = typeof effectiveDate === 'string' ? new Date(effectiveDate) : effectiveDate
+  // parseDateOnly로 YYYY-MM-DD 문자열을 UTC 자정으로 안전하게 변환.
+  // new Date(string)은 datetime 문자열에서 로컬 타임존을 적용해 날짜가 어긋날 수 있음.
+  const date = toCalendarDate(effectiveDate)
 
   return prisma.$transaction(async (tx) => {
     // 1. 기존 현재 primary assignment 종료

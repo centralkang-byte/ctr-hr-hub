@@ -1,0 +1,951 @@
+# CTR HR Hub - STEP 2: 코어 HR + 조직도 + CTR 브랜드 디자인 시스템
+# v3.1 (CTO 리뷰 반영)
+# ★ 반드시 STEP0_공통규칙.txt를 먼저 읽고 적용할 것
+
+
+================================================================
+STEP 2 프롬프트 — 코어 HR + 조직도 + CTR 브랜드 디자인 시스템
+================================================================
+
+## ★ 세션 시작: context.md 먼저 읽어줘
+
+이번 세션 목표: 직원 마스터 + 조직도 + CTR 브랜드 디자인 시스템 구축
+
+---
+
+
+================================================================
+CTR 브랜드 디자인 시스템
+================================================================
+
+### 컬러 팔레트 (Tailwind config 확장)
+
+tailwind.config.ts에 아래 색상을 extend.colors로 추가:
+
+```
+ctr-primary:    #003876   /* 네이비 - 메인 CTA, 사이드바 배경 */
+ctr-secondary:  #0068B7   /* 블루 - 보조 버튼, 링크 */
+ctr-accent:     #E63312   /* 레드 - 강조, 경고, 위험 액션 */
+ctr-light:      #F5F7FA   /* 연한 회색 - 페이지 배경, 테이블 헤더 */
+ctr-dark:       #1A1A1A   /* 거의 검정 - 본문 텍스트 */
+ctr-success:    #10B981   /* 초록 - 성공, 승인, 완료 */
+ctr-warning:    #F59E0B   /* 주황 - 주의, 경고 배너 */
+```
+
+### CTR 핵심가치 4개 + 아이콘
+
+★ v3.2: 아래는 **기본값(시드)**이며, 실제 런타임에는 tenant_settings.core_values 참조
+→ lib/tenant-settings.ts의 getCoreValues(companyId) 사용
+
+| 핵심가치 | 상수 키 | 아이콘 컴포넌트 | 색상 |
+|---------|--------|--------------|------|
+| Challenge | CHALLENGE | CtrChallengeIcon (산 모양) | ctr-accent |
+| Trust | TRUST | CtrTrustIcon (악수 모양) | ctr-primary |
+| Responsibility | RESPONSIBILITY | CtrResponsibilityIcon (방패 모양) | ctr-secondary |
+| Respect | RESPECT | CtrRespectIcon (하트+손 모양) | ctr-success |
+
+lib/constants.ts:
+```ts
+export const CTR_VALUES = ['CHALLENGE', 'TRUST', 'RESPONSIBILITY', 'RESPECT'] as const;
+export type CtrValue = typeof CTR_VALUES[number];
+
+export const CTR_VALUE_LABELS: Record<CtrValue, string> = {
+  CHALLENGE: 'Challenge',
+  TRUST: 'Trust',
+  RESPONSIBILITY: 'Responsibility',
+  RESPECT: 'Respect',
+};
+
+export const CTR_VALUE_COLORS: Record<CtrValue, string> = {
+  CHALLENGE: 'text-ctr-accent',
+  TRUST: 'text-ctr-primary',
+  RESPONSIBILITY: 'text-ctr-secondary',
+  RESPECT: 'text-ctr-success',
+};
+```
+
+components/icons/ 디렉토리에 SVG 컴포넌트 4개 생성:
+- CtrChallengeIcon.tsx — 산봉우리 실루엣
+- CtrTrustIcon.tsx — 악수하는 두 손
+- CtrResponsibilityIcon.tsx — 방패 + 체크마크
+- CtrRespectIcon.tsx — 손 위 하트
+
+각 아이콘: size(default 24), className props 지원. Tailwind 색상 적용 가능.
+
+### UI 규칙
+
+**글꼴**
+- 전체 앱 기본 글꼴: Pretendard
+- next/font/local로 로드, CSS variable --font-pretendard
+- tailwind.config.ts fontFamily.sans에 적용
+
+**레이아웃**
+- 사이드바: bg-ctr-primary, 텍스트 white, 너비 240px (접힘 시 64px)
+- 헤더: 흰색 배경, 우측에 CompanySelector + 사용자 아바타
+- 콘텐츠: bg-ctr-light 배경
+
+**컴포넌트 스타일링**
+- 버튼 primary: bg-ctr-primary hover:bg-ctr-secondary text-white
+- 버튼 danger: bg-ctr-accent hover:bg-ctr-accent/90 text-white
+- 버튼 outline: border-ctr-primary text-ctr-primary hover:bg-ctr-primary/5
+- 카드: bg-white border border-gray-200 rounded-lg shadow-sm
+- 테이블: shadcn DataTable 기반, 헤더 bg-ctr-light
+- 뱃지 (상태):
+  - ACTIVE: bg-ctr-success/10 text-ctr-success
+  - ON_LEAVE: bg-ctr-warning/10 text-ctr-warning
+  - RESIGNED/TERMINATED: bg-gray-100 text-gray-500
+- 빈 상태: EmptyState 컴포넌트 (핵심가치 아이콘 랜덤 또는 맥락별 선택)
+
+**사이드바 네비게이션 메뉴**
+```
+🏠 홈
+👥 직원 관리
+🏢 조직도
+⏰ 근태 관리
+🌴 휴가 관리
+📋 채용 (ATS)
+📊 성과 관리
+💰 급여 관리
+💵 연봉·보상          # v3.0 신규
+📈 HR Analytics
+🎓 온보딩
+🚪 퇴직 관리          # v3.0 신규
+⚖️ 징계·상벌          # v3.0 신규
+🎁 복리후생           # v3.0 신규
+📊 매니저 허브         # v3.2 신규 (MANAGER 이상만)
+⚙️ 설정
+   ├─ 🏢 법인 관리       # v3.2 (SUPER_ADMIN)
+   ├─ 🎨 일반 (브랜딩/핵심가치)  # v3.2 (HR_ADMIN)
+   ├─ 📝 용어 설정       # v3.2 (HR_ADMIN)
+   ├─ 📋 옵션 관리       # v3.2 (HR_ADMIN)
+   ├─ 🧩 커스텀 필드     # v3.2 (HR_ADMIN)
+   ├─ 🔄 워크플로우      # v3.2 (HR_ADMIN)
+   ├─ ✉️ 알림 템플릿     # v3.2 (HR_ADMIN)
+   ├─ 📊 평가 척도       # v3.2 (HR_ADMIN)
+   ├─ 🧱 모듈 관리       # v3.2 (HR_ADMIN)
+   ├─ 📤 내보내기 템플릿  # v3.2 (HR_ADMIN)
+   ├─ 📐 대시보드 위젯   # v3.2 (HR_ADMIN)
+   ├─ 📖 HR 규정 문서    # v3.2 (HR_ADMIN)
+   └─ 🏗️ 조직 개편      # (HR_ADMIN)
+```
+각 메뉴: PermissionGate로 권한별 표시/숨김
+
+**★ v3.2 헤더 영역 추가 요소**
+- 헤더 중앙: 검색 입력필드 (클릭 또는 Cmd+O/Ctrl+O → CommandPalette 모달)
+  - placeholder: "직원, 메뉴, 규정 검색… (⌘O)"
+- 헤더 우측: CompanySelector | 알림 벨 | 프로필
+- 우측 하단 플로팅: HrChatbot 버튼 (💬, bg-ctr-primary, z-index:50)
+
+
+================================================================
+★ v3.2 추가 — Task-Centric 홈 재설계
+================================================================
+
+### 홈 화면 (/dashboard)
+
+**공통 최상단: "오늘 할 일" (Pending Actions)**
+- API: GET /api/v1/dashboard/pending-actions
+- 반환: 역할별 필터링된 대기 항목 목록 (최대 10개)
+- 각 항목: 아이콘 + 제목 + 마감/생성일 + 바로가기 버튼
+- 항목 유형:
+  - 휴가 승인 대기 (MANAGER)
+  - 프로필 변경 승인 대기 (HR_ADMIN)
+  - 온보딩 미완료 태스크 (EMPLOYEE)
+  - 평가 제출 마감 임박 (ALL)
+  - 1:1 미팅 예정 (MANAGER)
+  - 급여 검토 대기 (HR_ADMIN)
+  - 다면평가 미완료 (ALL)
+  - 에스컬레이션 챗봇 문의 (HR_ADMIN)
+- 빈 상태: "처리할 항목이 없습니다 🎉" + CTR 핵심가치 아이콘 랜덤
+- 긴급도 정렬: 마감 임박(D-1🔴) → 곧 마감(D-3🟡) → 일반
+
+**EMPLOYEE 홈 (기존 유지 + 개선)**
+- "오늘 할 일" 섹션 (위)
+- 내 출퇴근 현황 (오늘)
+- 내 휴가 잔여
+- 내 성과 목표 진행률
+- 최근 받은 Recognition
+
+**MANAGER 홈 (기존 유지 + 개선)**
+- "오늘 할 일" 섹션 (위) — 승인 대기 건수 강조
+- 팀 출근 현황 (오늘)
+- 팀 휴가 달력 (이번 주)
+- 팀 Attrition Risk 요약 (HIGH 인원 수)
+- → "매니저 허브에서 더 보기" 링크
+
+
+================================================================
+★ v3.2 추가 — Manager Insights Hub (/manager-hub)
+================================================================
+
+**권한**: MANAGER 이상
+
+### 페이지 레이아웃
+PageHeader: "매니저 허브" + 팀 선택 드롭다운 (직속 부서 기본)
+
+### 섹션 1: 팀 현황 요약 (상단 KPI 카드 5개)
+- 팀원 수 (ACTIVE)
+- 이번 달 이직률
+- 평균 초과근무 (이번 주)
+- 미완료 1:1 (30일+)
+- Attrition HIGH 인원
+
+### 섹션 2: 승인 대기 (Pending Approvals)
+- 탭: 휴가 | 프로필 변경 | 기타
+- 각 항목: 신청자 + 내용 요약 + 승인/반려 인라인 버튼
+- 한 번에 처리 가능 (벌크 승인)
+
+### 섹션 3: 팀 건강 스냅샷
+- 5개 지표 Radar 차트 (mv_team_health 연동):
+  심리적 안전감, 매니저 지원, 참여도, 이직 위험, 1:1 빈도
+- 전사 평균 대비 표시
+
+### 섹션 4: 주의 필요 인원
+- Attrition Risk HIGH → 이름, 리스크 요인 상위 3개, "1:1 예약" 버튼
+- 초과근무 경고 (52h+ 🔴) → 이름, 이번 주 시간
+- 번아웃 위험 (mv_burnout_risk) → 이름, 위험 레벨
+- ★ 구체 점수는 미노출, 리스크 레벨(LOW/MEDIUM/HIGH)만 표시
+
+### 섹션 5: 팀 성과 요약
+- 현재 평가 사이클 진행률
+- EMS 9블록 분포 미니 (내 팀만)
+- MBO 목표 평균 달성률
+
+### API
+- GET /api/v1/manager-hub/summary — 5개 KPI
+- GET /api/v1/manager-hub/pending-approvals — 승인 대기
+- GET /api/v1/manager-hub/team-health — Radar 데이터
+- GET /api/v1/manager-hub/alerts — 주의 필요 인원
+- GET /api/v1/manager-hub/performance — 성과 요약
+
+
+================================================================
+★ v3.2 추가 — HR 챗봇 상세
+================================================================
+
+### 규정 문서 관리 (/settings/hr-documents)
+**권한**: HR_ADMIN
+
+**문서 업로드**
+- 지원 형식: PDF, DOCX, TXT, Markdown
+- 업로드 → 텍스트 추출 (PDF: pdf-parse, DOCX: mammoth)
+- 텍스트 → 청킹 (500토큰, 100토큰 오버랩)
+- 각 청크 → 임베딩 생성 (text-embedding-3-small)
+- hr_documents + hr_document_chunks 저장
+- $transaction: 문서 INSERT → 청크 BULK INSERT
+
+**문서 목록 UI**
+- DataTable: 제목 / 유형 / 법인 / 버전 / 언어 / 상태 / 업로드일
+- 행 액션: 미리보기, 재임베딩, 비활성화, 삭제
+- 재임베딩: 문서 수정 후 청크 재생성 (기존 삭제 → 재생성)
+
+**문서 유형별 기본 제공 안내**
+- EMPLOYMENT_RULES: 취업규칙 (한국 필수)
+- HR_POLICY: 인사규정 (전 법인)
+- BENEFIT_GUIDE: 복리후생 안내 (법인별)
+- SAFETY_MANUAL: 안전보건 규정
+- EMPLOYEE_HANDBOOK: Employee Handbook (해외 법인)
+
+### 챗봇 API
+
+**POST /api/v1/hr-chatbot/ask**
+```
+Request:
+  session_id: string (optional, 없으면 신규 세션)
+  question: string
+  company_id: string
+
+Response:
+  session_id: string
+  answer: string
+  sources: [{ document_title, doc_type, chunk_content_preview, similarity_score }]
+  confidence_score: number (0~1)
+  needs_escalation: boolean
+```
+
+**처리 플로우**
+1. 질문 텍스트 임베딩 생성
+2. hr_document_chunks에서 cosine 유사도 검색 (WHERE document.company_id = ? AND document.is_active = true)
+3. top_k=5 청크 가져오기 (threshold >= 0.7)
+4. Claude 호출: hrChatbotAnswer (prompt_version: "hr-chatbot-v1.0")
+   - system: "당신은 CTR 그룹의 HR 규정 전문 상담사입니다. 제공된 규정 문서 맥락만 기반으로 답변하세요. 규정에 없는 내용은 '해당 규정을 찾지 못했습니다'라고 답하세요. 반드시 출처(규정명+조항)를 명시하세요."
+   - context: top_k 청크 내용
+   - conversation_history: 최근 5턴
+5. confidence_score < 0.7 → needs_escalation=true
+6. hr_chat_messages INSERT
+
+**POST /api/v1/hr-chatbot/escalate**
+- session_id → 해당 세션의 최근 대화를 HR_ADMIN에게 알림
+- hr_chat_messages.escalated = true
+- notifications INSERT (HR_ADMIN 대상, "챗봇 에스컬레이션: [질문 요약]")
+
+**GET /api/v1/hr-chatbot/sessions**
+- 내 대화 세션 목록 (최근 20개)
+
+**GET /api/v1/hr-chatbot/sessions/:id/messages**
+- 세션 내 메시지 목록
+
+### 챗봇 분석 (HR_ADMIN)
+**경로**: /settings/hr-documents/analytics
+
+- 총 질문 수 / 일별 추이
+- 에스컬레이션 비율 (낮을수록 좋음)
+- 자주 묻는 질문 TOP 10 (키워드 클러스터링)
+- 피드백 분포 (👍/👎 비율)
+- 문서 커버리지: 어떤 문서가 가장 많이 참조되는지
+
+
+================================================================
+★ v3.2 추가 — Command Palette 상세
+================================================================
+
+### 구현 파일: components/command-palette/CommandPalette.tsx
+
+**트리거**
+- Cmd+O (Mac) / Ctrl+O (Win) — 전역 이벤트 리스너 (useEffect)
+- 헤더 검색바 클릭
+
+**모달 UI**
+- 배경 오버레이 (bg-black/50, z-index:60)
+- 중앙 상단 모달 (max-w-lg, 위에서 30% 위치)
+- 검색 입력: 상단 고정, 아이콘 + placeholder "검색…"
+- 결과 영역: 스크롤, 카테고리 구분선
+
+**검색 로직**
+1. 입력 → 디바운스 200ms
+2. 병렬 검색:
+   - 직원: GET /api/v1/search/employees?q=...&limit=3
+     → 이름 / 사번 / 부서 (RBAC 범위 내)
+   - 메뉴: 정적 메뉴 목록에서 클라이언트 fuzzy match (fuse.js)
+     → PermissionGate 적용 (권한 없는 메뉴 제외)
+   - 규정: GET /api/v1/search/documents?q=...&limit=3
+     → company_id 필터
+   - 최근: localStorage에서 최근 5개 페이지
+3. 카테고리별 그룹핑하여 표시
+
+**키보드 내비게이션**
+- ↑↓: 항목 이동 (하이라이트)
+- Enter: 선택 항목으로 이동 (router.push)
+- Esc: 닫기
+
+**결과 항목 렌더링**
+- 👤 직원: [프로필 사진] 이름 · 부서 · 직급
+- 📋 메뉴: [아이콘] 메뉴명 · 경로
+- 📖 규정: [📖] 규정명 · 유형 · 법인
+- 🕐 최근: [🕐] 페이지명 · 방문 시각
+
+
+================================================================
+기능
+================================================================
+
+### 1. 직원 목록 (/employees)
+
+**페이지 구성**
+- PageHeader: "직원 관리" + 직원 등록 버튼 (HR_ADMIN만)
+- CompanySelector로 법인 전환 → 해당 법인 직원만 조회
+- DataTable 컬럼: 사번 / 이름 / 부서 / 직급 / 직군 / 고용형태 / 상태
+- 행 클릭 → /employees/:id 프로필 이동
+
+**필터 (사이드 또는 상단 필터바)**
+- 부서: 드롭다운 (해당 법인 부서만)
+- 직급: 드롭다운
+- 직군: 드롭다운 (OFFICE / PRODUCTION / R_AND_D / MANAGEMENT)
+  ★ v3.1: job_categories 테이블 JOIN으로 조회 (employees에 code ENUM 없음)
+- 고용형태: FULL_TIME / CONTRACT / DISPATCH / INTERN
+- 상태: ACTIVE / ON_LEAVE / RESIGNED / TERMINATED
+
+**검색**
+- 이름, 사번, 이메일 통합 검색 (debounce 300ms)
+
+**정렬**
+- 이름(가나다), 입사일(최신/오래된), 부서(가나다)
+
+**페이지네이션**
+- 기본 20건, 10/20/50/100 선택 가능
+
+**데이터 없을 때**
+- EmptyState: "등록된 직원이 없습니다" + 직원 등록 버튼
+
+---
+
+### 2. 직원 프로필 (/employees/:id)
+
+**레이아웃**
+- 상단: 프로필 헤더 (사진, 이름, 사번, 부서, 직급, 상태 뱃지)
+- 우측 사이드 패널:
+  - 매니저 정보 (이름 + 사진 + 링크)
+  - Attrition Risk 점수 (HR_ADMIN만 표시, 색상 구분: Low=green, Medium=yellow, High=red)
+  - 재직 기간
+  - 퇴직 처리 버튼 (HR_ADMIN, status=ACTIVE 시만)
+
+**탭 구조 (5탭)**
+
+**탭 1: 기본정보**
+- 개인정보: 이름, 영문명, 생년월일, 성별, 국적, 이메일, 전화, 비상연락처
+- 고용정보: 사번, 법인, 부서, 직급, 직군, 고용형태, 입사일, 상태
+- HR_ADMIN: 인라인 편집 모드 (연필 아이콘 클릭 → 폼 전환 → 저장)
+- 수정 시 audit_logs 기록
+
+**탭 2: 인사이력**
+- employee_histories 타임라인 (최신순)
+- 각 항목: 아이콘 + 변경 유형 + 변경 내용 + 일자 + 승인자
+- 아이콘: HIRE=🟢, TRANSFER=🔄, PROMOTION=⬆️, DEMOTION=⬇️, RESIGN=🔴, TRANSFER_CROSS_COMPANY=🌐
+- 법인 간 전입: "CTR → CTR America" 형태 표시
+
+**탭 3: 문서**
+- employee_documents 목록 (DataTable: 유형/제목/업로드일/크기)
+- 업로드 버튼 (S3 Presigned URL)
+- 다운로드: 권한 재검증 후 Presigned URL 발급
+- 민감 문서(CONTRACT, ID_CARD): HR_ADMIN만 다운로드 가능
+- 삭제: Soft Delete (deleted_at)
+
+**탭 4: 징계·상벌**
+- 징계 이력 타임라인 (유형별 아이콘 + 색상)
+  VERBAL_WARNING=🟡, WRITTEN_WARNING=🟠, REPRIMAND=🔴, SUSPENSION=⛔
+- 포상 이력 타임라인 (🏆 아이콘)
+- EMPLOYEE: 본인 것만 조회 가능 / 타인 → 403
+
+**탭 5: 연봉이력**
+- compensation_history 타임라인
+- 각 항목: 변경 유형 + 이전 금액 → 변경 금액 + 인상률 + compa-ratio
+- HR_ADMIN만 조회 가능 / EMPLOYEE는 이 탭 자체 비표시
+
+---
+
+### 3. 직원 등록 (/employees/new) — HR_ADMIN
+
+**다단계 폼 (Step Wizard)**
+
+Step 1: 기본정보
+- 이름(필수), 영문명, 생년월일, 성별, 국적, 이메일(필수, UK 검증),
+  전화, 비상연락처 이름+전화
+
+Step 2: 고용정보
+- 사번(자동 생성 또는 수동, UK 검증)
+- 고용형태: FULL_TIME / CONTRACT / DISPATCH / INTERN
+- 입사일
+
+Step 3: 배정
+- 법인 선택 (CompanySelector에서 선택된 법인 기본값)
+- 부서 선택 (법인별 부서 드롭다운)
+- 직급 선택
+- 직군 선택 (OFFICE / PRODUCTION / R_AND_D / MANAGEMENT)
+  ★ v3.1: job_category_id FK로 저장
+- 매니저 선택 (직원 검색)
+
+Step 4: 확인
+- 입력 내용 요약 + 최종 확인 + 등록 버튼
+
+**등록 처리 ($transaction)**
+1. employees INSERT
+2. employee_histories INSERT (change_type: HIRE)
+3. employee_auth INSERT (초기 비밀번호 해시 또는 null=SSO 전용)
+4. 알림: 매니저에게 "새 팀원 입사" 알림
+5. 온보딩 자동 시작 체크박스 → 체크 시 employee_onboarding 자동 생성
+
+**법인 간 전입 처리**
+- 기존 법인에서 RESIGN 처리 없이 TRANSFER_CROSS_COMPANY 이력 기록
+- employee_histories: from_company_id + to_company_id
+- employees.company_id 업데이트
+- employee_roles: 이전 법인 역할 종료(end_date) + 새 법인 역할 시작
+
+---
+
+### 4. 조직도 (/org)
+
+**CompanySelector + "그룹 전체" 옵션**
+
+**그룹 전체 모드**
+- 3단계 트리: CTR Holdings(최상위) → 자회사 7+6개 → 각 법인 부서
+- React Flow 또는 D3 트리 레이아웃
+- 법인 노드: 법인명 + 국기 아이콘 + 인원 수
+- 확장/축소 가능
+
+**법인 선택 모드**
+- 해당 법인 부서 트리
+- 부서 노드: 부서명 + 인원 수 + 부서장 이름
+- 부서 클릭 → 우측 패널:
+  - 부서 상세 (코드, 레벨, 상위 부서)
+  - 소속 직원 목록 (이름, 직급, 직군)
+  - 하위 부서 목록
+
+**API 최적화**
+- /api/v1/org/tree → 전체 트리 1회 조회 (nested JSON)
+- 법인별 캐싱 (5분 TTL)
+
+---
+
+### 5. 조직 개편 관리 (/settings/org-changes) — HR_ADMIN
+
+**조직개편 이력 목록**
+- DataTable: 일자 / 변경유형 / 대상부서 / 변경내용 / 승인자
+- 변경유형 필터: CREATE/MERGE/SPLIT/RENAME/CLOSE/RESTRUCTURE
+
+**변경 전/후 비교 UI**
+- from_data / to_data JSON diff 시각화
+- 변경된 필드 하이라이트
+
+**조직개편 실행**
+
+단건 변경:
+- 부서 생성: 부서명, 코드, 상위부서, 레벨 입력 → departments INSERT + org_change_history(CREATE)
+- 부서 통합: 대상 부서 2개+ 선택 → 통합 부서 선택 → 소속 직원 일괄 이동 + org_change_history(MERGE)
+- 부서 분리: 대상 부서 선택 → 새 부서 정보 입력 → 직원 배분 → org_change_history(SPLIT)
+- 부서 폐지: 대상 부서 선택 → 소속 직원 이동처 지정 → departments.is_active=false + org_change_history(CLOSE)
+- 부서 명칭 변경: 대상 부서 선택 → 새 이름 입력 → org_change_history(RENAME)
+
+일괄 변경:
+- POST /api/v1/org/restructure
+- 여러 부서 동시 변경 → $transaction
+- 각 변경마다 org_change_history 기록
+
+**감사 로그**: 모든 조직개편 → audit_logs 필수
+
+
+================================================================
+★ v3.2 추가 — 설정 커스터마이제이션 (/settings/customization)
+================================================================
+
+★ HR_ADMIN / SUPER_ADMIN 전용
+
+### 1. 법인(회사) 관리 (/settings/companies) — SUPER_ADMIN
+
+**법인 목록**
+- DataTable: 코드 / 이름 / 국가 / 상태(Active/Inactive) / 직원 수
+- 액션: 추가 / 수정 / 비활성화 (직원 0명일 때만 삭제 가능)
+
+**법인 추가/수정 폼**
+- 기본: 코드(UK), 이름, 국가(Select), 타임존(Select)
+- 급여: payroll_mode(IMPORT/MANAGED), 통화(Select)
+- 로케일: 기본 언어, 회계연도 시작월
+- 상위법인: parent_company_id (그룹사 구조)
+- 저장 → companies INSERT/UPDATE + tenant_settings 자동 생성(법인 추가 시)
+
+**법인 비활성화**
+- is_active=false → 소속 직원에 경고
+- 비활성 법인: CompanySelector에서 숨김, API 필터에서 제외
+
+---
+
+### 2. 일반 설정 (/settings/customization/general) — HR_ADMIN
+
+**브랜딩**
+- 로고 업로드 (logo_url) — S3 Presigned URL
+- 파비콘 업로드 (favicon_url)
+- 색상 설정: primary / secondary / accent 컬러 피커
+  - 실시간 프리뷰 (사이드바/헤더 색상 변경 미리보기)
+- 저장 → tenant_settings UPDATE → BrandProvider CSS 변수 갱신
+
+**핵심가치 (Core Values)**
+- 기본값: CTR 4개 (CHALLENGE/TRUST/RESPONSIBILITY/RESPECT)
+- 편집: 각 항목의 key, label, icon(아이콘 선택 드롭다운), color(컬러피커)
+- 추가/삭제 (최소 1개, 최대 8개)
+- Recognition, EmptyState, 온보딩 등에서 동적 참조
+- 저장 → tenant_settings.core_values UPDATE
+
+**기본 설정**
+- 기본 로케일 (ko/en/zh/...)
+- 회계연도 시작월 (1~12)
+- 수습 기간 (개월)
+- 주간 최대 초과근무 시간 (법정 기준 자동 표시)
+- 타임존
+- 저장 → tenant_settings UPDATE
+
+---
+
+### 3. 용어 커스터마이징 (/settings/customization/terms) — HR_ADMIN
+
+**용어 편집 테이블**
+- DataTable: 기본 키 | 기본 표시명 | 커스텀 표시명(ko) | 커스텀 표시명(en) | 커스텀 표시명(현지어)
+- 인라인 편집 (클릭하면 Input으로 전환)
+- 14개 기본 용어 키:
+
+| 키 | 기본값 (ko) | 기본값 (en) | 커스터마이즈 예시 |
+|---|---|---|---|
+| department | 부서 | Department | 팀 |
+| job_grade | 직급 | Grade | 레벨 |
+| employee_code | 사번 | Employee ID | 구성원 번호 |
+| manager | 상사 | Manager | 리더 |
+| team | 팀 | Team | 그룹 |
+| position | 직위 | Position | 직책 |
+| recognition | 칭찬 | Recognition | 감사 |
+| one_on_one | 1:1 미팅 | 1:1 Meeting | 면담 |
+| goal | 목표 | Goal | OKR |
+| evaluation | 평가 | Evaluation | 리뷰 |
+| leave | 휴가 | Leave | 연차 |
+| onboarding | 온보딩 | Onboarding | 입사 절차 |
+| offboarding | 퇴직 | Offboarding | 퇴직 절차 |
+| discipline | 징계 | Discipline | 인사 조치 |
+
+- 저장 → term_overrides UPSERT
+- "기본값으로 초기화" 버튼 (해당 키의 override 삭제)
+
+**적용 범위**: UI 전체 — 사이드바 메뉴명, 페이지 타이틀, 폼 라벨, 이메일 템플릿 변수
+- lib/terms.ts의 getTermLabel() 함수가 모든 곳에서 사용됨
+
+---
+
+### 4. 동적 옵션 관리 (/settings/customization/options) — HR_ADMIN
+
+**ENUM 그룹별 탭**
+- 탭: 휴가유형 | 고용형태 | 징계유형 | 포상유형 | 퇴직사유 | 교육분류 | 복리후생분류 | 출퇴근방식 | 수당유형
+
+**각 탭 UI**
+- 목록: 키 | 표시명 | 색상 | 순서 | 시스템 여부 | 활성 여부
+- 시스템 항목 (is_system=true): 수정 가능, 삭제/비활성화 불가, 🔒 아이콘
+- 사용자 추가 항목: 수정/삭제/비활성화 가능
+- "옵션 추가" 버튼: 키(영문), 표시명, 색상, 순서
+- 드래그-드롭 순서 변경
+- 저장 → tenant_enum_options UPSERT
+
+**예시: 휴가유형 커스텀**
+```
+🔒 ANNUAL      연차         (시스템, 삭제불가)
+🔒 SICK        병가         (시스템, 삭제불가)
+🔒 MATERNITY   출산휴가     (시스템, 삭제불가)
+   VOLUNTEER   봉사활동휴가  (사용자 추가)
+   REFRESH     리프레시휴가  (사용자 추가)
+```
+
+---
+
+### 5. 커스텀 필드 관리 (/settings/customization/fields) — HR_ADMIN
+
+**엔티티별 탭**
+- 탭: 직원 | 지원자 | 채용공고 | 휴가신청 | 성과평가
+
+**각 탭 UI**
+- 목록: 필드명 | 타입 | 필수 여부 | 검색 가능 | 직원 열람 | 섹션명
+- "필드 추가" 버튼:
+  - 필드 키 (영문, 자동생성 제안)
+  - 표시명 (한국어)
+  - 타입 선택: 텍스트 | 숫자 | 날짜 | 선택(단일) | 선택(복수) | 예/아니오 | 파일
+  - SELECT/MULTI_SELECT 선택 시: 옵션 목록 편집기 (inline CRUD)
+  - 필수 여부 토글
+  - 검색/필터 포함 토글
+  - 직원 본인 열람 가능 여부 토글
+  - 섹션 라벨 (기본: "추가 정보")
+- 드래그-드롭 순서 변경
+- 저장 → custom_fields UPSERT
+- 삭제 시: custom_field_values 잔존 데이터 경고 → soft delete
+
+**커스텀 필드 렌더링**
+- 직원 등록/수정 폼: CustomFieldsSection 컴포넌트가 하단에 자동 렌더링
+- 직원 프로필 조회: 커스텀 필드 값 표시 (섹션별 그룹핑)
+- 직원 목록: is_searchable=true인 필드만 필터에 추가
+- 내보내기: export_templates에 커스텀 필드 컬럼 포함 가능
+
+---
+
+### 6. 워크플로우 설정 (/settings/customization/workflows) — HR_ADMIN
+
+**워크플로우 유형별 관리**
+- 목록: 워크플로우 유형 | 이름 | 단계 수 | 조건 | 활성 상태
+
+**기본 워크플로우 유형:**
+
+| 유형 | 기본 설정 | 커스텀 가능 범위 |
+|---|---|---|
+| LEAVE_APPROVAL | 1단계 (직속상사) | 1~3단계, 금액/일수 조건 |
+| PROFILE_CHANGE | 1단계 (HR) | 1~2단계 |
+| GOAL_APPROVAL | 1단계 (직속상사) | 1~2단계 |
+| PAYROLL_APPROVAL | 2단계 (HR→임원) | 1~3단계 |
+| OVERTIME_REQUEST | 1단계 (직속상사) | 1~2단계 |
+| OFFER_APPROVAL | 1단계 (HR) | 1~3단계 |
+| DISCIPLINARY_APPROVAL | 2단계 (HR→임원) | 2~3단계 |
+
+**워크플로우 편집 UI**
+- Step Wizard 형태:
+  - Step 1: 유형 선택 + 이름 입력
+  - Step 2: 단계 추가 (드래그-드롭)
+    - 각 단계: 승인자 유형 선택 (직속상사/부서장/HR/특정역할/특정인)
+    - 자동승인 시간 (옵션): N시간 후 자동 승인
+    - 건너뛰기 허용 여부
+  - Step 3: 조건 설정 (옵션)
+    - "특정 부서만", "금액 N원 이상", "일수 N일 이상" 등 조건 추가
+    - 조건 매칭 시 이 워크플로우 적용, 없으면 기본 워크플로우
+  - Step 4: 프리뷰 + 저장
+
+**시각화**: 각 워크플로우를 플로우차트로 표시
+```
+[신청자] → [직속상사 승인] → [부서장 승인] → [완료]
+```
+
+---
+
+### 7. 이메일/알림 템플릿 (/settings/customization/templates) — HR_ADMIN
+
+**이벤트별 목록**
+- 목록: 이벤트 | 채널(EMAIL/PUSH/IN_APP) | 언어 | 제목 미리보기 | 활성 여부
+- 필터: 채널별, 언어별
+
+**템플릿 편집**
+- 제목: Input (Handlebars 변수 삽입 가능)
+- 본문: Rich Text Editor (Handlebars 변수 삽입 가능)
+- 사용 가능 변수 목록 표시 (사이드 패널):
+  ```
+  {{employee_name}}    직원 이름
+  {{company_name}}     법인 이름
+  {{leave_days}}       휴가 일수
+  {{approved_by}}      승인자 이름
+  {{link}}             관련 링크
+  {{manager_name}}     매니저 이름
+  {{cycle_name}}       평가 사이클명
+  {{days_left}}        마감까지 남은 일수
+  ```
+- 실시간 프리뷰 (샘플 데이터로 변수 치환)
+- "기본값으로 초기화" 버튼 (is_system=true 템플릿만)
+
+**알림 규칙 편집**
+- 기존 notification_triggers와 연동
+- 임계값 조정: 초과근무 경고 시간(기본 45h → 고객 설정), Attrition 위험 점수(기본 70 → 고객 설정)
+- 채널 토글: 이메일 ON/OFF, 푸시 ON/OFF
+
+---
+
+### 8. 평가 척도 설정 (/settings/customization/evaluation) — HR_ADMIN
+
+**점수 척도**
+- min / max 설정 (기본 1~5, 변경 가능: 1~4, 1~10 등)
+- 각 점수별 라벨 편집 (인라인)
+- 프리뷰: 실제 평가 폼에서 보이는 형태 시각화
+
+**등급 라벨**
+- S/A/B/C/D 각각의 표시명 편집
+- "최우수"→"Exceeds Expectations" 등
+
+**EMS 9블록 설정**
+- ems_block_config 연동
+- 각 블록의 라벨, 색상, 권장 조치 편집
+
+---
+
+### 9. 모듈 관리 (/settings/customization/modules) — HR_ADMIN
+
+**모듈 토글 그리드**
+- 각 모듈: 아이콘 + 이름 + 설명 + ON/OFF Switch
+- 필수 모듈 (토글 불가): CORE_HR
+- 선택 모듈: 각각 독립적 ON/OFF
+
+| 모듈 | 설명 | 사이드바 메뉴 |
+|---|---|---|
+| CORE_HR | 직원/조직 관리 | 👥 직원 관리, 🏢 조직도 |
+| ATTENDANCE | 근태 관리 | ⏰ 근태 관리 |
+| LEAVE | 휴가 관리 | 🌴 휴가 관리 |
+| PERFORMANCE | 성과 관리 | 📊 성과 관리 |
+| RECRUITMENT | 채용 (ATS) | 📋 채용 |
+| PAYROLL | 급여 관리 | 💰 급여 관리 |
+| COMPENSATION | 연봉·보상 | 💵 연봉·보상 |
+| OFFBOARDING | 퇴직 관리 | 🚪 퇴직 관리 |
+| DISCIPLINE | 징계·상벌 | ⚖️ 징계·상벌 |
+| BENEFITS | 복리후생 | 🎁 복리후생 |
+| PULSE | Pulse Survey | (성과관리 하위) |
+| PEER_REVIEW | 다면평가 (360°) | (성과관리 하위) |
+| SUCCESSION | 승계 계획 | (성과관리 하위) |
+| L_AND_D | 교육(L&D) | 🎓 교육 |
+| HR_CHATBOT | HR 챗봇 | 💬 플로팅 |
+| MANAGER_HUB | 매니저 허브 | 📊 매니저 허브 |
+| ANALYTICS | HR Analytics | 📈 HR Analytics |
+
+- OFF 시: 사이드바 메뉴 숨김 + 해당 API 403 MODULE_DISABLED
+
+---
+
+### 10. 내보내기 템플릿 (/settings/customization/exports) — HR_ADMIN
+
+**엔티티별 탭**
+- 탭: 직원 | 근태 | 급여 | 휴가 | 성과 | 채용
+
+**각 탭 UI**
+- 템플릿 목록: 이름 | 컬럼 수 | 형식(XLSX/CSV) | 기본 여부
+- "새 템플릿" 버튼:
+  - 이름 입력
+  - 컬럼 선택: 좌측(사용 가능 컬럼 전체) → 우측(선택된 컬럼, 드래그-드롭 순서)
+  - 커스텀 필드도 "추가 정보" 그룹에 표시
+  - 각 컬럼: 헤더명 오버라이드 가능
+  - 형식: XLSX / CSV 선택
+- "기본으로 설정" 버튼 (is_default=true, 기존 기본 해제)
+- 내보내기 시: 기본 템플릿으로 자동 적용, 다른 템플릿 선택 가능
+
+---
+
+### 11. 대시보드 위젯 설정 (/settings/customization/dashboard) — HR_ADMIN
+
+**역할별 탭**
+- 탭: 직원 | 매니저 | HR 관리자 | 임원
+
+**각 탭 UI**
+- 위젯 목록: 이름 | 설명 | 표시 여부(Switch) | 순서
+- 드래그-드롭 순서 변경
+- 프리뷰 버튼: 설정된 레이아웃 미리보기
+- 저장 → tenant_settings.dashboard_layout UPDATE
+
+**위젯 목록 예시 (EMPLOYEE):**
+```
+✅ 오늘 할 일 (Pending Actions)    — 순서 1 (고정, 항상 최상단)
+✅ 출퇴근 현황                     — 순서 2
+✅ 휴가 잔여                       — 순서 3
+✅ 최근 Recognition               — 순서 4
+☐ 온보딩 진행률                    — 순서 5 (숨김)
+☐ 교육 현황                       — 순서 6 (숨김)
+```
+
+
+================================================================
+API
+================================================================
+
+```
+# 직원
+GET               /api/v1/employees                    # 목록 (필터, 검색, 페이지네이션)
+POST              /api/v1/employees                    # 등록
+GET               /api/v1/employees/:id                # 상세
+PUT               /api/v1/employees/:id                # 수정
+DELETE            /api/v1/employees/:id                # Soft Delete
+
+# 발령/전입
+POST              /api/v1/employees/:id/transfer       # 부서 이동 / 승진 / 법인 전입
+
+# 이력/문서
+GET               /api/v1/employees/:id/histories      # 인사이력
+GET               /api/v1/employees/:id/documents      # 문서 목록
+POST              /api/v1/employees/:id/documents      # 문서 업로드
+GET               /api/v1/employees/:id/documents/:docId/download  # 다운로드 URL
+
+# 조직도
+GET               /api/v1/org/tree                     # 조직 트리
+GET               /api/v1/org/departments              # 부서 목록
+POST              /api/v1/org/departments              # 부서 생성
+PUT               /api/v1/org/departments/:id          # 부서 수정
+
+# 조직 개편
+GET               /api/v1/org/change-history           # 개편 이력
+POST              /api/v1/org/restructure              # 일괄 조직개편
+
+# ★ v3.2 법인 관리 (SUPER_ADMIN)
+GET               /api/v1/companies                    # 법인 목록
+POST              /api/v1/companies                    # 법인 추가 → +tenant_settings 자동생성
+PUT               /api/v1/companies/:id                # 법인 수정
+PUT               /api/v1/companies/:id/deactivate     # 법인 비활성화
+
+# ★ v3.2 테넌트 설정
+GET               /api/v1/settings/tenant              # 현재 법인 설정 조회
+PUT               /api/v1/settings/tenant              # 설정 수정 (브랜딩/핵심가치/기본설정/모듈/대시보드)
+
+# ★ v3.2 용어 커스터마이징
+GET               /api/v1/settings/terms               # 용어 목록
+PUT               /api/v1/settings/terms               # 일괄 UPSERT
+DELETE            /api/v1/settings/terms/:key           # 초기화 (override 삭제)
+
+# ★ v3.2 동적 ENUM 옵션
+GET               /api/v1/settings/enum-options/:group  # 그룹별 옵션 목록
+POST              /api/v1/settings/enum-options         # 옵션 추가
+PUT               /api/v1/settings/enum-options/:id     # 옵션 수정
+DELETE            /api/v1/settings/enum-options/:id     # 옵션 삭제 (is_system=false만)
+PUT               /api/v1/settings/enum-options/reorder # 순서 변경
+
+# ★ v3.2 커스텀 필드
+GET               /api/v1/settings/custom-fields        # 전체 목록 (?entity_type=EMPLOYEE)
+POST              /api/v1/settings/custom-fields        # 필드 추가
+PUT               /api/v1/settings/custom-fields/:id    # 필드 수정
+DELETE            /api/v1/settings/custom-fields/:id    # 필드 soft delete
+GET               /api/v1/custom-field-values/:entityType/:entityId   # 값 조회
+PUT               /api/v1/custom-field-values/:entityType/:entityId   # 값 저장
+
+# ★ v3.2 워크플로우
+GET               /api/v1/settings/workflows            # 워크플로우 목록
+POST              /api/v1/settings/workflows            # 워크플로우 생성 (rules + steps)
+PUT               /api/v1/settings/workflows/:id        # 수정
+DELETE            /api/v1/settings/workflows/:id        # 삭제 (is_active=false)
+
+# ★ v3.2 이메일/알림 템플릿
+GET               /api/v1/settings/email-templates      # 템플릿 목록
+PUT               /api/v1/settings/email-templates/:id  # 템플릿 수정
+POST              /api/v1/settings/email-templates/:id/reset  # 기본값 초기화
+POST              /api/v1/settings/email-templates/:id/preview  # 프리뷰 (변수 치환)
+
+# ★ v3.2 내보내기 템플릿
+GET               /api/v1/settings/export-templates     # 목록 (?entity_type=EMPLOYEE)
+POST              /api/v1/settings/export-templates     # 생성
+PUT               /api/v1/settings/export-templates/:id # 수정
+DELETE            /api/v1/settings/export-templates/:id # 삭제
+```
+
+
+================================================================
+완료 기준
+================================================================
+
+**디자인 시스템**
+- [ ] Tailwind config ctr-* 색상 7개 확장 확인
+- [ ] Pretendard 글꼴 로드 + 적용 확인
+- [ ] CTR 아이콘 4개 (Challenge/Trust/Responsibility/Respect) 렌더링 확인
+- [ ] 사이드바 bg-ctr-primary + 메뉴 PermissionGate 확인
+- [ ] 버튼 primary/danger/outline 3종 스타일 확인
+
+**직원 관리**
+- [ ] 직원 목록 DataTable + 5개 필터 + 검색 + 페이지네이션 확인
+- [ ] 직군 필터 동작 확인 (job_categories JOIN)
+- [ ] CompanySelector 법인 전환 → 직원 목록 필터 확인
+- [ ] 직원 프로필 5탭 렌더링 확인
+- [ ] HR_ADMIN 인라인 편집 + 저장 + audit_logs 확인
+- [ ] EMPLOYEE → 타인 연봉이력 탭 비표시 확인
+- [ ] EMPLOYEE → 타인 징계이력 접근 403 확인
+
+**직원 등록**
+- [ ] 다단계 폼 4 Step 네비게이션 확인
+- [ ] 이메일 UK 중복 검증 확인
+- [ ] $transaction (employees + history + auth) 원자적 저장 확인
+- [ ] 온보딩 자동 시작 체크 → employee_onboarding 생성 확인
+- [ ] 매니저 알림 발송 확인
+
+**법인 간 전입**
+- [ ] TRANSFER_CROSS_COMPANY 이력 기록 확인
+- [ ] from_company_id + to_company_id 저장 확인
+- [ ] 이전 법인 역할 종료 + 새 법인 역할 시작 확인
+
+**조직도**
+- [ ] 조직도 트리 렌더링 확인
+- [ ] "그룹 전체" 3단계 (홀딩스→법인→부서) 확인
+- [ ] 부서 클릭 → 우측 패널 (상세 + 직원목록) 확인
+
+**조직 개편**
+- [ ] 부서 생성 → departments + org_change_history(CREATE) 확인
+- [ ] 부서 통합 → 직원 이동 + org_change_history(MERGE) 확인
+- [ ] 부서 폐지 → is_active=false + org_change_history(CLOSE) 확인
+- [ ] 일괄 변경 → $transaction + 각각 이력 기록 확인
+- [ ] 변경 전/후 비교 UI (JSON diff) 확인
+
+**공통**
+- [ ] Soft Delete 동작 확인 (직원 삭제 → deleted_at 기록)
+- [ ] RBAC 권한 검증 (EMPLOYEE → 직원 등록 403)
+- [ ] 감사 로그 (직원 생성/수정, 조직개편) 기록 확인
+- [ ] 데이터 없을 때 EmptyState 표시 확인
+- [ ] npx tsc --noEmit 에러 0개
+
+**★ v3.2 설정 커스터마이제이션**
+- [ ] 법인 관리: 추가/수정/비활성화 동작 + tenant_settings 자동 생성 확인
+- [ ] 브랜딩: 색상 변경 → BrandProvider CSS 변수 즉시 반영 확인
+- [ ] 핵심가치: core_values 수정 → Recognition/EmptyState 동적 반영 확인
+- [ ] 용어 오버라이드: term_overrides 변경 → 사이드바/폼 라벨 반영 확인
+- [ ] 동적 ENUM: 커스텀 옵션 추가 → Select 드롭다운에 표시 확인
+- [ ] 커스텀 필드: 필드 추가 → 직원 프로필 하단 CustomFieldsSection 렌더링 확인
+- [ ] 커스텀 필드: is_searchable=true → 직원 목록 필터에 추가 확인
+- [ ] 워크플로우: 2단계 승인 설정 → 휴가 신청 시 2단계 진행 확인
+- [ ] 이메일 템플릿: 제목 변경 → 실제 알림 발송 시 반영 확인
+- [ ] 모듈 토글: RECRUITMENT OFF → 사이드바 숨김 + API 403 확인
+- [ ] 내보내기 템플릿: 커스텀 컬럼 선택 → XLSX 다운로드 확인
+- [ ] 대시보드 위젯: 순서 변경 + 숨기기 → 홈 화면 반영 확인
+
+
+================================================================
+★ 세션 종료: context.md 업데이트
+================================================================
+
+반드시 포함:
+- 신규 파일 목록 (컴포넌트, 페이지, API 라우트)
+- CTR 브랜드 디자인 시스템 적용 현황
+- 직원 목록/프로필/등록 API 엔드포인트
+- 조직도 API 엔드포인트
+- 다음 세션(STEP 3) 시작 전 확인 사항

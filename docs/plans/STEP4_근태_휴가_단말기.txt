@@ -1,0 +1,484 @@
+# CTR HR Hub - STEP 4: 근태 + 휴가 + 단말기 + 교대근무
+# v3.1 (CTO 리뷰 반영)
+# ★ 반드시 STEP0_공통규칙.txt를 먼저 읽고 적용할 것
+
+
+================================================================
+STEP 4 프롬프트 — 근태 + 휴가 + 단말기 + 교대근무
+================================================================
+
+## ★ 세션 시작: context.md 먼저 읽어줘
+
+이번 세션 목표: 근태 관리 + 휴가 신청/승인 + 출퇴근 단말기 API + 교대근무 관리
+
+---
+
+
+================================================================
+노동법 엔진 — lib/labor/
+================================================================
+
+v3.1: lib/labor-kr.ts 제거 → lib/labor/ 디렉토리 하나로 통합
+v3.1: lib/labor/pl.ts → lib/labor/eu.ts (CTR Europe, PL 소재지, 영어 업무)
+
+각 파일은 동일한 인터페이스 구현:
+
+```ts
+// lib/labor/types.ts
+export interface LaborConfig {
+  country_code: string;
+  standard_hours_weekly: number;
+  standard_hours_daily: number;
+  overtime_threshold_weekly: number;   // 이 시간 초과 시 초과근무
+  max_overtime_weekly: number;         // 주당 초과근무 상한
+  overtime_rates: OvertimeRate[];      // 시간대별 할증률
+  leave_types: LeaveTypeConfig[];      // 법정 휴가 유형
+  mandatory_break: BreakRule;          // 필수 휴게
+  night_shift: NightShiftRule;         // 야간근무 규정
+  probation_months: number;            // 수습 기간
+  severance: SeveranceRule | null;     // 퇴직금 규정
+}
+
+export interface OvertimeRate {
+  label: string;
+  multiplier: number;        // 예: 1.5 (150%)
+  condition: string;         // 적용 조건 (weekday_ot, weekend, holiday 등)
+}
+
+export interface LeaveTypeConfig {
+  type: string;              // ANNUAL, SICK, MATERNITY 등
+  days_per_year: number | null;
+  accrual_rule: string;      // FRONT_LOADED, MONTHLY_ACCRUAL, TENURE_BASED 등
+  paid: boolean;
+}
+
+export function getLaborConfig(countryCode: string): LaborConfig;
+export function calculateOvertime(config: LaborConfig, weeklyHours: number): OvertimeCalculation;
+export function calculateLeaveAccrual(config: LaborConfig, type: string, tenureMonths: number): number;
+```
+
+### 국가별 파일 (7개)
+
+**lib/labor/kr.ts (한국 — CTR 국내 7개 법인)**
+- standard_hours_weekly: 40
+- standard_hours_daily: 8
+- overtime_threshold_weekly: 40
+- max_overtime_weekly: 12
+- overtime_rates:
+  - weekday_ot: 1.5
+  - weekend: 1.5
+  - holiday: 2.0
+  - night (22:00~06:00): +0.5 가산
+- leave_types:
+  - ANNUAL: 15일 (1년 미만 월 1일 발생), 근속 가산 (3년 이상 +1일/2년)
+  - SICK: 무급 (단, 산재 별도)
+  - MATERNITY: 90일 유급
+  - PATERNITY: 10일 유급
+  - FAMILY_CARE: 10일 무급
+  - WEDDING: 5일 유급
+  - BEREAVEMENT: 3~5일 (관계별 상이)
+  - MENSTRUAL: 1일/월 무급
+- mandatory_break: 4시간당 30분, 8시간당 1시간
+- night_shift: 22:00~06:00
+- probation_months: 3
+- severance: 1년 이상 근무 시 30일분 평균임금
+
+**lib/labor/us.ts (미국 — CTR America)**
+- standard_hours_weekly: 40
+- overtime_threshold_weekly: 40
+- overtime_rates: weekday_ot=1.5 (FLSA)
+- leave_types: SICK, PTO (법정은 주별 상이, 기본 PTO 정책 적용)
+- severance: null (법정 의무 없음, 회사 정책)
+
+**lib/labor/cn.ts (중국 — CTR China)**
+- standard_hours_weekly: 40
+- overtime_rates: weekday=1.5, weekend=2.0, holiday=3.0
+- leave_types: ANNUAL(5~15일, 근속연수 기반), SICK(3~24개월, 근속기반)
+- mandatory_break: 점심 1시간
+- severance: N+1 (근속연수 × 월평균임금)
+
+**lib/labor/in.ts (인도 — CTR India)**
+- standard_hours_weekly: 48
+- overtime_rates: weekday_ot=2.0
+- leave_types: CASUAL(12일), SICK(12일), EARNED(15일)
+- mandatory_break: 5시간당 30분
+
+**lib/labor/eu.ts (유럽 — CTR Europe, 폴란드)**
+v3.1: 파일명 eu.ts, locale=en
+- standard_hours_weekly: 40
+- overtime_rates: weekday=1.5, weekend=2.0
+- leave_types: ANNUAL(20~26일, 근속기반), SICK(80% 급여, 33일까지)
+- mandatory_break: 6시간 이상 근무 시 15분
+
+**lib/labor/tr.ts (터키 — CTR Turkey)**
+- standard_hours_weekly: 45
+- overtime_rates: weekday=1.5
+- leave_types: ANNUAL(14~26일, 근속기반)
+- mandatory_break: 7.5시간당 1시간
+
+**lib/labor/mx.ts (멕시코 — CTR Mexico)**
+- standard_hours_weekly: 48
+- overtime_rates: first_9h=2.0, after_9h=3.0
+- leave_types: ANNUAL(12일 첫해 → 매년 +2일, 상한 없음, 2023법 개정 반영)
+- mandatory_break: 30분 (continuous shift)
+- severance: 3개월 + 20일/년
+
+
+================================================================
+기능
+================================================================
+
+### 1. 근무 일정 관리 (/settings/work-schedules) — HR_ADMIN
+
+**근무 유형 CRUD**
+- DataTable: 이름 / 코드 / 유형 / 시작~종료 / 법인
+- 생성 폼:
+  - 이름 (예: "주간 교대", "야간 교대", "표준 근무")
+  - 코드 (UK)
+  - 유형: FIXED / FLEXIBLE / SHIFT
+  - 시작 시간, 종료 시간, 휴게 시간 (분)
+  - 야간 여부 (Boolean → night_shift 가산 적용)
+  - 법인 선택
+
+**직원 배정 (/employees/:id → 고용정보 섹션)**
+- 직원별 근무 일정 배정: employee_schedules INSERT
+- effective_from 필수, end_date 선택 (기간 배정)
+- 현재 적용 중인 일정 표시 (end_date가 null이거나 미래)
+
+---
+
+### 2. 출퇴근 (/attendance)
+
+**EMPLOYEE 뷰**
+- 상단: 오늘 출퇴근 카드
+  - 출근 기록 없으면: "출근" 버튼 (큰 파란 버튼)
+  - 출근 후: 근무 중 경과 시간 (실시간 타이머) + "퇴근" 버튼 (큰 빨간 버튼)
+  - 퇴근 후: 오늘 근무 시간 표시
+
+- 출퇴근 기록 폼 (모바일/웹):
+  - 출근: 현재 시간 기록 + 유형(OFFICE/REMOTE/FIELD) 선택 + 비고 (선택)
+  - 퇴근: 현재 시간 기록 + 비고 (선택)
+  - 지각/이상 자동 판정:
+    - 출근 시간 > 근무일정 시작시간 + 10분 → attendance_status = LATE
+    - 근무 시간 < 법정 기준 시간 → EARLY_LEAVE 또는 INCOMPLETE
+
+- 주간 근무 요약 카드:
+  - 이번 주 근무 시간 합계 / 초과근무 시간
+  - 일별 막대 그래프 (기준 시간 점선 표시)
+
+- 월간 근태 달력:
+  - 날짜별 셀: 출퇴근 시간 + 상태 아이콘
+  - 정상=🟢, 지각=🟡, 조퇴=🟠, 결근=🔴, 휴가=🔵, 재택=🏠
+
+**MANAGER 뷰**
+- /attendance/team
+- 팀원 오늘 출퇴근 현황: DataTable (이름/출근시간/퇴근시간/상태/유형)
+- 미출근 직원 하이라이트 (bg-ctr-warning/5)
+- 주간 팀 요약:
+  - 팀 평균 근무 시간 vs 기준 시간
+  - 초과근무 경고 (45시간 이상 직원 🔴 표시)
+    ★ 한국법: 주 52시간 초과 경고 특별 표시
+
+**HR_ADMIN 뷰**
+- /attendance/admin
+- 전사 근태 현황: CompanySelector + 법인별 대시보드
+- 지각률 / 결근률 / 평균 초과근무 KPI 카드 3개
+- 이상 근태 목록: 지각 / 조퇴 / 미출근 필터
+- 근태 수동 수정 기능:
+  - 직원 선택 → 날짜 선택 → 출/퇴근 시간 수정
+  - 수정 사유 필수 입력
+  - audit_logs 기록 (이전값 → 변경값)
+- 초과근무 경고 대시보드:
+  - 주 45시간 이상: WARNING (🟡)
+  - 주 52시간 이상: CRITICAL (🔴, 한국법 위반)
+  - mv_burnout_risk MV 활용
+
+---
+
+### 3. 출퇴근 단말기 연동 API
+
+**단말기 → HR Hub 데이터 전송**
+```
+POST /api/v1/terminals/clock
+Headers:
+  X-Terminal-ID: string (attendance_terminals.terminal_id)
+  X-Terminal-Secret: string (attendance_terminals.api_secret)
+Body: {
+  employee_code: string,     // 사번 또는 카드번호
+  clock_type: "IN" | "OUT",
+  timestamp: ISO 8601,
+  method: "CARD" | "FINGERPRINT" | "FACE" | "PIN"
+}
+Response 200: {
+  ok: true,
+  attendance_id: string,
+  employee_name: string       // 단말기 표시용
+}
+Response 401: { error: "INVALID_TERMINAL" }
+Response 404: { error: "EMPLOYEE_NOT_FOUND" }
+```
+
+**인증**: X-Terminal-ID + X-Terminal-Secret 매칭 (attendance_terminals 테이블)
+- 일반 Bearer Token 인증과 별개 경로
+- 미들웨어: verifyTerminal() → terminald + secret 검증
+
+**단말기 관리 (/settings/terminals) — HR_ADMIN**
+- DataTable: 단말기명 / ID / 설치 위치 / 법인 / 상태 / 마지막 통신
+- 등록: 이름, 설치 위치, 법인 → 자동 ID + Secret 생성
+- Secret 재발급 (기존 무효화)
+- 비활성화 / 삭제
+- 마지막 통신 시간 > 24시간 → "오프라인" 경고
+
+**처리 로직**
+1. Terminal 인증 확인
+2. employee_code → employees.employee_code 매칭 (같은 법인)
+3. clock_type=IN: attendances INSERT (clock_in=timestamp, terminal_id, clock_in_method)
+4. clock_type=OUT:
+   - 해당 직원의 오늘 최신 attendances (clock_out IS NULL) 찾기
+   - clock_out=timestamp, clock_out_method 업데이트
+   - total_hours 계산 (mandatory_break 차감 적용)
+   - overtime_hours 계산 (getLaborConfig → 기준 시간 초과분)
+5. 이상 처리:
+   - IN 중복 (이미 오늘 미퇴근 출근 존재) → 기존 건 자동 퇴근 처리 (23:59) + 새 출근
+   - OUT 없이 다음날 IN → 전날 건 자동 퇴근 처리 (23:59)
+
+---
+
+### 4. 휴가 관리
+
+#### 4-1. 휴가 정책 관리 (/settings/leave-policies) — HR_ADMIN
+
+**정책 CRUD**
+- DataTable: 유형 / 일수 / 법인 / 유급/무급 / 이월 / 상태
+- 생성 폼:
+  - 유형: 드롭다운 (ANNUAL/SICK/MATERNITY/PATERNITY/FAMILY_CARE/BEREAVEMENT/WEDDING/MENSTRUAL/PTO/PERSONAL/OTHER)
+  - 연간 일수 (또는 null=무제한)
+  - 법인 선택
+  - 유급/무급 토글
+  - 이월 가능 여부 + 이월 상한 일수
+  - 최소 신청 단위: FULL_DAY / HALF_DAY / HOUR
+  - 반차 가능 여부 (Boolean)
+
+**법정 휴가 자동 세팅**
+- 법인 생성 시 lib/labor/{country}.ts의 leave_types를 기반으로
+  leave_policies 자동 INSERT
+- HR_ADMIN이 커스터마이즈 가능 (법정 기준 이상만)
+
+#### 4-2. 직원 휴가 잔여 관리
+
+**employee_leave_balances**
+- 직원별 × 휴가유형별 잔여 관리
+- total_days: 연간 부여 (법정 + 회사 추가)
+- used_days: 사용 일수 (approved leave_requests 합산)
+- remaining: total_days - used_days (computed)
+
+**연초 일괄 부여 (FRONT_LOADED)**
+- 매년 1/1 또는 회계연도 시작일에 cron으로 실행
+- lib/labor/{country}.ts의 calculateLeaveAccrual() 호출
+- 이전 년도 잔여 이월 처리 (carry_over 정책 적용)
+
+**월별 발생 (MONTHLY_ACCRUAL)**
+- 매월 1일 cron: 해당 국가 정책에 따라 월 발생분 가산
+
+#### 4-3. 휴가 신청 (/leave) — EMPLOYEE
+
+**신청 폼**
+- 휴가 유형 선택 (본인 법인 정책 기준)
+- 시작일 ~ 종료일 (DateRangePicker)
+- 반차 선택: 오전/오후 (half_day_type)
+- 사유 (선택)
+- 잔여 일수 실시간 표시: "연차 12일 남음 → 이 신청 후 10일"
+- 잔여 부족 시 신청 불가 (버튼 비활성)
+
+**신청 → 승인 플로우**
+1. EMPLOYEE 신청: leave_requests INSERT (status=PENDING)
+2. 매니저에게 알림 (LEAVE_REQUESTED 트리거)
+3. MANAGER 승인/반려:
+   - 승인: status=APPROVED, approved_by, approved_at
+     → employee_leave_balances.used_days += 사용일수
+     → 신청자 알림 "휴가가 승인되었습니다"
+   - 반려: status=REJECTED, rejection_reason 필수
+     → 신청자 알림 "휴가가 반려되었습니다: {{사유}}"
+4. 취소: EMPLOYEE가 PENDING/APPROVED 건 취소 가능
+   - APPROVED 취소 시 used_days 차감 복구
+
+**내 휴가 현황**
+- 잔여 일수 요약 카드 (유형별)
+- 신청 이력 DataTable (상태 뱃지 + 필터)
+- 휴가 달력 (승인된 휴가 표시)
+
+#### 4-4. 매니저 휴가 관리
+
+**팀 휴가 현황 (/leave/team) — MANAGER**
+- 팀원 휴가 달력 (월간, 팀원별 행)
+  - 승인 휴가: 파란 바
+  - 대기 중: 점선 바
+- 미처리 신청 목록 (상단 알림 뱃지)
+- 승인/반려 인라인 액션
+
+#### 4-5. HR 휴가 관리 (/leave/admin) — HR_ADMIN
+
+**전사 휴가 현황**
+- CompanySelector + 법인별 대시보드
+- 잔여 일수 현황: 부서별 평균 잔여율
+- 부서별 사용률 차트 (Recharts Bar Chart)
+- 대량 휴가 부여:
+  - 대상 직원 다중 선택 또는 부서 일괄
+  - 유형 + 일수 입력
+  - 일괄 INSERT (employee_leave_balances 업데이트)
+
+---
+
+### 5. 공휴일 관리 (/settings/holidays) — HR_ADMIN
+
+**법인별 공휴일**
+- DataTable: 날짜 / 이름 / 법인 / 유형(공휴일/대체휴일/창립기념일)
+- 연도 선택 드롭다운
+- 공휴일 추가/수정/삭제
+- 근태 연동: 공휴일 = 근무 면제일 → 출근 시 holiday 가산 적용
+
+---
+
+### 6. 교대근무 관리
+
+**Phase 1: 수동 배정 (v3.1)**
+
+/settings/shift-roster — HR_ADMIN
+
+**월간 교대 시프트표**
+- 행: 직원 (해당 부서/생산라인)
+- 열: 날짜 (1~31)
+- 셀: 시프트 코드 (A조/B조/C조 또는 DAY/EVENING/NIGHT/OFF)
+- 셀 클릭 → 시프트 선택 드롭다운
+- 드래그로 연속 배정 가능
+
+**배정 처리**
+- employee_schedules에 effective_from/end_date로 기간 지정
+- 동일 직원의 기간 중복 방지 (UK: employee_id + date range 겹침 체크)
+
+**주의사항 자동 체크**
+- 야간→주간 연속 배치 경고 (최소 11시간 휴식 확인, EU/한국 기준)
+- 주당 근무시간 초과 예측 경고
+- 경고는 UI 배너로 표시 (저장 차단은 하지 않음, Phase 1)
+
+**Phase 2 기술 부채**: 자동 순환 로직, 교대 패턴 템플릿, 선호도 반영
+
+
+================================================================
+API
+================================================================
+
+```
+# 근무 일정
+GET /POST          /api/v1/work-schedules                  # 목록/등록
+GET /PUT /DELETE   /api/v1/work-schedules/:id              # 상세/수정/삭제
+POST               /api/v1/employees/:id/schedules          # 직원 배정
+GET                /api/v1/employees/:id/schedules          # 직원 일정 조회
+
+# 출퇴근
+GET                /api/v1/attendance/today                  # 오늘 내 출퇴근
+POST               /api/v1/attendance/clock-in               # 출근 (웹/앱)
+POST               /api/v1/attendance/clock-out              # 퇴근 (웹/앱)
+GET                /api/v1/attendance/weekly-summary          # 주간 요약
+GET                /api/v1/attendance/monthly/:year/:month    # 월간 달력
+GET                /api/v1/attendance/team                    # MANAGER 팀 현황
+GET                /api/v1/attendance/admin                   # HR 전사 현황
+PUT                /api/v1/attendance/:id                     # 근태 수정 (HR)
+
+# 단말기
+POST               /api/v1/terminals/clock                   # 단말기 출퇴근 전송
+GET /POST          /api/v1/terminals                         # 단말기 관리
+GET /PUT /DELETE   /api/v1/terminals/:id                     # 상세/수정/삭제
+POST               /api/v1/terminals/:id/regenerate-secret    # Secret 재발급
+
+# 휴가
+GET /POST          /api/v1/leave/requests                    # 신청 목록/신청
+GET                /api/v1/leave/requests/:id                # 상세
+PUT                /api/v1/leave/requests/:id/approve         # 승인 (MANAGER)
+PUT                /api/v1/leave/requests/:id/reject          # 반려 (MANAGER)
+PUT                /api/v1/leave/requests/:id/cancel          # 취소 (EMPLOYEE)
+GET                /api/v1/leave/balances                     # 내 잔여
+GET                /api/v1/leave/balances/:employeeId         # 직원 잔여 (HR)
+GET                /api/v1/leave/team                         # 팀 현황 (MANAGER)
+GET                /api/v1/leave/admin                        # 전사 현황 (HR)
+POST               /api/v1/leave/bulk-grant                   # 대량 부여 (HR)
+
+# 휴가 정책
+GET /POST          /api/v1/leave/policies                    # 정책 관리
+GET /PUT /DELETE   /api/v1/leave/policies/:id
+
+# 공휴일
+GET /POST          /api/v1/holidays                          # 공휴일 관리
+GET /PUT /DELETE   /api/v1/holidays/:id
+
+# 교대근무
+GET                /api/v1/shift-roster/:year/:month          # 월간 시프트표
+PUT                /api/v1/shift-roster/assign                # 시프트 배정
+GET                /api/v1/shift-roster/warnings              # 배정 경고 체크
+```
+
+
+================================================================
+완료 기준
+================================================================
+
+**노동법 엔진**
+- [ ] lib/labor/types.ts 인터페이스 정의 확인
+- [ ] 7개국 파일 존재 확인 (kr, us, cn, in, eu, tr, mx)
+- [ ] getLaborConfig('KR') → standard_hours_weekly=40 확인
+- [ ] calculateOvertime(config, 45) → 5시간 × 1.5 정확 계산 확인
+- [ ] calculateLeaveAccrual(config, 'ANNUAL', 36) → 16일 (한국, 3년차) 확인
+- [ ] EU 파일명 eu.ts + locale=en 확인 (pl.ts 없음)
+
+**출퇴근**
+- [ ] EMPLOYEE 출퇴근 버튼 → attendances INSERT/UPDATE 확인
+- [ ] 경과 시간 실시간 타이머 표시 확인
+- [ ] 지각 자동 판정 (>시작+10분 → LATE) 확인
+- [ ] 주간 요약 카드 + 일별 막대 그래프 확인
+- [ ] 월간 달력 상태 아이콘 확인
+- [ ] MANAGER 팀 현황 + 미출근 하이라이트 확인
+- [ ] HR 근태 수동 수정 + audit_logs 확인
+- [ ] 초과근무 경고 (45h=🟡, 52h=🔴) 확인
+
+**단말기**
+- [ ] POST /api/v1/terminals/clock → X-Terminal-ID/Secret 인증 확인
+- [ ] employee_code 매칭 → attendances 기록 확인
+- [ ] IN 중복 → 기존 건 자동 퇴근 처리 확인
+- [ ] total_hours 계산 (mandatory_break 차감) 확인
+- [ ] overtime_hours 계산 (국가별 기준 적용) 확인
+- [ ] 단말기 관리 CRUD + Secret 재발급 확인
+- [ ] 마지막 통신 > 24시간 → "오프라인" 경고 확인
+
+**휴가**
+- [ ] 법인별 leave_policies 자동 세팅 확인
+- [ ] EMPLOYEE 신청 → PENDING → MANAGER 알림 확인
+- [ ] MANAGER 승인 → used_days 가산 + 알림 확인
+- [ ] MANAGER 반려 → rejection_reason + 알림 확인
+- [ ] EMPLOYEE 취소 (APPROVED) → used_days 복구 확인
+- [ ] 잔여 부족 시 신청 불가 확인
+- [ ] 반차 (HALF_DAY, AM/PM) 신청 확인
+- [ ] 팀 휴가 달력 (승인=실선, 대기=점선) 확인
+- [ ] HR 대량 부여 확인
+- [ ] 이월 처리 (연초 cron) 로직 확인
+
+**교대근무**
+- [ ] 월간 시프트표 그리드 UI 확인
+- [ ] 셀 클릭 → 시프트 선택 드롭다운 확인
+- [ ] employee_schedules 기간 배정 + 중복 방지 확인
+- [ ] 야간→주간 연속 배치 경고 배너 확인
+
+**공통**
+- [ ] npx tsc --noEmit 에러 0개
+
+
+================================================================
+★ 세션 종료: context.md 업데이트
+================================================================
+
+반드시 포함:
+- lib/labor/ 7개 파일 생성 현황
+- 신규 페이지 및 API 라우트 목록
+- 단말기 인증 미들웨어 (verifyTerminal)
+- 휴가 승인 플로우 상태 머신
+- 교대근무 Phase 1 한계 (수동 배정만)
+- 다음 세션(STEP 5) 시작 전 확인 사항

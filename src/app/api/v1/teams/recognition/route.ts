@@ -3,26 +3,25 @@
 // Teams Bot 경유 칭찬/인정 생성
 // ═══════════════════════════════════════════════════════════
 
-import { type NextRequest, NextResponse } from 'next/server'
+import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyBotSignature } from '@/lib/teams-bot'
 import { teamsRecognitionSchema } from '@/lib/schemas/teams'
 import { sendNotification } from '@/lib/notifications'
 import { buildRecognitionCard } from '@/lib/adaptive-cards'
+import { apiSuccess, apiError } from '@/lib/api'
+import { unauthorized, badRequest, notFound } from '@/lib/errors'
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get('authorization')
   if (!verifyBotSignature(authHeader)) {
-    return NextResponse.json({ error: '인증 실패' }, { status: 401 })
+    return apiError(unauthorized('인증 실패'))
   }
 
   const body: unknown = await req.json()
   const parsed = teamsRecognitionSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: '잘못된 요청 데이터', details: parsed.error.issues },
-      { status: 400 },
-    )
+    return apiError(badRequest('잘못된 요청 데이터'))
   }
 
   const { receiverAadId, value, message } = parsed.data
@@ -30,10 +29,7 @@ export async function POST(req: NextRequest) {
   // 보내는 사람: Authorization 헤더에서 봇이 전달한 sender 정보
   const senderAadId = req.headers.get('x-teams-sender-aad-id')
   if (!senderAadId) {
-    return NextResponse.json(
-      { error: '보내는 사람 정보가 없습니다.' },
-      { status: 400 },
-    )
+    return apiError(badRequest('보내는 사람 정보가 없습니다.'))
   }
 
   // SsoIdentity로 Employee 매핑
@@ -61,10 +57,7 @@ export async function POST(req: NextRequest) {
   ])
 
   if (!sender?.employee || !receiver?.employee) {
-    return NextResponse.json(
-      { error: 'HR Hub에 등록되지 않은 사용자입니다.' },
-      { status: 404 },
-    )
+    return apiError(notFound('HR Hub에 등록되지 않은 사용자입니다.'))
   }
 
   const senderCompanyId = (sender.employee.assignments[0] as any)?.companyId as string | undefined // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -97,5 +90,5 @@ export async function POST(req: NextRequest) {
     adaptiveCard: card,
   })
 
-  return NextResponse.json({ success: true, recognitionId: recognition.id })
+  return apiSuccess({ recognitionId: recognition.id })
 }

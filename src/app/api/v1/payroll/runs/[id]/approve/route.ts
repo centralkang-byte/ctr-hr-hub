@@ -9,7 +9,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, notFound } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
-import { sendNotifications } from '@/lib/notifications'
+import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
 
 export const PUT = withPermission(
   async (req, context, user) => {
@@ -27,59 +27,50 @@ export const PUT = withPermission(
 
     // yearMonth → year, month 파싱 (e.g. "2025-03")
     const [yearStr, monthStr] = run.yearMonth.split('-')
-    const year = parseInt(yearStr, 10)
+    const year  = parseInt(yearStr,  10)
     const month = parseInt(monthStr, 10)
+
+    const ctx = { companyId: user.companyId, actorId: user.employeeId, occurredAt: new Date() }
+    const eventPayload = {
+      ctx,
+      runId:          run.id,
+      yearMonth:      run.yearMonth,
+      year,
+      month,
+      payrollItemIds: run.payrollItems,
+    }
 
     await prisma.$transaction(async (tx) => {
       // 1. 상태 → APPROVED
       await tx.payrollRun.update({
         where: { id },
         data: {
-          status: 'APPROVED',
+          status:     'APPROVED',
           approvedBy: user.employeeId,
           approvedAt: new Date(),
         },
       })
 
-      // 2. Payslip 생성 (직원별) — createMany로 N+1 제거
-      await tx.payslip.createMany({
-        data: run.payrollItems.map((item) => ({
-          payrollItemId: item.id,
-          employeeId: item.employeeId,
-          companyId: run.companyId,
-          year,
-          month,
-        })),
-        skipDuplicates: true,
-      })
+      // 2. Payslip 생성 + batch notification (handled by payrollApprovedHandler)
+      await eventBus.publish(DOMAIN_EVENTS.PAYROLL_APPROVED, eventPayload, tx)
     })
 
     const updated = await prisma.payrollRun.findUniqueOrThrow({ where: { id } })
 
     const { ip, userAgent } = extractRequestMeta(req.headers)
     logAudit({
-      actorId: user.employeeId,
-      action: 'PAYROLL_RUN_APPROVE',
+      actorId:      user.employeeId,
+      action:       'PAYROLL_RUN_APPROVE',
       resourceType: 'PayrollRun',
-      resourceId: id,
-      companyId: user.companyId,
-      changes: { year, month, headcount: run.payrollItems.length },
+      resourceId:   id,
+      companyId:    user.companyId,
+      changes:      { year, month, headcount: run.payrollItems.length },
       ip,
       userAgent,
     })
 
-    // Fire-and-forget batch notifications to all employees with payslips
-    void sendNotifications(
-      run.payrollItems.map((item) => ({
-        employeeId: item.employeeId,
-        triggerType: 'payslip_issued',
-        title: '급여 명세서가 발급되었습니다',
-        body: `${year}년 ${month}월 급여 명세서를 확인하세요.`,
-        link: `/my/payroll/payslips`,
-        priority: 'normal' as const,
-        metadata: { year, month },
-      }))
-    )
+    // Fire-and-forget batch notifications (tx=undefined → handler sends notifications only)
+    void eventBus.publish(DOMAIN_EVENTS.PAYROLL_APPROVED, eventPayload)
 
     return apiSuccess({ ...updated, payslipsCreated: run.payrollItems.length })
   },

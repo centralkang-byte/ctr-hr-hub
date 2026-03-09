@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyTerminal, updateTerminalHeartbeat } from '@/lib/terminal'
 import { terminalClockSchema } from '@/lib/schemas/terminal'
-import { isAppError } from '@/lib/errors'
+import { isAppError, badRequest, notFound, AppError } from '@/lib/errors'
+import { apiSuccess, apiError } from '@/lib/api'
 
 // ─── POST /api/v1/terminals/clock ───────────────────────
 // Terminal clock event (CLOCK_IN / CLOCK_OUT)
@@ -17,10 +18,7 @@ export async function POST(req: NextRequest) {
     const body: unknown = await req.json()
     const parsed = terminalClockSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: '잘못된 요청', issues: parsed.error.issues },
-        { status: 400 },
-      )
+      return apiError(badRequest('잘못된 요청'))
     }
 
     // 3. Find employee by employeeNo in same company
@@ -38,10 +36,7 @@ export async function POST(req: NextRequest) {
       },
     })
     if (!employee) {
-      return NextResponse.json(
-        { error: '직원을 찾을 수 없습니다.' },
-        { status: 404 },
-      )
+      return apiError(notFound('직원을 찾을 수 없습니다.'))
     }
 
     const eventTime = new Date(parsed.data.timestamp)
@@ -92,10 +87,7 @@ export async function POST(req: NextRequest) {
       // Update heartbeat
       await updateTerminalHeartbeat(terminal.id)
 
-      return NextResponse.json(
-        { success: true, data: { id: attendance.id, type: 'CLOCK_IN' } },
-        { status: 201 },
-      )
+      return apiSuccess({ id: attendance.id, type: 'CLOCK_IN' }, 201)
     } else {
       // CLOCK_OUT: find today's uncompleted attendance
       const existing = await prisma.attendance.findFirst({
@@ -107,10 +99,7 @@ export async function POST(req: NextRequest) {
       })
 
       if (!existing) {
-        return NextResponse.json(
-          { error: '출근 기록이 없습니다.' },
-          { status: 400 },
-        )
+        return apiError(badRequest('출근 기록이 없습니다.'))
       }
 
       const totalMinutes = existing.clockIn
@@ -136,23 +125,12 @@ export async function POST(req: NextRequest) {
 
       await updateTerminalHeartbeat(terminal.id)
 
-      return NextResponse.json({
-        success: true,
-        data: {
-          id: attendance.id,
-          type: 'CLOCK_OUT',
-          totalMinutes,
-          overtimeMinutes,
-        },
-      })
+      return apiSuccess({ id: attendance.id, type: 'CLOCK_OUT', totalMinutes, overtimeMinutes })
     }
   } catch (error) {
     if (isAppError(error)) {
-      return NextResponse.json(
-        { error: (error as { message: string }).message },
-        { status: (error as { statusCode: number }).statusCode },
-      )
+      return apiError(error as AppError)
     }
-    return NextResponse.json({ error: '서버 오류' }, { status: 500 })
+    return apiError(new AppError(500, 'INTERNAL_ERROR', '서버 오류'))
   }
 }

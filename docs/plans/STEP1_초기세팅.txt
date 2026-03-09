@@ -1,0 +1,1381 @@
+# CTR HR Hub - STEP 1: 프로젝트 초기 세팅
+# v3.1 (CTO 리뷰 반영)
+# ★ 반드시 STEP0_공통규칙.txt를 먼저 읽고 전체 STEP에 적용할 것
+
+
+================================================================
+STEP 1 프롬프트 — 프로젝트 초기 세팅
+================================================================
+
+너는 CTR HR Hub SaaS 시스템의 시니어 풀스택 개발자야.
+STEP0_공통규칙.txt의 코딩 규칙과 기술 스택을 반드시 준수하면서
+아래 스펙에 맞춰 프로젝트를 처음부터 구축해줘.
+
+---
+
+## 이번 세션 목표
+기능 구현 없이 뼈대만 만든다.
+
+1. Next.js 14 프로젝트 생성 (TypeScript strict, App Router, Tailwind)
+2. STEP0의 폴더 구조 전체 생성
+3. 공통 lib 파일 전체 생성
+4. Prisma schema.prisma 전체 작성 (아래 ERD v3.1 기준)
+5. NextAuth.js 설정 — Microsoft Entra ID Provider (M365 SSO 전용)
+6. .env.example 작성 (STEP0 참조)
+7. 역할별 홈 레이아웃 쉘 (EMPLOYEE / MANAGER / HR_ADMIN / EXECUTIVE)
+8. Materialized View SQL 파일 작성
+9. 공통 컴포넌트 구현
+
+
+================================================================
+ERD v3.1 — schema.prisma 전체 작성
+================================================================
+
+아래 모든 테이블의 컬럼을 그대로 Prisma 모델로 작성할 것.
+
+---
+
+### 조직/권한 — 다법인 구조
+
+**companies**
+id(uuid PK), code(String UK), name, name_en, country_code(String),
+timezone(String), locale(String), currency(String default 'KRW'),
+parent_company_id(self FK nullable),
+payroll_mode(ENUM CompanyPayrollMode: IMPORT/MANAGED, default IMPORT),
+is_active(Boolean default true), created_at(DateTime), deleted_at(DateTime nullable)
+
+**departments**
+id(uuid PK), company_id(FK companies), parent_id(self FK nullable),
+code(String), name, name_en(String nullable),
+level(Int), sort_order(Int), is_active(Boolean default true),
+deleted_at(DateTime nullable)
+@@unique([company_id, code])
+
+**job_grades**
+id(uuid PK), company_id(FK companies), code(String), name,
+rank_order(Int), deleted_at(DateTime nullable)
+
+**job_categories**
+id(uuid PK), company_id(FK companies),
+code(ENUM JobCategoryCode: OFFICE/PRODUCTION/R_AND_D/MANAGEMENT),
+name, description(String nullable), is_active(Boolean default true)
+
+**roles**
+id(uuid PK), code(String UK), name, is_system(Boolean default false),
+created_at(DateTime)
+
+**permissions**
+id(uuid PK), module(String), resource(String), action(String),
+description(String nullable)
+
+**role_permissions**
+id(uuid PK), role_id(FK roles), permission_id(FK permissions)
+@@unique([role_id, permission_id])
+
+**employee_roles**
+id(uuid PK), employee_id(FK employees), role_id(FK roles),
+company_id(FK companies), start_date(DateTime), end_date(DateTime nullable)
+@@unique([employee_id, role_id, company_id])
+
+---
+
+### 조직 개편 이력
+
+**org_change_history**
+id(uuid PK), company_id(FK companies),
+change_type(ENUM OrgChangeType: CREATE/MERGE/SPLIT/RENAME/CLOSE/RESTRUCTURE),
+affected_department_id(FK departments nullable),
+from_data(Json nullable), to_data(Json nullable),
+effective_date(DateTime), reason(String nullable),
+approved_by(FK employees nullable), document_key(String nullable),
+created_at(DateTime)
+
+---
+
+### 직원 마스터
+# v3.1: job_category_id(FK) NOT NULL만 유지. job_category_code ENUM 제거.
+# 직군 코드는 JOIN으로 조회.
+
+**employees**
+id(uuid PK), company_id(FK companies), department_id(FK departments),
+job_grade_id(FK job_grades), job_category_id(FK job_categories NOT NULL),
+manager_id(self FK nullable),
+employee_no(String UK), name, name_en(String nullable),
+birth_date(DateTime nullable), gender(String nullable), nationality(String nullable),
+email(String UK), phone(String nullable),
+emergency_contact(String nullable), emergency_contact_phone(String nullable),
+employment_type(ENUM EmploymentType: FULL_TIME/CONTRACT/DISPATCH/INTERN),
+status(ENUM EmployeeStatus: ACTIVE/ON_LEAVE/RESIGNED/TERMINATED),
+hire_date(DateTime), resign_date(DateTime nullable), photo_url(String nullable),
+locale(String nullable), timezone(String nullable),
+attrition_risk_score(Int default 0),
+is_high_potential(Boolean default false),
+high_potential_since(DateTime nullable),
+onboarded_at(DateTime nullable),
+created_at(DateTime), updated_at(DateTime), deleted_at(DateTime nullable)
+
+---
+
+### 인증
+
+**employee_auth**
+id(uuid PK), employee_id(FK employees UK),
+password_hash(String nullable),
+mfa_enabled(Boolean default false), mfa_secret(String nullable),
+last_login_at(DateTime nullable),
+failed_login_count(Int default 0), locked_until(DateTime nullable),
+created_at(DateTime), updated_at(DateTime)
+
+**sso_identities**
+id(uuid PK), employee_id(FK employees),
+provider(String NOT NULL), provider_account_id(String NOT NULL),
+email(String NOT NULL),
+access_token(String nullable), refresh_token(String nullable),
+token_expires_at(DateTime nullable),
+created_at(DateTime), updated_at(DateTime)
+@@unique([provider, provider_account_id])
+
+**sso_sessions**
+id(uuid PK), employee_id(FK employees),
+session_token(String UK),
+ip_address(String nullable), user_agent(String nullable),
+expires_at(DateTime NOT NULL), revoked_at(DateTime nullable),
+created_at(DateTime)
+
+---
+
+### 직원 이력·문서
+
+**employee_histories**
+id(uuid PK), employee_id(FK employees),
+change_type(ENUM HistoryChangeType: HIRE/TRANSFER/PROMOTION/DEMOTION/RESIGN/TERMINATE/TRANSFER_CROSS_COMPANY),
+from_company_id(FK companies nullable), to_company_id(FK companies nullable),
+from_dept_id(FK departments nullable), to_dept_id(FK departments nullable),
+from_grade_id(FK job_grades nullable), to_grade_id(FK job_grades nullable),
+effective_date(DateTime), reason(String nullable),
+approved_by(FK employees nullable), created_at(DateTime)
+
+**employee_documents**
+id(uuid PK), employee_id(FK employees), company_id(FK companies),
+doc_type(ENUM DocType: CONTRACT/ID_CARD/CERTIFICATE/RESUME/HANDOVER/OTHER),
+title(String), file_key(String NOT NULL),
+file_size(Int nullable), mime_type(String nullable),
+uploaded_by(FK employees nullable), created_at(DateTime), deleted_at(DateTime nullable)
+
+---
+
+### 퇴직 관리
+
+**offboarding_checklists**
+id(uuid PK), company_id(FK companies), name,
+target_type(ENUM OffboardingTargetType: VOLUNTARY/INVOLUNTARY/RETIREMENT/CONTRACT_END),
+is_active(Boolean default true), created_at(DateTime)
+
+**offboarding_tasks**
+id(uuid PK), checklist_id(FK offboarding_checklists),
+title, description(String nullable),
+assignee_type(ENUM OffboardingAssignee: EMPLOYEE/MANAGER/HR/IT/FINANCE),
+due_days_before(Int), sort_order(Int), is_required(Boolean default true)
+
+**employee_offboarding**
+id(uuid PK), employee_id(FK employees), checklist_id(FK offboarding_checklists),
+resign_type(ENUM ResignType: VOLUNTARY/INVOLUNTARY/RETIREMENT/CONTRACT_END/MUTUAL_AGREEMENT),
+last_working_date(DateTime), resign_reason_code(String nullable),
+resign_reason_detail(String nullable),
+handover_to_id(FK employees nullable),
+status(ENUM OffboardingStatus: IN_PROGRESS/COMPLETED/CANCELLED),
+severance_calculated(Boolean default false),
+it_account_deactivated(Boolean default false),
+exit_interview_completed(Boolean default false),
+started_at(DateTime), completed_at(DateTime nullable), created_at(DateTime)
+
+**employee_offboarding_tasks**
+id(uuid PK), employee_offboarding_id(FK employee_offboarding),
+task_id(FK offboarding_tasks),
+status(ENUM TaskStatus: PENDING/DONE/SKIPPED/BLOCKED),
+completed_by(FK employees nullable), completed_at(DateTime nullable),
+note(String nullable)
+
+**exit_interviews**
+id(uuid PK), employee_offboarding_id(FK employee_offboarding),
+employee_id(FK employees), interviewer_id(FK employees),
+interview_date(DateTime),
+primary_reason(ENUM ExitReason: COMPENSATION/CAREER_GROWTH/WORK_LIFE_BALANCE/MANAGEMENT/CULTURE/RELOCATION/PERSONAL/OTHER),
+satisfaction_score(Int), would_recommend(Boolean nullable),
+feedback_text(String), ai_summary(String nullable),
+created_at(DateTime)
+
+---
+
+### 징계·상벌 관리
+
+**disciplinary_actions**
+id(uuid PK), employee_id(FK employees), company_id(FK companies),
+action_type(ENUM DisciplinaryType: VERBAL_WARNING/WRITTEN_WARNING/REPRIMAND/SUSPENSION/PAY_CUT/DEMOTION/TERMINATION),
+category(ENUM DisciplinaryCategory: ATTENDANCE/SAFETY/QUALITY/CONDUCT/POLICY_VIOLATION/OTHER),
+incident_date(DateTime), description(String),
+evidence_keys(Json nullable),
+committee_date(DateTime nullable), committee_members(Json nullable),
+decision(String nullable), decision_date(DateTime nullable),
+suspension_start(DateTime nullable), suspension_end(DateTime nullable),
+appeal_status(ENUM AppealStatus: NONE/FILED/UNDER_REVIEW/UPHELD/OVERTURNED default NONE),
+appeal_date(DateTime nullable), appeal_result(String nullable),
+issued_by(FK employees), created_at(DateTime), deleted_at(DateTime nullable)
+
+**reward_records**
+id(uuid PK), employee_id(FK employees), company_id(FK companies),
+reward_type(ENUM RewardType: COMMENDATION/BONUS_AWARD/PROMOTION_RECOMMENDATION/LONG_SERVICE/INNOVATION/SAFETY/OTHER),
+title, description(String nullable), amount(Decimal nullable),
+awarded_date(DateTime), awarded_by(FK employees),
+document_key(String nullable), created_at(DateTime)
+
+---
+
+### 온보딩
+
+**onboarding_templates**
+id(uuid PK), company_id(FK companies), name, description(String nullable),
+target_type(ENUM OnboardingTargetType: NEW_HIRE/TRANSFER/REHIRE),
+is_active(Boolean default true), created_at(DateTime), deleted_at(DateTime nullable)
+
+**onboarding_tasks**
+id(uuid PK), template_id(FK onboarding_templates),
+title, description(String nullable),
+assignee_type(ENUM OnboardingAssignee: EMPLOYEE/MANAGER/HR/BUDDY),
+due_days_after(Int), sort_order(Int),
+is_required(Boolean default true),
+category(ENUM OnboardingTaskCategory: DOCUMENT/TRAINING/SETUP/INTRODUCTION/OTHER)
+
+**employee_onboarding**
+id(uuid PK), employee_id(FK employees), template_id(FK onboarding_templates),
+buddy_id(FK employees nullable),
+status(ENUM OnboardingProgressStatus: NOT_STARTED/IN_PROGRESS/COMPLETED),
+started_at(DateTime nullable), completed_at(DateTime nullable), created_at(DateTime)
+
+**employee_onboarding_tasks**
+id(uuid PK), employee_onboarding_id(FK employee_onboarding),
+task_id(FK onboarding_tasks),
+status(ENUM TaskProgressStatus: PENDING/DONE/SKIPPED),
+completed_by(FK employees nullable), completed_at(DateTime nullable),
+note(String nullable)
+
+**onboarding_checkins**
+id(uuid PK), employee_id(FK employees),
+checkin_week(Int NOT NULL),
+mood(ENUM Mood: GREAT/GOOD/NEUTRAL/STRUGGLING/BAD),
+energy(Int), belonging(Int),
+comment(String nullable), ai_summary(String nullable),
+submitted_at(DateTime), created_at(DateTime)
+
+---
+
+### 근태
+
+**work_schedules**
+id(uuid PK), company_id(FK companies), name,
+schedule_type(ENUM ScheduleType: STANDARD/FLEXIBLE/DISCRETIONARY/REMOTE/SHIFT_2/SHIFT_3),
+weekly_hours(Decimal), daily_config(Json), shift_config(Json nullable)
+
+**employee_schedules**
+id(uuid PK), employee_id(FK employees), schedule_id(FK work_schedules),
+shift_group(String nullable),
+effective_from(DateTime), effective_to(DateTime nullable), created_at(DateTime)
+
+**attendances**
+id(uuid PK), employee_id(FK employees),
+work_date(DateTime), clock_in(DateTime nullable), clock_out(DateTime nullable),
+clock_in_method(ENUM ClockMethod: WEB/MOBILE_GPS/QR/FINGERPRINT/CARD_READER),
+clock_in_lat(Decimal nullable), clock_in_lng(Decimal nullable),
+terminal_id(String nullable), terminal_location(String nullable),
+work_type(ENUM WorkType: NORMAL/OVERTIME/NIGHT/HOLIDAY),
+shift_group(String nullable),
+total_minutes(Int nullable), overtime_minutes(Int nullable),
+status(ENUM AttendanceStatus: NORMAL/LATE/EARLY_OUT/ABSENT),
+note(String nullable), created_at(DateTime)
+
+**attendance_terminals**
+id(uuid PK), company_id(FK companies),
+terminal_code(String UK),
+terminal_type(ENUM TerminalType: FINGERPRINT/CARD_READER/FACE_RECOGNITION),
+location_name(String), ip_address(String nullable),
+is_active(Boolean default true), last_heartbeat_at(DateTime nullable),
+created_at(DateTime)
+
+---
+
+### 휴가
+
+**leave_policies**
+id(uuid PK), company_id(FK companies), name,
+leave_type(ENUM LeaveType: ANNUAL/SICK/MATERNITY/PATERNITY/BEREAVEMENT/SPECIAL/COMPENSATORY),
+default_days(Decimal), is_paid(Boolean default true),
+carry_over_allowed(Boolean default false),
+max_carry_over_days(Decimal nullable),
+min_tenure_months(Int default 0),
+is_active(Boolean default true), created_at(DateTime), deleted_at(DateTime nullable)
+
+**employee_leave_balances**
+id(uuid PK), employee_id(FK employees), policy_id(FK leave_policies),
+year(Int NOT NULL),
+granted_days(Decimal NOT NULL), used_days(Decimal default 0),
+pending_days(Decimal default 0), carry_over_days(Decimal default 0),
+created_at(DateTime), updated_at(DateTime)
+@@unique([employee_id, policy_id, year])
+
+**leave_requests**
+id(uuid PK), employee_id(FK employees), policy_id(FK leave_policies),
+start_date(DateTime), end_date(DateTime), days(Decimal NOT NULL),
+reason(String nullable),
+status(ENUM LeaveRequestStatus: PENDING/APPROVED/REJECTED/CANCELLED),
+approved_by(FK employees nullable), approved_at(DateTime nullable),
+rejection_reason(String nullable),
+created_at(DateTime), updated_at(DateTime)
+
+**holidays**
+id(uuid PK), company_id(FK companies), name,
+date(DateTime NOT NULL), is_substitute(Boolean default false),
+year(Int NOT NULL), created_at(DateTime)
+@@unique([company_id, date])
+
+---
+
+### 채용
+
+**job_postings**
+id(uuid PK), company_id(FK companies),
+department_id(FK departments nullable),
+title, description(String), requirements(String nullable),
+employment_type(ENUM EmploymentType),
+job_grade_id(FK job_grades nullable),
+job_category_id(FK job_categories nullable),
+location(String nullable),
+salary_range_min(Decimal nullable), salary_range_max(Decimal nullable),
+status(ENUM PostingStatus: DRAFT/OPEN/CLOSED/CANCELLED),
+posted_at(DateTime nullable), closed_at(DateTime nullable),
+created_by(FK employees), created_at(DateTime), deleted_at(DateTime nullable)
+
+**applicants**
+id(uuid PK), name, email(String UK), phone(String nullable),
+resume_key(String nullable),
+source(ENUM ApplicantSource: DIRECT/REFERRAL/AGENCY/JOB_BOARD/INTERNAL),
+created_at(DateTime)
+
+**applications**
+id(uuid PK), posting_id(FK job_postings), applicant_id(FK applicants),
+stage(ENUM ApplicationStage: APPLIED/SCREENING/INTERVIEW_1/INTERVIEW_2/OFFER/HIRED/REJECTED),
+ai_screening_score(Int nullable), ai_screening_summary(String nullable),
+rejection_reason(String nullable),
+applied_at(DateTime), updated_at(DateTime)
+@@unique([posting_id, applicant_id])
+
+**interview_schedules**
+id(uuid PK), application_id(FK applications), interviewer_id(FK employees),
+scheduled_at(DateTime NOT NULL), duration_minutes(Int default 60),
+location(String nullable), meeting_link(String nullable),
+status(ENUM InterviewStatus: SCHEDULED/COMPLETED/CANCELLED/NO_SHOW),
+created_at(DateTime)
+
+**interview_evaluations**
+id(uuid PK), schedule_id(FK interview_schedules), evaluator_id(FK employees),
+overall_score(Int),
+competency_scores(Json),
+strengths(String nullable), concerns(String nullable),
+recommendation(ENUM InterviewRecommendation: STRONG_YES/YES/NEUTRAL/NO/STRONG_NO),
+comment(String nullable), submitted_at(DateTime)
+
+**competency_library**
+id(uuid PK), company_id(FK companies nullable),
+name, category(String), description(String nullable),
+behavioral_indicators(Json nullable),
+is_active(Boolean default true), created_at(DateTime)
+
+---
+
+### 성과 — EMS 9블록
+
+**performance_cycles**
+id(uuid PK), company_id(FK companies), name, year(Int),
+half(ENUM CycleHalf: H1/H2/ANNUAL),
+goal_start(DateTime), goal_end(DateTime),
+eval_start(DateTime), eval_end(DateTime),
+status(ENUM CycleStatus: DRAFT/ACTIVE/EVAL_OPEN/CALIBRATION/CLOSED)
+
+**mbo_goals**
+id(uuid PK), cycle_id(FK performance_cycles), employee_id(FK employees),
+title, description(String nullable),
+weight(Decimal NOT NULL),
+target_metric(String nullable), target_value(String nullable),
+status(ENUM GoalStatus: DRAFT/PENDING_APPROVAL/APPROVED/REJECTED),
+achievement_score(Decimal nullable),
+approved_by(FK employees nullable), approved_at(DateTime nullable),
+ai_generated(Boolean default false),
+created_at(DateTime), updated_at(DateTime)
+
+**mbo_progress**
+id(uuid PK), goal_id(FK mbo_goals),
+progress_pct(Int NOT NULL),
+note(String nullable),
+created_by(FK employees), created_at(DateTime)
+
+**performance_evaluations**
+id(uuid PK), cycle_id(FK performance_cycles),
+employee_id(FK employees), evaluator_id(FK employees),
+eval_type(ENUM EvalType: SELF/MANAGER/PEER),
+performance_score(Decimal nullable),
+competency_score(Decimal nullable),
+ems_block(String nullable),
+performance_detail(Json nullable),
+competency_detail(Json nullable),
+comment(String nullable),
+status(ENUM EvalStatus: DRAFT/SUBMITTED/CONFIRMED),
+submitted_at(DateTime nullable), created_at(DateTime)
+
+**ems_block_config**
+id(uuid PK), company_id(FK companies),
+performance_axis_labels(Json),
+competency_axis_labels(Json),
+block_definitions(Json),
+performance_thresholds(Json),
+competency_thresholds(Json),
+is_active(Boolean default true), created_at(DateTime)
+
+---
+
+### CFR — 1:1 미팅 + Recognition
+
+**one_on_ones**
+id(uuid PK), employee_id(FK employees), manager_id(FK employees),
+scheduled_at(DateTime), completed_at(DateTime nullable),
+status(ENUM OneOnOneStatus: SCHEDULED/COMPLETED/CANCELLED/NO_SHOW),
+agenda(String nullable), notes(String nullable),
+ai_guide(String nullable), ai_summary(String nullable),
+action_items(Json nullable),
+created_at(DateTime)
+
+**recognitions**
+id(uuid PK), sender_id(FK employees), receiver_id(FK employees),
+company_id(FK companies),
+core_value(String NOT NULL),
+message(String NOT NULL),
+is_public(Boolean default true),
+created_at(DateTime)
+
+---
+
+### 캘리브레이션 — EMS 9블록 기반
+
+**calibration_rules**
+id(uuid PK), company_id(FK companies),
+cycle_id(FK performance_cycles nullable),
+ems_block(String NOT NULL),
+recommended_pct(Decimal), min_pct(Decimal nullable), max_pct(Decimal nullable),
+created_by(FK employees), created_at(DateTime)
+@@unique([company_id, cycle_id, ems_block])
+
+**calibration_sessions**
+id(uuid PK), cycle_id(FK performance_cycles), company_id(FK companies),
+department_id(FK departments nullable),
+name, status(ENUM CalibrationStatus: DRAFT/IN_PROGRESS/COMPLETED),
+block_distribution(Json nullable),
+notes(String nullable),
+created_by(FK employees), completed_at(DateTime nullable), created_at(DateTime)
+
+**calibration_adjustments**
+id(uuid PK), session_id(FK calibration_sessions),
+employee_id(FK employees), evaluator_id(FK employees),
+original_performance_score(Decimal), original_competency_score(Decimal),
+original_block(String),
+adjusted_performance_score(Decimal), adjusted_competency_score(Decimal),
+adjusted_block(String),
+reason(String), adjusted_by(FK employees), adjusted_at(DateTime)
+
+---
+
+### 연봉·보상 관리
+
+**salary_bands**
+id(uuid PK), company_id(FK companies),
+job_grade_id(FK job_grades), job_category_id(FK job_categories nullable),
+currency(String default 'KRW'),
+min_salary(Decimal), mid_salary(Decimal), max_salary(Decimal),
+effective_from(DateTime), effective_to(DateTime nullable),
+created_at(DateTime), deleted_at(DateTime nullable)
+
+**compensation_history**
+id(uuid PK), employee_id(FK employees), company_id(FK companies),
+change_type(ENUM CompensationChangeType: HIRE/ANNUAL_INCREASE/PROMOTION/MARKET_ADJUSTMENT/DEMOTION/TRANSFER/OTHER),
+previous_base_salary(Decimal), new_base_salary(Decimal),
+currency(String), change_pct(Decimal),
+effective_date(DateTime), reason(String nullable),
+approved_by(FK employees nullable),
+ems_block_at_time(String nullable),
+compa_ratio(Decimal nullable),
+created_at(DateTime)
+
+**salary_adjustment_matrix**
+id(uuid PK), company_id(FK companies),
+cycle_id(FK performance_cycles nullable),
+ems_block(String), recommended_increase_pct(Decimal),
+min_increase_pct(Decimal nullable), max_increase_pct(Decimal nullable),
+created_at(DateTime)
+
+---
+
+### 복리후생·수당
+
+**benefit_policies**
+id(uuid PK), company_id(FK companies), name,
+category(ENUM BenefitCategory: MEAL/TRANSPORT/EDUCATION/HEALTH/HOUSING/CHILDCARE/OTHER),
+amount(Decimal nullable),
+frequency(ENUM BenefitFrequency: MONTHLY/QUARTERLY/ANNUAL/ONE_TIME),
+currency(String default 'KRW'),
+eligibility_rules(Json nullable),
+is_taxable(Boolean default true),
+effective_from(DateTime), effective_to(DateTime nullable),
+is_active(Boolean default true), created_at(DateTime), deleted_at(DateTime nullable)
+
+**employee_benefits**
+id(uuid PK), employee_id(FK employees), policy_id(FK benefit_policies),
+status(ENUM BenefitEnrollmentStatus: ACTIVE/SUSPENDED/EXPIRED),
+enrolled_at(DateTime), expired_at(DateTime nullable),
+note(String nullable), created_at(DateTime)
+
+**allowance_records**
+id(uuid PK), employee_id(FK employees), company_id(FK companies),
+allowance_type(ENUM AllowanceType: OVERTIME/NIGHT_SHIFT/HOLIDAY/HAZARD/POSITION/FAMILY/MEAL/TRANSPORT/OTHER),
+amount(Decimal), currency(String), year_month(String),
+note(String nullable), created_at(DateTime)
+
+---
+
+### Payroll
+
+**payroll_runs**
+id(uuid PK), company_id(FK companies),
+year_month(String NOT NULL),
+status(ENUM PayrollStatus: DRAFT/IMPORTED/CONFIRMED/PAID),
+total_gross(Decimal nullable), total_net(Decimal nullable),
+currency(String default 'KRW'),
+imported_file_key(String nullable),
+confirmed_by(FK employees nullable), confirmed_at(DateTime nullable),
+created_at(DateTime), updated_at(DateTime)
+
+**payroll_items**
+id(uuid PK), run_id(FK payroll_runs), employee_id(FK employees),
+base_salary(Decimal), overtime_pay(Decimal default 0),
+bonus(Decimal default 0), deductions(Decimal default 0),
+net_pay(Decimal),
+detail(Json nullable),
+created_at(DateTime)
+
+---
+
+### 알림
+
+**notification_triggers**
+id(uuid PK), event_type(String UK),
+template(String NOT NULL),
+channels(Json NOT NULL),
+is_active(Boolean default true), created_at(DateTime)
+
+**notifications**
+id(uuid PK), employee_id(FK employees),
+trigger_type(String NOT NULL),
+title(String NOT NULL), body(String NOT NULL),
+channel(ENUM NotificationChannel: IN_APP/EMAIL/PUSH),
+is_read(Boolean default false), read_at(DateTime nullable),
+link(String nullable),
+created_at(DateTime)
+
+---
+
+### AI 로그
+
+**ai_logs**
+id(uuid PK), employee_id(FK employees nullable),
+feature(ENUM AiFeature: ONE_ON_ONE_GUIDE/ONE_ON_ONE_SUMMARY/RECRUITMENT_SCREEN/ATTRITION_RISK/TRAINING_RECOMMEND/PULSE_INSIGHT/SELF_EVAL_DRAFT/GOAL_DRAFT/BIAS_DETECT/ATTRITION_RISK_CALC/ANALYTICS_INSIGHT/ONBOARDING_CHECKIN_SUMMARY/EXIT_INTERVIEW_SUMMARY),
+prompt_version(String), input_tokens(Int), output_tokens(Int),
+latency_ms(Int), model(String),
+user_edited(Boolean default false), feedback_score(Int nullable),
+created_at(DateTime)
+
+---
+
+### L&D
+
+**training_courses**
+id(uuid PK), company_id(FK companies nullable),
+title, description(String nullable),
+category(ENUM TrainingCategory: COMPLIANCE/TECHNICAL/LEADERSHIP/SAFETY/ONBOARDING/OTHER),
+is_mandatory(Boolean default false),
+target_job_categories(Json nullable),
+duration_hours(Decimal nullable),
+provider(String nullable), external_url(String nullable),
+is_active(Boolean default true), created_at(DateTime), deleted_at(DateTime nullable)
+
+**training_enrollments**
+id(uuid PK), course_id(FK training_courses), employee_id(FK employees),
+status(ENUM EnrollmentStatus: ENROLLED/IN_PROGRESS/COMPLETED/DROPPED),
+enrolled_at(DateTime), completed_at(DateTime nullable),
+score(Decimal nullable), certificate_key(String nullable),
+created_at(DateTime)
+@@unique([course_id, employee_id])
+
+---
+
+### Pulse Survey
+
+**pulse_surveys**
+id(uuid PK), company_id(FK companies), title, description(String nullable),
+target_scope(ENUM PulseScope: ALL/DIVISION/DEPARTMENT/TEAM),
+target_ids(Json nullable),
+anonymity_level(ENUM AnonymityLevel: FULL_DIVISION/FULL_ANONYMOUS),
+min_respondents_for_report(Int default 5),
+open_at(DateTime), close_at(DateTime),
+status(ENUM PulseStatus: DRAFT/ACTIVE/CLOSED),
+created_by(FK employees), created_at(DateTime), deleted_at(DateTime nullable)
+
+**pulse_questions**
+id(uuid PK), survey_id(FK pulse_surveys),
+question_text(String NOT NULL),
+question_type(ENUM QuestionType: LIKERT/TEXT/CHOICE),
+options(Json nullable),
+sort_order(Int), is_required(Boolean default true)
+
+**pulse_responses**
+id(uuid PK), survey_id(FK pulse_surveys), question_id(FK pulse_questions),
+respondent_id(FK employees nullable),
+respondent_division_id(FK departments nullable),
+answer_value(String), submitted_at(DateTime)
+
+---
+
+### Self-Service 정보 수정 요청
+
+**profile_change_requests**
+id(uuid PK), employee_id(FK employees),
+field_name(String NOT NULL), old_value(String nullable), new_value(String NOT NULL),
+status(ENUM ChangeRequestStatus: PENDING/APPROVED/REJECTED),
+reviewed_by(FK employees nullable), reviewed_at(DateTime nullable),
+rejection_reason(String nullable),
+created_at(DateTime)
+
+---
+
+### Succession Planning
+
+**succession_plans**
+id(uuid PK), position_title(String NOT NULL),
+department_id(FK departments nullable), company_id(FK companies),
+current_holder_id(FK employees nullable),
+criticality(ENUM Criticality: LOW/MEDIUM/HIGH/CRITICAL),
+status(ENUM PlanStatus: DRAFT/ACTIVE/ARCHIVED),
+notes(String nullable),
+created_by(FK employees), created_at(DateTime), updated_at(DateTime)
+
+**succession_candidates**
+id(uuid PK), plan_id(FK succession_plans), employee_id(FK employees),
+readiness(ENUM Readiness: READY_NOW/READY_1_2_YEARS/READY_3_PLUS_YEARS),
+development_areas(Json nullable),
+notes(String nullable),
+nominated_by(FK employees), created_at(DateTime)
+
+---
+
+### Attrition Risk 이력
+
+**attrition_risk_history**
+id(uuid PK), employee_id(FK employees),
+score(Int NOT NULL), rule_score(Int NOT NULL),
+ai_adjustment(Int nullable),
+score_factors(Json NOT NULL),
+calculated_at(DateTime default now())
+
+---
+
+### 감사 로그
+
+**audit_logs**
+id(uuid PK), actor_id(FK employees NOT NULL),
+action(String NOT NULL), resource_type(String NOT NULL), resource_id(String NOT NULL),
+company_id(FK companies nullable),
+changes(Json nullable),
+ip_address(String nullable), user_agent(String nullable),
+created_at(DateTime)
+
+---
+
+### ★ v3.2 추가 — HR 챗봇 (RAG)
+
+**hr_documents** (HR 규정 원본)
+id(uuid PK), company_id(FK companies),
+title(String NOT NULL),
+doc_type(ENUM HrDocType: EMPLOYMENT_RULES/HR_POLICY/BENEFIT_GUIDE/SAFETY_MANUAL/EMPLOYEE_HANDBOOK/OTHER),
+file_url(String nullable),
+content_text(Text NOT NULL),
+version(String default '1.0'),
+locale(String default 'ko'),
+uploaded_by(FK employees),
+is_active(Boolean default true),
+created_at(DateTime), updated_at(DateTime), deleted_at(DateTime nullable)
+
+**hr_document_chunks** (벡터 임베딩 청크)
+id(uuid PK), document_id(FK hr_documents NOT NULL),
+chunk_index(Int NOT NULL),
+content(Text NOT NULL),
+embedding(vector(1536) NOT NULL),
+token_count(Int),
+metadata(Json nullable),
+created_at(DateTime)
+INDEX: HNSW on embedding vector_cosine_ops
+INDEX: (document_id, chunk_index)
+
+**hr_chat_sessions** (챗봇 대화 세션)
+id(uuid PK), employee_id(FK employees NOT NULL),
+company_id(FK companies NOT NULL),
+title(String nullable),
+is_active(Boolean default true),
+created_at(DateTime), updated_at(DateTime)
+
+**hr_chat_messages** (챗봇 메시지)
+id(uuid PK), session_id(FK hr_chat_sessions NOT NULL),
+role(ENUM ChatRole: USER/ASSISTANT),
+content(Text NOT NULL),
+sources(Json nullable),
+confidence_score(Decimal nullable),
+escalated(Boolean default false),
+escalated_to(FK employees nullable),
+escalated_at(DateTime nullable),
+escalation_resolved(Boolean default false),
+feedback(ENUM ChatFeedback: POSITIVE/NEGATIVE nullable),
+created_at(DateTime)
+
+---
+
+### ★ v3.2 추가 — 다면평가 평가자 선정
+
+**collaboration_scores** (협업 점수 — 일일 cron 산출)
+id(uuid PK), employee_id(FK employees NOT NULL),
+peer_id(FK employees NOT NULL),
+company_id(FK companies NOT NULL),
+score_type(ENUM CollabScoreType: RECOGNITION/ONE_ON_ONE/SAME_DEPARTMENT/INTERVIEW_PANEL/CROSS_TRANSFER),
+raw_count(Int default 0),
+weighted_score(Decimal default 0),
+period_start(DateTime NOT NULL),
+period_end(DateTime NOT NULL),
+created_at(DateTime)
+UNIQUE INDEX: uq_collab (employee_id, peer_id, score_type, period_start)
+
+**peer_review_nominations** (다면평가 평가자 후보)
+id(uuid PK), cycle_id(FK performance_cycles NOT NULL),
+employee_id(FK employees NOT NULL),
+nominee_id(FK employees NOT NULL),
+nomination_source(ENUM NominationSource: AI_RECOMMENDED/SELF_NOMINATED/MANAGER_ASSIGNED/HR_ASSIGNED),
+collaboration_total_score(Decimal nullable),
+status(ENUM NominationStatus: PROPOSED/APPROVED/REJECTED/COMPLETED),
+approved_by(FK employees nullable),
+approved_at(DateTime nullable),
+created_at(DateTime)
+UNIQUE INDEX: uq_peer_nom (cycle_id, employee_id, nominee_id)
+
+
+================================================================
+★ v3.2 추가 — 설정 커스터마이제이션 테이블
+================================================================
+
+**tenant_settings** (법인/고객별 전역 설정)
+id(uuid PK), company_id(FK companies NOT NULL UK),
+
+# 브랜딩
+logo_url(String nullable),
+favicon_url(String nullable),
+primary_color(String default '#1B3A5C'),    # 기본: CTR 네이비
+secondary_color(String default '#4A90D9'),
+accent_color(String default '#F5A623'),
+
+# 핵심가치 — JSON 배열 (기존 하드코딩 대체)
+# 기본값: [{"key":"CHALLENGE","label":"Challenge","icon":"mountain","color":"#F5A623"},
+#          {"key":"TRUST","label":"Trust","icon":"handshake","color":"#1B3A5C"},
+#          {"key":"RESPONSIBILITY","label":"Responsibility","icon":"shield","color":"#2E7D32"},
+#          {"key":"RESPECT","label":"Respect","icon":"heart","color":"#C62828"}]
+core_values(JSONB default '[]'),
+
+# 모듈 활성화
+# 기본: ["CORE_HR","ATTENDANCE","LEAVE","PERFORMANCE"]
+# 선택: "RECRUITMENT","PAYROLL","OFFBOARDING","DISCIPLINE","COMPENSATION",
+#        "BENEFITS","PULSE","PEER_REVIEW","SUCCESSION","L_AND_D","HR_CHATBOT",
+#        "MANAGER_HUB","ANALYTICS"
+enabled_modules(JSONB default '["CORE_HR","ATTENDANCE","LEAVE","PERFORMANCE"]'),
+
+# 평가 설정
+rating_scale_min(Int default 1),
+rating_scale_max(Int default 5),
+rating_labels(JSONB default '["매우 부족","부족","보통","우수","탁월"]'),
+grade_labels(JSONB default '{"S":"최우수","A":"우수","B":"보통","C":"미흡","D":"부진"}'),
+
+# 대시보드 레이아웃 (역할별 위젯 설정)
+dashboard_layout(JSONB nullable),
+
+# 기타
+default_locale(String default 'ko'),
+fiscal_year_start_month(Int default 1),   # 회계연도 시작월 (1=1월)
+probation_months(Int default 3),          # 수습 기간
+max_overtime_weekly_hours(Decimal default 52),
+timezone(String default 'Asia/Seoul'),
+
+created_at(DateTime), updated_at(DateTime)
+
+
+**term_overrides** (용어 커스터마이징)
+id(uuid PK), company_id(FK companies NOT NULL),
+term_key(String NOT NULL),        # 'department', 'job_grade', 'employee_code', 'manager', 'team', 'position', 'recognition', 'one_on_one' 등
+label_ko(String NOT NULL),        # 한국어 표시명
+label_en(String nullable),        # 영어 표시명
+label_local(String nullable),     # 현지어 표시명
+created_at(DateTime), updated_at(DateTime)
+UNIQUE INDEX: uq_term (company_id, term_key)
+
+# 기본 용어 키 목록 (seed):
+# department → 부서, job_grade → 직급, employee_code → 사번,
+# manager → 상사, team → 팀, position → 직위,
+# recognition → 칭찬, one_on_one → 1:1 미팅,
+# goal → 목표, evaluation → 평가, leave → 휴가,
+# onboarding → 온보딩, offboarding → 퇴직, discipline → 징계
+
+
+**tenant_enum_options** (동적 ENUM 옵션)
+id(uuid PK), company_id(FK companies NOT NULL),
+enum_group(String NOT NULL),      # 'leave_type', 'employment_type', 'disciplinary_type',
+                                  # 'reward_type', 'exit_reason', 'doc_type',
+                                  # 'training_category', 'benefit_category',
+                                  # 'clock_method', 'allowance_type' 등
+option_key(String NOT NULL),      # 'ANNUAL', 'SICK', 'CUSTOM_LEAVE_1' 등
+label(String NOT NULL),           # 표시명
+color(String nullable),           # Badge 색상
+icon(String nullable),            # 아이콘 (옵션)
+sort_order(Int default 0),
+is_system(Boolean default false), # true면 삭제/수정 불가
+is_active(Boolean default true),
+created_at(DateTime)
+UNIQUE INDEX: uq_enum_opt (company_id, enum_group, option_key)
+
+
+**custom_fields** (커스텀 필드 정의)
+id(uuid PK), company_id(FK companies NOT NULL),
+entity_type(String NOT NULL),     # 'EMPLOYEE', 'APPLICANT', 'JOB_POSTING', 'LEAVE_REQUEST', 'EVALUATION'
+field_key(String NOT NULL),       # 'blood_type', 'shirt_size', 'parking_spot' 등
+field_label(String NOT NULL),     # UI 표시명
+field_type(ENUM CustomFieldType: TEXT/NUMBER/DATE/SELECT/MULTI_SELECT/BOOLEAN/FILE),
+options(JSONB nullable),          # SELECT/MULTI_SELECT 시 옵션 배열
+is_required(Boolean default false),
+is_searchable(Boolean default false),  # 검색/필터 포함 여부
+is_visible_to_employee(Boolean default true),
+sort_order(Int default 0),
+section_label(String default '추가 정보'), # UI 섹션 헤더
+created_at(DateTime), updated_at(DateTime), deleted_at(DateTime nullable)
+UNIQUE INDEX: uq_custom_field (company_id, entity_type, field_key)
+
+
+**custom_field_values** (커스텀 필드 값)
+id(uuid PK), field_id(FK custom_fields NOT NULL),
+entity_id(uuid NOT NULL),         # employees.id / applicants.id 등
+value_text(String nullable),
+value_number(Decimal nullable),
+value_date(DateTime nullable),
+value_json(JSONB nullable),       # MULTI_SELECT / 복합값
+value_boolean(Boolean nullable),
+created_at(DateTime), updated_at(DateTime)
+UNIQUE INDEX: uq_cfv (field_id, entity_id)
+
+
+**workflow_rules** (승인 워크플로우 정의)
+id(uuid PK), company_id(FK companies NOT NULL),
+workflow_type(String NOT NULL),   # 'LEAVE_APPROVAL', 'PROFILE_CHANGE', 'OVERTIME_REQUEST',
+                                  # 'EXPENSE_CLAIM', 'GOAL_APPROVAL', 'OFFER_APPROVAL',
+                                  # 'PAYROLL_APPROVAL', 'DISCIPLINARY_APPROVAL'
+name(String NOT NULL),            # "휴가 승인 (2단계)"
+total_steps(Int NOT NULL),        # 1, 2, 3
+is_active(Boolean default true),
+conditions(JSONB nullable),       # 조건: {"department_id":"xxx"} / {"amount_gte":1000000} 등
+                                  # 조건 매칭 시 이 워크플로우 적용, 없으면 기본
+created_at(DateTime), updated_at(DateTime), deleted_at(DateTime nullable)
+UNIQUE INDEX: uq_wf_rule (company_id, workflow_type, name)
+
+
+**workflow_steps** (워크플로우 단계 정의)
+id(uuid PK), rule_id(FK workflow_rules NOT NULL),
+step_order(Int NOT NULL),         # 1, 2, 3
+approver_type(ENUM ApproverType: DIRECT_MANAGER/DEPARTMENT_HEAD/HR_ADMIN/SPECIFIC_ROLE/SPECIFIC_EMPLOYEE),
+approver_role_id(FK roles nullable),      # SPECIFIC_ROLE 시
+approver_employee_id(FK employees nullable), # SPECIFIC_EMPLOYEE 시
+auto_approve_after_hours(Int nullable),   # N시간 후 자동 승인 (옵션)
+can_skip(Boolean default false),          # 건너뛰기 가능 여부
+created_at(DateTime)
+UNIQUE INDEX: uq_wf_step (rule_id, step_order)
+
+
+**email_templates** (이메일/알림 템플릿)
+id(uuid PK), company_id(FK companies NOT NULL),
+event_type(String NOT NULL),      # 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'ONBOARDING_WELCOME',
+                                  # 'EVAL_REMINDER', 'OFFER_LETTER', 'TERMINATION_NOTICE',
+                                  # 'ONE_ON_ONE_REMINDER', 'OVERTIME_WARNING',
+                                  # 'CHATBOT_ESCALATION', 'PEER_REVIEW_ASSIGNED' 등
+channel(ENUM TemplateChannel: EMAIL/PUSH/IN_APP),
+locale(String default 'ko'),
+subject(String NOT NULL),         # 이메일 제목 (Handlebars: "{{employee_name}}님의 휴가가 승인되었습니다")
+body(Text NOT NULL),              # 본문 (Handlebars + HTML)
+variables(JSONB NOT NULL),        # 사용 가능 변수 목록: ["employee_name","leave_days","approved_by","link"]
+is_active(Boolean default true),
+is_system(Boolean default false), # true면 삭제 불가, 수정만 가능
+created_at(DateTime), updated_at(DateTime)
+UNIQUE INDEX: uq_email_tpl (company_id, event_type, channel, locale)
+
+
+**export_templates** (데이터 내보내기 템플릿)
+id(uuid PK), company_id(FK companies NOT NULL),
+entity_type(String NOT NULL),     # 'EMPLOYEE', 'ATTENDANCE', 'PAYROLL', 'LEAVE' 등
+name(String NOT NULL),            # "직원 목록 (기본)", "직원 목록 (인사팀용)"
+columns(JSONB NOT NULL),          # [{"key":"employee_code","header":"사번","order":1}, {"key":"cf:blood_type","header":"혈액형","order":10}]
+file_format(ENUM ExportFormat: XLSX/CSV default XLSX),
+is_default(Boolean default false),
+created_by(FK employees nullable),
+created_at(DateTime), updated_at(DateTime), deleted_at(DateTime nullable)
+UNIQUE INDEX: uq_export_tpl (company_id, entity_type, name)
+
+
+================================================================
+Materialized View SQL (prisma/migrations/mv_analytics.sql)
+================================================================
+
+★ v3.1: 모든 MV에 UNIQUE INDEX 필수 (REFRESH CONCURRENTLY 요건)
+
+### MV 1: mv_headcount_daily
+날짜별 법인별 부서별 고용형태별 직군별 인원수
+UNIQUE INDEX: uq_headcount (snapshot_date, company_id, department_id, employment_type, job_category_id)
+
+### MV 2: mv_attendance_weekly
+주간 직원별 근무시간 / 연장시간 / 지각횟수
+UNIQUE INDEX: uq_att_weekly (employee_id, week_start)
+
+### MV 3: mv_performance_summary
+평가 사이클별 부서별 EMS 9블록 분포
+UNIQUE INDEX: uq_perf_summary (cycle_id, department_id, ems_block)
+
+### MV 4: mv_recruitment_funnel
+공고별 단계별 전환율
+UNIQUE INDEX: uq_recruit_funnel (posting_id, stage)
+
+### MV 5: mv_burnout_risk
+번아웃 위험군 (2단계: WARNING / CRITICAL)
+```sql
+CREATE MATERIALIZED VIEW mv_burnout_risk AS
+WITH weekly_ot AS (
+  SELECT employee_id,
+    COUNT(*) FILTER (
+      WHERE weekly_hours > 45
+        AND week_start >= CURRENT_DATE - INTERVAL '28 days'
+    ) AS high_weeks
+  FROM (
+    SELECT employee_id,
+      DATE_TRUNC('week', clock_in) AS week_start,
+      SUM(EXTRACT(EPOCH FROM (clock_out - clock_in))/3600) AS weekly_hours
+    FROM attendances
+    WHERE clock_out IS NOT NULL
+    GROUP BY employee_id, DATE_TRUNC('week', clock_in)
+  ) w GROUP BY employee_id
+),
+leave_unused AS (
+  SELECT employee_id,
+    COALESCE(SUM(granted_days - used_days - pending_days), 0) AS unused_days
+  FROM employee_leave_balances
+  WHERE year = EXTRACT(YEAR FROM CURRENT_DATE)
+  GROUP BY employee_id
+),
+last_oo AS (
+  SELECT employee_id,
+    EXTRACT(DAY FROM NOW() - MAX(completed_at))::INT AS days_since
+  FROM one_on_ones
+  WHERE status = 'COMPLETED'
+  GROUP BY employee_id
+)
+SELECT
+  e.id AS employee_id, e.name,
+  e.company_id,
+  d.name AS department,
+  jc.code AS job_category_code,
+  COALESCE(wo.high_weeks, 0) AS consecutive_high_weeks,
+  COALESCE(lu.unused_days, 0) AS unused_days,
+  COALESCE(lo.days_since, 999) AS days_since_last_one_on_one,
+  (CASE
+    WHEN (COALESCE(wo.high_weeks, 0) >= 4)::INT
+       + (COALESCE(lu.unused_days, 0) >= 45)::INT
+       + (COALESCE(lo.days_since, 999) >= 30)::INT >= 2
+    THEN true ELSE false END) AS is_burnout_warning,
+  (COALESCE(wo.high_weeks, 0) >= 4
+    AND COALESCE(lu.unused_days, 0) >= 45
+    AND COALESCE(lo.days_since, 999) >= 30) AS is_burnout_critical
+FROM employees e
+JOIN departments d ON e.department_id = d.id
+JOIN job_categories jc ON e.job_category_id = jc.id
+LEFT JOIN weekly_ot wo ON wo.employee_id = e.id
+LEFT JOIN leave_unused lu ON lu.employee_id = e.id
+LEFT JOIN last_oo lo ON lo.employee_id = e.id
+WHERE e.status = 'ACTIVE' AND e.deleted_at IS NULL;
+
+CREATE UNIQUE INDEX uq_burnout_risk ON mv_burnout_risk(employee_id);
+```
+
+### MV 6: mv_team_health
+팀별 심리적 안전감 점수
+UNIQUE INDEX: uq_team_health (department_id)
+
+### MV 7: mv_exit_reason_monthly
+월별 퇴직 사유 집계
+```sql
+CREATE MATERIALIZED VIEW mv_exit_reason_monthly AS
+SELECT
+  DATE_TRUNC('month', eo.last_working_date) AS month,
+  eo.resign_type,
+  ei.primary_reason,
+  e.company_id,
+  COUNT(*) AS count
+FROM employee_offboarding eo
+JOIN employees e ON e.id = eo.employee_id
+LEFT JOIN exit_interviews ei ON ei.employee_offboarding_id = eo.id
+WHERE eo.status = 'COMPLETED'
+GROUP BY 1, 2, 3, 4;
+
+CREATE UNIQUE INDEX uq_exit_reason ON mv_exit_reason_monthly(month, company_id, resign_type, COALESCE(primary_reason, 'NONE'));
+```
+
+### MV 8: mv_compa_ratio_distribution
+직급×직군별 compa-ratio 분포
+```sql
+CREATE MATERIALIZED VIEW mv_compa_ratio_distribution AS
+SELECT
+  e.company_id,
+  jc.code AS job_category_code,
+  jg.code AS grade_code,
+  jg.name AS grade_name,
+  COUNT(*) AS employee_count,
+  AVG(ch.compa_ratio) AS avg_compa_ratio,
+  PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY ch.compa_ratio) AS p25,
+  PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY ch.compa_ratio) AS median,
+  PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY ch.compa_ratio) AS p75
+FROM employees e
+JOIN job_categories jc ON jc.id = e.job_category_id
+JOIN job_grades jg ON jg.id = e.job_grade_id
+LEFT JOIN LATERAL (
+  SELECT compa_ratio FROM compensation_history
+  WHERE employee_id = e.id
+  ORDER BY effective_date DESC LIMIT 1
+) ch ON true
+WHERE e.status = 'ACTIVE' AND e.deleted_at IS NULL
+GROUP BY 1, 2, 3, 4;
+
+CREATE UNIQUE INDEX uq_compa_dist ON mv_compa_ratio_distribution(company_id, job_category_code, grade_code);
+```
+
+### pg_cron 갱신 스케줄
+```sql
+SELECT cron.schedule('refresh-mv-headcount',    '0 19 * * *',   $$REFRESH MATERIALIZED VIEW CONCURRENTLY mv_headcount_daily$$);
+SELECT cron.schedule('refresh-mv-attendance',   '0 6 * * 1',    $$REFRESH MATERIALIZED VIEW CONCURRENTLY mv_attendance_weekly$$);
+SELECT cron.schedule('refresh-mv-performance',  '30 19 * * *',  $$REFRESH MATERIALIZED VIEW CONCURRENTLY mv_performance_summary$$);
+SELECT cron.schedule('refresh-mv-recruitment',  '0 20 * * *',   $$REFRESH MATERIALIZED VIEW CONCURRENTLY mv_recruitment_funnel$$);
+SELECT cron.schedule('refresh-mv-burnout',      '30 20 * * *',  $$REFRESH MATERIALIZED VIEW CONCURRENTLY mv_burnout_risk$$);
+SELECT cron.schedule('refresh-mv-team-health',  '0 21 * * *',   $$REFRESH MATERIALIZED VIEW CONCURRENTLY mv_team_health$$);
+SELECT cron.schedule('refresh-mv-exit-reason',  '0 19 * * *',   $$REFRESH MATERIALIZED VIEW CONCURRENTLY mv_exit_reason_monthly$$);
+SELECT cron.schedule('refresh-mv-compa-ratio',  '30 19 * * *',  $$REFRESH MATERIALIZED VIEW CONCURRENTLY mv_compa_ratio_distribution$$);
+```
+
+
+================================================================
+Seed 데이터
+================================================================
+
+### 1. companies 13개
+
+| 코드 | 이름 | country | timezone | locale | currency | parent |
+|------|------|---------|----------|--------|----------|--------|
+| CTR-HQ | CTR Holdings | KR | Asia/Seoul | ko | KRW | null |
+| CTR-KR | CTR | KR | Asia/Seoul | ko | KRW | CTR Holdings |
+| CTR-MOB | CTR Mobility | KR | Asia/Seoul | ko | KRW | CTR Holdings |
+| CTR-ECO | CTR Ecoforging | KR | Asia/Seoul | ko | KRW | CTR Holdings |
+| CTR-ROB | CTR Robotics | KR | Asia/Seoul | ko | KRW | CTR Holdings |
+| CTR-ENG | CTR Energy | KR | Asia/Seoul | ko | KRW | CTR Holdings |
+| FML | Formationlabs | KR | Asia/Seoul | ko | KRW | CTR Holdings |
+| CTR-US | CTR America | US | America/Chicago | en | USD | CTR |
+| CTR-CN | CTR China | CN | Asia/Shanghai | zh | CNY | CTR |
+| CTR-RU | CTR Russia | RU | Europe/Moscow | ru | RUB | CTR |
+| CTR-VN | CTR Vietnam | VN | Asia/Ho_Chi_Minh | vi | VND | CTR |
+| CTR-EU | CTR Europe | PL | Europe/Warsaw | en | PLN | CTR |
+| CTR-MX | CTR Mexico | MX | America/Mexico_City | es | MXN | CTR |
+
+★ CTR Europe: 소재지 폴란드(PL)이지만 locale=en (v3.1 수정)
+
+### 2. roles (is_system: true)
+SUPER_ADMIN / HR_ADMIN / MANAGER / EMPLOYEE / EXECUTIVE
+
+### 3. permissions: 11모듈 × 6액션
+모듈: employees, org, attendance, leave, recruitment, performance, payroll, compensation, offboarding, discipline, benefits
+액션: create, read, update, delete, export, manage
+
+### 4. role_permissions 기본 매핑
+- SUPER_ADMIN: 전체
+- HR_ADMIN: employees(전체), org(전체), attendance(전체), leave(전체), recruitment(전체), performance(전체), payroll(read/export), compensation(전체), offboarding(전체), discipline(전체), benefits(전체)
+- MANAGER: employees(read 팀), attendance(read 팀), leave(read/update 팀), performance(read/update 팀), discipline(read)
+- EMPLOYEE: employees(read 본인), attendance(read/create 본인), leave(read/create 본인), performance(read/create 본인)
+- EXECUTIVE: employees(read), analytics(read), performance(read)
+
+### 5. job_categories (각 법인별)
+OFFICE(사무직), PRODUCTION(생산직), R_AND_D(연구개발), MANAGEMENT(관리직)
+
+### 6. ems_block_config (CTR 기본)
+Performance thresholds: [0, 2.33, 3.67, 5.01] → Low(1) / Medium(2) / High(3)
+Competency thresholds: [0, 2.33, 3.67, 5.01] → A(Low) / B(Medium) / C(High)
+
+| 블록 | 라벨 | 색상 |
+|------|------|------|
+| 3C | Star | green |
+| 3B | Strong Performer | blue |
+| 3A | Growth Potential | teal |
+| 2C | Core Player | cyan |
+| 2B | Solid Contributor | gray |
+| 2A | Development Needed | yellow |
+| 1C | Misplaced Talent | orange |
+| 1B | Under Performer | red-light |
+| 1A | Action Required | red |
+
+### 7. 테스트 계정 4개
+- admin@ctr.co.kr / SUPER_ADMIN / CTR Holdings
+- hr@ctr.co.kr / HR_ADMIN / CTR
+- manager@ctr.co.kr / MANAGER / CTR
+- employee@ctr.co.kr / EMPLOYEE / CTR
+
+### 8. 온보딩 템플릿 1개 (CTR-KR, NEW_HIRE)
+태스크 6개: 서류제출(HR/D+1), 장비수령(IT/D+1), 부서소개(BUDDY/D+2), 보안교육(EMPLOYEE/D+3), OJT(MANAGER/D+5), 멘토미팅(BUDDY/D+7)
+
+### 9. 퇴직 체크리스트 1개 (CTR-KR, VOLUNTARY)
+태스크 8개: 사직서 접수(HR/D-14), 업무 인수인계 문서(EMPLOYEE/D-10), 인수자 확인(MANAGER/D-7), 장비 반납(IT/D-3), 보안카드 반납(HR/D-1), 계정 비활성화(IT/D-0), 퇴직면담(HR/D-3), 퇴직금 정산(FINANCE/D+7)
+
+### 10. salary_bands (CTR-KR 기본, 직급별, KRW)
+각 직급의 min/mid/max 연봉 밴드 (사무직 기준)
+
+### 11. benefit_policies (CTR-KR 기본, 3개)
+식대(MEAL, 150,000원/월), 교통비(TRANSPORT, 100,000원/월), 건강검진(HEALTH, 500,000원/연)
+
+### 12. 알림 트리거 기본 세팅
+LEAVE_APPROVED, LEAVE_REJECTED, OVERTIME_WARNING, OVERTIME_CRITICAL, ONBOARDING_CHECKIN, TERMINAL_OFFLINE, ATTRITION_HIGH
+
+### 13. holidays (CTR-KR, 2025년 대한민국 공휴일)
+
+### 14. ★ v3.2 pgvector 확장 활성화
+```sql
+CREATE EXTENSION IF NOT EXISTS vector;
+```
+
+### 15. ★ v3.2 tenant_settings 기본 (법인별 1레코드)
+- 13개 법인 각각 tenant_settings INSERT
+- core_values: CTR 기본 4개 (CHALLENGE/TRUST/RESPONSIBILITY/RESPECT)
+- enabled_modules: CTR-KR은 전체 활성, 해외 법인은 기본만
+- rating_scale: 1~5, grade_labels: S/A/B/C/D
+- primary_color: '#1B3A5C', accent_color: '#F5A623'
+- max_overtime_weekly_hours: KR=52, TR/MX=48, 기타=45
+
+### 16. ★ v3.2 term_overrides (기본 용어 14개 × 13법인)
+- 기본: 오버라이드 없음 (기본 용어 사용)
+- 각 법인 locale에 맞는 기본 라벨만 seed
+- 키 목록: department, job_grade, employee_code, manager, team,
+  position, recognition, one_on_one, goal, evaluation, leave,
+  onboarding, offboarding, discipline
+
+### 17. ★ v3.2 tenant_enum_options 기본값 시드
+- leave_type 7개 (ANNUAL/SICK/MATERNITY/PATERNITY/BEREAVEMENT/SPECIAL/COMPENSATORY) × is_system=true
+- employment_type 4개 (FULL_TIME/CONTRACT/DISPATCH/INTERN) × is_system=true
+- disciplinary_type 7개 × is_system=true
+- reward_type 7개 × is_system=true
+- exit_reason 8개 × is_system=true
+- training_category 6개 × is_system=true
+- benefit_category 9개 × is_system=true
+- clock_method 5개 × is_system=true
+- 각 CTR-KR 법인 기준 생성 (다른 법인은 동일 복사)
+
+### 18. ★ v3.2 workflow_rules 기본 (CTR-KR)
+- LEAVE_APPROVAL: 1단계 (직속 상사), total_steps=1
+- PROFILE_CHANGE: 1단계 (HR_ADMIN), total_steps=1
+- GOAL_APPROVAL: 1단계 (직속 상사), total_steps=1
+- PAYROLL_APPROVAL: 2단계 (HR_ADMIN → EXECUTIVE), total_steps=2
+- 각 rule에 workflow_steps seed
+
+### 19. ★ v3.2 email_templates 기본 (CTR-KR, ko)
+- LEAVE_APPROVED (EMAIL): "{{employee_name}}님의 휴가가 승인되었습니다"
+- LEAVE_REJECTED (EMAIL): "{{employee_name}}님의 휴가가 반려되었습니다"
+- ONBOARDING_WELCOME (EMAIL): "{{employee_name}}님, CTR에 오신 것을 환영합니다"
+- EVAL_REMINDER (EMAIL/PUSH): "{{cycle_name}} 평가 마감 {{days_left}}일 전"
+- OVERTIME_WARNING (PUSH): "이번 주 근무시간이 {{hours}}시간입니다"
+- ONE_ON_ONE_REMINDER (PUSH): "{{manager_name}}님과 1:1이 1시간 후 예정"
+- PEER_REVIEW_ASSIGNED (EMAIL): "{{employee_name}}님의 다면평가에 참여해주세요"
+- CHATBOT_ESCALATION (PUSH): "HR 챗봇 에스컬레이션 - {{question_preview}}"
+- 총 12~15개 기본 템플릿, 각 is_system=true
+
+### 20. ★ v3.2 export_templates 기본 (CTR-KR)
+- EMPLOYEE 기본: 사번, 이름, 부서, 직급, 입사일, 상태 (is_default=true)
+- ATTENDANCE 기본: 사번, 이름, 근무일, 출근, 퇴근, 근무시간, 연장시간
+- PAYROLL 기본: 사번, 이름, 기본급, 수당, 공제, 실수령액
+
+
+================================================================
+공통 컴포넌트 구현
+================================================================
+
+### CompanySelector.tsx
+법인 전환 드롭다운. 사용자가 접근 권한 있는 법인 목록만 표시.
+- HR_ADMIN/EXECUTIVE/SUPER_ADMIN: 전체 법인 + "그룹 합산" 옵션
+- MANAGER/EMPLOYEE: 본인 소속 법인만
+- 선택된 법인 → URL 파라미터 company_id + 세션 캐시
+- 헤더 우측에 배치
+
+### EmptyState.tsx
+데이터 없을 때 표시. icon + title + description + optional action button
+
+### AiGeneratedBadge.tsx
+AI 생성 콘텐츠 표시 뱃지. "🤖 AI 생성" + tooltip "AI가 생성한 내용입니다"
+
+### PermissionGate.tsx
+Server Component. requiredPermission 체크 후 children 렌더링 또는 null
+
+### LoadingSpinner.tsx
+로딩 스피너. 전체 페이지 또는 인라인 모드
+
+### ★ v3.2 CommandPalette.tsx
+전역 검색 모달. components/command-palette/CommandPalette.tsx
+- Cmd+O / Ctrl+O로 열기
+- 4종 검색 (직원/메뉴/규정/최근) 카테고리 그룹핑
+- cmdk 라이브러리 (https://cmdk.paco.me/) 사용 권장
+- 키보드 내비게이션 완전 지원
+
+### ★ v3.2 HrChatbot.tsx
+플로팅 챗봇. components/hr-chatbot/HrChatbot.tsx
+- 우측 하단 플로팅 버튼 (💬 아이콘, bg-ctr-primary)
+- 클릭 → 채팅 패널 (360×500px, 모바일 전체 화면)
+- 메시지 버블 UI (사용자=우측, AI=좌측)
+- AI 답변에 출처 인라인 표시 (📖 취업규칙 제15조)
+- 답변 하단 👍/👎 피드백
+- 에스컬레이션 버튼 "HR 담당자에게 문의"
+- 세션 관리: 새 대화 / 이전 대화 목록
+
+### ★ v3.2 lib/terms.ts — 용어 헬퍼
+```typescript
+// 캐시: Map<company_id, Map<term_key, label>>
+// getTermLabel(companyId, key, locale?) → override 있으면 override, 없으면 DEFAULT_TERMS[key]
+// DEFAULT_TERMS: { department: '부서', job_grade: '직급', ... }
+// useTerms(companyId) → React hook, SWR로 term_overrides 로드
+```
+
+### ★ v3.2 lib/tenant-settings.ts — 테넌트 설정 헬퍼
+```typescript
+// getTenantSettings(companyId) → tenant_settings 레코드 (Redis 캐시 5분)
+// isModuleEnabled(companyId, module) → boolean
+// getCoreValues(companyId) → CoreValue[]
+// getRatingScale(companyId) → { min, max, labels }
+// getBrandColors(companyId) → { primary, secondary, accent }
+```
+
+### ★ v3.2 lib/enum-options.ts — 동적 ENUM 헬퍼
+```typescript
+// getEnumOptions(companyId, enumGroup) → Option[] (is_active만, sort_order)
+// useEnumOptions(companyId, enumGroup) → React hook, SWR
+// 모든 Select/Dropdown에서 하드코딩 대신 이 헬퍼 사용
+```
+
+### ★ v3.2 lib/workflow.ts — 워크플로우 엔진 헬퍼
+```typescript
+// getApplicableWorkflow(companyId, workflowType, context?) → workflow_rules + steps
+// getNextApprover(workflowRuleId, currentStep, employeeId) → Employee
+// isApprovalComplete(entityId, workflowType) → boolean
+// 기존 승인 로직: 직속 상사 1단계 → workflow_rules 참조로 전환
+```
+
+### ★ v3.2 lib/custom-fields.ts — 커스텀 필드 헬퍼
+```typescript
+// getCustomFields(companyId, entityType) → CustomField[]
+// getCustomFieldValues(entityId, entityType) → Record<fieldKey, value>
+// saveCustomFieldValues(entityId, entityType, values) → void
+// renderCustomFieldInput(field) → React component (타입별 분기)
+```
+
+### ★ v3.2 components/CustomFieldsSection.tsx
+엔티티 폼 하단에 추가되는 커스텀 필드 섹션
+- props: companyId, entityType, entityId, mode('view'|'edit')
+- 자동으로 custom_fields 로드 → 타입별 Input 렌더링
+- TEXT → Input, NUMBER → NumberInput, DATE → DatePicker,
+  SELECT → Select, MULTI_SELECT → MultiSelect, BOOLEAN → Switch, FILE → FileUpload
+
+### ★ v3.2 components/ModuleGate.tsx
+모듈 활성화 체크. module prop 받아서 enabled_modules에 있으면 children 렌더, 없으면 null
+- 사이드바, 라우터, 페이지 레벨에서 사용
+- 비활성 모듈 API 호출 시 403 MODULE_DISABLED 반환
+
+### ★ v3.2 components/BrandProvider.tsx
+테넌트 브랜딩 CSS 변수 주입 Provider
+- tenant_settings에서 primary_color, secondary_color, accent_color 로드
+- <style> 태그로 --brand-primary, --brand-secondary, --brand-accent 주입
+- 기존 Tailwind ctr-primary → CSS 변수 참조로 전환
+
+
+================================================================
+역할별 홈 화면
+================================================================
+
+- EMPLOYEE: 출퇴근 버튼 + 내 휴가 잔여 + 최근 Recognition + 온보딩 진행률 (해당 시)
+- MANAGER: 팀 근태 현황 + 팀 휴가 달력 + 1:1 일정 + 팀 성과 요약
+- HR_ADMIN: 전사 인원 현황 + 채용 파이프라인 + 이직 위험 Top 5 + 퇴직 진행 현황
+- EXECUTIVE: 핵심 KPI 카드 (인원/이직률/성과분포/인건비) + AI 인사이트
+
+
+================================================================
+완료 기준
+================================================================
+
+- [ ] Next.js 프로젝트 + TypeScript strict + Tailwind + shadcn/ui 초기화
+- [ ] STEP0 폴더 구조 전체 생성
+- [ ] lib/ 공통 파일 전체 생성
+      (auth, prisma, permissions, errors, audit, api, env, constants, claude,
+       attrition, s3, redis, terminal, labor/index + kr + 6개국 스텁,
+       ★ terms, tenant-settings, enum-options, workflow, custom-fields)
+       attrition, s3, redis, terminal, labor/index + kr + 6개국 스텁)
+- [ ] schema.prisma 전체 모델 정의 (위 ERD v3.1 기준 — 모든 테이블)
+- [ ] prisma db push 성공 (또는 prisma db push --force-reset)
+- [ ] seed.ts 실행 성공:
+      companies 13개, roles 5개, permissions 66개, job_categories, ems_block_config,
+      테스트 계정 4개, 온보딩 템플릿, 퇴직 체크리스트, salary_bands, benefit_policies,
+      알림 트리거, holidays
+- [ ] NextAuth M365 SSO 설정 완료
+- [ ] .env.example 작성
+- [ ] 역할별 홈 레이아웃 쉘 렌더링 확인
+- [ ] MV SQL 8개 + UNIQUE INDEX 8개 + pg_cron 8개 스케줄 작성
+- [ ] CompanySelector 렌더링 + 권한별 법인 목록 필터 확인
+- [ ] EmptyState, AiGeneratedBadge, PermissionGate 컴포넌트 생성 확인
+- [ ] ★ v3.2 커스터마이제이션 테이블 8개 생성 확인
+      (tenant_settings, term_overrides, tenant_enum_options, custom_fields,
+       custom_field_values, workflow_rules, workflow_steps, email_templates, export_templates)
+- [ ] ★ v3.2 커스터마이제이션 Seed 데이터 생성 확인
+      (tenant_settings 13개, 기본 term 14개, enum_options ~60개,
+       workflow_rules 4개+steps, email_templates ~15개, export_templates 3개)
+- [ ] ★ v3.2 커스터마이제이션 lib 5개 생성 확인
+      (terms.ts, tenant-settings.ts, enum-options.ts, workflow.ts, custom-fields.ts)
+- [ ] ★ v3.2 CustomFieldsSection, ModuleGate, BrandProvider 컴포넌트 생성 확인
+- [ ] npx tsc --noEmit 에러 0개
+
+
+================================================================
+★ 세션 종료: context.md 작성
+================================================================
+
+반드시 포함:
+- 완성된 파일 목록 (전체 경로)
+- 생성된 테이블 목록 (모델 수)
+- Seed 데이터 상태 (각 항목 건수)
+- 환경변수 목록
+- MV 목록 + UNIQUE INDEX 현황
+- 다음 세션(STEP 2) 시작 전 확인 사항

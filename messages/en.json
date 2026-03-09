@@ -3011,7 +3011,10 @@
       "feedback": "1:1 / Feedback",
       "selfEval": "Self Evaluation",
       "recognition": "Recognition",
-      "training": "My Training"
+      "training": "My Training",
+      "home": "My Space Home",
+      "skills": "Competency Self-Assessment",
+      "yearEnd": "Year-End Settlement"
     },
     "team": {
       "label": "Team",
@@ -3021,7 +3024,8 @@
       "goals": "Team Goals",
       "results": "Team Performance",
       "managerEval": "Manager Evaluation",
-      "oneOnOne": "1:1 Meeting"
+      "oneOnOne": "1:1 Meeting",
+      "skills": "Team Competency Evaluation"
     },
     "hrOps": {
       "label": "HR Operations",
@@ -3035,7 +3039,12 @@
       "offboarding": "Offboarding",
       "payroll": "Payroll",
       "discipline": "Discipline",
-      "rewards": "Rewards"
+      "rewards": "Rewards",
+      "payrollGlobal": "Global Payroll Overview",
+      "payrollImport": "International Payroll Upload",
+      "payrollSimulation": "Payroll Simulation",
+      "payrollAnomalies": "Payroll Anomaly Detection",
+      "yearEndSettlement": "Year-End Settlement"
     },
     "talent": {
       "label": "Talent Management",
@@ -3050,7 +3059,9 @@
       "compensation": "Compensation",
       "benefits": "Benefits Management",
       "training": "Learning & Development",
-      "succession": "Succession Planning"
+      "succession": "Succession Planning",
+      "recruitmentBoard": "Kanban Board",
+      "skillMatrix": "Skill Matrix"
     },
     "insights": {
       "label": "Insights",
@@ -3071,7 +3082,9 @@
       "dpia": "DPIA",
       "ruCompliance": "Russia Compliance",
       "cnCompliance": "China Compliance",
-      "krCompliance": "Korea Compliance"
+      "krCompliance": "Korea Compliance",
+      "kpiDashboard": "HR KPI Dashboard",
+      "peopleDirectory": "People Directory"
     },
     "settings": {
       "label": "Settings",
@@ -3111,7 +3124,8 @@
       "orgChanges": "Org Changes",
       "monitoring": "Monitoring",
       "m365": "M365 Integration",
-      "auditLogs": "Audit Logs"
+      "auditLogs": "Audit Logs",
+      "hub": "Settings"
     }
   }
 }

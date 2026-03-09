@@ -12,8 +12,13 @@ import { withPermission, perm } from '@/lib/permissions'
 import { sendNotifications } from '@/lib/notifications'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { eventBus } from '@/lib/events/event-bus'
+import { DOMAIN_EVENTS } from '@/lib/events/types'
+import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
 import type { SessionUser } from '@/types'
 import type { OffboardingTargetType } from '@/generated/prisma/enums'
+
+bootstrapEventHandlers()
 
 // ─── Schema ──────────────────────────────────────────────
 
@@ -201,6 +206,22 @@ export const POST = withPermission(
     if (notifications.length > 0) {
       sendNotifications(notifications)
     }
+
+    // 9-a. Fire-and-forget: EMPLOYEE_OFFBOARDING_STARTED event
+    void eventBus.publish(DOMAIN_EVENTS.EMPLOYEE_OFFBOARDING_STARTED, {
+      ctx: {
+        companyId:  employeeCompanyId,
+        actorId:    user.employeeId,
+        occurredAt: new Date(),
+      },
+      employeeId:      employeeId,
+      companyId:       employeeCompanyId,
+      offboardingId:   result.id,
+      resignType:      resignType,
+      lastWorkingDate: new Date(lastWorkingDate),
+      checklistId:     checklist.id,
+      handoverToId:    handoverToId,
+    })
 
     // 9. Audit log
     const meta = extractRequestMeta(req.headers)

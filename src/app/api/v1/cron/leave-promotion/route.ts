@@ -3,10 +3,12 @@
 // 연차 사용 촉진 (KR 법인, step 1=60일/2=30일/3=10일)
 // ═══════════════════════════════════════════════════════════
 
-import { type NextRequest, NextResponse } from 'next/server'
+import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyCronSecret } from '@/lib/cron-auth'
 import { sendNotification } from '@/lib/notifications'
+import { apiSuccess, apiError } from '@/lib/api'
+import { unauthorized } from '@/lib/errors'
 
 const STEP_THRESHOLDS = [
   { step: 1, daysBeforeAnniversary: 60, label: '60일 전' },
@@ -15,9 +17,7 @@ const STEP_THRESHOLDS = [
 ]
 
 export async function POST(req: NextRequest) {
-  if (!verifyCronSecret(req)) {
-    return NextResponse.json({ error: '인증 실패' }, { status: 401 })
-  }
+  if (!verifyCronSecret(req)) return apiError(unauthorized('인증 실패'))
 
   const now = new Date()
   const currentYear = now.getFullYear()
@@ -111,9 +111,5 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({
-    success: true,
-    processed: employees.length,
-    sent: sentCount,
-  })
+  return apiSuccess({ processed: employees.length, sent: sentCount })
 }
