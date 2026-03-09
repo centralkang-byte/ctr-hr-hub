@@ -2802,7 +2802,9 @@
       "recognition": "Reconhecimento",
       "skills": "Autoavaliação de competências",
       "training": "Meu treinamento",
-      "yearEnd": "Declaração anual"
+      "yearEnd": "Declaração anual",
+      "approvalsInbox": "Caixa de aprovações",
+      "myOffboarding": "Meu desligamento"
     },
     "team": {
       "label": "Gestão da equipe",

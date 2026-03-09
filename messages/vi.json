@@ -2802,7 +2802,9 @@
       "recognition": "Khen ngợi/Ghi nhận",
       "skills": "Tự đánh giá năng lực",
       "training": "Đào tạo của tôi",
-      "yearEnd": "Quyết toán cuối năm"
+      "yearEnd": "Quyết toán cuối năm",
+      "approvalsInbox": "Hộp thư phê duyệt",
+      "myOffboarding": "Quy trình nghỉ việc"
     },
     "team": {
       "label": "Quản lý nhóm",

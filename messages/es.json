@@ -2802,7 +2802,9 @@
       "recognition": "Reconocimiento",
       "skills": "Autoevaluación de competencias",
       "training": "Mi formación",
-      "yearEnd": "Liquidación anual"
+      "yearEnd": "Liquidación anual",
+      "approvalsInbox": "Bandeja de aprobación",
+      "myOffboarding": "Mi baja laboral"
     },
     "team": {
       "label": "Gestión de equipo",

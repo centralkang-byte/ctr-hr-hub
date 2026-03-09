@@ -41,5 +41,14 @@ export default async function MyProfilePage() {
 
   if (!employee) redirect('/login')
 
-  return <MyProfileClient user={user} employee={employee} />
+  // ─── Date 직렬화 (Server→Client 경계 crossing) ────────────
+  // Next.js App Router는 Date 객체를 직접 넘길 수 없음.
+  // 문자열로 변환 후 Client Component에서 new Date()로 복원.
+  const serialized = {
+    ...employee,
+    hireDate:  employee.hireDate.toISOString(),
+    birthDate: employee.birthDate?.toISOString() ?? null,
+  }
+
+  return <MyProfileClient user={user} employee={serialized} />
 }

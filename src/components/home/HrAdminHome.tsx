@@ -10,7 +10,6 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
   Users,
-  Briefcase,
   AlertTriangle,
   UserMinus,
   CheckSquare,
@@ -20,7 +19,6 @@ import {
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { AiGeneratedBadge } from '@/components/shared/AiGeneratedBadge'
 import { WidgetSkeleton } from '@/components/shared/WidgetSkeleton'
 import { UnifiedTaskHub } from './UnifiedTaskHub'
 import { NudgeCards } from './NudgeCards'
@@ -154,110 +152,14 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
         </div>
       )}
 
-      {/* ── Main layout: TaskHub left, Details right ── */}
-      <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
+      {/* ── Main layout: TaskHub left, Compact sidebar right ── */}
+      <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
         {/* UnifiedTaskHub */}
         <UnifiedTaskHub user={user} />
 
-        {/* Right sidebar — detail cards */}
+        {/* Right sidebar — compact above-fold cards only */}
         <div className="space-y-4">
-          {/* 채용 파이프라인 */}
-          <Card className="border-[#F0F0F3] shadow-none">
-            <CardHeader className="pb-2 pt-4">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1C1D21]">
-                <Briefcase className="h-4 w-4 text-[#5E81F4]" />
-                채용 파이프라인
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 pb-4">
-              {[
-                { stage: '서류 심사', count: 45, color: 'bg-[#5E81F4]' },
-                { stage: '1차 면접',  count: 18, color: 'bg-[#00C853]' },
-                { stage: '2차 면접',  count: 8,  color: 'bg-[#A855F7]' },
-                { stage: '최종 합격', count: 3,  color: 'bg-green-500' },
-              ].map((item) => (
-                <div key={item.stage} className="flex items-center gap-2">
-                  <span className={`h-2 w-2 rounded-full ${item.color}`} />
-                  <span className="flex-1 text-sm text-[#8181A5]">{item.stage}</span>
-                  <span className="text-sm font-bold text-[#1C1D21]">{item.count}</span>
-                </div>
-              ))}
-              <Link
-                href="/recruitment/dashboard"
-                className="block pt-1 text-center text-xs font-medium text-[#5E81F4] hover:underline"
-              >
-                채용 대시보드 →
-              </Link>
-            </CardContent>
-          </Card>
-
-          {/* 이직 위험 Top 5 */}
-          <Card className="border-[#F0F0F3] shadow-none">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 pt-4">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1C1D21]">
-                <AlertTriangle className="h-4 w-4 text-[#EF4444]" />
-                이직 위험 Top 5
-              </CardTitle>
-              <AiGeneratedBadge />
-            </CardHeader>
-            <CardContent className="space-y-2 pb-4">
-              {[
-                { name: '정대현', dept: 'SW개발팀', risk: 87 },
-                { name: '한수진', dept: '품질관리팀', risk: 82 },
-                { name: '오세훈', dept: 'IT인프라팀', risk: 78 },
-                { name: '임지은', dept: '재무팀', risk: 75 },
-                { name: '강동원', dept: '영업팀', risk: 71 },
-              ].map((person) => (
-                <div key={person.name} className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-[#1C1D21]">{person.name}</p>
-                    <p className="text-xs text-[#8181A5]">{person.dept}</p>
-                  </div>
-                  <Badge variant="destructive" className="text-xs">
-                    {person.risk}%
-                  </Badge>
-                </div>
-              ))}
-              <Link
-                href="/analytics/predictive"
-                className="block pt-1 text-center text-xs font-medium text-[#5E81F4] hover:underline"
-              >
-                예측 분석 →
-              </Link>
-            </CardContent>
-          </Card>
-
-          {/* 퇴직 진행 현황 */}
-          <Card className="border-[#F0F0F3] shadow-none">
-            <CardHeader className="pb-2 pt-4">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1C1D21]">
-                <UserMinus className="h-4 w-4 text-[#F59E0B]" />
-                퇴직 진행 현황
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 pb-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[#8181A5]">퇴직 예정</span>
-                <Badge variant="secondary" className="text-[10px]">2명</Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[#8181A5]">인수인계 진행 중</span>
-                <Badge variant="secondary" className="text-[10px]">1명</Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[#8181A5]">이번 달 퇴직</span>
-                <Badge className="bg-[#5E81F4] text-[10px] text-white">2명</Badge>
-              </div>
-              <Link
-                href="/offboarding"
-                className="block pt-1 text-center text-xs font-medium text-[#5E81F4] hover:underline"
-              >
-                퇴직 관리 →
-              </Link>
-            </CardContent>
-          </Card>
-
-          {/* 승인 대기 */}
+          {/* 승인 대기 현황 */}
           <Card className="border-l-4 border-[#F0F0F3] border-l-[#5E81F4] shadow-none">
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1C1D21]">
@@ -265,7 +167,7 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
                 승인 대기 현황
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 pb-4">
+            <CardContent className="space-y-2 pb-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-[#8181A5]">휴가 신청</span>
                 <Badge className="bg-[#5E81F4] text-[10px] text-white">
@@ -280,34 +182,46 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
                 <span className="text-sm text-[#8181A5]">급여 조정</span>
                 <Badge className="bg-[#5E81F4] text-[10px] text-white">3건</Badge>
               </div>
+              <Link
+                href="/approvals/inbox"
+                className="block pt-1 text-center text-xs font-medium text-[#5E81F4] hover:underline"
+              >
+                승인함 바로가기 →
+              </Link>
             </CardContent>
           </Card>
 
-          {/* AI 인사이트 */}
+          {/* 퇴직 진행 현황 */}
           <Card className="border-[#F0F0F3] shadow-none">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 pt-4">
-              <CardTitle className="text-sm font-semibold text-[#1C1D21]">
-                AI 인사이트
+            <CardHeader className="pb-2 pt-4">
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1C1D21]">
+                <UserMinus className="h-4 w-4 text-[#F59E0B]" />
+                퇴직 진행 현황
               </CardTitle>
-              <AiGeneratedBadge />
             </CardHeader>
-            <CardContent className="space-y-2 pb-4">
-              <div className="rounded-lg border border-[#FDE68A] bg-[#FEFCE8] p-3">
-                <p className="text-sm font-medium text-[#854D0E]">
-                  SW개발팀 이직 위험도 상승
-                </p>
-                <p className="mt-1 text-xs text-[#A16207]">
-                  최근 3개월간 이직 위험도가 15%p 상승했습니다.
-                </p>
+            <CardContent className="space-y-2 pb-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[#8181A5]">퇴직 예정</span>
+                <Badge variant="secondary" className="text-[10px]">
+                  {summary?.terminations ?? 0}명
+                </Badge>
               </div>
-              <div className="rounded-lg border border-[#D1FAE5] bg-[#ECFDF5] p-3">
-                <p className="text-sm font-medium text-[#065F46]">
-                  온보딩 완료율 개선
-                </p>
-                <p className="mt-1 text-xs text-[#059669]">
-                  이번 분기 온보딩 완료율 92% (+8%p)
-                </p>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[#8181A5]">인수인계 진행 중</span>
+                <Badge variant="secondary" className="text-[10px]">1명</Badge>
               </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[#8181A5]">이번 달 퇴직</span>
+                <Badge className="bg-[#5E81F4] text-[10px] text-white">
+                  {summary?.terminations ?? 0}명
+                </Badge>
+              </div>
+              <Link
+                href="/offboarding"
+                className="block pt-1 text-center text-xs font-medium text-[#5E81F4] hover:underline"
+              >
+                퇴직관리 →
+              </Link>
             </CardContent>
           </Card>
         </div>

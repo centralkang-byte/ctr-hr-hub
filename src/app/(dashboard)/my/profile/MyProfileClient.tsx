@@ -52,9 +52,9 @@ interface EmployeeData {
   nameEn: string | null
   email: string
   phone: string | null
-  birthDate: Date | null
+  birthDate: Date | string | null   // ISO string from server serialization
   gender: string | null
-  hireDate: Date
+  hireDate: Date | string           // ISO string from server serialization
   assignments: Assignment[]
   profileExtension: ProfileExtension | null
   emergencyContacts: EmergencyContact[]
@@ -88,7 +88,7 @@ const VISIBILITY_OPTIONS = ['public', 'team', 'manager', 'private'] as const
 
 // ─── Helpers ────────────────────────────────────────────────
 
-function formatDate(d: Date | null | undefined): string {
+function formatDate(d: Date | string | null | undefined): string {
   if (!d) return '-'
   return new Date(d).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })
 }

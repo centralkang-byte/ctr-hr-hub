@@ -3014,7 +3014,9 @@
       "training": "My Training",
       "home": "My Space Home",
       "skills": "Competency Self-Assessment",
-      "yearEnd": "Year-End Settlement"
+      "yearEnd": "Year-End Settlement",
+      "approvalsInbox": "Approval Inbox",
+      "myOffboarding": "My Offboarding"
     },
     "team": {
       "label": "Team",

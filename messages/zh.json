@@ -2802,7 +2802,9 @@
       "recognition": "表扬/认可",
       "skills": "能力自评",
       "training": "我的培训",
-      "yearEnd": "年终结算"
+      "yearEnd": "年终结算",
+      "approvalsInbox": "审批收件箱",
+      "myOffboarding": "我的离职流程"
     },
     "team": {
       "label": "团队管理",

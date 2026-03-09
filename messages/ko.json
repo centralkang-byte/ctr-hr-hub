@@ -3014,7 +3014,9 @@
       "recognition": "칭찬/인정",
       "skills": "역량 자기평가",
       "training": "내 교육",
-      "yearEnd": "연말 정산"
+      "yearEnd": "연말 정산",
+      "approvalsInbox": "승인함",
+      "myOffboarding": "나의 퇴직처리"
     },
     "team": {
       "label": "팀 관리",
