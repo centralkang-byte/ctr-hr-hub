@@ -1,111 +1,67 @@
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — PUT /api/v1/offboarding/:id/tasks/:taskId/complete
-// 퇴직 태스크 완료 처리 (필수 태스크 모두 완료 시 퇴직 처리 종료)
+// CTR HR Hub — PUT /api/v1/offboarding/[id]/tasks/[taskId]/complete
+// Stage 5-B: 직원 본인 오프보딩 태스크 완료 처리
 // ═══════════════════════════════════════════════════════════
 
+import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { apiSuccess } from '@/lib/api'
-import { notFound, badRequest } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
-import { deactivateItAccount } from '@/lib/offboarding-complete'
-import { eventBus } from '@/lib/events/event-bus'
-import { DOMAIN_EVENTS } from '@/lib/events/types'
-import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
-import { MODULE, ACTION } from '@/lib/constants'
+import { apiSuccess, apiError } from '@/lib/api'
+import { unauthorized, notFound, forbidden } from '@/lib/errors'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 
-bootstrapEventHandlers()
+interface Context {
+  params: Promise<{ id: string; taskId: string }>
+}
 
-export const PUT = withPermission(
-  async (_req, ctx, user: SessionUser) => {
-    const { id, taskId } = await ctx.params
+export async function PUT(_req: NextRequest, context: Context) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user) return apiError(unauthorized())
+    const user = session.user as SessionUser
 
-    // Verify the offboarding exists and is in progress
+    const { id: offboardingId, taskId } = await context.params
+
+    // 1. Verify this offboarding belongs to the current user
     const offboarding = await prisma.employeeOffboarding.findFirst({
-      where: {
-        id,
-        ...(user.role !== 'SUPER_ADMIN'
-          ? { employee: { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } } }
-          : {}),
-      },
-      include: {
-        offboardingTasks: { include: { task: true } },
-      },
+      where: { id: offboardingId, employeeId: user.employeeId, status: 'IN_PROGRESS' },
     })
-    if (!offboarding) throw notFound('퇴직 처리를 찾을 수 없습니다.')
-    if (offboarding.status !== 'IN_PROGRESS') {
-      throw badRequest('진행 중인 퇴직 처리만 태스크를 완료할 수 있습니다.')
+    if (!offboarding) throw notFound('진행 중인 퇴직 처리를 찾을 수 없습니다.')
+
+    // 2. Find the task instance
+    const taskInstance = await prisma.employeeOffboardingTask.findFirst({
+      where: { id: taskId, employeeOffboardingId: offboardingId },
+      include: { task: { select: { assigneeType: true, title: true } } },
+    })
+    if (!taskInstance) throw notFound('해당 태스크를 찾을 수 없습니다.')
+
+    // 3. Only EMPLOYEE tasks can be self-completed
+    if (taskInstance.task.assigneeType !== 'EMPLOYEE') {
+      throw forbidden('본인이 직접 완료할 수 없는 태스크입니다.')
     }
 
-    // Verify the task belongs to this offboarding
-    const targetTask = offboarding.offboardingTasks.find((t) => t.id === taskId)
-    if (!targetTask) throw notFound('태스크를 찾을 수 없습니다.')
-    if (targetTask.status === 'DONE') {
-      throw badRequest('이미 완료된 태스크입니다.')
+    // 4. Idempotent — already done
+    if (taskInstance.status === 'DONE') {
+      return apiSuccess({ message: '이미 완료된 태스크입니다.' })
     }
 
-    const completedAt = new Date()
-
-    await prisma.$transaction(async (tx) => {
-      // Mark task as DONE
-      await tx.employeeOffboardingTask.update({
-        where: { id: taskId },
-        data: {
-          status: 'DONE',
-          completedAt,
-          completedBy: user.employeeId,
-        },
-      })
-
-      // Check if all required tasks are now done (including current one)
-      const updatedTasks = offboarding.offboardingTasks.map((t) =>
-        t.id === taskId ? { ...t, status: 'DONE' as const } : t,
-      )
-      const allRequiredDone = updatedTasks
-        .filter((t) => t.task.isRequired)
-        .every((t) => t.status === 'DONE')
-
-      // Resolve companyId from employee assignment
-      const assignment = await tx.employeeAssignment.findFirst({
-        where: { employeeId: offboarding.employeeId, isPrimary: true, endDate: null },
-        select: { companyId: true },
-      })
-      const companyId = assignment?.companyId ?? user.companyId
-
-      // Publish OFFBOARDING_TASK_COMPLETED inside tx
-      await eventBus.publish(DOMAIN_EVENTS.OFFBOARDING_TASK_COMPLETED, {
-        ctx: { companyId, actorId: user.employeeId, occurredAt: completedAt },
-        employeeId:      offboarding.employeeId,
-        companyId,
-        offboardingId:   id,
-        taskId,
-        completedBy:     user.employeeId,
-        taskTitle:       targetTask.task.title,
-        allRequiredDone,
-      }, tx)
-
-      if (allRequiredDone) {
-        const now = new Date()
-        await tx.employeeOffboarding.update({
-          where: { id },
-          data: { status: 'COMPLETED', completedAt: now },
-        })
-        await deactivateItAccount(tx, offboarding.employeeId)
-
-        // Publish OFFBOARDING_COMPLETED inside tx
-        await eventBus.publish(DOMAIN_EVENTS.OFFBOARDING_COMPLETED, {
-          ctx: { companyId, actorId: user.employeeId, occurredAt: now },
-          employeeId:      offboarding.employeeId,
-          companyId,
-          offboardingId:   id,
-          lastWorkingDate: offboarding.lastWorkingDate,
-          resignType:      offboarding.resignType,
-          completedAt:     now,
-        }, tx)
-      }
+    // 5. Mark as done
+    const updated = await prisma.employeeOffboardingTask.update({
+      where: { id: taskId },
+      data: {
+        status:      'DONE',
+        completedBy: user.employeeId,
+        completedAt: new Date(),
+      },
     })
 
-    return apiSuccess({ completed: true })
-  },
-  perm(MODULE.ONBOARDING, ACTION.UPDATE),
-)
+    return apiSuccess({
+      id:          updated.id,
+      status:      updated.status,
+      completedAt: updated.completedAt?.toISOString(),
+    })
+  } catch (error) {
+    return apiError(error)
+  }
+}

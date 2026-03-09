@@ -61,6 +61,8 @@ import {
   Globe,
   Calculator,
   Upload,
+  CheckCircle2,
+  LogOut,
   type LucideIcon,
 } from 'lucide-react'
 import { MODULE, ROLE } from '@/lib/constants'
@@ -260,6 +262,27 @@ export const NAVIGATION: NavSection[] = [
         module: MODULE.PAYROLL,
         countryFilter: ['KR'],
         badge: 'new' as const,
+      },
+      // Stage 5-B: 승인함 (매니저/HR전용 — sidebar 필터링은 section visibleTo로 불가ꊥ,
+      // 센션 단위로 MANAGER_UP에만 증재지 않으면 아이템 레벨 표시 제어는
+      // Sidebar.tsx가 comingSoon or other flag로 가능. 여기선 저장만 해두고 필터링은 Sidebar에서 함.)
+      {
+        key: 'approvals-inbox',
+        labelKey: 'nav.mySpace.approvalsInbox',
+        label: '승인함',
+        href: '/approvals/inbox',
+        icon: CheckCircle2,
+        module: MODULE.LEAVE,
+        badge: 'new' as const,
+      },
+      // Stage 5-B: 나의 퇴직처리 (퇴직 진행 중인 직원의 체크리스트)
+      {
+        key: 'my-offboarding',
+        labelKey: 'nav.mySpace.myOffboarding',
+        label: '나의 퇴직처리',
+        href: '/my/offboarding',
+        icon: LogOut,
+        module: MODULE.EMPLOYEES,
       },
     ],
   },

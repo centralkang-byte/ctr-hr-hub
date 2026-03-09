@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --port 3002",
-    "build": "next build && node -e \"const fs=require('fs');const src='.next/server/app/page_client-reference-manifest.js';const dst='.next/server/app/(dashboard)/page_client-reference-manifest.js';if(fs.existsSync(src))fs.copyFileSync(src,dst);\"",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
@@ -54,6 +54,7 @@
     "react-dom": "^18",
     "react-hook-form": "^7.71.2",
     "recharts": "^3.7.0",
+    "server-only": "^0.0.1",
     "swr": "^2.4.0",
     "tailwind-merge": "^3.5.0",
     "tailwindcss-animate": "^1.0.7",

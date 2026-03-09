@@ -2,6 +2,11 @@
 // CTR HR Hub — Prisma Client Singleton
 // ═══════════════════════════════════════════════════════════
 
+// server-only: 클라이언트 번들로 절대 포함되지 않도록 강제.
+// 이 줄이 없으면 'use client' 컴포넌트가 prisma를 import할 경우
+// Vercel 빌드가 조용히 실패함.
+import 'server-only'
+
 import { PrismaClient } from '@/generated/prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 

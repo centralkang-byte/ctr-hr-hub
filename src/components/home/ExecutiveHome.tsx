@@ -17,7 +17,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { AiGeneratedBadge } from '@/components/shared/AiGeneratedBadge'
-import { PendingActionsPanel } from './PendingActionsPanel'
+import { NudgeCards } from './NudgeCards'
+import { UnifiedTaskHub } from './UnifiedTaskHub'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 
@@ -53,16 +54,19 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
     <div className="space-y-6">
       {/* Greeting */}
       <div>
-        <h1 className="text-2xl font-bold text-ctr-gray-900">
-          안녕하세요, {user.name}님
+        <h1 className="text-2xl font-bold text-[#1C1D21]">
+          안녕하세요, {user.name}님 👋
         </h1>
-        <p className="mt-1 text-sm text-ctr-gray-500">
+        <p className="mt-1 text-sm text-[#8181A5]">
           그룹 전체 인사 현황 요약입니다.
         </p>
       </div>
 
-      {/* Pending Actions */}
-      <PendingActionsPanel user={user} />
+      {/* AI Nudge Cards (EXECUTIVE view) */}
+      <NudgeCards user={user} />
+
+      {/* 나의 할 일 */}
+      <UnifiedTaskHub user={user} />
 
       {/* 핵심 KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
