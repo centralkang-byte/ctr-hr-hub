@@ -7,6 +7,7 @@
     "build": "next build && node -e \"const fs=require('fs');const src='.next/server/app/page_client-reference-manifest.js';const dst='.next/server/app/(dashboard)/page_client-reference-manifest.js';if(fs.existsSync(src))fs.copyFileSync(src,dst);\"",
     "start": "next start",
     "lint": "next lint",
+    "postinstall": "prisma generate",
     "seed:dev": "npx tsx prisma/seed-dev.ts"
   },
   "dependencies": {
