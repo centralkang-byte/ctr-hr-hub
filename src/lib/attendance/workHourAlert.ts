@@ -248,7 +248,7 @@ export async function getCompanyAlerts(companyId: string, resolvedOnly = false) 
   const timezone = setting?.timezone ?? 'Asia/Seoul'
   const weekStart = getWeekStartTz(new Date(), timezone)
 
-  return prisma.workHourAlert.findMany({
+  const alerts = await prisma.workHourAlert.findMany({
     where: {
       isResolved: resolvedOnly ? true : false,
       weekStart,
@@ -267,6 +267,20 @@ export async function getCompanyAlerts(companyId: string, resolvedOnly = false) 
         },
       },
     },
-    orderBy: [{ alertLevel: 'desc' }, { totalHours: 'desc' }],
+    // NOTE: alertLevel is VARCHAR — alphabetical sort gives wrong severity order.
+    // We sort in-memory by numeric severity instead (blocked > warning > caution).
+    orderBy: { totalHours: 'desc' },  // secondary sort: most hours first
   })
+
+  // ─── 심각도 기준 내림차순 정렬 ────────────────────────────
+  // blocked(52h+) > warning(48h+) > caution(44h+)
+  const SEVERITY: Record<string, number> = {
+    blocked: 3,
+    warning: 2,
+    caution: 1,
+  }
+
+  return alerts.sort(
+    (a, b) => (SEVERITY[b.alertLevel] ?? 0) - (SEVERITY[a.alertLevel] ?? 0)
+  )
 }

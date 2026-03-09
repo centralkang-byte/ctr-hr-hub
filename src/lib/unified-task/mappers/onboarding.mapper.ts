@@ -14,6 +14,9 @@ import {
 } from '../types'
 
 // ─── Prisma 조회 타입 ──────────────────────────────────────
+// NOTE: EmployeeOnboarding has NO `manager` relation in schema.
+//       EmployeeAssignment has NO `managerId` field.
+//       Manager lookup for onboarding tasks is not supported at this layer.
 
 export type OnboardingTaskWithRelations = Prisma.EmployeeOnboardingTaskGetPayload<{
   include: {
@@ -38,7 +41,6 @@ export type OnboardingTaskWithRelations = Prisma.EmployeeOnboardingTaskGetPayloa
               where: { isPrimary: true; endDate: null }
               take: 1
               select: {
-                managerId: true
                 jobGrade: { select: { name: true } }
                 department: { select: { name: true } }
               }
@@ -46,9 +48,6 @@ export type OnboardingTaskWithRelations = Prisma.EmployeeOnboardingTaskGetPayloa
           }
         }
         buddy: {
-          select: { id: true; name: true }
-        }
-        manager: {
           select: { id: true; name: true }
         }
       }
@@ -129,16 +128,11 @@ function resolveAssignee(
         department: employee.assignments?.[0]?.department?.name,
       }
 
-    case 'MANAGER': {
-      const managerId = employee.assignments?.[0]?.managerId
-      if (!managerId) return UNASSIGNED_ACTOR
-      // manager relation은 include에서 직접 포함하지 않고
-      // managerId만 반환 (route에서 별도 조회 or actor 구성)
-      return {
-        employeeId: managerId,
-        name:       '매니저',   // route에서 실명 보강 가능 (현재 best-effort)
-      }
-    }
+    case 'MANAGER':
+      // EmployeeAssignment에 managerId 필드 없음, EmployeeOnboarding에 manager relation 없음.
+      // Position.reportsToPositionId 기반 매니저 조회는 performance.mapper에서만 지원.
+      // 현재 레이어에서는 UNASSIGNED로 처리 (TODO: 별도 쿼리로 보강 가능)
+      return UNASSIGNED_ACTOR
 
     case 'BUDDY':
       if (!onboarding.buddy) return UNASSIGNED_ACTOR

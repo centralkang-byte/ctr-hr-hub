@@ -130,6 +130,9 @@ const PAYROLL_INCLUDE = {
 } as const
 
 // ─── EmployeeOnboardingTask 조회 ───────────────────────────────────
+// NOTE: EmployeeAssignment has NO `managerId` field.
+//       EmployeeOnboarding has NO `manager` relation.
+//       Both are removed so Prisma doesn't throw "Unknown field" errors.
 
 const ONBOARDING_INCLUDE = {
   task: {
@@ -153,15 +156,13 @@ const ONBOARDING_INCLUDE = {
             where: { isPrimary: true, endDate: null },
             take:  1,
             select: {
-              managerId:  true,
               jobGrade:   { select: { name: true } },
               department: { select: { name: true } },
             },
           },
         },
       },
-      buddy:   { select: { id: true, name: true } },
-      manager: { select: { id: true, name: true } },
+      buddy: { select: { id: true, name: true } },
     },
   },
 } as const
