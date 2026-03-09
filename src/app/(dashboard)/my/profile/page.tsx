@@ -12,32 +12,72 @@ export default async function MyProfilePage() {
   if (!session?.user) redirect('/login')
   const user = session.user as SessionUser
 
-  const employee = await prisma.employee.findUnique({
-    where: { id: user.employeeId },
-    select: {
-      id: true,
-      employeeNo: true,
-      name: true,
-      nameEn: true,
-      email: true,
-      phone: true,
-      birthDate: true,
-      gender: true,
-      hireDate: true,
-      assignments: {
-        where: { isPrimary: true, endDate: null },
-        take: 1,
-        include: {
-          department: { select: { id: true, name: true } },
-          jobGrade: { select: { id: true, name: true, code: true } },
-          company: { select: { id: true, code: true, name: true } },
+  let employee
+  try {
+    employee = await prisma.employee.findUnique({
+      where: { id: user.employeeId },
+      select: {
+        id: true,
+        employeeNo: true,
+        name: true,
+        nameEn: true,
+        email: true,
+        phone: true,
+        birthDate: true,
+        gender: true,
+        hireDate: true,
+        assignments: {
+          where: { isPrimary: true, endDate: null },
+          take: 1,
+          include: {
+            department: { select: { id: true, name: true } },
+            jobGrade: { select: { id: true, name: true, code: true } },
+            company: { select: { id: true, code: true, name: true } },
+          },
         },
+        profileExtension: true,
+        emergencyContacts: { orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] },
+        profileVisibility: true,
       },
-      profileExtension: true,
-      emergencyContacts: { orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] },
-      profileVisibility: true,
-    },
-  })
+    })
+  } catch (err) {
+    console.error('[my/profile] Prisma query failed:', err)
+    // Fallback: fetch without optional relations that may not have tables
+    try {
+      employee = await prisma.employee.findUnique({
+        where: { id: user.employeeId },
+        select: {
+          id: true,
+          employeeNo: true,
+          name: true,
+          nameEn: true,
+          email: true,
+          phone: true,
+          birthDate: true,
+          gender: true,
+          hireDate: true,
+          assignments: {
+            where: { isPrimary: true, endDate: null },
+            take: 1,
+            include: {
+              department: { select: { id: true, name: true } },
+              jobGrade: { select: { id: true, name: true, code: true } },
+              company: { select: { id: true, code: true, name: true } },
+            },
+          },
+        },
+      })
+      // Add empty defaults for missing relations
+      if (employee) {
+        (employee as any).profileExtension = null;
+        (employee as any).emergencyContacts = [];
+        (employee as any).profileVisibility = null;
+      }
+    } catch (err2) {
+      console.error('[my/profile] Fallback query also failed:', err2)
+      redirect('/home')
+    }
+  }
 
   if (!employee) redirect('/login')
 
@@ -46,9 +86,10 @@ export default async function MyProfilePage() {
   // 문자열로 변환 후 Client Component에서 new Date()로 복원.
   const serialized = {
     ...employee,
-    hireDate:  employee.hireDate.toISOString(),
+    hireDate:  employee.hireDate?.toISOString() ?? new Date().toISOString(),
     birthDate: employee.birthDate?.toISOString() ?? null,
   }
 
-  return <MyProfileClient user={user} employee={serialized} />
+  return <MyProfileClient user={user} employee={serialized as any} />
 }
+
