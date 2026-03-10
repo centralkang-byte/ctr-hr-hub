@@ -31,6 +31,7 @@ import { seedSuccession } from './seeds/14-succession'
 import { seedPeerReview } from './seeds/15-peer-review'
 import { seedPartialFixes } from './seeds/16-partial-fixes'
 import { seedPayrollPipeline } from './seeds/17-payroll-pipeline'
+import { seedPerformancePipeline } from './seeds/18-performance-pipeline'
 
 // Load DATABASE_URL from .env.local or .env
 const DATABASE_URL = process.env.DATABASE_URL
@@ -108,9 +109,10 @@ type PermKey = `${string}_${string}`
 function buildRolePermissions(): Record<string, PermKey[]> {
   const all: PermKey[] = modules.flatMap(m => actions.map(a => `${m}_${a}` as PermKey))
 
-  // HR_ADMIN: everything except payroll create/update/delete (read/export/manage allowed)
+  // HR_ADMIN: everything except payroll update/delete (read/create/export/manage allowed)
+  // payroll_create 추가: 시뮬레이션 API (POST /api/v1/payroll/simulation) 에서 필요
   const hrAdmin = all.filter(p => {
-    if (p.startsWith('payroll_') && !['payroll_read', 'payroll_export', 'payroll_manage'].includes(p)) return false
+    if (p.startsWith('payroll_') && !['payroll_read', 'payroll_create', 'payroll_export', 'payroll_manage'].includes(p)) return false
     return true
   })
 
@@ -3590,6 +3592,11 @@ async function main() {
   // SESSION GP#3: Payroll Pipeline QA Data (expanded)
   // ─────────────────────────────────────────────────────────
   await seedPayrollPipeline(prisma)
+
+  // ─────────────────────────────────────────────────────────
+  // SESSION GP#4: Performance Pipeline Foundation
+  // ─────────────────────────────────────────────────────────
+  await seedPerformancePipeline(prisma)
 }
 
 main()

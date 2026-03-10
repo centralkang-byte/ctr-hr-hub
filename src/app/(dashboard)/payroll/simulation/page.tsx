@@ -12,10 +12,22 @@ export default async function PayrollSimulationPage() {
   if (!session?.user) redirect('/login')
   const user = session.user as SessionUser
 
-  const [companies, jobGrades] = await Promise.all([
-    prisma.company.findMany({ orderBy: { code: 'asc' }, select: { id: true, name: true, code: true, currency: true } }),
-    prisma.jobGrade.findMany({ orderBy: { rankOrder: 'asc' }, select: { id: true, name: true, rankOrder: true } }),
+  const [companies, departments] = await Promise.all([
+    prisma.company.findMany({
+      orderBy: { code: 'asc' },
+      select: { id: true, name: true, code: true, currency: true },
+    }),
+    prisma.department.findMany({
+      orderBy: { name: 'asc' },
+      select: { id: true, name: true, companyId: true },
+    }),
   ])
 
-  return <PayrollSimulationClient user={user} companies={companies} jobGrades={jobGrades} />
+  return (
+    <PayrollSimulationClient
+      user={user}
+      companies={companies}
+      departments={departments}
+    />
+  )
 }

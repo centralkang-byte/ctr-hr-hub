@@ -49,6 +49,21 @@ export const DOMAIN_EVENTS = {
   PERFORMANCE_SELF_EVAL_SUBMITTED: 'PERFORMANCE_SELF_EVAL_SUBMITTED',
   PERFORMANCE_MANAGER_EVAL_SUBMITTED: 'PERFORMANCE_MANAGER_EVAL_SUBMITTED',
   PERFORMANCE_CYCLE_FINALIZED: 'PERFORMANCE_CYCLE_FINALIZED',
+
+  // GP#4: Pipeline State Machine Events (Session B)
+  GOAL_OVERDUE: 'GOAL_OVERDUE',
+  CHECKIN_COMPLETED: 'CHECKIN_COMPLETED',
+  CHECKIN_OVERDUE: 'CHECKIN_OVERDUE',
+  SELF_EVAL_OVERDUE: 'SELF_EVAL_OVERDUE',
+  PEER_NOMINATION_COMPLETED: 'PEER_NOMINATION_COMPLETED',
+  PEER_EVAL_SUBMITTED: 'PEER_EVAL_SUBMITTED',
+  CALIBRATION_ADJUSTED: 'CALIBRATION_ADJUSTED',
+  CALIBRATION_APPROVED: 'CALIBRATION_APPROVED',
+  RESULT_NOTIFIED: 'RESULT_NOTIFIED',
+  RESULT_ACKNOWLEDGED: 'RESULT_ACKNOWLEDGED',
+  COMP_REVIEW_STARTED: 'COMP_REVIEW_STARTED',
+  COMP_EXCEPTION_FLAGGED: 'COMP_EXCEPTION_FLAGGED',
+  COMP_APPROVED: 'COMP_APPROVED',
 } as const
 
 export type DomainEventName = typeof DOMAIN_EVENTS[keyof typeof DOMAIN_EVENTS]
@@ -366,6 +381,125 @@ export interface PerformanceCycleFinalizedPayload {
   totalEvaluated: number  // 확정된 평가 수 (SUBMITTED 기준)
 }
 
+// ── GP#4 Session B: Pipeline Events ──────────────────────
+
+export interface GoalOverduePayload {
+  ctx: EventContext
+  cycleId: string
+  companyId: string
+  overdueEmployeeIds: string[]
+  overdueCount: number
+  daysSinceDeadline: number
+}
+
+export interface CheckinCompletedPayload {
+  ctx: EventContext
+  cycleId: string
+  employeeId: string
+  companyId: string
+}
+
+export interface CheckinOverduePayload {
+  ctx: EventContext
+  cycleId: string
+  companyId: string
+  overdueEmployeeIds: string[]
+  overdueCount: number
+  checkInMode: string  // MANDATORY | RECOMMENDED
+}
+
+export interface SelfEvalOverduePayload {
+  ctx: EventContext
+  cycleId: string
+  companyId: string
+  overdueEmployeeIds: string[]
+  overdueCount: number
+  daysSinceDeadline: number
+}
+
+export interface PeerNominationCompletedPayload {
+  ctx: EventContext
+  cycleId: string
+  employeeId: string  // 피평가자
+  companyId: string
+  nomineeIds: string[]
+  nomineeCount: number
+}
+
+export interface PeerEvalSubmittedPayload {
+  ctx: EventContext
+  cycleId: string
+  nominationId: string
+  reviewerId: string   // 동료 평가자
+  employeeId: string   // 피평가자
+  companyId: string
+  allPeersDone: boolean
+}
+
+export interface CalibrationAdjustedPayload {
+  ctx: EventContext
+  cycleId: string
+  employeeId: string
+  companyId: string
+  originalGrade: string
+  adjustedGrade: string
+  reason: string
+}
+
+export interface CalibrationApprovedPayload {
+  ctx: EventContext
+  cycleId: string
+  companyId: string
+  approvedBy: string
+  totalEmployees: number
+  adjustedCount: number
+}
+
+export interface ResultNotifiedPayload {
+  ctx: EventContext
+  cycleId: string
+  employeeId: string
+  companyId: string
+  notifiedBy: string  // managerId
+  finalGrade: string
+}
+
+export interface ResultAcknowledgedPayload {
+  ctx: EventContext
+  cycleId: string
+  employeeId: string
+  companyId: string
+  isAutoAcknowledged: boolean
+  allDone: boolean  // true면 전체 사이클 CLOSED 가능
+}
+
+export interface CompReviewStartedPayload {
+  ctx: EventContext
+  cycleId: string
+  companyId: string
+  totalEmployees: number
+}
+
+export interface CompExceptionFlaggedPayload {
+  ctx: EventContext
+  cycleId: string
+  employeeId: string
+  companyId: string
+  recommendedPct: number
+  actualPct: number
+  reason: string
+}
+
+export interface CompApprovedPayload {
+  ctx: EventContext
+  cycleId: string
+  companyId: string
+  approvedBy: string
+  totalEmployees: number
+  totalBudgetImpact: number
+  payrollRunId?: string
+}
+
 // ------------------------------------
 // Discriminated Union (Event Map)
 // ------------------------------------
@@ -397,6 +531,20 @@ export interface DomainEventMap {
   PERFORMANCE_SELF_EVAL_SUBMITTED: PerformanceSelfEvalSubmittedPayload
   PERFORMANCE_MANAGER_EVAL_SUBMITTED: PerformanceManagerEvalSubmittedPayload
   PERFORMANCE_CYCLE_FINALIZED: PerformanceCycleFinalizedPayload
+  // GP#4 pipeline events
+  GOAL_OVERDUE: GoalOverduePayload
+  CHECKIN_COMPLETED: CheckinCompletedPayload
+  CHECKIN_OVERDUE: CheckinOverduePayload
+  SELF_EVAL_OVERDUE: SelfEvalOverduePayload
+  PEER_NOMINATION_COMPLETED: PeerNominationCompletedPayload
+  PEER_EVAL_SUBMITTED: PeerEvalSubmittedPayload
+  CALIBRATION_ADJUSTED: CalibrationAdjustedPayload
+  CALIBRATION_APPROVED: CalibrationApprovedPayload
+  RESULT_NOTIFIED: ResultNotifiedPayload
+  RESULT_ACKNOWLEDGED: ResultAcknowledgedPayload
+  COMP_REVIEW_STARTED: CompReviewStartedPayload
+  COMP_EXCEPTION_FLAGGED: CompExceptionFlaggedPayload
+  COMP_APPROVED: CompApprovedPayload
 }
 
 /** 타입-안전 이벤트 봉투 */

@@ -347,11 +347,44 @@ enum CycleHalf {
 }
 
 enum CycleStatus {
-  DRAFT
-  ACTIVE
-  EVAL_OPEN
-  CALIBRATION
-  CLOSED
+  // Existing 5 states — DO NOT RENAME (breaks Prisma migrate)
+  DRAFT          // GP#4: acts as SETUP (개시)
+  ACTIVE         // GP#4: acts as GOAL_SETTING (목표 설정)
+  EVAL_OPEN      // GP#4: acts as EVALUATION (평가 실시)
+  CALIBRATION    // GP#4: same (캘리브레이션)
+  CLOSED         // GP#4: same (종료)
+
+  // GP#4 new states (APPEND ONLY — safe migration)
+  CHECK_IN       // 중간 체크인
+  FINALIZED      // 캘리브레이션 승인 완료, 결과 통보 대기
+  COMP_REVIEW    // 보상 기획
+  COMP_COMPLETED // 보상 승인 → PayrollRun 연동 완료
+}
+
+// GP#4: 체크인 운영 모드
+enum CheckInMode {
+  MANDATORY     // 게이트 — 미완료 시 Overdue 처리
+  RECOMMENDED   // 권장 — 경고만, 사이클은 정상 진행
+}
+
+// GP#4: 4등급 체계 (설계서 섹션 5)
+enum PerformanceGrade {
+  E        // Exceeds (탁월) — 10% 가이드라인
+  M_PLUS   // Meets+ (우수) — 30%
+  M        // Meets (보통) — 50%
+  B        // Below (미흡) — 10%
+}
+
+// GP#4: 개인별 평가 진행 상태 (설계서 섹션 14)
+enum ReviewStatus {
+  NOT_STARTED
+  GOAL_SETTING
+  SELF_EVAL
+  PEER_EVAL
+  MANAGER_EVAL
+  CALIBRATED
+  NOTIFIED
+  ACKNOWLEDGED
 }
 
 enum GoalStatus {
@@ -858,6 +891,10 @@ model Company {
   analyticsSnapshots AnalyticsSnapshot[] @relation("CompanyAnalyticsSnapshots")
   analyticsConfigs   AnalyticsConfig[]   @relation("CompanyAnalyticsConfigs")
 
+  // GP#4: Performance Pipeline
+  performanceReviews     PerformanceReview[]
+  employeeLevelMappings  EmployeeLevelMapping[]
+
   @@map("companies")
 }
 
@@ -1341,6 +1378,10 @@ model Employee {
   // B7-1b: Year-End Tax Settlement
   yearEndSettlements  YearEndSettlement[]  @relation("EmployeeYearEndSettlements")
   withholdingReceipts WithholdingReceipt[] @relation("EmployeeWithholdingReceipts")
+
+  // GP#4: Performance Pipeline
+  performanceReviews     PerformanceReview[]      @relation("ReviewEmployee")
+  performanceReviewsNotified PerformanceReview[]   @relation("ReviewNotifier")
 
   @@index([deletedAt])
   @@index([hireDate])
@@ -2173,6 +2214,17 @@ model PerformanceCycle {
   evalEnd   DateTime    @map("eval_end")
   status    CycleStatus
 
+  // GP#4: 추가 설정 필드
+  checkInDeadline    DateTime?     @map("check_in_deadline")
+  checkInMode        CheckInMode   @default(RECOMMENDED) @map("check_in_mode")
+  peerReviewEnabled  Boolean       @default(true) @map("peer_review_enabled")
+  peerReviewMinCount Int           @default(3) @map("peer_review_min_count")
+  peerReviewMaxCount Int           @default(5) @map("peer_review_max_count")
+  mboWeight          Int           @default(60) @map("mbo_weight")
+  beiWeight          Int           @default(40) @map("bei_weight")
+  excludeProbation   Boolean       @default(true) @map("exclude_probation")
+  targetFilter       Json?         @map("target_filter") // { companies: [], departments: [], levels: [] }
+
   company                Company                  @relation(fields: [companyId], references: [id])
   mboGoals               MboGoal[]
   performanceEvaluations PerformanceEvaluation[]
@@ -2180,6 +2232,8 @@ model PerformanceCycle {
   calibrationSessions    CalibrationSession[]
   salaryAdjustmentMatrix SalaryAdjustmentMatrix[]
   peerReviewNominations  PeerReviewNomination[]
+  performanceReviews     PerformanceReview[]
+  oneOnOnes              OneOnOne[]                @relation("CycleOneOnOnes")
   createdAt              DateTime                 @default(now()) @map("created_at")
 
   @@map("performance_cycles")
@@ -2201,6 +2255,10 @@ model MboGoal {
   aiGenerated      Boolean    @default(false) @map("ai_generated")
   createdAt        DateTime   @default(now()) @map("created_at")
   updatedAt        DateTime   @updatedAt @map("updated_at")
+
+  // GP#4: Lock + Overdue
+  isLocked         Boolean    @default(false) @map("is_locked")
+  overdueAt        DateTime?  @map("overdue_at")
 
   cycle     PerformanceCycle @relation(fields: [cycleId], references: [id])
   employee  Employee         @relation("MboGoalEmployee", fields: [employeeId], references: [id])
@@ -2244,6 +2302,11 @@ model PerformanceEvaluation {
   status            EvalStatus
   submittedAt       DateTime?  @map("submitted_at")
   createdAt         DateTime   @default(now()) @map("created_at")
+
+  // GP#4: 투트랙 등급 보존 + Overdue
+  originalGradeEnum  PerformanceGrade?  @map("original_grade_enum")
+  finalGradeEnum     PerformanceGrade?  @map("final_grade_enum")
+  overdueAt          DateTime?          @map("overdue_at")
 
   cycle     PerformanceCycle @relation(fields: [cycleId], references: [id])
   employee  Employee         @relation("EvalEmployee", fields: [employeeId], references: [id])
@@ -2295,10 +2358,15 @@ model OneOnOne {
   sentimentTag String?        @map("sentiment_tag")
   createdAt    DateTime       @default(now()) @map("created_at")
 
-  employee  Employee @relation("OneOnOneEmployee", fields: [employeeId], references: [id])
-  manager   Employee @relation("OneOnOneManager", fields: [managerId], references: [id])
-  company   Company  @relation(fields: [companyId], references: [id])
-  companyId String   @map("company_id")
+  // GP#4: 체크인 연동
+  cycleId         String?           @map("cycle_id")
+  isCheckinRecord Boolean           @default(false) @map("is_checkin_record")
+
+  employee  Employee          @relation("OneOnOneEmployee", fields: [employeeId], references: [id])
+  manager   Employee          @relation("OneOnOneManager", fields: [managerId], references: [id])
+  company   Company           @relation(fields: [companyId], references: [id])
+  companyId String            @map("company_id")
+  cycle     PerformanceCycle? @relation("CycleOneOnOnes", fields: [cycleId], references: [id])
 
   @@index([companyId, employeeId])
   @@index([companyId, scheduledAt])
@@ -2449,6 +2517,13 @@ model CompensationHistory {
   compaRatio         Decimal?               @map("compa_ratio")
   createdAt          DateTime               @default(now()) @map("created_at")
 
+  // GP#4: 보상 기획 연동
+  cycleId            String?                @map("cycle_id")
+  performanceGradeAtTime String?            @map("performance_grade_at_time")
+  isException        Boolean                @default(false) @map("is_exception")
+  exceptionReason    String?                @map("exception_reason")
+  payrollRunId       String?                @map("payroll_run_id")
+
   employee Employee  @relation("CompensationEmployee", fields: [employeeId], references: [id])
   company  Company   @relation(fields: [companyId], references: [id])
   approver Employee? @relation("CompensationApprover", fields: [approvedBy], references: [id])
@@ -2465,6 +2540,13 @@ model SalaryAdjustmentMatrix {
   minIncreasePct         Decimal? @map("min_increase_pct")
   maxIncreasePct         Decimal? @map("max_increase_pct")
   createdAt              DateTime @default(now()) @map("created_at")
+
+  // GP#4: Merit Matrix 확장 (4등급 × 3밴드)
+  gradeKey               String?  @map("grade_key")       // E | M_PLUS | M | B
+  comparatioBand         String?  @map("comparatio_band") // LOW | MID | HIGH
+  meritMinPct            Decimal? @db.Decimal(5, 2) @map("merit_min_pct")
+  meritMaxPct            Decimal? @db.Decimal(5, 2) @map("merit_max_pct")
+  meritRecommendedPct    Decimal? @db.Decimal(5, 2) @map("merit_recommended_pct")
 
   company Company           @relation(fields: [companyId], references: [id])
   cycle   PerformanceCycle? @relation(fields: [cycleId], references: [id])
@@ -3343,6 +3425,7 @@ model PeerReviewNomination {
   employee Employee         @relation("PeerReviewEmployee", fields: [employeeId], references: [id])
   nominee  Employee         @relation("PeerReviewNominee", fields: [nomineeId], references: [id])
   approver Employee?        @relation("PeerReviewApprover", fields: [approvedBy], references: [id])
+  answer   PeerReviewAnswer?
 
   @@unique([cycleId, employeeId, nomineeId])
   @@map("peer_review_nominations")
@@ -5671,4 +5754,90 @@ model KpiDashboardConfig {
 
   @@unique([userId])
   @@map("kpi_dashboard_configs")
+}
+
+// ================================================================
+// GP#4: Performance Pipeline Foundation
+// ================================================================
+
+model PerformanceReview {
+  id                  String           @id @default(uuid())
+  cycleId             String           @map("cycle_id")
+  employeeId          String           @map("employee_id")
+  companyId           String           @map("company_id")
+  status              ReviewStatus     @default(NOT_STARTED)
+
+  // Two-track grade preservation (Design Spec Section 11)
+  originalGrade       PerformanceGrade?  @map("original_grade")
+  finalGrade          PerformanceGrade?  @map("final_grade")
+  calibrationNote     String?            @map("calibration_note")
+
+  // Overdue flags (Design Spec Section 3)
+  overdueFlags        Json               @default("[]") @map("overdue_flags")
+
+  // Result notification (Design Spec Section 12)
+  notifiedAt          DateTime?          @map("notified_at")
+  notifiedBy          String?            @map("notified_by")
+  acknowledgedAt      DateTime?          @map("acknowledged_at")
+  isAutoAcknowledged  Boolean            @default(false) @map("is_auto_acknowledged")
+
+  // Calculated scores
+  mboScore            Decimal?           @db.Decimal(5, 2) @map("mbo_score")
+  beiScore            Decimal?           @db.Decimal(5, 2) @map("bei_score")
+  totalScore          Decimal?           @db.Decimal(5, 2) @map("total_score")
+
+  createdAt           DateTime           @default(now()) @map("created_at")
+  updatedAt           DateTime           @updatedAt @map("updated_at")
+
+  cycle               PerformanceCycle   @relation(fields: [cycleId], references: [id])
+  employee            Employee           @relation("ReviewEmployee", fields: [employeeId], references: [id])
+  notifier            Employee?          @relation("ReviewNotifier", fields: [notifiedBy], references: [id])
+  company             Company            @relation(fields: [companyId], references: [id])
+
+  @@unique([cycleId, employeeId])
+  @@index([cycleId])
+  @@index([employeeId])
+  @@index([companyId])
+  @@map("performance_reviews")
+}
+
+model PeerReviewAnswer {
+  id                    String    @id @default(uuid())
+  nominationId          String    @unique @map("nomination_id")
+
+  // CTR Core Values scores (1-5 each)
+  scoreChallenge        Int       @map("score_challenge")
+  scoreTrust            Int       @map("score_trust")
+  scoreResponsibility   Int       @map("score_responsibility")
+  scoreRespect          Int       @map("score_respect")
+
+  // Comments per value (optional per item, overall required)
+  commentChallenge      String?   @map("comment_challenge")
+  commentTrust          String?   @map("comment_trust")
+  commentResponsibility String?   @map("comment_responsibility")
+  commentRespect        String?   @map("comment_respect")
+  overallComment        String    @map("overall_comment")
+
+  submittedAt           DateTime  @default(now()) @map("submitted_at")
+
+  nomination            PeerReviewNomination @relation(fields: [nominationId], references: [id])
+
+  @@map("peer_review_answers")
+}
+
+model EmployeeLevelMapping {
+  id            String   @id @default(uuid())
+  companyId     String   @map("company_id")
+  jobGradeCode  String   @map("job_grade_code")
+  levelCode     String   @map("level_code")  // L1 | L2 | L3 | L4 | L5 | EXEC
+  mboWeight     Int?     @map("mbo_weight")  // Level-specific override (null = cycle default)
+  beiWeight     Int?     @map("bei_weight")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  company       Company  @relation(fields: [companyId], references: [id])
+
+  @@unique([companyId, jobGradeCode])
+  @@map("employee_level_mappings")
 }

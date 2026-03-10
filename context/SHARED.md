@@ -1,6 +1,6 @@
 # SHARED.md — Project State (Single Source of Truth)
 
-> **Last Updated:** 2026-03-10 (GP#3 QA-B — Bug Fix + Korean Translation + UX Unification)
+> **Last Updated:** 2026-03-10 (GP#4-A — Performance Pipeline Schema Foundation)
 > **Project Path:** `/Users/sangwoo/Documents/VibeCoding/HR_Hub/ctr-hr-hub`
 
 ---
@@ -36,6 +36,7 @@
 | **GP#3-D** (Integrated Dashboard + Payroll Calendar + Edge Cases + Final Polish) | ✅ Complete |
 | **GP#3 QA-A** (Korean Translation + Status Badges + Seed Data Expansion) | ✅ Complete |
 | **GP#3 QA-B** (Bug Fix: Insights sidebar + i18n keys + Breadcrumb + Permission + UX Unification) | ✅ Complete |
+| **GP#4-A** (Performance Pipeline Schema Foundation: 3 new models, 3 new enums, CycleStatus 9-state, 6 APIs) | ✅ Complete |
 
 ---
 
@@ -74,12 +75,12 @@ DRAFT → ATTENDANCE_CLOSED → CALCULATING → ADJUSTMENT
 
 | Item | Count |
 |------|-------|
-| TS/TSX files | 894+ |
-| API routes (route.ts) | 294+ |
+| TS/TSX files | 900+ |
+| API routes (route.ts) | 300+ |
 | Pages (page.tsx) | 115+ (166 including sub-routes) |
 | Components | 120+ |
-| Prisma models | 89+ |
-| Prisma enums | 70 |
+| Prisma models | 92 (prev 89 + PerformanceReview, PeerReviewAnswer, EmployeeLevelMapping) |
+| Prisma enums | 74 (prev 70 + CheckInMode, PerformanceGrade, ReviewStatus, CycleStatus extended) |
 
 ---
 
@@ -124,6 +125,9 @@ DRAFT → ATTENDANCE_CLOSED → CALCULATING → ADJUSTMENT
 | PayrollSimulation | 3 | 16-partial-fixes.ts |
 | PiiAccessLog | ~20 | 16-partial-fixes.ts |
 | OneOnOne | ~10 | 16-partial-fixes.ts |
+| EmployeeLevelMapping | ~12 | 18-performance-pipeline.ts |
+| MeritMatrix (GP#4) | ~12 | 18-performance-pipeline.ts |
+| PerformanceReview (GP#4) | ~60 | 18-performance-pipeline.ts |
 
 **Seed QA Results (2026-03-10 FINAL):**
 - 42 menus audited: PASS 22 → **29** / EMPTY 15 → **3** / PARTIAL 5 → **0**
@@ -275,6 +279,10 @@ ACTION.APPROVE === 'manage' // ✅
 
 1. **GP#4 Performance Cycle** — 목표설정 → MBO 평가 → 캘리브레이션 → 등급 확정 → 결과 통보 end-to-end
    - Goal: "모든 성과 사이클을 완전 자동화된 파이프라인으로"
+   - **Session A ✅**: Schema foundation (PerformanceReview, PeerReviewAnswer, EmployeeLevelMapping, CycleStatus 9-state, 6 APIs)
+   - **Session B**: Overdue + Pipeline State Machine (advance logic, check-in APIs, events)
+   - **Session C**: Evaluation + Calibration + Notification (peer review 4-item, two-track, Data Masking)
+   - **Session D**: Compensation Review + UI (Merit Matrix, Soft Warning, dashboard)
 2. **Settings Page** — Currently empty shell, needs actual settings UI
    - Priority items from TODO comments: 31 payroll settings + 6 attendance settings
 3. **RLS Policies** — Row-level security for multi-tenant data isolation
