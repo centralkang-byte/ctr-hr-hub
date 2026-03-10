@@ -1212,6 +1212,7 @@ model Employee {
   // Payroll
   payrollItems           PayrollItem[]
   payrollRunApprovals    PayrollRun[]           @relation("PayrollApprover")
+  payrollApprovalSteps   PayrollApprovalStep[]  @relation("PayrollApprover2")
   payrollSimulations     PayrollSimulation[]
   payrollAdjustments     PayrollAdjustment[]    @relation("PayrollAdjustmentEmployee")
   payrollAnomalies       PayrollAnomaly[]       @relation("PayrollAnomalyEmployee")
@@ -2657,6 +2658,7 @@ model PayrollRun {
   payrollItems PayrollItem[]
   adjustments  PayrollAdjustment[]
   anomalies    PayrollAnomaly[]
+  payrollApproval PayrollApproval?  @relation("PayrollApproval")
 
   @@index([companyId, yearMonth])
   @@index([companyId, status])
@@ -2756,6 +2758,63 @@ model PayrollAnomaly {
   @@index([payrollRunId])
   @@index([employeeId])
   @@map("payroll_anomalies")
+}
+
+// ─── GP#3-C: 급여 다단계 승인 (STEP 4) ───────────────────────
+
+// TODO: Move to Settings (Payroll) — 법인별 급여 승인 체계 (역할 코드 목록)
+model PayrollApproval {
+  id           String               @id @default(uuid())
+  payrollRunId String               @unique @map("payroll_run_id")
+  payrollRun   PayrollRun           @relation("PayrollApproval", fields: [payrollRunId], references: [id])
+  currentStep  Int                  @default(1) @map("current_step")
+  totalSteps   Int                  @map("total_steps")
+  status       PayrollApprovalStatus @default(PENDING)
+  requestedBy  String               @map("requested_by")
+  requestedAt  DateTime             @default(now()) @map("requested_at")
+  completedAt  DateTime?            @map("completed_at")
+  createdAt    DateTime             @default(now()) @map("created_at")
+  updatedAt    DateTime             @updatedAt @map("updated_at")
+
+  steps PayrollApprovalStep[]
+
+  @@index([payrollRunId])
+  @@map("payroll_approvals")
+}
+
+model PayrollApprovalStep {
+  id           String               @id @default(uuid())
+  approvalId   String               @map("approval_id")
+  approval     PayrollApproval      @relation(fields: [approvalId], references: [id], onDelete: Cascade)
+  stepNumber   Int                  @map("step_number")   // 1-indexed
+  roleRequired String               @map("role_required") // e.g. "HR_MANAGER", "CFO"
+  approverId   String?              @map("approver_id")
+  approver     Employee?            @relation("PayrollApprover2", fields: [approverId], references: [id])
+  status       PayrollApprovalStepStatus @default(PENDING)
+  comment      String?
+  decidedAt    DateTime?            @map("decided_at")
+  createdAt    DateTime             @default(now()) @map("created_at")
+
+  @@unique([approvalId, stepNumber])
+  @@index([approvalId])
+  @@map("payroll_approval_steps")
+}
+
+enum PayrollApprovalStatus {
+  PENDING
+  IN_PROGRESS
+  APPROVED
+  REJECTED
+
+  @@map("PayrollApprovalStatus")
+}
+
+enum PayrollApprovalStepStatus {
+  PENDING
+  APPROVED
+  REJECTED
+
+  @@map("PayrollApprovalStepStatus")
 }
 
 enum AnomalySeverity {

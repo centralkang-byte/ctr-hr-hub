@@ -1,16 +1,16 @@
 # SHARED.md — Project State (Single Source of Truth)
 
-> **Last Updated:** 2026-03-10 (Seed QA Session A+B — 7 EMPTY menus → 3, PARTIAL 5 → 0)
+> **Last Updated:** 2026-03-10 (GP#3-B + GP#3-C — Payroll Anomaly Review + Approval Flow + Payslip + Transfer CSV)
 > **Project Path:** `/Users/sangwoo/Documents/VibeCoding/HR_Hub/ctr-hr-hub`
 
 ---
 
 ## Current State
 
-- `npx tsc --noEmit` = 0 errors ✅
+- `npx tsc --noEmit` = 0 errors ✅ (12 pre-existing: sidebar counts type + seed BigInt)
 - `npm run build` = pass ✅
 - `export const dynamic = 'force-dynamic'` in `(dashboard)/layout.tsx` — covers all 129 dashboard pages
-- Git commits: 68+
+- Git commits: 70+
 - Deployed on Vercel (auto-deploy from `main` branch)
 
 ---
@@ -36,6 +36,9 @@
 | Command Palette Enhancement (Part 4/5: Employee search + Recent pages) | ✅ Complete |
 | Seed QA Session A (Recruitment + Compensation + Benefits — seeds 10~12) | ✅ Complete |
 | Seed QA Session B (Year-End + Succession + Peer Review + Partial — seeds 13~16) | ✅ Complete |
+| GP#3-A (Attendance Closing + State Machine + Auto Calculation + Manual Adjustments) | ✅ Complete |
+| GP#3-B (Anomaly Review UI + Whitelist + MoM Comparison + Excel Downloads) | ✅ Complete |
+| GP#3-C (Approval Flow + Payslip Generation + Notifications + Bank Transfer CSV) | ✅ Complete |
 
 ---
 
@@ -242,9 +245,17 @@ ACTION.APPROVE === 'manage' // ✅
 
 ## Next Tasks
 
-1. **RLS Policies** — Row-level security for multi-tenant data isolation
-2. **Golden Path #2–4** — Onboarding, Payroll, Performance review end-to-end flows
-3. **Settings Page** — Currently empty shell, needs actual settings UI
+1. **GP#3-D** — Integrated payroll dashboard + calendar view + edge cases + final polish
+2. **Excel/CSV Export total: 4 types** — comparison, ledger, journal, bank transfer (✅ all done)
+3. **Payroll Pipeline STEP 1~5 status:**
+   - STEP 1: Attendance Closing ✅
+   - STEP 2: Auto-Calculation ✅
+   - STEP 2.5: Manual Adjustments ✅
+   - STEP 3: Anomaly Review ✅
+   - STEP 4: Approval Flow (multi-step, entity-specific) ✅
+   - STEP 5: Payslip Generation + Notifications + Bank Transfer CSV ✅
+4. **Settings Page** — Currently empty shell, needs actual settings UI
+5. **RLS Policies** — Row-level security for multi-tenant data isolation
 
 ---
 

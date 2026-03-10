@@ -22,23 +22,23 @@ import type { SessionUser } from '@/types'
 // ─── Unified item shape ────────────────────────────────────
 
 export interface ApprovalItem {
-  id:            string
-  module:        'LEAVE' | 'PERFORMANCE' | 'PAYROLL'
-  type:          string
-  title:         string
-  description:   string
-  requesterId:   string
+  id: string
+  module: 'LEAVE' | 'PERFORMANCE' | 'PAYROLL'
+  type: string
+  title: string
+  description: string
+  requesterId: string
   requesterName: string
   requesterDept: string
-  createdAt:     string
-  dueDate:       string | null
-  priority:      'HIGH' | 'MEDIUM' | 'LOW'
-  status:        'PENDING' | 'APPROVED' | 'REJECTED'
-  metadata:      Record<string, unknown>
+  createdAt: string
+  dueDate: string | null
+  priority: 'HIGH' | 'MEDIUM' | 'LOW'
+  status: 'PENDING' | 'APPROVED' | 'REJECTED'
+  metadata: Record<string, unknown>
   actions: {
     approveUrl: string
-    rejectUrl:  string
-    detailUrl:  string
+    rejectUrl: string
+    detailUrl: string
   }
 }
 
@@ -71,19 +71,19 @@ export async function GET(req: NextRequest) {
     const user = session.user as SessionUser
 
     const { searchParams } = req.nextUrl
-    const moduleFilter  = searchParams.get('module')  // LEAVE | PERFORMANCE | PAYROLL | null=ALL
-    const statusFilter  = searchParams.get('status')  // PENDING | APPROVED | REJECTED | null=PENDING
-    const countOnly     = searchParams.get('countOnly') === 'true'
-    const historyDays   = parseInt(searchParams.get('days') ?? '30', 10)
+    const moduleFilter = searchParams.get('module')  // LEAVE | PERFORMANCE | PAYROLL | null=ALL
+    const statusFilter = searchParams.get('status')  // PENDING | APPROVED | REJECTED | null=PENDING
+    const countOnly = searchParams.get('countOnly') === 'true'
+    const historyDays = parseInt(searchParams.get('days') ?? '30', 10)
 
     // default: show PENDING
-    const showPending   = !statusFilter || statusFilter === 'PENDING'
+    const showPending = !statusFilter || statusFilter === 'PENDING'
     const showCompleted = statusFilter === 'APPROVED' || statusFilter === 'REJECTED' || statusFilter === 'ALL'
 
-    const companyId     = user.companyId
-    const employeeId    = user.employeeId
-    const isHrUp        = [ROLE.HR_ADMIN, ROLE.SUPER_ADMIN].includes(user.role as never)
-    const isManagerUp   = [ROLE.MANAGER, ROLE.EXECUTIVE, ROLE.HR_ADMIN, ROLE.SUPER_ADMIN].includes(user.role as never)
+    const companyId = user.companyId
+    const employeeId = user.employeeId
+    const isHrUp = [ROLE.HR_ADMIN, ROLE.SUPER_ADMIN].includes(user.role as never)
+    const isManagerUp = [ROLE.MANAGER, ROLE.EXECUTIVE, ROLE.HR_ADMIN, ROLE.SUPER_ADMIN].includes(user.role as never)
 
     // Direct reports (for MANAGER — only see their team's requests)
     const reportIds = isManagerUp && !isHrUp
@@ -96,7 +96,7 @@ export async function GET(req: NextRequest) {
 
     if (!moduleFilter || moduleFilter === 'LEAVE') {
       const leaveStatuses: string[] = []
-      if (showPending)   leaveStatuses.push('PENDING')
+      if (showPending) leaveStatuses.push('PENDING')
       if (showCompleted) { leaveStatuses.push('APPROVED', 'REJECTED') }
 
       if (leaveStatuses.length > 0) {
@@ -131,27 +131,27 @@ export async function GET(req: NextRequest) {
         for (const lr of leaves) {
           const dept = lr.employee.assignments?.[0]?.department?.name ?? '-'
           const start = new Date(lr.startDate).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
-          const end   = new Date(lr.endDate).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
-          const days  = Number(lr.days)
+          const end = new Date(lr.endDate).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
+          const days = Number(lr.days)
 
           items.push({
-            id:            `leave:${lr.id}`,
-            module:        'LEAVE',
-            type:          'LEAVE_REQUEST',
-            title:         `${lr.employee.name} — ${lr.policy.name} ${days}일 (${start}~${end})`,
-            description:   lr.reason ?? '사유 없음',
-            requesterId:   lr.employeeId,
+            id: `leave:${lr.id}`,
+            module: 'LEAVE',
+            type: 'LEAVE_REQUEST',
+            title: `${lr.employee.name} — ${lr.policy.name} ${days}일 (${start}~${end})`,
+            description: lr.reason ?? '사유 없음',
+            requesterId: lr.employeeId,
             requesterName: lr.employee.name,
             requesterDept: dept,
-            createdAt:     lr.createdAt.toISOString(),
-            dueDate:       lr.startDate.toISOString(),
-            priority:      days >= 3 ? 'HIGH' : 'MEDIUM',
-            status:        lr.status as 'PENDING' | 'APPROVED' | 'REJECTED',
-            metadata:      { leaveRequestId: lr.id, days, policyName: lr.policy.name },
+            createdAt: lr.createdAt.toISOString(),
+            dueDate: lr.startDate.toISOString(),
+            priority: days >= 3 ? 'HIGH' : 'MEDIUM',
+            status: lr.status as 'PENDING' | 'APPROVED' | 'REJECTED',
+            metadata: { leaveRequestId: lr.id, days, policyName: lr.policy.name },
             actions: {
               approveUrl: `/api/v1/leave/requests/${lr.id}/approve`,
-              rejectUrl:  `/api/v1/leave/requests/${lr.id}/reject`,
-              detailUrl:  `/leave/team`,
+              rejectUrl: `/api/v1/leave/requests/${lr.id}/reject`,
+              detailUrl: `/leave/team`,
             },
           })
         }
@@ -162,7 +162,7 @@ export async function GET(req: NextRequest) {
 
     if (!moduleFilter || moduleFilter === 'PERFORMANCE') {
       const goalStatuses: string[] = []
-      if (showPending)   goalStatuses.push('PENDING_APPROVAL')
+      if (showPending) goalStatuses.push('PENDING_APPROVAL')
       if (showCompleted) goalStatuses.push('APPROVED', 'REJECTED')
 
       if (goalStatuses.length > 0) {
@@ -178,13 +178,13 @@ export async function GET(req: NextRequest) {
             ...(cutoff ? { updatedAt: { gte: cutoff } } : {}),
           },
           select: {
-            id:         true,
-            title:      true,
-            weight:     true,
-            status:     true,
+            id: true,
+            title: true,
+            weight: true,
+            status: true,
             employeeId: true,
-            createdAt:  true,
-            updatedAt:  true,
+            createdAt: true,
+            updatedAt: true,
             employee: {
               select: {
                 name: true,
@@ -206,27 +206,27 @@ export async function GET(req: NextRequest) {
           const rawStatus = g.status as string
           const mappedStatus: 'PENDING' | 'APPROVED' | 'REJECTED' =
             rawStatus === 'PENDING_APPROVAL' ? 'PENDING'
-            : rawStatus === 'APPROVED' ? 'APPROVED'
-            : 'REJECTED'
+              : rawStatus === 'APPROVED' ? 'APPROVED'
+                : 'REJECTED'
 
           items.push({
-            id:            `goal:${g.id}`,
-            module:        'PERFORMANCE',
-            type:          'MBO_GOAL_REVIEW',
-            title:         `${g.employee.name} — MBO 목표 검토 (${g.cycle.name})`,
-            description:   g.title,
-            requesterId:   g.employeeId,
+            id: `goal:${g.id}`,
+            module: 'PERFORMANCE',
+            type: 'MBO_GOAL_REVIEW',
+            title: `${g.employee.name} — MBO 목표 검토 (${g.cycle.name})`,
+            description: g.title,
+            requesterId: g.employeeId,
             requesterName: g.employee.name,
             requesterDept: dept,
-            createdAt:     g.createdAt.toISOString(),
-            dueDate:       g.cycle.evalEnd?.toISOString() ?? null,
-            priority:      'MEDIUM',
-            status:        mappedStatus,
-            metadata:      { goalId: g.id, cycleName: g.cycle.name, weight: Number(g.weight) },
+            createdAt: g.createdAt.toISOString(),
+            dueDate: g.cycle.evalEnd?.toISOString() ?? null,
+            priority: 'MEDIUM',
+            status: mappedStatus,
+            metadata: { goalId: g.id, cycleName: g.cycle.name, weight: Number(g.weight) },
             actions: {
               approveUrl: `/api/v1/performance/goals/${g.id}/approve`,
-              rejectUrl:  `/api/v1/performance/goals/${g.id}/reject`,
-              detailUrl:  `/performance/goals`,
+              rejectUrl: `/api/v1/performance/goals/${g.id}/reject`,
+              detailUrl: `/performance/goals`,
             },
           })
         }
@@ -235,47 +235,76 @@ export async function GET(req: NextRequest) {
 
 
     // ── 3. Payroll Runs (HR_ADMIN only) ──────────────────
+    // GP#3-C: Shows runs in PENDING_APPROVAL (waiting for approver)
+    // and completed APPROVED/PAID for history
 
     if (isHrUp && (!moduleFilter || moduleFilter === 'PAYROLL')) {
       const payrollStatuses: string[] = []
-      if (showPending)   payrollStatuses.push('REVIEW')
+      if (showPending) payrollStatuses.push('PENDING_APPROVAL')
       if (showCompleted) payrollStatuses.push('APPROVED', 'PAID')
 
       if (payrollStatuses.length > 0) {
+        const cutoff = showCompleted && !showPending
+          ? new Date(Date.now() - historyDays * 86400_000)
+          : undefined
+
         const runs = await prisma.payrollRun.findMany({
           where: {
             companyId,
             status: { in: payrollStatuses as never[] },
+            ...(cutoff ? { updatedAt: { gte: cutoff } } : {}),
           },
-          orderBy: { createdAt: 'desc' },
+          include: {
+            payrollApproval: {
+              select: { requestedBy: true, currentStep: true, totalSteps: true },
+            },
+          },
+          orderBy: { updatedAt: 'desc' },
           take: 20,
         })
+
+        // Resolve requester names
+        const requesterIds = [...new Set(
+          runs.map((r) => r.payrollApproval?.requestedBy ?? r.createdBy).filter(Boolean) as string[],
+        )]
+        const requesters = await prisma.employee.findMany({
+          where: { id: { in: requesterIds } },
+          select: { id: true, name: true },
+        })
+        const requesterMap = new Map(requesters.map((e) => [e.id, e.name]))
 
         for (const run of runs) {
           const rawStatus = run.status as string
           const mappedStatus: 'PENDING' | 'APPROVED' | 'REJECTED' =
-            rawStatus === 'REVIEW' ? 'PENDING'
-            : rawStatus === 'APPROVED' || rawStatus === 'PAID' ? 'APPROVED'
-            : 'REJECTED'
+            rawStatus === 'PENDING_APPROVAL' ? 'PENDING'
+              : rawStatus === 'APPROVED' || rawStatus === 'PAID' ? 'APPROVED'
+                : 'REJECTED'
+
+          const requestedBy = run.payrollApproval?.requestedBy ?? run.createdBy ?? ''
+          const requesterName = requesterMap.get(requestedBy) ?? '급여팀'
+          const stepLabel = run.payrollApproval
+            ? `${run.payrollApproval.currentStep}/${run.payrollApproval.totalSteps}단계`
+            : '결재 대기'
 
           items.push({
-            id:            `payroll:${run.id}`,
-            module:        'PAYROLL',
-            type:          'PAYROLL_APPROVAL',
-            title:         `${run.yearMonth} 급여 승인`,
-            description:   `급여 실행 승인 대기 중`,
-            requesterId:   run.approvedBy ?? '',
-            requesterName: '급여팀',
+            id: `payroll:${run.id}`,
+            module: 'PAYROLL',
+            type: 'PAYROLL_APPROVAL',
+            title: `${run.yearMonth} 급여 결재 — ${stepLabel}`,
+            description: `${run.headcount ?? 0}명 · 순지급 ${Number(run.totalNet ?? 0).toLocaleString('ko-KR')}원`,
+            requesterId: requestedBy,
+            requesterName: requesterName,
             requesterDept: 'HR',
-            createdAt:     run.createdAt.toISOString(),
-            dueDate:       null,
-            priority:      'HIGH',
-            status:        mappedStatus,
-            metadata:      { payrollRunId: run.id, yearMonth: run.yearMonth },
+            createdAt: run.updatedAt.toISOString(),
+            dueDate: null,
+            priority: 'HIGH',
+            status: mappedStatus,
+            metadata: { payrollRunId: run.id, yearMonth: run.yearMonth },
             actions: {
-              approveUrl: `/api/v1/payroll/runs/${run.id}/approve`,
-              rejectUrl:  `/api/v1/payroll/runs/${run.id}/reject`,
-              detailUrl:  `/payroll/runs/${run.id}`,
+              // GP#3-C: 다단계 승인 endpoints
+              approveUrl: `/api/v1/payroll/${run.id}/approve`,
+              rejectUrl: `/api/v1/payroll/${run.id}/reject`,
+              detailUrl: `/payroll/${run.id}/approve`,
             },
           })
         }

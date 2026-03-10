@@ -44,24 +44,24 @@ function normaliseDetail(
   const ded = d.deductions ?? {}
 
   const earnings = {
-    baseSalary:               c.base ?? 0,
-    fixedOvertimeAllowance:   0,
-    mealAllowance:            c.meal ?? 0,
-    transportAllowance:       c.transport ?? 0,
-    overtimePay:              c.overtime ?? 0,
-    nightShiftPay:            c.nightShift ?? 0,
-    holidayPay:               c.holiday ?? 0,
-    bonuses:                  c.bonus ?? 0,
-    otherEarnings:            c.positionAllowance ?? 0,
+    baseSalary: c.base ?? 0,
+    fixedOvertimeAllowance: 0,
+    mealAllowance: c.meal ?? 0,
+    transportAllowance: c.transport ?? 0,
+    overtimePay: c.overtime ?? 0,
+    nightShiftPay: c.nightShift ?? 0,
+    holidayPay: c.holiday ?? 0,
+    bonuses: c.bonus ?? 0,
+    otherEarnings: c.positionAllowance ?? 0,
   }
   const deductions = {
-    nationalPension:    ded.nationalPension ?? 0,
-    healthInsurance:    ded.healthInsurance ?? 0,
-    longTermCare:       ded.longTermCare ?? 0,
-    employmentInsurance:ded.employmentInsurance ?? 0,
-    incomeTax:          ded.incomeTax ?? 0,
-    localIncomeTax:     ded.localIncomeTax ?? 0,
-    otherDeductions:    0,
+    nationalPension: ded.nationalPension ?? 0,
+    healthInsurance: ded.healthInsurance ?? 0,
+    longTermCare: ded.longTermCare ?? 0,
+    employmentInsurance: ded.employmentInsurance ?? 0,
+    incomeTax: ded.incomeTax ?? 0,
+    localIncomeTax: ded.localIncomeTax ?? 0,
+    otherDeductions: 0,
   }
   const totalDeductions = Object.values(deductions).reduce((s, v) => s + v, 0)
 
@@ -105,15 +105,32 @@ export const GET = withPermission(
       orderBy: { run: { periodEnd: 'desc' } },
     })
 
+    // Payslip 열람 여부 조회
+    const payrollItemIds = items.map((i) => i.id)
+    const payslips = await prisma.payslip.findMany({
+      where: {
+        payrollItemId: { in: payrollItemIds },
+        employeeId: user.employeeId,
+      },
+      select: { payrollItemId: true, isViewed: true, viewedAt: true, id: true },
+    })
+    const payslipMap = new Map(payslips.map((p) => [p.payrollItemId, p]))
+
     // Normalise each item's detail to match PayrollItemDetail shape
-    const normalised = items.map((item) => ({
-      ...item,
-      detail: normaliseDetail(
-        item.detail,
-        item.grossPay as unknown as number,
-        item.netPay as unknown as number,
-      ),
-    }))
+    const normalised = items.map((item) => {
+      const ps = payslipMap.get(item.id)
+      return {
+        ...item,
+        payslipId: ps?.id ?? null,
+        isViewed: ps?.isViewed ?? false,
+        viewedAt: ps?.viewedAt ?? null,
+        detail: normaliseDetail(
+          item.detail,
+          item.grossPay as unknown as number,
+          item.netPay as unknown as number,
+        ),
+      }
+    })
 
     return apiSuccess(normalised)
   },
