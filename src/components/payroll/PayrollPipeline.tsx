@@ -29,12 +29,12 @@ export interface PipelineEntry {
 
 // Maps visual column (1-6) → step ranges from STATUS_TO_STEP
 const STEPS = [
-    { col: 1, label: 'STEP 1', sublabel: '근태 마감', minStep: 2, targetStatus: ['ATTENDANCE_CLOSED'] },
-    { col: 2, label: 'STEP 2', sublabel: '자동 계산', minStep: 3, targetStatus: ['CALCULATING', 'ADJUSTMENT'] },
-    { col: 3, label: 'STEP 2.5', sublabel: '수동 조정', minStep: 4, targetStatus: ['ADJUSTMENT'] },
-    { col: 4, label: 'STEP 3', sublabel: '이상 검토', minStep: 5, targetStatus: ['REVIEW'] },
-    { col: 5, label: 'STEP 4', sublabel: '결재', minStep: 6, targetStatus: ['PENDING_APPROVAL'] },
-    { col: 6, label: 'STEP 5', sublabel: '명세서 발행', minStep: 7, targetStatus: ['APPROVED', 'PAID'] },
+    { col: 1, label: '1단계', sublabel: '근태 마감', minStep: 2, targetStatus: ['ATTENDANCE_CLOSED'] },
+    { col: 2, label: '2단계', sublabel: '자동 계산', minStep: 3, targetStatus: ['CALCULATING', 'ADJUSTMENT'] },
+    { col: 3, label: '2.5단계', sublabel: '수동 조정', minStep: 4, targetStatus: ['ADJUSTMENT'] },
+    { col: 4, label: '3단계', sublabel: '이상 검토', minStep: 5, targetStatus: ['REVIEW'] },
+    { col: 5, label: '4단계', sublabel: '결재', minStep: 6, targetStatus: ['PENDING_APPROVAL'] },
+    { col: 6, label: '5단계', sublabel: '명세서 발행', minStep: 7, targetStatus: ['APPROVED', 'PAID'] },
 ]
 
 // ─── Badge style per pipeline step ──────────────────────────
@@ -124,8 +124,8 @@ export default function PayrollPipeline({ pipelines }: Props) {
                             {/* Company label */}
                             <div>
                                 <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${entry.alertLevel === 'red' ? 'bg-[#FEE2E2] text-[#B91C1C]' :
-                                        entry.alertLevel === 'amber' ? 'bg-[#FEF3C7] text-[#B45309]' :
-                                            'text-[#333]'
+                                    entry.alertLevel === 'amber' ? 'bg-[#FEF3C7] text-[#B45309]' :
+                                        'text-[#333]'
                                     }`}>
                                     {entry.companyCode ?? entry.companyName}
                                 </span>

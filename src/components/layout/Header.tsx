@@ -41,6 +41,10 @@ interface HeaderProps {
 // ─── Breadcrumb helper ──────────────────────────────────────
 
 const BREADCRUMB_KEYS: Record<string, string> = {
+  // Main modules
+  home: 'home',
+  my: 'my',
+  dashboard: 'dashboard',
   employees: 'employees',
   org: 'org',
   attendance: 'attendance',
@@ -57,6 +61,17 @@ const BREADCRUMB_KEYS: Record<string, string> = {
   training: 'training',
   settings: 'settings',
   notifications: 'notifications',
+  compliance: 'compliance',
+  // Payroll sub-routes
+  'year-end': 'year-end',
+  'close-attendance': 'close-attendance',
+  adjustments: 'adjustments',
+  anomalies: 'anomalies',
+  approve: 'approve',
+  publish: 'publish',
+  'bank-transfers': 'bank-transfers',
+  global: 'global',
+  simulation: 'simulation',
 }
 
 // ─── Component ──────────────────────────────────────────────

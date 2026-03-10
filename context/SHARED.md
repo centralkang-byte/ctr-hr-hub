@@ -1,6 +1,6 @@
 # SHARED.md — Project State (Single Source of Truth)
 
-> **Last Updated:** 2026-03-10 (GP#3 QA — Korean Translation + Seed Data Expansion)
+> **Last Updated:** 2026-03-10 (GP#3 QA-B — Bug Fix + Korean Translation + UX Unification)
 > **Project Path:** `/Users/sangwoo/Documents/VibeCoding/HR_Hub/ctr-hr-hub`
 
 ---
@@ -34,7 +34,8 @@
 | **GP#3-B** (Anomaly Review UI + Whitelist + MoM Comparison + Excel Downloads) | ✅ Complete |
 | **GP#3-C** (Approval Flow + Payslip Generation + Notifications + Bank Transfer CSV) | ✅ Complete |
 | **GP#3-D** (Integrated Dashboard + Payroll Calendar + Edge Cases + Final Polish) | ✅ Complete |
-| **GP#3 QA** (Korean Translation + Status Badges + Seed Data Expansion) | ✅ Complete |
+| **GP#3 QA-A** (Korean Translation + Status Badges + Seed Data Expansion) | ✅ Complete |
+| **GP#3 QA-B** (Bug Fix: Insights sidebar + i18n keys + Breadcrumb + Permission + UX Unification) | ✅ Complete |
 
 ---
 

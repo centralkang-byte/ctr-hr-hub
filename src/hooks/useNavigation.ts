@@ -18,8 +18,10 @@ function canAccessModule(
 ): boolean {
   if (user.role === ROLE.SUPER_ADMIN) return true
 
-  if (module === MODULE.SETTINGS) {
-    return user.role === ROLE.HR_ADMIN
+  // HR_ADMIN has implicit access to settings, analytics, and compliance
+  // These modules may not have explicit permissions seeded
+  if (module === MODULE.SETTINGS || module === MODULE.ANALYTICS || module === MODULE.COMPLIANCE) {
+    return user.role === ROLE.HR_ADMIN || user.role === ROLE.EXECUTIVE
   }
 
   return user.permissions.some(

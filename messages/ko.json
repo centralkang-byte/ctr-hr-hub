@@ -280,7 +280,18 @@
     "ruCompliance": "러시아 컴플라이언스",
     "cnCompliance": "중국 컴플라이언스",
     "krCompliance": "한국 컴플라이언스",
-    "peerReview": "동료 평가"
+    "peerReview": "동료 평가",
+    "year-end": "연말정산",
+    "close-attendance": "근태 마감",
+    "adjustments": "수동 조정",
+    "anomalies": "이상 검토",
+    "approve": "급여 승인",
+    "publish": "급여 확정",
+    "bank-transfers": "이체 관리",
+    "global": "글로벌 급여",
+    "simulation": "급여 시뮬레이션",
+    "dashboard": "대시보드",
+    "my": "나의 공간"
   },
   "employee": {
     "title": "직원 관리",
@@ -3083,7 +3094,11 @@
       "global": "글로벌 급여",
       "simulation": "급여 시뮬레이션",
       "anomalies": "급여 이상 탐지",
-      "yearEnd": "연말정산"
+      "yearEnd": "연말정산",
+      "closeAttendance": "근태 마감",
+      "adjustments": "수동 조정",
+      "anomalyReview": "이상 검토",
+      "bankTransfers": "이체 관리"
     },
     "talent": {
       "label": "인재 관리",

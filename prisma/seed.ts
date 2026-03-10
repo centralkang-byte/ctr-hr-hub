@@ -108,9 +108,9 @@ type PermKey = `${string}_${string}`
 function buildRolePermissions(): Record<string, PermKey[]> {
   const all: PermKey[] = modules.flatMap(m => actions.map(a => `${m}_${a}` as PermKey))
 
-  // HR_ADMIN: everything except payroll write (only read/export)
+  // HR_ADMIN: everything except payroll create/update/delete (read/export/manage allowed)
   const hrAdmin = all.filter(p => {
-    if (p.startsWith('payroll_') && !['payroll_read', 'payroll_export'].includes(p)) return false
+    if (p.startsWith('payroll_') && !['payroll_read', 'payroll_export', 'payroll_manage'].includes(p)) return false
     return true
   })
 
