@@ -1,5 +1,5 @@
 # CTR HR Hub — UI Inventory Report
-Date: 2026-03-09
+Date: 2026-03-10 (Updated after Seed QA)
 
 ---
 
@@ -12,168 +12,157 @@ Date: 2026-03-09
 /(auth)/login                     → Login Page
 /(dashboard)/                     → redirect (to /home or role-specific)
 
-홈 (Home)
-  /home                           → 대시보드 홈 (role-based: Employee/Manager/HRAdmin/Executive)
+Home (홈)
+  /home                           → Dashboard Home (role-based: Employee/Manager/HRAdmin/Executive)
 
-나의 공간 (My Space)
-  /my                             → 나의 공간 허브
-  /my/profile                     → 내 프로필
-  /my/leave                       → 내 휴가
-  /my/benefits                    → 복리후생
-  /my/skills                      → 역량 자기평가 (NEW)
-  /my/training                    → 내 교육
-  /my/year-end                    → 연말정산 (KR only, NEW)
-  /my/internal-jobs               → 사내 채용 공고
-  /my/settings/notifications      → 알림 설정
+My Space (나의 공간)
+  /my                             → My Space Hub
+  /my/profile                     → My Profile
+  /my/leave                       → My Leave
+  /my/benefits                    → Benefits
+  /my/skills                      → Skills Self-Assessment (NEW)
+  /my/training                    → My Training
+  /my/year-end                    → Year-End Settlement (KR only, NEW)
+  /my/internal-jobs               → Internal Job Postings
+  /my/settings/notifications      → Notification Settings
 
-알림
-  /notifications                  → 알림 센터
+Notifications (알림)
+  /notifications                  → Notification Center
 
-인사 운영 (HR Ops)
-  직원 관리
-    /employees                    → 직원 목록
-    /employees/new                → 직원 추가
-    /employees/[id]               → 직원 상세
-    /employees/[id]/contracts     → 계약 관리
-    /employees/[id]/work-permits  → 취업비자/허가
-    /employees/me                 → 내 직원 프로필
+HR Operations (인사 운영)
+  Employee Management (직원 관리)
+    /employees                    → Employee List
+    /employees/new                → Add Employee
+    /employees/[id]               → Employee Detail
+    /employees/[id]/contracts     → Contract Management
+    /employees/[id]/work-permits  → Work Permits/Visa
+    /employees/me                 → My Employee Profile
     /directory                    → People Directory
 
-  조직 관리
-    /org                          → 조직도 (Org Chart)
+  Org Management (조직 관리)
+    /org                          → Org Chart
     /org-studio                   → Org Studio
 
-  근태
-    /attendance                   → 내 근태
-    /attendance/admin             → 근태 관리 (HR)
-    /attendance/team              → 팀 근태
-    /attendance/shift-calendar    → 교대 캘린더
-    /attendance/shift-roster      → 교대 로스터
-    /approvals/attendance         → 근태 승인
+  Attendance (근태)
+    /attendance                   → My Attendance
+    /attendance/admin             → Attendance Admin (HR)
+    /attendance/team              → Team Attendance
+    /attendance/shift-calendar    → Shift Calendar
+    /attendance/shift-roster      → Shift Roster
+    /approvals/attendance         → Attendance Approvals
 
-  휴가
-    /leave                        → 내 휴가 신청/조회
-    /leave/team                   → 팀 휴가 현황
-    /leave/admin                  → 휴가 관리 (HR)
+  Leave (휴가)
+    /leave                        → My Leave Request/History
+    /leave/team                   → Team Leave Status
+    /leave/admin                  → Leave Admin (HR)
 
-  온보딩/오프보딩
-    /onboarding                   → 온보딩 관리 (HR)
-    /onboarding/me                → 내 온보딩
-    /onboarding/checkin           → 체크인
-    /onboarding/checkins          → 체크인 현황
-    /offboarding                  → 퇴직 관리
-    /offboarding/[id]             → 퇴직자 상세
+  Onboarding/Offboarding (온보딩/오프보딩)
+    /onboarding                   → Onboarding Admin (HR)
+    /onboarding/me                → My Onboarding
+    /onboarding/checkin           → Check-in
+    /onboarding/checkins          → Check-in Status
+    /offboarding                  → Offboarding Admin
+    /offboarding/[id]             → Offboarding Detail
 
-  급여
-    /payroll                      → 급여 관리
-    /payroll/[runId]/review       → 급여 런 검토
-    /payroll/me                   → 내 급여명세서
-    /payroll/me/[runId]           → 급여명세서 상세
-    /payroll/global               → 글로벌 급여 현황
-    /payroll/import               → 해외 급여 업로드
-    /payroll/simulation           → 급여 시뮬레이션
-    /payroll/anomalies            → 급여 이상 탐지
-    /payroll/bank-transfers       → 이체 관리
-    /payroll/year-end             → 연말정산 (HR, KR only)
+  Payroll (급여)
+    /payroll                      → Payroll Admin
+    /payroll/[runId]/review       → Payroll Run Review
+    /payroll/me                   → My Payslips
+    /payroll/me/[runId]           → Payslip Detail
+    /payroll/global               → Global Payroll Overview
+    /payroll/import               → Overseas Payroll Upload
+    /payroll/simulation           → Payroll Simulation
+    /payroll/anomalies            → Payroll Anomaly Detection
+    /payroll/bank-transfers       → Bank Transfer Management
+    /payroll/year-end             → Year-End Settlement (HR, KR only)
 
-  징계/포상
-    /discipline                   → 징계 목록
-    /discipline/new               → 징계 추가
-    /discipline/[id]              → 징계 상세
-    /discipline/rewards           → 포상 목록
-    /discipline/rewards/new       → 포상 추가
-    /discipline/rewards/[id]      → 포상 상세
+  Discipline/Rewards (징계/포상)
+    /discipline                   → Discipline List
+    /discipline/new               → Add Discipline
+    /discipline/[id]              → Discipline Detail
+    /discipline/rewards           → Rewards List
+    /discipline/rewards/new       → Add Reward
+    /discipline/rewards/[id]      → Reward Detail
 
-인재 관리 (Talent)
-  채용 (ATS)
-    /recruitment                  → 채용 공고 목록
-    /recruitment/new              → 공고 추가
-    /recruitment/dashboard        → 채용 대시보드
-    /recruitment/board            → 칸반 보드 (NEW)
-    /recruitment/talent-pool      → 인재 풀
-    /recruitment/requisitions     → 채용 요청
-    /recruitment/requisitions/new → 채용 요청 추가
-    /recruitment/cost-analysis    → 비용 분석
-    /recruitment/[id]             → 공고 상세
-    /recruitment/[id]/edit        → 공고 수정
-    /recruitment/[id]/applicants  → 지원자 목록
-    /recruitment/[id]/applicants/new → 지원자 추가
-    /recruitment/[id]/interviews  → 인터뷰 목록
-    /recruitment/[id]/interviews/new → 인터뷰 추가
-    /recruitment/[id]/pipeline    → 채용 파이프라인
+Talent Management (인재 관리)
+  Recruitment ATS (채용)
+    /recruitment                  → Job Postings
+    /recruitment/new              → New Posting
+    /recruitment/dashboard        → Recruitment Dashboard
+    /recruitment/board            → Kanban Board (NEW)
+    /recruitment/talent-pool      → Talent Pool
+    /recruitment/requisitions     → Hiring Requests
+    /recruitment/requisitions/new → New Request
+    /recruitment/cost-analysis    → Cost Analysis
+    /recruitment/[id]             → Posting Detail
+    /recruitment/[id]/edit        → Edit Posting
+    /recruitment/[id]/applicants  → Applicant List
+    /recruitment/[id]/applicants/new → Add Applicant
+    /recruitment/[id]/interviews  → Interview List
+    /recruitment/[id]/interviews/new → Add Interview
+    /recruitment/[id]/pipeline    → Pipeline View
 
-  성과 관리
-    /performance                  → 내 성과/목표 (Employee view)
-    /performance/admin            → 성과 관리 (HR)
-    /performance/goals            → 목표 관리
-    /performance/team-goals       → 팀 목표
-    /performance/team-results     → 팀 성과
-    /performance/results          → 성과 결과
-    /performance/self-eval        → 자기평가
-    /performance/manager-eval     → 매니저 평가
-    /performance/calibration      → 캘리브레이션
-    /performance/peer-review      → 동료 평가
-    /performance/peer-review/[cycleId]/setup  → 동료 평가 설정
-    /performance/peer-review/evaluate/[nominationId] → 동료 평가 수행
-    /performance/peer-review/results/[cycleId] → 동료 평가 결과
-    /performance/one-on-one       → 1:1 미팅
-    /performance/recognition      → 칭찬/인정
-    /performance/pulse            → 펄스 서베이
-    /performance/pulse/[id]/respond → 서베이 응답
-    /performance/pulse/[id]/results → 서베이 결과
+  Performance (성과 관리)
+    /performance                  → My Performance/Goals (Employee)
+    /performance/admin            → Performance Admin (HR)
+    /performance/goals            → Goal Management
+    /performance/team-goals       → Team Goals
+    /performance/team-results     → Team Results
+    /performance/results          → Performance Results
+    /performance/self-eval        → Self Evaluation
+    /performance/manager-eval     → Manager Evaluation
+    /performance/calibration      → Calibration
+    /performance/peer-review      → Peer Review
+    /performance/one-on-one       → 1:1 Meetings
+    /performance/recognition      → Recognition
+    /performance/pulse            → Pulse Survey
 
-  보상/복리후생
-    /compensation                 → 보상 관리
-    /benefits                     → 복리후생 관리
+  Compensation/Benefits (보상/복리후생)
+    /compensation                 → Compensation Admin
+    /benefits                     → Benefits Admin
 
-  교육/개발
-    /training                     → 교육 목록
-    /training/enrollments         → 내 교육 등록
-    /organization/skill-matrix    → 스킬 매트릭스 (NEW)
-    /team/skills                  → 팀원 역량 평가
+  Training/Development (교육/개발)
+    /training                     → Training List
+    /training/enrollments         → My Enrollments
+    /organization/skill-matrix    → Skill Matrix (NEW)
+    /team/skills                  → Team Skills Assessment
 
-  승계/탤런트
-    /talent/succession            → 승계 계획
-    /succession                   → 승계 (중복?)
+  Succession (승계)
+    /talent/succession            → Succession Planning
 
-팀 관리 (Team / Manager Hub)
-  /manager-hub                    → 팀 현황 허브
+Team Management (팀 관리)
+  /manager-hub                    → Team Status Hub
 
-컴플라이언스/규정 준수
-  /compliance                     → 컴플라이언스 허브
-  /compliance/gdpr                → GDPR 관리
-  /compliance/data-retention      → 데이터 보관 정책
-  /compliance/pii-audit           → PII 감사
+Compliance (컴플라이언스)
+  /compliance                     → Compliance Hub
+  /compliance/gdpr                → GDPR Management
+  /compliance/data-retention      → Data Retention Policies
+  /compliance/pii-audit           → PII Audit
   /compliance/dpia                → DPIA
-  /compliance/kr                  → 한국 컴플라이언스
-  /compliance/ru                  → 러시아 컴플라이언스
-  /compliance/cn                  → 중국 컴플라이언스
+  /compliance/kr                  → Korea Compliance
+  /compliance/ru                  → Russia Compliance
+  /compliance/cn                  → China Compliance
 
-인사이트 (Analytics)
-  /dashboard                      → HR KPI 대시보드
-  /dashboard/compare              → 대시보드 비교
-  /analytics                      → 전사 개요
-  /analytics/workforce            → 인력 분석
-  /analytics/turnover             → 이직 분석
-  /analytics/attrition            → 이탈 위험
-  /analytics/performance          → 성과 분석
-  /analytics/attendance           → 근태 분석
-  /analytics/recruitment          → 채용 분석
-  /analytics/compensation         → 보상 분석
-  /analytics/gender-pay-gap       → 성별 임금 격차
-  /analytics/team-health          → 팀 건강
-  /analytics/report               → AI 보고서
-  /analytics/predictive           → 예측 분석 (HR_ADMIN+)
-  /analytics/predictive/[employeeId] → 직원별 리스크 상세
+Insights / Analytics (인사이트)
+  /dashboard                      → HR KPI Dashboard
+  /dashboard/compare              → Dashboard Compare
+  /analytics                      → Overview
+  /analytics/workforce            → Workforce Analytics
+  /analytics/turnover             → Turnover Analysis
+  /analytics/attrition            → Attrition Risk
+  /analytics/performance          → Performance Analysis
+  /analytics/attendance           → Attendance Analysis
+  /analytics/recruitment          → Recruitment Analysis
+  /analytics/compensation         → Compensation Analysis
+  /analytics/gender-pay-gap       → Gender Pay Gap
+  /analytics/team-health          → Team Health
+  /analytics/report               → AI Report
+  /analytics/predictive           → Predictive Analytics (HR_ADMIN+)
+  /analytics/predictive/[employeeId] → Employee Risk Detail
 
-설정 (Settings) — 39 dedicated pages + 1 dynamic catch-all
-  /settings                       → 설정 허브
-  /settings/[category]            → 동적 설정 카테고리 (approval-chain, promotion-rules 등)
-  /settings/attendance            → 근태 설정
-  /settings/audit-logs            → 감사 로그
-  /settings/branding              → 브랜딩
-  /settings/calibration           → 캘리브레이션 설정
-  /settings/competencies          → 역량 설정
+Settings (설정) — 39 dedicated pages + 1 dynamic catch-all
+  /settings                       → Settings Hub
+  /settings/[category]            → Dynamic Settings Category
   /settings/contract-rules        → 계약 규칙
   /settings/custom-fields         → 커스텀 필드
   /settings/dashboard-widgets     → 대시보드 위젯 설정

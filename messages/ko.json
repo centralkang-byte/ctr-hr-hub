@@ -2997,16 +2997,17 @@
     "home": {
       "label": "홈",
       "dashboard": "대시보드",
-      "notifications": "알림"
+      "notifications": "알림",
+      "approvalsInbox": "승인함"
     },
     "mySpace": {
       "label": "나의 공간",
       "home": "나의 공간 홈",
       "profile": "내 프로필",
-      "attendance": "출퇴근/근태",
-      "leave": "휴가",
-      "goals": "내 목표/평가",
-      "payslip": "내 급여명세서",
+      "attendance": "출퇴근",
+      "leave": "휴가 신청",
+      "goals": "목표/평가",
+      "payslip": "급여명세서",
       "benefits": "복리후생",
       "onboarding": "내 온보딩",
       "feedback": "1:1/피드백",
@@ -3025,9 +3026,20 @@
       "leave": "팀 휴가",
       "goals": "팀 목표",
       "results": "팀 성과",
+      "goalsPerformance": "팀 목표/성과",
       "managerEval": "매니저 평가",
       "oneOnOne": "1:1 미팅",
       "skills": "팀원 역량 평가"
+    },
+    "hrMgmt": {
+      "label": "인사 관리",
+      "employees": "직원 관리",
+      "directory": "구성원 디렉토리",
+      "org": "조직 관리",
+      "attendanceAdmin": "근태 관리",
+      "leaveAdmin": "휴가 관리",
+      "onboardingOffboarding": "온보딩/오프보딩",
+      "disciplineRewards": "징계/포상"
     },
     "hrOps": {
       "label": "인사 운영",
@@ -3047,6 +3059,31 @@
       "payrollSimulation": "급여 시뮬레이션",
       "payrollAnomalies": "급여 이상 탐지",
       "yearEndSettlement": "연말정산"
+    },
+    "recruitment": {
+      "label": "채용",
+      "posts": "채용 공고",
+      "dashboard": "채용 대시보드",
+      "board": "칸반 보드",
+      "talentPool": "인재 풀"
+    },
+    "performance": {
+      "label": "성과/보상",
+      "admin": "성과 관리",
+      "goals": "목표 관리",
+      "calibration": "캘리브레이션",
+      "results": "성과 결과",
+      "peerReview": "동료 평가",
+      "compensation": "보상 관리",
+      "benefits": "복리후생 관리"
+    },
+    "payroll": {
+      "label": "급여",
+      "admin": "급여 관리",
+      "global": "글로벌 급여",
+      "simulation": "급여 시뮬레이션",
+      "anomalies": "급여 이상 탐지",
+      "yearEnd": "연말정산"
     },
     "talent": {
       "label": "인재 관리",
@@ -3069,15 +3106,15 @@
       "label": "인사이트",
       "overview": "전사 개요",
       "workforce": "인력 분석",
-      "turnover": "이직 분석",
+      "turnover": "이직 예측",
       "performance": "성과 분석",
       "attendance": "근태 분석",
       "recruitment": "채용 분석",
       "compensation": "보상 분석",
       "genderPayGap": "성별 임금 격차",
-      "teamHealth": "팀 건강",
-      "attrition": "이탈 위험",
-      "aiReport": "AI 보고서",
+      "teamHealth": "팀 헬스",
+      "attrition": "번아웃 감지",
+      "aiReport": "AI 리포트",
       "gdpr": "GDPR/개인정보",
       "dataRetention": "데이터 보관",
       "piiAudit": "PII 감사",
@@ -3089,6 +3126,16 @@
       "hrChatbot": "HR 챗봇",
       "aiAgent": "AI 에이전트",
       "kpiDashboard": "HR KPI 대시보드"
+    },
+    "compliance": {
+      "label": "컴플라이언스",
+      "gdpr": "GDPR/개인정보",
+      "dataRetention": "데이터 보관",
+      "piiAudit": "PII 감사",
+      "dpia": "DPIA",
+      "kr": "한국 컴플라이언스",
+      "cn": "중국 컴플라이언스",
+      "ru": "러시아 컴플라이언스"
     },
     "settings": {
       "label": "설정",

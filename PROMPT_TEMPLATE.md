@@ -1,143 +1,149 @@
-# CTR HR Hub — Claude Code 세션 프롬프트 템플릿
+# CTR HR Hub — Claude Code Session Prompt Template
 
 ---
 
-## 기본 세션 시작 블록 (매 세션 상단에 붙여넣기)
+## Session Start Block (paste at top of every session)
 
 ```
-아래 파일들을 먼저 읽어:
+Read these files first:
 
-1. CLAUDE.md               — 디자인 토큰 + 프로젝트 스펙
-2. CTR_UI_PATTERNS.md      — UI/UX 인터랙션 패턴
-3. context/SHARED.md       — 현재 개발 상태 + DB 스키마
+1. CLAUDE.md               — Design tokens + project specs
+2. CTR_UI_PATTERNS.md      — UI/UX interaction patterns
+3. SHARED.md               — Current project state + DB schema + coding patterns
 
-## 산출물 저장 위치
-- 계획서/설계서: ctr-hr-hub/docs/plans/
-- 컨텍스트 파일: ctr-hr-hub/context/
-- md 파일은 HR_Hub/ 루트에 저장하지 말 것
+## Output Locations
+- Plans/specs: ctr-hr-hub/docs/plans/
+- Do not save md files in HR_Hub/ root
 ```
 
 ---
 
-## Phase B 기능 구현 세션
+## Feature Implementation Session
 
 ```
-[세션명] 기능을 구현해줘.
+Implement [feature name].
 
-## 사전 준비
-CLAUDE.md, CTR_UI_PATTERNS.md, context/SHARED.md 읽기
+## Pre-Task
+Read CLAUDE.md, CTR_UI_PATTERNS.md, SHARED.md
 
-## 기술 스택
+## Tech Stack
 - Next.js 14 App Router
-- Tailwind CSS (CLAUDE.md 토큰 기준)
-- Prisma ORM (raw SQL 금지)
+- Tailwind CSS (CLAUDE.md tokens)
+- Prisma ORM (no raw SQL)
 - Supabase (auth + storage)
-- lucide-react 아이콘
-- Pretendard 폰트
+- lucide-react icons
+- Pretendard font
 
-## 구현 범위
-1. [기능 1] — [설명]
-2. [기능 2] — [설명]
+## Scope
+1. [Feature 1] — [description]
+2. [Feature 2] — [description]
 
-## 제약사항
-- 시드 데이터: 6개 법인 구조 반영 (CTR-KR, CN, RU, US, VN, MX)
-- 한국어 UI
-- FLEX/Workday 스타일 (CLAUDE.md DO/DON'T 준수)
+## Constraints
+- Seed data: 7 entities (CTR-HQ, KR, CN, RU, US, VN, MX)
+- Korean UI primary, i18n for 7 languages
+- FLEX/Workday-style UI (follow CLAUDE.md DO/DON'T)
+- Fully autonomous: diagnose → fix → verify → deploy without asking user
 
-## 세션 종료 시
-context/SHARED.md (또는 TRACK_A/B.md)에 아래 항목 업데이트:
-- 생성한 DB 테이블
-- 생성한 컴포넌트
-- 생성한 API 라우트
-- 알려진 이슈
-- 다음 세션 주의사항
+## Completion Criteria
+- [ ] npx tsc --noEmit = 0 errors
+- [ ] npm run build = passes
+- [ ] Data visible in actual UI (not just API response)
+- [ ] SHARED.md updated with changes
+
+## Session End
+Update SHARED.md:
+- New/modified DB tables
+- New/modified components
+- New/modified API routes
+- Known issues
+- Next session notes
 ```
 
 ---
 
-## 디자인 리팩토링 세션 (C1~C3)
+## Design Refactoring Session
 
 ```
-[화면명] 디자인을 FLEX Green 스타일로 리팩토링해줘.
+Refactor [page name] to CRAFTUI standards.
 
-## 사전 준비
-CLAUDE.md, CTR_UI_PATTERNS.md 읽기
+## Pre-Task
+Read CLAUDE.md, CTR_UI_PATTERNS.md
 
-## 리팩토링 기준
-- primary: #00C853 / primary-dark: #00A844
-- 카드: rounded-xl border border-[#E8E8E8] (shadow 없음)
-- 테이블 헤더: text-[#999] bg-transparent
-- 뱃지: 연한 배경 + 진한 텍스트 (CLAUDE.md 상태 뱃지 참조)
-- 버튼: 단색 (그라데이션 금지)
-- Pretendard 폰트, 한국어 제목 tracking-[-0.02em]
+## CRAFTUI Tokens
+- Primary: #5E81F4
+- Background: #F5F5FA
+- Border: #F0F0F3
+- Inactive text: #8181A5
+- Active text: #1C1D21
+- Cards: rounded-xl border border-[#F0F0F3] (no shadow)
+- Table header: text-[#8181A5] bg-transparent
 
-## 대상 파일
-- [파일 경로 1]
-- [파일 경로 2]
+## Target Files
+- [file path 1]
+- [file path 2]
 
-## 주의
-- 기능 로직은 건드리지 말 것
-- 디자인 토큰만 교체
-- 기존 Tailwind 클래스 → CLAUDE.md 기준으로 교체
-```
-
----
-
-## QA / 검증 세션
-
-```
-[모듈명] QA를 진행해줘.
-
-## 체크리스트
-- [ ] 6개 법인 데이터 정상 표시
-- [ ] 역할별 접근 제어 (EMPLOYEE/MANAGER/HR_ADMIN/SUPER_ADMIN)
-- [ ] 한국어 UI 누락 없음
-- [ ] 52시간 준수 로직 (CTR-KR 해당 시)
-- [ ] 빌드 에러 없음 (npm run build)
-- [ ] TypeScript 에러 없음
-- [ ] 승인 워크플로 정상 동작
-
-## 발견 이슈
-context/SHARED.md known_issues 섹션에 기록
+## Rules
+- Do NOT change functional logic — design tokens only
+- Replace existing Tailwind classes → CLAUDE.md tokens
 ```
 
 ---
 
-## 병렬 개발 세션 (Track A/B)
+## QA / Verification Session
 
 ```
-[Track A 또는 B] — [세션명] 작업을 시작해.
+Run QA on [module name].
 
-## 컨텍스트 파일 읽기 순서
-cat context/SHARED.md
-cat context/TRACK_A.md
-cat context/TRACK_B.md
+## Checklist
+- [ ] Data displays correctly for all 7 entities
+- [ ] RBAC access control (EMPLOYEE/MANAGER/HR_ADMIN/SUPER_ADMIN)
+- [ ] Korean UI complete (no missing labels)
+- [ ] 52h compliance logic (CTR-KR)
+- [ ] npm run build passes
+- [ ] npx tsc --noEmit = 0 errors
+- [ ] Approval workflows functional
 
-## 규칙
-- 쓰기는 TRACK_[A 또는 B].md만
-- Prisma migrate 이름: [a 또는 b]_{모듈코드}_{설명}
-  예) npx prisma migrate dev --name a_b2_core_hr_ui
-- schema.prisma 내 자기 트랙 영역에만 모델 추가
-  // === TRACK [A/B]: [모듈명] === 주석으로 구간 표시
-
-## 세션 종료 시
-TRACK_[A/B].md 하단에 결과 추가
+## Issues Found
+Record in SHARED.md "Known Issues" section
 ```
 
 ---
 
-## 빠른 버그픽스 세션
+## Quick Bug Fix Session
 
 ```
-[버그 설명]을 수정해줘.
+Fix: [bug description]
 
-## 컨텍스트
-- 발생 위치: [파일 경로]
-- 증상: [설명]
-- 예상 원인: [설명]
+## Context
+- Location: [file path]
+- Symptom: [description]
+- Suspected cause: [description]
 
-## 제약
-- 최소한의 수정만
-- 관련 없는 리팩토링 하지 말 것
-- 수정 후 해당 기능 동작 확인
+## Rules
+- Minimum changes only
+- No unrelated refactoring
+- Verify the fix end-to-end: code → tsc → build → deploy → UI confirmation
+- If Vercel deploy seems stuck: npx vercel --prod --yes
+```
+
+---
+
+## Seed Data Session
+
+```
+Add seed data for [module].
+
+## Pre-Task
+Read SHARED.md seed data section
+
+## Rules
+- Never modify prisma/seed.ts (master data)
+- Only add/modify files in prisma/seeds/
+- Never use deterministicUUID for FK references — always query DB with findFirst
+- Seed data format MUST match frontend component types
+- After seed: run on production DB via Direct Connection (port 5432)
+- Verify data displays in actual UI
+
+## Session End
+Update SHARED.md seed data table with new counts
 ```
