@@ -3181,5 +3181,16 @@
     "favorites": {
       "label": "Favorites"
     }
+  },
+  "header": {
+    "directory": "People Directory",
+    "quickActions": "Quick Actions",
+    "actions": {
+      "registerEmployee": "Register Employee",
+      "requestLeave": "Request Leave",
+      "createPosting": "Create Job Posting",
+      "scheduleOneOnOne": "Schedule 1:1",
+      "sendRecognition": "Send Recognition"
+    }
   }
 }

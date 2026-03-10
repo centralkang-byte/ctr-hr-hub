@@ -6,11 +6,13 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
-import { User, Settings, LogOut } from 'lucide-react'
+import { User, Settings, LogOut, Users } from 'lucide-react'
 import { NotificationBell } from '@/components/layout/NotificationBell'
+import { QuickActionsMenu } from '@/components/layout/QuickActionsMenu'
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
@@ -61,8 +63,10 @@ const BREADCRUMB_KEYS: Record<string, string> = {
 
 export function Header({ user, companies }: HeaderProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const t = useTranslations('menu')
   const tAuth = useTranslations('auth')
+  const tHeader = useTranslations('header')
   const userInitial = user.name.charAt(0).toUpperCase()
 
   const currentCompany = companies.find((c) => c.id === user.companyId)
@@ -113,6 +117,20 @@ export function Header({ user, companies }: HeaderProps) {
 
         {/* Language Switcher */}
         <LanguageSwitcher countryCode={countryCode} />
+
+        {/* Quick Actions (+) */}
+        <QuickActionsMenu userRole={user.role} />
+
+        {/* People Directory */}
+        <button
+          type="button"
+          aria-label={tHeader('directory')}
+          title={tHeader('directory')}
+          className="inline-flex h-9 w-9 items-center justify-center rounded-md text-ctr-gray-500 hover:bg-[#F5F5FA] transition-colors"
+          onClick={() => router.push('/directory')}
+        >
+          <Users className="h-5 w-5" />
+        </button>
 
         {/* Notification Bell */}
         <NotificationBell />
