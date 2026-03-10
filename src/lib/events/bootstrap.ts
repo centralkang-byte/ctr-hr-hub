@@ -12,16 +12,18 @@
 // ═══════════════════════════════════════════════════════════
 
 import { eventBus } from './event-bus'
-import { leaveApprovedHandler }        from './handlers/leave-approved.handler'
-import { leaveRejectedHandler }        from './handlers/leave-rejected.handler'
-import { leaveCancelledHandler }       from './handlers/leave-cancelled.handler'
-import { payrollCalculatedHandler }    from './handlers/payroll-calculated.handler'
-import { payrollApprovedHandler }      from './handlers/payroll-approved.handler'
-import { employeeHiredHandler }        from './handlers/employee-hired.handler'
-import { offboardingStartedHandler }   from './handlers/offboarding-started.handler'
-import { mboGoalSubmittedHandler }     from './handlers/mbo-goal-submitted.handler'
-import { mboGoalReviewedHandler }      from './handlers/mbo-goal-reviewed.handler'
-import { selfEvalSubmittedHandler }    from './handlers/self-eval-submitted.handler'
+import { leaveApprovedHandler } from './handlers/leave-approved.handler'
+import { leaveRejectedHandler } from './handlers/leave-rejected.handler'
+import { leaveCancelledHandler } from './handlers/leave-cancelled.handler'
+import { payrollCalculatedHandler } from './handlers/payroll-calculated.handler'
+import { payrollApprovedHandler } from './handlers/payroll-approved.handler'
+import { payrollAttendanceClosedHandler } from './handlers/payroll-attendance-closed.handler'
+import { payrollReviewReadyHandler } from './handlers/payroll-review-ready.handler'
+import { employeeHiredHandler } from './handlers/employee-hired.handler'
+import { offboardingStartedHandler } from './handlers/offboarding-started.handler'
+import { mboGoalSubmittedHandler } from './handlers/mbo-goal-submitted.handler'
+import { mboGoalReviewedHandler } from './handlers/mbo-goal-reviewed.handler'
+import { selfEvalSubmittedHandler } from './handlers/self-eval-submitted.handler'
 import { managerEvalSubmittedHandler } from './handlers/manager-eval-submitted.handler'
 
 let bootstrapped = false
@@ -41,6 +43,9 @@ export function bootstrapEventHandlers(): void {
   // ── Payroll Events ───────────────────────────────────────
   eventBus.subscribe(payrollCalculatedHandler)
   eventBus.subscribe(payrollApprovedHandler)
+  // GP#3 pipeline handlers
+  eventBus.subscribe(payrollAttendanceClosedHandler)
+  eventBus.subscribe(payrollReviewReadyHandler)
 
   // ── Onboarding Events ────────────────────────────────────
   eventBus.subscribe(employeeHiredHandler)

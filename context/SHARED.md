@@ -1,6 +1,6 @@
 # SHARED.md — Project State (Single Source of Truth)
 
-> **Last Updated:** 2026-03-10 (Command Palette Enhancement — Part 4/5)
+> **Last Updated:** 2026-03-10 (Seed QA Session A+B — 7 EMPTY menus → 3, PARTIAL 5 → 0)
 > **Project Path:** `/Users/sangwoo/Documents/VibeCoding/HR_Hub/ctr-hr-hub`
 
 ---
@@ -34,6 +34,8 @@
 | Sidebar IA Redesign (7→10 sections) | ✅ Complete |
 | Header Enhancements (Part 3/5: Quick Actions + Directory) | ✅ Complete |
 | Command Palette Enhancement (Part 4/5: Employee search + Recent pages) | ✅ Complete |
+| Seed QA Session A (Recruitment + Compensation + Benefits — seeds 10~12) | ✅ Complete |
+| Seed QA Session B (Year-End + Succession + Peer Review + Partial — seeds 13~16) | ✅ Complete |
 
 ---
 
@@ -70,10 +72,32 @@
 | Offboarding Processes | 2 | 07-lifecycle.ts |
 | Notifications | 262 | 08-notifications.ts |
 
-**Seed QA Results (2026-03-10):**
-- 52 menus audited: 39 PASS / 13 EMPTY (by design) / 0 FAIL
-- Fixed: deterministicUUID FK errors, payslip detail normalisation (dual defense), force-dynamic 129 pages
-- Empty menus: discipline, rewards, recruitment pipeline, peer review, etc. — no seed data yet
+| JobPostings | 6 | 10-recruitment.ts |
+| Applications | ~31 | 10-recruitment.ts |
+| SalaryBands | ~10 | 11-compensation.ts |
+| CompensationHistory | ~200 | 11-compensation.ts |
+| ExchangeRates | 6 | 11-compensation.ts |
+| SalaryAdjustmentMatrix | 9 | 11-compensation.ts |
+| BenefitPlans | 8 | 12-benefits.ts |
+| BenefitClaims | ~30 | 12-benefits.ts |
+| BenefitBudgets | ~7 | 12-benefits.ts |
+| YearEndSettlement | ~30 | 13-year-end.ts |
+| YearEndDeduction | ~90 | 13-year-end.ts |
+| YearEndDependent | ~30 | 13-year-end.ts |
+| WithholdingReceipt | ~21 | 13-year-end.ts |
+| SuccessionPlan | 5 | 14-succession.ts |
+| SuccessionCandidate | ~10 | 14-succession.ts |
+| PeerReviewNomination | ~20 | 15-peer-review.ts |
+| CalibrationAdjustment | ~15 | 16-partial-fixes.ts |
+| AttritionRiskHistory | ~40 | 16-partial-fixes.ts |
+| PayrollSimulation | 3 | 16-partial-fixes.ts |
+| PiiAccessLog | ~20 | 16-partial-fixes.ts |
+| OneOnOne | ~10 | 16-partial-fixes.ts |
+
+**Seed QA Results (2026-03-10 FINAL):**
+- 42 menus audited: PASS 22 → **29** / EMPTY 15 → **3** / PARTIAL 5 → **0**
+- 3 remaining EMPTY (by design): discipline/rewards, GDPR/compliance — event-driven
+- **NOTE for GP#3:** GP#1/GP#2 기존 코드 TODO 주석 소급 적용 필수 시작 전 확인
 
 ---
 

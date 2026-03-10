@@ -23,6 +23,13 @@ import { seedPayroll } from './seeds/06-payroll'
 import { seedLifecycle } from './seeds/07-lifecycle'
 import { seedNotifications } from './seeds/08-notifications'
 import { seedQAFixes } from './seeds/09-qa-fixes'
+import { seedRecruitment } from './seeds/10-recruitment'
+import { seedCompensation } from './seeds/11-compensation'
+import { seedBenefits } from './seeds/12-benefits'
+import { seedYearEnd } from './seeds/13-year-end'
+import { seedSuccession } from './seeds/14-succession'
+import { seedPeerReview } from './seeds/15-peer-review'
+import { seedPartialFixes } from './seeds/16-partial-fixes'
 
 // Load DATABASE_URL from .env.local or .env
 const DATABASE_URL = process.env.DATABASE_URL
@@ -1288,11 +1295,11 @@ async function main() {
 
   // 5 new CTR-KR departments
   const newKrDepts = [
-    { code: 'MFG',   name: '생산/제조팀', nameEn: 'Manufacturing Team',  level: 1, sortOrder: 5 },
-    { code: 'QA',    name: '품질관리팀',  nameEn: 'Quality Control Team', level: 1, sortOrder: 6 },
-    { code: 'FIN',   name: '재무/회계팀', nameEn: 'Finance & Accounting', level: 1, sortOrder: 7 },
-    { code: 'PUR',   name: '구매/조달팀', nameEn: 'Procurement Team',     level: 1, sortOrder: 8 },
-    { code: 'RANDD', name: '연구개발팀',  nameEn: 'R&D Team',             level: 1, sortOrder: 9 },
+    { code: 'MFG', name: '생산/제조팀', nameEn: 'Manufacturing Team', level: 1, sortOrder: 5 },
+    { code: 'QA', name: '품질관리팀', nameEn: 'Quality Control Team', level: 1, sortOrder: 6 },
+    { code: 'FIN', name: '재무/회계팀', nameEn: 'Finance & Accounting', level: 1, sortOrder: 7 },
+    { code: 'PUR', name: '구매/조달팀', nameEn: 'Procurement Team', level: 1, sortOrder: 8 },
+    { code: 'RANDD', name: '연구개발팀', nameEn: 'R&D Team', level: 1, sortOrder: 9 },
   ]
 
   for (const d of newKrDepts) {
@@ -1308,36 +1315,36 @@ async function main() {
 
   // Also normalize existing deptMap to use company-prefixed keys
   // (existing deptMap uses code only: 'MGMT', 'HR', etc.)
-  deptMap['CTR-KR:MGMT']  = deterministicUUID('dept', 'CTR-KR:MGMT')
-  deptMap['CTR-KR:HR']    = deterministicUUID('dept', 'CTR-KR:HR')
-  deptMap['CTR-KR:DEV']   = deterministicUUID('dept', 'CTR-KR:DEV')
+  deptMap['CTR-KR:MGMT'] = deterministicUUID('dept', 'CTR-KR:MGMT')
+  deptMap['CTR-KR:HR'] = deterministicUUID('dept', 'CTR-KR:HR')
+  deptMap['CTR-KR:DEV'] = deterministicUUID('dept', 'CTR-KR:DEV')
   deptMap['CTR-KR:SALES'] = deterministicUUID('dept', 'CTR-KR:SALES')
 
   // Other company departments (1-2 each)
   const otherDepts = [
-    { companyCode: 'CTR-HQ', code: 'STRAT', name: 'Strategy & Planning',  nameEn: 'Strategy & Planning',  level: 1, sortOrder: 2 },
-    { companyCode: 'CTR-MOB', code: 'ENG',  name: 'Engineering',          nameEn: 'Engineering',          level: 1, sortOrder: 1 },
-    { companyCode: 'CTR-MOB', code: 'MFG',  name: 'Production',           nameEn: 'Production',           level: 1, sortOrder: 2 },
-    { companyCode: 'CTR-ECO', code: 'ENG',  name: 'Engineering',          nameEn: 'Engineering',          level: 1, sortOrder: 1 },
-    { companyCode: 'CTR-ECO', code: 'OPS',  name: 'Operations',           nameEn: 'Operations',           level: 1, sortOrder: 2 },
-    { companyCode: 'CTR-ROB', code: 'ENG',  name: 'Robotics Engineering', nameEn: 'Robotics Engineering', level: 1, sortOrder: 1 },
-    { companyCode: 'CTR-ROB', code: 'MFG',  name: 'Manufacturing',        nameEn: 'Manufacturing',        level: 1, sortOrder: 2 },
-    { companyCode: 'CTR-ENG', code: 'ENG',  name: 'Engineering',          nameEn: 'Engineering',          level: 1, sortOrder: 1 },
-    { companyCode: 'CTR-ENG', code: 'RD',   name: 'R&D',                  nameEn: 'R&D',                  level: 1, sortOrder: 2 },
-    { companyCode: 'FML',    code: 'OPS',   name: 'Operations',           nameEn: 'Operations',           level: 1, sortOrder: 1 },
-    { companyCode: 'FML',    code: 'FIN',   name: 'Finance',              nameEn: 'Finance',              level: 1, sortOrder: 2 },
-    { companyCode: 'CTR-US', code: 'OPS',   name: 'Operations',           nameEn: 'Operations',           level: 1, sortOrder: 1 },
-    { companyCode: 'CTR-US', code: 'SALES', name: 'Sales',                nameEn: 'Sales',                level: 1, sortOrder: 2 },
-    { companyCode: 'CTR-CN', code: 'MFG',   name: '生产部',               nameEn: 'Manufacturing',        level: 1, sortOrder: 1 },
-    { companyCode: 'CTR-CN', code: 'QA',    name: '质量部',               nameEn: 'Quality Assurance',    level: 1, sortOrder: 2 },
-    { companyCode: 'CTR-RU', code: 'MFG',   name: 'Производство',         nameEn: 'Manufacturing',        level: 1, sortOrder: 1 },
-    { companyCode: 'CTR-RU', code: 'ENG',   name: 'Инженерия',            nameEn: 'Engineering',          level: 1, sortOrder: 2 },
-    { companyCode: 'CTR-VN', code: 'MFG',   name: 'Sản xuất',             nameEn: 'Manufacturing',        level: 1, sortOrder: 1 },
-    { companyCode: 'CTR-VN', code: 'ASM',   name: 'Lắp ráp',              nameEn: 'Assembly',             level: 1, sortOrder: 2 },
-    { companyCode: 'CTR-EU', code: 'ENG',   name: 'Engineering',          nameEn: 'Engineering',          level: 1, sortOrder: 1 },
-    { companyCode: 'CTR-EU', code: 'SALES', name: 'Sales',                nameEn: 'Sales',                level: 1, sortOrder: 2 },
-    { companyCode: 'CTR-MX', code: 'MFG',   name: 'Manufactura',          nameEn: 'Manufacturing',        level: 1, sortOrder: 1 },
-    { companyCode: 'CTR-MX', code: 'ASM',   name: 'Ensamble',             nameEn: 'Assembly',             level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-HQ', code: 'STRAT', name: 'Strategy & Planning', nameEn: 'Strategy & Planning', level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-MOB', code: 'ENG', name: 'Engineering', nameEn: 'Engineering', level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-MOB', code: 'MFG', name: 'Production', nameEn: 'Production', level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-ECO', code: 'ENG', name: 'Engineering', nameEn: 'Engineering', level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-ECO', code: 'OPS', name: 'Operations', nameEn: 'Operations', level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-ROB', code: 'ENG', name: 'Robotics Engineering', nameEn: 'Robotics Engineering', level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-ROB', code: 'MFG', name: 'Manufacturing', nameEn: 'Manufacturing', level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-ENG', code: 'ENG', name: 'Engineering', nameEn: 'Engineering', level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-ENG', code: 'RD', name: 'R&D', nameEn: 'R&D', level: 1, sortOrder: 2 },
+    { companyCode: 'FML', code: 'OPS', name: 'Operations', nameEn: 'Operations', level: 1, sortOrder: 1 },
+    { companyCode: 'FML', code: 'FIN', name: 'Finance', nameEn: 'Finance', level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-US', code: 'OPS', name: 'Operations', nameEn: 'Operations', level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-US', code: 'SALES', name: 'Sales', nameEn: 'Sales', level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-CN', code: 'MFG', name: '生产部', nameEn: 'Manufacturing', level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-CN', code: 'QA', name: '质量部', nameEn: 'Quality Assurance', level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-RU', code: 'MFG', name: 'Производство', nameEn: 'Manufacturing', level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-RU', code: 'ENG', name: 'Инженерия', nameEn: 'Engineering', level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-VN', code: 'MFG', name: 'Sản xuất', nameEn: 'Manufacturing', level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-VN', code: 'ASM', name: 'Lắp ráp', nameEn: 'Assembly', level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-EU', code: 'ENG', name: 'Engineering', nameEn: 'Engineering', level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-EU', code: 'SALES', name: 'Sales', nameEn: 'Sales', level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-MX', code: 'MFG', name: 'Manufactura', nameEn: 'Manufacturing', level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-MX', code: 'ASM', name: 'Ensamble', nameEn: 'Assembly', level: 1, sortOrder: 2 },
   ]
 
   for (const d of otherDepts) {
@@ -1360,21 +1367,21 @@ async function main() {
   const jobMap: Record<string, string> = {} // code -> id
 
   const globalJobs = [
-    { id: deterministicUUID('job', 'SW_ENG'),    code: 'SW_ENG',    titleKo: '소프트웨어 엔지니어', titleEn: 'Software Engineer' },
-    { id: deterministicUUID('job', 'HR_MGR'),    code: 'HR_MGR',    titleKo: 'HR 매니저',           titleEn: 'HR Manager' },
-    { id: deterministicUUID('job', 'HR_SPEC'),   code: 'HR_SPEC',   titleKo: 'HR 담당',             titleEn: 'HR Specialist' },
-    { id: deterministicUUID('job', 'MFG_OPS'),   code: 'MFG_OPS',   titleKo: '생산직',              titleEn: 'Manufacturing Operator' },
-    { id: deterministicUUID('job', 'MFG_SUP'),   code: 'MFG_SUP',   titleKo: '생산감독',            titleEn: 'Manufacturing Supervisor' },
-    { id: deterministicUUID('job', 'QA_ENG'),    code: 'QA_ENG',    titleKo: '품질 엔지니어',       titleEn: 'Quality Engineer' },
-    { id: deterministicUUID('job', 'FIN_MGR'),   code: 'FIN_MGR',   titleKo: '재무 매니저',         titleEn: 'Finance Manager' },
-    { id: deterministicUUID('job', 'SALES_MGR'), code: 'SALES_MGR', titleKo: '영업 매니저',         titleEn: 'Sales Manager' },
-    { id: deterministicUUID('job', 'RND_ENG'),   code: 'RND_ENG',   titleKo: '연구개발 엔지니어',   titleEn: 'R&D Engineer' },
-    { id: deterministicUUID('job', 'PUR_SPEC'),  code: 'PUR_SPEC',  titleKo: '구매 전문가',         titleEn: 'Procurement Specialist' },
-    { id: deterministicUUID('job', 'PLANT_MGR'), code: 'PLANT_MGR', titleKo: '공장장',              titleEn: 'Plant Manager' },
-    { id: deterministicUUID('job', 'OPS_MGR'),   code: 'OPS_MGR',   titleKo: '운영 매니저',         titleEn: 'Operations Manager' },
-    { id: deterministicUUID('job', 'IT_ENG'),    code: 'IT_ENG',    titleKo: 'IT 엔지니어',         titleEn: 'IT Engineer' },
-    { id: deterministicUUID('job', 'EXEC_ASST'), code: 'EXEC_ASST', titleKo: '임원 보좌',           titleEn: 'Executive Assistant' },
-    { id: deterministicUUID('job', 'ADMIN_MGR'), code: 'ADMIN_MGR', titleKo: '총무 매니저',         titleEn: 'Administrative Manager' },
+    { id: deterministicUUID('job', 'SW_ENG'), code: 'SW_ENG', titleKo: '소프트웨어 엔지니어', titleEn: 'Software Engineer' },
+    { id: deterministicUUID('job', 'HR_MGR'), code: 'HR_MGR', titleKo: 'HR 매니저', titleEn: 'HR Manager' },
+    { id: deterministicUUID('job', 'HR_SPEC'), code: 'HR_SPEC', titleKo: 'HR 담당', titleEn: 'HR Specialist' },
+    { id: deterministicUUID('job', 'MFG_OPS'), code: 'MFG_OPS', titleKo: '생산직', titleEn: 'Manufacturing Operator' },
+    { id: deterministicUUID('job', 'MFG_SUP'), code: 'MFG_SUP', titleKo: '생산감독', titleEn: 'Manufacturing Supervisor' },
+    { id: deterministicUUID('job', 'QA_ENG'), code: 'QA_ENG', titleKo: '품질 엔지니어', titleEn: 'Quality Engineer' },
+    { id: deterministicUUID('job', 'FIN_MGR'), code: 'FIN_MGR', titleKo: '재무 매니저', titleEn: 'Finance Manager' },
+    { id: deterministicUUID('job', 'SALES_MGR'), code: 'SALES_MGR', titleKo: '영업 매니저', titleEn: 'Sales Manager' },
+    { id: deterministicUUID('job', 'RND_ENG'), code: 'RND_ENG', titleKo: '연구개발 엔지니어', titleEn: 'R&D Engineer' },
+    { id: deterministicUUID('job', 'PUR_SPEC'), code: 'PUR_SPEC', titleKo: '구매 전문가', titleEn: 'Procurement Specialist' },
+    { id: deterministicUUID('job', 'PLANT_MGR'), code: 'PLANT_MGR', titleKo: '공장장', titleEn: 'Plant Manager' },
+    { id: deterministicUUID('job', 'OPS_MGR'), code: 'OPS_MGR', titleKo: '운영 매니저', titleEn: 'Operations Manager' },
+    { id: deterministicUUID('job', 'IT_ENG'), code: 'IT_ENG', titleKo: 'IT 엔지니어', titleEn: 'IT Engineer' },
+    { id: deterministicUUID('job', 'EXEC_ASST'), code: 'EXEC_ASST', titleKo: '임원 보좌', titleEn: 'Executive Assistant' },
+    { id: deterministicUUID('job', 'ADMIN_MGR'), code: 'ADMIN_MGR', titleKo: '총무 매니저', titleEn: 'Administrative Manager' },
   ]
 
   for (const j of globalJobs) {
@@ -1398,86 +1405,86 @@ async function main() {
 
   // Get dept IDs (using normalized deptMap keys)
   const d = {
-    MGMT:  deptMap['CTR-KR:MGMT'],
-    HR:    deptMap['CTR-KR:HR'],
-    DEV:   deptMap['CTR-KR:DEV'],
+    MGMT: deptMap['CTR-KR:MGMT'],
+    HR: deptMap['CTR-KR:HR'],
+    DEV: deptMap['CTR-KR:DEV'],
     SALES: deptMap['CTR-KR:SALES'],
-    MFG:   deterministicUUID('dept', 'CTR-KR:MFG'),
-    QA:    deterministicUUID('dept', 'CTR-KR:QA'),
-    FIN:   deterministicUUID('dept', 'CTR-KR:FIN'),
-    PUR:   deterministicUUID('dept', 'CTR-KR:PUR'),
+    MFG: deterministicUUID('dept', 'CTR-KR:MFG'),
+    QA: deterministicUUID('dept', 'CTR-KR:QA'),
+    FIN: deterministicUUID('dept', 'CTR-KR:FIN'),
+    PUR: deterministicUUID('dept', 'CTR-KR:PUR'),
     RANDD: deterministicUUID('dept', 'CTR-KR:RANDD'),
   }
 
   const krPositions = [
     // ── MGMT (6) ─────────────────────────────────────────────
-    { code: 'CTR-KR-MGMT-001', titleKo: '대표이사',     titleEn: 'CEO',                     deptId: d.MGMT,  jobCode: 'ADMIN_MGR', gradeCode: 'G1' },
-    { code: 'CTR-KR-MGMT-002', titleKo: '경영지원본부장', titleEn: 'Head of Management',    deptId: d.MGMT,  jobCode: 'ADMIN_MGR', gradeCode: 'G2' },
-    { code: 'CTR-KR-MGMT-003', titleKo: '경영지원팀장', titleEn: 'Management Team Lead',    deptId: d.MGMT,  jobCode: 'ADMIN_MGR', gradeCode: 'G3' },
-    { code: 'CTR-KR-MGMT-004', titleKo: '경영지원선임', titleEn: 'Senior Admin Specialist', deptId: d.MGMT,  jobCode: 'ADMIN_MGR', gradeCode: 'G4' },
-    { code: 'CTR-KR-MGMT-005', titleKo: '경영지원담당', titleEn: 'Admin Specialist',        deptId: d.MGMT,  jobCode: 'EXEC_ASST', gradeCode: 'G5' },
-    { code: 'CTR-KR-MGMT-006', titleKo: '총무사원',     titleEn: 'Admin Staff',             deptId: d.MGMT,  jobCode: 'EXEC_ASST', gradeCode: 'G6' },
+    { code: 'CTR-KR-MGMT-001', titleKo: '대표이사', titleEn: 'CEO', deptId: d.MGMT, jobCode: 'ADMIN_MGR', gradeCode: 'G1' },
+    { code: 'CTR-KR-MGMT-002', titleKo: '경영지원본부장', titleEn: 'Head of Management', deptId: d.MGMT, jobCode: 'ADMIN_MGR', gradeCode: 'G2' },
+    { code: 'CTR-KR-MGMT-003', titleKo: '경영지원팀장', titleEn: 'Management Team Lead', deptId: d.MGMT, jobCode: 'ADMIN_MGR', gradeCode: 'G3' },
+    { code: 'CTR-KR-MGMT-004', titleKo: '경영지원선임', titleEn: 'Senior Admin Specialist', deptId: d.MGMT, jobCode: 'ADMIN_MGR', gradeCode: 'G4' },
+    { code: 'CTR-KR-MGMT-005', titleKo: '경영지원담당', titleEn: 'Admin Specialist', deptId: d.MGMT, jobCode: 'EXEC_ASST', gradeCode: 'G5' },
+    { code: 'CTR-KR-MGMT-006', titleKo: '총무사원', titleEn: 'Admin Staff', deptId: d.MGMT, jobCode: 'EXEC_ASST', gradeCode: 'G6' },
     // ── HR (4) ───────────────────────────────────────────────
-    { code: 'CTR-KR-HR-001',   titleKo: '인사팀장',     titleEn: 'HR Team Lead',            deptId: d.HR,    jobCode: 'HR_MGR',    gradeCode: 'G3' },
-    { code: 'CTR-KR-HR-002',   titleKo: '인사담당선임', titleEn: 'Senior HR Specialist',    deptId: d.HR,    jobCode: 'HR_SPEC',   gradeCode: 'G4' },
-    { code: 'CTR-KR-HR-003',   titleKo: '인사담당',     titleEn: 'HR Specialist',           deptId: d.HR,    jobCode: 'HR_SPEC',   gradeCode: 'G5' },
-    { code: 'CTR-KR-HR-004',   titleKo: '인사사원',     titleEn: 'HR Staff',                deptId: d.HR,    jobCode: 'HR_SPEC',   gradeCode: 'G6' },
+    { code: 'CTR-KR-HR-001', titleKo: '인사팀장', titleEn: 'HR Team Lead', deptId: d.HR, jobCode: 'HR_MGR', gradeCode: 'G3' },
+    { code: 'CTR-KR-HR-002', titleKo: '인사담당선임', titleEn: 'Senior HR Specialist', deptId: d.HR, jobCode: 'HR_SPEC', gradeCode: 'G4' },
+    { code: 'CTR-KR-HR-003', titleKo: '인사담당', titleEn: 'HR Specialist', deptId: d.HR, jobCode: 'HR_SPEC', gradeCode: 'G5' },
+    { code: 'CTR-KR-HR-004', titleKo: '인사사원', titleEn: 'HR Staff', deptId: d.HR, jobCode: 'HR_SPEC', gradeCode: 'G6' },
     // ── DEV (7) ──────────────────────────────────────────────
-    { code: 'CTR-KR-DEV-001',  titleKo: '개발팀장',     titleEn: 'Dev Team Lead',           deptId: d.DEV,   jobCode: 'SW_ENG',    gradeCode: 'G3' },
-    { code: 'CTR-KR-DEV-002',  titleKo: '수석개발자A',  titleEn: 'Senior Developer A',      deptId: d.DEV,   jobCode: 'SW_ENG',    gradeCode: 'G4' },
-    { code: 'CTR-KR-DEV-003',  titleKo: '수석개발자B',  titleEn: 'Senior Developer B',      deptId: d.DEV,   jobCode: 'SW_ENG',    gradeCode: 'G4' },
-    { code: 'CTR-KR-DEV-004',  titleKo: '개발자A',      titleEn: 'Developer A',             deptId: d.DEV,   jobCode: 'SW_ENG',    gradeCode: 'G5' },
-    { code: 'CTR-KR-DEV-005',  titleKo: '개발자B',      titleEn: 'Developer B',             deptId: d.DEV,   jobCode: 'SW_ENG',    gradeCode: 'G5' },
-    { code: 'CTR-KR-DEV-006',  titleKo: '개발사원A',    titleEn: 'Dev Staff A',             deptId: d.DEV,   jobCode: 'SW_ENG',    gradeCode: 'G6' },
-    { code: 'CTR-KR-DEV-007',  titleKo: '개발사원B',    titleEn: 'Dev Staff B',             deptId: d.DEV,   jobCode: 'SW_ENG',    gradeCode: 'G6' },
+    { code: 'CTR-KR-DEV-001', titleKo: '개발팀장', titleEn: 'Dev Team Lead', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'G3' },
+    { code: 'CTR-KR-DEV-002', titleKo: '수석개발자A', titleEn: 'Senior Developer A', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'G4' },
+    { code: 'CTR-KR-DEV-003', titleKo: '수석개발자B', titleEn: 'Senior Developer B', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'G4' },
+    { code: 'CTR-KR-DEV-004', titleKo: '개발자A', titleEn: 'Developer A', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'G5' },
+    { code: 'CTR-KR-DEV-005', titleKo: '개발자B', titleEn: 'Developer B', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'G5' },
+    { code: 'CTR-KR-DEV-006', titleKo: '개발사원A', titleEn: 'Dev Staff A', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'G6' },
+    { code: 'CTR-KR-DEV-007', titleKo: '개발사원B', titleEn: 'Dev Staff B', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'G6' },
     // ── SALES (7) ────────────────────────────────────────────
-    { code: 'CTR-KR-SALES-001', titleKo: '영업팀장',    titleEn: 'Sales Team Lead',         deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G3' },
-    { code: 'CTR-KR-SALES-002', titleKo: '영업선임A',   titleEn: 'Senior Sales A',          deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G4' },
-    { code: 'CTR-KR-SALES-003', titleKo: '영업선임B',   titleEn: 'Senior Sales B',          deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G4' },
-    { code: 'CTR-KR-SALES-004', titleKo: '영업담당A',   titleEn: 'Sales Specialist A',      deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G5' },
-    { code: 'CTR-KR-SALES-005', titleKo: '영업담당B',   titleEn: 'Sales Specialist B',      deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G5' },
-    { code: 'CTR-KR-SALES-006', titleKo: '영업사원A',   titleEn: 'Sales Staff A',           deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G6' },
-    { code: 'CTR-KR-SALES-007', titleKo: '영업사원B',   titleEn: 'Sales Staff B',           deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G6' },
+    { code: 'CTR-KR-SALES-001', titleKo: '영업팀장', titleEn: 'Sales Team Lead', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G3' },
+    { code: 'CTR-KR-SALES-002', titleKo: '영업선임A', titleEn: 'Senior Sales A', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G4' },
+    { code: 'CTR-KR-SALES-003', titleKo: '영업선임B', titleEn: 'Senior Sales B', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G4' },
+    { code: 'CTR-KR-SALES-004', titleKo: '영업담당A', titleEn: 'Sales Specialist A', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G5' },
+    { code: 'CTR-KR-SALES-005', titleKo: '영업담당B', titleEn: 'Sales Specialist B', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G5' },
+    { code: 'CTR-KR-SALES-006', titleKo: '영업사원A', titleEn: 'Sales Staff A', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G6' },
+    { code: 'CTR-KR-SALES-007', titleKo: '영업사원B', titleEn: 'Sales Staff B', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G6' },
     // ── MFG (10) ─────────────────────────────────────────────
-    { code: 'CTR-KR-MFG-001',  titleKo: '생산팀장',     titleEn: 'Manufacturing Team Lead', deptId: d.MFG,   jobCode: 'PLANT_MGR', gradeCode: 'G3' },
-    { code: 'CTR-KR-MFG-002',  titleKo: '생산감독A',    titleEn: 'Production Supervisor A', deptId: d.MFG,   jobCode: 'MFG_SUP',   gradeCode: 'G4' },
-    { code: 'CTR-KR-MFG-003',  titleKo: '생산감독B',    titleEn: 'Production Supervisor B', deptId: d.MFG,   jobCode: 'MFG_SUP',   gradeCode: 'G4' },
-    { code: 'CTR-KR-MFG-004',  titleKo: '생산반장A',    titleEn: 'Line Leader A',           deptId: d.MFG,   jobCode: 'MFG_SUP',   gradeCode: 'G5' },
-    { code: 'CTR-KR-MFG-005',  titleKo: '생산반장B',    titleEn: 'Line Leader B',           deptId: d.MFG,   jobCode: 'MFG_SUP',   gradeCode: 'G5' },
-    { code: 'CTR-KR-MFG-006',  titleKo: '생산반장C',    titleEn: 'Line Leader C',           deptId: d.MFG,   jobCode: 'MFG_SUP',   gradeCode: 'G5' },
-    { code: 'CTR-KR-MFG-007',  titleKo: '생산사원A',    titleEn: 'Operator A',              deptId: d.MFG,   jobCode: 'MFG_OPS',   gradeCode: 'G6' },
-    { code: 'CTR-KR-MFG-008',  titleKo: '생산사원B',    titleEn: 'Operator B',              deptId: d.MFG,   jobCode: 'MFG_OPS',   gradeCode: 'G6' },
-    { code: 'CTR-KR-MFG-009',  titleKo: '생산사원C',    titleEn: 'Operator C',              deptId: d.MFG,   jobCode: 'MFG_OPS',   gradeCode: 'G6' },
-    { code: 'CTR-KR-MFG-010',  titleKo: '생산사원D',    titleEn: 'Operator D',              deptId: d.MFG,   jobCode: 'MFG_OPS',   gradeCode: 'G6' },
+    { code: 'CTR-KR-MFG-001', titleKo: '생산팀장', titleEn: 'Manufacturing Team Lead', deptId: d.MFG, jobCode: 'PLANT_MGR', gradeCode: 'G3' },
+    { code: 'CTR-KR-MFG-002', titleKo: '생산감독A', titleEn: 'Production Supervisor A', deptId: d.MFG, jobCode: 'MFG_SUP', gradeCode: 'G4' },
+    { code: 'CTR-KR-MFG-003', titleKo: '생산감독B', titleEn: 'Production Supervisor B', deptId: d.MFG, jobCode: 'MFG_SUP', gradeCode: 'G4' },
+    { code: 'CTR-KR-MFG-004', titleKo: '생산반장A', titleEn: 'Line Leader A', deptId: d.MFG, jobCode: 'MFG_SUP', gradeCode: 'G5' },
+    { code: 'CTR-KR-MFG-005', titleKo: '생산반장B', titleEn: 'Line Leader B', deptId: d.MFG, jobCode: 'MFG_SUP', gradeCode: 'G5' },
+    { code: 'CTR-KR-MFG-006', titleKo: '생산반장C', titleEn: 'Line Leader C', deptId: d.MFG, jobCode: 'MFG_SUP', gradeCode: 'G5' },
+    { code: 'CTR-KR-MFG-007', titleKo: '생산사원A', titleEn: 'Operator A', deptId: d.MFG, jobCode: 'MFG_OPS', gradeCode: 'G6' },
+    { code: 'CTR-KR-MFG-008', titleKo: '생산사원B', titleEn: 'Operator B', deptId: d.MFG, jobCode: 'MFG_OPS', gradeCode: 'G6' },
+    { code: 'CTR-KR-MFG-009', titleKo: '생산사원C', titleEn: 'Operator C', deptId: d.MFG, jobCode: 'MFG_OPS', gradeCode: 'G6' },
+    { code: 'CTR-KR-MFG-010', titleKo: '생산사원D', titleEn: 'Operator D', deptId: d.MFG, jobCode: 'MFG_OPS', gradeCode: 'G6' },
     // ── QA (7) ───────────────────────────────────────────────
-    { code: 'CTR-KR-QA-001',   titleKo: '품질팀장',     titleEn: 'QA Team Lead',            deptId: d.QA,    jobCode: 'QA_ENG',    gradeCode: 'G3' },
-    { code: 'CTR-KR-QA-002',   titleKo: '품질감독A',    titleEn: 'QA Supervisor A',         deptId: d.QA,    jobCode: 'QA_ENG',    gradeCode: 'G4' },
-    { code: 'CTR-KR-QA-003',   titleKo: '품질감독B',    titleEn: 'QA Supervisor B',         deptId: d.QA,    jobCode: 'QA_ENG',    gradeCode: 'G4' },
-    { code: 'CTR-KR-QA-004',   titleKo: '품질담당A',    titleEn: 'QA Specialist A',         deptId: d.QA,    jobCode: 'QA_ENG',    gradeCode: 'G5' },
-    { code: 'CTR-KR-QA-005',   titleKo: '품질담당B',    titleEn: 'QA Specialist B',         deptId: d.QA,    jobCode: 'QA_ENG',    gradeCode: 'G5' },
-    { code: 'CTR-KR-QA-006',   titleKo: '품질사원A',    titleEn: 'QA Staff A',              deptId: d.QA,    jobCode: 'QA_ENG',    gradeCode: 'G6' },
-    { code: 'CTR-KR-QA-007',   titleKo: '품질사원B',    titleEn: 'QA Staff B',              deptId: d.QA,    jobCode: 'QA_ENG',    gradeCode: 'G6' },
+    { code: 'CTR-KR-QA-001', titleKo: '품질팀장', titleEn: 'QA Team Lead', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'G3' },
+    { code: 'CTR-KR-QA-002', titleKo: '품질감독A', titleEn: 'QA Supervisor A', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'G4' },
+    { code: 'CTR-KR-QA-003', titleKo: '품질감독B', titleEn: 'QA Supervisor B', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'G4' },
+    { code: 'CTR-KR-QA-004', titleKo: '품질담당A', titleEn: 'QA Specialist A', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'G5' },
+    { code: 'CTR-KR-QA-005', titleKo: '품질담당B', titleEn: 'QA Specialist B', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'G5' },
+    { code: 'CTR-KR-QA-006', titleKo: '품질사원A', titleEn: 'QA Staff A', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'G6' },
+    { code: 'CTR-KR-QA-007', titleKo: '품질사원B', titleEn: 'QA Staff B', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'G6' },
     // ── FIN (5) ──────────────────────────────────────────────
-    { code: 'CTR-KR-FIN-001',  titleKo: '재무팀장',     titleEn: 'Finance Team Lead',       deptId: d.FIN,   jobCode: 'FIN_MGR',   gradeCode: 'G3' },
-    { code: 'CTR-KR-FIN-002',  titleKo: '재무선임',     titleEn: 'Senior Finance Specialist', deptId: d.FIN, jobCode: 'FIN_MGR',   gradeCode: 'G4' },
-    { code: 'CTR-KR-FIN-003',  titleKo: '재무담당A',    titleEn: 'Finance Specialist A',    deptId: d.FIN,   jobCode: 'FIN_MGR',   gradeCode: 'G5' },
-    { code: 'CTR-KR-FIN-004',  titleKo: '재무담당B',    titleEn: 'Finance Specialist B',    deptId: d.FIN,   jobCode: 'FIN_MGR',   gradeCode: 'G5' },
-    { code: 'CTR-KR-FIN-005',  titleKo: '재무사원',     titleEn: 'Finance Staff',           deptId: d.FIN,   jobCode: 'FIN_MGR',   gradeCode: 'G6' },
+    { code: 'CTR-KR-FIN-001', titleKo: '재무팀장', titleEn: 'Finance Team Lead', deptId: d.FIN, jobCode: 'FIN_MGR', gradeCode: 'G3' },
+    { code: 'CTR-KR-FIN-002', titleKo: '재무선임', titleEn: 'Senior Finance Specialist', deptId: d.FIN, jobCode: 'FIN_MGR', gradeCode: 'G4' },
+    { code: 'CTR-KR-FIN-003', titleKo: '재무담당A', titleEn: 'Finance Specialist A', deptId: d.FIN, jobCode: 'FIN_MGR', gradeCode: 'G5' },
+    { code: 'CTR-KR-FIN-004', titleKo: '재무담당B', titleEn: 'Finance Specialist B', deptId: d.FIN, jobCode: 'FIN_MGR', gradeCode: 'G5' },
+    { code: 'CTR-KR-FIN-005', titleKo: '재무사원', titleEn: 'Finance Staff', deptId: d.FIN, jobCode: 'FIN_MGR', gradeCode: 'G6' },
     // ── PUR (5) ──────────────────────────────────────────────
-    { code: 'CTR-KR-PUR-001',  titleKo: '구매팀장',     titleEn: 'Procurement Team Lead',   deptId: d.PUR,   jobCode: 'PUR_SPEC',  gradeCode: 'G3' },
-    { code: 'CTR-KR-PUR-002',  titleKo: '구매선임',     titleEn: 'Senior Procurement Spec', deptId: d.PUR,   jobCode: 'PUR_SPEC',  gradeCode: 'G4' },
-    { code: 'CTR-KR-PUR-003',  titleKo: '구매담당A',    titleEn: 'Procurement Specialist A', deptId: d.PUR,  jobCode: 'PUR_SPEC',  gradeCode: 'G5' },
-    { code: 'CTR-KR-PUR-004',  titleKo: '구매담당B',    titleEn: 'Procurement Specialist B', deptId: d.PUR,  jobCode: 'PUR_SPEC',  gradeCode: 'G5' },
-    { code: 'CTR-KR-PUR-005',  titleKo: '구매사원',     titleEn: 'Procurement Staff',       deptId: d.PUR,   jobCode: 'PUR_SPEC',  gradeCode: 'G6' },
+    { code: 'CTR-KR-PUR-001', titleKo: '구매팀장', titleEn: 'Procurement Team Lead', deptId: d.PUR, jobCode: 'PUR_SPEC', gradeCode: 'G3' },
+    { code: 'CTR-KR-PUR-002', titleKo: '구매선임', titleEn: 'Senior Procurement Spec', deptId: d.PUR, jobCode: 'PUR_SPEC', gradeCode: 'G4' },
+    { code: 'CTR-KR-PUR-003', titleKo: '구매담당A', titleEn: 'Procurement Specialist A', deptId: d.PUR, jobCode: 'PUR_SPEC', gradeCode: 'G5' },
+    { code: 'CTR-KR-PUR-004', titleKo: '구매담당B', titleEn: 'Procurement Specialist B', deptId: d.PUR, jobCode: 'PUR_SPEC', gradeCode: 'G5' },
+    { code: 'CTR-KR-PUR-005', titleKo: '구매사원', titleEn: 'Procurement Staff', deptId: d.PUR, jobCode: 'PUR_SPEC', gradeCode: 'G6' },
     // ── RANDD (8) ────────────────────────────────────────────
-    { code: 'CTR-KR-RANDD-001', titleKo: '연구소장',    titleEn: 'R&D Director',            deptId: d.RANDD, jobCode: 'RND_ENG',   gradeCode: 'G2' },
-    { code: 'CTR-KR-RANDD-002', titleKo: '연구팀장',    titleEn: 'R&D Team Lead',           deptId: d.RANDD, jobCode: 'RND_ENG',   gradeCode: 'G3' },
-    { code: 'CTR-KR-RANDD-003', titleKo: '선임연구원A', titleEn: 'Senior Researcher A',     deptId: d.RANDD, jobCode: 'RND_ENG',   gradeCode: 'G4' },
-    { code: 'CTR-KR-RANDD-004', titleKo: '선임연구원B', titleEn: 'Senior Researcher B',     deptId: d.RANDD, jobCode: 'RND_ENG',   gradeCode: 'G4' },
-    { code: 'CTR-KR-RANDD-005', titleKo: '연구원A',     titleEn: 'Researcher A',            deptId: d.RANDD, jobCode: 'RND_ENG',   gradeCode: 'G5' },
-    { code: 'CTR-KR-RANDD-006', titleKo: '연구원B',     titleEn: 'Researcher B',            deptId: d.RANDD, jobCode: 'RND_ENG',   gradeCode: 'G5' },
-    { code: 'CTR-KR-RANDD-007', titleKo: '연구사원A',   titleEn: 'Research Staff A',        deptId: d.RANDD, jobCode: 'RND_ENG',   gradeCode: 'G6' },
-    { code: 'CTR-KR-RANDD-008', titleKo: '연구사원B',   titleEn: 'Research Staff B',        deptId: d.RANDD, jobCode: 'RND_ENG',   gradeCode: 'G6' },
+    { code: 'CTR-KR-RANDD-001', titleKo: '연구소장', titleEn: 'R&D Director', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'G2' },
+    { code: 'CTR-KR-RANDD-002', titleKo: '연구팀장', titleEn: 'R&D Team Lead', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'G3' },
+    { code: 'CTR-KR-RANDD-003', titleKo: '선임연구원A', titleEn: 'Senior Researcher A', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'G4' },
+    { code: 'CTR-KR-RANDD-004', titleKo: '선임연구원B', titleEn: 'Senior Researcher B', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'G4' },
+    { code: 'CTR-KR-RANDD-005', titleKo: '연구원A', titleEn: 'Researcher A', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'G5' },
+    { code: 'CTR-KR-RANDD-006', titleKo: '연구원B', titleEn: 'Researcher B', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'G5' },
+    { code: 'CTR-KR-RANDD-007', titleKo: '연구사원A', titleEn: 'Research Staff A', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'G6' },
+    { code: 'CTR-KR-RANDD-008', titleKo: '연구사원B', titleEn: 'Research Staff B', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'G6' },
   ]
 
   // First pass: create all positions without reportsToPositionId
@@ -1510,18 +1517,18 @@ async function main() {
     ['CTR-KR-MGMT-005', 'CTR-KR-MGMT-003'],
     ['CTR-KR-MGMT-006', 'CTR-KR-MGMT-005'],
     // HR chain (reports to 경영지원본부장)
-    ['CTR-KR-HR-001',   'CTR-KR-MGMT-002'],
-    ['CTR-KR-HR-002',   'CTR-KR-HR-001'],
-    ['CTR-KR-HR-003',   'CTR-KR-HR-002'],
-    ['CTR-KR-HR-004',   'CTR-KR-HR-003'],
+    ['CTR-KR-HR-001', 'CTR-KR-MGMT-002'],
+    ['CTR-KR-HR-002', 'CTR-KR-HR-001'],
+    ['CTR-KR-HR-003', 'CTR-KR-HR-002'],
+    ['CTR-KR-HR-004', 'CTR-KR-HR-003'],
     // DEV chain
-    ['CTR-KR-DEV-001',  'CTR-KR-MGMT-002'],
-    ['CTR-KR-DEV-002',  'CTR-KR-DEV-001'],
-    ['CTR-KR-DEV-003',  'CTR-KR-DEV-001'],
-    ['CTR-KR-DEV-004',  'CTR-KR-DEV-002'],
-    ['CTR-KR-DEV-005',  'CTR-KR-DEV-003'],
-    ['CTR-KR-DEV-006',  'CTR-KR-DEV-004'],
-    ['CTR-KR-DEV-007',  'CTR-KR-DEV-005'],
+    ['CTR-KR-DEV-001', 'CTR-KR-MGMT-002'],
+    ['CTR-KR-DEV-002', 'CTR-KR-DEV-001'],
+    ['CTR-KR-DEV-003', 'CTR-KR-DEV-001'],
+    ['CTR-KR-DEV-004', 'CTR-KR-DEV-002'],
+    ['CTR-KR-DEV-005', 'CTR-KR-DEV-003'],
+    ['CTR-KR-DEV-006', 'CTR-KR-DEV-004'],
+    ['CTR-KR-DEV-007', 'CTR-KR-DEV-005'],
     // SALES chain
     ['CTR-KR-SALES-001', 'CTR-KR-MGMT-002'],
     ['CTR-KR-SALES-002', 'CTR-KR-SALES-001'],
@@ -1531,24 +1538,24 @@ async function main() {
     ['CTR-KR-SALES-006', 'CTR-KR-SALES-004'],
     ['CTR-KR-SALES-007', 'CTR-KR-SALES-005'],
     // MFG chain
-    ['CTR-KR-MFG-001',  'CTR-KR-MGMT-002'],
-    ['CTR-KR-MFG-002',  'CTR-KR-MFG-001'],
-    ['CTR-KR-MFG-003',  'CTR-KR-MFG-001'],
-    ['CTR-KR-MFG-004',  'CTR-KR-MFG-002'],
-    ['CTR-KR-MFG-005',  'CTR-KR-MFG-002'],
-    ['CTR-KR-MFG-006',  'CTR-KR-MFG-003'],
-    ['CTR-KR-MFG-007',  'CTR-KR-MFG-004'],
-    ['CTR-KR-MFG-008',  'CTR-KR-MFG-005'],
-    ['CTR-KR-MFG-009',  'CTR-KR-MFG-006'],
-    ['CTR-KR-MFG-010',  'CTR-KR-MFG-006'],
+    ['CTR-KR-MFG-001', 'CTR-KR-MGMT-002'],
+    ['CTR-KR-MFG-002', 'CTR-KR-MFG-001'],
+    ['CTR-KR-MFG-003', 'CTR-KR-MFG-001'],
+    ['CTR-KR-MFG-004', 'CTR-KR-MFG-002'],
+    ['CTR-KR-MFG-005', 'CTR-KR-MFG-002'],
+    ['CTR-KR-MFG-006', 'CTR-KR-MFG-003'],
+    ['CTR-KR-MFG-007', 'CTR-KR-MFG-004'],
+    ['CTR-KR-MFG-008', 'CTR-KR-MFG-005'],
+    ['CTR-KR-MFG-009', 'CTR-KR-MFG-006'],
+    ['CTR-KR-MFG-010', 'CTR-KR-MFG-006'],
     // QA chain
-    ['CTR-KR-QA-001',  'CTR-KR-MGMT-002'],
-    ['CTR-KR-QA-002',  'CTR-KR-QA-001'],
-    ['CTR-KR-QA-003',  'CTR-KR-QA-001'],
-    ['CTR-KR-QA-004',  'CTR-KR-QA-002'],
-    ['CTR-KR-QA-005',  'CTR-KR-QA-003'],
-    ['CTR-KR-QA-006',  'CTR-KR-QA-004'],
-    ['CTR-KR-QA-007',  'CTR-KR-QA-005'],
+    ['CTR-KR-QA-001', 'CTR-KR-MGMT-002'],
+    ['CTR-KR-QA-002', 'CTR-KR-QA-001'],
+    ['CTR-KR-QA-003', 'CTR-KR-QA-001'],
+    ['CTR-KR-QA-004', 'CTR-KR-QA-002'],
+    ['CTR-KR-QA-005', 'CTR-KR-QA-003'],
+    ['CTR-KR-QA-006', 'CTR-KR-QA-004'],
+    ['CTR-KR-QA-007', 'CTR-KR-QA-005'],
     // FIN chain
     ['CTR-KR-FIN-001', 'CTR-KR-MGMT-002'],
     ['CTR-KR-FIN-002', 'CTR-KR-FIN-001'],
@@ -1589,18 +1596,18 @@ async function main() {
 
   // Other companies' department structure:
   const otherCompanyDeptConfig: Record<string, string[]> = {
-    'CTR-HQ':  ['STRAT'],
+    'CTR-HQ': ['STRAT'],
     'CTR-MOB': ['ENG', 'MFG'],
     'CTR-ECO': ['ENG', 'OPS'],
     'CTR-ROB': ['ENG', 'MFG'],
     'CTR-ENG': ['ENG', 'RD'],
-    'FML':     ['OPS', 'FIN'],
-    'CTR-US':  ['OPS', 'SALES'],
-    'CTR-CN':  ['MFG', 'QA'],
-    'CTR-RU':  ['MFG', 'ENG'],
-    'CTR-VN':  ['MFG', 'ASM'],
-    'CTR-EU':  ['ENG', 'SALES'],
-    'CTR-MX':  ['MFG', 'ASM'],
+    'FML': ['OPS', 'FIN'],
+    'CTR-US': ['OPS', 'SALES'],
+    'CTR-CN': ['MFG', 'QA'],
+    'CTR-RU': ['MFG', 'ENG'],
+    'CTR-VN': ['MFG', 'ASM'],
+    'CTR-EU': ['ENG', 'SALES'],
+    'CTR-MX': ['MFG', 'ASM'],
   }
 
   for (const [compCode, deptCodes] of Object.entries(otherCompanyDeptConfig)) {
@@ -1701,13 +1708,13 @@ async function main() {
   let settingCount = 0
 
   const globalSettings = [
-    { type: 'EVALUATION',  key: 'config',   value: { grading_scale: 'S_A_B_C', forced_distribution: true, distribution_rules: [{ grade: 'S', min_pct: 0, max_pct: 10 }, { grade: 'A', min_pct: 15, max_pct: 30 }, { grade: 'B', min_pct: 40, max_pct: 60 }, { grade: 'C', min_pct: 10, max_pct: 30 }], review_sequence: ['SELF', 'MANAGER', 'CALIBRATION'], bei_enabled: true, mbo_weight: 70, bei_weight: 30 } },
-    { type: 'PROMOTION',   key: 'config',   value: { min_tenure_by_grade: { G5: 3, G4: 4, G3: 4, G2: 5 }, requires_evaluation_grade: ['S', 'A'], approval_chain: ['TEAM_LEAD', 'DIVISION_HEAD', 'HR_COMMITTEE'] } },
-    { type: 'ATTENDANCE',  key: 'config',   value: { work_hours_per_day: 8, work_days_per_week: 5, weekly_hour_limit: 40, overtime_requires_approval: true, shift_enabled: false } },
-    { type: 'LEAVE',       key: 'config',   value: { leave_types: [{ code: 'ANNUAL', name: '연차', paid: true, default_days: 15 }, { code: 'SICK', name: '병가', paid: false, default_days: 5 }], accrual_rules: [{ tenure_years: 0, annual_days: 11 }, { tenure_years: 1, annual_days: 15 }], carryover_max_days: 10, carryover_expiry_months: 6 } },
-    { type: 'ONBOARDING',  key: 'config',   value: { probation_period_months: 3, required_documents: ['ID', 'DEGREE', 'BANK_ACCOUNT'], buddy_assignment: true } },
-    { type: 'RECRUITMENT', key: 'config',   value: { pipeline_stages: ['APPLIED', 'SCREEN', 'INTERVIEW_1', 'INTERVIEW_2', 'OFFER', 'ACCEPTED'], approval_required: true, approval_chain: ['HR', 'DEPT_HEAD', 'EXEC'], ai_screening_enabled: true } },
-    { type: 'BENEFITS',    key: 'config',   value: { eligible_programs: ['HEALTH', 'PENSION', 'MEAL', 'TRANSPORT'], currency: 'KRW' } },
+    { type: 'EVALUATION', key: 'config', value: { grading_scale: 'S_A_B_C', forced_distribution: true, distribution_rules: [{ grade: 'S', min_pct: 0, max_pct: 10 }, { grade: 'A', min_pct: 15, max_pct: 30 }, { grade: 'B', min_pct: 40, max_pct: 60 }, { grade: 'C', min_pct: 10, max_pct: 30 }], review_sequence: ['SELF', 'MANAGER', 'CALIBRATION'], bei_enabled: true, mbo_weight: 70, bei_weight: 30 } },
+    { type: 'PROMOTION', key: 'config', value: { min_tenure_by_grade: { G5: 3, G4: 4, G3: 4, G2: 5 }, requires_evaluation_grade: ['S', 'A'], approval_chain: ['TEAM_LEAD', 'DIVISION_HEAD', 'HR_COMMITTEE'] } },
+    { type: 'ATTENDANCE', key: 'config', value: { work_hours_per_day: 8, work_days_per_week: 5, weekly_hour_limit: 40, overtime_requires_approval: true, shift_enabled: false } },
+    { type: 'LEAVE', key: 'config', value: { leave_types: [{ code: 'ANNUAL', name: '연차', paid: true, default_days: 15 }, { code: 'SICK', name: '병가', paid: false, default_days: 5 }], accrual_rules: [{ tenure_years: 0, annual_days: 11 }, { tenure_years: 1, annual_days: 15 }], carryover_max_days: 10, carryover_expiry_months: 6 } },
+    { type: 'ONBOARDING', key: 'config', value: { probation_period_months: 3, required_documents: ['ID', 'DEGREE', 'BANK_ACCOUNT'], buddy_assignment: true } },
+    { type: 'RECRUITMENT', key: 'config', value: { pipeline_stages: ['APPLIED', 'SCREEN', 'INTERVIEW_1', 'INTERVIEW_2', 'OFFER', 'ACCEPTED'], approval_required: true, approval_chain: ['HR', 'DEPT_HEAD', 'EXEC'], ai_screening_enabled: true } },
+    { type: 'BENEFITS', key: 'config', value: { eligible_programs: ['HEALTH', 'PENSION', 'MEAL', 'TRANSPORT'], currency: 'KRW' } },
     { type: 'COMPENSATION', key: 'pay_day', value: { dayOfMonth: 25 } },
   ]
 
@@ -1728,25 +1735,25 @@ async function main() {
   const companyOverrides = [
     // CTR-KR: Korean labor law (52h weekly limit, extended maternity, 4대보험)
     { companyCode: 'CTR-KR', type: 'ATTENDANCE', key: 'config', value: { work_hours_per_day: 8, work_days_per_week: 5, weekly_hour_limit: 52, overtime_requires_approval: true, shift_enabled: false } },
-    { companyCode: 'CTR-KR', type: 'LEAVE',      key: 'config', value: { leave_types: [{ code: 'ANNUAL', name: '연차', paid: true, default_days: 15 }, { code: 'SICK', name: '병가', paid: false, default_days: 5 }, { code: 'MATERNITY', name: '출산휴가', paid: true, default_days: 90 }], accrual_rules: [{ tenure_years: 0, annual_days: 11 }, { tenure_years: 1, annual_days: 15 }, { tenure_years: 3, annual_days: 16 }], carryover_max_days: 10, carryover_expiry_months: 6 } },
+    { companyCode: 'CTR-KR', type: 'LEAVE', key: 'config', value: { leave_types: [{ code: 'ANNUAL', name: '연차', paid: true, default_days: 15 }, { code: 'SICK', name: '병가', paid: false, default_days: 5 }, { code: 'MATERNITY', name: '출산휴가', paid: true, default_days: 90 }], accrual_rules: [{ tenure_years: 0, annual_days: 11 }, { tenure_years: 1, annual_days: 15 }, { tenure_years: 3, annual_days: 16 }], carryover_max_days: 10, carryover_expiry_months: 6 } },
     { companyCode: 'CTR-KR', type: 'ONBOARDING', key: 'config', value: { probation_period_months: 3, required_documents: ['ID', 'DEGREE', 'BANK_ACCOUNT', 'HEALTH_INSURANCE', 'EMPLOYMENT_INSURANCE'], buddy_assignment: true } },
     // CTR-CN: Chinese labor law (44h/week, 春节 bonus leave)
     { companyCode: 'CTR-CN', type: 'ATTENDANCE', key: 'config', value: { work_hours_per_day: 8, work_days_per_week: 5, weekly_hour_limit: 44, overtime_requires_approval: true, shift_enabled: true } },
-    { companyCode: 'CTR-CN', type: 'LEAVE',      key: 'config', value: { leave_types: [{ code: 'ANNUAL', name: '年假', paid: true, default_days: 5 }, { code: 'SPRING_FESTIVAL', name: '春节', paid: true, default_days: 7 }, { code: 'SICK', name: '病假', paid: false, default_days: 7 }], accrual_rules: [{ tenure_years: 0, annual_days: 5 }, { tenure_years: 10, annual_days: 10 }, { tenure_years: 20, annual_days: 15 }], carryover_max_days: 5, carryover_expiry_months: 12 } },
+    { companyCode: 'CTR-CN', type: 'LEAVE', key: 'config', value: { leave_types: [{ code: 'ANNUAL', name: '年假', paid: true, default_days: 5 }, { code: 'SPRING_FESTIVAL', name: '春节', paid: true, default_days: 7 }, { code: 'SICK', name: '病假', paid: false, default_days: 7 }], accrual_rules: [{ tenure_years: 0, annual_days: 5 }, { tenure_years: 10, annual_days: 10 }, { tenure_years: 20, annual_days: 15 }], carryover_max_days: 5, carryover_expiry_months: 12 } },
     // CTR-US: US practices (PTO unified, bi-weekly pay, I-9/W-4 docs)
-    { companyCode: 'CTR-US', type: 'EVALUATION',   key: 'config',   value: { grading_scale: 'A_B_C_D_E', forced_distribution: false, review_sequence: ['SELF', 'MANAGER'], bei_enabled: false, mbo_weight: 100, bei_weight: 0 } },
-    { companyCode: 'CTR-US', type: 'LEAVE',        key: 'config',   value: { leave_types: [{ code: 'PTO', name: 'PTO', paid: true, default_days: 15 }, { code: 'SICK', name: 'Sick Leave', paid: true, default_days: 5 }], accrual_rules: [{ tenure_years: 0, annual_days: 15 }, { tenure_years: 5, annual_days: 20 }], carryover_max_days: 5, carryover_expiry_months: 3 } },
-    { companyCode: 'CTR-US', type: 'COMPENSATION', key: 'pay_day',  value: { dayOfMonth: 15, biWeekly: true, currency: 'USD' } },
-    { companyCode: 'CTR-US', type: 'ONBOARDING',   key: 'config',   value: { probation_period_months: 0, required_documents: ['I9', 'W4', 'STATE_TAX', 'DIRECT_DEPOSIT', '401K_ENROLLMENT'], buddy_assignment: true } },
+    { companyCode: 'CTR-US', type: 'EVALUATION', key: 'config', value: { grading_scale: 'A_B_C_D_E', forced_distribution: false, review_sequence: ['SELF', 'MANAGER'], bei_enabled: false, mbo_weight: 100, bei_weight: 0 } },
+    { companyCode: 'CTR-US', type: 'LEAVE', key: 'config', value: { leave_types: [{ code: 'PTO', name: 'PTO', paid: true, default_days: 15 }, { code: 'SICK', name: 'Sick Leave', paid: true, default_days: 5 }], accrual_rules: [{ tenure_years: 0, annual_days: 15 }, { tenure_years: 5, annual_days: 20 }], carryover_max_days: 5, carryover_expiry_months: 3 } },
+    { companyCode: 'CTR-US', type: 'COMPENSATION', key: 'pay_day', value: { dayOfMonth: 15, biWeekly: true, currency: 'USD' } },
+    { companyCode: 'CTR-US', type: 'ONBOARDING', key: 'config', value: { probation_period_months: 0, required_documents: ['I9', 'W4', 'STATE_TAX', 'DIRECT_DEPOSIT', '401K_ENROLLMENT'], buddy_assignment: true } },
     // CTR-RU: Russian labor law (28 days annual, military docs)
-    { companyCode: 'CTR-RU', type: 'LEAVE',      key: 'config', value: { leave_types: [{ code: 'ANNUAL', name: 'Ежегодный отпуск', paid: true, default_days: 28 }, { code: 'SICK', name: 'Больничный', paid: true, default_days: 14 }], accrual_rules: [{ tenure_years: 0, annual_days: 28 }], carryover_max_days: 14, carryover_expiry_months: 18 } },
+    { companyCode: 'CTR-RU', type: 'LEAVE', key: 'config', value: { leave_types: [{ code: 'ANNUAL', name: 'Ежегодный отпуск', paid: true, default_days: 28 }, { code: 'SICK', name: 'Больничный', paid: true, default_days: 14 }], accrual_rules: [{ tenure_years: 0, annual_days: 28 }], carryover_max_days: 14, carryover_expiry_months: 18 } },
     { companyCode: 'CTR-RU', type: 'ONBOARDING', key: 'config', value: { probation_period_months: 3, required_documents: ['PASSPORT', 'MILITARY_ID', 'WORKBOOK', 'INN', 'SNILS'], buddy_assignment: false } },
     // CTR-VN: Vietnamese labor law (12 days annual, notarized contract)
-    { companyCode: 'CTR-VN', type: 'LEAVE',      key: 'config', value: { leave_types: [{ code: 'ANNUAL', name: 'Nghỉ phép năm', paid: true, default_days: 12 }, { code: 'SICK', name: 'Nghỉ ốm', paid: true, default_days: 30 }], accrual_rules: [{ tenure_years: 0, annual_days: 12 }, { tenure_years: 5, annual_days: 13 }, { tenure_years: 10, annual_days: 14 }], carryover_max_days: 5, carryover_expiry_months: 12 } },
+    { companyCode: 'CTR-VN', type: 'LEAVE', key: 'config', value: { leave_types: [{ code: 'ANNUAL', name: 'Nghỉ phép năm', paid: true, default_days: 12 }, { code: 'SICK', name: 'Nghỉ ốm', paid: true, default_days: 30 }], accrual_rules: [{ tenure_years: 0, annual_days: 12 }, { tenure_years: 5, annual_days: 13 }, { tenure_years: 10, annual_days: 14 }], carryover_max_days: 5, carryover_expiry_months: 12 } },
     { companyCode: 'CTR-VN', type: 'ONBOARDING', key: 'config', value: { probation_period_months: 2, required_documents: ['CITIZEN_ID', 'HOUSEHOLD_REGISTRATION', 'DEGREE', 'HEALTH_CERT'], buddy_assignment: false } },
     // CTR-MX: Mexican labor law (graduated vacation, bi-weekly MXN)
-    { companyCode: 'CTR-MX', type: 'LEAVE',        key: 'config',   value: { leave_types: [{ code: 'ANNUAL', name: 'Vacaciones', paid: true, default_days: 12 }, { code: 'SICK', name: 'Incapacidad', paid: true, default_days: 3 }], accrual_rules: [{ tenure_years: 1, annual_days: 12 }, { tenure_years: 2, annual_days: 14 }, { tenure_years: 3, annual_days: 16 }], carryover_max_days: 0, carryover_expiry_months: 12 } },
-    { companyCode: 'CTR-MX', type: 'COMPENSATION', key: 'pay_day',  value: { dayOfMonth: 15, biWeekly: true, currency: 'MXN' } },
+    { companyCode: 'CTR-MX', type: 'LEAVE', key: 'config', value: { leave_types: [{ code: 'ANNUAL', name: 'Vacaciones', paid: true, default_days: 12 }, { code: 'SICK', name: 'Incapacidad', paid: true, default_days: 3 }], accrual_rules: [{ tenure_years: 1, annual_days: 12 }, { tenure_years: 2, annual_days: 14 }, { tenure_years: 3, annual_days: 16 }], carryover_max_days: 0, carryover_expiry_months: 12 } },
+    { companyCode: 'CTR-MX', type: 'COMPENSATION', key: 'pay_day', value: { dayOfMonth: 15, biWeekly: true, currency: 'MXN' } },
   ]
 
   for (const s of companyOverrides) {
@@ -2862,13 +2869,20 @@ async function main() {
   // YearEndDeductionConfig 2025
   const yearEndDeductionConfigs2025 = [
     // income_deduction
-    { year: 2025, category: 'income_deduction', code: 'personal', name: '인적공제', displayOrder: 1,
-      rules: { basePerPerson: 1500000, additionalSenior: 1000000, additionalDisabled: 2000000, additionalSingleParent: 1000000 } },
-    { year: 2025, category: 'income_deduction', code: 'national_pension', name: '국민연금 공제', displayOrder: 2,
-      rules: { rate: 1.0 } },
-    { year: 2025, category: 'income_deduction', code: 'health_insurance', name: '건강보험 공제', displayOrder: 3,
-      rules: { rate: 1.0 } },
-    { year: 2025, category: 'income_deduction', code: 'credit_card', name: '신용카드 등 소득공제', displayOrder: 4,
+    {
+      year: 2025, category: 'income_deduction', code: 'personal', name: '인적공제', displayOrder: 1,
+      rules: { basePerPerson: 1500000, additionalSenior: 1000000, additionalDisabled: 2000000, additionalSingleParent: 1000000 }
+    },
+    {
+      year: 2025, category: 'income_deduction', code: 'national_pension', name: '국민연금 공제', displayOrder: 2,
+      rules: { rate: 1.0 }
+    },
+    {
+      year: 2025, category: 'income_deduction', code: 'health_insurance', name: '건강보험 공제', displayOrder: 3,
+      rules: { rate: 1.0 }
+    },
+    {
+      year: 2025, category: 'income_deduction', code: 'credit_card', name: '신용카드 등 소득공제', displayOrder: 4,
       rules: {
         thresholdRate: 0.25,
         rates: { credit_card: 0.15, debit_card: 0.30, cash_receipt: 0.30, traditional_market: 0.40, public_transport: 0.40, culture: 0.30 },
@@ -2876,27 +2890,42 @@ async function main() {
         additionalLimits: { traditional_market: 1000000, public_transport: 1000000, culture: 1000000 }
       }
     },
-    { year: 2025, category: 'income_deduction', code: 'housing_savings', name: '주택마련저축 공제', displayOrder: 5,
-      rules: { rate: 0.4, annualLimit: 2400000, salaryLimit: 70000000 } },
-    { year: 2025, category: 'income_deduction', code: 'housing_loan_interest', name: '주택임차차입금 이자 공제', displayOrder: 6,
-      rules: { limits: { lease_deposit: 3000000, mortgage_fixed_15y: 15000000, mortgage_fixed_10y: 3000000 } } },
+    {
+      year: 2025, category: 'income_deduction', code: 'housing_savings', name: '주택마련저축 공제', displayOrder: 5,
+      rules: { rate: 0.4, annualLimit: 2400000, salaryLimit: 70000000 }
+    },
+    {
+      year: 2025, category: 'income_deduction', code: 'housing_loan_interest', name: '주택임차차입금 이자 공제', displayOrder: 6,
+      rules: { limits: { lease_deposit: 3000000, mortgage_fixed_15y: 15000000, mortgage_fixed_10y: 3000000 } }
+    },
     // tax_credit
-    { year: 2025, category: 'tax_credit', code: 'earned_income_credit', name: '근로소득 세액공제', displayOrder: 10,
+    {
+      year: 2025, category: 'tax_credit', code: 'earned_income_credit', name: '근로소득 세액공제', displayOrder: 10,
       rules: {
-        brackets: [ { maxTax: 1300000, rate: 0.55 }, { minTax: 1300000, rate: 0.30, base: 715000 } ],
+        brackets: [{ maxTax: 1300000, rate: 0.55 }, { minTax: 1300000, rate: 0.30, base: 715000 }],
         limits: { salary_under_3300: 740000, salary_3300_7000: 660000, salary_over_7000: 500000 }
       }
     },
-    { year: 2025, category: 'tax_credit', code: 'child_credit', name: '자녀 세액공제', displayOrder: 11,
-      rules: { first: 150000, second: 350000, thirdPlus: 300000 } },
-    { year: 2025, category: 'tax_credit', code: 'medical_credit', name: '의료비 세액공제', displayOrder: 12,
-      rules: { thresholdRate: 0.03, rate: 0.15, seniorDisabledRate: 0.15, limit: 7000000, seniorDisabledNoLimit: true } },
-    { year: 2025, category: 'tax_credit', code: 'education_credit', name: '교육비 세액공제', displayOrder: 13,
-      rules: { rate: 0.15, selfNoLimit: true, childLimit: 3000000, kindergartenLimit: 3000000 } },
-    { year: 2025, category: 'tax_credit', code: 'donation_credit', name: '기부금 세액공제', displayOrder: 14,
-      rules: { politicalLimit: 100000, rate15: 0.15, rate30threshold: 10000000, rate30: 0.30 } },
-    { year: 2025, category: 'tax_credit', code: 'rent_credit', name: '월세 세액공제', displayOrder: 15,
-      rules: { salaryLimit: 70000000, annualLimit: 7500000, rate_under_5500: 0.17, rate_5500_7000: 0.15 } },
+    {
+      year: 2025, category: 'tax_credit', code: 'child_credit', name: '자녀 세액공제', displayOrder: 11,
+      rules: { first: 150000, second: 350000, thirdPlus: 300000 }
+    },
+    {
+      year: 2025, category: 'tax_credit', code: 'medical_credit', name: '의료비 세액공제', displayOrder: 12,
+      rules: { thresholdRate: 0.03, rate: 0.15, seniorDisabledRate: 0.15, limit: 7000000, seniorDisabledNoLimit: true }
+    },
+    {
+      year: 2025, category: 'tax_credit', code: 'education_credit', name: '교육비 세액공제', displayOrder: 13,
+      rules: { rate: 0.15, selfNoLimit: true, childLimit: 3000000, kindergartenLimit: 3000000 }
+    },
+    {
+      year: 2025, category: 'tax_credit', code: 'donation_credit', name: '기부금 세액공제', displayOrder: 14,
+      rules: { politicalLimit: 100000, rate15: 0.15, rate30threshold: 10000000, rate30: 0.30 }
+    },
+    {
+      year: 2025, category: 'tax_credit', code: 'rent_credit', name: '월세 세액공제', displayOrder: 15,
+      rules: { salaryLimit: 70000000, annualLimit: 7500000, rate_under_5500: 0.17, rate_5500_7000: 0.15 }
+    },
   ]
 
   for (const config of yearEndDeductionConfigs2025) {
@@ -2909,14 +2938,14 @@ async function main() {
 
   // IncomeTaxRate 2025
   const taxRates2025 = [
-    { year: 2025, minAmount: BigInt(0),          maxAmount: BigInt(14000000),   rate: 6,  progressiveDeduction: BigInt(0) },
-    { year: 2025, minAmount: BigInt(14000000),   maxAmount: BigInt(50000000),   rate: 15, progressiveDeduction: BigInt(1260000) },
-    { year: 2025, minAmount: BigInt(50000000),   maxAmount: BigInt(88000000),   rate: 24, progressiveDeduction: BigInt(5760000) },
-    { year: 2025, minAmount: BigInt(88000000),   maxAmount: BigInt(150000000),  rate: 35, progressiveDeduction: BigInt(15440000) },
-    { year: 2025, minAmount: BigInt(150000000),  maxAmount: BigInt(300000000),  rate: 38, progressiveDeduction: BigInt(19940000) },
-    { year: 2025, minAmount: BigInt(300000000),  maxAmount: BigInt(500000000),  rate: 40, progressiveDeduction: BigInt(25940000) },
-    { year: 2025, minAmount: BigInt(500000000),  maxAmount: BigInt(1000000000), rate: 42, progressiveDeduction: BigInt(35940000) },
-    { year: 2025, minAmount: BigInt(1000000000), maxAmount: null,               rate: 45, progressiveDeduction: BigInt(65940000) },
+    { year: 2025, minAmount: BigInt(0), maxAmount: BigInt(14000000), rate: 6, progressiveDeduction: BigInt(0) },
+    { year: 2025, minAmount: BigInt(14000000), maxAmount: BigInt(50000000), rate: 15, progressiveDeduction: BigInt(1260000) },
+    { year: 2025, minAmount: BigInt(50000000), maxAmount: BigInt(88000000), rate: 24, progressiveDeduction: BigInt(5760000) },
+    { year: 2025, minAmount: BigInt(88000000), maxAmount: BigInt(150000000), rate: 35, progressiveDeduction: BigInt(15440000) },
+    { year: 2025, minAmount: BigInt(150000000), maxAmount: BigInt(300000000), rate: 38, progressiveDeduction: BigInt(19940000) },
+    { year: 2025, minAmount: BigInt(300000000), maxAmount: BigInt(500000000), rate: 40, progressiveDeduction: BigInt(25940000) },
+    { year: 2025, minAmount: BigInt(500000000), maxAmount: BigInt(1000000000), rate: 42, progressiveDeduction: BigInt(35940000) },
+    { year: 2025, minAmount: BigInt(1000000000), maxAmount: null, rate: 45, progressiveDeduction: BigInt(65940000) },
   ]
 
   for (const rate of taxRates2025) {
@@ -2949,11 +2978,11 @@ async function main() {
   const coreValueGradeMap: Record<string, number> = { G3: 4, G4: 3, G5: 3, G6: 2 }
   // 직무 전문 역량
   const technicalGradeMap: Record<string, Record<string, number>> = {
-    welding:          { G3: 5, G4: 4, G5: 3, G6: 2 },
-    quality_mgmt:     { G3: 5, G4: 4, G5: 3, G6: 2 },
-    mold_design:      { G3: 4, G4: 3, G5: 2, G6: 1 },
-    injection_molding:{ G3: 4, G4: 3, G5: 3, G6: 2 },
-    plc_programming:  { G3: 5, G4: 4, G5: 3, G6: 2 },
+    welding: { G3: 5, G4: 4, G5: 3, G6: 2 },
+    quality_mgmt: { G3: 5, G4: 4, G5: 3, G6: 2 },
+    mold_design: { G3: 4, G4: 3, G5: 2, G6: 1 },
+    injection_molding: { G3: 4, G4: 3, G5: 3, G6: 2 },
+    plc_programming: { G3: 5, G4: 4, G5: 3, G6: 2 },
   }
 
   const coreValueCodes = ['challenge', 'trust', 'responsibility', 'respect']
@@ -2989,18 +3018,30 @@ async function main() {
 
   // ── 2. CTR-KR 생산팀 직원 6명 생성 ─────────────────────────
   const mfgEmployees = [
-    { no: 'CTR-KR-2001', name: '김현식', nameEn: 'Kim Hyunshik', grade: 'G4', email: 'kim.hyunshik@ctr.co.kr',
-      scores: { challenge:5, trust:4, responsibility:4, respect:3, welding:4, quality_mgmt:4, mold_design:3, injection_molding:3, plc_programming:2 } },
-    { no: 'CTR-KR-2002', name: '이태준', nameEn: 'Lee Taejun', grade: 'G4', email: 'lee.taejun@ctr.co.kr',
-      scores: { challenge:4, trust:3, responsibility:3, respect:4, welding:4, quality_mgmt:3, mold_design:2, injection_molding:3, plc_programming:1 } },
-    { no: 'CTR-KR-2003', name: '박재홍', nameEn: 'Park Jaehong', grade: 'G5', email: 'park.jaehong@ctr.co.kr',
-      scores: { challenge:4, trust:3, responsibility:3, respect:3, welding:3, quality_mgmt:3, mold_design:2, injection_molding:2, plc_programming:2 } },
-    { no: 'CTR-KR-2004', name: '최민준', nameEn: 'Choi Minjun', grade: 'G5', email: 'choi.minjun@ctr.co.kr',
-      scores: { challenge:3, trust:4, responsibility:3, respect:3, welding:4, quality_mgmt:3, mold_design:1, injection_molding:3, plc_programming:1 } },
-    { no: 'CTR-KR-2005', name: '정수현', nameEn: 'Jeong Suhyun', grade: 'G6', email: 'jeong.suhyun@ctr.co.kr',
-      scores: { challenge:3, trust:3, responsibility:3, respect:2, welding:3, quality_mgmt:2, mold_design:1, injection_molding:2, plc_programming:1 } },
-    { no: 'CTR-KR-2006', name: '홍기영', nameEn: 'Hong Giyeong', grade: 'G6', email: 'hong.giyeong@ctr.co.kr',
-      scores: { challenge:3, trust:3, responsibility:2, respect:3, welding:2, quality_mgmt:2, mold_design:1, injection_molding:2, plc_programming:2 } },
+    {
+      no: 'CTR-KR-2001', name: '김현식', nameEn: 'Kim Hyunshik', grade: 'G4', email: 'kim.hyunshik@ctr.co.kr',
+      scores: { challenge: 5, trust: 4, responsibility: 4, respect: 3, welding: 4, quality_mgmt: 4, mold_design: 3, injection_molding: 3, plc_programming: 2 }
+    },
+    {
+      no: 'CTR-KR-2002', name: '이태준', nameEn: 'Lee Taejun', grade: 'G4', email: 'lee.taejun@ctr.co.kr',
+      scores: { challenge: 4, trust: 3, responsibility: 3, respect: 4, welding: 4, quality_mgmt: 3, mold_design: 2, injection_molding: 3, plc_programming: 1 }
+    },
+    {
+      no: 'CTR-KR-2003', name: '박재홍', nameEn: 'Park Jaehong', grade: 'G5', email: 'park.jaehong@ctr.co.kr',
+      scores: { challenge: 4, trust: 3, responsibility: 3, respect: 3, welding: 3, quality_mgmt: 3, mold_design: 2, injection_molding: 2, plc_programming: 2 }
+    },
+    {
+      no: 'CTR-KR-2004', name: '최민준', nameEn: 'Choi Minjun', grade: 'G5', email: 'choi.minjun@ctr.co.kr',
+      scores: { challenge: 3, trust: 4, responsibility: 3, respect: 3, welding: 4, quality_mgmt: 3, mold_design: 1, injection_molding: 3, plc_programming: 1 }
+    },
+    {
+      no: 'CTR-KR-2005', name: '정수현', nameEn: 'Jeong Suhyun', grade: 'G6', email: 'jeong.suhyun@ctr.co.kr',
+      scores: { challenge: 3, trust: 3, responsibility: 3, respect: 2, welding: 3, quality_mgmt: 2, mold_design: 1, injection_molding: 2, plc_programming: 1 }
+    },
+    {
+      no: 'CTR-KR-2006', name: '홍기영', nameEn: 'Hong Giyeong', grade: 'G6', email: 'hong.giyeong@ctr.co.kr',
+      scores: { challenge: 3, trust: 3, responsibility: 2, respect: 3, welding: 2, quality_mgmt: 2, mold_design: 1, injection_molding: 2, plc_programming: 2 }
+    },
   ]
 
   let skillEmpCount = 0
@@ -3528,6 +3569,21 @@ async function main() {
   // QA FIXES: Fill missing data (recent attendance, payslips, etc.)
   // ─────────────────────────────────────────────────────────
   await seedQAFixes(prisma)
+
+  // ─────────────────────────────────────────────────────────
+  // SESSION A: Recruitment + Compensation + Benefits
+  // ─────────────────────────────────────────────────────────
+  await seedRecruitment(prisma)
+  await seedCompensation(prisma)
+  await seedBenefits(prisma)
+
+  // ─────────────────────────────────────────────────────────
+  // SESSION B: Year-End + Succession + Peer-Review + Partial Fixes
+  // ─────────────────────────────────────────────────────────
+  await seedYearEnd(prisma)
+  await seedSuccession(prisma)
+  await seedPeerReview(prisma)
+  await seedPartialFixes(prisma)
 }
 
 main()

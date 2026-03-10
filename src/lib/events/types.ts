@@ -15,33 +15,40 @@
 
 export const DOMAIN_EVENTS = {
   // Leave module
-  LEAVE_APPROVED:   'LEAVE_APPROVED',
-  LEAVE_REJECTED:   'LEAVE_REJECTED',
-  LEAVE_CANCELLED:  'LEAVE_CANCELLED',
-  LEAVE_REQUESTED:  'LEAVE_REQUESTED',   // 신청 생성 (향후 알림/워크플로우용)
+  LEAVE_APPROVED: 'LEAVE_APPROVED',
+  LEAVE_REJECTED: 'LEAVE_REJECTED',
+  LEAVE_CANCELLED: 'LEAVE_CANCELLED',
+  LEAVE_REQUESTED: 'LEAVE_REQUESTED',   // 신청 생성 (향후 알림/워크플로우용)
 
-  // Payroll module
+  // Payroll module (GP#2 기존)
   PAYROLL_CALCULATED: 'PAYROLL_CALCULATED',
-  PAYROLL_APPROVED:   'PAYROLL_APPROVED',
-  PAYROLL_PAID:       'PAYROLL_PAID',     // 지급 완료 (향후 SocialInsurance 연동)
+  PAYROLL_APPROVED: 'PAYROLL_APPROVED',
+  PAYROLL_PAID: 'PAYROLL_PAID',     // 지급 완료 (향후 SocialInsurance 연동)
+
+  // GP#3: Payroll Pipeline Events
+  PAYROLL_ATTENDANCE_CLOSED: 'PAYROLL_ATTENDANCE_CLOSED',
+  PAYROLL_ATTENDANCE_REOPENED: 'PAYROLL_ATTENDANCE_REOPENED',
+  PAYROLL_ADJUSTMENT_ADDED: 'PAYROLL_ADJUSTMENT_ADDED',
+  PAYROLL_REVIEW_READY: 'PAYROLL_REVIEW_READY',
+  PAYROLL_PUBLISHED: 'PAYROLL_PUBLISHED',
 
   // Onboarding module
-  EMPLOYEE_HIRED:               'EMPLOYEE_HIRED',
-  ONBOARDING_TASK_COMPLETED:    'ONBOARDING_TASK_COMPLETED',
-  ONBOARDING_COMPLETED:         'ONBOARDING_COMPLETED',
+  EMPLOYEE_HIRED: 'EMPLOYEE_HIRED',
+  ONBOARDING_TASK_COMPLETED: 'ONBOARDING_TASK_COMPLETED',
+  ONBOARDING_COMPLETED: 'ONBOARDING_COMPLETED',
 
   // Offboarding module
-  EMPLOYEE_OFFBOARDING_STARTED:  'EMPLOYEE_OFFBOARDING_STARTED',
-  OFFBOARDING_TASK_COMPLETED:    'OFFBOARDING_TASK_COMPLETED',
-  OFFBOARDING_COMPLETED:         'OFFBOARDING_COMPLETED',
+  EMPLOYEE_OFFBOARDING_STARTED: 'EMPLOYEE_OFFBOARDING_STARTED',
+  OFFBOARDING_TASK_COMPLETED: 'OFFBOARDING_TASK_COMPLETED',
+  OFFBOARDING_COMPLETED: 'OFFBOARDING_COMPLETED',
 
   // Performance Review module
-  PERFORMANCE_CYCLE_PHASE_CHANGED:   'PERFORMANCE_CYCLE_PHASE_CHANGED',
-  PERFORMANCE_MBO_GOAL_SUBMITTED:    'PERFORMANCE_MBO_GOAL_SUBMITTED',
-  PERFORMANCE_MBO_GOAL_REVIEWED:     'PERFORMANCE_MBO_GOAL_REVIEWED',
-  PERFORMANCE_SELF_EVAL_SUBMITTED:   'PERFORMANCE_SELF_EVAL_SUBMITTED',
+  PERFORMANCE_CYCLE_PHASE_CHANGED: 'PERFORMANCE_CYCLE_PHASE_CHANGED',
+  PERFORMANCE_MBO_GOAL_SUBMITTED: 'PERFORMANCE_MBO_GOAL_SUBMITTED',
+  PERFORMANCE_MBO_GOAL_REVIEWED: 'PERFORMANCE_MBO_GOAL_REVIEWED',
+  PERFORMANCE_SELF_EVAL_SUBMITTED: 'PERFORMANCE_SELF_EVAL_SUBMITTED',
   PERFORMANCE_MANAGER_EVAL_SUBMITTED: 'PERFORMANCE_MANAGER_EVAL_SUBMITTED',
-  PERFORMANCE_CYCLE_FINALIZED:       'PERFORMANCE_CYCLE_FINALIZED',
+  PERFORMANCE_CYCLE_FINALIZED: 'PERFORMANCE_CYCLE_FINALIZED',
 } as const
 
 export type DomainEventName = typeof DOMAIN_EVENTS[keyof typeof DOMAIN_EVENTS]
@@ -125,6 +132,54 @@ export interface PayrollPaidPayload {
   runId: string
   yearMonth: string
   paidAt: Date
+}
+
+// ── GP#3 Payroll Pipeline Events ─────────────────────────
+
+export interface PayrollAttendanceClosedPayload {
+  ctx: EventContext
+  payrollRunId: string
+  companyId: string
+  yearMonth: string
+  year: number
+  month: number
+  totalEmployees: number
+  confirmedCount: number
+  excludedCount: number
+}
+
+export interface PayrollAttendanceReopenedPayload {
+  ctx: EventContext
+  payrollRunId: string
+  companyId: string
+  yearMonth: string
+}
+
+export interface PayrollAdjustmentAddedPayload {
+  ctx: EventContext
+  payrollRunId: string
+  companyId: string
+  adjustmentId: string
+  employeeId: string
+  amount: number
+  type: string
+}
+
+export interface PayrollReviewReadyPayload {
+  ctx: EventContext
+  payrollRunId: string
+  companyId: string
+  yearMonth: string
+  anomalyCount: number
+}
+
+export interface PayrollPublishedPayload {
+  ctx: EventContext
+  payrollRunId: string
+  companyId: string
+  yearMonth: string
+  headcount: number
+  publishedAt: Date
 }
 
 // ── Onboarding Events ────────────────────────────────────
@@ -316,26 +371,32 @@ export interface PerformanceCycleFinalizedPayload {
 // ------------------------------------
 
 export interface DomainEventMap {
-  LEAVE_APPROVED:                     LeaveApprovedPayload
-  LEAVE_REJECTED:                     LeaveRejectedPayload
-  LEAVE_CANCELLED:                    LeaveCancelledPayload
-  LEAVE_REQUESTED:                    LeaveRequestedPayload
-  PAYROLL_CALCULATED:                 PayrollCalculatedPayload
-  PAYROLL_APPROVED:                   PayrollApprovedPayload
-  PAYROLL_PAID:                       PayrollPaidPayload
-  EMPLOYEE_HIRED:                     EmployeeHiredPayload
-  ONBOARDING_TASK_COMPLETED:          OnboardingTaskCompletedPayload
-  ONBOARDING_COMPLETED:               OnboardingCompletedPayload
-  EMPLOYEE_OFFBOARDING_STARTED:       EmployeeOffboardingStartedPayload
-  OFFBOARDING_TASK_COMPLETED:         OffboardingTaskCompletedPayload
-  OFFBOARDING_COMPLETED:              OffboardingCompletedPayload
+  LEAVE_APPROVED: LeaveApprovedPayload
+  LEAVE_REJECTED: LeaveRejectedPayload
+  LEAVE_CANCELLED: LeaveCancelledPayload
+  LEAVE_REQUESTED: LeaveRequestedPayload
+  PAYROLL_CALCULATED: PayrollCalculatedPayload
+  PAYROLL_APPROVED: PayrollApprovedPayload
+  PAYROLL_PAID: PayrollPaidPayload
+  // GP#3 pipeline events
+  PAYROLL_ATTENDANCE_CLOSED: PayrollAttendanceClosedPayload
+  PAYROLL_ATTENDANCE_REOPENED: PayrollAttendanceReopenedPayload
+  PAYROLL_ADJUSTMENT_ADDED: PayrollAdjustmentAddedPayload
+  PAYROLL_REVIEW_READY: PayrollReviewReadyPayload
+  PAYROLL_PUBLISHED: PayrollPublishedPayload
+  EMPLOYEE_HIRED: EmployeeHiredPayload
+  ONBOARDING_TASK_COMPLETED: OnboardingTaskCompletedPayload
+  ONBOARDING_COMPLETED: OnboardingCompletedPayload
+  EMPLOYEE_OFFBOARDING_STARTED: EmployeeOffboardingStartedPayload
+  OFFBOARDING_TASK_COMPLETED: OffboardingTaskCompletedPayload
+  OFFBOARDING_COMPLETED: OffboardingCompletedPayload
   // Performance Review
-  PERFORMANCE_CYCLE_PHASE_CHANGED:    PerformanceCyclePhaseChangedPayload
-  PERFORMANCE_MBO_GOAL_SUBMITTED:     PerformanceMboGoalSubmittedPayload
-  PERFORMANCE_MBO_GOAL_REVIEWED:      PerformanceMboGoalReviewedPayload
-  PERFORMANCE_SELF_EVAL_SUBMITTED:    PerformanceSelfEvalSubmittedPayload
+  PERFORMANCE_CYCLE_PHASE_CHANGED: PerformanceCyclePhaseChangedPayload
+  PERFORMANCE_MBO_GOAL_SUBMITTED: PerformanceMboGoalSubmittedPayload
+  PERFORMANCE_MBO_GOAL_REVIEWED: PerformanceMboGoalReviewedPayload
+  PERFORMANCE_SELF_EVAL_SUBMITTED: PerformanceSelfEvalSubmittedPayload
   PERFORMANCE_MANAGER_EVAL_SUBMITTED: PerformanceManagerEvalSubmittedPayload
-  PERFORMANCE_CYCLE_FINALIZED:        PerformanceCycleFinalizedPayload
+  PERFORMANCE_CYCLE_FINALIZED: PerformanceCycleFinalizedPayload
 }
 
 /** 타입-안전 이벤트 봉투 */

@@ -446,10 +446,13 @@ enum AllowanceType {
 
 enum PayrollStatus {
   DRAFT
-  CALCULATING
-  REVIEW
-  APPROVED
-  PAID
+  ATTENDANCE_CLOSED  // 근태 마감 완료
+  CALCULATING        // 자동 계산 진행 중
+  ADJUSTMENT         // 수동 조정 단계
+  REVIEW             // 이상 검토 단계
+  PENDING_APPROVAL   // 결재 대기
+  APPROVED           // 승인 완료
+  PAID               // 지급 완료 (급여명세서 발행)
   CANCELLED
 
   @@map("PayrollStatus")
@@ -1207,9 +1210,11 @@ model Employee {
   approvedBenefitClaims BenefitClaim[] @relation("BenefitClaimApprover")
 
   // Payroll
-  payrollItems        PayrollItem[]
-  payrollRunApprovals PayrollRun[]  @relation("PayrollApprover")
-  payrollSimulations  PayrollSimulation[]
+  payrollItems           PayrollItem[]
+  payrollRunApprovals    PayrollRun[]           @relation("PayrollApprover")
+  payrollSimulations     PayrollSimulation[]
+  payrollAdjustments     PayrollAdjustment[]    @relation("PayrollAdjustmentEmployee")
+  payrollAnomalies       PayrollAnomaly[]       @relation("PayrollAnomalyEmployee")
 
   // Notifications
   notifications           Notification[]
@@ -2609,7 +2614,9 @@ model PayrollRun {
   companyId       String           @map("company_id")
   name            String           @default("")
   runType         PayrollRunType   @default(MONTHLY) @map("run_type")
-  yearMonth       String           @map("year_month")
+  yearMonth       String           @map("year_month")       // "yyyy-MM" format
+  year            Int?                                      // GP#3: 월 분리 편의를 위해
+  month           Int?                                      // GP#3: 월 분리 편의를 위해
   frequency       PayrollFrequency @default(MONTHLY)
   periodStart     DateTime         @default(now()) @map("period_start")
   periodEnd       DateTime         @default(now()) @map("period_end")
@@ -2626,10 +2633,30 @@ model PayrollRun {
   paidAt          DateTime?        @map("paid_at")
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @updatedAt @map("updated_at")
+  createdBy       String?          @map("created_by")
 
-  company      Company       @relation(fields: [companyId], references: [id])
-  approver     Employee?     @relation("PayrollApprover", fields: [approvedBy], references: [id])
+  // GP#3-A: 근태 마감 (STEP 1)
+  attendanceClosedAt  DateTime?  @map("attendance_closed_at")
+  attendanceClosedBy  String?    @map("attendance_closed_by")
+  excludedEmployeeIds String[]   @default([]) @map("excluded_employee_ids")
+
+  // GP#3-A: 수동 조정 (STEP 2.5)
+  adjustmentCount Int     @default(0) @map("adjustment_count")
+  adjustmentTotal Decimal @default(0) @map("adjustment_total") @db.Decimal(15, 0)
+
+  // GP#3-A: 이상 검토 (STEP 3)
+  anomalyCount         Int     @default(0) @map("anomaly_count")
+  allAnomaliesResolved Boolean @default(false) @map("all_anomalies_resolved")
+
+  // GP#3: 전월 비교용
+  previousMonthRunId String? @map("previous_month_run_id")
+  notes              String?
+
+  company      Company            @relation(fields: [companyId], references: [id])
+  approver     Employee?          @relation("PayrollApprover", fields: [approvedBy], references: [id])
   payrollItems PayrollItem[]
+  adjustments  PayrollAdjustment[]
+  anomalies    PayrollAnomaly[]
 
   @@index([companyId, yearMonth])
   @@index([companyId, status])
@@ -2658,6 +2685,93 @@ model PayrollItem {
 
   @@index([runId, employeeId])
   @@map("payroll_items")
+}
+
+// ================================================================
+// 14-B. GP#3: PayrollAdjustment + PayrollAnomaly
+// ================================================================
+
+// GP#3-A: 수동 조정 (소급 지급, 보너스, 오류 정정 등)
+model PayrollAdjustment {
+  id           String         @id @default(uuid())
+  payrollRunId String         @map("payroll_run_id")
+  payrollRun   PayrollRun     @relation(fields: [payrollRunId], references: [id])
+
+  employeeId String   @map("employee_id")
+  employee   Employee @relation("PayrollAdjustmentEmployee", fields: [employeeId], references: [id])
+
+  type        AdjustmentType
+  category    String           // 급여 항목 카테고리 (기본급, 수당, 복리후생 등)
+  description String           // 사유/메모 (required)
+  amount      Decimal          @db.Decimal(15, 0) // 양수=추가, 음수=공제
+
+  evidenceUrl String?  @map("evidence_url") // 첨부파일 URL
+  createdBy   String   @map("created_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([payrollRunId])
+  @@index([employeeId])
+  @@map("payroll_adjustments")
+}
+
+enum AdjustmentType {
+  RETROACTIVE  // 소급 지급
+  BONUS        // 경조사비, 성과급 등
+  CORRECTION   // 오류 정정
+  DEDUCTION    // 과지급 환수
+  OTHER
+
+  @@map("AdjustmentType")
+}
+
+// GP#3-A: 이상 감지 (데이터 생성, UI는 GP#3-B에서 구현)
+model PayrollAnomaly {
+  id           String       @id @default(uuid())
+  payrollRunId String       @map("payroll_run_id")
+  payrollRun   PayrollRun   @relation(fields: [payrollRunId], references: [id])
+
+  employeeId String   @map("employee_id")
+  employee   Employee @relation("PayrollAnomalyEmployee", fields: [employeeId], references: [id])
+
+  ruleCode    String  @map("rule_code")     // e.g. "MOM_CHANGE_30PCT", "BAND_EXCEEDED"
+  severity    AnomalySeverity
+  description String
+
+  currentValue  Decimal? @map("current_value") @db.Decimal(15, 0)
+  previousValue Decimal? @map("previous_value") @db.Decimal(15, 0)
+  threshold     String?  // e.g. "30%", "52h"
+
+  // 해소
+  status     AnomalyStatus @default(OPEN)
+  resolvedBy String?       @map("resolved_by")
+  resolvedAt DateTime?     @map("resolved_at")
+  resolution String?       // "CONFIRMED_NORMAL", "CORRECTED", "WHITELISTED"
+
+  // 화이트리스트
+  whitelisted     Boolean @default(false)
+  whitelistReason String? @map("whitelist_reason")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([payrollRunId])
+  @@index([employeeId])
+  @@map("payroll_anomalies")
+}
+
+enum AnomalySeverity {
+  CRITICAL  // 법정 한도 초과 등
+  WARNING   // 전월 대비 급변동 등
+  INFO      // 신규입사자 첫 급여 등
+
+  @@map("AnomalySeverity")
+}
+
+enum AnomalyStatus {
+  OPEN
+  RESOLVED
+  WHITELISTED
+
+  @@map("AnomalyStatus")
 }
 
 // ================================================================
