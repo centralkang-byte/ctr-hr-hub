@@ -2,82 +2,77 @@
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — CommandPalette (Cmd+K / Ctrl+K 전역 검색)
-// 커스텀 CRAFTUI 스타일 모달 + 키보드 네비게이션 + API 검색
+// 메뉴 검색 + 직원 검색 + 최근 방문 페이지
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import {
-  Users,
   LayoutDashboard,
-  FileText,
   Clock,
   Search,
   Hash,
 } from 'lucide-react'
-import { apiClient } from '@/lib/api'
+import { useRecentPages } from '@/hooks/useRecentPages'
 
-// ─── Types ──────────────────────────────────────────────────
+// ─── OS Detection (client-only) ─────────────────────────────────────────────
 
-interface SearchResult {
-  id: string
-  label: string
-  description?: string
-  href: string
-  category: 'employee' | 'menu' | 'document' | 'recent'
+function isMac(): boolean {
+  if (typeof navigator === 'undefined') return true
+  return /Mac|iPhone|iPad|iPod/.test(navigator.platform)
 }
 
-interface ApiEmployee {
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+interface MenuResult {
+  id: string
+  label: string
+  href: string
+}
+
+interface EmployeeResult {
   id: string
   name: string
   employeeNo: string
-  email: string
-  department: string | null
-  position: string | null
+  department: { name: string } | null
+  company: { code: string } | null
 }
 
-interface ApiDocument {
-  id: string
-  title: string
-  docType: string
-}
+// ─── Menu items ──────────────────────────────────────────────────────────────
 
-// ─── Menu items for fuzzy matching ──────────────────────────
-
-const MENU_ITEMS: SearchResult[] = [
-  { id: 'menu-home', label: '홈', href: '/home', category: 'menu' },
-  { id: 'menu-employees', label: '직원 관리', href: '/employees', category: 'menu' },
-  { id: 'menu-attendance', label: '근태 관리', href: '/attendance', category: 'menu' },
-  { id: 'menu-attendance-team', label: '팀 근태', href: '/attendance/team', category: 'menu' },
-  { id: 'menu-leave', label: '휴가 관리', href: '/leave', category: 'menu' },
-  { id: 'menu-leave-admin', label: '휴가 관리 (관리자)', href: '/leave/admin', category: 'menu' },
-  { id: 'menu-performance', label: '성과 관리', href: '/performance', category: 'menu' },
-  { id: 'menu-performance-mbo', label: 'MBO 목표', href: '/performance/mbo', category: 'menu' },
-  { id: 'menu-performance-eval', label: '성과 평가', href: '/performance/evaluations', category: 'menu' },
-  { id: 'menu-performance-1on1', label: '1:1 미팅', href: '/performance/one-on-one', category: 'menu' },
-  { id: 'menu-recruitment', label: '채용 관리', href: '/recruitment', category: 'menu' },
-  { id: 'menu-recruitment-board', label: '채용 칸반 보드', href: '/recruitment/board', category: 'menu' },
-  { id: 'menu-payroll', label: '급여 관리', href: '/payroll', category: 'menu' },
-  { id: 'menu-compensation', label: '연봉/보상', href: '/compensation', category: 'menu' },
-  { id: 'menu-onboarding', label: '온보딩', href: '/onboarding', category: 'menu' },
-  { id: 'menu-offboarding', label: '퇴직 관리', href: '/offboarding', category: 'menu' },
-  { id: 'menu-training', label: '교육 관리', href: '/training', category: 'menu' },
-  { id: 'menu-benefits', label: '복리후생', href: '/benefits', category: 'menu' },
-  { id: 'menu-succession', label: '승계 계획', href: '/talent/succession', category: 'menu' },
-  { id: 'menu-analytics', label: '분석 대시보드', href: '/analytics', category: 'menu' },
-  { id: 'menu-predictive', label: 'HR 예측 애널리틱스', href: '/analytics/predictive', category: 'menu' },
-  { id: 'menu-discipline', label: '징계·포상', href: '/discipline', category: 'menu' },
-  { id: 'menu-manager-hub', label: '매니저 허브', href: '/manager-hub', category: 'menu' },
-  { id: 'menu-approvals', label: '승인함', href: '/approvals/attendance', category: 'menu' },
-  { id: 'menu-directory', label: 'People Directory', href: '/directory', category: 'menu' },
-  { id: 'menu-org', label: '조직 관리', href: '/org', category: 'menu' },
-  { id: 'menu-settings', label: '설정', href: '/settings', category: 'menu' },
-  { id: 'menu-notifications', label: '알림', href: '/notifications', category: 'menu' },
+const MENU_ITEMS: MenuResult[] = [
+  { id: 'menu-home', label: '홈', href: '/home' },
+  { id: 'menu-employees', label: '직원 관리', href: '/employees' },
+  { id: 'menu-attendance', label: '근태 관리', href: '/attendance' },
+  { id: 'menu-attendance-team', label: '팀 근태', href: '/attendance/team' },
+  { id: 'menu-leave', label: '휴가 관리', href: '/leave' },
+  { id: 'menu-leave-admin', label: '휴가 관리 (관리자)', href: '/leave/admin' },
+  { id: 'menu-performance', label: '성과 관리', href: '/performance' },
+  { id: 'menu-performance-mbo', label: 'MBO 목표', href: '/performance/mbo' },
+  { id: 'menu-performance-eval', label: '성과 평가', href: '/performance/evaluations' },
+  { id: 'menu-performance-1on1', label: '1:1 미팅', href: '/performance/one-on-one' },
+  { id: 'menu-recruitment', label: '채용 관리', href: '/recruitment' },
+  { id: 'menu-recruitment-board', label: '채용 칸반 보드', href: '/recruitment/board' },
+  { id: 'menu-payroll', label: '급여 관리', href: '/payroll' },
+  { id: 'menu-compensation', label: '연봉/보상', href: '/compensation' },
+  { id: 'menu-onboarding', label: '온보딩', href: '/onboarding' },
+  { id: 'menu-offboarding', label: '퇴직 관리', href: '/offboarding' },
+  { id: 'menu-training', label: '교육 관리', href: '/training' },
+  { id: 'menu-benefits', label: '복리후생', href: '/benefits' },
+  { id: 'menu-succession', label: '승계 계획', href: '/talent/succession' },
+  { id: 'menu-analytics', label: '분석 대시보드', href: '/analytics' },
+  { id: 'menu-predictive', label: 'HR 예측 애널리틱스', href: '/analytics/predictive' },
+  { id: 'menu-discipline', label: '징계·포상', href: '/discipline' },
+  { id: 'menu-manager-hub', label: '매니저 허브', href: '/manager-hub' },
+  { id: 'menu-approvals', label: '승인함', href: '/approvals/attendance' },
+  { id: 'menu-directory', label: 'People Directory', href: '/directory' },
+  { id: 'menu-org', label: '조직 관리', href: '/org' },
+  { id: 'menu-settings', label: '설정', href: '/settings' },
+  { id: 'menu-notifications', label: '알림', href: '/notifications' },
 ]
 
-const RECENT_KEY = 'ctr-command-recent'
-
-// ─── Simple fuzzy match ─────────────────────────────────────
+// ─── Fuzzy match ─────────────────────────────────────────────────────────────
 
 function fuzzyMatch(text: string, query: string): boolean {
   const lower = text.toLowerCase()
@@ -89,20 +84,42 @@ function fuzzyMatch(text: string, query: string): boolean {
   return qi === q.length
 }
 
-// ─── Component ──────────────────────────────────────────────
+// ─── Avatar color palette ────────────────────────────────────────────────────
+
+const AVATAR_COLORS = [
+  '#5E81F4', '#F4845F', '#2DCE89', '#F5A623',
+  '#9B59B6', '#1ABC9C', '#E74C3C', '#3498DB',
+]
+
+function avatarColor(name: string): string {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length]
+}
+
+// ─── Component ───────────────────────────────────────────────────────────────
 
 export function CommandPalette() {
+  const router = useRouter()
+  const t = useTranslations('commandPalette')
+  const { recentPages } = useRecentPages()
+
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
-  const [employeeResults, setEmployeeResults] = useState<SearchResult[]>([])
-  const [documentResults, setDocumentResults] = useState<SearchResult[]>([])
-  const [recentResults, setRecentResults] = useState<SearchResult[]>([])
+  const [employeeResults, setEmployeeResults] = useState<EmployeeResult[]>([])
+  const [loadingEmployees, setLoadingEmployees] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
-  const inputRef = useRef<HTMLInputElement>(null)
-  const router = useRouter()
+  const [mac, setMac] = useState(true)
 
-  // Cmd+K / Ctrl+K handler
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  // Detect OS on mount
+  useEffect(() => {
+    setMac(isMac())
+  }, [])
+
+  // ─── Global Cmd+K / Ctrl+K ───────────────────────────────────────────────
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -114,140 +131,100 @@ export function CommandPalette() {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [])
 
-  // Auto-focus input when opened
+  // Auto-focus / reset on open/close
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 0)
     } else {
       setQuery('')
+      setDebouncedQuery('')
+      setEmployeeResults([])
       setActiveIndex(0)
     }
   }, [open])
 
-  // Load recent searches
+  // Debounce query
   useEffect(() => {
-    if (open) {
-      try {
-        const stored = localStorage.getItem(RECENT_KEY)
-        if (stored) setRecentResults(JSON.parse(stored))
-      } catch {
-        // ignore
-      }
-    }
-  }, [open])
-
-  // Debounce
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedQuery(query), 200)
+    const timer = setTimeout(() => setDebouncedQuery(query), 300)
     return () => clearTimeout(timer)
   }, [query])
 
-  // Reset active index when results change
+  // Reset keyboard index when results change
   useEffect(() => {
     setActiveIndex(0)
   }, [debouncedQuery])
 
-  // API search
+  // ─── Employee API search (directory) ─────────────────────────────────────
   useEffect(() => {
-    if (!debouncedQuery || debouncedQuery.length < 1) {
+    if (!debouncedQuery || debouncedQuery.length < 2) {
       setEmployeeResults([])
-      setDocumentResults([])
       return
     }
-
-    apiClient
-      .get<{ employees: ApiEmployee[]; documents: ApiDocument[] }>(
-        `/api/v1/search/command?q=${encodeURIComponent(debouncedQuery)}&limit=5`,
-      )
-      .then((res) => {
-        setEmployeeResults(
-          res.data.employees.map((e: ApiEmployee) => ({
-            id: e.id,
-            label: e.name,
-            description: [e.department, e.position].filter(Boolean).join(' · '),
-            href: `/employees/${e.id}`,
-            category: 'employee' as const,
-          })),
-        )
-        setDocumentResults(
-          res.data.documents.map((d: ApiDocument) => ({
-            id: d.id,
-            label: d.title,
-            description: d.docType,
-            href: '/settings/hr-documents',
-            category: 'document' as const,
-          })),
-        )
+    setLoadingEmployees(true)
+    fetch(`/api/v1/directory?search=${encodeURIComponent(debouncedQuery)}&limit=5`)
+      .then((r) => r.json())
+      .then((json) => {
+        setEmployeeResults((json.data as EmployeeResult[]) ?? [])
       })
-      .catch(() => {
-        setEmployeeResults([])
-        setDocumentResults([])
-      })
+      .catch(() => setEmployeeResults([]))
+      .finally(() => setLoadingEmployees(false))
   }, [debouncedQuery])
 
-  // Build flat list of all visible results for keyboard nav
-  const filteredMenus = debouncedQuery
+  // ─── Derived result lists ─────────────────────────────────────────────────
+  const filteredMenus: MenuResult[] = debouncedQuery
     ? MENU_ITEMS.filter((item) => fuzzyMatch(item.label, debouncedQuery)).slice(0, 5)
-    : MENU_ITEMS.slice(0, 6)
+    : []
 
-  const allResults: SearchResult[] = [
-    ...employeeResults,
-    ...filteredMenus,
-    ...documentResults,
-    ...(!debouncedQuery ? recentResults : []),
-  ]
+  // Flat list for keyboard navigation
+  // Order: employees → menus  (when searching)
+  //        recent pages       (when empty)
+  const flatList: { id: string; href: string }[] = debouncedQuery
+    ? [
+      ...employeeResults.map((e) => ({ id: `emp-${e.id}`, href: `/employees/${e.id}` })),
+      ...filteredMenus.map((m) => ({ id: m.id, href: m.href })),
+    ]
+    : recentPages.map((p) => ({ id: `recent-${p.path}`, href: p.path }))
 
-  const addToRecent = useCallback((result: SearchResult) => {
-    try {
-      const stored = localStorage.getItem(RECENT_KEY)
-      const recent: SearchResult[] = stored ? JSON.parse(stored) : []
-      const filtered = recent.filter((r) => r.id !== result.id)
-      const updated = [
-        { ...result, category: 'recent' as const },
-        ...filtered,
-      ].slice(0, 5)
-      localStorage.setItem(RECENT_KEY, JSON.stringify(updated))
-      setRecentResults(updated)
-    } catch {
-      // ignore
-    }
-  }, [])
-
-  const handleSelect = useCallback(
-    (result: SearchResult) => {
+  // ─── Navigation helper ────────────────────────────────────────────────────
+  const navigate = useCallback(
+    (href: string) => {
       setOpen(false)
-      setQuery('')
-      addToRecent(result)
-      router.push(result.href)
+      router.push(href)
     },
-    [router, addToRecent],
+    [router],
   )
 
-  // Keyboard navigation inside modal
+  // ─── Keyboard navigation ─────────────────────────────────────────────────
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === 'Escape') {
         setOpen(false)
       } else if (e.key === 'ArrowDown') {
         e.preventDefault()
-        setActiveIndex((prev) => (prev + 1) % Math.max(allResults.length, 1))
+        setActiveIndex((prev) => (prev + 1) % Math.max(flatList.length, 1))
       } else if (e.key === 'ArrowUp') {
         e.preventDefault()
-        setActiveIndex((prev) =>
-          prev === 0 ? Math.max(allResults.length - 1, 0) : prev - 1,
-        )
+        setActiveIndex((prev) => (prev === 0 ? Math.max(flatList.length - 1, 0) : prev - 1))
       } else if (e.key === 'Enter') {
         e.preventDefault()
-        const selected = allResults[activeIndex]
-        if (selected) handleSelect(selected)
+        const selected = flatList[activeIndex]
+        if (selected) navigate(selected.href)
       }
     },
-    [allResults, activeIndex, handleSelect],
+    [flatList, activeIndex, navigate],
   )
 
   if (!open) return null
 
-  // ─── Render ─────────────────────────────────────────────
+  const shortcutHint = mac ? '⌘K' : 'Ctrl+K'
+  const placeholderText = `${t('placeholder')}  ${shortcutHint}`
+
+  const hasResults =
+    debouncedQuery
+      ? employeeResults.length > 0 || filteredMenus.length > 0
+      : recentPages.length > 0
+
+  // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <div
       className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]"
@@ -258,189 +235,174 @@ export function CommandPalette() {
 
       {/* Modal */}
       <div
-        className="relative w-full max-w-[560px] mx-4 bg-white border border-[#F0F0F3] rounded-xl shadow-2xl overflow-hidden"
+        className="relative mx-4 w-full max-w-[560px] overflow-hidden rounded-xl border border-[#F0F0F3] bg-white shadow-2xl"
         onMouseDown={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
       >
-        {/* Search input */}
-        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-[#F0F0F3]">
-          <Search className="w-4 h-4 text-[#8181A5] flex-shrink-0" />
+        {/* ── Search input ── */}
+        <div className="flex items-center gap-3 border-b border-[#F0F0F3] px-4 py-3.5">
+          <Search className="h-4 w-4 flex-shrink-0 text-[#8181A5]" />
           <input
             ref={inputRef}
             type="text"
-            className="flex-1 text-[15px] text-[#1C1D21] placeholder:text-[#8181A5] bg-transparent focus:outline-none focus:ring-0 border-none"
-            placeholder="직원 이름, 메뉴, HR 규정 검색..."
+            className="flex-1 border-none bg-transparent text-[15px] text-[#1C1D21] placeholder:text-[#8181A5] focus:outline-none focus:ring-0"
+            placeholder={placeholderText}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
-          <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono text-[#8181A5] border border-[#F0F0F3] bg-[#F5F5FA]">
+          <kbd className="hidden items-center gap-0.5 rounded border border-[#F0F0F3] bg-[#F5F5FA] px-1.5 py-0.5 font-mono text-[10px] text-[#8181A5] sm:inline-flex">
             ESC
           </kbd>
         </div>
 
-        {/* Results */}
-        <div className="max-h-[380px] overflow-y-auto py-2">
-          {allResults.length === 0 && debouncedQuery && (
-            <div className="px-4 py-8 text-center text-sm text-[#8181A5]">
-              &apos;{debouncedQuery}&apos; 검색 결과가 없습니다.
+        {/* ── Results area ── */}
+        <div className="max-h-[420px] overflow-y-auto py-2">
+
+          {/* ── No-query state: Recent pages ── */}
+          {!debouncedQuery && recentPages.length > 0 && (
+            <ResultGroup label={t('recentPages')}>
+              {recentPages.map((page, idx) => (
+                <button
+                  key={`recent-${page.path}`}
+                  type="button"
+                  className={`flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors ${flatList[activeIndex]?.id === `recent-${page.path}`
+                      ? 'bg-[#F5F5FA]'
+                      : 'hover:bg-[#F5F5FA]'
+                    }`}
+                  onMouseDown={(e) => { e.preventDefault(); navigate(page.path) }}
+                  onMouseEnter={() => setActiveIndex(idx)}
+                >
+                  <Clock className="h-4 w-4 flex-shrink-0 text-[#8181A5]" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm text-[#1C1D21]">{page.title}</p>
+                    <p className="truncate text-xs text-[#8181A5]">{page.path}</p>
+                  </div>
+                </button>
+              ))}
+            </ResultGroup>
+          )}
+
+          {/* ── No-query, no recent: empty tip ── */}
+          {!debouncedQuery && recentPages.length === 0 && (
+            <div className="px-4 py-6 text-center">
+              <Hash className="mx-auto mb-2 h-5 w-5 text-[#C5C7D4]" />
+              <p className="text-sm text-[#8181A5]">직원 이름, 메뉴를 검색하세요</p>
             </div>
           )}
 
-          {/* Employee results */}
-          {employeeResults.length > 0 && (
-            <ResultGroup label="직원">
-              {employeeResults.map((result, idx) => (
-                <ResultItem
-                  key={result.id}
-                  result={result}
-                  isActive={allResults.indexOf(result) === activeIndex}
-                  onSelect={() => handleSelect(result)}
-                  onHover={() => setActiveIndex(idx)}
-                  icon={<Users className="w-4 h-4" />}
-                />
-              ))}
+          {/* ── Employee results ── */}
+          {debouncedQuery && (employeeResults.length > 0 || loadingEmployees) && (
+            <ResultGroup label={t('employees')}>
+              {loadingEmployees && employeeResults.length === 0 ? (
+                <div className="px-3 py-2 text-xs text-[#8181A5]">검색 중…</div>
+              ) : (
+                employeeResults.map((emp, idx) => {
+                  const flatIdx = idx
+                  const initial = emp.name.charAt(0).toUpperCase()
+                  const bgColor = avatarColor(emp.name)
+                  const dept = emp.department?.name ?? ''
+                  const code = emp.employeeNo ?? ''
+                  const subtitle = [dept, code].filter(Boolean).join(' · ')
+                  return (
+                    <button
+                      key={`emp-${emp.id}`}
+                      type="button"
+                      className={`flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${flatList[activeIndex]?.id === `emp-${emp.id}`
+                          ? 'bg-[#F5F5FA]'
+                          : 'hover:bg-[#F5F5FA]'
+                        }`}
+                      onMouseDown={(e) => { e.preventDefault(); navigate(`/employees/${emp.id}`) }}
+                      onMouseEnter={() => setActiveIndex(flatIdx)}
+                    >
+                      {/* Avatar */}
+                      <span
+                        className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+                        style={{ backgroundColor: bgColor }}
+                      >
+                        {initial}
+                      </span>
+                      {/* Info */}
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-[#1C1D21]">{emp.name}</p>
+                        {subtitle && (
+                          <p className="truncate text-xs text-[#8181A5]">{subtitle}</p>
+                        )}
+                      </div>
+                    </button>
+                  )
+                })
+              )}
             </ResultGroup>
           )}
 
-          {/* Menu results */}
-          {filteredMenus.length > 0 && (
-            <ResultGroup label={debouncedQuery ? '메뉴' : '빠른 이동'}>
-              {filteredMenus.map((item) => (
-                <ResultItem
-                  key={item.id}
-                  result={item}
-                  isActive={allResults.indexOf(item) === activeIndex}
-                  onSelect={() => handleSelect(item)}
-                  onHover={() => setActiveIndex(allResults.indexOf(item))}
-                  icon={<LayoutDashboard className="w-4 h-4" />}
-                />
-              ))}
+          {/* ── Menu results ── */}
+          {debouncedQuery && filteredMenus.length > 0 && (
+            <ResultGroup label={t('menu')}>
+              {filteredMenus.map((item) => {
+                const flatIdx = flatList.findIndex((f) => f.id === item.id)
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={`flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${flatList[activeIndex]?.id === item.id
+                        ? 'bg-[#F5F5FA] text-[#5E81F4]'
+                        : 'hover:bg-[#F5F5FA]'
+                      }`}
+                    onMouseDown={(e) => { e.preventDefault(); navigate(item.href) }}
+                    onMouseEnter={() => setActiveIndex(flatIdx)}
+                  >
+                    <LayoutDashboard className={`h-4 w-4 flex-shrink-0 ${flatList[activeIndex]?.id === item.id ? 'text-[#5E81F4]' : 'text-[#C5C7D4]'
+                      }`} />
+                    <span className={`text-sm font-medium ${flatList[activeIndex]?.id === item.id ? 'text-[#5E81F4]' : 'text-[#3D3F4E]'
+                      }`}>
+                      {item.label}
+                    </span>
+                  </button>
+                )
+              })}
             </ResultGroup>
           )}
 
-          {/* Document results */}
-          {documentResults.length > 0 && (
-            <ResultGroup label="HR 규정">
-              {documentResults.map((result) => (
-                <ResultItem
-                  key={result.id}
-                  result={result}
-                  isActive={allResults.indexOf(result) === activeIndex}
-                  onSelect={() => handleSelect(result)}
-                  onHover={() => setActiveIndex(allResults.indexOf(result))}
-                  icon={<FileText className="w-4 h-4" />}
-                />
-              ))}
-            </ResultGroup>
-          )}
-
-          {/* Recent searches */}
-          {!debouncedQuery && recentResults.length > 0 && (
-            <ResultGroup label="최근 검색">
-              {recentResults.map((result) => (
-                <ResultItem
-                  key={`recent-${result.id}`}
-                  result={result}
-                  isActive={allResults.indexOf(result) === activeIndex}
-                  onSelect={() => handleSelect(result)}
-                  onHover={() => setActiveIndex(allResults.indexOf(result))}
-                  icon={<Clock className="w-4 h-4" />}
-                />
-              ))}
-            </ResultGroup>
-          )}
-
-          {/* Empty state (no query, no recent) */}
-          {!debouncedQuery && recentResults.length === 0 && (
-            <div className="px-4 py-6 text-center">
-              <Hash className="mx-auto mb-2 w-5 h-5 text-[#C5C7D4]" />
-              <p className="text-sm text-[#8181A5]">직원 이름, 메뉴, HR 규정을 검색하세요</p>
+          {/* ── No results ── */}
+          {debouncedQuery && !loadingEmployees && !hasResults && (
+            <div className="px-4 py-8 text-center text-sm text-[#8181A5]">
+              {t('noResults')}
             </div>
           )}
         </div>
 
-        {/* Footer hint */}
-        <div className="flex items-center justify-between px-4 py-2 border-t border-[#F0F0F3] bg-[#FAFAFA]">
+        {/* ── Footer ── */}
+        <div className="flex items-center justify-between border-t border-[#F0F0F3] bg-[#FAFAFA] px-4 py-2">
           <div className="flex items-center gap-3 text-[11px] text-[#C5C7D4]">
             <span className="flex items-center gap-1">
-              <kbd className="px-1 py-0.5 rounded border border-[#E8E8EC] bg-white font-mono">↑↓</kbd>
+              <kbd className="rounded border border-[#E8E8EC] bg-white px-1 py-0.5 font-mono">↑↓</kbd>
               탐색
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1 py-0.5 rounded border border-[#E8E8EC] bg-white font-mono">↵</kbd>
+              <kbd className="rounded border border-[#E8E8EC] bg-white px-1 py-0.5 font-mono">↵</kbd>
               이동
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1 py-0.5 rounded border border-[#E8E8EC] bg-white font-mono">ESC</kbd>
+              <kbd className="rounded border border-[#E8E8EC] bg-white px-1 py-0.5 font-mono">ESC</kbd>
               닫기
             </span>
           </div>
-          <span className="text-[11px] text-[#C5C7D4]">
-            <kbd className="font-mono">⌘K</kbd>
-          </span>
+          <span className="font-mono text-[11px] text-[#C5C7D4]">{shortcutHint}</span>
         </div>
       </div>
     </div>
   )
 }
 
-// ─── Sub-components ─────────────────────────────────────────
+// ─── ResultGroup ─────────────────────────────────────────────────────────────
 
-function ResultGroup({
-  label,
-  children,
-}: {
-  label: string
-  children: React.ReactNode
-}) {
+function ResultGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="mb-1">
-      <p className="px-4 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-[#C5C7D4]">
+    <div className="mb-1 px-2">
+      <p className="px-1 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wider text-[#C5C7D4]">
         {label}
       </p>
       {children}
     </div>
-  )
-}
-
-function ResultItem({
-  result,
-  isActive,
-  onSelect,
-  onHover,
-  icon,
-}: {
-  result: SearchResult
-  isActive: boolean
-  onSelect: () => void
-  onHover: () => void
-  icon: React.ReactNode
-}) {
-  return (
-    <button
-      type="button"
-      className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
-        isActive
-          ? 'bg-[#F5F5FA] text-[#5E81F4]'
-          : 'text-[#8181A5] hover:bg-[#F5F5FA] hover:text-[#5E81F4]'
-      }`}
-      onMouseDown={(e) => {
-        e.preventDefault()
-        onSelect()
-      }}
-      onMouseEnter={onHover}
-    >
-      <span className={`flex-shrink-0 ${isActive ? 'text-[#5E81F4]' : 'text-[#C5C7D4]'}`}>
-        {icon}
-      </span>
-      <span className={`text-sm font-medium ${isActive ? 'text-[#1C1D21]' : 'text-[#3D3F4E]'}`}>
-        {result.label}
-      </span>
-      {result.description && (
-        <span className="ml-auto text-xs text-[#C5C7D4] truncate max-w-[160px]">
-          {result.description}
-        </span>
-      )}
-    </button>
   )
 }

@@ -3192,5 +3192,12 @@
       "scheduleOneOnOne": "1:1 미팅 예약",
       "sendRecognition": "칭찬 보내기"
     }
+  },
+  "commandPalette": {
+    "placeholder": "검색...",
+    "recentPages": "최근 방문",
+    "menu": "메뉴",
+    "employees": "구성원",
+    "noResults": "검색 결과가 없습니다"
   }
 }

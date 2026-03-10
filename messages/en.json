@@ -3192,5 +3192,12 @@
       "scheduleOneOnOne": "Schedule 1:1",
       "sendRecognition": "Send Recognition"
     }
+  },
+  "commandPalette": {
+    "placeholder": "Search...",
+    "recentPages": "Recent",
+    "menu": "Menu",
+    "employees": "Employees",
+    "noResults": "No results found"
   }
 }
