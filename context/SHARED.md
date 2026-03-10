@@ -1,16 +1,16 @@
 # SHARED.md — Project State (Single Source of Truth)
 
-> **Last Updated:** 2026-03-10 (GP#3-B + GP#3-C — Payroll Anomaly Review + Approval Flow + Payslip + Transfer CSV)
+> **Last Updated:** 2026-03-10 (GP#3-D — Integrated Dashboard + Payroll Calendar + Edge Cases + Final Polish)
 > **Project Path:** `/Users/sangwoo/Documents/VibeCoding/HR_Hub/ctr-hr-hub`
 
 ---
 
 ## Current State
 
-- `npx tsc --noEmit` = 0 errors ✅ (12 pre-existing: sidebar counts type + seed BigInt)
+- `npx tsc --noEmit` = 0 new errors ✅ (12 pre-existing: sidebar counts type + seed BigInt — unchanged)
 - `npm run build` = pass ✅
 - `export const dynamic = 'force-dynamic'` in `(dashboard)/layout.tsx` — covers all 129 dashboard pages
-- Git commits: 70+
+- Git commits: 73+
 - Deployed on Vercel (auto-deploy from `main` branch)
 
 ---
@@ -21,24 +21,50 @@
 |-------|--------|
 | STEP 0–9 (all modules) | ✅ Complete |
 | Design Refactoring R1–R9 | ✅ Complete |
-| Master Plan v2.0 Phase A (Architecture) | ✅ Complete |
-| Master Plan v2.0 Phase B (B1–B11 Features) | ✅ Complete |
-| Master Plan v2.0 Phase C (UX Refactoring C1–C3) | ✅ Complete |
+| Master Plan v2.0 Phase A–C | ✅ Complete |
 | FIX-1 (Security) + FIX-2 (Performance) | ✅ Complete |
 | Phase 0 (Timezone Integrity) | ✅ Complete |
 | Golden Path #1 (Leave Pipeline) | ✅ Complete |
 | Golden Path v3.0 (Nudge + Onboarding + Offboarding + Performance) | ✅ Complete |
 | CRAFTUI Phase 1–3 | ✅ Complete |
-| Seed Data Expansion (4 sessions + QA fixes) | ✅ Complete |
-| Seed QA (52-menu audit) | ✅ Complete |
+| Seed Data Expansion + QA (16 seeds, 52-menu audit) | ✅ Complete |
 | Sidebar IA Redesign (7→10 sections) | ✅ Complete |
-| Header Enhancements (Part 3/5: Quick Actions + Directory) | ✅ Complete |
-| Command Palette Enhancement (Part 4/5: Employee search + Recent pages) | ✅ Complete |
-| Seed QA Session A (Recruitment + Compensation + Benefits — seeds 10~12) | ✅ Complete |
-| Seed QA Session B (Year-End + Succession + Peer Review + Partial — seeds 13~16) | ✅ Complete |
-| GP#3-A (Attendance Closing + State Machine + Auto Calculation + Manual Adjustments) | ✅ Complete |
-| GP#3-B (Anomaly Review UI + Whitelist + MoM Comparison + Excel Downloads) | ✅ Complete |
-| GP#3-C (Approval Flow + Payslip Generation + Notifications + Bank Transfer CSV) | ✅ Complete |
+| Header + Command Palette Enhancements | ✅ Complete |
+| **GP#3-A** (Attendance Closing + State Machine + Auto Calculation + Manual Adjustments) | ✅ Complete |
+| **GP#3-B** (Anomaly Review UI + Whitelist + MoM Comparison + Excel Downloads) | ✅ Complete |
+| **GP#3-C** (Approval Flow + Payslip Generation + Notifications + Bank Transfer CSV) | ✅ Complete |
+| **GP#3-D** (Integrated Dashboard + Payroll Calendar + Edge Cases + Final Polish) | ✅ Complete |
+
+---
+
+## GP#3 Payroll Pipeline — ✅ COMPLETE (4 sessions)
+
+### Pipeline (6 steps, 8 status states)
+```
+DRAFT → ATTENDANCE_CLOSED → CALCULATING → ADJUSTMENT
+      → REVIEW → PENDING_APPROVAL → APPROVED → PAID
+```
+
+### What was built
+| Area | Details |
+|------|---------|
+| State machine | 8 statuses, guarded transitions, no step skipping |
+| Anomaly engine | 6 rules + per-rule tolerance + whitelist |
+| Approval flow | Entity-specific multi-step (KR: 2-step HR_MANAGER→CFO, others: 1-step) |
+| Payslip | Auto-generated on APPROVED event, employee notification batch |
+| Exports | 4 types: comparison, ledger, journal, bank transfer CSV (BOM) |
+| Dashboard | Pipeline grid + calendar + KPI cards + quick actions |
+| Edge cases | Mid-hire/departure pro-rata (kr-tax.ts), reopen from ADJUSTMENT+REVIEW with cascade cleanup |
+| Read tracking | isViewed/viewedAt on payslips + NEW badge on employee payslip list |
+
+### New models added
+- `PayrollAdjustment` — 수동 조정 (STEP 2.5)
+- `PayrollAnomaly` — 이상 탐지 결과 (STEP 3)
+- `PayrollApproval` + `PayrollApprovalStep` — 다단계 결재 (STEP 4)
+
+### API routes: ~26 total (in `/api/v1/payroll/`)
+### Pages: 6 (close-attendance, adjustments, review, approve, publish, dashboard)
+### TODO: Move to Settings comments: 31 total (GP#3 scope)
 
 ---
 
@@ -245,17 +271,13 @@ ACTION.APPROVE === 'manage' // ✅
 
 ## Next Tasks
 
-1. **GP#3-D** — Integrated payroll dashboard + calendar view + edge cases + final polish
-2. **Excel/CSV Export total: 4 types** — comparison, ledger, journal, bank transfer (✅ all done)
-3. **Payroll Pipeline STEP 1~5 status:**
-   - STEP 1: Attendance Closing ✅
-   - STEP 2: Auto-Calculation ✅
-   - STEP 2.5: Manual Adjustments ✅
-   - STEP 3: Anomaly Review ✅
-   - STEP 4: Approval Flow (multi-step, entity-specific) ✅
-   - STEP 5: Payslip Generation + Notifications + Bank Transfer CSV ✅
-4. **Settings Page** — Currently empty shell, needs actual settings UI
-5. **RLS Policies** — Row-level security for multi-tenant data isolation
+1. **GP#4 Performance Cycle** — 목표설정 → MBO 평가 → 캘리브레이션 → 등급 확정 → 결과 통보 end-to-end
+   - Goal: "모든 성과 사이클을 완전 자동화된 파이프라인으로"
+2. **Settings Page** — Currently empty shell, needs actual settings UI
+   - Priority items from TODO comments: 31 payroll settings + 6 attendance settings
+3. **RLS Policies** — Row-level security for multi-tenant data isolation
+4. **GP#3 소급 사항** — GP#1/GP#2 기존 코드 TODO 주석 소급 완료 ✅ (GP#3 시작 시 확인 완료)
+
 
 ---
 
