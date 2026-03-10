@@ -22,6 +22,7 @@ import { seedPerformance } from './seeds/05-performance'
 import { seedPayroll } from './seeds/06-payroll'
 import { seedLifecycle } from './seeds/07-lifecycle'
 import { seedNotifications } from './seeds/08-notifications'
+import { seedQAFixes } from './seeds/09-qa-fixes'
 
 // Load DATABASE_URL from .env.local or .env
 const DATABASE_URL = process.env.DATABASE_URL
@@ -3522,6 +3523,11 @@ async function main() {
   // ─────────────────────────────────────────────────────────
   await seedLifecycle(prisma)
   await seedNotifications(prisma)
+
+  // ─────────────────────────────────────────────────────────
+  // QA FIXES: Fill missing data (recent attendance, payslips, etc.)
+  // ─────────────────────────────────────────────────────────
+  await seedQAFixes(prisma)
 }
 
 main()

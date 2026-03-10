@@ -253,8 +253,13 @@ export async function seedNewEmployees(prisma: PrismaClient): Promise<void> {
   // ── 컨텍스트 조회 ──────────────────────────────────────────
   const ctrKrId   = deterministicUUID('company', 'CTR-KR')
   const ctrCnId   = deterministicUUID('company', 'CTR-CN')
-  const employeeRoleId = deterministicUUID('role', 'EMPLOYEE')
-  const managerRoleId  = deterministicUUID('role', 'MANAGER')
+  const employeeRole = await prisma.role.findFirst({ where: { code: 'EMPLOYEE' } })
+  const managerRole  = await prisma.role.findFirst({ where: { code: 'MANAGER' } })
+  if (!employeeRole || !managerRole) {
+    throw new Error('EMPLOYEE or MANAGER role not found in DB. Run base seed first.')
+  }
+  const employeeRoleId = employeeRole.id
+  const managerRoleId  = managerRole.id
 
   // 그레이드 맵 (CTR-KR)
   const krGrade = (code: string) => deterministicUUID('grade', `CTR-KR:${code}`)
