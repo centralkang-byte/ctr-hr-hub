@@ -245,7 +245,7 @@ export default function AdjustmentsClient({ user }: Props) {
                             {runs.length === 0 ? (
                                 <div className="px-4 py-8 text-center">
                                     <Layers size={24} className="text-[#D4D4D4] mx-auto mb-2" />
-                                    <p className="text-sm text-[#999]">ADJUSTMENT 상태 급여 없음</p>
+                                    <p className="text-sm text-[#999]">수동 조정 단계의 급여 정산이 없습니다</p>
                                 </div>
                             ) : (
                                 runs.map((run) => (

@@ -30,6 +30,7 @@ import { seedYearEnd } from './seeds/13-year-end'
 import { seedSuccession } from './seeds/14-succession'
 import { seedPeerReview } from './seeds/15-peer-review'
 import { seedPartialFixes } from './seeds/16-partial-fixes'
+import { seedPayrollPipeline } from './seeds/17-payroll-pipeline'
 
 // Load DATABASE_URL from .env.local or .env
 const DATABASE_URL = process.env.DATABASE_URL
@@ -3584,6 +3585,11 @@ async function main() {
   await seedSuccession(prisma)
   await seedPeerReview(prisma)
   await seedPartialFixes(prisma)
+
+  // ─────────────────────────────────────────────────────────
+  // SESSION GP#3: Payroll Pipeline QA Data (expanded)
+  // ─────────────────────────────────────────────────────────
+  await seedPayrollPipeline(prisma)
 }
 
 main()

@@ -1,6 +1,6 @@
 # SHARED.md — Project State (Single Source of Truth)
 
-> **Last Updated:** 2026-03-10 (GP#3-D — Integrated Dashboard + Payroll Calendar + Edge Cases + Final Polish)
+> **Last Updated:** 2026-03-10 (GP#3 QA — Korean Translation + Seed Data Expansion)
 > **Project Path:** `/Users/sangwoo/Documents/VibeCoding/HR_Hub/ctr-hr-hub`
 
 ---
@@ -34,6 +34,7 @@
 | **GP#3-B** (Anomaly Review UI + Whitelist + MoM Comparison + Excel Downloads) | ✅ Complete |
 | **GP#3-C** (Approval Flow + Payslip Generation + Notifications + Bank Transfer CSV) | ✅ Complete |
 | **GP#3-D** (Integrated Dashboard + Payroll Calendar + Edge Cases + Final Polish) | ✅ Complete |
+| **GP#3 QA** (Korean Translation + Status Badges + Seed Data Expansion) | ✅ Complete |
 
 ---
 
@@ -93,8 +94,8 @@ DRAFT → ATTENDANCE_CLOSED → CALCULATING → ADJUSTMENT
 | Leave Balances | 384 | 04-leave.ts |
 | MBO Goals | 524 | 05-performance.ts |
 | Performance Evaluations | 128 | 05-performance.ts |
-| Payroll Items | 459 | 06-payroll.ts |
-| Payslips | 459 | 09-qa-fixes.ts |
+| Payroll Items | 1,050 | 17-payroll-pipeline.ts (36 runs × avg 29 emps) |
+| Payslips | 940 | 17-payroll-pipeline.ts |
 | Recognitions | 40 | 09-qa-fixes.ts |
 | Profile Extensions | 138 | 09-qa-fixes.ts |
 | Onboarding Plans | 4 | 07-lifecycle.ts |
