@@ -3,6 +3,11 @@
 // 세션 확인 → Sidebar + Header + main content
 // ═══════════════════════════════════════════════════════════
 
+// All dashboard pages use getServerSession (→ headers()).
+// Force dynamic rendering for the entire (dashboard) segment.
+export const dynamic = 'force-dynamic'
+
+
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
