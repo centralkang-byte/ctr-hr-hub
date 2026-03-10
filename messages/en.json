@@ -3177,6 +3177,9 @@
       "m365": "M365 Integration",
       "auditLogs": "Audit Logs",
       "hub": "Settings"
+    },
+    "favorites": {
+      "label": "Favorites"
     }
   }
 }

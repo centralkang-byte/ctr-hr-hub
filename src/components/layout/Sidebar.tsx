@@ -2,7 +2,7 @@
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Sidebar Navigation (10-Section IA)
-// 역할 기반 섹션 그루핑 + 단일 아코디언 + 다크 테마
+// 역할 기반 섹션 그루핑 + 단일 아코디언 + 즐겨찾기 + 뱃지
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useState } from 'react'
@@ -16,10 +16,13 @@ import {
   ChevronUp,
   LogOut,
   Lock,
+  Star,
   type LucideIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useNavigation } from '@/hooks/useNavigation'
+import { useFavorites } from '@/hooks/useFavorites'
+import { useSidebarCounts, type SidebarCounts } from '@/hooks/useSidebarCounts'
 import type { NavItem, NavSection } from '@/config/navigation'
 import type { SessionUser } from '@/types'
 import {
@@ -30,6 +33,32 @@ import {
 } from '@/components/ui/tooltip'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { ScrollArea } from '@/components/ui/scroll-area'
+
+// ─── Badge Map: nav item key → count key + color ────────────
+
+const BADGE_MAP: Record<string, { countKey: string; color: string }> = {
+  'approvals-inbox': { countKey: 'approvals',     color: 'bg-red-500' },
+  'notifications':   { countKey: 'notifications', color: 'bg-red-500' },
+  'leave-admin':     { countKey: 'pendingLeave',  color: 'bg-[#5E81F4]' },
+  'attendance-admin':{ countKey: 'todayAbsent',   color: 'bg-[#F59E0B]' },
+}
+
+// ─── Badge pill ─────────────────────────────────────────────
+
+function BadgePill({ count, color }: { count: number; color: string }) {
+  if (count <= 0) return null
+  const label = count > 99 ? '99+' : String(count)
+  return (
+    <span
+      className={cn(
+        'ml-auto min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold flex items-center justify-center text-white shrink-0',
+        color,
+      )}
+    >
+      {label}
+    </span>
+  )
+}
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -42,29 +71,36 @@ interface SidebarProps {
 // ─── Component ──────────────────────────────────────────────
 
 export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
-  const [collapsed, setCollapsed] = useState(false)
-  // Single-expand: only one section open at a time.
-  // Default open = the section that contains the active route (or 'my-space' fallback)
+  const [collapsed, setCollapsed]     = useState(false)
   const [openSection, setOpenSection] = useState<string | null>('my-space')
+  const pathname  = usePathname()
+  const t         = useTranslations('nav')
+  const tAuth     = useTranslations('auth')
 
-  const pathname = usePathname()
-  const t = useTranslations('nav')
-  const tAuth = useTranslations('auth')
+  const { sections }                              = useNavigation({ user, countryCode: countryCode ?? null })
+  const { favorites, isFavorite, toggleFavorite } = useFavorites()
+  const { counts }                                = useSidebarCounts()
 
-  const { sections } = useNavigation({
-    user,
-    countryCode: countryCode ?? null,
-  })
+  const toggleCollapsed = useCallback(() => setCollapsed((p) => !p), [])
+  const toggleSection   = useCallback(
+    (key: string) => setOpenSection((p) => (p === key ? null : key)),
+    [],
+  )
 
-  const toggleCollapsed = useCallback(() => {
-    setCollapsed((prev) => !prev)
-  }, [])
-
-  const toggleSection = useCallback((sectionKey: string) => {
-    setOpenSection((prev) => (prev === sectionKey ? null : sectionKey))
-  }, [])
+  // Build flat list of all visible nav items for Favorites lookup
+  const allItems: NavItem[] = sections.flatMap((s) => s.items)
+  const favoriteItems: NavItem[] = favorites
+    .map((key) => allItems.find((i) => i.key === key))
+    .filter(Boolean) as NavItem[]
 
   const userInitial = user.name.charAt(0).toUpperCase()
+
+  const getLabel = useCallback(
+    (labelKey: string, fallback: string): string => {
+      try { return t(labelKey.replace('nav.', '')) } catch { return fallback }
+    },
+    [t],
+  )
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -74,21 +110,14 @@ export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
           collapsed ? 'w-16' : 'w-64',
         )}
       >
-        {/* ─── Logo / Brand Area ─── */}
-        <div
-          className={cn(
-            'flex items-center gap-3 px-4 py-5',
-            collapsed && 'justify-center px-2',
-          )}
-        >
+        {/* ─── Logo ─── */}
+        <div className={cn('flex items-center gap-3 px-4 py-5', collapsed && 'justify-center px-2')}>
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-ctr-primary font-bold text-white">
             C
           </div>
           {!collapsed && (
             <div className="min-w-0 flex-1">
-              <h1 className="truncate text-sm font-bold tracking-tight text-[#1C1D21]">
-                CTR HR Hub
-              </h1>
+              <h1 className="truncate text-sm font-bold tracking-tight text-[#1C1D21]">CTR HR Hub</h1>
             </div>
           )}
         </div>
@@ -96,6 +125,41 @@ export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
         {/* ─── Navigation ─── */}
         <ScrollArea className="flex-1">
           <nav className="pb-4">
+
+            {/* ── Favorites section (always expanded, hidden when empty) ── */}
+            {!collapsed && favoriteItems.length > 0 && (
+              <div className="mb-1">
+                <div className="flex items-center gap-2 px-4 py-2">
+                  <Star className="h-[18px] w-[18px] text-[#F59E0B] fill-[#F59E0B]" />
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-[#8181A5]">
+                    {getLabel('favorites.label', '즐겨찾기')}
+                  </span>
+                </div>
+                <div className="space-y-0.5 mt-1">
+                  {favoriteItems.map((item) => {
+                    const badgeInfo = BADGE_MAP[item.key]
+                    const count = badgeInfo
+                      ? (counts[badgeInfo.countKey as keyof typeof counts] ?? 0)
+                      : 0
+                    return (
+                      <ExpandedNavItem
+                        key={`fav-${item.key}`}
+                        item={item}
+                        pathname={pathname}
+                        getLabel={getLabel}
+                        isFavorite={true}
+                        onToggleFavorite={toggleFavorite}
+                        badgeCount={count}
+                        badgeColor={badgeInfo?.color}
+                      />
+                    )
+                  })}
+                </div>
+                <div className="mx-3 mt-3 border-t border-[#F0F0F3]" />
+              </div>
+            )}
+
+            {/* ── Main sections ── */}
             {sections.map((section, idx) => (
               <SidebarSection
                 key={section.key}
@@ -104,8 +168,12 @@ export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
                 collapsed={collapsed}
                 expanded={section.key === openSection}
                 onToggle={() => toggleSection(section.key)}
-                showDivider={idx > 0}
+                showDivider={idx > 0 && favoriteItems.length === 0}
                 t={t}
+                counts={counts}
+                isFavorite={isFavorite}
+                onToggleFavorite={toggleFavorite}
+                getLabel={getLabel}
               />
             ))}
           </nav>
@@ -118,20 +186,13 @@ export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
           className="flex items-center justify-center border-t border-[#F0F0F3] py-2 hover:bg-[#F5F5FA]"
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          {collapsed ? (
-            <ChevronRight className="h-4 w-4 text-[#8181A5]" />
-          ) : (
-            <ChevronLeft className="h-4 w-4 text-[#8181A5]" />
-          )}
+          {collapsed
+            ? <ChevronRight className="h-4 w-4 text-[#8181A5]" />
+            : <ChevronLeft  className="h-4 w-4 text-[#8181A5]" />}
         </button>
 
-        {/* ─── User Profile Section ─── */}
-        <div
-          className={cn(
-            'flex items-center gap-3 border-t border-[#F0F0F3] px-3 py-3',
-            collapsed && 'flex-col gap-1 px-1',
-          )}
-        >
+        {/* ─── User Profile ─── */}
+        <div className={cn('flex items-center gap-3 border-t border-[#F0F0F3] px-3 py-3', collapsed && 'flex-col gap-1 px-1')}>
           <Avatar className="h-8 w-8 shrink-0 border border-[#F0F0F3]">
             <AvatarFallback className="bg-ctr-primary text-xs text-white">
               {userInitial}
@@ -139,9 +200,7 @@ export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
           </Avatar>
           {!collapsed && (
             <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-medium text-[#1C1D21]">
-                {user.name}
-              </p>
+              <p className="truncate text-xs font-medium text-[#1C1D21]">{user.name}</p>
               <p className="truncate text-[10px] text-[#8181A5]">{user.role}</p>
             </div>
           )}
@@ -156,9 +215,7 @@ export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
                 <LogOut className="h-4 w-4 text-[#8181A5]" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="right" className="text-xs">
-              {tAuth('logout')}
-            </TooltipContent>
+            <TooltipContent side="right" className="text-xs">{tAuth('logout')}</TooltipContent>
           </Tooltip>
         </div>
       </aside>
@@ -176,28 +233,17 @@ interface SidebarSectionProps {
   onToggle: () => void
   showDivider: boolean
   t: ReturnType<typeof useTranslations>
+  counts: SidebarCounts
+  isFavorite: (key: string) => boolean
+  onToggleFavorite: (key: string) => void
+  getLabel: (labelKey: string, fallback: string) => string
 }
 
 function SidebarSection({
-  section,
-  pathname,
-  collapsed,
-  expanded,
-  onToggle,
-  showDivider,
-  t,
+  section, pathname, collapsed, expanded, onToggle,
+  showDivider, counts, isFavorite, onToggleFavorite, getLabel,
 }: SidebarSectionProps) {
-  // For "home" section with single dashboard item, render items directly without accordion
-  const isSingleItemSection = section.key === 'home'
-
-  // Helper to get translated label with fallback
-  const getLabel = (labelKey: string, fallback: string): string => {
-    try {
-      return t(labelKey.replace('nav.', ''))
-    } catch {
-      return fallback
-    }
-  }
+  const isHome = section.key === 'home'
 
   if (collapsed) {
     return (
@@ -205,12 +251,7 @@ function SidebarSection({
         {showDivider && <div className="mx-3 mt-2 border-t border-[#F0F0F3]" />}
         <div className="flex flex-col items-center gap-1 py-1">
           {section.items.map((item) => (
-            <CollapsedNavItem
-              key={item.key}
-              item={item}
-              pathname={pathname}
-              getLabel={getLabel}
-            />
+            <CollapsedNavItem key={item.key} item={item} pathname={pathname} getLabel={getLabel} />
           ))}
         </div>
       </>
@@ -219,12 +260,10 @@ function SidebarSection({
 
   return (
     <>
-      {showDivider && (
-        <div className="mx-3 mt-4 border-t border-[#F0F0F3] pt-4" />
-      )}
+      {showDivider && <div className="mx-3 mt-4 border-t border-[#F0F0F3] pt-4" />}
 
-      {/* Section header (skip for home — render items directly) */}
-      {!isSingleItemSection && (
+      {/* Section header — skip for Home */}
+      {!isHome && (
         <button
           type="button"
           onClick={onToggle}
@@ -236,25 +275,33 @@ function SidebarSection({
               {getLabel(section.labelKey, section.label)}
             </span>
           </div>
-          {expanded ? (
-            <ChevronUp className="h-3 w-3 text-[#8181A5]" />
-          ) : (
-            <ChevronDown className="h-3 w-3 text-[#8181A5]" />
-          )}
+          {expanded
+            ? <ChevronUp   className="h-3 w-3 text-[#8181A5]" />
+            : <ChevronDown className="h-3 w-3 text-[#8181A5]" />}
         </button>
       )}
 
-      {/* Items (always visible for home section) */}
-      {(isSingleItemSection || expanded) && (
-        <div className={cn('space-y-0.5', !isSingleItemSection && 'mt-1')}>
-          {section.items.map((item) => (
-            <ExpandedNavItem
-              key={item.key}
-              item={item}
-              pathname={pathname}
-              getLabel={getLabel}
-            />
-          ))}
+      {/* Items */}
+      {(isHome || expanded) && (
+        <div className={cn('space-y-0.5', !isHome && 'mt-1')}>
+          {section.items.map((item) => {
+            const badgeInfo = BADGE_MAP[item.key]
+            const count = badgeInfo
+              ? (counts[badgeInfo.countKey as keyof typeof counts] ?? 0)
+              : 0
+            return (
+              <ExpandedNavItem
+                key={item.key}
+                item={item}
+                pathname={pathname}
+                getLabel={getLabel}
+                isFavorite={isFavorite(item.key)}
+                onToggleFavorite={onToggleFavorite}
+                badgeCount={count}
+                badgeColor={badgeInfo?.color}
+              />
+            )
+          })}
         </div>
       )}
     </>
@@ -267,9 +314,15 @@ interface NavItemProps {
   item: NavItem
   pathname: string
   getLabel: (key: string, fallback: string) => string
+  isFavorite: boolean
+  onToggleFavorite: (key: string) => void
+  badgeCount?: number
+  badgeColor?: string
 }
 
-function ExpandedNavItem({ item, pathname, getLabel }: NavItemProps) {
+function ExpandedNavItem({
+  item, pathname, getLabel, isFavorite, onToggleFavorite, badgeCount = 0, badgeColor,
+}: NavItemProps) {
   const isActive =
     pathname === item.href ||
     (item.href !== '/' && pathname.startsWith(item.href + '/'))
@@ -280,49 +333,82 @@ function ExpandedNavItem({ item, pathname, getLabel }: NavItemProps) {
       <Tooltip>
         <TooltipTrigger asChild>
           <div className="mx-2 flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-sm text-[#8181A5]">
-            <item.icon className="h-[18px] w-[18px]" />
-            <span className="truncate">{label}</span>
-            <Lock className="ml-auto h-3 w-3" />
+            <item.icon className="h-[18px] w-[18px] shrink-0" />
+            <span className="truncate flex-1">{label}</span>
+            <Lock className="ml-auto h-3 w-3 shrink-0" />
           </div>
         </TooltipTrigger>
-        <TooltipContent side="right" className="text-xs">
-          준비 중입니다
-        </TooltipContent>
+        <TooltipContent side="right" className="text-xs">준비 중입니다</TooltipContent>
       </Tooltip>
     )
   }
 
   return (
-    <Link
-      href={item.href}
-      className={cn(
-        'mx-2 flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
-        isActive
-          ? 'bg-[#F5F5FA] text-[#5E81F4] font-bold'
-          : 'text-[#8181A5] hover:bg-[#F5F5FA] hover:text-[#1C1D21]',
-      )}
-    >
-      <item.icon className="h-[18px] w-[18px] shrink-0" />
-      <span className="truncate">{label}</span>
-      {item.badge && (
-        <span
+    <div className="group relative mx-2 flex items-center rounded-lg">
+      <Link
+        href={item.href}
+        className={cn(
+          'flex flex-1 items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
+          isActive
+            ? 'bg-[#F5F5FA] text-[#5E81F4] font-bold'
+            : 'text-[#8181A5] hover:bg-[#F5F5FA] hover:text-[#1C1D21]',
+        )}
+      >
+        <item.icon className="h-[18px] w-[18px] shrink-0" />
+        <span className="truncate flex-1">{label}</span>
+
+        {/* Badge — shown before star */}
+        {badgeCount > 0 && badgeColor && (
+          <BadgePill count={badgeCount} color={badgeColor} />
+        )}
+
+        {/* Legacy badge (new/beta) */}
+        {!badgeCount && item.badge && (
+          <span
+            className={cn(
+              'ml-auto rounded-full px-1.5 py-0.5 text-[10px] font-medium shrink-0',
+              item.badge === 'new' ? 'bg-[#5E81F4] text-white' : 'bg-[#F5F5FA] text-[#8181A5]',
+            )}
+          >
+            {item.badge.toUpperCase()}
+          </span>
+        )}
+      </Link>
+
+      {/* Star / Favorite toggle — appears on hover */}
+      <button
+        type="button"
+        onClick={(e) => { e.preventDefault(); onToggleFavorite(item.key) }}
+        className={cn(
+          'absolute right-2 flex h-5 w-5 items-center justify-center rounded transition-opacity',
+          isFavorite
+            ? 'opacity-100'
+            : 'opacity-0 group-hover:opacity-100',
+        )}
+        aria-label={isFavorite ? '즐겨찾기 해제' : '즐겨찾기 추가'}
+      >
+        <Star
           className={cn(
-            'ml-auto rounded-full px-1.5 py-0.5 text-[10px] font-medium',
-            item.badge === 'new'
-              ? 'bg-[#5E81F4] text-white'
-              : 'bg-[#F5F5FA] text-[#8181A5]',
+            'h-3.5 w-3.5 transition-colors',
+            isFavorite
+              ? 'text-[#F59E0B] fill-[#F59E0B]'
+              : 'text-[#CCCCCC] hover:text-[#F59E0B]',
           )}
-        >
-          {item.badge.toUpperCase()}
-        </span>
-      )}
-    </Link>
+        />
+      </button>
+    </div>
   )
 }
 
 // ─── Collapsed Nav Item ─────────────────────────────────────
 
-function CollapsedNavItem({ item, pathname, getLabel }: NavItemProps) {
+interface CollapsedNavItemProps {
+  item: NavItem
+  pathname: string
+  getLabel: (key: string, fallback: string) => string
+}
+
+function CollapsedNavItem({ item, pathname, getLabel }: CollapsedNavItemProps) {
   const isActive =
     pathname === item.href ||
     (item.href !== '/' && pathname.startsWith(item.href + '/'))
@@ -336,9 +422,7 @@ function CollapsedNavItem({ item, pathname, getLabel }: NavItemProps) {
             <item.icon className="h-[18px] w-[18px]" />
           </div>
         </TooltipTrigger>
-        <TooltipContent side="right" className="text-xs">
-          {label} — 준비 중
-        </TooltipContent>
+        <TooltipContent side="right" className="text-xs">{label} — 준비 중</TooltipContent>
       </Tooltip>
     )
   }
@@ -350,17 +434,13 @@ function CollapsedNavItem({ item, pathname, getLabel }: NavItemProps) {
           href={item.href}
           className={cn(
             'flex h-10 w-10 items-center justify-center rounded-lg transition-colors',
-            isActive
-              ? 'bg-[#F5F5FA] text-[#5E81F4]'
-              : 'text-[#8181A5] hover:bg-[#F5F5FA]',
+            isActive ? 'bg-[#F5F5FA] text-[#5E81F4]' : 'text-[#8181A5] hover:bg-[#F5F5FA]',
           )}
         >
           <item.icon className="h-[18px] w-[18px]" />
         </Link>
       </TooltipTrigger>
-      <TooltipContent side="right" className="text-xs">
-        {label}
-      </TooltipContent>
+      <TooltipContent side="right" className="text-xs">{label}</TooltipContent>
     </Tooltip>
   )
 }
