@@ -10,11 +10,96 @@ import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import type { PayrollItemDetail } from '@/lib/payroll/types'
 
+// ─── Raw DB detail shape (from seed script) ──────────────────
+interface RawDetail {
+  grade?: string
+  persona?: string
+  components?: {
+    base?: number
+    meal?: number
+    transport?: number
+    overtime?: number
+    positionAllowance?: number
+    nightShift?: number
+    holiday?: number
+    bonus?: number
+  }
+  deductions?: {
+    nationalPension?: number
+    healthInsurance?: number
+    longTermCare?: number
+    employmentInsurance?: number
+    incomeTax?: number
+    localIncomeTax?: number
+    otherDeductions?: number
+  }
+}
+
+// ─── Normalise any detail format → PayrollItemDetail ─────────
+function normaliseDetail(
+  raw: unknown,
+  grossPay: number,
+  netPay: number,
+): PayrollItemDetail | null {
+  if (!raw || typeof raw !== 'object') return null
+  const d = raw as Record<string, unknown>
+
+  // Already in PayrollItemDetail format (has earnings key)
+  if (d.earnings && typeof d.earnings === 'object') {
+    return raw as PayrollItemDetail
+  }
+
+  // Raw seed format: { components, deductions }
+  const rd = raw as RawDetail
+  const c = rd.components ?? {}
+  const ded = rd.deductions ?? {}
+
+  const earnings = {
+    baseSalary:             c.base ?? 0,
+    fixedOvertimeAllowance: 0,
+    mealAllowance:          c.meal ?? 0,
+    transportAllowance:     c.transport ?? 0,
+    overtimePay:            c.overtime ?? 0,
+    nightShiftPay:          c.nightShift ?? 0,
+    holidayPay:             c.holiday ?? 0,
+    bonuses:                c.bonus ?? 0,
+    otherEarnings:          c.positionAllowance ?? 0,
+  }
+  const deductions = {
+    nationalPension:     ded.nationalPension ?? 0,
+    healthInsurance:     ded.healthInsurance ?? 0,
+    longTermCare:        ded.longTermCare ?? 0,
+    employmentInsurance: ded.employmentInsurance ?? 0,
+    incomeTax:           ded.incomeTax ?? 0,
+    localIncomeTax:      ded.localIncomeTax ?? 0,
+    otherDeductions:     ded.otherDeductions ?? 0,
+  }
+  const totalDeductions = Object.values(deductions).reduce((s, v) => s + v, 0)
+
+  return {
+    earnings,
+    deductions,
+    overtime: {
+      hourlyWage: 0,
+      totalOvertimeHours: 0,
+      weekdayOTHours: 0,
+      weekendHours: 0,
+      holidayHours: 0,
+      nightHours: 0,
+    },
+    grossPay: Number(grossPay) || 0,
+    totalDeductions,
+    netPay: Number(netPay) || 0,
+  }
+}
+
+// ─── API response shape ───────────────────────────────────────
 interface PayslipItem {
   id: string
   grossPay: string | number
   netPay: string | number
-  detail: PayrollItemDetail | null
+  deductions: string | number
+  detail: unknown   // may be raw or already-normalised
   run: {
     id: string
     name: string
@@ -31,7 +116,7 @@ interface PayStubDetailClientProps {
   runId: string
 }
 
-export default function PayStubDetailClient({ user, runId }: PayStubDetailClientProps) {
+export default function PayStubDetailClient({ user: _user, runId }: PayStubDetailClientProps) {
   const router = useRouter()
   const t = useTranslations('payStubDetail')
   const tCommon = useTranslations('common')
@@ -39,7 +124,7 @@ export default function PayStubDetailClient({ user, runId }: PayStubDetailClient
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetch = async () => {
+    const load = async () => {
       try {
         const res = await apiClient.get<PayslipItem[]>('/api/v1/payroll/me')
         const data = (res.data ?? []) as PayslipItem[]
@@ -50,7 +135,7 @@ export default function PayStubDetailClient({ user, runId }: PayStubDetailClient
         setLoading(false)
       }
     }
-    fetch()
+    load()
   }, [runId])
 
   const handleDownloadPdf = async () => {
@@ -61,7 +146,7 @@ export default function PayStubDetailClient({ user, runId }: PayStubDetailClient
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `payslip_${item?.run.yearMonth ?? 'unknown'}.pdf`
+      a.download = `payslip_${item?.run.yearMonth ?? 'unknown'}.html`
       a.click()
       URL.revokeObjectURL(url)
     } catch {
@@ -77,18 +162,37 @@ export default function PayStubDetailClient({ user, runId }: PayStubDetailClient
     )
   }
 
-  const item = items[0]
-
-  if (!item || !item.detail) {
+  const raw = items[0]
+  if (!raw) {
     return (
       <div className="p-6">
         <Button variant="ghost" onClick={() => router.push('/payroll/me')}>
           <ArrowLeft className="h-4 w-4 mr-1" />
           {tCommon('back')}
         </Button>
-        <div className="text-center py-16 text-[#666]">
-          {t('notFound')}
-        </div>
+        <div className="text-center py-16 text-[#666]">{t('notFound')}</div>
+      </div>
+    )
+  }
+
+  // Normalise detail on the client — handles both raw and pre-normalised formats
+  const detail: PayrollItemDetail | null = normaliseDetail(
+    raw.detail,
+    Number(raw.grossPay),
+    Number(raw.netPay),
+  )
+
+  // item alias for use in JSX below
+  const item = raw
+
+  if (!detail) {
+    return (
+      <div className="p-6">
+        <Button variant="ghost" onClick={() => router.push('/payroll/me')}>
+          <ArrowLeft className="h-4 w-4 mr-1" />
+          {tCommon('back')}
+        </Button>
+        <div className="text-center py-16 text-[#666]">{t('notFound')}</div>
       </div>
     )
   }
@@ -104,16 +208,14 @@ export default function PayStubDetailClient({ user, runId }: PayStubDetailClient
           <div>
             <div className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-[#00C853]" />
-              <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('titleWithMonth', { month: item.run.yearMonth })}</h1>
+              <h1 className="text-2xl font-bold text-[#1A1A1A]">
+                {t('titleWithMonth', { month: item.run.yearMonth })}
+              </h1>
             </div>
             <p className="text-sm text-[#666] mt-0.5">{item.run.name}</p>
           </div>
         </div>
-        <Button
-          onClick={handleDownloadPdf}
-          variant="outline"
-          className="gap-1"
-        >
+        <Button onClick={handleDownloadPdf} variant="outline" className="gap-1">
           <Download className="h-4 w-4" />
           {t('downloadPdf')}
         </Button>
@@ -139,7 +241,7 @@ export default function PayStubDetailClient({ user, runId }: PayStubDetailClient
 
       {/* Breakdown */}
       <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
-        <PayStubBreakdown detail={item.detail} />
+        <PayStubBreakdown detail={detail} />
       </div>
     </div>
   )
