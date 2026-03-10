@@ -18,6 +18,9 @@ interface AlertThresholds {
   blocked: number
 }
 
+// TODO: Move to Settings (Attendance) — 주간 근무한도 주의 임계값 44시간 (caution)
+// TODO: Move to Settings (Attendance) — 주간 근무한도 경고 임계값 48시간 (warning)
+// TODO: Move to Settings (Attendance) — 당주 법정 최대 근로시간 52시간 (blocked, 근로기준법)
 const DEFAULT_THRESHOLDS: AlertThresholds = {
   caution: 44,
   warning: 48,

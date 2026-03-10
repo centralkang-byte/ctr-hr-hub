@@ -6,21 +6,27 @@
 // ─── 4대보험 요율 (근로자 부담분) ──────────────────────────
 
 /** 국민연금: 4.5% (월 상한 590만원) */
+// TODO: Move to Settings (Payroll) — 국민연금 요율 4.5% (2025 기준)
 export const NATIONAL_PENSION_RATE = 0.045
+// TODO: Move to Settings (Payroll) — 국민연금 부과 상한 5,900,000원 (2025 기준)
 export const NATIONAL_PENSION_CEILING = 5_900_000
 
 /** 건강보험: 3.545% */
+// TODO: Move to Settings (Payroll) — 건강보험 요율 3.545% (2025 기준)
 export const HEALTH_INSURANCE_RATE = 0.03545
 
 /** 장기요양보험: 건강보험의 12.81% */
+// TODO: Move to Settings (Payroll) — 장기요양보험 요율 12.81% (2025 기준, 건강보험료 대비)
 export const LONG_TERM_CARE_RATE = 0.1281
 
 /** 고용보험: 0.9% */
+// TODO: Move to Settings (Payroll) — 고용보험 요율 0.9% (2025 기준)
 export const EMPLOYMENT_INSURANCE_RATE = 0.009
 
 // ─── 통상시급 ──────────────────────────────────────────────
 
 /** 월 소정근로시간 = 209시간 (주 40시간 기준) */
+// TODO: Move to Settings (Attendance) — 월 소정근로시간 209시간 (주 40시간 × 52주 / 12 + 유급 주휴)
 export const MONTHLY_STANDARD_HOURS = 209
 
 export function calculateHourlyWage(monthlySalary: number): number {
@@ -161,13 +167,16 @@ export function calculateTotalDeductions(
 // FIX: Issue #3 — Statutory non-taxable defaults (2025 기준 법정 한도)
 // DB에 NontaxableLimit 레코드가 없을 때 사용하는 fallback 값.
 // 항목 코드는 calculator.ts의 AllowanceItem.code와 일치해야 함.
+// TODO: Move to Settings (Payroll) — 식대 비과세 한도 200,000원 (소득세법 §12 ②)
+// TODO: Move to Settings (Payroll) — 자가운전보조금 비과세 한도 200,000원 (소득세법 §12 ②)
+// TODO: Move to Settings (Payroll) — 보육수당 비과세 한도 100,000원
 const STATUTORY_NON_TAXABLE_DEFAULTS: Record<string, number> = {
-  meal_allowance:    200_000,  // 식대 비과세 한도 (소득세법 §12 ②)
+  meal_allowance: 200_000,  // 식대 비과세 한도 (소득세법 §12 ②)
   vehicle_allowance: 200_000,  // 자가운전보조금 (소득세법 §12 ②)
-  childcare:         100_000,  // 보육수당
-  MEAL:              200_000,  // BenefitPolicy.category 코드 대응
-  VEHICLE:           200_000,
-  CHILDCARE:         100_000,
+  childcare: 100_000,  // 보육수당
+  MEAL: 200_000,  // BenefitPolicy.category 코드 대응
+  VEHICLE: 200_000,
+  CHILDCARE: 100_000,
 }
 
 
@@ -325,6 +334,7 @@ export function detectPayrollAnomalies(
   const anomalies: PayrollAnomalyCheck[] = []
 
   // 전월 대비 변동 > 20%
+  // TODO: Move to Settings (Payroll) — 이상 탐지: 전월 대비 총지급액 변동 기준 20%
   if (previous && previous.grossPay > 0) {
     const changeRatio = Math.abs(current.grossPay - previous.grossPay) / previous.grossPay
     if (changeRatio > 0.2) {
@@ -337,6 +347,7 @@ export function detectPayrollAnomalies(
   }
 
   // 초과근무수당 > 기본급 50%
+  // TODO: Move to Settings (Payroll) — 이상 탐지: 초과근무수당 기본급 대비 상한 비율 50%
   if (current.baseSalary > 0 && current.overtimePay > current.baseSalary * 0.5) {
     anomalies.push({
       type: 'WARNING',
