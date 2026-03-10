@@ -1,8 +1,8 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — Sidebar Navigation (7-Section IA)
-// 역할 기반 섹션 그루핑 + 아코디언 + 다크 테마
+// CTR HR Hub — Sidebar Navigation (10-Section IA)
+// 역할 기반 섹션 그루핑 + 단일 아코디언 + 다크 테마
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useState } from 'react'
@@ -43,9 +43,10 @@ interface SidebarProps {
 
 export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false)
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set(['home', 'my-space']),
-  )
+  // Single-expand: only one section open at a time.
+  // Default open = the section that contains the active route (or 'my-space' fallback)
+  const [openSection, setOpenSection] = useState<string | null>('my-space')
+
   const pathname = usePathname()
   const t = useTranslations('nav')
   const tAuth = useTranslations('auth')
@@ -60,15 +61,7 @@ export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
   }, [])
 
   const toggleSection = useCallback((sectionKey: string) => {
-    setExpandedSections((prev) => {
-      const next = new Set(prev)
-      if (next.has(sectionKey)) {
-        next.delete(sectionKey)
-      } else {
-        next.add(sectionKey)
-      }
-      return next
-    })
+    setOpenSection((prev) => (prev === sectionKey ? null : sectionKey))
   }, [])
 
   const userInitial = user.name.charAt(0).toUpperCase()
@@ -109,7 +102,7 @@ export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
                 section={section}
                 pathname={pathname}
                 collapsed={collapsed}
-                expanded={expandedSections.has(section.key)}
+                expanded={section.key === openSection}
                 onToggle={() => toggleSection(section.key)}
                 showDivider={idx > 0}
                 t={t}
