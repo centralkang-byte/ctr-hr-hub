@@ -1,6 +1,6 @@
 # SHARED.md — Project State (Single Source of Truth)
 
-> **Last Updated:** 2026-03-12 (H-2c FINAL — Settings API + Utility Refactoring + useProcessSetting infinite loop fix)
+> **Last Updated:** 2026-03-12 (H-3 FINAL — Audit Trail + Legacy Cleanup + H-2d TODO 0)
 > **Project Path:** `/Users/sangwoo/Documents/VibeCoding/HR_Hub/ctr-hr-hub`
 
 ---
@@ -54,6 +54,8 @@
 | **H-2a** (Attendance 8 Tabs: gold standard implementation with lazy loading, structuredClone, work-schedules through leave-promotion) | ✅ Complete |
 | **H-2b** (36 Tabs across 5 categories: Payroll 8, Performance 7, Recruitment 5, Organization 8, System 8) | ✅ Complete |
 | **H-2c** (Connect Hardcoded → Settings API: unified process-settings API, 26 seed definitions, useProcessSetting hook, 10+ tabs connected) | ✅ Complete |
+| **H-2d** (Remaining TODO Migrations: 44 TODOs → 0, 6 placeholder tabs connected, 6 seed entries, 7 TypeScript interfaces) | ✅ Complete |
+| **H-3** (Audit Trail + Legacy Cleanup: 39 legacy pages removed, 10 orphaned components deleted, settings audit log, AuditLogTab rewrite) | ✅ Complete |
 
 ---
 
@@ -579,11 +581,13 @@ ACTION.APPROVE === 'manage' // ✅
 1. **Session G-1**: Insights Dashboard Rebuild (7 dashboards + AI Report shell) ✅
 2. **Session G-2**: Predictive Analytics + AI Report (Turnover/Burnout prediction models, AI report generator, Dashboard integration) ✅
 
-### Phase 4 (Settings): ✅ H-2c COMPLETE
+### Phase 4 (Settings): ✅ H-3 COMPLETE (Settings Phase DONE)
 1. **Session H-1**: Settings Hub + 6 Category Sub-pages + Company Override UX ✅
 2. **Session H-2a**: Attendance 8 Tabs (gold standard) ✅
 3. **Session H-2b**: Remaining 36 Tabs across 5 categories ✅
 4. **Session H-2c**: Connect Hardcoded → Settings API ✅
+5. **Session H-2d**: Remaining TODO Migrations (44→0) + 6 placeholder tabs ✅
+6. **Session H-3**: Audit Trail + Legacy Cleanup + Polish ✅
 
 ---
 
@@ -662,9 +666,56 @@ New `*FromSettings` async variants added alongside. Callers migrate incrementall
 
 ---
 
-### Remaining Gaps (2026-03-12 스캔 기준)
-- **Settings Phase 3 Continued (H-2d)** — 44개 TODO 남음: payroll API routes (시뮬레이션, 대시보드, 승인), performance lib, cron jobs. 이들을 `*FromSettings` 함수 호출로 교체.
-  - Remaining placeholder tabs (6): Organization/AssignmentRules, Recruitment/Pipeline+AiScreening+InterviewForm, System/Locale+NotificationChannels
+## H-2d Remaining TODO Migrations — ✅ COMPLETE (1 session)
+
+### 44 TODOs → 0
+- All `TODO: Move to Settings` markers replaced with "Settings-connected" markers
+- Payroll routes (dashboard, approve, comparison, journal, transfer, simulation, attendance-reopen)
+- Performance lib (data-masking, merit-matrix, pipeline, distribution, participants, grade-scale, peer-review)
+- Attendance (accrualEngine, AttendanceSettingsV2Client, LeaveAccrualTab, LeavePromotionTab, OvertimeTab)
+- Analytics (currency, turnover/overview), Labor (asset-deduction × 6), Cron (auto-acknowledge, overdue-check)
+
+### 6 Placeholder Tabs Connected
+| Category | Tab | Setting Key |
+|----------|-----|-------------|
+| Organization | AssignmentRulesTab | assignment-rules |
+| Recruitment | PipelineTab | pipeline-stages |
+| Recruitment | AiScreeningTab | ai-screening |
+| Recruitment | InterviewFormTab | interview-form |
+| System | LocaleTab | locale |
+| System | NotificationChannelsTab | notification-channels |
+
+### 7 New TypeScript Interfaces + ORGANIZATION union addition
+### 6 New Seed Entries in 26-process-settings.ts
+
+---
+
+## H-3 Audit Trail + Legacy Cleanup — ✅ COMPLETE (1 session)
+
+### Legacy Cleanup
+- **39 legacy settings directories removed** (audit-logs, branding, calibration, competencies, etc.)
+- **10 orphaned components/files removed** (EvaluationSettingsClient, PromotionSettingsClient, CompensationSettingsClient, ApprovalFlowManagerClient, SettingsSideTabs, SettingsPlaceholder, SettingsCard, SettingsSearch, CompanySettingsClient, categories.ts)
+- **Settings pages: 48 → 7** (hub + 6 categories)
+- 0 orphaned imports, 0 dead navigation links
+
+### Audit Trail
+| File | Change |
+|------|--------|
+| `src/lib/settings/audit-helpers.ts` | NEW — `generateChangeDescription()` for field-level diffs |
+| `src/app/api/v1/settings-audit-log/route.ts` | NEW — GET with pagination, category filter, actor/company joins |
+| `src/app/api/v1/process-settings/[category]/route.ts` | PUT: pre-fetch existing + fire-and-forget AuditLog. DELETE: same pattern |
+| `src/app/(dashboard)/settings/system/tabs/AuditLogTab.tsx` | REWRITE — 6-column table, pagination, empty state |
+
+### AuditLog Actions
+| Action | Trigger |
+|--------|---------|
+| SETTINGS_CREATE | First-time setting save (no prior record) |
+| SETTINGS_UPDATE | Update existing setting value |
+| SETTINGS_REVERT | Delete company override → restore global default |
+
+---
+
+### Remaining Gaps (2026-03-12 H-3 이후)
 - **RLS Policies** — Row-level security for multi-tenant data isolation
 - **Minor Gaps:**
   - BENEFIT_REQUEST 매퍼 미구현 (Task Hub enum에 정의됐으나 mapper 없음)
