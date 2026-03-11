@@ -2804,7 +2804,8 @@
       "training": "Моё обучение",
       "yearEnd": "Годовой расчёт",
       "approvalsInbox": "Входящие одобрения",
-      "myOffboarding": "Мой оффбординг"
+      "myOffboarding": "Мой оффбординг",
+      "myTasks": "My Tasks"
     },
     "team": {
       "label": "Управление командой",
@@ -2876,7 +2877,9 @@
       "cnCompliance": "Соответствие требованиям Китая",
       "krCompliance": "Соответствие требованиям Кореи",
       "hrChatbot": "HR Чат-бот",
-      "aiAgent": "AI Агент"
+      "aiAgent": "AI Агент",
+      "executiveSummary": "Executive Summary",
+      "payroll": "Аналитика зарплат"
     },
     "settings": {
       "label": "Настройки",
@@ -2919,5 +2922,32 @@
       "m365": "Интеграция M365",
       "auditLogs": "Журнал аудита"
     }
+  },
+  "myTasks": {
+    "title": "My Tasks",
+    "description": "View and manage tasks from all pipelines in one place.",
+    "tabInProgress": "In Progress",
+    "tabCompleted": "Completed",
+    "filterAll": "All",
+    "filterLeave": "Leave",
+    "filterPayroll": "Payroll",
+    "filterOnboarding": "Onboarding",
+    "filterOffboarding": "Offboarding",
+    "filterPerformance": "Performance",
+    "sortPriority": "Priority",
+    "sortDueDate": "Due Date",
+    "sortCreatedAt": "Created",
+    "emptyNoTasks": "No tasks to process 🎉",
+    "emptyNoTasksDesc": "You've completed all your tasks!",
+    "emptyNoType": "No tasks for the selected type",
+    "emptyCompleted": "No completed tasks in the last 90 days",
+    "emptyCompletedDesc": "You can check earlier history in each module.",
+    "completedNotice": "Only showing task records within the last 90 days.",
+    "completedLinks": "For earlier history, check these modules:",
+    "linkLeave": "My Leave History",
+    "linkPayslip": "Payslips",
+    "linkPerformance": "Performance Reviews",
+    "viewAll": "View All",
+    "totalCount": "{count} total"
   }
 }

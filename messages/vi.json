@@ -2804,7 +2804,8 @@
       "training": "Đào tạo của tôi",
       "yearEnd": "Quyết toán cuối năm",
       "approvalsInbox": "Hộp thư phê duyệt",
-      "myOffboarding": "Quy trình nghỉ việc"
+      "myOffboarding": "Quy trình nghỉ việc",
+      "myTasks": "My Tasks"
     },
     "team": {
       "label": "Quản lý nhóm",
@@ -2876,7 +2877,9 @@
       "cnCompliance": "Tuân thủ Trung Quốc",
       "krCompliance": "Tuân thủ Hàn Quốc",
       "hrChatbot": "Chatbot nhân sự",
-      "aiAgent": "AI đại lý"
+      "aiAgent": "AI đại lý",
+      "executiveSummary": "Executive Summary",
+      "payroll": "Phân tích lương"
     },
     "settings": {
       "label": "Cài đặt",
@@ -2919,5 +2922,32 @@
       "m365": "Tích hợp M365",
       "auditLogs": "Nhật ký kiểm toán"
     }
+  },
+  "myTasks": {
+    "title": "My Tasks",
+    "description": "View and manage tasks from all pipelines in one place.",
+    "tabInProgress": "In Progress",
+    "tabCompleted": "Completed",
+    "filterAll": "All",
+    "filterLeave": "Leave",
+    "filterPayroll": "Payroll",
+    "filterOnboarding": "Onboarding",
+    "filterOffboarding": "Offboarding",
+    "filterPerformance": "Performance",
+    "sortPriority": "Priority",
+    "sortDueDate": "Due Date",
+    "sortCreatedAt": "Created",
+    "emptyNoTasks": "No tasks to process 🎉",
+    "emptyNoTasksDesc": "You've completed all your tasks!",
+    "emptyNoType": "No tasks for the selected type",
+    "emptyCompleted": "No completed tasks in the last 90 days",
+    "emptyCompletedDesc": "You can check earlier history in each module.",
+    "completedNotice": "Only showing task records within the last 90 days.",
+    "completedLinks": "For earlier history, check these modules:",
+    "linkLeave": "My Leave History",
+    "linkPayslip": "Payslips",
+    "linkPerformance": "Performance Reviews",
+    "viewAll": "View All",
+    "totalCount": "{count} total"
   }
 }

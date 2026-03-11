@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma'
 import { sendNotification } from '@/lib/notifications'
 import { getStartOfDayTz } from '@/lib/timezone'
 import { formatInTimeZone } from 'date-fns-tz'
+import { getAttendanceSetting } from '@/lib/settings/get-setting'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -18,9 +19,7 @@ interface AlertThresholds {
   blocked: number
 }
 
-// TODO: Move to Settings (Attendance) — 주간 근무한도 주의 임계값 44시간 (caution)
-// TODO: Move to Settings (Attendance) — 주간 근무한도 경고 임계값 48시간 (warning)
-// TODO: Move to Settings (Attendance) — 당주 법정 최대 근로시간 52시간 (blocked, 근로기준법)
+// Alert thresholds: AttendanceSetting (per-company) → CompanyProcessSetting → hardcoded
 const DEFAULT_THRESHOLDS: AlertThresholds = {
   caution: 44,
   warning: 48,
@@ -104,19 +103,37 @@ async function getWeeklyHours(
 // ─── 법인 임계값 조회 ─────────────────────────────────────────
 
 async function getThresholds(companyId: string): Promise<AlertThresholds> {
+  // 1st: Try AttendanceSetting (existing per-company model)
   const setting = await prisma.attendanceSetting.findUnique({
     where: { companyId },
     select: { alertThresholds: true },
   })
 
-  if (!setting?.alertThresholds) return DEFAULT_THRESHOLDS
-
-  const raw = setting.alertThresholds as Record<string, number>
-  return {
-    caution: raw.caution ?? DEFAULT_THRESHOLDS.caution,
-    warning: raw.warning ?? DEFAULT_THRESHOLDS.warning,
-    blocked: raw.blocked ?? DEFAULT_THRESHOLDS.blocked,
+  if (setting?.alertThresholds) {
+    const raw = setting.alertThresholds as Record<string, number>
+    return {
+      caution: raw.caution ?? DEFAULT_THRESHOLDS.caution,
+      warning: raw.warning ?? DEFAULT_THRESHOLDS.warning,
+      blocked: raw.blocked ?? DEFAULT_THRESHOLDS.blocked,
+    }
   }
+
+  // 2nd: Try CompanyProcessSetting (new unified settings)
+  const processSetting = await getAttendanceSetting<AlertThresholds>(
+    'work-hour-thresholds',
+    companyId,
+  )
+
+  if (processSetting) {
+    return {
+      caution: processSetting.caution ?? DEFAULT_THRESHOLDS.caution,
+      warning: processSetting.warning ?? DEFAULT_THRESHOLDS.warning,
+      blocked: processSetting.blocked ?? DEFAULT_THRESHOLDS.blocked,
+    }
+  }
+
+  // 3rd: Hardcoded defaults
+  return DEFAULT_THRESHOLDS
 }
 
 // ─── 경고 레벨 판정 ───────────────────────────────────────────

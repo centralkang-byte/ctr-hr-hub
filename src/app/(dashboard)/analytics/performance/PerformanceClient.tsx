@@ -1,168 +1,117 @@
 'use client'
 
-// ═══════════════════════════════════════════════════════════
-// CTR HR Hub — Performance Analytics Client
-// 성과 분석 (EMS분포/부서비교)
-// ═══════════════════════════════════════════════════════════
-
-import { useState, useEffect, useCallback } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { useTranslations } from 'next-intl'
-import { Loader2 } from 'lucide-react'
+import React, { useEffect, useState, useCallback } from 'react'
 import {
-  BarChart, Bar,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+  ResponsiveContainer,
 } from 'recharts'
-import { apiClient } from '@/lib/api'
-import { AnalyticsPageLayout } from '@/components/analytics/AnalyticsPageLayout'
+import { Target, CheckCircle2, Scale, FileText } from 'lucide-react'
+import { KpiCard } from '@/components/analytics/KpiCard'
 import { ChartCard } from '@/components/analytics/ChartCard'
 import { EmptyChart } from '@/components/analytics/EmptyChart'
-import type { PerformanceData } from '@/lib/analytics/types'
-
-// EMS 9-block labels
-const EMS_LABELS: Record<string, string> = {
-  '1': '1 (Low-Low)', '2': '2 (Low-Mid)', '3': '3 (Low-High)',
-  '4': '4 (Mid-Low)', '5': '5 (Mid-Mid)', '6': '6 (Mid-High)',
-  '7': '7 (High-Low)', '8': '8 (High-Mid)', '9': '9 (High-High)',
-}
-
-const EMS_COLORS: Record<string, string> = {
-  '1': '#EF4444', '2': '#F97316', '3': '#F59E0B',
-  '4': '#F97316', '5': '#10B981', '6': '#00C853',
-  '7': '#F59E0B', '8': '#00C853', '9': '#6366F1',
-}
+import { AnalyticsFilterBar } from '@/components/analytics/AnalyticsFilterBar'
+import { CHART_COLORS } from '@/components/analytics/chart-colors'
+import type { PerformanceResponse } from '@/lib/analytics/types'
 
 export default function PerformanceClient() {
-  const searchParams = useSearchParams()
-  const companyId = searchParams.get('company_id') ?? undefined
-  const t = useTranslations('analytics.performancePage')
-  const ta = useTranslations('analytics')
-
-  const [data, setData] = useState<PerformanceData | null>(null)
+  const [data, setData] = useState<PerformanceResponse | null>(null)
   const [loading, setLoading] = useState(true)
+  const [companies, setCompanies] = useState<{ id: string; name: string }[]>([])
 
   const fetchData = useCallback(async () => {
     setLoading(true)
     try {
-      const res = await apiClient.get<PerformanceData>('/api/v1/analytics/performance', {
-        company_id: companyId,
-      })
-      setData(res.data)
-    } catch {
-      // silently handle
-    } finally {
-      setLoading(false)
-    }
-  }, [companyId])
+      const [res, compRes] = await Promise.all([
+        fetch(`/api/v1/analytics/performance/overview${window.location.search}`),
+        fetch('/api/v1/companies'),
+      ])
+      if (res.ok) { const j = await res.json(); setData(j.data) }
+      if (compRes.ok) { const c = await compRes.json(); setCompanies(c.data || []) }
+    } catch { /* */ } finally { setLoading(false) }
+  }, [])
 
   useEffect(() => { fetchData() }, [fetchData])
 
-  if (loading) {
-    return (
-      <AnalyticsPageLayout title={t('title')}>
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-[#999]" />
-        </div>
-      </AnalyticsPageLayout>
-    )
+  if (loading || !data) {
+    return <div className="space-y-6 animate-pulse">{[...Array(4)].map((_, i) => <div key={i} className="h-48 bg-gray-100 rounded-xl" />)}</div>
   }
 
-  if (!data) {
-    return (
-      <AnalyticsPageLayout title={t('title')}>
-        <EmptyChart />
-      </AnalyticsPageLayout>
-    )
-  }
+  const { kpis, charts } = data
 
-  // Process EMS data for the 9-block heatmap grid
-  const emsData = data.emsDistribution.map((r) => ({
-    ...r,
-    label: EMS_LABELS[r.ems_block] ?? `Block ${r.ems_block}`,
-    fill: EMS_COLORS[r.ems_block] ?? '#94A3B8',
-  }))
+  // Check for bias: if any actual > guideline by 10%+
+  const hasBias = charts.gradeDistribution.some((g) => g.actual > g.guideline + 10)
 
   return (
-    <AnalyticsPageLayout title={t('title')} description={t('description')}>
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* EMS 9-block 히트맵 */}
-        <ChartCard title={t('emsDistribution')} description={t('emsDescription')} className="lg:col-span-2">
-          {emsData.length > 0 ? (
-            <div className="grid grid-cols-3 gap-2">
-              {/* Row 3 (High performance) */}
-              {['7', '8', '9'].map((block) => {
-                const item = emsData.find((e) => e.ems_block === block)
+    <div className="space-y-6">
+      <AnalyticsFilterBar companies={companies} />
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <KpiCard {...kpis.currentCyclePhase} icon={Target} tooltip="현재 성과 관리 사이클 단계" />
+        <KpiCard {...kpis.evaluationCompletionRate} icon={CheckCircle2} tooltip="평가 완료된 직원 ÷ 평가 대상 전체 × 100" />
+        <KpiCard {...kpis.calibrationAdjustmentRate} icon={Scale} tooltip="캘리브레이션 과정에서 등급이 조정된 비율" />
+        <KpiCard {...kpis.goalSubmissionRate} icon={FileText} tooltip="목표 제출 완료한 직원 ÷ 목표 설정 대상 × 100" />
+      </div>
+
+      <ChartCard
+        title="📊 등급 분포 vs 가이드라인"
+        badge={hasBias ? '⚠️ 상위 편향 감지' : undefined}
+        badgeColor="bg-amber-50 text-amber-700 border-amber-200"
+      >
+        {charts.gradeDistribution.length === 0 ? <EmptyChart /> : (
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={charts.gradeDistribution}>
+              <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
+              <XAxis dataKey="grade" fontSize={11} />
+              <YAxis fontSize={11} unit="%" />
+              <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
+              <Legend iconType="circle" iconSize={8} />
+              <Bar dataKey="actual" name="실제" fill={CHART_COLORS.primary} radius={[4, 4, 0, 0]} maxBarSize={40} />
+              <Bar dataKey="guideline" name="가이드라인" fill="#D1D5DB" radius={[4, 4, 0, 0]} maxBarSize={40} />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+      </ChartCard>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ChartCard title="🏢 부서별 등급 분포">
+          {charts.departmentGradeDist.length === 0 ? <EmptyChart /> : (
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={charts.departmentGradeDist}>
+                <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
+                <XAxis dataKey="department" fontSize={10} angle={-15} textAnchor="end" height={50} />
+                <YAxis fontSize={11} unit="%" domain={[0, 100]} />
+                <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
+                <Legend iconType="circle" iconSize={8} />
+                <Bar dataKey="탁월(E)" stackId="a" fill={CHART_COLORS.secondary[1]} maxBarSize={30} />
+                <Bar dataKey="우수(M+)" stackId="a" fill={CHART_COLORS.primary} maxBarSize={30} />
+                <Bar dataKey="보통(M)" stackId="a" fill={CHART_COLORS.warning} maxBarSize={30} />
+                <Bar dataKey="미흡(B)" stackId="a" fill={CHART_COLORS.danger} maxBarSize={30} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </ChartCard>
+
+        <ChartCard title="📈 평가 진행 현황">
+          {charts.evaluationProgress.length === 0 ? <EmptyChart /> : (
+            <div className="space-y-4 py-2">
+              {charts.evaluationProgress.map((stage) => {
+                const pct = stage.total > 0 ? Math.round((stage.completed / stage.total) * 100) : 0
                 return (
-                  <div
-                    key={block}
-                    className="flex flex-col items-center justify-center rounded-lg border p-4"
-                    style={{ backgroundColor: `${EMS_COLORS[block]}15`, borderColor: `${EMS_COLORS[block]}40` }}
-                  >
-                    <span className="text-xs font-medium text-[#666]">{EMS_LABELS[block]}</span>
-                    <span className="mt-1 text-2xl font-bold" style={{ color: EMS_COLORS[block] }}>
-                      {item?.employee_count ?? 0}
-                    </span>
-                    <span className="text-xs text-[#999]">{ta('personSuffix')}</span>
-                  </div>
-                )
-              })}
-              {/* Row 2 (Mid performance) */}
-              {['4', '5', '6'].map((block) => {
-                const item = emsData.find((e) => e.ems_block === block)
-                return (
-                  <div
-                    key={block}
-                    className="flex flex-col items-center justify-center rounded-lg border p-4"
-                    style={{ backgroundColor: `${EMS_COLORS[block]}15`, borderColor: `${EMS_COLORS[block]}40` }}
-                  >
-                    <span className="text-xs font-medium text-[#666]">{EMS_LABELS[block]}</span>
-                    <span className="mt-1 text-2xl font-bold" style={{ color: EMS_COLORS[block] }}>
-                      {item?.employee_count ?? 0}
-                    </span>
-                    <span className="text-xs text-[#999]">{ta('personSuffix')}</span>
-                  </div>
-                )
-              })}
-              {/* Row 1 (Low performance) */}
-              {['1', '2', '3'].map((block) => {
-                const item = emsData.find((e) => e.ems_block === block)
-                return (
-                  <div
-                    key={block}
-                    className="flex flex-col items-center justify-center rounded-lg border p-4"
-                    style={{ backgroundColor: `${EMS_COLORS[block]}15`, borderColor: `${EMS_COLORS[block]}40` }}
-                  >
-                    <span className="text-xs font-medium text-[#666]">{EMS_LABELS[block]}</span>
-                    <span className="mt-1 text-2xl font-bold" style={{ color: EMS_COLORS[block] }}>
-                      {item?.employee_count ?? 0}
-                    </span>
-                    <span className="text-xs text-[#999]">{ta('personSuffix')}</span>
+                  <div key={stage.stage}>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="font-medium text-gray-700">{stage.stage}</span>
+                      <span className="text-gray-500">{stage.completed}/{stage.total} ({pct}%)</span>
+                    </div>
+                    <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full rounded-full bg-gradient-to-r from-[#5E81F4] to-[#8B5CF6] transition-all duration-500" style={{ width: `${pct}%` }} />
+                    </div>
                   </div>
                 )
               })}
             </div>
-          ) : (
-            <EmptyChart message={t('noPerformanceData')} />
-          )}
-        </ChartCard>
-
-        {/* 부서별 평균 성과점수 */}
-        <ChartCard title={t('avgScoreByDept')} className="lg:col-span-2">
-          {data.byDepartment.length > 0 ? (
-            <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={data.byDepartment}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="department_name" tick={{ fontSize: 12 }} />
-                <YAxis domain={[0, 5]} />
-                <Tooltip />
-                <Bar dataKey="avg_score" fill="#6366F1" radius={[4, 4, 0, 0]} name={t('avgScore')} />
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <EmptyChart />
           )}
         </ChartCard>
       </div>
-    </AnalyticsPageLayout>
+    </div>
   )
 }

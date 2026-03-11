@@ -64,6 +64,10 @@ export const DOMAIN_EVENTS = {
   COMP_REVIEW_STARTED: 'COMP_REVIEW_STARTED',
   COMP_EXCEPTION_FLAGGED: 'COMP_EXCEPTION_FLAGGED',
   COMP_APPROVED: 'COMP_APPROVED',
+
+  // F-2: Delegation
+  DELEGATION_STARTED: 'DELEGATION_STARTED',
+  DELEGATION_ENDED: 'DELEGATION_ENDED',
 } as const
 
 export type DomainEventName = typeof DOMAIN_EVENTS[keyof typeof DOMAIN_EVENTS]
@@ -496,8 +500,31 @@ export interface CompApprovedPayload {
   companyId: string
   approvedBy: string
   totalEmployees: number
-  totalBudgetImpact: number
+  totalBudgetImpact?: number
+  exceptionCount?: number
+  approverComment?: string
   payrollRunId?: string
+}
+
+// ── Delegation Events ───────────────────────────────────────
+
+export interface DelegationStartedPayload {
+  delegationId: string
+  delegatorId: string
+  delegateeId: string
+  companyId: string
+  scope: string
+  startDate: string
+  endDate: string
+}
+
+export interface DelegationEndedPayload {
+  delegationId: string
+  delegatorId: string
+  delegateeId: string
+  companyId: string
+  reason: 'EXPIRED' | 'REVOKED'
+  endedAt: string
 }
 
 // ------------------------------------
@@ -545,6 +572,9 @@ export interface DomainEventMap {
   COMP_REVIEW_STARTED: CompReviewStartedPayload
   COMP_EXCEPTION_FLAGGED: CompExceptionFlaggedPayload
   COMP_APPROVED: CompApprovedPayload
+  // F-2: Delegation
+  DELEGATION_STARTED: DelegationStartedPayload
+  DELEGATION_ENDED: DelegationEndedPayload
 }
 
 /** 타입-안전 이벤트 봉투 */

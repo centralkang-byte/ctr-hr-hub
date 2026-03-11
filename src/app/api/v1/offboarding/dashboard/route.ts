@@ -1,13 +1,13 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — GET /api/v1/offboarding/dashboard
-// 퇴직처리 현황 대시보드: 진행률 + D-day 경고
-// B5 강화: 법인 필터 (SUPER_ADMIN)
+// 퇴직처리 현황 대시보드: 진행률 + D-day 경고 + E-2 통계 확장
+// B5 강화: 법인 필터 (SUPER_ADMIN) + blocked count + exit interview pending
 // ═══════════════════════════════════════════════════════════
 
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { Prisma } from '@/generated/prisma/client'
-import { apiPaginated, buildPagination } from '@/lib/api'
+import { buildPagination } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
@@ -25,16 +25,16 @@ export const GET = withPermission(
       ...(status
         ? { status }
         : {
-            status: {
-              in: ['IN_PROGRESS', 'COMPLETED'],
-            },
-          }),
+          status: {
+            in: ['IN_PROGRESS', 'COMPLETED'],
+          },
+        }),
       ...(companyId
         ? {
-            employee: {
-              assignments: { some: { companyId, isPrimary: true, endDate: null } },
-            },
-          }
+          employee: {
+            assignments: { some: { companyId, isPrimary: true, endDate: null } },
+          },
+        }
         : {}),
     }
 
@@ -63,9 +63,16 @@ export const GET = withPermission(
 
     const now = Date.now()
 
+    // E-2: Compute summary statistics
+    let totalBlocked = 0
+    let totalUrgent = 0
+    let exitInterviewPending = 0
+    const resignTypeBreakdown: Record<string, number> = {}
+
     const enriched = offboardings.map((ob) => {
       const totalTasks = ob.offboardingTasks.length
       const completed = ob.offboardingTasks.filter((t) => t.status === 'DONE').length
+      const blocked = ob.offboardingTasks.filter((t) => t.status === 'BLOCKED').length
 
       const daysUntil = Math.ceil(
         (new Date(ob.lastWorkingDate).getTime() - now) / 86400000,
@@ -73,16 +80,32 @@ export const GET = withPermission(
       const isD7 = daysUntil <= 7
       const isD3 = daysUntil <= 3
 
+      // Aggregate summary stats
+      totalBlocked += blocked
+      if (isD7 && ob.status === 'IN_PROGRESS') totalUrgent++
+      if (!ob.exitInterviewCompleted && ob.status === 'IN_PROGRESS') exitInterviewPending++
+      resignTypeBreakdown[ob.resignType] = (resignTypeBreakdown[ob.resignType] ?? 0) + 1
+
       return {
         ...ob,
-        progress: { total: totalTasks, completed },
+        progress: { total: totalTasks, completed, blocked },
         daysUntil,
         isD7,
         isD3,
       }
     })
 
-    return apiPaginated(enriched, buildPagination(page, limit, total))
+    const { NextResponse } = await import('next/server')
+    return NextResponse.json({
+      data: enriched,
+      pagination: buildPagination(page, limit, total),
+      summary: {
+        totalBlocked,
+        totalUrgent,
+        exitInterviewPending,
+        resignTypeBreakdown,
+      },
+    })
   },
   perm(MODULE.ONBOARDING, ACTION.VIEW),
 )

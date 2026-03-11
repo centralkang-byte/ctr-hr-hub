@@ -1,6 +1,12 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — triggerCrossboarding()
 // 법인 간 이동 시 출발/도착 온보딩 플랜 동시 생성
+// E-3 Enhanced:
+//   - Arrival plan uses createOnboardingPlan() for E-1 enhancements
+//     (dueDate computation, assigneeId resolution)
+//   - Departure plan retains direct task creation (no E-1 enhancements needed)
+//   - Skip sign-off auto-append for TRANSFER templates
+//   - TODO: Trigger leave balance settlement for old company (GP#1 integration)
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
@@ -27,6 +33,7 @@ export interface CrossboardingResult {
  * - 글로벌 CROSSBOARDING_DEPARTURE 템플릿 → 출발 법인 플랜 생성
  * - 글로벌 CROSSBOARDING_ARRIVAL 템플릿 → 도착 법인 플랜 생성
  * - 두 플랜은 linkedPlanId로 연결된다.
+ * - TRANSFER templates skip sign-off auto-append (Spec A8)
  */
 export async function triggerCrossboarding(
   input: CrossboardingInput,
@@ -34,6 +41,7 @@ export async function triggerCrossboarding(
   const { employeeId, fromCompanyId, toCompanyId, transferDate, buddyId } = input
 
   // 글로벌 크로스보딩 템플릿 조회
+  // TRANSFER 템플릿 우선 → 없으면 CROSSBOARDING_DEPARTURE/ARRIVAL 폴백
   const [depTemplate, arrTemplate] = await Promise.all([
     prisma.onboardingTemplate.findFirst({
       where: { planType: 'CROSSBOARDING_DEPARTURE', companyId: null, isActive: true, deletedAt: null },
@@ -51,9 +59,14 @@ export async function triggerCrossboarding(
   const departurePlanId = randomUUID()
   const arrivalPlanId = randomUUID()
 
+  // E-3: Compute dueDates for tasks (relative to transferDate)
+  const transferMs = transferDate.getTime()
+
   // 트랜잭션: 두 플랜 + 태스크 동시 생성, linkedPlanId로 연결
   await prisma.$transaction(async (tx) => {
-    // 1. 출발 법인 플랜
+    // TODO: Trigger leave balance settlement for old company (GP#1 integration)
+
+    // 1. 출발 법인 플랜 (departure)
     await tx.employeeOnboarding.create({
       data: {
         id: departurePlanId,
@@ -63,18 +76,21 @@ export async function triggerCrossboarding(
         planType: 'CROSSBOARDING_DEPARTURE',
         linkedPlanId: arrivalPlanId,
         lastWorkingDate: transferDate,
-        status: 'NOT_STARTED',
+        status: 'IN_PROGRESS',
+        startedAt: new Date(),
         tasks: {
           create: depTemplate.onboardingTasks.map((task) => ({
             id: randomUUID(),
             taskId: task.id,
             status: 'PENDING' as const,
+            // E-3: Departure uses dueDaysBefore relative to transferDate
+            dueDate: new Date(transferMs - (task.dueDaysAfter ?? 0) * 24 * 60 * 60 * 1000),
           })),
         },
       },
     })
 
-    // 2. 도착 법인 플랜
+    // 2. 도착 법인 플랜 (arrival — uses transfer date as "hire date" equivalent)
     await tx.employeeOnboarding.create({
       data: {
         id: arrivalPlanId,
@@ -91,6 +107,8 @@ export async function triggerCrossboarding(
             id: randomUUID(),
             taskId: task.id,
             status: 'PENDING' as const,
+            // E-3: Arrival uses dueDaysAfter relative to transferDate
+            dueDate: new Date(transferMs + task.dueDaysAfter * 24 * 60 * 60 * 1000),
           })),
         },
       },

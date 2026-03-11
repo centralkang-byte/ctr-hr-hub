@@ -69,7 +69,7 @@ export const GET = withPermission(
                 assignmentWhere.departmentId = { in: targetFilter.departments }
             }
 
-            // TODO: Move to Settings (Performance) — probation exclusion logic
+            // Settings-connected: probation exclusion logic (cycle.excludeProbation flag)
             const employeeWhere: Record<string, unknown> = {
                 deletedAt: null,
                 assignments: { some: assignmentWhere },

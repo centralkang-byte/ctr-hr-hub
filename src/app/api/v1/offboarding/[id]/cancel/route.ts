@@ -1,6 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — PUT /api/v1/offboarding/:id/cancel
-// 퇴직 처리 취소 (HR only): 직원 상태 복원 + 이력 기록
+// 퇴직 처리 취소 (HR only): 직원 상태 복원 + 태스크 일괄 취소 + 자산 정리
+// E-2: Enhanced with batch task cancel + asset cleanup
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
@@ -40,26 +41,41 @@ export const PUT = withPermission(
     }
 
     await prisma.$transaction(async (tx) => {
-      // Restore employee status to ACTIVE and clear resign date
+      // 1. Restore employee status to ACTIVE and clear resign date
       await tx.employee.update({
         where: { id: offboarding.employeeId },
-        data: {
-          resignDate: null,
-        },
+        data: { resignDate: null },
       })
-      // Restore assignment status to ACTIVE
       await tx.employeeAssignment.updateMany({
         where: { employeeId: offboarding.employeeId, isPrimary: true, endDate: null },
         data: { status: 'ACTIVE' },
       })
 
-      // Set offboarding status to CANCELLED
+      // 2. Set offboarding status to CANCELLED
       await tx.employeeOffboarding.update({
         where: { id },
         data: { status: 'CANCELLED' },
       })
 
-      // Record history
+      // 3. E-2: Batch-cancel ALL non-DONE tasks → set SKIPPED
+      await tx.employeeOffboardingTask.updateMany({
+        where: {
+          employeeOffboardingId: id,
+          status: { in: ['PENDING', 'IN_PROGRESS', 'BLOCKED'] },
+        },
+        data: { status: 'SKIPPED' },
+      })
+
+      // 4. E-2: Cancel any pending asset returns → set to RETURNED (no deduction needed)
+      await tx.assetReturn.updateMany({
+        where: {
+          offboardingId: id,
+          status: { in: ['PENDING', 'UNRETURNED'] },
+        },
+        data: { status: 'RETURNED' },
+      })
+
+      // 5. Record history
       await tx.employeeHistory.create({
         data: {
           employeeId: offboarding.employeeId,
@@ -67,7 +83,7 @@ export const PUT = withPermission(
           effectiveDate: new Date(),
           reason: '퇴직 처리 취소',
           approvedBy: user.employeeId,
-          toCompanyId: (offboarding.employee.assignments?.[0] as any)?.companyId as string | undefined, // eslint-disable-line @typescript-eslint/no-explicit-any
+          toCompanyId: offboarding.employee.assignments?.[0]?.companyId ?? undefined,
         },
       })
     })

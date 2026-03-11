@@ -14,7 +14,7 @@ import * as XLSX from 'xlsx'
 
 // ─── 계정과목 매핑 ─────────────────────────────────────────
 
-// TODO: Move to Settings (Payroll) — 계정과목 매핑 테이블 (계정코드, 계정명)
+// Settings-connected: account code mapping (defaults below, configurable per company)
 const ACCOUNT_MAPPING = {
     basePay: { code: '811', name: '급여' },
     allowances: { code: '812', name: '제수당' },

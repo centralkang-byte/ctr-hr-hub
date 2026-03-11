@@ -6,11 +6,12 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { notFound, badRequest } from '@/lib/errors'
+import { notFound, badRequest, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { z } from 'zod'
+import { isDirectManager } from '@/lib/auth/manager-check'
 
 // ─── GET: Fetch exit interview for an offboarding record ────
 
@@ -32,6 +33,22 @@ export const GET = withPermission(
       where: { employeeOffboardingId: id },
       include: { interviewer: { select: { id: true, name: true } } },
     })
+
+    if (!interview) return apiSuccess(null)
+
+    // E-2: Isolation enforcement
+    // MANAGER: blocked from seeing exit interview raw data
+    if (await isDirectManager(user.employeeId, offboarding.employeeId)) {
+      throw forbidden('퇴직 면담 원본은 직속 매니저에게 공개되지 않습니다.')
+    }
+    // Employee themselves: blocked from reading submitted interview
+    if (user.employeeId === offboarding.employeeId) {
+      throw forbidden('제출된 퇴직 면담은 열람이 불가합니다.')
+    }
+    // Only HR_ADMIN and SUPER_ADMIN reach here
+    if (user.role !== 'SUPER_ADMIN' && user.role !== 'HR_ADMIN') {
+      throw forbidden('퇴직 면담은 HR 관리자만 열람할 수 있습니다.')
+    }
 
     return apiSuccess(interview)
   },

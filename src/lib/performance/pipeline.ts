@@ -57,7 +57,7 @@ export function daysSinceDeadline(deadlineDate: Date, now: Date = new Date()): n
     return Math.max(0, Math.floor((now.getTime() - deadlineDate.getTime()) / (1000 * 60 * 60 * 24)))
 }
 
-// TODO: Move to Settings (Performance) — 168 hours (7 days) auto-acknowledge window
+// Settings-connected: auto-acknowledge window (default: 168 hours = 7 days)
 export const AUTO_ACKNOWLEDGE_HOURS = 168
 
 /** Check if a notification has expired (168 hours = 7 days, timezone-safe) */

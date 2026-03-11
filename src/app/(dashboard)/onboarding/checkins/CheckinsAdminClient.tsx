@@ -72,15 +72,15 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
   }
 
   const SENTIMENT_BADGE: Record<string, { label: string; className: string }> = {
-    POSITIVE: { label: t('sentimentPositive'), className: 'bg-[#E8F5E9] text-[#2E7D32]' },
-    MIXED: { label: t('sentimentMixed'), className: 'bg-[#FFF3E0] text-[#FF9800]' },
-    CONCERNING: { label: t('sentimentConcerning'), className: 'bg-[#FFEBEE] text-[#F44336]' },
+    POSITIVE: { label: t('sentimentPositive'), className: 'bg-[#DCFCE7] text-[#16A34A]' },
+    MIXED: { label: t('sentimentMixed'), className: 'bg-[#F0F4FF] text-[#5E81F4]' },
+    CONCERNING: { label: t('sentimentConcerning'), className: 'bg-[#FEF2F2] text-[#EF4444]' },
   }
 
   const TREND_BADGE: Record<string, { label: string; className: string }> = {
-    IMPROVING: { label: t('trendImproving'), className: 'bg-[#E8F5E9] text-[#2E7D32]' },
-    STABLE: { label: t('trendStable'), className: 'bg-[#F5F5F5] text-[#666]' },
-    DECLINING: { label: t('trendDeclining'), className: 'bg-[#FFEBEE] text-[#F44336]' },
+    IMPROVING: { label: t('trendImproving'), className: 'bg-[#DCFCE7] text-[#16A34A]' },
+    STABLE: { label: t('trendStable'), className: 'bg-[#F5F5FA] text-[#8181A5]' },
+    DECLINING: { label: t('trendDeclining'), className: 'bg-[#FEF2F2] text-[#EF4444]' },
   }
 
   const [checkins, setCheckins] = useState<CheckinRow[]>([])
@@ -180,7 +180,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
           return (
             <button
               type="button"
-              className="text-sm font-medium text-[#00C853] hover:underline"
+              className="text-sm font-medium text-[#5E81F4] hover:underline"
               onClick={(e) => {
                 e.stopPropagation()
                 selectEmployee(row.employee.id, row.employee.name)
@@ -226,7 +226,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
         render: (r) => {
           const row = r as unknown as CheckinRow
           return (
-            <span className={`text-sm ${row.belonging <= 2 ? 'font-semibold text-[#F44336]' : ''}`}>
+            <span className={`text-sm ${row.belonging <= 2 ? 'font-semibold text-[#EF4444]' : ''}`}>
               {row.belonging}/5
             </span>
           )
@@ -237,7 +237,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
         header: t('submittedDate'),
         render: (r) => {
           const row = r as unknown as CheckinRow
-          return <span className="text-sm text-[#999]">{formatDate(String(row.submittedAt))}</span>
+          return <span className="text-sm text-[#8181A5]">{formatDate(String(row.submittedAt))}</span>
         },
       },
     ],
@@ -248,8 +248,8 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
   if (loading && checkins.length === 0) {
     return (
       <div className="space-y-6 p-6">
-        <div className="h-10 w-64 bg-[#F5F5F5] rounded animate-pulse" />
-        <div className="h-60 w-full bg-[#F5F5F5] rounded-xl animate-pulse" />
+        <div className="h-10 w-64 bg-[#F5F5FA] rounded animate-pulse" />
+        <div className="h-60 w-full bg-[#F5F5FA] rounded-xl animate-pulse" />
       </div>
     )
   }
@@ -264,9 +264,9 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
       {/* ─── Employee selector ─── */}
       {uniqueEmployees.length > 0 && (
         <div className="flex items-center gap-3">
-          <label className="text-sm font-medium text-[#1A1A1A]">{t('selectEmployee')}</label>
+          <label className="text-sm font-medium text-[#1C1D21]">{t('selectEmployee')}</label>
           <select
-            className="rounded-lg border border-[#E0E0E0] px-3 py-2 text-sm focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+            className="rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10"
             value={selectedEmployeeId ?? ''}
             onChange={(e) => {
               const emp = uniqueEmployees.find((u) => u.id === e.target.value)
@@ -298,15 +298,15 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
       {/* ─── Employee Detail Section ─── */}
       {selectedEmployeeId && (
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-[#E8E8E8] p-6">
+          <div className="bg-white rounded-xl border border-[#F0F0F3] p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em]">
+              <h3 className="text-base font-bold text-[#1C1D21] tracking-[-0.02em]">
                 {selectedEmployeeName} - {t('checkinTrend')}
               </h3>
               <button
                 onClick={requestAiSummary}
                 disabled={loadingAi || employeeCheckins.length === 0}
-                className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg border border-[#E0E0E0] text-[#666] hover:bg-[#F5F5F5] disabled:opacity-50 transition-colors"
+                className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg border border-[#F0F0F3] text-[#8181A5] hover:bg-[#F5F5FA] disabled:opacity-50 transition-colors"
               >
                 <Sparkles className="h-4 w-4" />
                 {loadingAi ? t('aiAnalyzing') : t('aiSummary')}
@@ -314,9 +314,9 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
             </div>
             <div>
               {loadingDetail ? (
-                <div className="h-64 w-full bg-[#F5F5F5] rounded-xl animate-pulse" />
+                <div className="h-64 w-full bg-[#F5F5FA] rounded-xl animate-pulse" />
               ) : chartData.length === 0 ? (
-                <p className="py-8 text-center text-sm text-[#999]">{t('noCheckinData')}</p>
+                <p className="py-8 text-center text-sm text-[#8181A5]">{t('noCheckinData')}</p>
               ) : (
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={chartData}>
@@ -350,14 +350,14 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
                     <Line
                       type="monotone"
                       dataKey="mood"
-                      stroke="#00C853"
+                      stroke="#5E81F4"
                       strokeWidth={2}
                       dot={{ r: 4 }}
                     />
                     <Line
                       type="monotone"
                       dataKey="energy"
-                      stroke="#FF9800"
+                      stroke="#F59E0B"
                       strokeWidth={2}
                       dot={{ r: 4 }}
                     />
@@ -376,30 +376,30 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
 
           {/* ─── AI Summary ─── */}
           {aiSummary && (
-            <div className="bg-white rounded-xl border border-[#E8E8E8] p-6">
+            <div className="bg-white rounded-xl border border-[#F0F0F3] p-6">
               <div className="flex items-center gap-2 mb-4">
-                <Sparkles className="h-4 w-4 text-[#FF9800]" />
-                <h3 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em]">
+                <Sparkles className="h-4 w-4 text-[#5E81F4]" />
+                <h3 className="text-base font-bold text-[#1C1D21] tracking-[-0.02em]">
                   {t('aiAnalysisSummary')}
                 </h3>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-semibold bg-[#F5F5F5] text-[#666] ml-2">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-semibold bg-[#F5F5FA] text-[#8181A5] ml-2">
                   AI Generated
                 </span>
               </div>
               <div className="space-y-4">
                 <div className="flex gap-3">
                   <div>
-                    <span className="text-xs text-[#999]">{t('overallSentiment')}</span>
+                    <span className="text-xs text-[#8181A5]">{t('overallSentiment')}</span>
                     <div className="mt-1">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${SENTIMENT_BADGE[aiSummary.overall_sentiment]?.className ?? 'bg-[#F5F5F5] text-[#666]'}`}>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${SENTIMENT_BADGE[aiSummary.overall_sentiment]?.className ?? 'bg-[#F5F5FA] text-[#8181A5]'}`}>
                         {SENTIMENT_BADGE[aiSummary.overall_sentiment]?.label ?? aiSummary.overall_sentiment}
                       </span>
                     </div>
                   </div>
                   <div>
-                    <span className="text-xs text-[#999]">{t('trendLabel')}</span>
+                    <span className="text-xs text-[#8181A5]">{t('trendLabel')}</span>
                     <div className="mt-1">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${TREND_BADGE[aiSummary.trend]?.className ?? 'bg-[#F5F5F5] text-[#666]'}`}>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${TREND_BADGE[aiSummary.trend]?.className ?? 'bg-[#F5F5FA] text-[#8181A5]'}`}>
                         {TREND_BADGE[aiSummary.trend]?.label ?? aiSummary.trend}
                       </span>
                     </div>
@@ -408,11 +408,11 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
 
                 {aiSummary.key_observations.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-[#1A1A1A] mb-1">{t('keyObservations')}</h4>
-                    <ul className="space-y-1 text-sm text-[#666]">
+                    <h4 className="text-sm font-medium text-[#1C1D21] mb-1">{t('keyObservations')}</h4>
+                    <ul className="space-y-1 text-sm text-[#8181A5]">
                       {aiSummary.key_observations.map((obs, i) => (
                         <li key={i} className="flex items-start gap-2">
-                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#00C853]" />
+                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#5E81F4]" />
                           {obs}
                         </li>
                       ))}
@@ -422,11 +422,11 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
 
                 {aiSummary.recommended_actions.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-[#1A1A1A] mb-1">{t('recommendedActions')}</h4>
-                    <ul className="space-y-1 text-sm text-[#666]">
+                    <h4 className="text-sm font-medium text-[#1C1D21] mb-1">{t('recommendedActions')}</h4>
+                    <ul className="space-y-1 text-sm text-[#8181A5]">
                       {aiSummary.recommended_actions.map((action, i) => (
                         <li key={i} className="flex items-start gap-2">
-                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F44336]" />
+                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#EF4444]" />
                           {action}
                         </li>
                       ))}

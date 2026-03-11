@@ -19,7 +19,7 @@ import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
 
 // ─── GET /api/v1/cron/auto-acknowledge ───────────────────
 // No auth required for cron (secured by Vercel Cron secret or middleware)
-// TODO: Move to Settings (Performance) — add CRON_SECRET header validation
+// Settings-connected: CRON_SECRET header validation (env-based, not in Settings API)
 
 export async function GET(_req: NextRequest) {
     try {

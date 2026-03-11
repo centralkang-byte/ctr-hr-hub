@@ -31,27 +31,28 @@ import {
 
 export interface PerformanceMapperContext {
   employeeId: string
-  companyId:  string
-  role:       string   // SessionUser.role (e.g., 'HR_ADMIN', 'MANAGER', 'EMPLOYEE')
+  companyId: string
+  role: string   // SessionUser.role (e.g., 'HR_ADMIN', 'MANAGER', 'EMPLOYEE')
+  isSuperAdmin?: boolean  // SUPER_ADMIN은 전체 법인 조회
 }
 
 // ─── 상수 ─────────────────────────────────────────────────
 
 const SYSTEM_ACTOR: UnifiedTaskActor = {
   employeeId: 'system:performance',
-  name:       '성과관리',
+  name: '성과관리',
 }
 
 // ─── 우선순위 계산 ────────────────────────────────────────
 
 function calcPriorityFromDeadline(deadline: Date | null | undefined): UnifiedTaskPriority {
   if (!deadline) return UnifiedTaskPriority.MEDIUM
-  const diffMs   = deadline.getTime() - Date.now()
+  const diffMs = deadline.getTime() - Date.now()
   const diffDays = diffMs / (1000 * 60 * 60 * 24)
 
-  if (diffDays < 0)   return UnifiedTaskPriority.URGENT   // 마감 초과
-  if (diffDays <= 2)  return UnifiedTaskPriority.HIGH
-  if (diffDays <= 5)  return UnifiedTaskPriority.MEDIUM
+  if (diffDays < 0) return UnifiedTaskPriority.URGENT   // 마감 초과
+  if (diffDays <= 2) return UnifiedTaskPriority.HIGH
+  if (diffDays <= 5) return UnifiedTaskPriority.MEDIUM
   return UnifiedTaskPriority.LOW
 }
 
@@ -75,13 +76,14 @@ function makeActor(
 export async function fetchPerformanceTasks(
   ctx: PerformanceMapperContext,
 ): Promise<UnifiedTask[]> {
-  const { employeeId, companyId, role } = ctx
+  const { employeeId, companyId, role, isSuperAdmin } = ctx
   const isHrAdmin = role === 'HR_ADMIN' || role === 'SUPER_ADMIN'
+  const companyFilter = isSuperAdmin ? {} : { companyId }
 
   // ── Step 1: 활성 사이클 조회 ─────────────────────────────
   const activeCycle = await prisma.performanceCycle.findFirst({
     where: {
-      companyId,
+      ...companyFilter,
       status: { notIn: ['DRAFT', 'CLOSED'] },
     },
     orderBy: { createdAt: 'desc' },
@@ -90,11 +92,11 @@ export async function fetchPerformanceTasks(
   // 활성 사이클 없음 → 태스크 없음
   if (!activeCycle) return []
 
-  const cycleId    = activeCycle.id
-  const cycleMeta  = {
-    cycleName:  activeCycle.name,
+  const cycleId = activeCycle.id
+  const cycleMeta = {
+    cycleName: activeCycle.name,
     cyclePhase: activeCycle.status as string,
-    year:       activeCycle.year,
+    year: activeCycle.year,
   }
   const now = new Date()
 
@@ -103,16 +105,16 @@ export async function fetchPerformanceTasks(
   const myAssignment = await prisma.employeeAssignment.findFirst({
     where: { employeeId, isPrimary: true, endDate: null },
     select: {
-      positionId:  true,
-      position:    { select: { id: true, titleKo: true } },
-      department:  { select: { name: true } },
-      jobGrade:    { select: { name: true } },
+      positionId: true,
+      position: { select: { id: true, titleKo: true } },
+      department: { select: { name: true } },
+      jobGrade: { select: { name: true } },
     },
   })
 
-  const myPositionId   = myAssignment?.positionId ?? null
-  const myDepartment   = myAssignment?.department?.name
-  const myJobGrade     = myAssignment?.jobGrade?.name
+  const myPositionId = myAssignment?.positionId ?? null
+  const myDepartment = myAssignment?.department?.name
+  const myJobGrade = myAssignment?.jobGrade?.name
   const myPositionTitle = myAssignment?.position?.titleKo
 
   // ── Step 3: 직속 부하 조회 (포지션 기반) ─────────────────
@@ -122,35 +124,35 @@ export async function fetchPerformanceTasks(
   if (myPositionId) {
     const reports = await prisma.employeeAssignment.findMany({
       where: {
-        companyId,
+        ...companyFilter,
         isPrimary: true,
-        endDate:   null,
-        status:    'ACTIVE',
+        endDate: null,
+        status: 'ACTIVE',
         position: { reportsToPositionId: myPositionId },
       },
       select: {
         employeeId: true,
-        employee:   { select: { id: true, name: true } },
-        position:   { select: { titleKo: true } },
+        employee: { select: { id: true, name: true } },
+        position: { select: { titleKo: true } },
         department: { select: { name: true } },
       },
     })
 
     directReports = reports.map((r) => ({
-      employeeId:    r.employee.id,
-      name:          r.employee.name,
+      employeeId: r.employee.id,
+      name: r.employee.name,
       positionTitle: r.position?.titleKo,
-      department:    r.department?.name,
+      department: r.department?.name,
     }))
   }
 
-  const isManager  = directReports.length > 0
+  const isManager = directReports.length > 0
 
   // ── Step 4: 페이즈별 태스크 생성 ─────────────────────────
 
   const tasks: UnifiedTask[] = []
   const myself = makeActor(employeeId, '', {
-    position:   myPositionTitle,
+    position: myPositionTitle,
     department: myDepartment,
   })
 
@@ -171,7 +173,7 @@ export async function fetchPerformanceTasks(
     const allGoals = await prisma.mboGoal.findMany({
       where: {
         cycleId,
-        companyId,
+        ...companyFilter,
         employeeId: { in: relevantEmployeeIds },
       },
       select: { employeeId: true, status: true },
@@ -187,9 +189,9 @@ export async function fetchPerformanceTasks(
 
     // ── 직원 본인 태스크: MBO 목표 등록 ──────────────────
     const myGoalStatuses = goalsByEmployee.get(employeeId) ?? []
-    const hasApproved    = myGoalStatuses.some((s) => s === 'APPROVED')
-    const hasPending     = myGoalStatuses.some((s) => s === 'PENDING_APPROVAL')
-    const hasDraft       = myGoalStatuses.some((s) => s === 'DRAFT' || s === 'REJECTED')
+    const hasApproved = myGoalStatuses.some((s) => s === 'APPROVED')
+    const hasPending = myGoalStatuses.some((s) => s === 'PENDING_APPROVAL')
+    const hasDraft = myGoalStatuses.some((s) => s === 'DRAFT' || s === 'REJECTED')
 
     let goalSubmitStatus: UnifiedTaskStatus
     if (hasApproved && !hasPending && !hasDraft) {
@@ -201,22 +203,22 @@ export async function fetchPerformanceTasks(
     }
 
     tasks.push({
-      id:          `performance:goal_submit:${employeeId}:${cycleId}`,
-      type:        UnifiedTaskType.PERFORMANCE_REVIEW,
-      status:      goalSubmitStatus,
-      priority:    goalSubmitStatus === UnifiedTaskStatus.COMPLETED ? UnifiedTaskPriority.LOW : goalPriority,
-      title:       '[성과] MBO 목표 등록',
-      summary:     `${activeCycle.name} — 목표 가중치 합계 100% 제출`,
-      requester:   myself,
-      assignee:    myself,
-      createdAt:   now.toISOString(),
-      updatedAt:   now.toISOString(),
-      dueDate:     goalDueDateStr,
-      sourceId:    cycleId,
+      id: `performance:goal_submit:${employeeId}:${cycleId}`,
+      type: UnifiedTaskType.PERFORMANCE_REVIEW,
+      status: goalSubmitStatus,
+      priority: goalSubmitStatus === UnifiedTaskStatus.COMPLETED ? UnifiedTaskPriority.LOW : goalPriority,
+      title: '[성과] MBO 목표 등록',
+      summary: `${activeCycle.name} — 목표 가중치 합계 100% 제출`,
+      requester: myself,
+      assignee: myself,
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString(),
+      dueDate: goalDueDateStr,
+      sourceId: cycleId,
       sourceModel: 'PerformanceCycle',
-      actionUrl:   '/performance/goals',
+      actionUrl: '/performance/goals',
       companyId,
-      metadata:    { ...cycleMeta },
+      metadata: { ...cycleMeta },
     })
 
     // ── 매니저 태스크: 팀원 목표 검토 ────────────────────
@@ -224,7 +226,7 @@ export async function fetchPerformanceTasks(
       for (const report of directReports) {
         const reportGoalStatuses = goalsByEmployee.get(report.employeeId) ?? []
         const hasPendingApproval = reportGoalStatuses.some((s) => s === 'PENDING_APPROVAL')
-        const allApproved        = reportGoalStatuses.length > 0 &&
+        const allApproved = reportGoalStatuses.length > 0 &&
           reportGoalStatuses.every((s) => s === 'APPROVED')
 
         // PENDING_APPROVAL 없으면 이 팀원에 대한 검토 태스크는 불필요
@@ -235,27 +237,27 @@ export async function fetchPerformanceTasks(
           : UnifiedTaskStatus.PENDING
 
         const reportActor = makeActor(report.employeeId, report.name, {
-          position:   report.positionTitle,
+          position: report.positionTitle,
           department: report.department,
         })
 
         tasks.push({
-          id:          `performance:goal_review:${report.employeeId}:${cycleId}`,
-          type:        UnifiedTaskType.PERFORMANCE_REVIEW,
-          status:      reviewStatus,
-          priority:    reviewStatus === UnifiedTaskStatus.COMPLETED ? UnifiedTaskPriority.LOW : goalPriority,
-          title:       `[성과] ${report.name} 목표 검토`,
-          summary:     `${report.name}님의 MBO 목표 승인 대기`,
-          requester:   reportActor,
-          assignee:    myself,
-          createdAt:   now.toISOString(),
-          updatedAt:   now.toISOString(),
-          dueDate:     goalDueDateStr,
-          sourceId:    `${report.employeeId}:${cycleId}`,
+          id: `performance:goal_review:${report.employeeId}:${cycleId}`,
+          type: UnifiedTaskType.PERFORMANCE_REVIEW,
+          status: reviewStatus,
+          priority: reviewStatus === UnifiedTaskStatus.COMPLETED ? UnifiedTaskPriority.LOW : goalPriority,
+          title: `[성과] ${report.name} 목표 검토`,
+          summary: `${report.name}님의 MBO 목표 승인 대기`,
+          requester: reportActor,
+          assignee: myself,
+          createdAt: now.toISOString(),
+          updatedAt: now.toISOString(),
+          dueDate: goalDueDateStr,
+          sourceId: `${report.employeeId}:${cycleId}`,
           sourceModel: 'MboGoal',
-          actionUrl:   '/performance/team-goals',
+          actionUrl: '/performance/team-goals',
           companyId,
-          metadata:    { ...cycleMeta, targetEmployeeId: report.employeeId, targetEmployeeName: report.name },
+          metadata: { ...cycleMeta, targetEmployeeId: report.employeeId, targetEmployeeName: report.name },
         })
       }
     }
@@ -265,9 +267,9 @@ export async function fetchPerformanceTasks(
   // 페이즈: EVAL_OPEN (자기평가 + 매니저 평가)
   // ────────────────────────────────────────────────────────
   else if (activeCycle.status === 'EVAL_OPEN') {
-    const evalDeadline    = activeCycle.evalEnd
-    const evalPriority    = calcPriorityFromDeadline(evalDeadline)
-    const evalDueDateStr  = evalDeadline?.toISOString()
+    const evalDeadline = activeCycle.evalEnd
+    const evalPriority = calcPriorityFromDeadline(evalDeadline)
+    const evalDueDateStr = evalDeadline?.toISOString()
 
     // ── 배치 조회: 관련 직원 평가 전체 ──────────────────
     const relevantEmployeeIds = [
@@ -278,7 +280,7 @@ export async function fetchPerformanceTasks(
     const allEvals = await prisma.performanceEvaluation.findMany({
       where: {
         cycleId,
-        companyId,
+        ...companyFilter,
         OR: [
           // 직원 본인의 자기평가
           { employeeId, evalType: 'SELF' },
@@ -287,10 +289,10 @@ export async function fetchPerformanceTasks(
         ],
       },
       select: {
-        employeeId:  true,
+        employeeId: true,
         evaluatorId: true,
-        evalType:    true,
-        status:      true,
+        evalType: true,
+        status: true,
       },
     })
 
@@ -302,22 +304,22 @@ export async function fetchPerformanceTasks(
         : UnifiedTaskStatus.PENDING
 
     tasks.push({
-      id:          `performance:self_eval:${employeeId}:${cycleId}`,
-      type:        UnifiedTaskType.PERFORMANCE_REVIEW,
-      status:      selfStatus,
-      priority:    selfStatus === UnifiedTaskStatus.COMPLETED ? UnifiedTaskPriority.LOW : evalPriority,
-      title:       '[성과] 자기평가 작성',
-      summary:     `${activeCycle.name} — 성과 및 역량 자기평가 제출`,
-      requester:   myself,
-      assignee:    myself,
-      createdAt:   now.toISOString(),
-      updatedAt:   now.toISOString(),
-      dueDate:     evalDueDateStr,
-      sourceId:    cycleId,
+      id: `performance:self_eval:${employeeId}:${cycleId}`,
+      type: UnifiedTaskType.PERFORMANCE_REVIEW,
+      status: selfStatus,
+      priority: selfStatus === UnifiedTaskStatus.COMPLETED ? UnifiedTaskPriority.LOW : evalPriority,
+      title: '[성과] 자기평가 작성',
+      summary: `${activeCycle.name} — 성과 및 역량 자기평가 제출`,
+      requester: myself,
+      assignee: myself,
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString(),
+      dueDate: evalDueDateStr,
+      sourceId: cycleId,
       sourceModel: 'PerformanceCycle',
-      actionUrl:   '/performance/self-eval',
+      actionUrl: '/performance/self-eval',
       companyId,
-      metadata:    { ...cycleMeta },
+      metadata: { ...cycleMeta },
     })
 
     // ── 매니저 태스크: 팀원별 평가 작성 ──────────────────
@@ -338,27 +340,27 @@ export async function fetchPerformanceTasks(
             : UnifiedTaskStatus.PENDING
 
         const reportActor = makeActor(report.employeeId, report.name, {
-          position:   report.positionTitle,
+          position: report.positionTitle,
           department: report.department,
         })
 
         tasks.push({
-          id:          `performance:mgr_eval:${report.employeeId}:${cycleId}`,
-          type:        UnifiedTaskType.PERFORMANCE_REVIEW,
+          id: `performance:mgr_eval:${report.employeeId}:${cycleId}`,
+          type: UnifiedTaskType.PERFORMANCE_REVIEW,
           status,
-          priority:    status === UnifiedTaskStatus.COMPLETED ? UnifiedTaskPriority.LOW : evalPriority,
-          title:       `[성과] ${report.name} 평가 작성`,
-          summary:     `${report.name}님에 대한 매니저 평가`,
-          requester:   reportActor,
-          assignee:    myself,
-          createdAt:   now.toISOString(),
-          updatedAt:   now.toISOString(),
-          dueDate:     evalDueDateStr,
-          sourceId:    `${report.employeeId}:${cycleId}`,
+          priority: status === UnifiedTaskStatus.COMPLETED ? UnifiedTaskPriority.LOW : evalPriority,
+          title: `[성과] ${report.name} 평가 작성`,
+          summary: `${report.name}님에 대한 매니저 평가`,
+          requester: reportActor,
+          assignee: myself,
+          createdAt: now.toISOString(),
+          updatedAt: now.toISOString(),
+          dueDate: evalDueDateStr,
+          sourceId: `${report.employeeId}:${cycleId}`,
           sourceModel: 'PerformanceEvaluation',
-          actionUrl:   '/performance/team-evaluations',
+          actionUrl: '/performance/team-evaluations',
           companyId,
-          metadata:    { ...cycleMeta, targetEmployeeId: report.employeeId, targetEmployeeName: report.name },
+          metadata: { ...cycleMeta, targetEmployeeId: report.employeeId, targetEmployeeName: report.name },
         })
       }
     }
@@ -371,8 +373,8 @@ export async function fetchPerformanceTasks(
     // HR_ADMIN 또는 SUPER_ADMIN에게만 캘리브레이션 태스크 노출
     if (isHrAdmin) {
       const sessions = await prisma.calibrationSession.findMany({
-        where:   { cycleId, companyId },
-        select:  { id: true, name: true, status: true, departmentId: true },
+        where: { cycleId, ...companyFilter },
+        select: { id: true, name: true, status: true, departmentId: true },
         orderBy: { createdAt: 'asc' },
       })
 
@@ -385,21 +387,21 @@ export async function fetchPerformanceTasks(
             : UnifiedTaskStatus.PENDING
 
         tasks.push({
-          id:          `performance:calibration:${session.id}`,
-          type:        UnifiedTaskType.PERFORMANCE_REVIEW,
-          status:      sessionStatus,
-          priority:    isCompleted ? UnifiedTaskPriority.LOW : UnifiedTaskPriority.MEDIUM,
-          title:       `[성과] 캘리브레이션 세션`,
-          summary:     session.name,
-          requester:   SYSTEM_ACTOR,
-          assignee:    myself,
-          createdAt:   now.toISOString(),
-          updatedAt:   now.toISOString(),
-          sourceId:    session.id,
+          id: `performance:calibration:${session.id}`,
+          type: UnifiedTaskType.PERFORMANCE_REVIEW,
+          status: sessionStatus,
+          priority: isCompleted ? UnifiedTaskPriority.LOW : UnifiedTaskPriority.MEDIUM,
+          title: `[성과] 캘리브레이션 세션`,
+          summary: session.name,
+          requester: SYSTEM_ACTOR,
+          assignee: myself,
+          createdAt: now.toISOString(),
+          updatedAt: now.toISOString(),
+          sourceId: session.id,
           sourceModel: 'CalibrationSession',
-          actionUrl:   '/performance/calibration',
+          actionUrl: '/performance/calibration',
           companyId,
-          metadata:    { ...cycleMeta, sessionId: session.id, sessionName: session.name },
+          metadata: { ...cycleMeta, sessionId: session.id, sessionName: session.name },
         })
       }
     }

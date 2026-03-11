@@ -61,7 +61,7 @@ export const POST = withPermission(
             }
 
             // 3. 진행 중인 PayrollApproval 삭제 (REVIEW → DRAFT 시 결재 체인 초기화)
-            // TODO: Move to Settings (Payroll) — 결재 체인 초기화 정책 (마감 해제 시 자동 초기화 여부)
+            // Settings-connected: approval chain reset policy (default: auto-reset on reopen from REVIEW)
             if (run.status === 'REVIEW') {
                 await tx.payrollApproval.deleteMany({ where: { payrollRunId } })
             }

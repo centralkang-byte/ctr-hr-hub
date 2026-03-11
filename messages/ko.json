@@ -1455,7 +1455,29 @@
     "itemsPerPage": "{n}건",
     "active": "활성",
     "inactive": "비활성",
-    "actions": "액션"
+    "actions": "액션",
+    "ddayPrefix": "D-",
+    "ddayToday": "D-Day",
+    "reschedule": "퇴직일 변경",
+    "rescheduleTitle": "퇴직일 변경",
+    "rescheduleDesc": "최종 근무일을 변경하면 관련 태스크의 기한이 자동으로 재계산됩니다.",
+    "rescheduleNewDate": "새로운 최종 근무일",
+    "rescheduleReason": "변경 사유",
+    "exitInterviewStatsTitle": "퇴직 면담 분석",
+    "exitInterviewStatsDesc": "익명화된 퇴직 사유 통계 및 조직 건강 지표",
+    "exitInterviewPrivacy": "5건 미만의 데이터는 통계로 생성되지 않습니다.",
+    "exitInterviewPrivacyFull": "모든 통계는 익명화되어 표시됩니다. 개인 식별 정보는 포함되지 않으며, 5건 미만의 데이터는 통계로 생성되지 않습니다.",
+    "totalInterviews": "총 면담 건수",
+    "avgSatisfaction": "평균 만족도",
+    "recommendRate": "추천 의향",
+    "reasonAnalysis": "퇴직 사유 분석",
+    "assetDeduction": "자산 공제",
+    "assetDeductionConsent": "자산 공제 동의서",
+    "taskStatusInProgress": "진행 중",
+    "myOffboardingTitle": "내 퇴직 처리",
+    "myOffboardingEmpty": "진행 중인 퇴직 처리가 없습니다.",
+    "selfServiceTitle": "퇴직자 셀프서비스",
+    "selfServiceDesc": "퇴직 과정에서 필요한 정보와 태스크를 확인합니다."
   },
   "salary": {
     "title": "보상 관리",
@@ -1797,7 +1819,26 @@
     "categoryIntroductionFull": "소개",
     "categoryOtherFull": "기타",
     "dueDaysAfter": "완료 기한 (입사 후 일수)",
-    "deleteTemplateConfirm": "\"{name}\" 템플릿을 삭제하시겠습니까?"
+    "deleteTemplateConfirm": "\"{name}\" 템플릿을 삭제하시겠습니까?",
+    "milestoneDay1": "Day 1 · 첫날",
+    "milestoneDay7": "Day 7 · 1주차",
+    "milestoneDay30": "Day 30 · 1개월",
+    "milestoneDay90": "Day 90 · 3개월",
+    "signoffTitle": "온보딩 최종 서명",
+    "signoffButton": "온보딩 완료 승인",
+    "signoffPending": "서명 대기",
+    "signoffCompleted": "서명 완료",
+    "blockedStatus": "차단됨",
+    "blockedReason": "차단 사유",
+    "blockedBadge": "BLOCKED",
+    "unblock": "차단 해제",
+    "crossboarding": "크로스보딩",
+    "crossboardingDeparture": "출발 법인 체크리스트",
+    "crossboardingArrival": "도착 법인 체크리스트",
+    "transferType": "전배",
+    "convertToEmployee": "직원으로 등록",
+    "convertSuccess": "직원 등록 완료! 온보딩이 자동으로 시작됩니다.",
+    "convertAlready": "이미 직원으로 전환된 지원서입니다."
   },
   "org": {
     "title": "조직 관리",
@@ -3028,7 +3069,9 @@
       "training": "내 교육",
       "yearEnd": "연말 정산",
       "approvalsInbox": "승인함",
-      "myOffboarding": "나의 퇴직처리"
+      "myOnboarding": "나의 온보딩",
+      "myOffboarding": "나의 퇴직처리",
+      "myTasks": "나의 업무"
     },
     "team": {
       "label": "팀 관리",
@@ -3140,7 +3183,9 @@
       "peopleDirectory": "구성원 디렉토리",
       "hrChatbot": "HR 챗봇",
       "aiAgent": "AI 에이전트",
-      "kpiDashboard": "HR KPI 대시보드"
+      "kpiDashboard": "HR KPI 대시보드",
+      "executiveSummary": "Executive Summary",
+      "payroll": "급여 분석"
     },
     "compliance": {
       "label": "컴플라이언스",
@@ -3214,5 +3259,32 @@
     "menu": "메뉴",
     "employees": "구성원",
     "noResults": "검색 결과가 없습니다"
+  },
+  "myTasks": {
+    "title": "나의 업무",
+    "description": "모든 파이프라인의 업무를 한곳에서 확인하고 처리합니다.",
+    "tabInProgress": "진행중",
+    "tabCompleted": "완료",
+    "filterAll": "전체",
+    "filterLeave": "휴가",
+    "filterPayroll": "급여",
+    "filterOnboarding": "온보딩",
+    "filterOffboarding": "오프보딩",
+    "filterPerformance": "성과",
+    "sortPriority": "우선순위",
+    "sortDueDate": "마감일",
+    "sortCreatedAt": "생성일",
+    "emptyNoTasks": "처리할 업무가 없습니다 🎉",
+    "emptyNoTasksDesc": "모든 할 일을 완료했습니다!",
+    "emptyNoType": "선택한 유형의 업무가 없습니다",
+    "emptyCompleted": "최근 90일 이내 완료된 업무가 없습니다",
+    "emptyCompletedDesc": "이전 내역은 각 모듈에서 확인하실 수 있습니다.",
+    "completedNotice": "최근 90일 이내의 통합 업무 내역만 표시됩니다.",
+    "completedLinks": "이전 내역은 아래 메뉴에서 확인하실 수 있습니다:",
+    "linkLeave": "나의 휴가 내역",
+    "linkPayslip": "급여 명세서",
+    "linkPerformance": "성과 평가 이력",
+    "viewAll": "전체 보기",
+    "totalCount": "총 {count}건"
   }
 }

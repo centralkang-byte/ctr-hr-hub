@@ -61,8 +61,8 @@ export type OffboardingTaskWithRelations = Prisma.EmployeeOffboardingTaskGetPayl
 // ─── System Actors (HR/IT/FINANCE — 실제 employeeId 없음) ─
 
 const SYSTEM_ACTORS: Record<string, UnifiedTaskActor> = {
-  HR:      { employeeId: 'system:hr',      name: 'HR팀' },
-  IT:      { employeeId: 'system:it',      name: 'IT팀' },
+  HR: { employeeId: 'system:hr', name: 'HR팀' },
+  IT: { employeeId: 'system:it', name: 'IT팀' },
   FINANCE: { employeeId: 'system:finance', name: 'Finance팀' },
 }
 
@@ -72,15 +72,16 @@ const UNASSIGNED_ACTOR: UnifiedTaskActor = {
 }
 
 // ─── Status 매핑 ──────────────────────────────────────────
-// TaskStatus: PENDING / DONE / SKIPPED / BLOCKED
+// TaskProgressStatus: PENDING / IN_PROGRESS / DONE / BLOCKED / SKIPPED
 
 function mapOffboardingStatus(status: string): UnifiedTaskStatus {
   switch (status) {
-    case 'PENDING':  return UnifiedTaskStatus.PENDING
-    case 'BLOCKED':  return UnifiedTaskStatus.PENDING  // BLOCKED → PENDING (+ metadata에 blocked 표시)
-    case 'DONE':     return UnifiedTaskStatus.COMPLETED
-    case 'SKIPPED':  return UnifiedTaskStatus.CANCELLED
-    default:         return UnifiedTaskStatus.PENDING
+    case 'PENDING': return UnifiedTaskStatus.PENDING
+    case 'IN_PROGRESS': return UnifiedTaskStatus.IN_PROGRESS
+    case 'BLOCKED': return UnifiedTaskStatus.PENDING  // BLOCKED → PENDING (+ metadata에 blocked 표시)
+    case 'DONE': return UnifiedTaskStatus.COMPLETED
+    case 'SKIPPED': return UnifiedTaskStatus.CANCELLED
+    default: return UnifiedTaskStatus.PENDING
   }
 }
 
@@ -95,16 +96,16 @@ function mapOffboardingPriority(
   status: string,
   dueDate: Date | null,
 ): UnifiedTaskPriority {
-  if (status !== 'PENDING' && status !== 'BLOCKED') return UnifiedTaskPriority.LOW
+  if (status !== 'PENDING' && status !== 'IN_PROGRESS' && status !== 'BLOCKED') return UnifiedTaskPriority.LOW
   if (!dueDate) return UnifiedTaskPriority.MEDIUM
 
   const now = Date.now()
   const dueTime = dueDate.getTime()
   const diffDays = (dueTime - now) / 86_400_000   // 양수 = 아직 남음, 음수 = 지남
 
-  if (diffDays < 0)   return UnifiedTaskPriority.URGENT  // 이미 overdue
-  if (diffDays < 1)   return UnifiedTaskPriority.HIGH    // today
-  if (diffDays <= 3)  return UnifiedTaskPriority.MEDIUM  // 3일 이내
+  if (diffDays < 0) return UnifiedTaskPriority.URGENT  // 이미 overdue
+  if (diffDays < 1) return UnifiedTaskPriority.HIGH    // today
+  if (diffDays <= 3) return UnifiedTaskPriority.MEDIUM  // 3일 이내
   return UnifiedTaskPriority.LOW
 }
 
@@ -121,8 +122,8 @@ function resolveOffboardingAssignee(
     case 'EMPLOYEE':
       return {
         employeeId: employee.id,
-        name:       employee.name,
-        position:   employee.assignments?.[0]?.jobGrade?.name,
+        name: employee.name,
+        position: employee.assignments?.[0]?.jobGrade?.name,
         department: employee.assignments?.[0]?.department?.name,
       }
 
@@ -144,14 +145,13 @@ function resolveOffboardingAssignee(
 // ─── Mapper 구현 ───────────────────────────────────────────
 
 class OffboardingTaskMapper
-  implements UnifiedTaskMapper<OffboardingTaskWithRelations>
-{
+  implements UnifiedTaskMapper<OffboardingTaskWithRelations> {
   readonly type = UnifiedTaskType.OFFBOARDING_TASK
 
   toUnifiedTask(source: OffboardingTaskWithRelations): UnifiedTask {
-    const offboarding   = source.employeeOffboarding
-    const task          = source.task
-    const employee      = offboarding.employee
+    const offboarding = source.employeeOffboarding
+    const task = source.task
+    const employee = offboarding.employee
     const dueDaysBefore = task.dueDaysBefore
 
     // dueDate = lastWorkingDate - dueDaysBefore (역방향 계산)
@@ -160,9 +160,9 @@ class OffboardingTaskMapper
       ? new Date(lastWorkingDate.getTime() - dueDaysBefore * 86_400_000)
       : null
 
-    const assignee  = resolveOffboardingAssignee(task.assigneeType, offboarding)
-    const status    = mapOffboardingStatus(source.status)
-    const priority  = mapOffboardingPriority(source.status, dueDate)
+    const assignee = resolveOffboardingAssignee(task.assigneeType, offboarding)
+    const status = mapOffboardingStatus(source.status)
+    const priority = mapOffboardingPriority(source.status, dueDate)
     const companyId = employee.assignments?.[0]?.companyId ?? ''
     const isBlocked = source.status === 'BLOCKED'
 
@@ -172,57 +172,69 @@ class OffboardingTaskMapper
       : null
 
     return {
-      id:       `offboarding_task:${source.id}`,
-      type:     UnifiedTaskType.OFFBOARDING_TASK,
+      id: `offboarding_task:${source.id}`,
+      type: UnifiedTaskType.OFFBOARDING_TASK,
       status,
       priority,
 
-      title:   `[Offboarding] ${task.title}`,
-      summary: task.description ?? `담당: ${task.assigneeType} · ${
-        daysUntilDue !== null
-          ? daysUntilDue < 0
-            ? `${Math.abs(daysUntilDue)}일 초과`
-            : `${daysUntilDue}일 후 마감`
-          : '기한 없음'
-      }`,
+      title: `[Offboarding] ${task.title}`,
+      summary: task.description ?? `담당: ${task.assigneeType} · ${daysUntilDue !== null
+        ? daysUntilDue < 0
+          ? `${Math.abs(daysUntilDue)}일 초과`
+          : `${daysUntilDue}일 후 마감`
+        : '기한 없음'
+        }`,
 
       requester: {
         employeeId: employee.id,
-        name:       employee.name,
-        position:   employee.assignments?.[0]?.jobGrade?.name,
+        name: employee.name,
+        position: employee.assignments?.[0]?.jobGrade?.name,
         department: employee.assignments?.[0]?.department?.name,
       },
       assignee,
 
       createdAt: offboarding.startedAt.toISOString(),
       updatedAt: source.completedAt?.toISOString() ?? offboarding.startedAt.toISOString(),
-      dueDate:   dueDate?.toISOString(),
+      dueDate: dueDate?.toISOString(),
 
-      sourceId:    source.id,
+      sourceId: source.id,
       sourceModel: 'EmployeeOffboardingTask',
-      actionUrl:   `/offboarding/${offboarding.id}`,
+      actionUrl: `/offboarding/${offboarding.id}`,
 
       companyId,
 
       metadata: {
-        assigneeType:    task.assigneeType,
+        assigneeType: task.assigneeType,
         dueDaysBefore,
-        isRequired:      task.isRequired,
+        isRequired: task.isRequired,
         isBlocked,
-        sortOrder:       task.sortOrder,
-        offboardingId:   offboarding.id,
+        sortOrder: task.sortOrder,
+        offboardingId: offboarding.id,
         offboardingStatus: offboarding.status,
-        resignType:      offboarding.resignType,
+        resignType: offboarding.resignType,
         lastWorkingDate: offboarding.lastWorkingDate.toISOString(),
-        handoverToId:    offboarding.handoverToId ?? null,
+        handoverToId: offboarding.handoverToId ?? null,
         daysUntilDue,
-        completedBy:     source.completedBy ?? null,
+        completedBy: source.completedBy ?? null,
       },
     }
   }
 
   toUnifiedTasks(sources: OffboardingTaskWithRelations[]): UnifiedTask[] {
-    return sources.map((s) => this.toUnifiedTask(s))
+    return sources
+      .map((s) => {
+        try {
+          if (!s.employeeOffboarding?.employee) {
+            console.warn(`[offboarding.mapper] Orphaned OffboardingTask: ${s.id} — skipping`)
+            return null
+          }
+          return this.toUnifiedTask(s)
+        } catch (error) {
+          console.error(`[offboarding.mapper] Error mapping OffboardingTask ${s.id}:`, error)
+          return null
+        }
+      })
+      .filter((t): t is UnifiedTask => t !== null)
   }
 }
 
@@ -233,27 +245,27 @@ export const offboardingTaskMapper = new OffboardingTaskMapper()
 export const OFFBOARDING_TASK_INCLUDE = {
   task: {
     select: {
-      id:           true,
-      title:        true,
-      description:  true,
+      id: true,
+      title: true,
+      description: true,
       assigneeType: true,
       dueDaysBefore: true,
-      isRequired:   true,
-      sortOrder:    true,
+      isRequired: true,
+      sortOrder: true,
     },
   },
   employeeOffboarding: {
     include: {
       employee: {
         select: {
-          id:   true,
+          id: true,
           name: true,
           assignments: {
             where: { isPrimary: true, endDate: null },
             take: 1,
             select: {
-              companyId:  true,
-              jobGrade:   { select: { name: true } },
+              companyId: true,
+              jobGrade: { select: { name: true } },
               department: { select: { name: true } },
             },
           },

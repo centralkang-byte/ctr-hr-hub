@@ -1,0 +1,58 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { Loader2, Plus, TrendingUp } from 'lucide-react'
+import { apiClient } from '@/lib/api'
+import { Button } from '@/components/ui/button'
+
+interface SalaryBand { id: string; minSalary: number; midSalary: number; maxSalary: number; jobGrade?: { code: string; name: string }; jobCategory?: { code: string; name: string } }
+interface Props { companyId: string | null }
+
+export function SalaryBandsTab({ companyId }: Props) {
+  const [bands, setBands] = useState<SalaryBand[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setLoading(true)
+    apiClient.get('/api/v1/compensation/salary-bands?limit=50')
+      .then((res) => { const list = (res as any)?.data ?? res ?? []; setBands(Array.isArray(list) ? list : []) })
+      .catch(() => setBands([]))
+      .finally(() => setLoading(false))
+  }, [companyId])
+
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+
+  const fmt = (n: number) => n.toLocaleString()
+
+  return (
+    <div className="space-y-4">
+      <div className="mb-4 flex items-center justify-between">
+        <div><h3 className="text-base font-semibold text-[#1C1D21]">연봉 밴드</h3><p className="text-sm text-[#8181A5]">직급별 최소/중간/최대 급여 범위 {bands.length}건</p></div>
+        <Button className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]"><Plus className="mr-2 h-4 w-4" />밴드 추가</Button>
+      </div>
+      {bands.length > 0 ? (
+        <div className="overflow-hidden rounded-lg border border-[#F0F0F3]">
+          <table className="w-full"><thead><tr className="border-b border-[#F0F0F3] bg-[#F5F5FA]">
+            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">직급</th>
+            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">직종</th>
+            <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-[#8181A5]">최소</th>
+            <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-[#8181A5]">중간</th>
+            <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-[#8181A5]">최대</th>
+          </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{bands.map((b) => (
+            <tr key={b.id} className="hover:bg-[#F5F5FA]">
+              <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{b.jobGrade?.code ?? '—'} <span className="text-[#8181A5]">{b.jobGrade?.name ?? ''}</span></td>
+              <td className="px-4 py-3 text-sm text-[#8181A5]">{b.jobCategory?.name ?? '—'}</td>
+              <td className="px-4 py-3 text-right text-sm text-[#1C1D21]">{fmt(b.minSalary)}</td>
+              <td className="px-4 py-3 text-right text-sm font-medium text-[#1C1D21]">{fmt(b.midSalary)}</td>
+              <td className="px-4 py-3 text-right text-sm text-[#1C1D21]">{fmt(b.maxSalary)}</td>
+            </tr>
+          ))}</tbody></table>
+        </div>
+      ) : (
+        <div className="rounded-lg border border-dashed border-[#F0F0F3] py-12 text-center">
+          <TrendingUp className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">등록된 연봉 밴드가 없습니다</p>
+        </div>
+      )}
+    </div>
+  )
+}

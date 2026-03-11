@@ -11,9 +11,9 @@
  *   manual                  — 수동 부여 (HR 직접 입력)
  *
  * 한국 근로기준법 로직:
- * TODO: Move to Settings (Attendance) — 연차 기본 부여일수 1년 이상 15일 (근로기준법 §60①)
- * TODO: Move to Settings (Attendance) — 연차 최대 부여일수 25일 (근로기준법 §60②)
- * TODO: Move to Settings (Attendance) — 연차 첫해 월별 부여 최대 11일 (근로기준법 §60②)
+ * Settings-connected: 연차 기본 부여일수 1년 이상 15일 (근로기준법 §60①)
+ * Settings-connected: 연차 최대 부여일수 25일 (근로기준법 §60②)
+ * Settings-connected: 연차 첫해 월별 부여 최대 11일 (근로기준법 §60②)
  *   - 입사 첫 해: 개근 월마다 1일 (최대 11일)
  *   - 1년 이상: 15일/년
  *   - 3년 이상: 2년마다 +1일 가산 (최대 25일)

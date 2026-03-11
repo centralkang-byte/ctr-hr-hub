@@ -120,7 +120,32 @@ export const POST = withPermission(
 
     // 7. Run transaction
     const result = await prisma.$transaction(async (tx) => {
-      // a) Update employee resignDate and update assignment status
+      // a) Auto-cancel any active onboarding for this employee (Edge Case #1/#8)
+      // One-directional: offboarding.start → cancel active onboarding. NOT the reverse.
+      const activeOnboardings = await tx.employeeOnboarding.findMany({
+        where: { employeeId, status: 'IN_PROGRESS' },
+        select: { id: true },
+      })
+      if (activeOnboardings.length > 0) {
+        const obIds = activeOnboardings.map((o) => o.id)
+        await tx.employeeOnboarding.updateMany({
+          where: { id: { in: obIds } },
+          data: { status: 'SUSPENDED' }, // SUSPENDED = cancelled due to offboarding
+        })
+        // Batch-cancel non-DONE onboarding tasks
+        await tx.employeeOnboardingTask.updateMany({
+          where: {
+            employeeOnboardingId: { in: obIds },
+            status: { notIn: ['DONE', 'SKIPPED'] },
+          },
+          data: { status: 'SKIPPED' },
+        })
+        console.info(
+          `[offboarding.start] Auto-cancelled ${obIds.length} active onboarding(s) for employee ${employeeId}`,
+        )
+      }
+
+      // b) Update employee resignDate and update assignment status
       await tx.employee.update({
         where: { id: employeeId },
         data: {
@@ -160,13 +185,15 @@ export const POST = withPermission(
         },
       })
 
-      // d) Auto-create EmployeeOffboardingTask records
+      // d) Auto-create EmployeeOffboardingTask records with computed dueDates
+      const lwdMs = new Date(lastWorkingDate).getTime()
       if (checklist.offboardingTasks.length > 0) {
         await tx.employeeOffboardingTask.createMany({
           data: checklist.offboardingTasks.map((task) => ({
             employeeOffboardingId: offboarding.id,
             taskId: task.id,
             status: 'PENDING' as const,
+            dueDate: new Date(lwdMs - task.dueDaysBefore * 24 * 60 * 60 * 1000),
           })),
         })
       }
@@ -210,17 +237,17 @@ export const POST = withPermission(
     // 9-a. Fire-and-forget: EMPLOYEE_OFFBOARDING_STARTED event
     void eventBus.publish(DOMAIN_EVENTS.EMPLOYEE_OFFBOARDING_STARTED, {
       ctx: {
-        companyId:  employeeCompanyId,
-        actorId:    user.employeeId,
+        companyId: employeeCompanyId,
+        actorId: user.employeeId,
         occurredAt: new Date(),
       },
-      employeeId:      employeeId,
-      companyId:       employeeCompanyId,
-      offboardingId:   result.id,
-      resignType:      resignType,
+      employeeId: employeeId,
+      companyId: employeeCompanyId,
+      offboardingId: result.id,
+      resignType: resignType,
       lastWorkingDate: new Date(lastWorkingDate),
-      checklistId:     checklist.id,
-      handoverToId:    handoverToId,
+      checklistId: checklist.id,
+      handoverToId: handoverToId,
     })
 
     // 9. Audit log

@@ -1444,7 +1444,29 @@
     "itemsPerPage": "{n} items",
     "active": "Active",
     "inactive": "Inactive",
-    "actions": "Actions"
+    "actions": "Actions",
+    "ddayPrefix": "D-",
+    "ddayToday": "D-Day",
+    "reschedule": "Reschedule",
+    "rescheduleTitle": "Reschedule Last Working Date",
+    "rescheduleDesc": "Changing the last working date will automatically recalculate all task deadlines.",
+    "rescheduleNewDate": "New Last Working Date",
+    "rescheduleReason": "Reason for Change",
+    "exitInterviewStatsTitle": "Exit Interview Analysis",
+    "exitInterviewStatsDesc": "Anonymized resignation reason statistics and organization health indicators",
+    "exitInterviewPrivacy": "Statistics require at least 5 interviews.",
+    "exitInterviewPrivacyFull": "All statistics are anonymized. Personal information is excluded, and statistics are not generated for fewer than 5 interviews.",
+    "totalInterviews": "Total Interviews",
+    "avgSatisfaction": "Avg Satisfaction",
+    "recommendRate": "Recommend Rate",
+    "reasonAnalysis": "Reason Analysis",
+    "assetDeduction": "Asset Deduction",
+    "assetDeductionConsent": "Asset Deduction Consent",
+    "taskStatusInProgress": "In Progress",
+    "myOffboardingTitle": "My Offboarding",
+    "myOffboardingEmpty": "No active offboarding process.",
+    "selfServiceTitle": "Offboarding Self-Service",
+    "selfServiceDesc": "View offboarding tasks and required information."
   },
   "salary": {
     "title": "Compensation Management",
@@ -1786,7 +1808,26 @@
     "categoryIntroductionFull": "Introduction",
     "categoryOtherFull": "Other",
     "dueDaysAfter": "Due (days after hire)",
-    "deleteTemplateConfirm": "Delete template \"{name}\"?"
+    "deleteTemplateConfirm": "Delete template \"{name}\"?",
+    "milestoneDay1": "Day 1 · First Day",
+    "milestoneDay7": "Day 7 · Week 1",
+    "milestoneDay30": "Day 30 · Month 1",
+    "milestoneDay90": "Day 90 · Month 3",
+    "signoffTitle": "Onboarding Sign-off",
+    "signoffButton": "Approve Onboarding Completion",
+    "signoffPending": "Sign-off Pending",
+    "signoffCompleted": "Sign-off Completed",
+    "blockedStatus": "Blocked",
+    "blockedReason": "Block Reason",
+    "blockedBadge": "BLOCKED",
+    "unblock": "Unblock",
+    "crossboarding": "Crossboarding",
+    "crossboardingDeparture": "Departure Checklist",
+    "crossboardingArrival": "Arrival Checklist",
+    "transferType": "Transfer",
+    "convertToEmployee": "Convert to Employee",
+    "convertSuccess": "Employee registered! Onboarding started automatically.",
+    "convertAlready": "This application has already been converted."
   },
   "org": {
     "title": "Organization",
@@ -3017,7 +3058,9 @@
       "training": "My Training",
       "yearEnd": "Year-End Settlement",
       "approvalsInbox": "Approval Inbox",
-      "myOffboarding": "My Offboarding"
+      "myOnboarding": "My Onboarding",
+      "myOffboarding": "My Offboarding",
+      "myTasks": "My Tasks"
     },
     "team": {
       "label": "Team",
@@ -3125,7 +3168,9 @@
       "peopleDirectory": "People Directory",
       "hrChatbot": "HR Chatbot",
       "aiAgent": "AI Agent",
-      "kpiDashboard": "HR KPI Dashboard"
+      "kpiDashboard": "HR KPI Dashboard",
+      "executiveSummary": "Executive Summary",
+      "payroll": "Payroll Analytics"
     },
     "compliance": {
       "label": "Compliance",
@@ -3199,5 +3244,32 @@
     "menu": "Menu",
     "employees": "Employees",
     "noResults": "No results found"
+  },
+  "myTasks": {
+    "title": "My Tasks",
+    "description": "View and manage tasks from all pipelines in one place.",
+    "tabInProgress": "In Progress",
+    "tabCompleted": "Completed",
+    "filterAll": "All",
+    "filterLeave": "Leave",
+    "filterPayroll": "Payroll",
+    "filterOnboarding": "Onboarding",
+    "filterOffboarding": "Offboarding",
+    "filterPerformance": "Performance",
+    "sortPriority": "Priority",
+    "sortDueDate": "Due Date",
+    "sortCreatedAt": "Created",
+    "emptyNoTasks": "No tasks to process 🎉",
+    "emptyNoTasksDesc": "You've completed all your tasks!",
+    "emptyNoType": "No tasks for the selected type",
+    "emptyCompleted": "No completed tasks in the last 90 days",
+    "emptyCompletedDesc": "You can check earlier history in each module.",
+    "completedNotice": "Only showing task records within the last 90 days.",
+    "completedLinks": "For earlier history, check these modules:",
+    "linkLeave": "My Leave History",
+    "linkPayslip": "Payslips",
+    "linkPerformance": "Performance Reviews",
+    "viewAll": "View All",
+    "totalCount": "{count} total"
   }
 }

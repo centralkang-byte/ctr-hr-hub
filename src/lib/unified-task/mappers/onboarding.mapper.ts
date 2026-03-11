@@ -58,8 +58,8 @@ export type OnboardingTaskWithRelations = Prisma.EmployeeOnboardingTaskGetPayloa
 // ─── System Actors (HR/IT/FINANCE — 실제 employeeId 없음) ─
 
 const SYSTEM_ACTORS: Record<string, UnifiedTaskActor> = {
-  HR:      { employeeId: 'system:hr',      name: 'HR팀' },
-  IT:      { employeeId: 'system:it',      name: 'IT팀' },
+  HR: { employeeId: 'system:hr', name: 'HR팀' },
+  IT: { employeeId: 'system:it', name: 'IT팀' },
   FINANCE: { employeeId: 'system:finance', name: 'Finance팀' },
 }
 
@@ -72,10 +72,10 @@ const UNASSIGNED_ACTOR: UnifiedTaskActor = {
 
 function mapOnboardingStatus(status: string): UnifiedTaskStatus {
   switch (status) {
-    case 'PENDING':  return UnifiedTaskStatus.PENDING
-    case 'DONE':     return UnifiedTaskStatus.COMPLETED
-    case 'SKIPPED':  return UnifiedTaskStatus.CANCELLED
-    default:         return UnifiedTaskStatus.PENDING
+    case 'PENDING': return UnifiedTaskStatus.PENDING
+    case 'DONE': return UnifiedTaskStatus.COMPLETED
+    case 'SKIPPED': return UnifiedTaskStatus.CANCELLED
+    default: return UnifiedTaskStatus.PENDING
   }
 }
 
@@ -83,10 +83,10 @@ function mapOnboardingStatus(status: string): UnifiedTaskStatus {
 // dueDaysAfter 기반으로 Day 1 / Day 7 / Day 30 / Day 90 분류
 
 function getMilestoneGroup(dueDaysAfter: number): string {
-  if (dueDaysAfter <= 1)   return 'Day 1'
-  if (dueDaysAfter <= 7)   return 'Day 7'
-  if (dueDaysAfter <= 30)  return 'Day 30'
-  if (dueDaysAfter <= 90)  return 'Day 90'
+  if (dueDaysAfter <= 1) return 'Day 1'
+  if (dueDaysAfter <= 7) return 'Day 7'
+  if (dueDaysAfter <= 30) return 'Day 30'
+  if (dueDaysAfter <= 90) return 'Day 90'
   return `Day ${dueDaysAfter}`
 }
 
@@ -105,8 +105,8 @@ function mapOnboardingPriority(
   const dueTime = dueDate.getTime()
   const diffDays = (now - dueTime) / (1000 * 60 * 60 * 24)
 
-  if (diffDays > 3)  return UnifiedTaskPriority.URGENT   // 3일 이상 연체
-  if (diffDays > 0)  return UnifiedTaskPriority.HIGH     // 연체 (오늘 초과)
+  if (diffDays > 3) return UnifiedTaskPriority.URGENT   // 3일 이상 연체
+  if (diffDays > 0) return UnifiedTaskPriority.HIGH     // 연체 (오늘 초과)
   if (diffDays > -2) return UnifiedTaskPriority.MEDIUM   // 2일 이내 마감
   return UnifiedTaskPriority.LOW
 }
@@ -123,8 +123,8 @@ function resolveAssignee(
     case 'EMPLOYEE':
       return {
         employeeId: employee.id,
-        name:       employee.name,
-        position:   employee.assignments?.[0]?.jobGrade?.name,
+        name: employee.name,
+        position: employee.assignments?.[0]?.jobGrade?.name,
         department: employee.assignments?.[0]?.department?.name,
       }
 
@@ -138,7 +138,7 @@ function resolveAssignee(
       if (!onboarding.buddy) return UNASSIGNED_ACTOR
       return {
         employeeId: onboarding.buddy.id,
-        name:       onboarding.buddy.name,
+        name: onboarding.buddy.name,
       }
 
     case 'HR':
@@ -154,66 +154,65 @@ function resolveAssignee(
 // ─── Mapper 구현 ───────────────────────────────────────────
 
 class OnboardingTaskMapper
-  implements UnifiedTaskMapper<OnboardingTaskWithRelations>
-{
+  implements UnifiedTaskMapper<OnboardingTaskWithRelations> {
   readonly type = UnifiedTaskType.ONBOARDING_TASK
 
   toUnifiedTask(source: OnboardingTaskWithRelations): UnifiedTask {
-    const onboarding    = source.employeeOnboarding
-    const task          = source.task
-    const employee      = onboarding.employee
-    const dueDaysAfter  = task.dueDaysAfter
+    const onboarding = source.employeeOnboarding
+    const task = source.task
+    const employee = onboarding.employee
+    const dueDaysAfter = task.dueDaysAfter
     const milestoneGroup = getMilestoneGroup(dueDaysAfter)
 
     // dueDate = 온보딩 시작일 + dueDaysAfter
     const startedAt = onboarding.startedAt
-    const dueDate   = startedAt
+    const dueDate = startedAt
       ? new Date(startedAt.getTime() + dueDaysAfter * 86_400_000)
       : null
 
-    const assignee  = resolveAssignee(task.assigneeType, onboarding)
-    const status    = mapOnboardingStatus(source.status)
-    const priority  = mapOnboardingPriority(source.status, dueDate)
+    const assignee = resolveAssignee(task.assigneeType, onboarding)
+    const status = mapOnboardingStatus(source.status)
+    const priority = mapOnboardingPriority(source.status, dueDate)
     const companyId = onboarding.companyId ?? ''
 
     return {
-      id:       `EmployeeOnboardingTask:${source.id}`,
-      type:     UnifiedTaskType.ONBOARDING_TASK,
+      id: `EmployeeOnboardingTask:${source.id}`,
+      type: UnifiedTaskType.ONBOARDING_TASK,
       status,
       priority,
 
-      title:   `${task.title} — ${employee.name} (${milestoneGroup})`,
+      title: `${task.title} — ${employee.name} (${milestoneGroup})`,
       summary: `카테고리: ${task.category} · 담당: ${task.assigneeType}`,
 
       requester: {
         employeeId: employee.id,
-        name:       employee.name,
-        position:   employee.assignments?.[0]?.jobGrade?.name,
+        name: employee.name,
+        position: employee.assignments?.[0]?.jobGrade?.name,
         department: employee.assignments?.[0]?.department?.name,
       },
       assignee,
 
       createdAt: onboarding.createdAt.toISOString(),
       updatedAt: source.completedAt?.toISOString() ?? onboarding.createdAt.toISOString(),
-      dueDate:   dueDate?.toISOString(),
+      dueDate: dueDate?.toISOString(),
 
-      sourceId:    source.id,
+      sourceId: source.id,
       sourceModel: 'EmployeeOnboardingTask',
-      actionUrl:   `/onboarding/${onboarding.id}/tasks/${source.id}`,
+      actionUrl: `/onboarding/${onboarding.id}/tasks/${source.id}`,
 
       companyId,
 
       metadata: {
-        category:        task.category,
-        assigneeType:    task.assigneeType,
+        category: task.category,
+        assigneeType: task.assigneeType,
         dueDaysAfter,
         milestoneGroup,
-        isRequired:      task.isRequired,
-        sortOrder:       task.sortOrder,
-        onboardingId:    onboarding.id,
+        isRequired: task.isRequired,
+        sortOrder: task.sortOrder,
+        onboardingId: onboarding.id,
         onboardingStatus: onboarding.status,
-        buddyId:         onboarding.buddyId ?? null,
-        daysOverdue:     dueDate
+        buddyId: onboarding.buddyId ?? null,
+        daysOverdue: dueDate
           ? Math.max(0, Math.floor((Date.now() - dueDate.getTime()) / 86_400_000))
           : null,
       },
@@ -221,7 +220,20 @@ class OnboardingTaskMapper
   }
 
   toUnifiedTasks(sources: OnboardingTaskWithRelations[]): UnifiedTask[] {
-    return sources.map((s) => this.toUnifiedTask(s))
+    return sources
+      .map((s) => {
+        try {
+          if (!s.employeeOnboarding?.employee) {
+            console.warn(`[onboarding.mapper] Orphaned OnboardingTask: ${s.id} — skipping`)
+            return null
+          }
+          return this.toUnifiedTask(s)
+        } catch (error) {
+          console.error(`[onboarding.mapper] Error mapping OnboardingTask ${s.id}:`, error)
+          return null
+        }
+      })
+      .filter((t): t is UnifiedTask => t !== null)
   }
 }
 

@@ -1,6 +1,10 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — POST /api/v1/recruitment/applications/[id]/convert-to-employee
 // 채용 지원자 → 직원 전환 (stage: HIRED)
+// E-3 Enhanced:
+//   - Idempotency guard: if already HIRED + Employee exists → return existing (200)
+//   - Emits EMPLOYEE_HIRED event → triggers onboarding pipeline automatically
+//   - Double-submit prevention at API level
 // ═══════════════════════════════════════════════════════════
 
 import { type NextRequest } from 'next/server'
@@ -12,7 +16,12 @@ import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { createAssignment } from '@/lib/assignments'
+import { eventBus } from '@/lib/events/event-bus'
+import { DOMAIN_EVENTS } from '@/lib/events/types'
+import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
 import type { SessionUser } from '@/types'
+
+bootstrapEventHandlers()
 
 // ─── Schema ───────────────────────────────────────────────
 
@@ -23,6 +32,8 @@ const convertSchema = z.object({
   departmentId: z.string().uuid().optional(),
   jobGradeId: z.string().uuid().optional(),
   jobCategoryId: z.string().uuid().optional(),  // 미입력 시 공고에서 자동 설정
+  buddyId: z.string().uuid().optional(),        // E-3: 온보딩 버디 지정
+  employmentType: z.enum(['FULL_TIME', 'CONTRACT', 'INTERN']).optional().default('FULL_TIME'),
 })
 
 // ─── POST /api/v1/recruitment/applications/[id]/convert-to-employee ───
@@ -34,6 +45,24 @@ export const POST = withPermission(
     user: SessionUser,
   ) => {
     const { id } = await context.params
+
+    // 🚨 IDEMPOTENCY GUARD: If already HIRED with existing Employee → return existing
+    const alreadyConverted = await prisma.application.findFirst({
+      where: {
+        id,
+        stage: 'HIRED',
+        convertedEmployeeId: { not: null },
+      },
+      select: { convertedEmployeeId: true },
+    })
+    if (alreadyConverted?.convertedEmployeeId) {
+      // Return existing employee without creating duplicate (200, not 201)
+      return apiSuccess({
+        employeeId: alreadyConverted.convertedEmployeeId,
+        alreadyConverted: true,
+        message: '이미 직원으로 전환된 지원서입니다.',
+      })
+    }
 
     // stage가 HIRED이고 아직 convertedEmployeeId가 없는 지원서
     const application = await prisma.application.findFirst({
@@ -65,7 +94,7 @@ export const POST = withPermission(
       throw badRequest('잘못된 요청 데이터입니다.', { issues: parsed.error.issues })
     }
 
-    const { employeeNo, startDate, companyId, departmentId, jobGradeId, jobCategoryId } = parsed.data
+    const { employeeNo, startDate, companyId, departmentId, jobGradeId, jobCategoryId, buddyId } = parsed.data
 
     const targetCompanyId = companyId ?? postingCompanyId ?? user.companyId
 
@@ -140,6 +169,20 @@ export const POST = withPermission(
 
       const newEmployee = emp
 
+      // E-3: Emit EMPLOYEE_HIRED event → triggers auto-onboarding pipeline
+      void eventBus.publish(DOMAIN_EVENTS.EMPLOYEE_HIRED, {
+        ctx: {
+          companyId: targetCompanyId,
+          actorId: user.employeeId,
+          occurredAt: new Date(),
+        },
+        employeeId: newEmployee.id,
+        companyId: targetCompanyId,
+        hireDate: new Date(startDate),
+        departmentId: resolvedDepartmentId,
+        positionId: resolvedJobGradeId,
+      })
+
       const { ip, userAgent } = extractRequestMeta(req.headers)
       logAudit({
         actorId: user.employeeId,
@@ -151,7 +194,11 @@ export const POST = withPermission(
         userAgent,
       })
 
-      return apiSuccess({ employeeId: newEmployee.id, employeeNo: newEmployee.employeeNo }, 201)
+      return apiSuccess({
+        employeeId: newEmployee.id,
+        employeeNo: newEmployee.employeeNo,
+        message: '직원 등록 완료! 온보딩이 자동으로 시작됩니다.',
+      }, 201)
     } catch (error) {
       throw handlePrismaError(error)
     }

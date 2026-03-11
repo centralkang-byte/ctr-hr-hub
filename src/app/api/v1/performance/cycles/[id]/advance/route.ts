@@ -342,9 +342,12 @@ export const PUT = withPermission(
       }
 
       if (currentStatus === 'CALIBRATION') {
-        const adjustedCount = await prisma.performanceReview.count({
-          where: { cycleId: id, NOT: { originalGrade: { equals: prisma.performanceReview.fields.finalGrade } } },
-        }).catch(() => 0)
+        // Count reviews where grade was adjusted (originalGrade !== finalGrade)
+        const allReviews = await prisma.performanceReview.findMany({
+          where: { cycleId: id, originalGrade: { not: null }, finalGrade: { not: null } },
+          select: { originalGrade: true, finalGrade: true },
+        })
+        const adjustedCount = allReviews.filter((r) => r.originalGrade !== r.finalGrade).length
 
         void eventBus.publish(DOMAIN_EVENTS.CALIBRATION_APPROVED, {
           ctx, cycleId: id, companyId: cycle.companyId,

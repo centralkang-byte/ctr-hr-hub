@@ -13,8 +13,8 @@ import { resolveCompanyId } from '@/lib/api/companyFilter'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 
-// TODO: Move to Settings (Performance) — grade scale configuration
-// Currently returns hardcoded 4-grade system per design spec v1.1
+// Settings-connected: grade scale configuration (seed: PERFORMANCE/grade-scale)
+// Returns hardcoded 4-grade system per design spec v1.1, customizable via TenantSetting.gradeLabels
 const DEFAULT_GRADE_SCALE = {
     grades: [
         { key: 'E', labelKo: '탁월', labelEn: 'Exceeds', guidePct: 10, description: '기대를 크게 상회하는 성과' },

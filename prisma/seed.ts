@@ -32,6 +32,13 @@ import { seedPeerReview } from './seeds/15-peer-review'
 import { seedPartialFixes } from './seeds/16-partial-fixes'
 import { seedPayrollPipeline } from './seeds/17-payroll-pipeline'
 import { seedPerformancePipeline } from './seeds/18-performance-pipeline'
+import { seedGP4PeerReview } from './seeds/19-peer-review'
+import { seedGP4CompReview } from './seeds/20-compensation-review'
+import { seedOffboardingInstances } from './seeds/22-offboarding-instances'
+import { seedCrossboarding } from './seeds/23-crossboarding'
+import { seedDelegation } from './seeds/24-delegation'
+import { seedLeaveEnhancement } from './seeds/25-leave-enhancement'
+import { seedProcessSettings } from './seeds/26-process-settings'
 
 // Load DATABASE_URL from .env.local or .env
 const DATABASE_URL = process.env.DATABASE_URL
@@ -96,7 +103,7 @@ const roleData = [
 // ================================================================
 const modules = [
   'employees', 'org', 'attendance', 'leave', 'recruitment',
-  'performance', 'payroll', 'compensation', 'offboarding', 'discipline', 'benefits',
+  'performance', 'payroll', 'compensation', 'onboarding', 'offboarding', 'discipline', 'benefits',
   'compliance',
 ]
 const actions = ['create', 'read', 'update', 'delete', 'export', 'manage']
@@ -3597,6 +3604,31 @@ async function main() {
   // SESSION GP#4: Performance Pipeline Foundation
   // ─────────────────────────────────────────────────────────
   await seedPerformancePipeline(prisma)
+
+  // ─────────────────────────────────────────────────────────
+  // SESSION GP#4-C: Peer Review Seed
+  // ─────────────────────────────────────────────────────────
+  await seedGP4PeerReview(prisma)
+
+  // ─────────────────────────────────────────────────────────
+  // SESSION GP#4-D1: Compensation Review Seed
+  // ─────────────────────────────────────────────────────────
+  await seedGP4CompReview(prisma)
+
+  // E-2: Offboarding instances + exit interviews + asset returns
+  await seedOffboardingInstances(prisma)
+
+  // E-3: Crossboarding TRANSFER templates
+  await seedCrossboarding(prisma)
+
+  // F-2: Delegation system
+  await seedDelegation(prisma)
+
+  // F-3: Leave enhancement test data
+  await seedLeaveEnhancement(prisma)
+
+  // H-2c: Process settings defaults (payroll/attendance/performance/system)
+  await seedProcessSettings(prisma)
 }
 
 main()

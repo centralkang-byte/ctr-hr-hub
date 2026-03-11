@@ -1,20 +1,13 @@
 'use client'
 
-// ═══════════════════════════════════════════════════════════
-// CTR HR Hub — Empty Chart State
-// ═══════════════════════════════════════════════════════════
-
+import React from 'react'
 import { BarChart3 } from 'lucide-react'
 
-interface EmptyChartProps {
-  message?: string
-}
-
-export function EmptyChart({ message = '데이터가 없습니다.' }: EmptyChartProps) {
+export function EmptyChart({ message = '데이터가 없습니다' }: { message?: string }) {
   return (
-    <div className="flex flex-col items-center justify-center py-12 text-[#999]">
-      <BarChart3 className="mb-2 h-10 w-10" />
-      <p className="text-sm">{message}</p>
+    <div className="flex flex-col items-center justify-center h-48 gap-3">
+      <BarChart3 className="h-8 w-8 text-gray-300" />
+      <p className="text-sm text-gray-400">{message}</p>
     </div>
   )
 }

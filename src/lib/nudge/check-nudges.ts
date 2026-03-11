@@ -22,6 +22,8 @@ import { exitInterviewPendingRule }              from './rules/exit-interview-pe
 import { performanceGoalOverdueRule }            from './rules/performance-goal-overdue.rule'
 import { performanceEvalOverdueRule }            from './rules/performance-eval-overdue.rule'
 import { performanceCalibrationPendingRule }     from './rules/performance-calibration-pending.rule'
+import { delegationNotSetRule }                  from './rules/delegation-not-set.rule'
+import { leaveYearendBurnRule }                  from './rules/leave-yearend-burn.rule'
 import type { NudgeRunSummary } from './types'
 
 // ------------------------------------
@@ -47,6 +49,10 @@ function getEngine(): NudgeEngine {
         performanceGoalOverdueRule,
         performanceEvalOverdueRule,
         performanceCalibrationPendingRule,
+        // Delegation
+        delegationNotSetRule,
+        // F-3: Leave year-end burn
+        leaveYearendBurnRule,
       ],
       oncePer24h: true,
     })

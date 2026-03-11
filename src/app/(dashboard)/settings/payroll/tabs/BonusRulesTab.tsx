@@ -1,0 +1,141 @@
+'use client'
+
+import { useEffect, useState, useCallback } from 'react'
+import { Save, Info, RotateCcw, Loader2 } from 'lucide-react'
+import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { toast } from '@/hooks/use-toast'
+import { apiClient } from '@/lib/api'
+
+interface Props { companyId: string | null }
+
+interface BonusSettings {
+  gradeMultipliers: Array<{ grade: string; label: string; multiplier: number }>
+  bonusType: 'MONTHLY_SALARY' | 'ANNUAL_SALARY' | 'FIXED_AMOUNT'
+  maxMultiplier: number
+}
+
+const DEFAULTS: BonusSettings = {
+  gradeMultipliers: [
+    { grade: 'E', label: '탁월', multiplier: 200 },
+    { grade: 'M_PLUS', label: '우수', multiplier: 150 },
+    { grade: 'M', label: '보통', multiplier: 100 },
+    { grade: 'B', label: '미흡', multiplier: 0 },
+  ],
+  bonusType: 'MONTHLY_SALARY',
+  maxMultiplier: 300,
+}
+
+export function BonusRulesTab({ companyId }: Props) {
+  const [settings, setSettings] = useState<BonusSettings>(() => structuredClone(DEFAULTS))
+  const [original, setOriginal] = useState<BonusSettings>(() => structuredClone(DEFAULTS))
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [isOverridden, setIsOverridden] = useState(false)
+
+  const fetchSettings = useCallback(async () => {
+    setLoading(true)
+    try {
+      const qs = companyId ? `?key=bonus-rules&companyId=${companyId}` : '?key=bonus-rules'
+      const res = await apiClient.get(`/api/v1/process-settings/compensation${qs}`)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const items = (res as any)?.data ?? res ?? []
+      const setting = Array.isArray(items) ? items[0] : null
+
+      if (setting?.settingValue) {
+        const sv = setting.settingValue as BonusSettings
+        setIsOverridden(!!setting.isOverridden)
+        const merged: BonusSettings = {
+          gradeMultipliers: sv.gradeMultipliers ?? DEFAULTS.gradeMultipliers,
+          bonusType: sv.bonusType ?? DEFAULTS.bonusType,
+          maxMultiplier: sv.maxMultiplier ?? DEFAULTS.maxMultiplier,
+        }
+        setSettings(structuredClone(merged))
+        setOriginal(structuredClone(merged))
+      } else {
+        setSettings(structuredClone(DEFAULTS))
+        setOriginal(structuredClone(DEFAULTS))
+      }
+    } catch {
+      setSettings(structuredClone(DEFAULTS))
+      setOriginal(structuredClone(DEFAULTS))
+    } finally {
+      setLoading(false)
+    }
+  }, [companyId])
+
+  useEffect(() => { fetchSettings() }, [fetchSettings])
+
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      await apiClient.put('/api/v1/process-settings/compensation', {
+        key: 'bonus-rules',
+        value: settings,
+        companyId: companyId ?? undefined,
+        description: '성과급 규칙',
+      })
+      toast({ title: '저장되었습니다', description: '성과급 규칙이 업데이트되었습니다.' })
+      setOriginal(structuredClone(settings))
+    } catch {
+      toast({ title: '저장 실패', description: '다시 시도해 주세요.', variant: 'destructive' })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleRevert = () => {
+    setSettings(structuredClone(original))
+    toast({ title: '변경을 취소했습니다' })
+  }
+
+  const hasChanges = JSON.stringify(settings) !== JSON.stringify(original)
+
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+
+  return (
+    <div className="space-y-4">
+      <div className="mb-4 flex items-center justify-between">
+        <div>
+          <h3 className="text-base font-semibold text-[#1C1D21]">성과급 규칙</h3>
+          <p className="text-sm text-[#8181A5]">등급별 성과급 배율 설정</p>
+        </div>
+        {isOverridden && (
+          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">법인 오버라이드</span>
+        )}
+      </div>
+
+      <SettingFieldWithOverride label="성과급 기준" description="성과급 산정 기준" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+        <select className="rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm" value={settings.bonusType} onChange={(e) => setSettings((p) => ({ ...p, bonusType: e.target.value as BonusSettings['bonusType'] }))}>
+          <option value="MONTHLY_SALARY">월 기본급 기준</option>
+          <option value="ANNUAL_SALARY">연봉 기준</option>
+          <option value="FIXED_AMOUNT">정액</option>
+        </select>
+      </SettingFieldWithOverride>
+
+      <div className="overflow-hidden rounded-lg border border-[#F0F0F3]">
+        <table className="w-full"><thead><tr className="border-b border-[#F0F0F3] bg-[#F5F5FA]">
+          <th className="px-4 py-3 text-left text-xs font-medium uppercase text-[#8181A5]">등급</th>
+          <th className="px-4 py-3 text-left text-xs font-medium uppercase text-[#8181A5]">라벨</th>
+          <th className="px-4 py-3 text-right text-xs font-medium uppercase text-[#8181A5]">배율 (%)</th>
+        </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{settings.gradeMultipliers.map((g, i) => (
+          <tr key={g.grade} className="hover:bg-[#F5F5FA]">
+            <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{g.grade}</td>
+            <td className="px-4 py-3 text-sm text-[#1C1D21]">{g.label}</td>
+            <td className="px-4 py-3 text-right"><Input type="number" value={g.multiplier} onChange={(e) => { const next = structuredClone(settings); next.gradeMultipliers[i].multiplier = Number(e.target.value); setSettings(next) }} className="ml-auto w-24 text-right" /></td>
+          </tr>
+        ))}</tbody></table>
+      </div>
+
+      <div className="flex justify-end gap-2 pt-4">
+        <Button variant="outline" onClick={handleRevert} disabled={!hasChanges}>
+          <RotateCcw className="mr-2 h-4 w-4" />되돌리기
+        </Button>
+        <Button className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]" onClick={handleSave} disabled={!hasChanges || saving}>
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
+        </Button>
+      </div>
+    </div>
+  )
+}

@@ -1,14 +1,10 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { Settings } from 'lucide-react'
-import { SETTINGS_CATEGORIES } from '@/lib/settings/categories'
-import { SettingsCard } from '@/components/settings/SettingsCard'
-import { SettingsSearch } from '@/components/settings/SettingsSearch'
+import { Settings, Search } from 'lucide-react'
+import { SETTINGS_CATEGORIES } from '@/components/settings/settings-config'
+import { SettingsHubClient } from './SettingsHubClient'
 
-// ★ This page uses getServerSession (→ headers()), so it MUST be dynamic.
-// Without this, Next.js tries to statically render it at build time,
-// which fails and causes 500 on Vercel.
 export const dynamic = 'force-dynamic'
 
 export default async function SettingsHubPage() {
@@ -16,30 +12,23 @@ export default async function SettingsHubPage() {
   if (!session?.user) redirect('/login')
 
   return (
-    <div className="p-6">
-      {/* Header */}
-      <div className="mb-6 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#00C853]/10">
-          <Settings className="h-5 w-5 text-[#00C853]" />
+    <div className="min-h-screen bg-[#F5F5FA]">
+      <div className="p-6">
+        {/* Header */}
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#5E81F4]/10">
+            <Settings className="h-5 w-5 text-[#5E81F4]" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-[#1C1D21]">설정</h1>
+            <p className="text-sm text-[#8181A5]">
+              시스템 설정을 카테고리별로 관리합니다 · {SETTINGS_CATEGORIES.reduce((s, c) => s + c.tabs.length, 0)}개 항목
+            </p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-[#1C1D21]">설정</h1>
-          <p className="text-sm text-[#8181A5]">
-            시스템 설정을 카테고리별로 관리합니다
-          </p>
-        </div>
-      </div>
 
-      {/* Search */}
-      <div className="mb-8 max-w-lg">
-        <SettingsSearch />
-      </div>
-
-      {/* Card grid */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {SETTINGS_CATEGORIES.map((category) => (
-          <SettingsCard key={category.id} category={category} />
-        ))}
+        {/* Client part: search + cards */}
+        <SettingsHubClient />
       </div>
     </div>
   )

@@ -7,6 +7,10 @@ export type SettingType =
   | 'ONBOARDING'
   | 'RECRUITMENT'
   | 'BENEFITS'
+  | 'PAYROLL'
+  | 'SYSTEM'
+  | 'PERFORMANCE'
+  | 'ORGANIZATION'
 
 // ── Per-setting-type JSONB schemas ──
 
@@ -69,6 +73,147 @@ export type BenefitsSettings = {
   currency: string
 }
 
+// ── Payroll settings (H-2c) ──
+
+export type KrSocialInsuranceSettings = {
+  pensionRate: number
+  pensionCeiling: number
+  healthRate: number
+  longTermCareRate: number
+  employmentRate: number
+  effectiveYear: number
+}
+
+export type TaxBracketEntry = {
+  min: number
+  max: number
+  rate: number
+  deduction: number
+}
+
+export type CountryDeductionSettings = {
+  rates: Record<string, number>
+  taxBrackets?: Array<Record<string, number>>
+  exemptAmount?: number
+  effectiveYear: number
+}
+
+export type AnomalyThresholdSettings = {
+  momChangePercent: number
+  momAmountThreshold: number
+  bandTolerancePercent: number
+  monthlyOtLimitHours: number
+  prorateMinRatio: number
+  grossChangePercent: number
+  overtimeBaseRatio: number
+}
+
+export type PayScheduleSettings = {
+  payDay: number
+  closingDay?: number
+}
+
+// ── Performance settings (H-2c) ──
+
+export type CalibrationDistributionSettings = {
+  enforced: boolean
+  advisory: boolean
+  deviationThreshold: number
+  distribution: Record<string, { min: number; max: number; recommended: number }>
+}
+
+export type GradeScaleSettings = {
+  scale: number
+  grades: Array<{
+    code: string
+    label: string
+    minScore: number
+    maxScore: number
+    color: string
+  }>
+}
+
+// ── System settings (H-2c) ──
+
+export type ExchangeRateSettings = {
+  rates: Record<string, number>
+  baseCurrency: string
+  effectiveDate: string
+}
+
+export type DataRetentionSettings = {
+  defaultRetentionDays: number
+  piiMaskingEnabled: boolean
+  auditLogRetentionDays: number
+}
+
+// ── Organization settings (H-2d) ──
+
+export type AssignmentRuleEntry = {
+  code: string
+  label: string
+  desc: string
+  requiresApproval: boolean
+}
+
+export type AssignmentRulesSetting = {
+  rules: AssignmentRuleEntry[]
+}
+
+// ── Recruitment settings (H-2d) ──
+
+export type PipelineStageEntry = {
+  id: string
+  name: string
+  nameEn: string
+  color: string
+}
+
+export type PipelineStageSetting = {
+  stages: PipelineStageEntry[]
+}
+
+export type AiScreeningFeatureEntry = {
+  key: string
+  label: string
+  desc: string
+  enabled: boolean
+}
+
+export type AiScreeningSetting = {
+  enabled: boolean
+  minScore: number
+  features: AiScreeningFeatureEntry[]
+}
+
+export type InterviewFormCategoryEntry = {
+  category: string
+  items: string[]
+}
+
+export type InterviewFormSetting = {
+  categories: InterviewFormCategoryEntry[]
+}
+
+// ── System settings (H-2d) ──
+
+export type LocaleSetting = {
+  defaultLocale: string
+  defaultTimezone: string
+  supportedLocales: string[]
+}
+
+export type NotificationChannelEntry = {
+  key: string
+  label: string
+  iconKey: string
+  enabled: boolean
+}
+
+export type NotificationChannelsSetting = {
+  channels: NotificationChannelEntry[]
+}
+
 export type ProcessSettingValue =
   | EvaluationSettings
   | PromotionSettings
@@ -78,6 +223,20 @@ export type ProcessSettingValue =
   | OnboardingSettings
   | RecruitmentSettings
   | BenefitsSettings
+  | KrSocialInsuranceSettings
+  | CountryDeductionSettings
+  | AnomalyThresholdSettings
+  | PayScheduleSettings
+  | CalibrationDistributionSettings
+  | GradeScaleSettings
+  | ExchangeRateSettings
+  | DataRetentionSettings
+  | AssignmentRulesSetting
+  | PipelineStageSetting
+  | AiScreeningSetting
+  | InterviewFormSetting
+  | LocaleSetting
+  | NotificationChannelsSetting
   | Record<string, unknown>
 
 export type CompanyProcessSettingRow = {

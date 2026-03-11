@@ -1,0 +1,58 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { Loader2, Info } from 'lucide-react'
+import { apiClient } from '@/lib/api'
+
+interface Grade { key: string; labelKo: string; labelEn: string; guidePct: number; description: string }
+interface Props { companyId: string | null }
+
+export function GradeScaleTab({ companyId }: Props) {
+  const [grades, setGrades] = useState<Grade[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setLoading(true)
+    const params = companyId ? `?companyId=${companyId}` : ''
+    apiClient.get(`/api/v1/settings/performance/grade-scale${params}`)
+      .then((res) => { const d = (res as any)?.data ?? res; setGrades(d?.grades ?? []) })
+      .catch(() => setGrades([]))
+      .finally(() => setLoading(false))
+  }, [companyId])
+
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+
+  return (
+    <div className="space-y-4">
+      <div className="mb-4">
+        <h3 className="text-base font-semibold text-[#1C1D21]">등급 체계</h3>
+        <p className="text-sm text-[#8181A5]">{grades.length}단계 등급 체계</p>
+      </div>
+      {grades.length > 0 ? (
+        <div className="space-y-3">
+          {grades.map((g) => (
+            <div key={g.key} className="flex items-center gap-4 rounded-lg border border-[#F0F0F3] p-4 hover:bg-[#F5F5FA] transition-colors">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#5E81F4] text-sm font-bold text-white">{g.key}</div>
+              <div className="flex-1">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-sm font-semibold text-[#1C1D21]">{g.labelKo}</span>
+                  <span className="text-xs text-[#8181A5]">{g.labelEn}</span>
+                </div>
+                <p className="text-xs text-[#8181A5]">{g.description}</p>
+              </div>
+              <div className="text-right">
+                <span className="text-lg font-bold text-[#5E81F4]">{g.guidePct}%</span>
+                <p className="text-xs text-[#8181A5]">배분 가이드</p>
+              </div>
+            </div>
+          ))}
+          <div className="mt-2 text-right text-sm text-[#8181A5]">합계: {grades.reduce((s, g) => s + g.guidePct, 0)}%</div>
+        </div>
+      ) : (
+        <div className="rounded-lg border border-dashed border-[#F0F0F3] py-12 text-center">
+          <Info className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">등급 체계가 설정되지 않았습니다</p>
+        </div>
+      )}
+    </div>
+  )
+}

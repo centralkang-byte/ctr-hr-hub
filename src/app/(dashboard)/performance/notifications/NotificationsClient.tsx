@@ -1,0 +1,239 @@
+'use client'
+
+import { useCallback, useEffect, useState } from 'react'
+import { Bell, CheckCircle2, Clock, Send, ShieldAlert, ArrowLeft } from 'lucide-react'
+import { apiClient } from '@/lib/api'
+import { getGradeLabel } from '@/lib/performance/data-masking'
+import type { SessionUser } from '@/types'
+
+// ─── Types ────────────────────────────────────────────────
+
+interface CycleOption { id: string; name: string; status: string }
+interface NotifyItem {
+    reviewId: string; employeeId: string; employeeName: string; department: string
+    finalGradeEnum: string | null; notifiedAt: string | null; acknowledgedAt: string | null
+    isAutoAcknowledged: boolean
+}
+
+type FilterType = 'all' | 'pending' | 'waiting' | 'done'
+
+// ─── Component ────────────────────────────────────────────
+
+export default function NotificationsClient({ user }: { user: SessionUser }) {
+    const isHrAdmin = user.role === 'SUPER_ADMIN' || user.role === 'HR_ADMIN'
+
+    const [cycles, setCycles] = useState<CycleOption[]>([])
+    const [selectedCycleId, setSelectedCycleId] = useState('')
+    const [cycleStatus, setCycleStatus] = useState('')
+    const [items, setItems] = useState<NotifyItem[]>([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState('')
+    const [filter, setFilter] = useState<FilterType>('all')
+    const [notifying, setNotifying] = useState<string | null>(null)
+    const [bulkNotifying, setBulkNotifying] = useState(false)
+
+    useEffect(() => {
+        async function load() {
+            try {
+                const res = await apiClient.getList<CycleOption>('/api/v1/performance/cycles', { page: 1, limit: 100 })
+                const valid = res.data.filter((c) => ['FINALIZED', 'CLOSED', 'COMP_REVIEW', 'COMP_COMPLETED'].includes(c.status))
+                setCycles(valid)
+                if (valid.length > 0) { setSelectedCycleId(valid[0].id); setCycleStatus(valid[0].status) }
+            } catch { setError('사이클을 불러오지 못했습니다.') }
+        }
+        load()
+    }, [])
+
+    const fetchItems = useCallback(async () => {
+        if (!selectedCycleId) return
+        setLoading(true); setError('')
+        try {
+            const res = await apiClient.get<NotifyItem[]>(`/api/v1/performance/cycles/${selectedCycleId}/participants`, { includeNotification: 'true' })
+            setItems(res.data ?? [])
+        } catch { setError('통보 현황을 불러오지 못했습니다.') }
+        finally { setLoading(false) }
+    }, [selectedCycleId])
+
+    useEffect(() => { fetchItems() }, [fetchItems])
+
+    function handleCycleChange(id: string) {
+        setSelectedCycleId(id)
+        const c = cycles.find((c) => c.id === id)
+        if (c) setCycleStatus(c.status)
+    }
+
+    async function handleNotify(reviewId: string) {
+        if (!confirm('이 직원에게 결과를 통보하시겠습니까?')) return
+        setNotifying(reviewId)
+        try {
+            await apiClient.post(`/api/v1/performance/reviews/${reviewId}/notify`)
+            await fetchItems()
+        } catch { alert('통보에 실패했습니다.') }
+        finally { setNotifying(null) }
+    }
+
+    async function handleBulkNotify() {
+        const pendingCount = items.filter((i) => !i.notifiedAt).length
+        if (!confirm(`미통보 ${pendingCount}명에게 일괄 통보하시겠습니까?`)) return
+        setBulkNotifying(true)
+        try {
+            await apiClient.post(`/api/v1/performance/cycles/${selectedCycleId}/bulk-notify`)
+            await fetchItems()
+        } catch { alert('일괄 통보에 실패했습니다.') }
+        finally { setBulkNotifying(false) }
+    }
+
+    // Route guard
+    const isBlocked = cycleStatus !== '' && !['FINALIZED', 'CLOSED', 'COMP_REVIEW', 'COMP_COMPLETED'].includes(cycleStatus)
+    if (isBlocked) {
+        return (
+            <div className="flex min-h-[60vh] items-center justify-center p-6">
+                <div className="text-center">
+                    <Bell className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
+                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">결과 통보 단계가 아닙니다.</h2>
+                    <p className="text-sm text-[#8181A5]">결과 통보는 FINALIZED 이후에 가능합니다.</p>
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline"><ArrowLeft className="h-4 w-4" /> 돌아가기</a>
+                </div>
+            </div>
+        )
+    }
+
+    // Helpers
+    function getDDay(notifiedAt: string | null): number | null {
+        if (!notifiedAt) return null
+        const deadline = new Date(notifiedAt).getTime() + 7 * 24 * 60 * 60 * 1000 // 168h
+        return Math.ceil((deadline - Date.now()) / (1000 * 60 * 60 * 24))
+    }
+
+    function getStatus(item: NotifyItem): { label: string; cls: string } {
+        if (item.acknowledgedAt) {
+            return item.isAutoAcknowledged
+                ? { label: '✅ 자동확인', cls: 'text-[#8181A5]' }
+                : { label: '✅ 확인', cls: 'text-[#047857]' }
+        }
+        if (item.notifiedAt) return { label: '🟡 대기', cls: 'text-[#92400E]' }
+        return { label: '⬜ 미통보', cls: 'text-[#8181A5]' }
+    }
+
+    const filtered = items.filter((item) => {
+        if (filter === 'pending') return !item.notifiedAt
+        if (filter === 'waiting') return item.notifiedAt && !item.acknowledgedAt
+        if (filter === 'done') return !!item.acknowledgedAt
+        return true
+    })
+
+    const total = items.length
+    const notified = items.filter((i) => i.notifiedAt).length
+    const acknowledged = items.filter((i) => i.acknowledgedAt).length
+    const pending = total - notified
+
+    return (
+        <div className="min-h-screen bg-[#F5F5FA] p-6">
+            <div className="mx-auto max-w-5xl">
+                {/* Header */}
+                <div className="mb-6 flex items-center justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold text-[#1C1D21]">결과 통보 (Result Notification)</h1>
+                        <p className="mt-1 text-sm text-[#8181A5]">
+                            전체: {total}명 | 통보 완료: {notified} | 미통보: {pending} | 확인 완료: {acknowledged}
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        {isHrAdmin && pending > 0 && (
+                            <button onClick={handleBulkNotify} disabled={bulkNotifying}
+                                className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40">
+                                <Send className="h-4 w-4" /> {bulkNotifying ? '통보 중...' : '전체 일괄 통보'}
+                            </button>
+                        )}
+                        <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
+                            className="rounded-lg border border-[#F0F0F3] bg-white px-3 py-2 text-sm">
+                            {cycles.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                        </select>
+                    </div>
+                </div>
+
+                {/* Filter tabs */}
+                <div className="mb-4 flex gap-2">
+                    {([['all', '전체'], ['pending', '미통보'], ['waiting', '대기 중'], ['done', '확인 완료']] as const).map(([key, label]) => (
+                        <button key={key} onClick={() => setFilter(key)}
+                            className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${filter === key ? 'bg-[#5E81F4] text-white' : 'bg-white border border-[#F0F0F3] text-[#8181A5] hover:bg-[#F5F5FA]'}`}>
+                            {label}
+                        </button>
+                    ))}
+                </div>
+
+                {error && (
+                    <div className="mb-4 rounded-lg border border-[#FFEBEE] bg-[#FFEBEE] p-3 text-sm text-[#C62828]">
+                        {error} <button onClick={fetchItems} className="ml-2 font-medium underline">다시 시도</button>
+                    </div>
+                )}
+
+                {loading ? (
+                    <div className="space-y-3">
+                        {[1, 2, 3, 4].map((i) => (
+                            <div key={i} className="animate-pulse rounded-xl border border-[#F0F0F3] bg-white p-4">
+                                <div className="mb-2 h-4 w-1/4 rounded bg-[#F0F0F3]" />
+                                <div className="h-3 w-1/3 rounded bg-[#F0F0F3]" />
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="rounded-xl border border-[#F0F0F3] bg-white overflow-hidden">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="bg-[#F5F5FA] text-xs text-[#8181A5] font-medium">
+                                    <th className="px-4 py-3 text-left">이름</th>
+                                    <th className="px-4 py-3 text-center">등급</th>
+                                    <th className="px-4 py-3 text-center">통보일</th>
+                                    <th className="px-4 py-3 text-center">확인일</th>
+                                    <th className="px-4 py-3 text-center">D-day</th>
+                                    <th className="px-4 py-3 text-center">상태</th>
+                                    <th className="px-4 py-3 text-center">액션</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filtered.map((item) => {
+                                    const status = getStatus(item)
+                                    const dDay = getDDay(item.notifiedAt)
+                                    return (
+                                        <tr key={item.reviewId} className="border-b border-[#F0F0F3] hover:bg-[#F5F5FA]">
+                                            <td className="px-4 py-3">
+                                                <p className="font-medium text-[#1C1D21]">{item.employeeName}</p>
+                                                <p className="text-xs text-[#8181A5]">{item.department}</p>
+                                            </td>
+                                            <td className="px-4 py-3 text-center font-medium text-[#1C1D21]">{getGradeLabel(item.finalGradeEnum)}</td>
+                                            <td className="px-4 py-3 text-center text-[#8181A5]">{item.notifiedAt?.slice(0, 10) ?? '-'}</td>
+                                            <td className="px-4 py-3 text-center text-[#8181A5]">
+                                                {item.acknowledgedAt ? (
+                                                    <span>{item.acknowledgedAt.slice(0, 10)}{item.isAutoAcknowledged ? ' (자동)' : ''}</span>
+                                                ) : '-'}
+                                            </td>
+                                            <td className="px-4 py-3 text-center">
+                                                {dDay !== null && !item.acknowledgedAt ? (
+                                                    <span className={`text-xs font-medium ${dDay <= 2 ? 'text-[#EF4444]' : 'text-[#F59E0B]'}`}>D-{Math.max(dDay, 0)}</span>
+                                                ) : '-'}
+                                            </td>
+                                            <td className={`px-4 py-3 text-center text-xs font-medium ${status.cls}`}>{status.label}</td>
+                                            <td className="px-4 py-3 text-center">
+                                                {!item.notifiedAt && (
+                                                    <button onClick={() => handleNotify(item.reviewId)} disabled={notifying === item.reviewId}
+                                                        className="rounded-lg bg-[#5E81F4] px-3 py-1 text-xs font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40">
+                                                        {notifying === item.reviewId ? '...' : '통보'}
+                                                    </button>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                            </tbody>
+                        </table>
+                        {/* Footer note */}
+                        <div className="border-t border-[#F0F0F3] px-5 py-3 text-xs text-[#8181A5]">
+                            💡 통보 후 168시간(7일) 이내 미확인 시 자동 확인 처리됩니다.
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    )
+}

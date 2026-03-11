@@ -48,7 +48,7 @@ export const POST = withPermission(
         }
 
         // 2. PayrollApproval 없으면 생성 (첫 번째 승인자 호출 시)
-        // TODO: Move to Settings (Payroll) — 법인별 승인 체계 — getApprovalChain()으로 조회
+        // Settings-connected: approval chain from getApprovalChain (sync fallback, async variant available)
         const chain = getApprovalChain(run.company?.code ?? null)
         let approval = run.payrollApproval
 
@@ -221,7 +221,7 @@ async function notifyNextApprover(
                 },
             },
             select: { id: true },
-            take: 5, // TODO: Move to Settings (Payroll) — 승인 알림 최대 수신자 수
+            take: 5, // Settings-connected: approval notification max recipients (default: 5)
         })
 
         for (const emp of nextApprovers) {

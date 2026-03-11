@@ -106,6 +106,8 @@ export type {
   PiiAccessLog,
   MandatoryTraining,
   SeveranceInterimPayment,
+  AssetReturn,
+  ApprovalDelegation,
 } from '@/generated/prisma/client'
 
 export {
@@ -198,6 +200,9 @@ export {
   type MandatoryTrainingType,
   type SeveranceInterimReason,
   type SeveranceInterimStatus,
+  type AssetReturnStatus,
+  type DelegationScope,
+  type DelegationStatus,
 } from '@/generated/prisma/enums'
 
 // ─── Permission (RBAC) ────────────────────────────────────

@@ -45,39 +45,40 @@ import type { UnifiedTask, UnifiedTaskListResponse } from '@/lib/unified-task/ty
 // ─── Constants ───────────────────────────────────────────
 
 const TYPE_LABEL: Record<string, string> = {
-  [UnifiedTaskType.LEAVE_APPROVAL]:   '휴가',
+  [UnifiedTaskType.LEAVE_APPROVAL]: '휴가',
   [UnifiedTaskType.PERFORMANCE_REVIEW]: '성과',
-  [UnifiedTaskType.ONBOARDING_TASK]:  '온보딩',
+  [UnifiedTaskType.ONBOARDING_TASK]: '온보딩',
   [UnifiedTaskType.OFFBOARDING_TASK]: '퇴직',
-  [UnifiedTaskType.PAYROLL_REVIEW]:   '급여',
-  [UnifiedTaskType.BENEFIT_REQUEST]:  '복리후생',
+  [UnifiedTaskType.PAYROLL_REVIEW]: '급여',
+  [UnifiedTaskType.BENEFIT_REQUEST]: '복리후생',
 }
 
 const TYPE_ICON: Record<string, React.ElementType> = {
-  [UnifiedTaskType.LEAVE_APPROVAL]:   CalendarDays,
+  [UnifiedTaskType.LEAVE_APPROVAL]: CalendarDays,
   [UnifiedTaskType.PERFORMANCE_REVIEW]: Target,
-  [UnifiedTaskType.ONBOARDING_TASK]:  ClipboardCheck,
+  [UnifiedTaskType.ONBOARDING_TASK]: ClipboardCheck,
   [UnifiedTaskType.OFFBOARDING_TASK]: DoorOpen,
-  [UnifiedTaskType.PAYROLL_REVIEW]:   Clock,
-  [UnifiedTaskType.BENEFIT_REQUEST]:  ListChecks,
+  [UnifiedTaskType.PAYROLL_REVIEW]: Clock,
+  [UnifiedTaskType.BENEFIT_REQUEST]: ListChecks,
 }
 
 const TYPE_ICON_COLOR: Record<string, string> = {
-  [UnifiedTaskType.LEAVE_APPROVAL]:   'text-[#5E81F4]',
+  [UnifiedTaskType.LEAVE_APPROVAL]: 'text-[#5E81F4]',
   [UnifiedTaskType.PERFORMANCE_REVIEW]: 'text-[#A855F7]',
-  [UnifiedTaskType.ONBOARDING_TASK]:  'text-[#00C853]',
+  [UnifiedTaskType.ONBOARDING_TASK]: 'text-[#00C853]',
   [UnifiedTaskType.OFFBOARDING_TASK]: 'text-[#F59E0B]',
-  [UnifiedTaskType.PAYROLL_REVIEW]:   'text-[#EF4444]',
-  [UnifiedTaskType.BENEFIT_REQUEST]:  'text-[#06B6D4]',
+  [UnifiedTaskType.PAYROLL_REVIEW]: 'text-[#EF4444]',
+  [UnifiedTaskType.BENEFIT_REQUEST]: 'text-[#06B6D4]',
 }
 
 // 필터 탭 정의
 const FILTER_TABS = [
-  { key: 'all',         label: '전체' },
-  { key: UnifiedTaskType.LEAVE_APPROVAL,    label: '휴가' },
+  { key: 'all', label: '전체' },
+  { key: UnifiedTaskType.LEAVE_APPROVAL, label: '휴가' },
   { key: UnifiedTaskType.PERFORMANCE_REVIEW, label: '성과' },
-  { key: UnifiedTaskType.ONBOARDING_TASK,   label: '온보딩' },
-  { key: UnifiedTaskType.PAYROLL_REVIEW,    label: '급여' },
+  { key: UnifiedTaskType.ONBOARDING_TASK, label: '온보딩' },
+  { key: UnifiedTaskType.OFFBOARDING_TASK, label: '퇴직' },
+  { key: UnifiedTaskType.PAYROLL_REVIEW, label: '급여' },
 ]
 
 // ─── Types ────────────────────────────────────────────────
@@ -95,7 +96,7 @@ function getDday(dueDate?: string): string | null {
   const diff = Math.ceil(
     (new Date(dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
   )
-  if (diff < 0)  return `D+${Math.abs(diff)}`
+  if (diff < 0) return `D+${Math.abs(diff)}`
   if (diff === 0) return 'D-Day'
   return `D-${diff}`
 }
@@ -105,27 +106,27 @@ function getDdayColor(dueDate?: string): string {
   const diff = Math.ceil(
     (new Date(dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
   )
-  if (diff < 0)  return 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]'
+  if (diff < 0) return 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]'
   if (diff === 0) return 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]'
-  if (diff <= 3)  return 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]'
+  if (diff <= 3) return 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]'
   return 'bg-[#F0F4FF] text-[#5E81F4] border-[#C7D2FE]'
 }
 
 function classifyTask(task: UnifiedTask): 'urgent' | 'week' | 'month' | 'done' {
   if (task.status === UnifiedTaskStatus.COMPLETED ||
-      task.status === UnifiedTaskStatus.REJECTED ||
-      task.status === UnifiedTaskStatus.CANCELLED) return 'done'
+    task.status === UnifiedTaskStatus.REJECTED ||
+    task.status === UnifiedTaskStatus.CANCELLED) return 'done'
 
   if (!task.dueDate) return 'month'
 
-  const now    = new Date()
-  const due    = new Date(task.dueDate)
+  const now = new Date()
+  const due = new Date(task.dueDate)
   const diffMs = due.getTime() - now.getTime()
   const diffDays = diffMs / (1000 * 60 * 60 * 24)
 
   if (diffDays < 0 ||
-      task.priority === UnifiedTaskPriority.URGENT) return 'urgent'
-  if (diffDays <= 7)  return 'week'
+    task.priority === UnifiedTaskPriority.URGENT) return 'urgent'
+  if (diffDays <= 7) return 'week'
   if (diffDays <= 31) return 'month'
   return 'month'
 }
@@ -133,10 +134,10 @@ function classifyTask(task: UnifiedTask): 'urgent' | 'week' | 'month' | 'done' {
 // ─── TaskCard (single item) ───────────────────────────────
 
 interface TaskCardProps {
-  task:        UnifiedTask
-  user:        SessionUser
-  onAction:    (taskId: string, action: 'approve' | 'reject', sourceId: string) => void
-  processing:  string | null
+  task: UnifiedTask
+  user: SessionUser
+  onAction: (taskId: string, action: 'approve' | 'reject', sourceId: string) => void
+  processing: string | null
 }
 
 function TaskCard({ task, user, onAction, processing }: TaskCardProps) {
@@ -147,13 +148,13 @@ function TaskCard({ task, user, onAction, processing }: TaskCardProps) {
   const isLeave = task.type === UnifiedTaskType.LEAVE_APPROVAL
   const canInlineApprove = isLeave && user.role !== 'EMPLOYEE'
   const isPending = task.status === UnifiedTaskStatus.PENDING ||
-                    task.status === UnifiedTaskStatus.IN_PROGRESS
+    task.status === UnifiedTaskStatus.IN_PROGRESS
   const isBusy = processing === task.id
 
   // Urgency border highlight
   let borderStyle = 'border border-[#F0F0F3]'
-  if (task.priority === UnifiedTaskPriority.URGENT)         borderStyle = 'border border-[#FECACA] border-l-4 border-l-[#EF4444]'
-  else if (task.priority === UnifiedTaskPriority.HIGH)       borderStyle = 'border border-[#FCD34D] border-l-4 border-l-[#F59E0B]'
+  if (task.priority === UnifiedTaskPriority.URGENT) borderStyle = 'border border-[#FECACA] border-l-4 border-l-[#EF4444]'
+  else if (task.priority === UnifiedTaskPriority.HIGH) borderStyle = 'border border-[#FCD34D] border-l-4 border-l-[#F59E0B]'
 
   return (
     <div
@@ -239,9 +240,9 @@ function TaskCard({ task, user, onAction, processing }: TaskCardProps) {
 // ─── Group Section ────────────────────────────────────────
 
 interface GroupSectionProps {
-  label:    string
-  tasks:    UnifiedTask[]
-  user:     SessionUser
+  label: string
+  tasks: UnifiedTask[]
+  user: SessionUser
   onAction: (taskId: string, action: 'approve' | 'reject', sourceId: string) => void
   processing: string | null
   collapsible?: boolean
@@ -298,11 +299,11 @@ function GroupSection({
 // ─── Main Component ───────────────────────────────────────
 
 export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
-  const [tasks,       setTasks]      = useState<UnifiedTask[]>([])
+  const [tasks, setTasks] = useState<UnifiedTask[]>([])
   const [countByType, setCountByType] = useState<Partial<Record<UnifiedTaskType, number>>>({})
-  const [loading,     setLoading]    = useState(true)
-  const [activeFilter, setFilter]    = useState<FilterKey>('all')
-  const [processing,  setProcessing] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [activeFilter, setFilter] = useState<FilterKey>('all')
+  const [processing, setProcessing] = useState<string | null>(null)
 
   // ── Fetch ───────────────────────────────────────────────
 
@@ -359,16 +360,16 @@ export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
   // ── Group ───────────────────────────────────────────────
 
   const urgent: UnifiedTask[] = []
-  const week:   UnifiedTask[] = []
-  const month:  UnifiedTask[] = []
-  const done:   UnifiedTask[] = []
+  const week: UnifiedTask[] = []
+  const month: UnifiedTask[] = []
+  const done: UnifiedTask[] = []
 
   for (const t of filtered) {
     switch (classifyTask(t)) {
       case 'urgent': urgent.push(t); break
-      case 'week':   week.push(t);   break
-      case 'month':  month.push(t);  break
-      case 'done':   done.push(t);   break
+      case 'week': week.push(t); break
+      case 'month': month.push(t); break
+      case 'done': done.push(t); break
     }
   }
 
@@ -390,6 +391,12 @@ export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
               </span>
             )}
           </CardTitle>
+          <Link
+            href="/my/tasks"
+            className="text-xs font-medium text-[#5E81F4] hover:underline"
+          >
+            전체 보기 →
+          </Link>
         </div>
 
         {/* Filter tabs */}
@@ -404,17 +411,15 @@ export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
                 key={tab.key}
                 type="button"
                 onClick={() => setFilter(tab.key as FilterKey)}
-                className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                  activeFilter === tab.key
+                className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${activeFilter === tab.key
                     ? 'bg-[#5E81F4] text-white'
                     : 'bg-[#F5F5FA] text-[#8181A5] hover:bg-[#E8EBFF] hover:text-[#5E81F4]'
-                }`}
+                  }`}
               >
                 {tab.label}
                 {count > 0 && (
-                  <span className={`rounded-full px-1 text-[10px] ${
-                    activeFilter === tab.key ? 'bg-white/30 text-white' : 'bg-[#E8E8F0] text-[#8181A5]'
-                  }`}>
+                  <span className={`rounded-full px-1 text-[10px] ${activeFilter === tab.key ? 'bg-white/30 text-white' : 'bg-[#E8E8F0] text-[#8181A5]'
+                    }`}>
                     {count}
                   </span>
                 )}

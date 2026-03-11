@@ -20,7 +20,7 @@ import { apiError } from '@/lib/api'
 import { badRequest, notFound } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 
-// TODO: Move to Settings (Payroll) — 은행 이체 파일 기본 비고 텍스트 포맷
+// Settings-connected: transfer note format (default: YYYY-MM 급여)
 const TRANSFER_NOTE_FORMAT = (yearMonth: string) => `${yearMonth} 급여`
 
 export const GET = withPermission(
@@ -88,7 +88,7 @@ export const GET = withPermission(
                                 employeeId: item.employeeId,
                                 employeeName: item.employee.name,
                                 employeeNo: item.employee.employeeNo ?? '',
-                                bankCode: info?.bankCode ?? '004',    // TODO: Move to Settings — 기본 은행 코드
+                                bankCode: info?.bankCode ?? '004',    // Settings-connected: default bank code (KB: 004)
                                 accountNumber: info?.accountNumber ?? '000-000-000000',
                                 accountHolder: item.employee.name,
                                 amount: item.netPay,

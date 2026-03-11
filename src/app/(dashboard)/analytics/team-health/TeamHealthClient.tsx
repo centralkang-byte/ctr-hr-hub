@@ -1,200 +1,164 @@
 'use client'
 
-// ═══════════════════════════════════════════════════════════
-// CTR HR Hub — Team Health Analytics Client
-// 팀 건강 분석 (부서별 종합점수 + 번아웃 위험)
-// ═══════════════════════════════════════════════════════════
-
-import { useState, useEffect, useCallback } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { useTranslations } from 'next-intl'
-import { Loader2 } from 'lucide-react'
-import {
-  RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
-  BarChart, Bar,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-} from 'recharts'
-import { apiClient } from '@/lib/api'
-import { AnalyticsPageLayout } from '@/components/analytics/AnalyticsPageLayout'
+import React, { useEffect, useState, useCallback } from 'react'
+import { Heart, Clock, CalendarDays, Target, AlertTriangle, Flame } from 'lucide-react'
 import { ChartCard } from '@/components/analytics/ChartCard'
-import { EmptyChart } from '@/components/analytics/EmptyChart'
-import { BurnoutBadge } from '@/components/analytics/BurnoutBadge'
-import type { TeamHealthData, TeamHealthRow } from '@/lib/analytics/types'
+import type { TeamHealthResponse } from '@/lib/analytics/types'
+
+const SCORE_COLORS: Record<string, string> = {
+  HEALTHY: '#10B981', CAUTION: '#F59E0B', WARNING: '#F97316', CRITICAL: '#EF4444',
+}
+const SCORE_LABELS: Record<string, string> = {
+  HEALTHY: '건강', CAUTION: '주의', WARNING: '경고', CRITICAL: '위험',
+}
+const SUB_ICONS = [
+  { key: 'overtime', label: '초과근무', icon: Clock },
+  { key: 'leaveUsage', label: '연차사용', icon: CalendarDays },
+  { key: 'performanceDist', label: '성과분포', icon: Target },
+  { key: 'turnoverRisk', label: '이직위험', icon: AlertTriangle },
+  { key: 'burnoutRisk', label: '번아웃', icon: Flame },
+]
+const STATUS_COLORS = { GREEN: '#10B981', YELLOW: '#F59E0B', RED: '#EF4444' }
+const STATUS_LABELS = { GREEN: '🟢', YELLOW: '🟡', RED: '🔴' }
+const RISK_COLORS = { HIGH: 'text-red-600 bg-red-50', MEDIUM: 'text-amber-600 bg-amber-50', LOW: 'text-emerald-600 bg-emerald-50' }
 
 export default function TeamHealthClient() {
-  const searchParams = useSearchParams()
-  const companyId = searchParams.get('company_id') ?? undefined
-  const t = useTranslations('analytics.teamHealthPage')
-
-  function buildRadarData(team: TeamHealthRow) {
-    return [
-      { metric: t('radarPerformance'), value: (team.avg_performance_score ?? 0) * 20 },
-      { metric: t('radarAttendance'), value: Math.max(0, 100 - (team.avg_late_count_4w ?? 0) * 20) },
-      { metric: t('radarLeave'), value: Math.min(100, (team.avg_unused_leave_days ?? 0) * 4) },
-      { metric: t('radarOneOnOne'), value: team.one_on_one_coverage_pct ?? 0 },
-    ]
-  }
-
-  const [data, setData] = useState<TeamHealthData | null>(null)
+  const [data, setData] = useState<TeamHealthResponse | null>(null)
   const [loading, setLoading] = useState(true)
-  const [selectedTeam, setSelectedTeam] = useState<TeamHealthRow | null>(null)
 
   const fetchData = useCallback(async () => {
     setLoading(true)
     try {
-      const res = await apiClient.get<TeamHealthData>('/api/v1/analytics/team-health', {
-        company_id: companyId,
-      })
-      setData(res.data)
-      if (res.data.teams.length > 0) {
-        setSelectedTeam(res.data.teams[0])
-      }
-    } catch {
-      // silently handle
-    } finally {
-      setLoading(false)
-    }
-  }, [companyId])
+      const res = await fetch('/api/v1/analytics/team-health/overview')
+      if (res.ok) { const j = await res.json(); setData(j.data) }
+    } catch { /* */ } finally { setLoading(false) }
+  }, [])
 
   useEffect(() => { fetchData() }, [fetchData])
 
-  if (loading) {
+  if (loading || !data) {
+    return <div className="space-y-6 animate-pulse">{[...Array(3)].map((_, i) => <div key={i} className="h-48 bg-gray-100 rounded-xl" />)}</div>
+  }
+
+  if (data.isEmpty) {
     return (
-      <AnalyticsPageLayout title={t('title')}>
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-[#999]" />
+      <div className="bg-white rounded-xl border border-gray-100 p-12 text-center">
+        <div className="flex justify-center mb-4">
+          <div className="rounded-full bg-gray-100 p-4">
+            <Heart className="h-8 w-8 text-gray-400" />
+          </div>
         </div>
-      </AnalyticsPageLayout>
+        <h3 className="text-lg font-semibold text-gray-700 mb-2">👥 조회할 팀원 데이터가 없습니다 (0명)</h3>
+        <p className="text-sm text-gray-500 max-w-md mx-auto">
+          현재 직속 팀원이 배정되지 않았거나, 조직도 데이터가 아직 연결되지 않았습니다.
+          인사팀에 문의하시거나 조직도 업데이트를 확인해주세요.
+        </p>
+      </div>
     )
   }
 
-  if (!data) {
-    return (
-      <AnalyticsPageLayout title={t('title')}>
-        <EmptyChart />
-      </AnalyticsPageLayout>
-    )
-  }
-
-  const coverageData = data.teams.map((tm) => ({
-    department_name: tm.department_name,
-    coverage: tm.one_on_one_coverage_pct ?? 0,
-  }))
+  const scoreColor = SCORE_COLORS[data.scoreLevel] || '#94A3B8'
+  const dashOffset = 100 - data.score
 
   return (
-    <AnalyticsPageLayout title={t('title')} description={t('description')}>
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Radar Chart for selected team */}
-        <ChartCard title={selectedTeam ? t('deptCompositeMetrics', { dept: selectedTeam.department_name }) : t('compositeMetrics')}>
-          {selectedTeam ? (
-            <ResponsiveContainer width="100%" height={300}>
-              <RadarChart data={buildRadarData(selectedTeam)}>
-                <PolarGrid />
-                <PolarAngleAxis dataKey="metric" tick={{ fontSize: 12 }} />
-                <PolarRadiusAxis domain={[0, 100]} />
-                <Radar dataKey="value" stroke="#00C853" fill="#00C853" fillOpacity={0.3} />
-              </RadarChart>
-            </ResponsiveContainer>
-          ) : (
-            <EmptyChart />
-          )}
-        </ChartCard>
-
-        {/* 1:1 미팅 커버리지 */}
-        <ChartCard title={t('oneOnOneCoverage')}>
-          {coverageData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={coverageData} layout="vertical" margin={{ left: 80 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" domain={[0, 100]} unit="%" />
-                <YAxis type="category" dataKey="department_name" width={70} tick={{ fontSize: 12 }} />
-                <Tooltip />
-                <Bar dataKey="coverage" fill="#10B981" radius={[0, 4, 4, 0]} name={t('coveragePercent')} />
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <EmptyChart />
-          )}
-        </ChartCard>
-
-        {/* 부서 건강지표 테이블 */}
-        <ChartCard title={t('deptHealthMetrics')} className="lg:col-span-2">
-          {data.teams.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-[#F5F5F5] bg-[#FAFAFA]">
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#666]">{t('department')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('headcount')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('performanceScore')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('late4w')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('overtime4w')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('unusedLeave')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('oneOnOneCoverageCol')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.teams.map((tm) => (
-                    <tr
-                      key={tm.department_id}
-                      className={`cursor-pointer border-b border-[#F5F5F5] hover:bg-[#FAFAFA] ${selectedTeam?.department_id === tm.department_id ? 'bg-[#E8F5E9]' : ''}`}
-                      onClick={() => setSelectedTeam(tm)}
-                    >
-                      <td className="px-4 py-3 font-medium text-[#333]">{tm.department_name}</td>
-                      <td className="px-4 py-3 text-center text-[#555]">{tm.team_size}</td>
-                      <td className="px-4 py-3 text-center text-[#555]">{tm.avg_performance_score ?? '-'}</td>
-                      <td className="px-4 py-3 text-center text-[#555]">{tm.avg_late_count_4w ?? '-'}</td>
-                      <td className="px-4 py-3 text-center text-[#555]">{tm.avg_overtime_hours_4w ?? '-'}{t('hSuffix')}</td>
-                      <td className="px-4 py-3 text-center text-[#555]">{tm.avg_unused_leave_days ?? '-'}{t('daySuffix')}</td>
-                      <td className="px-4 py-3 text-center text-[#555]">{tm.one_on_one_coverage_pct ?? 0}%</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+    <div className="space-y-6">
+      {/* Health Score Hero */}
+      <div className="bg-white rounded-xl border border-gray-100 p-6">
+        <div className="flex flex-col items-center">
+          <div className="relative w-48 h-28 mb-4">
+            <svg viewBox="0 0 120 70" className="w-48 h-28">
+              {/* Background arc */}
+              <path d="M10 65 A50 50 0 0 1 110 65" fill="none" stroke="#E5E7EB" strokeWidth="8" strokeLinecap="round" />
+              {/* Score arc */}
+              <path d="M10 65 A50 50 0 0 1 110 65" fill="none" stroke={scoreColor} strokeWidth="8" strokeLinecap="round"
+                strokeDasharray={`${(data.score / 100) * 157} 157`} className="transition-all duration-1000" />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-end pb-1">
+              <span className="text-3xl font-bold" style={{ color: scoreColor }}>{data.score}</span>
+              <span className="text-xs font-medium" style={{ color: scoreColor }}>
+                {SCORE_LABELS[data.scoreLevel]}
+              </span>
             </div>
-          ) : (
-            <EmptyChart />
-          )}
-        </ChartCard>
+          </div>
+        </div>
 
-        {/* 번아웃 위험 목록 */}
-        <ChartCard title={t('burnoutRiskList')} className="lg:col-span-2">
-          {data.burnoutList.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-[#F5F5F5] bg-[#FAFAFA]">
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#666]">{t('employeeName')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#666]">{t('departmentCol')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('level')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('highIntensityWeeks')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('unusedLeaveCol')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('daysSinceOneOnOne')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.burnoutList.map((b) => (
-                    <tr key={b.employee_id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
-                      <td className="px-4 py-3 font-medium text-[#333]">{b.name}</td>
-                      <td className="px-4 py-3 text-[#555]">{b.department}</td>
-                      <td className="px-4 py-3 text-center">
-                        <BurnoutBadge isCritical={b.is_burnout_critical} />
-                      </td>
-                      <td className="px-4 py-3 text-center text-[#555]">{b.consecutive_high_weeks}{t('weekSuffix')}</td>
-                      <td className="px-4 py-3 text-center text-[#555]">{b.unused_days}{t('daySuffix')}</td>
-                      <td className="px-4 py-3 text-center text-[#555]">{b.days_since_last_one_on_one}{t('daySuffix')}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="py-8 text-center text-sm text-[#059669]">
-              {t('noBurnoutRisk')}
-            </div>
-          )}
-        </ChartCard>
+        {/* Sub-scores */}
+        <div className="grid grid-cols-5 gap-3 mt-4">
+          {SUB_ICONS.map(({ key, label, icon: Icon }) => {
+            const sub = data.subScores[key as keyof typeof data.subScores]
+            const subColor = sub.level === 'GOOD' ? '#10B981' : sub.level === 'CAUTION' ? '#F59E0B' : sub.level === 'WARNING' ? '#F97316' : '#EF4444'
+            return (
+              <div key={key} className="text-center p-3 bg-gray-50 rounded-xl">
+                <Icon className="h-4 w-4 mx-auto mb-1" style={{ color: subColor }} />
+                <div className="text-lg font-bold" style={{ color: subColor }}>{sub.score}</div>
+                <div className="text-[10px] text-gray-500 mt-0.5">{label}</div>
+              </div>
+            )
+          })}
+        </div>
       </div>
-    </AnalyticsPageLayout>
+
+      {/* Members Table */}
+      <ChartCard title="👥 팀원 현황">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-100">
+                <th className="text-left py-2 px-3 font-medium text-gray-500">이름</th>
+                <th className="text-right py-2 px-3 font-medium text-gray-500">초과근무</th>
+                <th className="text-right py-2 px-3 font-medium text-gray-500">연차사용률</th>
+                <th className="text-center py-2 px-3 font-medium text-gray-500">성과등급</th>
+                <th className="text-center py-2 px-3 font-medium text-gray-500">이직위험</th>
+                <th className="text-center py-2 px-3 font-medium text-gray-500">상태</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.members.map((m) => (
+                <tr key={m.employeeId} className="border-b border-gray-50 hover:bg-gray-50/50">
+                  <td className="py-2 px-3 font-medium text-gray-700">{m.name}</td>
+                  <td className={`text-right py-2 px-3 ${m.weeklyOvertime > 10 ? 'text-red-600 font-medium' : ''}`}>{m.weeklyOvertime}h</td>
+                  <td className={`text-right py-2 px-3 ${m.leaveUsageRate < 30 ? 'text-amber-600' : ''}`}>{m.leaveUsageRate}%</td>
+                  <td className="text-center py-2 px-3">
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${m.lastGrade === 'B' ? 'bg-red-50 text-red-600' : 'bg-gray-100 text-gray-600'}`}>
+                      {m.lastGrade}
+                    </span>
+                  </td>
+                  <td className="text-center py-2 px-3">
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${RISK_COLORS[m.turnoverRisk]}`}>
+                      {m.turnoverRisk}
+                    </span>
+                  </td>
+                  <td className="text-center py-2 px-3">{STATUS_LABELS[m.overallStatus]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </ChartCard>
+
+      {/* Recommendations */}
+      <ChartCard title="💡 추천 액션">
+        <div className="space-y-3">
+          {data.recommendations.map((rec, i) => (
+            <div key={i} className={`flex items-start gap-3 p-3 rounded-lg border-l-4 ${
+              rec.severity === 'RED' ? 'border-l-red-500 bg-red-50/30' : 'border-l-amber-500 bg-amber-50/30'
+            }`}>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-700">
+                  {rec.employeeName}
+                  {rec.factors.length > 0 && ` — ${rec.factors.join(', ')}`}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">{rec.actionText}</p>
+              </div>
+              {rec.actionLink && (
+                <a href={rec.actionLink} className="text-xs text-[#5E81F4] hover:underline whitespace-nowrap">
+                  프로필 보기 →
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
+      </ChartCard>
+    </div>
   )
 }

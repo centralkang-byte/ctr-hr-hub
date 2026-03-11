@@ -38,13 +38,13 @@ export type PayrollRunWithRelations = Prisma.PayrollRunGetPayload<{
 
 function mapPayrollStatus(status: string): UnifiedTaskStatus {
   switch (status) {
-    case 'DRAFT':        return UnifiedTaskStatus.PENDING
-    case 'CALCULATING':  return UnifiedTaskStatus.IN_PROGRESS
-    case 'REVIEW':       return UnifiedTaskStatus.IN_PROGRESS
-    case 'APPROVED':     return UnifiedTaskStatus.COMPLETED
-    case 'PAID':         return UnifiedTaskStatus.COMPLETED
-    case 'CANCELLED':    return UnifiedTaskStatus.CANCELLED
-    default:             return UnifiedTaskStatus.PENDING
+    case 'DRAFT': return UnifiedTaskStatus.PENDING
+    case 'CALCULATING': return UnifiedTaskStatus.IN_PROGRESS
+    case 'REVIEW': return UnifiedTaskStatus.IN_PROGRESS
+    case 'APPROVED': return UnifiedTaskStatus.COMPLETED
+    case 'PAID': return UnifiedTaskStatus.COMPLETED
+    case 'CANCELLED': return UnifiedTaskStatus.CANCELLED
+    default: return UnifiedTaskStatus.PENDING
   }
 }
 
@@ -53,10 +53,10 @@ function mapPayrollStatus(status: string): UnifiedTaskStatus {
 
 function mapPayrollPriority(status: string): UnifiedTaskPriority {
   switch (status) {
-    case 'REVIEW':       return UnifiedTaskPriority.HIGH
+    case 'REVIEW': return UnifiedTaskPriority.HIGH
     case 'DRAFT':
-    case 'CALCULATING':  return UnifiedTaskPriority.MEDIUM
-    default:             return UnifiedTaskPriority.LOW
+    case 'CALCULATING': return UnifiedTaskPriority.MEDIUM
+    default: return UnifiedTaskPriority.LOW
   }
 }
 
@@ -88,8 +88,7 @@ function buildSystemActor(companyId: string): UnifiedTaskActor {
 // ─── Mapper 구현 ───────────────────────────────────────────
 
 class PayrollRunMapper
-  implements UnifiedTaskMapper<PayrollRunWithRelations>
-{
+  implements UnifiedTaskMapper<PayrollRunWithRelations> {
   readonly type = UnifiedTaskType.PAYROLL_REVIEW
 
   toUnifiedTask(source: PayrollRunWithRelations): UnifiedTask {
@@ -97,53 +96,62 @@ class PayrollRunMapper
 
     // 상태 라벨 (title에 포함)
     const statusLabel: Record<string, string> = {
-      DRAFT:       '초안',
+      DRAFT: '초안',
       CALCULATING: '계산 중',
-      REVIEW:      '검토 필요',
-      APPROVED:    '승인됨',
-      PAID:        '지급 완료',
-      CANCELLED:   '취소됨',
+      REVIEW: '검토 필요',
+      APPROVED: '승인됨',
+      PAID: '지급 완료',
+      CANCELLED: '취소됨',
     }
     const statusText = statusLabel[source.status] ?? source.status
 
     return {
-      id:       `PayrollRun:${source.id}`,
-      type:     UnifiedTaskType.PAYROLL_REVIEW,
-      status:   mapPayrollStatus(source.status),
+      id: `PayrollRun:${source.id}`,
+      type: UnifiedTaskType.PAYROLL_REVIEW,
+      status: mapPayrollStatus(source.status),
       priority: mapPayrollPriority(source.status),
 
-      title:   `${source.yearMonth} 급여 실행 — ${statusText}`,
+      title: `${source.yearMonth} 급여 실행 — ${statusText}`,
       summary: `${source.headcount}명 · ${totalNet.toLocaleString('ko-KR')} ${source.currency}`,
 
       requester: buildSystemActor(source.companyId),
-      assignee:  buildApproverActor(source.approver),
+      assignee: buildApproverActor(source.approver),
 
       createdAt: source.createdAt.toISOString(),
       updatedAt: source.updatedAt.toISOString(),
-      dueDate:   source.payDate?.toISOString(),
+      dueDate: source.payDate?.toISOString(),
 
-      sourceId:    source.id,
+      sourceId: source.id,
       sourceModel: 'PayrollRun',
-      actionUrl:   `/payroll/${source.id}/review`,
+      actionUrl: `/payroll/${source.id}/review`,
 
       companyId: source.companyId,
 
       metadata: {
-        period:       source.yearMonth,
-        runType:      source.runType,
-        headcount:    source.headcount,
-        totalGross:   source.totalGross ? Number(source.totalGross) : null,
+        period: source.yearMonth,
+        runType: source.runType,
+        headcount: source.headcount,
+        totalGross: source.totalGross ? Number(source.totalGross) : null,
         totalNet,
-        currency:     source.currency,
+        currency: source.currency,
         originalStatus: source.status,
-        approvedAt:   source.approvedAt?.toISOString() ?? null,
-        paidAt:       source.paidAt?.toISOString() ?? null,
+        approvedAt: source.approvedAt?.toISOString() ?? null,
+        paidAt: source.paidAt?.toISOString() ?? null,
       },
     }
   }
 
   toUnifiedTasks(sources: PayrollRunWithRelations[]): UnifiedTask[] {
-    return sources.map((s) => this.toUnifiedTask(s))
+    return sources
+      .map((s) => {
+        try {
+          return this.toUnifiedTask(s)
+        } catch (error) {
+          console.error(`[payroll.mapper] Error mapping PayrollRun ${s.id}:`, error)
+          return null
+        }
+      })
+      .filter((t): t is UnifiedTask => t !== null)
   }
 }
 

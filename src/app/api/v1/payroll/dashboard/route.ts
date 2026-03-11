@@ -10,11 +10,12 @@ import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
+import { getPayrollSetting, getSettingValue } from '@/lib/settings/get-setting'
 
 // ─── Status → Pipeline Step Mapping ────────────────────────
 
-// TODO: Move to Settings (Payroll) — 급여 파이프라인 단계 순서 정의
-const STATUS_TO_STEP: Record<string, number> = {
+// Settings-connected: reads from PAYROLL/pipeline-steps, falls back to defaults
+const DEFAULT_STATUS_TO_STEP: Record<string, number> = {
     DRAFT: 1,  // STEP 1: 근태 마감 前
     ATTENDANCE_CLOSED: 2,  // STEP 1: 근태 마감 완료
     CALCULATING: 3,  // STEP 2: 자동 계산 진행중
@@ -27,8 +28,8 @@ const STATUS_TO_STEP: Record<string, number> = {
 }
 
 // ─── Payroll Calendar (법인별 마감/지급일) ──────────────────
-// TODO: Move to Settings (Payroll) — 법인별 급여 마감일/지급일 (closingDay, payDay)
-export const PAYROLL_CALENDAR: Record<string, { closingDay: number; payDay: number; payDayNextMonth?: boolean }> = {
+// Settings-connected: reads from PAYROLL/pay-schedule, falls back to defaults
+export const DEFAULT_PAYROLL_CALENDAR: Record<string, { closingDay: number; payDay: number; payDayNextMonth?: boolean }> = {
     'CTR-CN': { closingDay: 5, payDay: 10 },
     'CTR-US': { closingDay: 15, payDay: 20 },
     'CTR-KR': { closingDay: 20, payDay: 25 },
@@ -84,9 +85,17 @@ export const GET = withPermission(
 
         // ── 2. Build pipeline entries ─────────────────────────────
 
+        // Settings-connected: pre-fetch pay schedule and pipeline steps
+        const payScheduleSettings = await getPayrollSetting<Record<string, { closingDay: number; payDay: number; payDayNextMonth?: boolean }>>(
+            'pay-calendar',
+        )
+        const calendarMap = payScheduleSettings ?? DEFAULT_PAYROLL_CALENDAR
+        const statusStepSettings = await getSettingValue<Record<string, number>>('PAYROLL', 'pipeline-steps')
+        const statusToStep = statusStepSettings ?? DEFAULT_STATUS_TO_STEP
+
         const pipelines = companies.map((co) => {
             const run = co.payrollRuns[0] ?? null
-            const calDef = PAYROLL_CALENDAR[co.code ?? '']
+            const calDef = calendarMap[co.code ?? ''] ?? DEFAULT_PAYROLL_CALENDAR[co.code ?? '']
 
             // Compute deadlines
             const closingDeadline = calDef
@@ -115,7 +124,7 @@ export const GET = withPermission(
                 companyName: co.name,
                 countryCode: co.countryCode,
                 payrollRunId: run?.id ?? null,
-                currentStep: run ? (STATUS_TO_STEP[run.status] ?? 0) : 0,
+                currentStep: run ? (statusToStep[run.status] ?? DEFAULT_STATUS_TO_STEP[run.status] ?? 0) : 0,
                 status: run?.status ?? 'NOT_STARTED',
                 employeeCount: run?.headcount ?? 0,
                 totalNetPay: run?.totalNet ? Number(run.totalNet) : 0,

@@ -12,6 +12,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
+import { checkDelegation } from '@/lib/delegation/resolve-delegatee'
 import type { SessionUser } from '@/types'
 
 const rejectionSchema = z.object({
@@ -39,6 +40,26 @@ export const PUT = withPermission(
 
     if (!request) {
       throw notFound('승인 대기 중인 휴가 신청을 찾을 수 없습니다.')
+    }
+
+    // F-2: Delegation check
+    let delegatedBy: string | null = null
+    const isDirectApprover =
+      !request.approvedBy ||
+      request.approvedBy === user.employeeId ||
+      ['HR_ADMIN', 'SUPER_ADMIN'].includes(user.role)
+
+    if (!isDirectApprover) {
+      const delegationResult = await checkDelegation(
+        user.employeeId,
+        request.approvedBy!,
+        user.companyId,
+        'LEAVE_ONLY',
+      )
+      if (!delegationResult.isDelegatee) {
+        throw badRequest('이 휴가 신청에 대한 반려 권한이 없습니다.')
+      }
+      delegatedBy = user.employeeId
     }
 
     // 3. Find corresponding balance
@@ -72,8 +93,9 @@ export const PUT = withPermission(
         data: {
           status:          'REJECTED',
           rejectionReason: parsed.data.rejectionReason,
-          approvedBy:      user.employeeId,
+          approvedBy:      request.approvedBy ?? user.employeeId,
           approvedAt:      new Date(),
+          delegatedBy:     delegatedBy,
         },
       })
 

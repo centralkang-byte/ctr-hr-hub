@@ -55,11 +55,11 @@ export type LeaveRequestWithRelations = Prisma.LeaveRequestGetPayload<{
 
 function mapLeaveStatus(status: string): UnifiedTaskStatus {
   switch (status) {
-    case 'PENDING':   return UnifiedTaskStatus.PENDING
-    case 'APPROVED':  return UnifiedTaskStatus.COMPLETED
-    case 'REJECTED':  return UnifiedTaskStatus.REJECTED
+    case 'PENDING': return UnifiedTaskStatus.PENDING
+    case 'APPROVED': return UnifiedTaskStatus.COMPLETED
+    case 'REJECTED': return UnifiedTaskStatus.REJECTED
     case 'CANCELLED': return UnifiedTaskStatus.CANCELLED
-    default:          return UnifiedTaskStatus.PENDING
+    default: return UnifiedTaskStatus.PENDING
   }
 }
 
@@ -104,55 +104,67 @@ const UNASSIGNED_ACTOR: UnifiedTaskActor = {
 // ─── Mapper 구현 ───────────────────────────────────────────
 
 class LeaveRequestMapper
-  implements UnifiedTaskMapper<LeaveRequestWithRelations>
-{
+  implements UnifiedTaskMapper<LeaveRequestWithRelations> {
   readonly type = UnifiedTaskType.LEAVE_APPROVAL
 
   toUnifiedTask(source: LeaveRequestWithRelations): UnifiedTask {
     const startDate = source.startDate.toISOString().slice(0, 10)
-    const endDate   = source.endDate.toISOString().slice(0, 10)
-    const days      = Number(source.days)
+    const endDate = source.endDate.toISOString().slice(0, 10)
+    const days = Number(source.days)
 
     const leaveLabel = source.policy?.name ?? '휴가'
     const requesterName = source.employee?.name ?? '알 수 없음'
 
     return {
-      id:        `LeaveRequest:${source.id}`,
-      type:      UnifiedTaskType.LEAVE_APPROVAL,
-      status:    mapLeaveStatus(source.status),
-      priority:  mapLeavePriority(source.status, source.createdAt),
+      id: `LeaveRequest:${source.id}`,
+      type: UnifiedTaskType.LEAVE_APPROVAL,
+      status: mapLeaveStatus(source.status),
+      priority: mapLeavePriority(source.status, source.createdAt),
 
-      title:   `${leaveLabel} ${days}일 신청 — ${requesterName}`,
+      title: `${leaveLabel} ${days}일 신청 — ${requesterName}`,
       summary: `${startDate} ~ ${endDate}`,
 
       requester: buildActor(source.employee),
-      assignee:  source.approver ? buildActor(source.approver) : UNASSIGNED_ACTOR,
+      assignee: source.approver ? buildActor(source.approver) : UNASSIGNED_ACTOR,
 
       createdAt: source.createdAt.toISOString(),
       updatedAt: source.updatedAt.toISOString(),
 
-      sourceId:    source.id,
+      sourceId: source.id,
       sourceModel: 'LeaveRequest',
-      actionUrl:   '/leave/team',
+      actionUrl: '/leave/team',
 
       companyId: source.companyId,
 
       metadata: {
-        leaveType:      source.policy?.leaveType ?? 'UNKNOWN',
-        isPaid:         source.policy?.isPaid ?? true,
+        leaveType: source.policy?.leaveType ?? 'UNKNOWN',
+        isPaid: source.policy?.isPaid ?? true,
         days,
         originalStatus: source.status,
         startDate,
         endDate,
-        reason:         source.reason ?? null,
+        reason: source.reason ?? null,
         rejectionReason: source.rejectionReason ?? null,
-        policyName:     source.policy?.name ?? null,
+        policyName: source.policy?.name ?? null,
       },
     }
   }
 
   toUnifiedTasks(sources: LeaveRequestWithRelations[]): UnifiedTask[] {
-    return sources.map((s) => this.toUnifiedTask(s))
+    return sources
+      .map((s) => {
+        try {
+          if (!s.employee) {
+            console.warn(`[leave.mapper] Orphaned LeaveRequest: ${s.id} — skipping`)
+            return null
+          }
+          return this.toUnifiedTask(s)
+        } catch (error) {
+          console.error(`[leave.mapper] Error mapping LeaveRequest ${s.id}:`, error)
+          return null
+        }
+      })
+      .filter((t): t is UnifiedTask => t !== null)
   }
 }
 

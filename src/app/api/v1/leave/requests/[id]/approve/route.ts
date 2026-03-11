@@ -11,6 +11,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
+import { checkDelegation } from '@/lib/delegation/resolve-delegatee'
 import type { SessionUser } from '@/types'
 
 export const PUT = withPermission(
@@ -24,6 +25,26 @@ export const PUT = withPermission(
 
     if (!request) {
       throw notFound('승인 대기 중인 휴가 신청을 찾을 수 없습니다.')
+    }
+
+    // F-2: Delegation check — if current user is not direct approver, check delegation
+    let delegatedBy: string | null = null
+    const isDirectApprover =
+      !request.approvedBy ||
+      request.approvedBy === user.employeeId ||
+      ['HR_ADMIN', 'SUPER_ADMIN'].includes(user.role)
+
+    if (!isDirectApprover) {
+      const delegationResult = await checkDelegation(
+        user.employeeId,
+        request.approvedBy!,
+        user.companyId,
+        'LEAVE_ONLY',
+      )
+      if (!delegationResult.isDelegatee) {
+        throw badRequest('이 휴가 신청에 대한 승인 권한이 없습니다.')
+      }
+      delegatedBy = user.employeeId
     }
 
     // FIX: Issue #2 — Year boundary: cross-year leave (e.g., Dec 30 ~ Jan 2) must
@@ -72,9 +93,10 @@ export const PUT = withPermission(
       const approved = await tx.leaveRequest.update({
         where: { id },
         data: {
-          status:     'APPROVED',
-          approvedBy: user.employeeId,
-          approvedAt: new Date(),
+          status:      'APPROVED',
+          approvedBy:  request.approvedBy ?? user.employeeId,
+          approvedAt:  new Date(),
+          delegatedBy: delegatedBy,
         },
       })
 

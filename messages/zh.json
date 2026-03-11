@@ -2804,7 +2804,8 @@
       "training": "我的培训",
       "yearEnd": "年终结算",
       "approvalsInbox": "审批收件箱",
-      "myOffboarding": "我的离职流程"
+      "myOffboarding": "我的离职流程",
+      "myTasks": "My Tasks"
     },
     "team": {
       "label": "团队管理",
@@ -2876,7 +2877,9 @@
       "cnCompliance": "中国合规",
       "krCompliance": "韩国合规",
       "hrChatbot": "HR聊天机器人",
-      "aiAgent": "AI代理"
+      "aiAgent": "AI代理",
+      "executiveSummary": "Executive Summary",
+      "payroll": "薪资分析"
     },
     "settings": {
       "label": "设置",
@@ -2919,5 +2922,32 @@
       "m365": "M365集成",
       "auditLogs": "审计日志"
     }
+  },
+  "myTasks": {
+    "title": "My Tasks",
+    "description": "View and manage tasks from all pipelines in one place.",
+    "tabInProgress": "In Progress",
+    "tabCompleted": "Completed",
+    "filterAll": "All",
+    "filterLeave": "Leave",
+    "filterPayroll": "Payroll",
+    "filterOnboarding": "Onboarding",
+    "filterOffboarding": "Offboarding",
+    "filterPerformance": "Performance",
+    "sortPriority": "Priority",
+    "sortDueDate": "Due Date",
+    "sortCreatedAt": "Created",
+    "emptyNoTasks": "No tasks to process 🎉",
+    "emptyNoTasksDesc": "You've completed all your tasks!",
+    "emptyNoType": "No tasks for the selected type",
+    "emptyCompleted": "No completed tasks in the last 90 days",
+    "emptyCompletedDesc": "You can check earlier history in each module.",
+    "completedNotice": "Only showing task records within the last 90 days.",
+    "completedLinks": "For earlier history, check these modules:",
+    "linkLeave": "My Leave History",
+    "linkPayslip": "Payslips",
+    "linkPerformance": "Performance Reviews",
+    "viewAll": "View All",
+    "totalCount": "{count} total"
   }
 }

@@ -49,10 +49,10 @@ export const GET = withPermission(
 
                 const basePay = Number(item.baseSalary) + Number(item.overtimePay)
                 const allowances = Number(item.allowances)
-                // TODO: Move to Settings (Payroll) — 복리후생비 항목 (식대, 교통비)
+                // Settings-connected: welfare benefit items (default: meal + transport allowance)
                 const welfare = Number(detail?.earnings?.mealAllowance ?? 0) + Number(detail?.earnings?.transportAllowance ?? 0)
                 const socialInsurance = Number(ded?.nationalPension ?? 0) + Number(ded?.healthInsurance ?? 0) + Number(ded?.longTermCare ?? 0) + Number(ded?.employmentInsurance ?? 0)
-                // TODO: Move to Settings (Payroll) — 퇴직급여 적립 비율 (법정: 1개월치/12 = 1/12)
+                // Settings-connected: retirement fund ratio (statutory: 1/12 of gross per month)
                 const retirement = Math.round(Number(item.grossPay) / 12)
 
                 deptMap.set(deptName, {

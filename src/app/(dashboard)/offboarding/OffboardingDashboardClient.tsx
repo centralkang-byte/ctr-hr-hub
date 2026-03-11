@@ -111,7 +111,7 @@ const RESIGN_TYPE_VARIANTS: Record<string, BadgeVariant> = {
 }
 
 const ASSIGNEE_COLORS: Record<string, string> = {
-  EMPLOYEE: 'bg-[#F5F5F5] text-[#333]',
+  EMPLOYEE: 'bg-[#F5F5FA] text-[#1C1D21]',
   MANAGER: 'bg-[#E8F5E9] text-[#00A844]',
   HR: 'bg-green-100 text-green-700',
   IT: 'bg-[#F3E8FF] text-[#7E22CE]',
@@ -314,9 +314,9 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
         {/* SUPER_ADMIN only: company filter */}
         {isSuperAdmin && companies.length > 0 && (
           <Select
-            value={companyIdFilter}
+            value={companyIdFilter || '__ALL__'}
             onValueChange={(v) => {
-              setCompanyIdFilter(v)
+              setCompanyIdFilter(v === '__ALL__' ? '' : v)
               setPage(1)
             }}
           >
@@ -324,7 +324,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
               <SelectValue placeholder="전체 법인" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">전체 법인</SelectItem>
+              <SelectItem value="__ALL__">전체 법인</SelectItem>
               {companies.map((c) => (
                 <SelectItem key={c.id} value={c.id}>
                   {c.code} — {c.name}
@@ -534,7 +534,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                                     </TableCell>
                                     <TableCell>
                                       <span
-                                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ASSIGNEE_COLORS[tsk.task.assigneeType] ?? 'bg-[#F5F5F5] text-[#333]'}`}
+                                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ASSIGNEE_COLORS[tsk.task.assigneeType] ?? 'bg-[#F5F5FA] text-[#1C1D21]'}`}
                                       >
                                         {ASSIGNEE_LABELS[tsk.task.assigneeType] ??
                                           tsk.task.assigneeType}

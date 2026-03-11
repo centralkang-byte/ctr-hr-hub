@@ -6,8 +6,9 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { AlertTriangle, CheckCircle2, Clock, Frown, Meh, Smile } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Clock, Frown, Lock, Meh, Smile } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -66,16 +67,16 @@ interface OnboardingDashboardClientProps {
 // ─── Constants ──────────────────────────────────────────────
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
-  IN_PROGRESS: 'bg-[#FFF3E0] text-[#FF9800]',
-  COMPLETED: 'bg-[#E8F5E9] text-[#2E7D32]',
+  IN_PROGRESS: 'bg-[#F0F4FF] text-[#5E81F4]',
+  COMPLETED: 'bg-[#DCFCE7] text-[#16A34A]',
 }
 
 const MOOD_CONFIG: Record<string, { icon: typeof Smile; color: string; label: string }> = {
-  GREAT: { icon: Smile, color: 'text-[#00C853]', label: '매우 좋음' },
-  GOOD: { icon: Smile, color: 'text-[#059669]', label: '좋음' },
-  NEUTRAL: { icon: Meh, color: 'text-[#B45309]', label: '보통' },
-  STRUGGLING: { icon: Frown, color: 'text-[#DC2626]', label: '힘듦' },
-  BAD: { icon: Frown, color: 'text-[#B91C1C]', label: '나쁨' },
+  GREAT: { icon: Smile, color: 'text-[#22C55E]', label: '매우 좋음' },
+  GOOD: { icon: Smile, color: 'text-[#16A34A]', label: '좋음' },
+  NEUTRAL: { icon: Meh, color: 'text-[#F59E0B]', label: '보통' },
+  STRUGGLING: { icon: Frown, color: 'text-[#EF4444]', label: '힘듦' },
+  BAD: { icon: Frown, color: 'text-[#DC2626]', label: '나쁨' },
 }
 
 const PLAN_TYPE_TABS = [
@@ -93,6 +94,7 @@ const LIMIT_OPTIONS = [10, 20, 50]
 export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDashboardClientProps) {
   const t = useTranslations('onboarding')
   const tCommon = useTranslations('common')
+  const router = useRouter()
 
   // ─── State ───
   const [filter, setFilter] = useState('__ALL__')
@@ -190,13 +192,13 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
         const pct = total > 0 ? (completed / total) * 100 : 0
         return (
           <div className="flex items-center gap-2">
-            <div className="flex-1 bg-[#F5F5F5] rounded-full h-2">
+            <div className="flex-1 bg-[#F0F0F3] rounded-full h-2">
               <div
-                className="bg-[#00C853] h-2 rounded-full transition-all"
+                className="bg-[#5E81F4] h-2 rounded-full transition-all"
                 style={{ width: `${pct}%` }}
               />
             </div>
-            <span className="text-sm text-[#666] whitespace-nowrap">
+            <span className="text-sm text-[#8181A5] whitespace-nowrap">
               {completed}/{total}
             </span>
           </div>
@@ -213,7 +215,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
       />
 
       {/* ─── Plan Type Tabs ─── */}
-      <div className="flex border-b border-[#E8E8E8]">
+      <div className="flex border-b border-[#F0F0F3]">
         {PLAN_TYPE_TABS.map((tab) => (
           <button
             key={tab.value}
@@ -221,11 +223,10 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
               setPlanType(tab.value)
               setPage(1)
             }}
-            className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors ${
-              planType === tab.value
-                ? 'border-b-2 border-[#00C853] text-[#00C853]'
-                : 'text-[#666] hover:text-[#333]'
-            }`}
+            className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors ${planType === tab.value
+                ? 'border-b-2 border-[#5E81F4] text-[#5E81F4]'
+                : 'text-[#8181A5] hover:text-[#1C1D21]'
+              }`}
           >
             {tab.label}
           </button>
@@ -242,11 +243,10 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                 setFilter(opt.value)
                 setPage(1)
               }}
-              className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
-                filter === opt.value
-                  ? 'bg-[#1A1A1A] text-white border-[#1A1A1A]'
-                  : 'bg-white text-[#666] border-[#E0E0E0] hover:border-[#999]'
-              }`}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${filter === opt.value
+                  ? 'bg-[#5E81F4] text-white border-[#5E81F4]'
+                  : 'bg-white text-[#8181A5] border-[#F0F0F3] hover:border-[#5E81F4]'
+                }`}
             >
               {opt.label}
             </button>
@@ -261,7 +261,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
               setCompanyIdFilter(e.target.value)
               setPage(1)
             }}
-            className="text-sm border border-[#E0E0E0] rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+            className="text-sm border border-[#F0F0F3] rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10"
           >
             <option value="">전체 법인</option>
             {companies.map((c) => (
@@ -278,7 +278,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
             setLimit(Number(e.target.value))
             setPage(1)
           }}
-          className="text-sm border border-[#E0E0E0] rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+          className="text-sm border border-[#F0F0F3] rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10"
         >
           {LIMIT_OPTIONS.map((n) => (
             <option key={n} value={String(n)}>
@@ -290,24 +290,24 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
 
       {/* ─── Table ─── */}
       {loading ? (
-        <div className="bg-white rounded-xl border border-[#E8E8E8]">
+        <div className="bg-white rounded-xl border border-[#F0F0F3]">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[#E8E8E8]">
+                <tr className="border-b border-[#F0F0F3]">
                   {[t('employeeName'), t('hireDate'), t('buddy'), t('templateLabel'), t('progress'), t('statusLabel'), t('delayed'), '감정', ''].map(
                     (h) => (
-                      <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{h}</th>
+                      <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5]">{h}</th>
                     ),
                   )}
                 </tr>
               </thead>
               <tbody>
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <tr key={`sk-${i}`} className="border-b border-[#F0F0F0]">
+                  <tr key={`sk-${i}`} className="border-b border-[#F0F0F3]">
                     {Array.from({ length: 8 }).map((_, j) => (
                       <td key={`sk-${i}-${j}`} className="px-4 py-3">
-                        <div className="h-5 bg-[#F5F5F5] rounded animate-pulse" />
+                        <div className="h-5 bg-[#F5F5FA] rounded animate-pulse" />
                       </td>
                     ))}
                   </tr>
@@ -317,7 +317,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
           </div>
         </div>
       ) : data.length === 0 ? (
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-8">
+        <div className="bg-white rounded-xl border border-[#F0F0F3] p-8">
           <EmptyState
             title={t('noOnboardingData')}
             description={t('noOnboardingDataDesc')}
@@ -325,40 +325,41 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-[#E8E8E8]">
+          <div className="bg-white rounded-xl border border-[#F0F0F3]">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#E8E8E8]">
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('employeeName')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('hireDate')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('buddy')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('templateLabel')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#999] w-48">{t('progress')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('statusLabel')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('delayed')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">감정</th>
-                    {isHrAdmin && <th className="px-4 py-3 text-left text-xs font-semibold text-[#999] w-24" />}
+                  <tr className="border-b border-[#F0F0F3]">
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5]">{t('employeeName')}</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5]">{t('hireDate')}</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5]">{t('buddy')}</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5]">{t('templateLabel')}</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5] w-48">{t('progress')}</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5]">{t('statusLabel')}</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5]">{t('delayed')}</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5]">감정</th>
+                    {isHrAdmin && <th className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5] w-24" />}
                   </tr>
                 </thead>
                 <tbody>
                   {data.map((row) => (
                     <tr
                       key={row.id}
-                      className={`border-b border-[#F0F0F0] hover:bg-[#FAFAFA] transition-colors ${row.isDelayed ? 'bg-[#FFF3E0]/30' : ''}`}
+                      className={`border-b border-[#F0F0F3] hover:bg-[#F5F5FA] transition-colors cursor-pointer ${row.isDelayed ? 'bg-[#FEF2F2]/30' : ''}`}
+                      onClick={() => router.push(`/onboarding/${row.id}`)}
                     >
-                      <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">
+                      <td className="px-4 py-3 text-sm font-medium text-[#1C1D21]">
                         {row.employee.name}
                       </td>
-                      <td className="px-4 py-3 text-sm text-[#666]">
+                      <td className="px-4 py-3 text-sm text-[#8181A5]">
                         {row.employee.hireDate
                           ? new Date(row.employee.hireDate).toLocaleDateString(
-                              'ko-KR',
-                            )
+                            'ko-KR',
+                          )
                           : '-'}
                       </td>
-                      <td className="px-4 py-3 text-sm text-[#666]">{row.buddy?.name ?? '-'}</td>
-                      <td className="px-4 py-3 text-sm text-[#666]">{row.template.name}</td>
+                      <td className="px-4 py-3 text-sm text-[#8181A5]">{row.buddy?.name ?? '-'}</td>
+                      <td className="px-4 py-3 text-sm text-[#8181A5]">{row.template.name}</td>
                       <td className="px-4 py-3">
                         <ProgressBar
                           completed={row.progress.completed}
@@ -367,7 +368,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                       </td>
                       <td className="px-4 py-3">
                         <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_BADGE_STYLES[row.status] ?? 'bg-[#F5F5F5] text-[#666]'}`}
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_BADGE_STYLES[row.status] ?? 'bg-[#F5F5FA] text-[#8181A5]'}`}
                         >
                           {row.status === 'IN_PROGRESS' && (
                             <Clock className="mr-1 h-3 w-3" />
@@ -380,12 +381,12 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                       </td>
                       <td className="px-4 py-3">
                         {row.isDelayed ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-[#FFEBEE] text-[#F44336]">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-[#FEF2F2] text-[#EF4444]">
                             <AlertTriangle className="mr-1 h-3 w-3" />
                             {t('delayed')}
                           </span>
                         ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-[#E8F5E9] text-[#2E7D32]">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-[#DCFCE7] text-[#16A34A]">
                             {t('normal')}
                           </span>
                         )}
@@ -393,7 +394,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                       <td className="px-4 py-3">
                         {row.emotionPulse ? (() => {
                           const cfg = MOOD_CONFIG[row.emotionPulse.mood]
-                          if (!cfg) return <span className="text-xs text-[#999]">-</span>
+                          if (!cfg) return <span className="text-xs text-[#8181A5]">-</span>
                           const Icon = cfg.icon
                           return (
                             <span
@@ -405,14 +406,14 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                             </span>
                           )
                         })() : (
-                          <span className="text-xs text-[#999]">-</span>
+                          <span className="text-xs text-[#8181A5]">-</span>
                         )}
                       </td>
                       {isHrAdmin && (
                         <td className="px-4 py-3">
                           {row.status !== 'COMPLETED' && (
                             <button
-                              className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#E0E0E0] text-[#666] hover:bg-[#F5F5F5] transition-colors"
+                              className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#F0F0F3] text-[#8181A5] hover:bg-[#F5F5FA] transition-colors"
                               onClick={() => setForceTarget(row)}
                             >
                               {t('forceComplete')}
@@ -430,22 +431,22 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
           {/* ─── Pagination ─── */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between px-2">
-              <p className="text-sm text-[#999]">
+              <p className="text-sm text-[#8181A5]">
                 {t('totalItems', { total: pagination?.total.toLocaleString() ?? '0' })}
               </p>
               <div className="flex items-center gap-2">
                 <button
-                  className="px-3 py-1.5 text-sm font-medium rounded-lg border border-[#E0E0E0] text-[#666] hover:bg-[#F5F5F5] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-1.5 text-sm font-medium rounded-lg border border-[#F0F0F3] text-[#8181A5] hover:bg-[#F5F5FA] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   disabled={page <= 1}
                   onClick={() => setPage((p) => p - 1)}
                 >
                   {tCommon('prev')}
                 </button>
-                <span className="text-sm text-[#666]">
+                <span className="text-sm text-[#8181A5]">
                   {page} / {totalPages}
                 </span>
                 <button
-                  className="px-3 py-1.5 text-sm font-medium rounded-lg border border-[#E0E0E0] text-[#666] hover:bg-[#F5F5F5] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-1.5 text-sm font-medium rounded-lg border border-[#F0F0F3] text-[#8181A5] hover:bg-[#F5F5FA] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   disabled={page >= totalPages}
                   onClick={() => setPage((p) => p + 1)}
                 >
@@ -491,7 +492,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
           </div>
           <DialogFooter>
             <button
-              className="px-4 py-2 text-sm font-medium rounded-lg border border-[#E0E0E0] text-[#666] hover:bg-[#F5F5F5] transition-colors"
+              className="px-4 py-2 text-sm font-medium rounded-lg border border-[#F0F0F3] text-[#8181A5] hover:bg-[#F5F5FA] transition-colors"
               onClick={() => {
                 setForceTarget(null)
                 setForceReason('')
@@ -502,7 +503,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
             <button
               onClick={handleForceComplete}
               disabled={!forceReason.trim() || forceLoading}
-              className="px-4 py-2 text-sm font-semibold rounded-lg bg-[#F44336] hover:bg-[#D32F2F] text-white disabled:opacity-50 transition-colors"
+              className="px-4 py-2 text-sm font-semibold rounded-lg bg-[#EF4444] hover:bg-[#DC2626] text-white disabled:opacity-50 transition-colors"
             >
               {forceLoading ? t('processing') : t('forceCompleteConfirm')}
             </button>

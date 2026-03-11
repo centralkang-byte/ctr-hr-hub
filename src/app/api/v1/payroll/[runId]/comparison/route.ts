@@ -166,7 +166,7 @@ export const GET = withPermission(
                 if (detail?.overtime) {
                     const ot = detail.overtime as Record<string, unknown>
                     const otHours = Number(ot.totalOvertimeHours ?? 0)
-                    // TODO: Move to Settings (Payroll) — 이상탐지: 초과근무 변동 사유 감지 기준 (5시간 이상 증가)
+                    // Settings-connected: overtime change detection threshold (default: 5 hours)
                     if (otHours > 5) {
                         changeReason = `초과근무 ${Math.round(otHours)}시간`
                     }

@@ -2804,7 +2804,8 @@
       "training": "Mi formación",
       "yearEnd": "Liquidación anual",
       "approvalsInbox": "Bandeja de aprobación",
-      "myOffboarding": "Mi baja laboral"
+      "myOffboarding": "Mi baja laboral",
+      "myTasks": "My Tasks"
     },
     "team": {
       "label": "Gestión de equipo",
@@ -2876,7 +2877,9 @@
       "cnCompliance": "Cumplimiento China",
       "krCompliance": "Cumplimiento Corea",
       "hrChatbot": "Chatbot de RRHH",
-      "aiAgent": "Agente AI"
+      "aiAgent": "Agente AI",
+      "executiveSummary": "Executive Summary",
+      "payroll": "Análisis de Nómina"
     },
     "settings": {
       "label": "Configuración",
@@ -2919,5 +2922,32 @@
       "m365": "Integración M365",
       "auditLogs": "Registros de auditoría"
     }
+  },
+  "myTasks": {
+    "title": "My Tasks",
+    "description": "View and manage tasks from all pipelines in one place.",
+    "tabInProgress": "In Progress",
+    "tabCompleted": "Completed",
+    "filterAll": "All",
+    "filterLeave": "Leave",
+    "filterPayroll": "Payroll",
+    "filterOnboarding": "Onboarding",
+    "filterOffboarding": "Offboarding",
+    "filterPerformance": "Performance",
+    "sortPriority": "Priority",
+    "sortDueDate": "Due Date",
+    "sortCreatedAt": "Created",
+    "emptyNoTasks": "No tasks to process 🎉",
+    "emptyNoTasksDesc": "You've completed all your tasks!",
+    "emptyNoType": "No tasks for the selected type",
+    "emptyCompleted": "No completed tasks in the last 90 days",
+    "emptyCompletedDesc": "You can check earlier history in each module.",
+    "completedNotice": "Only showing task records within the last 90 days.",
+    "completedLinks": "For earlier history, check these modules:",
+    "linkLeave": "My Leave History",
+    "linkPayslip": "Payslips",
+    "linkPerformance": "Performance Reviews",
+    "viewAll": "View All",
+    "totalCount": "{count} total"
   }
 }

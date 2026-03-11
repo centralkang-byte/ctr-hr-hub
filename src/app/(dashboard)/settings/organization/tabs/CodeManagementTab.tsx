@@ -1,0 +1,62 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { Loader2, Plus, Hash } from 'lucide-react'
+import { apiClient } from '@/lib/api'
+import { Button } from '@/components/ui/button'
+
+interface EnumOption { id: string; enumGroup: string; optionKey: string; label: string; color?: string; sortOrder: number }
+interface Props { companyId: string | null }
+
+export function CodeManagementTab({ companyId }: Props) {
+  const [options, setOptions] = useState<EnumOption[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setLoading(true)
+    apiClient.get('/api/v1/settings/enums?limit=200')
+      .then((res) => { const list = (res as any)?.data ?? res ?? []; setOptions(Array.isArray(list) ? list : []) })
+      .catch(() => setOptions([]))
+      .finally(() => setLoading(false))
+  }, [companyId])
+
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+
+  const grouped = options.reduce<Record<string, EnumOption[]>>((acc, o) => { (acc[o.enumGroup] ??= []).push(o); return acc }, {})
+
+  return (
+    <div className="space-y-4">
+      <div className="mb-4 flex items-center justify-between">
+        <div><h3 className="text-base font-semibold text-[#1C1D21]">코드 관리</h3><p className="text-sm text-[#8181A5]">시스템 코드/열거형 {Object.keys(grouped).length}개 그룹</p></div>
+        <Button className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]"><Plus className="mr-2 h-4 w-4" />코드 추가</Button>
+      </div>
+      {Object.keys(grouped).length > 0 ? Object.entries(grouped).sort(([a],[b]) => a.localeCompare(b)).map(([group, items]) => (
+        <div key={group}>
+          <h4 className="mb-2 text-sm font-semibold text-[#8181A5]">{group} ({items.length})</h4>
+          <div className="overflow-hidden rounded-lg border border-[#F0F0F3]">
+            <table className="w-full">
+              <thead><tr className="border-b border-[#F0F0F3] bg-[#F5F5FA]">
+                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-[#8181A5]">키</th>
+                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-[#8181A5]">라벨</th>
+                <th className="px-4 py-2 text-center text-xs font-medium uppercase text-[#8181A5]">색상</th>
+                <th className="px-4 py-2 text-center text-xs font-medium uppercase text-[#8181A5]">순서</th>
+              </tr></thead>
+              <tbody className="divide-y divide-[#F0F0F3]">{items.sort((a,b) => a.sortOrder - b.sortOrder).map((o) => (
+                <tr key={o.id} className="hover:bg-[#F5F5FA]">
+                  <td className="px-4 py-2 text-sm font-medium text-[#5E81F4]">{o.optionKey}</td>
+                  <td className="px-4 py-2 text-sm text-[#1C1D21]">{o.label}</td>
+                  <td className="px-4 py-2 text-center">{o.color ? <span className="inline-block h-4 w-4 rounded-full" style={{ backgroundColor: o.color }} /> : '—'}</td>
+                  <td className="px-4 py-2 text-center text-sm text-[#8181A5]">{o.sortOrder}</td>
+                </tr>
+              ))}</tbody>
+            </table>
+          </div>
+        </div>
+      )) : (
+        <div className="rounded-lg border border-dashed border-[#F0F0F3] py-12 text-center">
+          <Hash className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">등록된 코드가 없습니다</p>
+        </div>
+      )}
+    </div>
+  )
+}

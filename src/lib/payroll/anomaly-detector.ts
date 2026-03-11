@@ -9,6 +9,7 @@
 
 import { prisma } from '@/lib/prisma'
 import type { PayrollAnomaly, Prisma } from '@/generated/prisma/client'
+import { getPayrollSetting, getAttendanceSetting } from '@/lib/settings/get-setting'
 
 // ─── 탐지 규칙 코드 ─────────────────────────────────────────
 
@@ -21,24 +22,34 @@ export const ANOMALY_RULES = {
     LAST_PAYROLL: 'LAST_PAYROLL',         // 퇴사자 마지막 급여 (일할계산 확인)
 } as const
 
+// ─── Settings 인터페이스 ─────────────────────────────────────
+
+interface AnomalyThresholdSettings {
+    momChangePercent: number       // 전월 대비 변동 기준 (기본 30%)
+    momMinAmount: number           // 전월 대비 최소 금액 차이 (기본 50,000원)
+    bandTolerance: number          // 급여 밴드 허용 오차 (기본 3%)
+    monthlyOtLimit: number         // 월간 초과근무 한도 시간 (기본 52)
+    prorateMinRatio: number        // 기본급 하한 일할 비율 (기본 20%)
+}
+
+const DEFAULT_THRESHOLDS: AnomalyThresholdSettings = {
+    momChangePercent: 30,
+    momMinAmount: 50_000,
+    bandTolerance: 3,
+    monthlyOtLimit: 52,
+    prorateMinRatio: 20,
+}
+
 // ─── 허용 오차 (이중 필터: 금액 + 비율) ─────────────────────
 
-/**
- * 전월 대비 변동이 "허용 오차" 이내인지 판정.
- * 금액이 AmountThreshold 미만이면 비율이 크더라도 무시.
- *
- * TODO: Move to Settings (Payroll) — 이상 탐지 허용 오차 범위 (금액: 50,000원, 비율: 30%)
- */
 function isWithinTolerance(
     currentValue: number,
     previousValue: number,
-    percentThreshold: number = 30,  // TODO: Move to Settings (Payroll) — 이상 탐지 전월 대비 변동 기준 30%
-    amountThreshold: number = 50_000, // TODO: Move to Settings (Payroll) — 이상 탐지 허용 최소 금액 50,000원
+    percentThreshold: number = 30,
+    amountThreshold: number = 50_000,
 ): boolean {
     const diff = Math.abs(currentValue - previousValue)
-    // 금액 차이가 임계값 미만이면 허용 (소액 변동 무시)
     if (diff < amountThreshold) return true
-    // 금액이 크더라도 비율이 임계값 미만이면 허용
     const pctChange = previousValue > 0 ? (diff / previousValue) * 100 : 0
     return pctChange < percentThreshold
 }
@@ -55,6 +66,18 @@ function isWithinTolerance(
 export async function detectAnomalies(
     payrollRunId: string,
 ): Promise<PayrollAnomaly[]> {
+    // ── Fetch configurable thresholds from Settings ─────────────
+    const settingsP = getPayrollSetting<AnomalyThresholdSettings>('anomaly-thresholds')
+    const otSettingsP = getAttendanceSetting<{ weeklyCapHours: number }>('work-hour-limits')
+    const [thresholdSettings, otSettings] = await Promise.all([settingsP, otSettingsP])
+    const t: AnomalyThresholdSettings = {
+        momChangePercent: thresholdSettings?.momChangePercent ?? DEFAULT_THRESHOLDS.momChangePercent,
+        momMinAmount: thresholdSettings?.momMinAmount ?? DEFAULT_THRESHOLDS.momMinAmount,
+        bandTolerance: thresholdSettings?.bandTolerance ?? DEFAULT_THRESHOLDS.bandTolerance,
+        monthlyOtLimit: otSettings?.weeklyCapHours ?? thresholdSettings?.monthlyOtLimit ?? DEFAULT_THRESHOLDS.monthlyOtLimit,
+        prorateMinRatio: thresholdSettings?.prorateMinRatio ?? DEFAULT_THRESHOLDS.prorateMinRatio,
+    }
+
     // 1. 현재 PayrollRun + 모든 PayrollItem 조회
     const currentRun = await prisma.payrollRun.findUniqueOrThrow({
         where: { id: payrollRunId },
@@ -142,7 +165,7 @@ export async function detectAnomalies(
         const ruleCode1 = ANOMALY_RULES.MOM_CHANGE_30PCT
         if (prevItem && !whitelistSet.has(`${employeeId}:${ruleCode1}`)) {
             const prevGross = Number(prevItem.grossPay)
-            if (!isWithinTolerance(currentGross, prevGross)) {
+            if (!isWithinTolerance(currentGross, prevGross, t.momChangePercent, t.momMinAmount)) {
                 const diff = currentGross - prevGross
                 const pct = prevGross > 0 ? Math.round((Math.abs(diff) / prevGross) * 100) : 0
                 anomaliesToCreate.push({
@@ -166,8 +189,7 @@ export async function detectAnomalies(
             if (band) {
                 const annualBase = currentBase * 12
                 const maxSalary = Number(band.maxSalary)
-                // TODO: Move to Settings (Payroll) — 이상 탐지: 급여 밴드 허용 오차 3%
-                const tolerance = maxSalary * 1.03
+                const tolerance = maxSalary * (1 + t.bandTolerance / 100)
                 if (annualBase > tolerance) {
                     anomaliesToCreate.push({
                         payrollRunId,
@@ -177,7 +199,7 @@ export async function detectAnomalies(
                         description: `연간 기본급 환산(${annualBase.toLocaleString()}원)이 급여 밴드 상한(${maxSalary.toLocaleString()}원)을 초과`,
                         currentValue: annualBase,
                         previousValue: maxSalary,
-                        threshold: '밴드 상한 + 3%',
+                        threshold: `밴드 상한 + ${t.bandTolerance}%`,
                         status: 'OPEN',
                     })
                 }
@@ -191,8 +213,7 @@ export async function detectAnomalies(
             if (detail?.overtime) {
                 const ot = detail.overtime as Record<string, unknown>
                 const totalOTHours = Number(ot.totalOvertimeHours ?? 0)
-                // TODO: Move to Settings (Attendance) — 법정 월간 초과근무 한도 (주 52시간 기준 환산)
-                const MONTHLY_OT_LIMIT = 52
+                const MONTHLY_OT_LIMIT = t.monthlyOtLimit
                 if (totalOTHours > MONTHLY_OT_LIMIT) {
                     anomaliesToCreate.push({
                         payrollRunId,
@@ -217,8 +238,7 @@ export async function detectAnomalies(
             if (detail?.isProrated) {
                 const prorateRatio = Number(detail.prorateRatio ?? 1)
                 // 일할계산 비율이 20% 미만이면 이상 (5일 이상 근무 기준)
-                // TODO: Move to Settings (Payroll) — 이상 탐지: 기본급 하한 일할 비율 20%
-                if (prorateRatio < 0.2) {
+                if (prorateRatio < t.prorateMinRatio / 100) {
                     anomaliesToCreate.push({
                         payrollRunId,
                         employeeId,
@@ -227,7 +247,7 @@ export async function detectAnomalies(
                         description: `기본급 일할 비율 ${Math.round(prorateRatio * 100)}% — 매우 낮음 (근무일 부족 또는 무급휴가 과다)`,
                         currentValue: Math.round(prorateRatio * 100),
                         previousValue: 100,
-                        threshold: '20%',
+                        threshold: `${t.prorateMinRatio}%`,
                         status: 'OPEN',
                     })
                 }

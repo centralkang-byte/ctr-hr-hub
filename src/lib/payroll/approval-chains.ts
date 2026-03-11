@@ -1,33 +1,54 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Payroll Approval Chain Configuration
 // src/lib/payroll/approval-chains.ts
+//
+// Refactored (H-2c): async variants added that read from Settings.
 // ═══════════════════════════════════════════════════════════
 
-// TODO: Move to Settings (Payroll) — 법인별 급여 승인 체계 (역할 코드 목록)
-// 각 체인의 역할은 employee_roles.role.code 기준
+import { getPayrollSetting } from '@/lib/settings/get-setting'
+
+// ─── Default approval chains (fallback) ──────────────────
+
 export const PAYROLL_APPROVAL_CHAINS: Record<string, string[]> = {
-    'CTR-KR': ['HR_MANAGER', 'CFO'],      // HR담당 → HR팀장 → CFO (3-step including requester)
-    'CTR-CN': ['GENERAL_MANAGER'],         // HR담당 → 总经理 (2-step)
-    'CTR-US': ['CONTROLLER'],              // HR → Controller (2-step)
-    'CTR-RU': ['COUNTRY_HEAD'],            // HR담당 → 총괄 (2-step)
-    'CTR-VN': ['COUNTRY_HEAD'],            // HR담당 → 법인장 (2-step)
-    'CTR-MX': ['COUNTRY_HEAD'],            // HR담당 → 법인장 (2-step)
-    'DEFAULT': ['HR_ADMIN'],               // fallback: HR담당 → HR관리자 1단계
+    'CTR-KR': ['HR_MANAGER', 'CFO'],
+    'CTR-CN': ['GENERAL_MANAGER'],
+    'CTR-US': ['CONTROLLER'],
+    'CTR-RU': ['COUNTRY_HEAD'],
+    'CTR-VN': ['COUNTRY_HEAD'],
+    'CTR-MX': ['COUNTRY_HEAD'],
+    'DEFAULT': ['HR_ADMIN'],
 }
 
 /**
- * 법인 코드(entity code)로 승인 체인을 조회.
- * companyId 또는 회사 코드로 검색.
+ * Synchronous version (backward-compatible)
  */
 export function getApprovalChain(companyCode: string | null): string[] {
     if (!companyCode) return PAYROLL_APPROVAL_CHAINS.DEFAULT
-    // 정확히 일치하는 체인이 없으면 DEFAULT 반환
+    return PAYROLL_APPROVAL_CHAINS[companyCode] ?? PAYROLL_APPROVAL_CHAINS.DEFAULT
+}
+
+/**
+ * Async version — reads from Settings, falls back to defaults
+ */
+export async function getApprovalChainFromSettings(
+    companyCode: string | null,
+    companyId?: string | null,
+): Promise<string[]> {
+    const settings = await getPayrollSetting<Record<string, string[]>>(
+        'approval-chains',
+        companyId,
+    )
+
+    if (settings && companyCode && settings[companyCode]) {
+        return settings[companyCode]
+    }
+
+    if (!companyCode) return PAYROLL_APPROVAL_CHAINS.DEFAULT
     return PAYROLL_APPROVAL_CHAINS[companyCode] ?? PAYROLL_APPROVAL_CHAINS.DEFAULT
 }
 
 // ─── 은행 코드 (이체 파일용) ─────────────────────────────────
 
-// TODO: Move to Settings (Payroll) — 은행 코드 목록 (한국 표준 금융기관 코드)
 export const BANK_CODES: Record<string, string> = {
     '국민은행': '004',
     '신한은행': '088',
@@ -49,5 +70,30 @@ export const BANK_CODES: Record<string, string> = {
     '새마을금고': '045',
 }
 
-// TODO: Move to Settings (Payroll) — 급여 지급일 (기본: 매월 25일)
+/**
+ * Async — reads bank codes from Settings
+ */
+export async function getBankCodesFromSettings(
+    companyId?: string | null,
+): Promise<Record<string, string>> {
+    const settings = await getPayrollSetting<Record<string, string>>(
+        'bank-codes',
+        companyId,
+    )
+    return settings ?? BANK_CODES
+}
+
 export const DEFAULT_PAY_DAY = 25
+
+/**
+ * Async — reads pay day from Settings
+ */
+export async function getPayDayFromSettings(
+    companyId?: string | null,
+): Promise<number> {
+    const settings = await getPayrollSetting<{ payDay: number }>(
+        'pay-schedule',
+        companyId,
+    )
+    return settings?.payDay ?? DEFAULT_PAY_DAY
+}

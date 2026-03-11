@@ -233,8 +233,17 @@ enum OnboardingProgressStatus {
 
 enum TaskProgressStatus {
   PENDING
+  IN_PROGRESS
   DONE
+  BLOCKED
   SKIPPED
+}
+
+enum OnboardingMilestone {
+  DAY_1
+  DAY_7
+  DAY_30
+  DAY_90
 }
 
 enum Mood {
@@ -801,6 +810,7 @@ model Company {
   toCompanyHistories     EmployeeHistory[]        @relation("EmployeeHistoryToCompany")
   exitInterviews         ExitInterview[]
   onboardingCheckins     OnboardingCheckin[]
+  assetReturns           AssetReturn[]
   pulseResponses         PulseResponse[]
   leaveRequests          LeaveRequest[]
   attendances            Attendance[]
@@ -894,6 +904,12 @@ model Company {
   // GP#4: Performance Pipeline
   performanceReviews     PerformanceReview[]
   employeeLevelMappings  EmployeeLevelMapping[]
+
+  // F-2: Approval Delegation
+  approvalDelegations    ApprovalDelegation[]
+
+  // G-2: AI Reports
+  aiReports              AiReport[]
 
   @@map("companies")
 }
@@ -1183,8 +1199,10 @@ model Employee {
   employeeOffboardings        EmployeeOffboarding[]
   offboardingHandoverTo       EmployeeOffboarding[]     @relation("OffboardingHandover")
   offboardingTasksCompleted   EmployeeOffboardingTask[] @relation("OffboardingTaskCompleter")
+  offboardingTaskAssignments  EmployeeOffboardingTask[] @relation("OffboardingTaskAssignee")
   exitInterviewsAsEmployee    ExitInterview[]           @relation("ExitInterviewEmployee")
   exitInterviewsAsInterviewer ExitInterview[]           @relation("ExitInterviewInterviewer")
+  assetReturns                AssetReturn[]
 
   // Discipline
   disciplinaryActions DisciplinaryAction[] @relation("DisciplinaryEmployee")
@@ -1196,6 +1214,8 @@ model Employee {
   employeeOnboardings      EmployeeOnboarding[]     @relation("OnboardingEmployee")
   onboardingBuddy          EmployeeOnboarding[]     @relation("OnboardingBuddy")
   onboardingTasksCompleted EmployeeOnboardingTask[] @relation("OnboardingTaskCompleter")
+  onboardingTaskAssignments EmployeeOnboardingTask[] @relation("OnboardingTaskAssignee")
+  onboardingSignOffs       EmployeeOnboarding[]     @relation("OnboardingSignOff")
   onboardingCheckins       OnboardingCheckin[]
 
   // Attendance & Leave
@@ -1382,6 +1402,12 @@ model Employee {
   // GP#4: Performance Pipeline
   performanceReviews     PerformanceReview[]      @relation("ReviewEmployee")
   performanceReviewsNotified PerformanceReview[]   @relation("ReviewNotifier")
+
+  // F-2: Approval Delegation
+  delegationsAsDelegator ApprovalDelegation[]     @relation("DelegationDelegator")
+  delegationsAsDelegatee ApprovalDelegation[]     @relation("DelegationDelegatee")
+  leaveApprovalsDelegated LeaveRequest[]          @relation("LeaveDelegatee")
+  leaveCancelled          LeaveRequest[]          @relation("LeaveCanceller")
 
   @@index([deletedAt])
   @@index([hireDate])
@@ -1583,24 +1609,69 @@ model EmployeeOffboarding {
   handoverTo       Employee?                 @relation("OffboardingHandover", fields: [handoverToId], references: [id])
   offboardingTasks EmployeeOffboardingTask[]
   exitInterviews   ExitInterview[]
+  assetReturns     AssetReturn[]
 
   @@map("employee_offboarding")
 }
 
 model EmployeeOffboardingTask {
-  id                    String     @id @default(uuid())
-  employeeOffboardingId String     @map("employee_offboarding_id")
-  taskId                String     @map("task_id")
-  status                TaskStatus
-  completedBy           String?    @map("completed_by")
-  completedAt           DateTime?  @map("completed_at")
+  id                    String             @id @default(uuid())
+  employeeOffboardingId String             @map("employee_offboarding_id")
+  taskId                String             @map("task_id")
+  status                TaskProgressStatus @default(PENDING)
+  completedBy           String?            @map("completed_by")
+  completedAt           DateTime?          @map("completed_at")
   note                  String?
+
+  // E-2: New fields (matching onboarding task pattern)
+  assigneeId            String?            @map("assignee_id")
+  dueDate               DateTime?          @map("due_date")
+  blockedReason         String?            @map("blocked_reason")
+  blockedAt             DateTime?          @map("blocked_at")
+  unblockedAt           DateTime?          @map("unblocked_at")
 
   employeeOffboarding EmployeeOffboarding @relation(fields: [employeeOffboardingId], references: [id])
   task                OffboardingTask     @relation(fields: [taskId], references: [id])
   completer           Employee?           @relation("OffboardingTaskCompleter", fields: [completedBy], references: [id])
+  assignee            Employee?           @relation("OffboardingTaskAssignee", fields: [assigneeId], references: [id])
 
   @@map("employee_offboarding_tasks")
+}
+
+// E-2: Asset Return tracking for offboarding
+model AssetReturn {
+  id                String            @id @default(uuid())
+  employeeId        String            @map("employee_id")
+  offboardingId     String            @map("offboarding_id")
+  assetName         String            @map("asset_name")
+  assetTag          String?           @map("asset_tag")
+  purchaseDate      DateTime?         @map("purchase_date")
+  purchasePrice     Decimal?          @db.Decimal(15, 2) @map("purchase_price")
+  residualValue     Decimal?          @db.Decimal(15, 2) @map("residual_value")
+  status            AssetReturnStatus @default(PENDING)
+  returnedAt        DateTime?         @map("returned_at")
+  deductionApproved Boolean           @default(false) @map("deduction_approved")
+  deductionAmount   Decimal?          @db.Decimal(15, 2) @map("deduction_amount")
+  consentDocExists  Boolean           @default(false) @map("consent_doc_exists")
+  companyId         String            @map("company_id")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  employee    Employee            @relation(fields: [employeeId], references: [id])
+  offboarding EmployeeOffboarding @relation(fields: [offboardingId], references: [id])
+  company     Company             @relation(fields: [companyId], references: [id])
+
+  @@index([offboardingId])
+  @@index([employeeId])
+  @@map("asset_returns")
+}
+
+enum AssetReturnStatus {
+  PENDING
+  RETURNED
+  UNRETURNED
+  DEDUCTED
+  CIVIL_CLAIM
 }
 
 model ExitInterview {
@@ -1747,13 +1818,20 @@ model EmployeeOnboarding {
   completedAt     DateTime?                @map("completed_at")
   createdAt       DateTime                 @default(now()) @map("created_at")
 
+  // E-1: Sign-off fields
+  signOffBy   String?   @map("sign_off_by")
+  signOffAt   DateTime? @map("sign_off_at")
+  signOffNote String?   @map("sign_off_note")
+
   employee    Employee                 @relation("OnboardingEmployee", fields: [employeeId], references: [id])
   template    OnboardingTemplate       @relation(fields: [templateId], references: [id])
   buddy       Employee?                @relation("OnboardingBuddy", fields: [buddyId], references: [id])
+  signer      Employee?                @relation("OnboardingSignOff", fields: [signOffBy], references: [id])
   company     Company?                 @relation("EmployeeOnboardingCompany", fields: [companyId], references: [id])
   linkedPlan  EmployeeOnboarding?      @relation("CrossboardingLink", fields: [linkedPlanId], references: [id])
   linkedPlans EmployeeOnboarding[]     @relation("CrossboardingLink")
   tasks       EmployeeOnboardingTask[]
+  checkins    OnboardingCheckin[]      @relation("OnboardingCheckins")
 
   @@map("employee_onboarding")
 }
@@ -1767,9 +1845,17 @@ model EmployeeOnboardingTask {
   completedAt          DateTime?          @map("completed_at")
   note                 String?
 
+  // E-1: Extended fields
+  assigneeId    String?   @map("assignee_id")
+  dueDate       DateTime? @map("due_date")
+  blockedReason String?   @map("blocked_reason")
+  blockedAt     DateTime? @map("blocked_at")
+  unblockedAt   DateTime? @map("unblocked_at")
+
   employeeOnboarding EmployeeOnboarding @relation(fields: [employeeOnboardingId], references: [id])
   task               OnboardingTask     @relation(fields: [taskId], references: [id])
   completer          Employee?          @relation("OnboardingTaskCompleter", fields: [completedBy], references: [id])
+  assignee           Employee?          @relation("OnboardingTaskAssignee", fields: [assigneeId], references: [id])
 
   @@map("employee_onboarding_tasks")
 }
@@ -1786,9 +1872,14 @@ model OnboardingCheckin {
   submittedAt DateTime @map("submitted_at")
   createdAt   DateTime @default(now()) @map("created_at")
 
-  employee  Employee @relation(fields: [employeeId], references: [id])
-  company   Company  @relation(fields: [companyId], references: [id])
-  companyId String   @map("company_id")
+  // E-1: Milestone + onboarding FK
+  milestone    OnboardingMilestone? @map("milestone")
+  onboardingId String?              @map("onboarding_id")
+
+  employee   Employee            @relation(fields: [employeeId], references: [id])
+  company    Company             @relation(fields: [companyId], references: [id])
+  companyId  String              @map("company_id")
+  onboarding EmployeeOnboarding? @relation("OnboardingCheckins", fields: [onboardingId], references: [id])
 
   @@map("onboarding_checkins")
 }
@@ -1930,12 +2021,17 @@ model LeaveRequest {
   approvedBy      String?            @map("approved_by")
   approvedAt      DateTime?          @map("approved_at")
   rejectionReason String?            @map("rejection_reason")
+  delegatedBy     String?            @map("delegated_by")
+  cancelledBy     String?            @map("cancelled_by")     // F-3: 취소 처리자
+  cancelNote      String?            @map("cancel_note")      // F-3: 취소 사유/메모
   createdAt       DateTime           @default(now()) @map("created_at")
   updatedAt       DateTime           @updatedAt @map("updated_at")
 
   employee  Employee    @relation("LeaveRequester", fields: [employeeId], references: [id])
   policy    LeavePolicy @relation(fields: [policyId], references: [id])
   approver  Employee?   @relation("LeaveApprover", fields: [approvedBy], references: [id])
+  delegatee Employee?   @relation("LeaveDelegatee", fields: [delegatedBy], references: [id])
+  canceller Employee?   @relation("LeaveCanceller", fields: [cancelledBy], references: [id])
   company   Company     @relation(fields: [companyId], references: [id])
   companyId String      @map("company_id")
 
@@ -4956,6 +5052,10 @@ model LeaveSetting {
   // 연차 부여 규칙 (JSON: {method, basedays, accrualRule})
   annualLeaveRule Json @default("{}") @map("annual_leave_rule")
 
+  // F-3: 마이너스 연차 설정
+  allowNegativeBalance  Boolean @default(false) @map("allow_negative_balance")
+  negativeBalanceLimit  Float   @default(0)     @map("negative_balance_limit")  // e.g., -3.0
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -5342,6 +5442,7 @@ model LeaveTypeDef {
   allowHalfDay       Boolean  @default(true) @map("allow_half_day")
   requiresProof      Boolean  @default(false) @map("requires_proof")
   maxConsecutiveDays Int?     @map("max_consecutive_days")
+  minAdvanceDays     Int?     @map("min_advance_days")      // F-3: 최소 N일 전 신청
   isActive           Boolean  @default(true) @map("is_active")
   displayOrder       Int      @default(0) @map("display_order")
   createdAt          DateTime @default(now()) @map("created_at")
@@ -5840,4 +5941,72 @@ model EmployeeLevelMapping {
 
   @@unique([companyId, jobGradeCode])
   @@map("employee_level_mappings")
+}
+
+// ================================================================
+// F-2: Approval Delegation (승인 권한 위임)
+// ================================================================
+
+enum DelegationScope {
+  LEAVE_ONLY
+  ALL
+}
+
+enum DelegationStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+}
+
+model ApprovalDelegation {
+  id           String           @id @default(uuid())
+  delegatorId  String           @map("delegator_id")
+  delegateeId  String           @map("delegatee_id")
+  companyId    String           @map("company_id")
+  scope        DelegationScope  @default(LEAVE_ONLY)
+  status       DelegationStatus @default(ACTIVE)
+  reason       String?
+  startDate    DateTime         @map("start_date")
+  endDate      DateTime         @map("end_date")
+  revokedAt    DateTime?        @map("revoked_at")
+  revokedBy    String?          @map("revoked_by")
+  createdAt    DateTime         @default(now()) @map("created_at")
+  updatedAt    DateTime         @updatedAt @map("updated_at")
+
+  delegator Employee @relation("DelegationDelegator", fields: [delegatorId], references: [id])
+  delegatee Employee @relation("DelegationDelegatee", fields: [delegateeId], references: [id])
+  company   Company  @relation(fields: [companyId], references: [id])
+
+  @@index([delegatorId, status])
+  @@index([delegateeId, status])
+  @@index([companyId, status, startDate, endDate])
+  @@map("approval_delegations")
+}
+
+// ================================================================
+// G-2: AI Report
+// ================================================================
+
+enum AiReportStatus {
+  GENERATING
+  GENERATED
+  FAILED
+}
+
+model AiReport {
+  id          String         @id @default(uuid())
+  companyId   String?        @map("company_id")
+  period      String         // "2026-03" (year-month)
+  content     String         @default("")
+  metadata    Json?          // { tokensUsed, model, generatedAt, kpiSnapshot }
+  status      AiReportStatus @default(GENERATING)
+  generatedBy String?        @map("generated_by")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  company     Company?       @relation(fields: [companyId], references: [id])
+
+  @@unique([companyId, period])
+  @@index([period])
+  @@map("ai_reports")
 }

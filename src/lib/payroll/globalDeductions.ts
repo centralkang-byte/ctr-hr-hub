@@ -1,16 +1,18 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Global Payroll Deduction Calculator
 // 국가별 급여 공제 계산 (시뮬레이션용)
-// ═══════════════════════════════════════════════════════════
 //
-// KR: 4대보험 + 소득세 — kr-tax.ts 재사용
-// US/CN/VN/RU/MX: 순수 함수로 정의
+// Refactored (H-2c): async *FromSettings variants added.
+// Original synchronous functions preserved for backward compat.
 // ═══════════════════════════════════════════════════════════
 
 import {
     calculateSocialInsurance,
+    calculateSocialInsuranceFromSettings,
     calculateIncomeTax,
+    calculateIncomeTaxFromSettings,
 } from './kr-tax'
+import { getPayrollSetting } from '@/lib/settings/get-setting'
 
 // ─── 공통 공제 결과 타입 ─────────────────────────────────
 
@@ -24,12 +26,28 @@ export interface SimulationDeductions {
     totalDeductions: number
 }
 
-// ─── KR: 4대보험 + 소득세 (기존 kr-tax.ts 재사용) ────────
+// ─── KR: 4대보험 + 소득세 ────────────────────────────────
 
 export function calculateDeductionsKR(monthlyGross: number): SimulationDeductions {
     const si = calculateSocialInsurance(monthlyGross)
     const tax = calculateIncomeTax(monthlyGross)
+    return {
+        nationalPension: si.nationalPension,
+        healthInsurance: si.healthInsurance,
+        longTermCare: si.longTermCare,
+        employmentInsurance: si.employmentInsurance,
+        incomeTax: tax.incomeTax,
+        localIncomeTax: tax.localIncomeTax,
+        totalDeductions: si.total + tax.total,
+    }
+}
 
+export async function calculateDeductionsKRFromSettings(
+    monthlyGross: number,
+    companyId?: string | null,
+): Promise<SimulationDeductions> {
+    const si = await calculateSocialInsuranceFromSettings(monthlyGross, companyId)
+    const tax = await calculateIncomeTaxFromSettings(monthlyGross, companyId)
     return {
         nationalPension: si.nationalPension,
         healthInsurance: si.healthInsurance,
@@ -43,44 +61,80 @@ export function calculateDeductionsKR(monthlyGross: number): SimulationDeduction
 
 // ─── US: Social Security + Medicare + Federal Tax ─────────
 
-// TODO: Move to Settings (Payroll) — US Social Security rate 6.2%
-const US_SOCIAL_SECURITY_RATE = 0.062
-// TODO: Move to Settings (Payroll) — US Social Security wage base $168,600 (2025)
-const US_SS_WAGE_BASE = 168_600
-// TODO: Move to Settings (Payroll) — US Medicare rate 1.45%
-const US_MEDICARE_RATE = 0.0145
-// TODO: Move to Settings (Payroll) — US 401k default contribution 6%
-const US_401K_DEFAULT_RATE = 0.06
+// Defaults (preserved as fallback)
+const US_DEFAULTS = {
+    socialSecurityRate: 0.062,
+    ssWageBase: 168_600,
+    medicareRate: 0.0145,
+    default401kRate: 0.06,
+}
 
-function calculateFederalTaxUS(annualTaxable: number): number {
-    // TODO: Move to Settings (Payroll) — US Federal tax brackets (2025, Single)
-    const brackets = [
-        { max: 11_600, rate: 0.10 },
-        { max: 47_150, rate: 0.12 },
-        { max: 100_525, rate: 0.22 },
-        { max: 191_950, rate: 0.24 },
-        { max: 243_725, rate: 0.32 },
-        { max: 609_350, rate: 0.35 },
-        { max: Infinity, rate: 0.37 },
-    ]
+interface UsDeductionSettings {
+    rates: {
+        socialSecurityRate: number
+        ssWageBase: number
+        medicareRate: number
+        default401kRate: number
+    }
+    taxBrackets: Array<{ max: number | null; rate: number }>
+}
+
+const US_DEFAULT_BRACKETS = [
+    { max: 11_600, rate: 0.10 },
+    { max: 47_150, rate: 0.12 },
+    { max: 100_525, rate: 0.22 },
+    { max: 191_950, rate: 0.24 },
+    { max: 243_725, rate: 0.32 },
+    { max: 609_350, rate: 0.35 },
+    { max: null, rate: 0.37 },
+]
+
+function calculateFederalTaxUS(annualTaxable: number, brackets?: Array<{ max: number | null; rate: number }>): number {
+    const b = (brackets ?? US_DEFAULT_BRACKETS).map(x => ({ ...x, max: x.max ?? Infinity }))
     let tax = 0
     let prev = 0
-    for (const b of brackets) {
+    for (const bracket of b) {
         if (annualTaxable <= prev) break
-        const taxable = Math.min(annualTaxable, b.max) - prev
-        tax += taxable * b.rate
-        prev = b.max
+        const taxable = Math.min(annualTaxable, bracket.max) - prev
+        tax += taxable * bracket.rate
+        prev = bracket.max
     }
     return Math.round(tax)
 }
 
 export function calculateDeductionsUS(monthlyGross: number): SimulationDeductions {
     const annualGross = monthlyGross * 12
-    const ssBase = Math.min(annualGross, US_SS_WAGE_BASE)
-    const socialSecurity = Math.round((ssBase / 12) * US_SOCIAL_SECURITY_RATE)
-    const medicare = Math.round(monthlyGross * US_MEDICARE_RATE)
-    const contribution401k = Math.round(monthlyGross * US_401K_DEFAULT_RATE)
+    const ssBase = Math.min(annualGross, US_DEFAULTS.ssWageBase)
+    const socialSecurity = Math.round((ssBase / 12) * US_DEFAULTS.socialSecurityRate)
+    const medicare = Math.round(monthlyGross * US_DEFAULTS.medicareRate)
+    const contribution401k = Math.round(monthlyGross * US_DEFAULTS.default401kRate)
     const federalTax = Math.round(calculateFederalTaxUS(annualGross) / 12)
+
+    return {
+        nationalPension: socialSecurity,
+        healthInsurance: contribution401k,
+        longTermCare: 0,
+        employmentInsurance: medicare,
+        incomeTax: federalTax,
+        localIncomeTax: 0,
+        totalDeductions: socialSecurity + medicare + contribution401k + federalTax,
+    }
+}
+
+export async function calculateDeductionsUSFromSettings(
+    monthlyGross: number,
+    companyId?: string | null,
+): Promise<SimulationDeductions> {
+    const settings = await getPayrollSetting<UsDeductionSettings>('us-deductions', companyId)
+    const rates = settings?.rates ?? US_DEFAULTS
+    const brackets = settings?.taxBrackets ?? US_DEFAULT_BRACKETS
+
+    const annualGross = monthlyGross * 12
+    const ssBase = Math.min(annualGross, rates.ssWageBase ?? US_DEFAULTS.ssWageBase)
+    const socialSecurity = Math.round((ssBase / 12) * (rates.socialSecurityRate ?? US_DEFAULTS.socialSecurityRate))
+    const medicare = Math.round(monthlyGross * (rates.medicareRate ?? US_DEFAULTS.medicareRate))
+    const contribution401k = Math.round(monthlyGross * (rates.default401kRate ?? US_DEFAULTS.default401kRate))
+    const federalTax = Math.round(calculateFederalTaxUS(annualGross, brackets) / 12)
 
     return {
         nationalPension: socialSecurity,
@@ -95,29 +149,30 @@ export function calculateDeductionsUS(monthlyGross: number): SimulationDeduction
 
 // ─── CN: 五险一金 + 个人所得税 ─────────────────────────────
 
-// TODO: Move to Settings (Payroll) — CN 养老保险 8%
-const CN_PENSION_RATE = 0.08
-// TODO: Move to Settings (Payroll) — CN 医疗保险 2%
-const CN_MEDICAL_RATE = 0.02
-// TODO: Move to Settings (Payroll) — CN 失业保险 0.5%
-const CN_UNEMPLOYMENT_RATE = 0.005
-// TODO: Move to Settings (Payroll) — CN 住房公积金 12%
-const CN_HOUSING_FUND_RATE = 0.12
+const CN_DEFAULTS = { pensionRate: 0.08, medicalRate: 0.02, unemploymentRate: 0.005, housingFundRate: 0.12 }
+const CN_EXEMPT = 5000
+const CN_DEFAULT_BRACKETS = [
+    { max: 3000, rate: 0.03, deduction: 0 },
+    { max: 12000, rate: 0.10, deduction: 210 },
+    { max: 25000, rate: 0.20, deduction: 1410 },
+    { max: 35000, rate: 0.25, deduction: 2660 },
+    { max: 55000, rate: 0.30, deduction: 4410 },
+    { max: 80000, rate: 0.35, deduction: 7160 },
+    { max: Infinity, rate: 0.45, deduction: 15160 },
+]
 
-function calculateIncomeTaxCN(monthlyTaxable: number): number {
-    // TODO: Move to Settings (Payroll) — CN income tax brackets (monthly, after 5000 exemption)
-    const exempt = 5000
+interface CnSettings {
+    rates: { pensionRate: number; medicalRate: number; unemploymentRate: number; housingFundRate: number }
+    exemptAmount: number
+    taxBrackets: Array<{ max: number | null; rate: number; deduction: number }>
+}
+
+function calculateIncomeTaxCN(
+    monthlyTaxable: number,
+    exempt: number = CN_EXEMPT,
+    brackets: Array<{ max: number; rate: number; deduction: number }> = CN_DEFAULT_BRACKETS,
+): number {
     const taxable = Math.max(0, monthlyTaxable - exempt)
-    const brackets = [
-        { max: 3000, rate: 0.03, deduction: 0 },
-        { max: 12000, rate: 0.10, deduction: 210 },
-        { max: 25000, rate: 0.20, deduction: 1410 },
-        { max: 35000, rate: 0.25, deduction: 2660 },
-        { max: 55000, rate: 0.30, deduction: 4410 },
-        { max: 80000, rate: 0.35, deduction: 7160 },
-        { max: Infinity, rate: 0.45, deduction: 15160 },
-    ]
-
     for (const b of brackets) {
         if (taxable <= b.max) {
             return Math.round(taxable * b.rate - b.deduction)
@@ -127,49 +182,69 @@ function calculateIncomeTaxCN(monthlyTaxable: number): number {
 }
 
 export function calculateDeductionsCN(monthlyGross: number): SimulationDeductions {
-    const pension = Math.round(monthlyGross * CN_PENSION_RATE)
-    const medical = Math.round(monthlyGross * CN_MEDICAL_RATE)
-    const unemployment = Math.round(monthlyGross * CN_UNEMPLOYMENT_RATE)
-    const housingFund = Math.round(monthlyGross * CN_HOUSING_FUND_RATE)
+    const pension = Math.round(monthlyGross * CN_DEFAULTS.pensionRate)
+    const medical = Math.round(monthlyGross * CN_DEFAULTS.medicalRate)
+    const unemployment = Math.round(monthlyGross * CN_DEFAULTS.unemploymentRate)
+    const housingFund = Math.round(monthlyGross * CN_DEFAULTS.housingFundRate)
     const totalSocial = pension + medical + unemployment + housingFund
     const taxableIncome = monthlyGross - totalSocial
     const incomeTax = calculateIncomeTaxCN(taxableIncome)
 
     return {
-        nationalPension: pension,
-        healthInsurance: medical,
-        longTermCare: housingFund,
-        employmentInsurance: unemployment,
-        incomeTax,
-        localIncomeTax: 0,
+        nationalPension: pension, healthInsurance: medical, longTermCare: housingFund,
+        employmentInsurance: unemployment, incomeTax, localIncomeTax: 0,
+        totalDeductions: totalSocial + incomeTax,
+    }
+}
+
+export async function calculateDeductionsCNFromSettings(
+    monthlyGross: number,
+    companyId?: string | null,
+): Promise<SimulationDeductions> {
+    const s = await getPayrollSetting<CnSettings>('cn-deductions', companyId)
+    const rates = s?.rates ?? CN_DEFAULTS
+    const exempt = s?.exemptAmount ?? CN_EXEMPT
+    const brackets = (s?.taxBrackets ?? CN_DEFAULT_BRACKETS).map(b => ({ ...b, max: b.max ?? Infinity }))
+
+    const pension = Math.round(monthlyGross * (rates.pensionRate ?? CN_DEFAULTS.pensionRate))
+    const medical = Math.round(monthlyGross * (rates.medicalRate ?? CN_DEFAULTS.medicalRate))
+    const unemployment = Math.round(monthlyGross * (rates.unemploymentRate ?? CN_DEFAULTS.unemploymentRate))
+    const housingFund = Math.round(monthlyGross * (rates.housingFundRate ?? CN_DEFAULTS.housingFundRate))
+    const totalSocial = pension + medical + unemployment + housingFund
+    const taxableIncome = monthlyGross - totalSocial
+    const incomeTax = calculateIncomeTaxCN(taxableIncome, exempt, brackets)
+
+    return {
+        nationalPension: pension, healthInsurance: medical, longTermCare: housingFund,
+        employmentInsurance: unemployment, incomeTax, localIncomeTax: 0,
         totalDeductions: totalSocial + incomeTax,
     }
 }
 
 // ─── VN: BHXH + BHYT + BHTN + PIT ─────────────────────────
 
-// TODO: Move to Settings (Payroll) — VN BHXH (Social Insurance) 8%
-const VN_BHXH_RATE = 0.08
-// TODO: Move to Settings (Payroll) — VN BHYT (Health Insurance) 1.5%
-const VN_BHYT_RATE = 0.015
-// TODO: Move to Settings (Payroll) — VN BHTN (Unemployment Insurance) 1%
-const VN_BHTN_RATE = 0.01
+const VN_DEFAULTS = { bhxhRate: 0.08, bhytRate: 0.015, bhtnRate: 0.01 }
+const VN_EXEMPT = 11_000_000
+const VN_DEFAULT_BRACKETS = [
+    { max: 5_000_000, rate: 0.05 }, { max: 10_000_000, rate: 0.10 },
+    { max: 18_000_000, rate: 0.15 }, { max: 32_000_000, rate: 0.20 },
+    { max: 52_000_000, rate: 0.25 }, { max: 80_000_000, rate: 0.30 },
+    { max: Infinity, rate: 0.35 },
+]
 
-function calculateIncomeTaxVN(monthlyTaxable: number): number {
-    // TODO: Move to Settings (Payroll) — VN PIT brackets (monthly, after 11M exemption)
-    const exempt = 11_000_000
+interface VnSettings {
+    rates: { bhxhRate: number; bhytRate: number; bhtnRate: number }
+    exemptAmount: number
+    taxBrackets: Array<{ max: number | null; rate: number }>
+}
+
+function calculateIncomeTaxVN(
+    monthlyTaxable: number,
+    exempt: number = VN_EXEMPT,
+    brackets: Array<{ max: number; rate: number }> = VN_DEFAULT_BRACKETS,
+): number {
     const taxable = Math.max(0, monthlyTaxable - exempt)
-    const brackets = [
-        { max: 5_000_000, rate: 0.05 },
-        { max: 10_000_000, rate: 0.10 },
-        { max: 18_000_000, rate: 0.15 },
-        { max: 32_000_000, rate: 0.20 },
-        { max: 52_000_000, rate: 0.25 },
-        { max: 80_000_000, rate: 0.30 },
-        { max: Infinity, rate: 0.35 },
-    ]
-    let tax = 0
-    let prev = 0
+    let tax = 0, prev = 0
     for (const b of brackets) {
         if (taxable <= prev) break
         const chunk = Math.min(taxable, b.max) - prev
@@ -180,67 +255,90 @@ function calculateIncomeTaxVN(monthlyTaxable: number): number {
 }
 
 export function calculateDeductionsVN(monthlyGross: number): SimulationDeductions {
-    const bhxh = Math.round(monthlyGross * VN_BHXH_RATE)
-    const bhyt = Math.round(monthlyGross * VN_BHYT_RATE)
-    const bhtn = Math.round(monthlyGross * VN_BHTN_RATE)
+    const bhxh = Math.round(monthlyGross * VN_DEFAULTS.bhxhRate)
+    const bhyt = Math.round(monthlyGross * VN_DEFAULTS.bhytRate)
+    const bhtn = Math.round(monthlyGross * VN_DEFAULTS.bhtnRate)
     const totalSocial = bhxh + bhyt + bhtn
-    const taxableIncome = monthlyGross - totalSocial
-    const incomeTax = calculateIncomeTaxVN(taxableIncome)
+    const incomeTax = calculateIncomeTaxVN(monthlyGross - totalSocial)
 
     return {
-        nationalPension: bhxh,
-        healthInsurance: bhyt,
-        longTermCare: 0,
-        employmentInsurance: bhtn,
-        incomeTax,
-        localIncomeTax: 0,
+        nationalPension: bhxh, healthInsurance: bhyt, longTermCare: 0,
+        employmentInsurance: bhtn, incomeTax, localIncomeTax: 0,
         totalDeductions: totalSocial + incomeTax,
     }
 }
 
-// ─── RU: НДФЛ 13% flat ───────────────────────────────────
+export async function calculateDeductionsVNFromSettings(
+    monthlyGross: number,
+    companyId?: string | null,
+): Promise<SimulationDeductions> {
+    const s = await getPayrollSetting<VnSettings>('vn-deductions', companyId)
+    const rates = s?.rates ?? VN_DEFAULTS
+    const exempt = s?.exemptAmount ?? VN_EXEMPT
+    const brackets = (s?.taxBrackets ?? VN_DEFAULT_BRACKETS).map(b => ({ ...b, max: b.max ?? Infinity }))
 
-// TODO: Move to Settings (Payroll) — RU NDFL flat rate 13%
+    const bhxh = Math.round(monthlyGross * (rates.bhxhRate ?? VN_DEFAULTS.bhxhRate))
+    const bhyt = Math.round(monthlyGross * (rates.bhytRate ?? VN_DEFAULTS.bhytRate))
+    const bhtn = Math.round(monthlyGross * (rates.bhtnRate ?? VN_DEFAULTS.bhtnRate))
+    const totalSocial = bhxh + bhyt + bhtn
+    const incomeTax = calculateIncomeTaxVN(monthlyGross - totalSocial, exempt, brackets)
+
+    return {
+        nationalPension: bhxh, healthInsurance: bhyt, longTermCare: 0,
+        employmentInsurance: bhtn, incomeTax, localIncomeTax: 0,
+        totalDeductions: totalSocial + incomeTax,
+    }
+}
+
+// ─── RU: НДФЛ flat ───────────────────────────────────────
+
 const RU_NDFL_RATE = 0.13
 
 export function calculateDeductionsRU(monthlyGross: number): SimulationDeductions {
     const incomeTax = Math.round(monthlyGross * RU_NDFL_RATE)
+    return { nationalPension: 0, healthInsurance: 0, longTermCare: 0, employmentInsurance: 0, incomeTax, localIncomeTax: 0, totalDeductions: incomeTax }
+}
 
-    return {
-        nationalPension: 0,
-        healthInsurance: 0,
-        longTermCare: 0,
-        employmentInsurance: 0,
-        incomeTax,
-        localIncomeTax: 0,
-        totalDeductions: incomeTax,
-    }
+export async function calculateDeductionsRUFromSettings(
+    monthlyGross: number,
+    companyId?: string | null,
+): Promise<SimulationDeductions> {
+    const s = await getPayrollSetting<{ rates: { ndflRate: number } }>('ru-deductions', companyId)
+    const rate = s?.rates?.ndflRate ?? RU_NDFL_RATE
+    const incomeTax = Math.round(monthlyGross * rate)
+    return { nationalPension: 0, healthInsurance: 0, longTermCare: 0, employmentInsurance: 0, incomeTax, localIncomeTax: 0, totalDeductions: incomeTax }
 }
 
 // ─── MX: IMSS + ISR ──────────────────────────────────────
 
-// TODO: Move to Settings (Payroll) — MX IMSS employee contribution ~2.5%
 const MX_IMSS_RATE = 0.025
+const MX_DEFAULT_BRACKETS = [
+    { max: 746.04, rate: 0.0192, base: 0 },
+    { max: 6_332.05, rate: 0.064, base: 14.32 },
+    { max: 11_128.01, rate: 0.1088, base: 371.83 },
+    { max: 12_935.82, rate: 0.16, base: 893.63 },
+    { max: 15_487.71, rate: 0.1792, base: 1_182.88 },
+    { max: 31_236.49, rate: 0.2136, base: 1_640.18 },
+    { max: 49_233.00, rate: 0.2352, base: 5_004.12 },
+    { max: 93_993.90, rate: 0.30, base: 9_236.89 },
+    { max: 125_325.20, rate: 0.32, base: 22_665.17 },
+    { max: 375_975.61, rate: 0.34, base: 32_691.18 },
+    { max: Infinity, rate: 0.35, base: 117_912.32 },
+]
 
-function calculateISR(monthlyGross: number): number {
-    // TODO: Move to Settings (Payroll) — MX ISR tax brackets (monthly, 2025)
-    const brackets = [
-        { max: 746.04, rate: 0.0192, base: 0 },
-        { max: 6_332.05, rate: 0.064, base: 14.32 },
-        { max: 11_128.01, rate: 0.1088, base: 371.83 },
-        { max: 12_935.82, rate: 0.16, base: 893.63 },
-        { max: 15_487.71, rate: 0.1792, base: 1_182.88 },
-        { max: 31_236.49, rate: 0.2136, base: 1_640.18 },
-        { max: 49_233.00, rate: 0.2352, base: 5_004.12 },
-        { max: 93_993.90, rate: 0.30, base: 9_236.89 },
-        { max: 125_325.20, rate: 0.32, base: 22_665.17 },
-        { max: 375_975.61, rate: 0.34, base: 32_691.18 },
-        { max: Infinity, rate: 0.35, base: 117_912.32 },
-    ]
+interface MxSettings {
+    rates: { imssRate: number }
+    taxBrackets: Array<{ max: number | null; rate: number; base: number }>
+}
 
+function calculateISR(
+    monthlyGross: number,
+    brackets: Array<{ max: number; rate: number; base: number }> = MX_DEFAULT_BRACKETS,
+): number {
     for (const b of brackets) {
         if (monthlyGross <= b.max) {
-            const excess = monthlyGross - (brackets[brackets.indexOf(b) - 1]?.max ?? 0)
+            const prevMax = brackets[brackets.indexOf(b) - 1]?.max ?? 0
+            const excess = monthlyGross - prevMax
             return Math.round(b.base + excess * b.rate)
         }
     }
@@ -250,35 +348,51 @@ function calculateISR(monthlyGross: number): number {
 export function calculateDeductionsMX(monthlyGross: number): SimulationDeductions {
     const imss = Math.round(monthlyGross * MX_IMSS_RATE)
     const isr = calculateISR(monthlyGross)
+    return { nationalPension: 0, healthInsurance: imss, longTermCare: 0, employmentInsurance: 0, incomeTax: isr, localIncomeTax: 0, totalDeductions: imss + isr }
+}
 
-    return {
-        nationalPension: 0,
-        healthInsurance: imss,
-        longTermCare: 0,
-        employmentInsurance: 0,
-        incomeTax: isr,
-        localIncomeTax: 0,
-        totalDeductions: imss + isr,
-    }
+export async function calculateDeductionsMXFromSettings(
+    monthlyGross: number,
+    companyId?: string | null,
+): Promise<SimulationDeductions> {
+    const s = await getPayrollSetting<MxSettings>('mx-deductions', companyId)
+    const imssRate = s?.rates?.imssRate ?? MX_IMSS_RATE
+    const brackets = (s?.taxBrackets ?? MX_DEFAULT_BRACKETS).map(b => ({ ...b, max: b.max ?? Infinity }))
+
+    const imss = Math.round(monthlyGross * imssRate)
+    const isr = calculateISR(monthlyGross, brackets)
+    return { nationalPension: 0, healthInsurance: imss, longTermCare: 0, employmentInsurance: 0, incomeTax: isr, localIncomeTax: 0, totalDeductions: imss + isr }
 }
 
 // ─── Country dispatcher ──────────────────────────────────
 
+/** Synchronous version (backward compatible) */
 export function calculateDeductionsByCountry(
     companyCode: string,
     monthlyGross: number,
 ): SimulationDeductions {
     const code = companyCode.toUpperCase()
-
-    if (code.includes('KR') || code.includes('HQ')) {
-        return calculateDeductionsKR(monthlyGross)
-    }
+    if (code.includes('KR') || code.includes('HQ')) return calculateDeductionsKR(monthlyGross)
     if (code.includes('US')) return calculateDeductionsUS(monthlyGross)
     if (code.includes('CN')) return calculateDeductionsCN(monthlyGross)
     if (code.includes('VN')) return calculateDeductionsVN(monthlyGross)
     if (code.includes('RU')) return calculateDeductionsRU(monthlyGross)
     if (code.includes('MX')) return calculateDeductionsMX(monthlyGross)
+    return calculateDeductionsKR(monthlyGross) // Fallback
+}
 
-    // Fallback: KR
-    return calculateDeductionsKR(monthlyGross)
+/** Async version — reads per-country rates from Settings */
+export async function calculateDeductionsByCountryFromSettings(
+    companyCode: string,
+    monthlyGross: number,
+    companyId?: string | null,
+): Promise<SimulationDeductions> {
+    const code = companyCode.toUpperCase()
+    if (code.includes('KR') || code.includes('HQ')) return calculateDeductionsKRFromSettings(monthlyGross, companyId)
+    if (code.includes('US')) return calculateDeductionsUSFromSettings(monthlyGross, companyId)
+    if (code.includes('CN')) return calculateDeductionsCNFromSettings(monthlyGross, companyId)
+    if (code.includes('VN')) return calculateDeductionsVNFromSettings(monthlyGross, companyId)
+    if (code.includes('RU')) return calculateDeductionsRUFromSettings(monthlyGross, companyId)
+    if (code.includes('MX')) return calculateDeductionsMXFromSettings(monthlyGross, companyId)
+    return calculateDeductionsKRFromSettings(monthlyGross, companyId) // Fallback
 }

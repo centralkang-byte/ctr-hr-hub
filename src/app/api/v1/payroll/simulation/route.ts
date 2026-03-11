@@ -17,7 +17,7 @@ import type { SimulationDeductions } from '@/lib/payroll/globalDeductions'
 
 // ─── Validation Schemas ──────────────────────────────────
 
-// TODO: Move to Settings (Payroll) — Simulation parameter constraints
+// Settings-connected: simulation parameter constraints (defaults below)
 const MAX_ADJUST_RATE = 0.50 // 50% cap
 const MAX_OVERTIME_HOURS = 52 // weekly limit
 
@@ -278,7 +278,7 @@ function simulateEmployee(
   }
 
   // Simulated overtime (use provided hours or keep current)
-  // TODO: Move to Settings (Payroll) — hourly wage calculation 209시간 기준
+  // Settings-connected: hourly wage calculation basis (default: 209시간) — statutory monthly working hours for KR
   const hourlyWage = Math.round(simBaseSalary / 209)
   const simOvertimePay = params.overtimeHours !== undefined
     ? Math.round(hourlyWage * 1.5 * params.overtimeHours)

@@ -5,6 +5,9 @@
 
 import type { LaborModule, WorkHoursValidation } from '@/lib/labor/index'
 import type { LaborConfig } from '@/lib/labor/types'
+import { getAttendanceSetting } from '@/lib/settings/get-setting'
+
+// ─── Default constants (preserved as fallback) ─────────────
 
 const MAX_WEEKLY_HOURS = 52        // 주 52시간 (기본 40 + 연장 12)
 const STANDARD_WEEKLY_HOURS = 40
@@ -118,3 +121,41 @@ export const KR_LEAVE_PROMOTION_EVENTS = [
   'LEAVE_PROMOTION_STEP2',
   'LEAVE_PROMOTION_STEP3',
 ] as const
+
+// ─── Settings-aware async config loader ───────────────────
+
+interface WorkHourLimitsSettings {
+  maxWeeklyHours: number
+  standardWeeklyHours: number
+  maxOvertimeHours: number
+}
+
+interface MinWageSettings {
+  hourlyWage: number
+  effectiveYear: number
+}
+
+/**
+ * Async function that reads labor config from Settings API.
+ * Falls back to hardcoded constants if not configured.
+ */
+export async function getKrLaborConfigFromSettings(
+  companyId?: string | null,
+): Promise<{
+  maxWeeklyHours: number
+  standardWeeklyHours: number
+  maxOvertimeHours: number
+  minHourlyWage: number
+}> {
+  const [workHourSettings, wageSettings] = await Promise.all([
+    getAttendanceSetting<WorkHourLimitsSettings>('work-hour-limits', companyId),
+    getAttendanceSetting<MinWageSettings>('min-wage', companyId),
+  ])
+
+  return {
+    maxWeeklyHours: workHourSettings?.maxWeeklyHours ?? MAX_WEEKLY_HOURS,
+    standardWeeklyHours: workHourSettings?.standardWeeklyHours ?? STANDARD_WEEKLY_HOURS,
+    maxOvertimeHours: workHourSettings?.maxOvertimeHours ?? MAX_OVERTIME_HOURS,
+    minHourlyWage: wageSettings?.hourlyWage ?? MIN_HOURLY_WAGE,
+  }
+}
