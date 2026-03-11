@@ -1,6 +1,6 @@
 # SHARED.md — Project State (Single Source of Truth)
 
-> **Last Updated:** 2026-03-12 (H-3 FINAL — Audit Trail + Legacy Cleanup + H-2d TODO 0)
+> **Last Updated:** 2026-03-12 (Q-1 — Design Tokens + Utilities + Animation + UX Charter)
 > **Project Path:** `/Users/sangwoo/Documents/VibeCoding/HR_Hub/ctr-hr-hub`
 
 ---
@@ -56,6 +56,8 @@
 | **H-2c** (Connect Hardcoded → Settings API: unified process-settings API, 26 seed definitions, useProcessSetting hook, 10+ tabs connected) | ✅ Complete |
 | **H-2d** (Remaining TODO Migrations: 44 TODOs → 0, 6 placeholder tabs connected, 6 seed entries, 7 TypeScript interfaces) | ✅ Complete |
 | **H-3** (Audit Trail + Legacy Cleanup: 39 legacy pages removed, 10 orphaned components deleted, settings audit log, AuditLogTab rewrite) | ✅ Complete |
+| **Q-0** (Full Page Scan: 152 pages cataloged, 25-checkpoint Layer 3 analysis, 13 events + 11 nudges mapped, HR calendar generated) | ✅ Complete |
+| **Q-1** (Design Tokens + Utilities + Animation + UX Charter: 30 new files, 11 style constants, 4 format utils, 4 UI components, 2 hooks, 6 animation files, 3 docs) | ✅ Complete |
 
 ---
 
@@ -734,3 +736,50 @@ New `*FromSettings` async variants added alongside. Callers migrate incrementall
 | RU | 40h | RUB | Annual | Europe/Moscow |
 | VN | 48h | VND | Semi-annual | Asia/Ho_Chi_Minh |
 | MX | 48h | MXN | Annual | America/Mexico_City |
+
+---
+
+## Q-0: Full Page Scan — ✅ COMPLETE (1 session, 2026-03-12)
+
+### Scan Results
+- Total pages scanned: **152** (H-3 레거시 정리 후)
+- Auth: NextAuth (Microsoft Entra ID + Credentials test login)
+- Layer 3: 25 checkpoints × 6 categories = **19 PASS, 7 WARN, 1 FAIL**
+- Critical: 0 / Major: 4 / Minor: 3
+
+### Major Issues Found
+| ID | Issue | Count | Fix Phase |
+|:--:|-------|:-----:|:---------:|
+| M-1 | rounded-lg → rounded-xl | 1081 | Q-1 |
+| M-2 | blue-* → #5E81F4 tokens | 14 | Q-1 |
+| M-3 | English placeholders | 11 | Q-2 |
+| M-4 | Missing page metadata | ~100 | Q-2 |
+
+### Output Files
+- `QA_POLISH_REPORT.md` — Human-readable Layer 3 report
+- `scripts/qa/qa-report.json` — Machine-readable scan data
+- `docs/PAGE_CATALOG.md` — 152 pages documented
+- `docs/EVENT_FLOW_MAP.md` — 13 events + 11 nudges + impact matrix
+- `docs/HR_OPERATIONS_CALENDAR.md` — Monthly/weekly/annual HR task timeline
+
+### Next: Q-2 Pattern-based Bulk Fixes
+
+---
+
+## Q-1: Design Tokens + Utilities + Animation + UX Charter — ✅ COMPLETE (2026-03-12)
+
+### Changes
+- **File reorganization**: root → 2 files (CLAUDE.md, README.md), docs/archive structured
+- **Format utilities** (4 files): `number.ts`, `date.ts`, `text.ts`, `index.ts`
+  - `formatNumber`, `formatCurrency`, `formatCompact` (억/만), `formatPercent`
+  - `formatDate`, `formatDateTime`, `formatDateLong`, `formatDateShort`, `formatMonth`
+  - `truncateText`, `getInitials`, `getAvatarColor`
+- **Style constants** (12 files): table, form, card, modal, chart, z-index, typography, spacing, button, focus, drawer, index
+- **UI components** (4 new): `EmptyState`, `StatusBadge`, `ErrorPage`, `LoadingSkeleton` (4 variants)
+- **Hooks** (2 new): `useSubmitGuard` (Art.28), `useUnsavedChanges` (Art.19)
+- **Animation** (6 files): variants.ts, transitions.ts, AnimatedNumber, AnimatedList, PageTransition, MotionConfig
+- **Docs** (3 new): `UX_CHARTER.md` (30 articles), `DESIGN_TOKENS.md`, `ARCHITECTURE.md`
+- **Dependency**: framer-motion (needs manual install: `npm install framer-motion`)
+- **TypeScript**: 0 errors
+
+### Next: Q-2 pattern-based bulk fixes (table → form → modal → card → chart → badge)

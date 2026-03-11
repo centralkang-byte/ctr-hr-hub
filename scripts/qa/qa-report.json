@@ -1,0 +1,134 @@
+{
+  "scan_date": "2026-03-12",
+  "scan_mode": "static_analysis",
+  "total_pages": 152,
+  "auth_method": "NextAuth (Microsoft Entra ID + Credentials)",
+  "summary": {
+    "http_200": "N/A (static analysis mode)",
+    "http_404": "N/A",
+    "http_500": "N/A",
+    "render_ok": "N/A",
+    "render_blank": "N/A",
+    "detailed_scan": 152,
+    "by_category": {
+      "A_visual": { "pass": 5, "warn": 2, "fail": 1, "details": "A5 rounded-lg (1081 instances), A1 blue-* (14), A2 text-3xl+ (76)" },
+      "B_i18n": { "pass": 3, "warn": 1, "fail": 0, "details": "B3 English placeholders (11)" },
+      "C_format": { "pass": 3, "warn": 1, "fail": 0, "details": "C3 formatCompact missing" },
+      "D_layout": { "pass": 2, "warn": 1, "fail": 0, "details": "D2 overflow-x-auto (54 found, some tables may lack)" },
+      "E_feedback": { "pass": 3, "warn": 1, "fail": 0, "details": "E4 empty states 117/152 (77%)" },
+      "F_navigation": { "pass": 3, "warn": 1, "fail": 0, "details": "F2 metadata only 51/152 (33%)" }
+    },
+    "totals": {
+      "pass": 19,
+      "warn": 7,
+      "fail": 1
+    }
+  },
+  "major_issues": [
+    {
+      "id": "M-1",
+      "category": "A_visual",
+      "checkpoint": "A5",
+      "severity": "MAJOR",
+      "title": "rounded-lg vs rounded-xl inconsistency",
+      "count": 1081,
+      "description": "Cards use rounded-lg instead of rounded-xl per CTR_UI_PATTERNS",
+      "fix": "sed bulk replace in Q-1"
+    },
+    {
+      "id": "M-2",
+      "category": "A_visual",
+      "checkpoint": "A1",
+      "severity": "MAJOR",
+      "title": "Non-standard blue-* Tailwind colors",
+      "count": 14,
+      "description": "bg-blue-50/text-blue-600 used instead of #5E81F4 tokens",
+      "files": [
+        "settings/attendance/tabs/OvertimeTab.tsx",
+        "settings/attendance/tabs/LeaveTypesTab.tsx",
+        "settings/organization/tabs/AssignmentRulesTab.tsx",
+        "settings/system/tabs/AuditLogTab.tsx",
+        "settings/payroll/tabs/DeductionsTab.tsx",
+        "settings/performance/tabs/EvalCycleTab.tsx",
+        "offboarding/[id]/OffboardingDetailClient.tsx",
+        "payroll/simulation/PayrollSimulationClient.tsx",
+        "analytics/ExecutiveSummaryClient.tsx",
+        "components/settings/SettingFieldWithOverride.tsx",
+        "components/settings/GlobalChangeConfirmModal.tsx",
+        "components/analytics/AiInsightBanner.tsx"
+      ],
+      "fix": "Manual replacement in Q-1"
+    },
+    {
+      "id": "M-3",
+      "category": "B_i18n",
+      "checkpoint": "B3",
+      "severity": "MAJOR",
+      "title": "English placeholder text",
+      "count": 11,
+      "description": "Placeholder text in English instead of Korean",
+      "files": [
+        "employees/new/EmployeeNewClient.tsx",
+        "employees/[id]/work-permits/WorkPermitsClient.tsx",
+        "components/org/RestructureModal.tsx",
+        "components/compliance/gdpr/DataRequestForm.tsx",
+        "components/compliance/gdpr/DpiaForm.tsx",
+        "components/compliance/gdpr/RetentionPolicyForm.tsx",
+        "components/teams/TeamsWebhookSection.tsx"
+      ],
+      "fix": "Translate to Korean in Q-2"
+    },
+    {
+      "id": "M-4",
+      "category": "F_navigation",
+      "checkpoint": "F2",
+      "severity": "MAJOR",
+      "title": "Missing page metadata/titles",
+      "count": 101,
+      "description": "Only 51/152 pages have metadata exports",
+      "fix": "Bulk add metadata in Q-2"
+    }
+  ],
+  "minor_issues": [
+    {
+      "id": "m-1",
+      "title": "formatCompact utility missing",
+      "description": "Large numbers on KPI cards not abbreviated (₩3.2B vs ₩32억)"
+    },
+    {
+      "id": "m-2",
+      "title": "text-3xl+ usage",
+      "count": 76,
+      "description": "Possibly oversized headings (may be intentional)"
+    },
+    {
+      "id": "m-3",
+      "title": "sr-only English text",
+      "count": 2,
+      "description": "Screen reader labels in sheet/dialog components"
+    }
+  ],
+  "codebase_metrics": {
+    "loading_states": 298,
+    "toast_notifications": 186,
+    "empty_states": 117,
+    "overflow_protection": 191,
+    "table_scroll_wrappers": 54,
+    "url_state_management": 69,
+    "pathname_detection": 45,
+    "date_formatting": 165,
+    "number_formatting": 166,
+    "icon_library": "lucide-react (0 external)",
+    "button_loading_patterns": 55,
+    "event_handlers": 13,
+    "nudge_rules": 11,
+    "cron_jobs": 5,
+    "settings_tabs": 44
+  },
+  "layer5": {
+    "event_handlers": 13,
+    "nudge_rules": 11,
+    "pipelines": ["payroll (8-state)", "performance (8-state)"],
+    "cron_jobs": ["overdue-check", "auto-acknowledge", "eval-reminder", "org-snapshot", "leave-promotion"]
+  }
+}
