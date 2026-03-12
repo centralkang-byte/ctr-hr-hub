@@ -110,7 +110,21 @@ export const GET = withPermission(
       prisma.employee.count({ where }),
     ])
 
-    return apiPaginated(employees, buildPagination(page, limit, total))
+    // Flatten assignments[0] into top-level fields for frontend compatibility
+    // EmployeeRow expects { department, jobGrade, jobCategory } at root level
+    const mapped = employees.map((emp) => {
+      const a = emp.assignments?.[0]
+      return {
+        ...emp,
+        department: a?.department ?? null,
+        jobGrade: a?.jobGrade ?? null,
+        jobCategory: a?.jobCategory ?? null,
+        employmentType: a?.employmentType ?? null,
+        status: a?.status ?? 'ACTIVE',
+      }
+    })
+
+    return apiPaginated(mapped, buildPagination(page, limit, total))
   },
   perm(MODULE.EMPLOYEES, ACTION.VIEW),
 )

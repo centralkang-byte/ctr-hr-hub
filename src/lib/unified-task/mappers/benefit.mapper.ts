@@ -116,14 +116,14 @@ function buildActor(emp: {
   }>
 } | null): UnifiedTaskActor {
   if (!emp) {
-    return { id: 'unknown', name: 'Unknown', grade: null, department: null }
+    return { employeeId: 'unknown', name: 'Unknown' }
   }
   const a = emp.assignments?.[0]
   return {
-    id: emp.id,
+    employeeId: emp.id,
     name: emp.name,
-    grade: a?.jobGrade?.name ?? null,
-    department: a?.department?.name ?? null,
+    position: a?.jobGrade?.name ?? undefined,
+    department: a?.department?.name ?? undefined,
   }
 }
 
