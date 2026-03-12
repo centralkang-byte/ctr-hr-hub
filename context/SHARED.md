@@ -1,6 +1,6 @@
 # SHARED.md — Project State (Single Source of Truth)
 
-> **Last Updated:** 2026-03-12 (Q-4 P1 — i18n Complete + Navigation Polish)
+> **Last Updated:** 2026-03-12 (Q-4 P2 — Security Patch)
 > **Project Path:** `/Users/sangwoo/VibeCoding/HR_Hub/ctr-hr-hub`
 
 ---
@@ -10,7 +10,7 @@
 - `npx tsc --noEmit` = **0 errors** ✅
 - `npm run build` = pass ✅
 - `export const dynamic = 'force-dynamic'` in `(dashboard)/layout.tsx` — covers all dashboard pages
-- Git: pushed to `main` (latest: `479ab4a`)
+- Git: pushed to `main` (latest: `eeefb19`)
 - Deployed on Vercel (auto-deploy from `main` branch)
 - **i18n**: 7 locales × 14+ namespaces — 146/146 Client files have `useTranslations` ✅
 
@@ -1030,3 +1030,69 @@ Keys added across **7 locales** (`ko`, `en`, `zh`, `vi`, `ru`, `es`, `pt`):
 - confirm() → toast 다이얼로그 변환 (21파일)
 - Tab 레이블 배열 → 컴포넌트 내부 이동 + t() 적용
 - useSubmitGuard 추가 적용 (22개 form 남음)
+
+---
+
+## Q-4 P2: Security Patch (2026-03-12)
+
+### Phase 1: Security Audit (523 API routes scanned)
+
+| Category | Pre-fix | Post-fix |
+|----------|---------|----------|
+| Routes without auth | 16 | **0** (2 legitimate public: locale, NextAuth) |
+| Sensitive routes without role check | 2 | **0** |
+| Risk data without protection | 0 | **0** |
+| companyId missing (non-self-scoped) | 5 | **0** (2 fixed, 3 classified GLOBAL_OK) |
+| Breadcrumb raw keys | 0 | **0** |
+
+### Phase 2: Auth & Role Patches
+
+| Route | Fix Applied |
+|-------|-------------|
+| `departments/hierarchy` | Added `withPermission` + `resolveCompanyId` |
+| `settings-audit-log` | Added `withPermission` + HR_ADMIN role guard + companyId |
+| `process-settings/[category]` GET | Added `getServerSession` auth |
+| `process-settings/[category]` PUT/DELETE | Added HR_ADMIN role guard + `user.id` in audit log |
+| `attendance/employees/[id]` | Added companyId isolation via `resolveCompanyId` |
+| `employees/[id]/insights` | Added companyId isolation |
+| 5 CRON routes | Marked `// CRON:` (secured by CRON_SECRET header) |
+| 3 WEBHOOK routes | Marked `// WEBHOOK:` (MS Teams signature) |
+| 3 PUBLIC routes | Marked `// PUBLIC:` (pre-login endpoints) |
+
+### Phase 3: Bug Fixes
+
+| Bug | Fix |
+|-----|-----|
+| BENEFIT_REQUEST missing from unified tasks | Created `benefit.mapper.ts` + wired into unified-tasks API |
+| Employee list dept/grade not showing (C5) | Flattened `assignments[0].department/jobGrade` into top-level response |
+| Breadcrumb raw keys | None found (already i18n-ified) |
+
+### Over-fetch: Conservative Decision
+- 12 payroll candidates identified → all deferred (config/mutation endpoints)
+- Documented in `scripts/q4/select-decisions.txt`
+
+### Output Files
+- `scripts/q4/no-auth-routes.txt` — pre-fix routes without auth
+- `scripts/q4/auth-classification.txt` — public vs needs-auth
+- `scripts/q4/no-role-routes.txt` — sensitive routes without role check
+- `scripts/q4/risk-exposure.txt` — risk data exposure check
+- `scripts/q4/no-company-filter.txt` — missing companyId
+- `scripts/q4/overfetch-candidates.txt` — full-object payroll APIs
+- `scripts/q4/select-decisions.txt` — field restriction decisions
+
+### Module-by-Module Commits
+1. `4feaa3e` — Auth patches (hierarchy, settings-audit-log, process-settings)
+2. `9365370` — companyId isolation + PUBLIC/CRON markers
+3. `298d1de` — BENEFIT_REQUEST unified task mapper
+4. `17020bb` — Employee dept/grade join fix + benefit mapper type fix
+5. `eeefb19` — Final audit + select decisions + push
+
+### TypeScript: 0 errors ✅
+### Build: pass ✅
+
+### 다음 단계 (Q-4 P3)
+- confirm() → toast 다이얼로그 변환 (21파일, `scripts/q4/confirm-manual.txt`)
+- useSubmitGuard 추가 적용 (22개 form, `scripts/q4/submitguard-manual.txt`)
+- EmptyState JSX 추가 삽입 (121파일, `scripts/q4/emptystate-manual.txt`)
+- 나머지 59개 placeholder → 도메인 t() 키 활용
+- Tab 레이블 배열 → 컴포넌트 내부 이동 + t() 적용
