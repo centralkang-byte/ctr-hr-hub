@@ -72,10 +72,9 @@ const STAGE_LABELS: Record<string, string> = {
   REJECTED: '불합격',
 }
 
-export default function InternalJobsClient({
+export default function InternalJobsClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('mySpace')
- user }: { user: SessionUser }) {
   const [items, setItems] = useState<InternalJob[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')

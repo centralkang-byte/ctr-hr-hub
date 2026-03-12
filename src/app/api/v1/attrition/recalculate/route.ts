@@ -48,7 +48,7 @@ export const POST = withPermission(
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const employeeCompanyId = ((employee.assignments?.[0] as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap)?.companyId as string | undefined) ?? companyId
+      const employeeCompanyId = ((employee.assignments?.[0] as any)?.companyId as string | undefined) ?? companyId
 
       const result = await calculateAttritionRisk(employeeId)
 

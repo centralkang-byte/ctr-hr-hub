@@ -26,10 +26,10 @@ type FilterType = 'all' | 'pending' | 'waiting' | 'done'
 
 // ─── Component ────────────────────────────────────────────
 
-export default function NotificationsClient({
+export default function NotificationsClient({user }: {
+  user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
- user }: { user: SessionUser }) {
     const isHrAdmin = user.role === 'SUPER_ADMIN' || user.role === 'HR_ADMIN'
 
     const [cycles, setCycles] = useState<CycleOption[]>([])
@@ -74,31 +74,32 @@ export default function NotificationsClient({
     }
 
     async function handleNotify(reviewId: string) {
-        confirm({ title: '이 직원에게 결과를 통보하시겠습니까?', onConfirm: async () =>
-        setNotifying(reviewId)
-        try {
-            await apiClient.post(`/api/v1/performance/reviews/${reviewId}/notify`)
-            await fetchItems()
-        } catch { toast({ title: '통보에 실패했습니다.', variant: 'destructive' }) }
-        finally { setNotifying(null) }
+        confirm({ title: '이 직원에게 결과를 통보하시겠습니까?', onConfirm: async () => {
+            setNotifying(reviewId)
+            try {
+                await apiClient.post(`/api/v1/performance/reviews/${reviewId}/notify`)
+                await fetchItems()
+            } catch { toast({ title: '통보에 실패했습니다.', variant: 'destructive' }) }
+            finally { setNotifying(null) }
+        }})
     }
 
     async function handleBulkNotify() {
         const pendingCount = items.filter((i) => !i.notifiedAt).length
-        confirm({ title: `미통보 ${pendingCount}명에게 일괄 통보하시겠습니까?`, onConfirm: async () =>
-        setBulkNotifying(true)
-        try {
-            await apiClient.post(`/api/v1/performance/cycles/${selectedCycleId}/bulk-notify`)
-            await fetchItems()
-        } catch { toast({ title: '일괄 통보에 실패했습니다.', variant: 'destructive' }) }
-        finally { setBulkNotifying(false) }
+        confirm({ title: `미통보 ${pendingCount}명에게 일괄 통보하시겠습니까?`, onConfirm: async () => {
+            setBulkNotifying(true)
+            try {
+                await apiClient.post(`/api/v1/performance/cycles/${selectedCycleId}/bulk-notify`)
+                await fetchItems()
+            } catch { toast({ title: '일괄 통보에 실패했습니다.', variant: 'destructive' }) }
+            finally { setBulkNotifying(false) }
+        }})
     }
 
     // Route guard
     const isBlocked = cycleStatus !== '' && !['FINALIZED', 'CLOSED', 'COMP_REVIEW', 'COMP_COMPLETED'].includes(cycleStatus)
     if (isBlocked) {
         return (
-            <>
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
                     <Bell className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
@@ -249,6 +250,5 @@ export default function NotificationsClient({
             </div>
         <ConfirmDialog {...dialogProps} />
         </div>
-      </>
     )
 }

@@ -27,7 +27,6 @@ function StatusBadge({ status }: { status: string }) {
     pending: 'bg-[#FEF3C7] text-[#B45309] border border-[#FCD34D]',
   }
   return (
-    <>
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[status] ?? map.pending}`}>
       {status}
     </span>
@@ -59,12 +58,14 @@ export default function ConsentManagementTab() {
   }, [])
 
   const handleRevoke = (id: string) => {
-    confirm({ title: tc('confirmAction'), onConfirm: async () =>
-    fetch(`/api/v1/compliance/gdpr/consents/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: 'revoked' }),
-    }).then(() => fetchConsents())
+    confirm({ title: tc('confirmAction'), onConfirm: async () => {
+      await fetch(`/api/v1/compliance/gdpr/consents/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'revoked' }),
+      })
+      fetchConsents()
+    }})
   }
 
   return (
@@ -152,8 +153,7 @@ export default function ConsentManagementTab() {
           }}
         />
       )}
-    <ConfirmDialog {...dialogProps} />
+      <ConfirmDialog {...dialogProps} />
     </div>
-  </>
   )
 }

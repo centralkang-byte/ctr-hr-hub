@@ -76,9 +76,8 @@ interface TeamMemberGoals {
 // ─── Component ────────────────────────────────────────────
 
 export default function TeamGoalsClient({
-  const tCommon = useTranslations('common')
-  const t = useTranslations('performance')
  user }: { user: SessionUser }) {
+  const tCommon = useTranslations('common')
   const t = useTranslations('performance')
   const tc = useTranslations('common')
 
@@ -171,16 +170,17 @@ export default function TeamGoalsClient({
   // ─── Approve goal ─────────────────────────────────────
 
   async function handleApprove(goalId: string) {
-    confirm({ title: t('confirmApprove'), onConfirm: async () =>
-    setActionLoading(goalId)
-    try {
-      await apiClient.put(`/api/v1/performance/goals/${goalId}/approve`)
-      await fetchTeamGoals()
-    } catch {
-      toast({ title: t('approveFailed'), variant: 'destructive' })
-    } finally {
-      setActionLoading(null)
-    }
+    confirm({ title: t('confirmApprove'), onConfirm: async () => {
+      setActionLoading(goalId)
+      try {
+        await apiClient.put(`/api/v1/performance/goals/${goalId}/approve`)
+        await fetchTeamGoals()
+      } catch {
+        toast({ title: t('approveFailed'), variant: 'destructive' })
+      } finally {
+        setActionLoading(null)
+      }
+    }})
   }
 
   // ─── Request revision ─────────────────────────────────

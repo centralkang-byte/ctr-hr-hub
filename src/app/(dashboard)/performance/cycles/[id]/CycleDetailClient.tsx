@@ -49,10 +49,9 @@ const TRANSITIONS: Record<string, string> = {
 
 // ─── Component ────────────────────────────────────────────
 
-export default function CycleDetailClient({
-  const tCommon = useTranslations('common')
-  const t = useTranslations('performance')
- user, cycleId }: { user: SessionUser; cycleId: string }) {
+export default function CycleDetailClient({user, cycleId }: { user: SessionUser; cycleId: string }) {
+    const tCommon = useTranslations('common')
+    const t = useTranslations('performance')
     const router = useRouter()
     const isHrAdmin = user.role === 'SUPER_ADMIN' || user.role === 'HR_ADMIN'
 
@@ -63,9 +62,9 @@ export default function CycleDetailClient({
     const [advancing, setAdvancing] = useState(false)
     const [tab, setTab] = useState<'pipeline' | 'participants'>('pipeline')
     const [deptFilter, setDeptFilter] = useState('')
+    const { confirm, dialogProps } = useConfirmDialog()
 
     const fetchData = useCallback(async () => {
-  const { confirm, dialogProps } = useConfirmDialog()
         setLoading(true); setError('')
         try {
             const [cycleRes, partRes] = await Promise.all([
@@ -90,13 +89,14 @@ export default function CycleDetailClient({
             ? `다음 단계(${nextState})로 진행합니다.\n\n⚠️ 미완료 ${overdueCount}명은 Overdue 처리됩니다.\n\n되돌릴 수 없습니다. 계속하시겠습니까?`
             : `다음 단계(${nextState})로 진행합니다.\n\n되돌릴 수 없습니다. 계속하시겠습니까?`
 
-        confirm({ title: msg, onConfirm: async () =>
-        setAdvancing(true)
-        try {
-            await apiClient.post(`/api/v1/performance/cycles/${cycleId}/advance`)
-            await fetchData()
-        } catch { toast({ title: '상태 전환에 실패했습니다.', variant: 'destructive' }) }
-        finally { setAdvancing(false) }
+        confirm({ title: msg, onConfirm: async () => {
+            setAdvancing(true)
+            try {
+                await apiClient.post(`/api/v1/performance/cycles/${cycleId}/advance`)
+                await fetchData()
+            } catch { toast({ title: '상태 전환에 실패했습니다.', variant: 'destructive' }) }
+            finally { setAdvancing(false) }
+        }})
     }
 
     if (!isHrAdmin) {
@@ -144,6 +144,7 @@ export default function CycleDetailClient({
     const filteredParticipants = deptFilter ? participants.filter((p) => (p.employee.department?.name ?? '미지정') === deptFilter) : participants
 
     return (
+        <>
         <div className="min-h-screen bg-[#F5F5FA] p-6">
             <div className="mx-auto max-w-5xl">
                 {/* Back + Title */}
@@ -198,8 +199,7 @@ export default function CycleDetailClient({
                             </div>
                             <button onClick={handleAdvance} disabled={advancing}
                                 className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-5 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40 transition-colors">
-                                {advancing ? '전환 중...' : <><span>다음 단계로 진행</span><ChevronRight className="h-4 w-4" />  <ConfirmDialog {...dialogProps} />
-      </>}
+                                {advancing ? '전환 중...' : <><span>다음 단계로 진행</span><ChevronRight className="h-4 w-4" /></>}
                             </button>
                         </div>
                     )}
@@ -300,5 +300,7 @@ export default function CycleDetailClient({
                 )}
             </div>
         </div>
+        <ConfirmDialog {...dialogProps} />
+        </>
     )
 }

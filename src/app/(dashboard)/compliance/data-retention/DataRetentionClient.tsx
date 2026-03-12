@@ -22,8 +22,6 @@ interface RetentionPolicy {
 }
 
 export default function DataRetentionClient() {
-  const tCommon = useTranslations('common')
-
   const t = useTranslations('compliance')
   const tc = useTranslations('common')
 
@@ -49,17 +47,17 @@ export default function DataRetentionClient() {
   }, [])
 
   const handleRunPolicy = (id: string) => {
-    confirm({ title: tc('confirmAction'), onConfirm: async () =>
-    fetch(`/api/v1/compliance/gdpr/retention-policies/${id}/run`, { method: 'POST' }).then(() =>
+    confirm({ title: tc('confirmAction'), onConfirm: async () => {
+      await fetch(`/api/v1/compliance/gdpr/retention-policies/${id}/run`, { method: 'POST' })
       fetchPolicies()
-    )
+    }})
   }
 
   const handleDelete = (id: string) => {
-    confirm({ title: tc('confirmDelete'), onConfirm: async () =>
-    fetch(`/api/v1/compliance/gdpr/retention-policies/${id}`, { method: 'DELETE' }).then(() =>
+    confirm({ title: tc('confirmDelete'), onConfirm: async () => {
+      await fetch(`/api/v1/compliance/gdpr/retention-policies/${id}`, { method: 'DELETE' })
       fetchPolicies()
-    )
+    }})
   }
 
   return (

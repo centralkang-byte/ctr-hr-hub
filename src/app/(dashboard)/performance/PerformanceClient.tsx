@@ -79,9 +79,8 @@ function formatDate(dateStr: string | null): string {
 // ─── Component ────────────────────────────────────────────
 
 export default function PerformanceClient({
-  const tCommon = useTranslations('common')
-  const t = useTranslations('performance')
  user }: { user: SessionUser }) {
+  const tCommon = useTranslations('common')
   const t = useTranslations('performance')
   const [cycles, setCycles] = useState<CycleInfo[]>([])
   const [activeCycle, setActiveCycle] = useState<CycleInfo | null>(null)

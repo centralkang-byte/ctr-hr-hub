@@ -35,7 +35,6 @@ const GRADES = ['E', 'M_PLUS', 'M', 'B']
 
 function Stars({ value, onChange, disabled }: { value: number; onChange: (v: number) => void; disabled: boolean }) {
     return (
-        <>
         <div className="flex items-center gap-0.5">
             {[1, 2, 3, 4, 5].map((i) => (
                 <button key={i} disabled={disabled} onClick={() => onChange(i)}
@@ -55,10 +54,10 @@ const CTR_VALUES = [
 
 // ─── Main Component ───────────────────────────────────────
 
-export default function ManagerEvaluationClient({
+export default function ManagerEvaluationClient({user }: {
+  user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
- user }: { user: SessionUser }) {
     const [cycles, setCycles] = useState<CycleOption[]>([])
     const [selectedCycleId, setSelectedCycleId] = useState('')
     const [cycleStatus, setCycleStatus] = useState('')
@@ -260,18 +259,19 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
 
     async function handleSave(status: 'DRAFT' | 'SUBMITTED') {
         if (!(status === 'SUBMITTED')) return
-        confirm({ title: '평가를 확정하시겠습니까? 확정 후에는 수정이 제한됩니다.', onConfirm: async () =>
-        setSaving(true)
-        try {
-            await apiClient.put(`/api/v1/performance/evaluations/${member.managerEval?.id ?? 'new'}`, {
-                cycleId, employeeId: member.employeeId, status,
-                goalScores: Object.entries(goalScores).map(([goalId, s]) => ({ goalId, ...s })),
-                competencyScores: Object.entries(beiScores).map(([key, s]) => ({ competencyId: key, ...s })),
-                originalGradeEnum: finalGrade,
-            })
-            onSaved()
-        } catch { toast({ title: '저장에 실패했습니다.', variant: 'destructive' }) }
-        finally { setSaving(false) }
+        confirm({ title: '평가를 확정하시겠습니까? 확정 후에는 수정이 제한됩니다.', onConfirm: async () => {
+            setSaving(true)
+            try {
+                await apiClient.put(`/api/v1/performance/evaluations/${member.managerEval?.id ?? 'new'}`, {
+                    cycleId, employeeId: member.employeeId, status,
+                    goalScores: Object.entries(goalScores).map(([goalId, s]) => ({ goalId, ...s })),
+                    competencyScores: Object.entries(beiScores).map(([key, s]) => ({ competencyId: key, ...s })),
+                    originalGradeEnum: finalGrade,
+                })
+                onSaved()
+            } catch { toast({ title: '저장에 실패했습니다.', variant: 'destructive' }) }
+            finally { setSaving(false) }
+        }})
     }
 
     const TABS = [
@@ -431,15 +431,16 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
 
     async function handleNominate() {
         if (selected.size < 2) { toast({ title: '최소 2명을 지명해주세요.', variant: 'destructive' }); return }
-        confirm({ title: `${selected.size}명을 동료평가자로 지명하시겠습니까?`, onConfirm: async () =>
-        setSaving(true)
-        try {
-            await apiClient.post('/api/v1/performance/peer-review/nominate', {
-                cycleId, employeeId: member.employeeId, reviewerIds: Array.from(selected),
-            })
-            onSaved()
-        } catch { toast({ title: '지명에 실패했습니다.', variant: 'destructive' }) }
-        finally { setSaving(false) }
+        confirm({ title: `${selected.size}명을 동료평가자로 지명하시겠습니까?`, onConfirm: async () => {
+            setSaving(true)
+            try {
+                await apiClient.post('/api/v1/performance/peer-review/nominate', {
+                    cycleId, employeeId: member.employeeId, reviewerIds: Array.from(selected),
+                })
+                onSaved()
+            } catch { toast({ title: '지명에 실패했습니다.', variant: 'destructive' }) }
+            finally { setSaving(false) }
+        }})
     }
 
     return (
@@ -484,6 +485,5 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
             </div>
         <ConfirmDialog {...dialogProps} />
         </div>
-      </>
     )
 }

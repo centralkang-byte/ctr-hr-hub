@@ -62,11 +62,10 @@ interface Props {
 // ─── Component ───────────────────────────────────────────
 
 export default function PostingEditClient({
+ user, id }: Props) {
   const tCommon = useTranslations('common')
   const t = useTranslations('recruitment')
- user, id }: Props) {
   const router = useRouter()
-  const t = useTranslations('recruitment')
 
   const EMPLOYMENT_TYPE_OPTIONS = [
     { value: 'FULL_TIME', label: t('typeFULL_TIME') },
@@ -121,7 +120,7 @@ export default function PostingEditClient({
     formState: { errors },
   } = useForm<FormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(formSchema) as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap,
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       title: '',
       description: '',

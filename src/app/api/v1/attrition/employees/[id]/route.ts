@@ -101,7 +101,7 @@ export const GET = withPermission(
 
     if (includeAi && (riskLevel === 'HIGH' || riskLevel === 'CRITICAL') && latestRisk) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const a = employee.assignments?.[0] as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap
+      const a = employee.assignments?.[0] as any
 
       const factors = latestRisk.scoreFactors as Array<{
         factor: string
@@ -171,7 +171,7 @@ export const GET = withPermission(
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const primaryAssignment = employee.assignments?.[0] as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap
+    const primaryAssignment = employee.assignments?.[0] as any
 
     return apiSuccess({
       employee: {

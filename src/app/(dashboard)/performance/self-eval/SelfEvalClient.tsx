@@ -62,9 +62,8 @@ const SCORE_LABELS = ['', '매우 부족', '부족', '보통', '우수', '탁월
 // ─── Component ────────────────────────────────────────────
 
 export default function SelfEvalClient({
-  const tCommon = useTranslations('common')
-  const t = useTranslations('performance')
  user }: { user: SessionUser }) {
+  const tCommon = useTranslations('common')
   const t = useTranslations('performance')
   const tc = useTranslations('common')
 
@@ -147,23 +146,24 @@ export default function SelfEvalClient({
 
   const handleSave = async (status: 'DRAFT' | 'SUBMITTED') => {
     if (!(status === 'SUBMITTED')) return
-        confirm({ title: '제출하면 수정할 수 없습니다. 제출하시겠습니까?', onConfirm: async () =>
-    setSubmitting(true)
-    try {
-      await apiClient.post('/api/v1/performance/evaluations/self', {
-        cycleId: selectedCycleId,
-        goalScores: Object.values(goalScores),
-        competencyScores: Object.values(compScores),
-        overallComment,
-        status,
-      })
-      await fetchEvalData()
-      toast({ title: status === 'DRAFT' ? '임시 저장되었습니다.' : '제출 완료되었습니다.' })
-    } catch {
-      toast({ title: '저장에 실패했습니다.', variant: 'destructive' })
-    } finally {
-      setSubmitting(false)
-    }
+        confirm({ title: '제출하면 수정할 수 없습니다. 제출하시겠습니까?', onConfirm: async () => {
+      setSubmitting(true)
+      try {
+        await apiClient.post('/api/v1/performance/evaluations/self', {
+          cycleId: selectedCycleId,
+          goalScores: Object.values(goalScores),
+          competencyScores: Object.values(compScores),
+          overallComment,
+          status,
+        })
+        await fetchEvalData()
+        toast({ title: status === 'DRAFT' ? '임시 저장되었습니다.' : '제출 완료되었습니다.' })
+      } catch {
+        toast({ title: '저장에 실패했습니다.', variant: 'destructive' })
+      } finally {
+        setSubmitting(false)
+      }
+    }})
   }
 
   // ─── AI Comment Suggestion ──────────────────────────
@@ -201,7 +201,6 @@ export default function SelfEvalClient({
 
   if (loading) {
     return (
-      <>
       <div className="p-6">
         <div className="flex items-center justify-center h-64 text-[#666]">
           {tc('loading')}...
@@ -378,6 +377,5 @@ export default function SelfEvalClient({
       )}
     <ConfirmDialog {...dialogProps} />
     </div>
-  </>
   )
 }

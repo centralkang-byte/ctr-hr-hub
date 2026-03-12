@@ -51,10 +51,10 @@ function StarRating({ value, onChange, disabled }: { value: number; onChange: (v
 
 // ─── Main Component ───────────────────────────────────────
 
-export default function MyEvaluationClient({
+export default function MyEvaluationClient({user }: {
+  user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
- user }: { user: SessionUser }) {
     const [cycles, setCycles] = useState<CycleOption[]>([])
     const [selectedCycleId, setSelectedCycleId] = useState('')
     const [cycleStatus, setCycleStatus] = useState('')
@@ -130,7 +130,30 @@ export default function MyEvaluationClient({
                 toast({ title: '모든 점수와 코멘트를 작성해주세요.', variant: 'destructive' })
                 return
             }
-            confirm({ title: '제출하면 수정할 수 없습니다. 제출하시겠습니까?', onConfirm: async () =>
+            confirm({ title: '제출하면 수정할 수 없습니다. 제출하시겠습니까?', onConfirm: async () => {
+                if (abortRef.current) abortRef.current.abort()
+                abortRef.current = new AbortController()
+                setSubmitting(true)
+                setSaveStatus('saving')
+                try {
+                    await apiClient.post('/api/v1/performance/evaluations/self', {
+                        cycleId: selectedCycleId,
+                        goalScores: Object.entries(evalData.goalScores).map(([goalId, s]) => ({ goalId, ...s })),
+                        competencyScores: Object.entries(evalData.beiScores).map(([competencyId, s]) => ({ competencyId, ...s })),
+                        overallComment: '',
+                        status,
+                    })
+                    setSaveStatus('saved')
+                    setEvalData((p) => p ? { ...p, status: 'SUBMITTED' } : p)
+                    setTimeout(() => setSaveStatus('idle'), 3000)
+                } catch (err) {
+                    if (err instanceof Error && err.name === 'AbortError') return
+                    setSaveStatus('error')
+                } finally {
+                    setSubmitting(false)
+                }
+            }})
+            return
         }
 
         // Abort previous in-flight request (GEMINI FIX #2)

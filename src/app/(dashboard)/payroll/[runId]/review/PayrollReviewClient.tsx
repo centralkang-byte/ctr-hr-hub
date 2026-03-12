@@ -427,9 +427,10 @@ interface Props {
   runId: string
 }
 
-export default function PayrollReviewClient({
+export default function PayrollReviewClient({user: _user, runId }: Props) {
+  const t = useTranslations('payroll')
   const tCommon = useTranslations('common')
-  const t = useTranslations('payroll') user: _user, runId }: Props) {
+
   const router = useRouter()
   const [run, setRun] = useState<PayrollRunInfo | null>(null)
   const [anomalies, setAnomalies] = useState<Anomaly[]>([])

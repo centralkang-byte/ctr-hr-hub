@@ -40,7 +40,6 @@ const STATUS_BADGE: Record<string, { label: string; icon: typeof CheckCircle2; c
 
 function Stars({ value, onChange, disabled }: { value: number; onChange: (v: number) => void; disabled: boolean }) {
     return (
-        <>
         <div className="flex items-center gap-0.5">
             {[1, 2, 3, 4, 5].map((i) => (
                 <button key={i} disabled={disabled} onClick={() => onChange(i)}
@@ -64,10 +63,10 @@ const CTR_VALUES = [
 
 // ─── Main Component ───────────────────────────────────────
 
-export default function MyPeerReviewClient({
+export default function MyPeerReviewClient({user }: {
+  user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
- user }: { user: SessionUser }) {
     const [cycles, setCycles] = useState<CycleOption[]>([])
     const [selectedCycleId, setSelectedCycleId] = useState('')
     const [cycleStatus, setCycleStatus] = useState('')
@@ -124,7 +123,21 @@ export default function MyPeerReviewClient({
                 toast({ title: '종합 의견은 최소 20자 이상 작성해주세요.', variant: 'destructive' })
                 return
             }
-            confirm({ title: '제출하면 수정할 수 없습니다. 제출하시겠습니까?', onConfirm: async () =>
+            confirm({ title: '제출하면 수정할 수 없습니다. 제출하시겠습니까?', onConfirm: async () => {
+                setSaving(true)
+                try {
+                    await apiClient.post('/api/v1/performance/peer-review/submit', {
+                        cycleId: selectedCycleId,
+                        nominationId: activeReview.nominationId,
+                        ...form,
+                        status,
+                    })
+                    setActiveReview(null)
+                    await fetchAssignments()
+                } catch { toast({ title: '저장에 실패했습니다.', variant: 'destructive' }) }
+                finally { setSaving(false) }
+            }})
+            return
         }
 
         setSaving(true)
@@ -307,6 +320,5 @@ export default function MyPeerReviewClient({
             )}
         <ConfirmDialog {...dialogProps} />
         </div>
-      </>
     )
 }

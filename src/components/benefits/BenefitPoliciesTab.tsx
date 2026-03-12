@@ -157,14 +157,15 @@ export default function BenefitPoliciesTab() {
   }
 
   const handleDelete = async (policy: PolicyRow) => {
-    confirm({ variant: 'destructive', title: `"${policy.name}" 정책을 삭제하시겠습니까?`, onConfirm: async () =>
-    try {
-      await apiClient.delete(`/api/v1/benefits/policies/${policy.id}`)
-      toast({ title: '정책이 삭제되었습니다.' })
-      fetchPolicies()
-    } catch {
-      toast({ title: '삭제 실패', variant: 'destructive' })
-    }
+    confirm({ variant: 'destructive', title: `"${policy.name}" 정책을 삭제하시겠습니까?`, onConfirm: async () => {
+      try {
+        await apiClient.delete(`/api/v1/benefits/policies/${policy.id}`)
+        toast({ title: '정책이 삭제되었습니다.' })
+        fetchPolicies()
+      } catch {
+        toast({ title: '삭제 실패', variant: 'destructive' })
+      }
+    }})
   }
 
   const columns: DataTableColumn<PolicyRow>[] = [

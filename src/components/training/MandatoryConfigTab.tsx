@@ -181,29 +181,31 @@ export default function MandatoryConfigTab() {
   }
 
   const handleDelete = async (config: MandatoryConfig) => {
-    confirm({ variant: 'destructive', title: `"${config.course.title}" 의무교육 설정을 삭제하시겠습니까?`, onConfirm: async () =>
-    try {
-      await apiClient.delete(`/api/v1/training/mandatory-config/${config.id}`)
-      toast({ title: '설정이 삭제되었습니다.' })
-      fetchConfigs()
-    } catch {
-      toast({ title: '삭제 실패', variant: 'destructive' })
-    }
+    confirm({ variant: 'destructive', title: `"${config.course.title}" 의무교육 설정을 삭제하시겠습니까?`, onConfirm: async () => {
+      try {
+        await apiClient.delete(`/api/v1/training/mandatory-config/${config.id}`)
+        toast({ title: '설정이 삭제되었습니다.' })
+        fetchConfigs()
+      } catch {
+        toast({ title: '삭제 실패', variant: 'destructive' })
+      }
+    }})
   }
 
   const handleAutoEnroll = async () => {
-    confirm({ title: '현재 활성화된 모든 의무교육 설정으로 자동 수강 신청하시겠습니까?', onConfirm: async () =>
-    setEnrolling(true)
-    try {
-      const res = await apiClient.post<{ totalEnrolled: number; totalSkipped: number; configsProcessed: number }>('/api/v1/training/mandatory-config/enroll', {})
-      const d = res.data
-      toast({ title: `자동 등록 완료: ${d?.totalEnrolled ?? 0}명 신규 등록, ${d?.totalSkipped ?? 0}명 스킵` })
-      fetchStatus()
-    } catch {
-      toast({ title: '자동 등록 실패', variant: 'destructive' })
-    } finally {
-      setEnrolling(false)
-    }
+    confirm({ title: '현재 활성화된 모든 의무교육 설정으로 자동 수강 신청하시겠습니까?', onConfirm: async () => {
+      setEnrolling(true)
+      try {
+        const res = await apiClient.post<{ totalEnrolled: number; totalSkipped: number; configsProcessed: number }>('/api/v1/training/mandatory-config/enroll', {})
+        const d = res.data
+        toast({ title: `자동 등록 완료: ${d?.totalEnrolled ?? 0}명 신규 등록, ${d?.totalSkipped ?? 0}명 스킵` })
+        fetchStatus()
+      } catch {
+        toast({ title: '자동 등록 실패', variant: 'destructive' })
+      } finally {
+        setEnrolling(false)
+      }
+    }})
   }
 
   return (

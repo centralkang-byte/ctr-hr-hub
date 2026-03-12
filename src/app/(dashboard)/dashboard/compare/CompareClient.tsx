@@ -104,7 +104,7 @@ export function CompareClient() {
       {loading ? (
         <WidgetSkeleton height="h-64" />
       ) : !data ? (
-        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." /><span className="hidden"</div>
+        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
       ) : (
         <>
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">

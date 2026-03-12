@@ -62,14 +62,12 @@ const STANDARD_FIELDS = [
 
 type Tab = 'upload' | 'mapping' | 'history'
 
-export default function PayrollImportClient({
-  const tCommon = useTranslations('common')
-  const t = useTranslations('payroll')
-  user, companies
-}: {
+export default function PayrollImportClient({ user, companies }: {
   user: SessionUser
   companies: Company[]
 }) {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('payroll')
   const [tab, setTab] = useState<Tab>('upload')
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(companies[0] ?? null)
   const [mappings, setMappings] = useState<ImportMapping[]>([])

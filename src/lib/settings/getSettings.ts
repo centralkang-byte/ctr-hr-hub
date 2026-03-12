@@ -40,7 +40,7 @@ export async function getCompanySettings<M extends SettingsModelName>(
 ): Promise<SettingsResponse<SettingsTypeMap[M]>> {
   // 1. 법인 오버라이드 조회
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const override = await (prisma[model] as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap).findFirst({
+  const override = await (prisma[model] as any).findFirst({
     where: { companyId },
   })
 
@@ -50,7 +50,7 @@ export async function getCompanySettings<M extends SettingsModelName>(
 
   // 2. 글로벌 디폴트 fallback
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const global = await (prisma[model] as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap).findFirst({
+  const global = await (prisma[model] as any).findFirst({
     where: { companyId: null },
   })
 
@@ -65,7 +65,7 @@ export async function hasCompanyOverride(
   companyId: string
 ): Promise<boolean> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const count = await (prisma[model] as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap).count({ where: { companyId } })
+  const count = await (prisma[model] as any).count({ where: { companyId } })
   return count > 0
 }
 
@@ -81,7 +81,7 @@ export async function createCompanyOverride(
 
   // 글로벌 디폴트 조회
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const globalDefault = await (prisma[model] as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap).findFirst({
+  const globalDefault = await (prisma[model] as any).findFirst({
     where: { companyId: null },
   })
 
@@ -91,7 +91,7 @@ export async function createCompanyOverride(
   const { id: _id, createdAt: _c, updatedAt: _u, companyId: _co, ...rest } = globalDefault
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (prisma[model] as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap).create({
+  await (prisma[model] as any).create({
     data: { ...rest, companyId },
   })
 }
@@ -104,5 +104,5 @@ export async function deleteCompanyOverride(
   companyId: string
 ): Promise<void> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (prisma[model] as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap).deleteMany({ where: { companyId } })
+  await (prisma[model] as any).deleteMany({ where: { companyId } })
 }

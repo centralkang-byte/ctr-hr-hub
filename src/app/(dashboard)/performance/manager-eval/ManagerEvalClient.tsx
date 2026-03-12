@@ -166,9 +166,37 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
   // ─── Save / Submit ──────────────────────────────────
 
   const handleSave = async (status: 'DRAFT' | 'SUBMITTED') => {
-    if (!(!selectedEmployee) return
-    if (status === 'SUBMITTED')) return
-        confirm({ title: '제출하면 수정할 수 없습니다. 제출하시겠습니까?', onConfirm: async () =>
+    if (!selectedEmployee) return
+    if (status === 'SUBMITTED') {
+        confirm({ title: '제출하면 수정할 수 없습니다. 제출하시겠습니까?', onConfirm: async () => {
+          setSubmitting(true)
+          try {
+            const res = await apiClient.post<{ id: string }>('/api/v1/performance/evaluations/manager', {
+              cycleId: selectedCycleId,
+              employeeId: selectedEmployee,
+              goalScores: Object.values(goalScores),
+              competencyScores: Object.values(compScores),
+              performanceGrade: performanceGrade || undefined,
+              competencyGrade: competencyGrade || undefined,
+              beiIndicatorScores: Object.entries(beiChecks).map(([indicatorId, checked]) => ({
+                indicatorId,
+                checked,
+              })),
+              overallComment,
+              status,
+            })
+            // Capture evaluation ID so AI draft can be generated
+            if (res.data?.id) {
+              setCurrentEvaluationId(res.data.id)
+            }
+            await fetchTeam()
+            toast({ title: '제출 완료되었습니다.' })
+          } catch {
+            toast({ title: '저장에 실패했습니다.', variant: 'destructive' })
+          } finally { setSubmitting(false) }
+        }})
+        return
+    }
     setSubmitting(true)
     try {
       const res = await apiClient.post<{ id: string }>('/api/v1/performance/evaluations/manager', {
@@ -190,7 +218,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
         setCurrentEvaluationId(res.data.id)
       }
       await fetchTeam()
-      toast({ title: status === 'DRAFT' ? '임시 저장되었습니다.' : '제출 완료되었습니다.' })
+      toast({ title: '임시 저장되었습니다.' })
     } catch {
       toast({ title: '저장에 실패했습니다.', variant: 'destructive' })
     } finally { setSubmitting(false) }

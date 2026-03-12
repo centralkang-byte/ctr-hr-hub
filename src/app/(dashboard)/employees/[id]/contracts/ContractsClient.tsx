@@ -46,9 +46,8 @@ const CONTRACT_TYPE_COLORS: Record<string, string> = {
   PROBATION_ONLY: 'bg-[#FFEDD5] text-[#9A3412]',
 }
 
-export default function ContractsClient({
+export default function ContractsClient({ employeeId, permissions }: Props) {
   const tCommon = useTranslations('common')
- employeeId, permissions }: Props) {
   const t = useTranslations('employee')
   const tc = useTranslations('common')
 
@@ -64,7 +63,6 @@ export default function ContractsClient({
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState({
-  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmit)
     contractType: 'PERMANENT',
     startDate: '',
     endDate: '',
@@ -98,6 +96,8 @@ export default function ContractsClient({
     setOpen(false)
     await loadContracts()
   }
+
+  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmit)
 
   const isExpiringSoon = (endDate: string | null) => {
     if (!endDate) return false
@@ -235,7 +235,10 @@ export default function ContractsClient({
                 <TableCell className="text-sm text-[#666]">{c.notes ?? '-'}</TableCell>
               </TableRow>
             ))}
-            {!contracts?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+            {!contracts?.length && (
+              <TableRow>
+                <TableCell colSpan={7}>
+                  <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
                 </TableCell>
               </TableRow>
             )}

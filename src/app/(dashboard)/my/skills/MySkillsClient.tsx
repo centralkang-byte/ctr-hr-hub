@@ -112,10 +112,10 @@ function LevelSelector({
 
 // ── 메인 컴포넌트 ─────────────────────────────────────────
 
-export default function MySkillsClient({
+export default function MySkillsClient({user, competencies, requirementMap, grade }: Props) {
   const tCommon = useTranslations('common')
   const t = useTranslations('mySpace')
- user, competencies, requirementMap, grade }: Props) {
+
   const [period, setPeriod] = useState('2026-H1')
   const [assessments, setAssessments] = useState<Record<string, AssessmentItem>>({})
   const [savedAssessments, setSavedAssessments] = useState<Record<string, AssessmentItem>>({})

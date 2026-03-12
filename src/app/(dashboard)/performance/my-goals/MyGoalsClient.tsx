@@ -38,7 +38,6 @@ function GoalModal({ initial, onSave, onClose, saving }: {
     const set = (k: keyof GoalForm, v: string | number) => setForm((p) => ({ ...p, [k]: v }))
 
     return (
-        <>
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={onClose}>
             <div className="w-full max-w-lg rounded-xl bg-white p-6" onClick={(e) => e.stopPropagation()}>
                 <div className="mb-5 flex items-center justify-between">
@@ -88,10 +87,10 @@ function GoalModal({ initial, onSave, onClose, saving }: {
 
 // ─── Main Component ───────────────────────────────────────
 
-export default function MyGoalsClient({
+export default function MyGoalsClient({user }: {
+  user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
- user }: { user: SessionUser }) {
     const [cycles, setCycles] = useState<CycleOption[]>([])
     const [selectedCycleId, setSelectedCycleId] = useState('')
     const [cycleStatus, setCycleStatus] = useState('')
@@ -153,23 +152,25 @@ export default function MyGoalsClient({
     }
 
     async function handleDelete(goalId: string) {
-        confirm({ variant: 'destructive', title: '이 목표를 삭제하시겠습니까?', onConfirm: async () =>
-        try { await apiClient.delete(`/api/v1/performance/goals/${goalId}`); await fetchGoals() }
-        catch { toast({ title: '삭제에 실패했습니다.', variant: 'destructive' }) }
+        confirm({ variant: 'destructive', title: '이 목표를 삭제하시겠습니까?', onConfirm: async () => {
+            try { await apiClient.delete(`/api/v1/performance/goals/${goalId}`); await fetchGoals() }
+            catch { toast({ title: '삭제에 실패했습니다.', variant: 'destructive' }) }
+        }})
     }
 
     async function handleSubmitAll() {
         if (!canSubmit) return
-        confirm({ title: '모든 초안 목표를 제출하시겠습니까? 제출 후에는 수정할 수 없습니다.', onConfirm: async () =>
-        setSaving(true)
-        try {
-            const firstDraft = goals.find((g) => g.status === 'DRAFT')
-            if (firstDraft) {
-                await apiClient.put(`/api/v1/performance/goals/${firstDraft.id}/submit`)
-                await fetchGoals()
-            }
-        } catch { toast({ title: '제출에 실패했습니다.', variant: 'destructive' }) }
-        finally { setSaving(false) }
+        confirm({ title: '모든 초안 목표를 제출하시겠습니까? 제출 후에는 수정할 수 없습니다.', onConfirm: async () => {
+            setSaving(true)
+            try {
+                const firstDraft = goals.find((g) => g.status === 'DRAFT')
+                if (firstDraft) {
+                    await apiClient.put(`/api/v1/performance/goals/${firstDraft.id}/submit`)
+                    await fetchGoals()
+                }
+            } catch { toast({ title: '제출에 실패했습니다.', variant: 'destructive' }) }
+            finally { setSaving(false) }
+        }})
     }
 
     // ─── Cycle selector change
@@ -347,6 +348,5 @@ export default function MyGoalsClient({
             {modal && <GoalModal initial={modal.initial} onSave={handleSave} onClose={() => setModal(null)} saving={saving} />}
         <ConfirmDialog {...dialogProps} />
         </div>
-      </>
     )
 }

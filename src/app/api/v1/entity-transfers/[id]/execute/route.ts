@@ -59,7 +59,7 @@ export const PUT = withPermission(
         })
 
         const employee = transfer.employee
-        const currentAsgn = employee.assignments[0] as any // eslint-disable-line @typescript-eslint/no-explicit-any
+        const currentAsgn = employee.assignments[0] as any
         const now = new Date()
 
         // 2. Update employeeNo if changed

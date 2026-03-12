@@ -103,10 +103,9 @@ function parseFactors(
 
 export default function AttritionRiskClient() {
   const tCommon = useTranslations('common')
-  const t = useTranslations('analytics')
+  const t = useTranslations('analytics.attritionPage')
 
   const { toast } = useToast()
-  const t = useTranslations('analytics.attritionPage')
   const [loading, setLoading] = useState(true)
   const [recalculating, setRecalculating] = useState(false)
 

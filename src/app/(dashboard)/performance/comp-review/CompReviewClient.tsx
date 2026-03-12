@@ -42,6 +42,7 @@ const MeritRowComponent = memo(function MeritRowComponent({
 }: {
     row: MeritRow; onUpdate: (employeeId: string, appliedPct: number, reason: string) => void
 }) {
+    const tCommon = useTranslations('common')
     const [localPct, setLocalPct] = useState(row.appliedPct)
     const [localReason, setLocalReason] = useState(row.exceptionReason)
     const isOutOfRange = localPct < row.recommendedPct * 0.5 || localPct > row.recommendedPct * 1.5
@@ -81,10 +82,9 @@ const MeritRowComponent = memo(function MeritRowComponent({
 
 // ─── Main Component ───────────────────────────────────────
 
-export default function CompReviewClient({
-  const tCommon = useTranslations('common')
-  const t = useTranslations('performance')
- user }: { user: SessionUser }) {
+export default function CompReviewClient({user }: { user: SessionUser }) {
+    const tCommon = useTranslations('common')
+    const t = useTranslations('performance')
     const isHrAdmin = user.role === 'SUPER_ADMIN' || user.role === 'HR_ADMIN'
     const isExecutive = user.role === 'EXECUTIVE'
     const hasAccess = isHrAdmin || isExecutive
@@ -100,6 +100,7 @@ export default function CompReviewClient({
     const [saving, setSaving] = useState(false)
     const [approving, setApproving] = useState(false)
     const [pendingUpdates, setPendingUpdates] = useState<Record<string, { pct: number; reason: string }>>({})
+    const { confirm, dialogProps } = useConfirmDialog()
 
     useEffect(() => {
         async function load() {
@@ -114,7 +115,6 @@ export default function CompReviewClient({
     }, [])
 
     const fetchData = useCallback(async () => {
-  const { confirm, dialogProps } = useConfirmDialog()
         if (!selectedCycleId) return
         setLoading(true); setError('')
         try {
@@ -160,13 +160,14 @@ export default function CompReviewClient({
         const msg = exceptionCount > 0
             ? `최종 승인을 요청합니다.\n\n⚠️ ${exceptionCount}건의 예외가 포함되어 있습니다.\n\n승인 후에는 되돌릴 수 없습니다.`
             : '최종 승인을 요청합니다.\n\n승인 후에는 되돌릴 수 없습니다.'
-        confirm({ title: msg, onConfirm: async () =>
-        setApproving(true)
-        try {
-            await apiClient.post(`/api/v1/performance/compensation/${selectedCycleId}/approve`)
-            await fetchData()
-        } catch { toast({ title: '승인에 실패했습니다.', variant: 'destructive' }) }
-        finally { setApproving(false) }
+        confirm({ title: msg, onConfirm: async () => {
+            setApproving(true)
+            try {
+                await apiClient.post(`/api/v1/performance/compensation/${selectedCycleId}/approve`)
+                await fetchData()
+            } catch { toast({ title: '승인에 실패했습니다.', variant: 'destructive' }) }
+            finally { setApproving(false) }
+        }})
     }
 
     async function handleExport() {

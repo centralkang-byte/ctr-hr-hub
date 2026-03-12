@@ -90,7 +90,7 @@ export default function PeerReviewResultsClient() {
   }
 
   if (loading) return <div className="p-6 text-center text-[#999]">{tCommon('loading')}</div>
-  if (!results || !results.summary) return <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." /><span className="hidden"</div>
+  if (!results || !results.summary) return <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
 
   const radarData = Object.entries(results.summary.competencyAvg).map(([key, value]) => ({
     competency: COMPETENCY_LABELS[key] ?? key,

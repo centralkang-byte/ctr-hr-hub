@@ -74,13 +74,14 @@ export function TeamsWebhookSection() {
   }
 
   const handleDelete = async (id: string) => {
-    confirm({ variant: 'destructive', title: '이 Webhook 설정을 삭제할까요?', onConfirm: async () =>
-    try {
-      await fetch(`/api/v1/settings/teams-webhooks/${id}`, { method: 'DELETE' })
-      loadWebhooks()
-    } catch {
-      // ignore
-    }
+    confirm({ variant: 'destructive', title: '이 Webhook 설정을 삭제할까요?', onConfirm: async () => {
+      try {
+        await fetch(`/api/v1/settings/teams-webhooks/${id}`, { method: 'DELETE' })
+        loadWebhooks()
+      } catch {
+        // ignore
+      }
+    }})
   }
 
   const handleTest = async (id: string, url: string) => {

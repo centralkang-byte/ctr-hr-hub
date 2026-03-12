@@ -29,9 +29,8 @@ interface TeamResult {
 // ─── Component ────────────────────────────────────────────
 
 export default function TeamResultsClient({
-  const tCommon = useTranslations('common')
-  const t = useTranslations('performance')
  user }: { user: SessionUser }) {
+  const tCommon = useTranslations('common')
   const t = useTranslations('performance')
   const tc = useTranslations('common')
 

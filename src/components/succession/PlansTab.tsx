@@ -103,14 +103,15 @@ export default function PlansTab() {
   }
 
   const handleDelete = async (plan: PlanRow) => {
-    confirm({ variant: 'destructive', title: `"${plan.positionTitle}" 계획을 삭제하시겠습니까?`, onConfirm: async () =>
-    try {
-      await apiClient.delete(`/api/v1/succession/plans/${plan.id}`)
-      toast({ title: '핵심직책이 삭제되었습니다.' })
-      fetchPlans()
-    } catch {
-      toast({ title: '삭제 실패', variant: 'destructive' })
-    }
+    confirm({ variant: 'destructive', title: `"${plan.positionTitle}" 계획을 삭제하시겠습니까?`, onConfirm: async () => {
+      try {
+        await apiClient.delete(`/api/v1/succession/plans/${plan.id}`)
+        toast({ title: '핵심직책이 삭제되었습니다.' })
+        fetchPlans()
+      } catch {
+        toast({ title: '삭제 실패', variant: 'destructive' })
+      }
+    }})
   }
 
   const columns: DataTableColumn<PlanRow>[] = [

@@ -70,7 +70,7 @@ export default function RewardFormClient({ user }: Props) {
     formState: { errors },
   } = useForm<FormInput>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(formSchema) as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap,
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       employeeId: '',
       rewardType: '',

@@ -118,9 +118,10 @@ interface Props {
     runId: string
 }
 
-export default function PayrollApproveClient({
+export default function PayrollApproveClient({ user: _user, runId }: Props) {
+  const t = useTranslations('payroll')
   const tCommon = useTranslations('common')
-  const t = useTranslations('payroll') user: _user, runId }: Props) {
+
     const router = useRouter()
     const [run, setRun] = useState<RunInfo | null>(null)
     const [approval, setApproval] = useState<ApprovalStatus | null>(null)

@@ -113,7 +113,7 @@ export const GET = withPermission(
       .slice(0, 20)
       .map((r) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const emp = r.employee as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap
+        const emp = r.employee as any
         return {
           employeeId: r.employeeId,
           name: emp.name as string,

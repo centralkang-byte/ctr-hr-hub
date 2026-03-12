@@ -45,9 +45,8 @@ const RULE_ICONS: Record<string, string> = {
   '급격한 변화': '⚡',
 }
 
-export default function PayrollAnomaliesClient({
+export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
-  const t = useTranslations('payroll') user }: { user: SessionUser }) {
   const now = new Date()
   const [year, setYear] = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth() + 1)

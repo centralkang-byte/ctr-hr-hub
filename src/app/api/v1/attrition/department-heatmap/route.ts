@@ -67,7 +67,7 @@ export const GET = withPermission(
     const deptEmployeeMap = new Map<string, string[]>()
     for (const emp of activeEmployees) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const deptId: string | null | undefined = (emp.assignments?.[0] as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap)?.departmentId
+      const deptId: string | null | undefined = (emp.assignments?.[0] as any)?.departmentId
       if (!deptId) continue
       const list = deptEmployeeMap.get(deptId) ?? []
       list.push(emp.id)

@@ -60,11 +60,10 @@ function MoMDelta({ current, previous }: { current: number; previous: number | n
 }
 
 export default function PayrollMeClient({
-  const tCommon = useTranslations('common')
-  const t = useTranslations('payroll')
  user: _user }: PayrollMeClientProps) {
-  const router = useRouter()
+  const tCommon = useTranslations('common')
   const t = useTranslations('payrollMe')
+  const router = useRouter()
   const [items, setItems] = useState<PayslipItem[]>([])
   const [loading, setLoading] = useState(true)
 

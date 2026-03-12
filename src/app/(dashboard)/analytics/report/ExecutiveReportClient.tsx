@@ -20,12 +20,11 @@ import type { ExecutiveReport } from '@/lib/analytics/types'
 
 export default function ExecutiveReportClient() {
   const tCommon = useTranslations('common')
-  const t = useTranslations('analytics')
+  const t = useTranslations('analytics.executiveReportPage')
 
   const searchParams = useSearchParams()
   const companyId = searchParams.get('company_id') ?? undefined
   const { toast } = useToast()
-  const t = useTranslations('analytics.executiveReportPage')
 
   const [report, setReport] = useState<ExecutiveReport | null>(null)
   const [loading, setLoading] = useState(false)

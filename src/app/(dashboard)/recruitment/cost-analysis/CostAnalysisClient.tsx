@@ -174,12 +174,13 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
 
   // ─── Delete ────────────────────────────────────────────
   const handleDelete = async (id: string) => {
-    confirm({ variant: 'destructive', title: '삭제하시겠습니까?', onConfirm: async () =>
-    try {
-      await apiClient.delete(`/api/v1/recruitment/costs/${id}`)
-      fetchCosts()
-      fetchAnalysis()
-    } catch { /* ignore */ }
+    confirm({ variant: 'destructive', title: '삭제하시겠습니까?', onConfirm: async () => {
+      try {
+        await apiClient.delete(`/api/v1/recruitment/costs/${id}`)
+        fetchCosts()
+        fetchAnalysis()
+      } catch { /* ignore */ }
+    }})
   }
 
   const formatCurrency = (amount: number) =>
@@ -188,7 +189,6 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
   // ─── Render ────────────────────────────────────────────
   if (loading) {
     return (
-      <>
       <div className="flex items-center justify-center h-96">
         <Loader2 className="w-8 h-8 animate-spin text-[#00C853]" />
       </div>
@@ -641,6 +641,5 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
       )}
     <ConfirmDialog {...dialogProps} />
     </div>
-  </>
   )
 }

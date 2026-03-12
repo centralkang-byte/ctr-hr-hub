@@ -42,9 +42,8 @@ const STATUS_COLORS: Record<string, string> = {
   PENDING_RENEWAL: 'bg-[#FEF9C3] text-[#854D0E]',
 }
 
-export default function WorkPermitsClient({
+export default function WorkPermitsClient({ employeeId, permissions }: Props) {
   const tCommon = useTranslations('common')
- employeeId, permissions }: Props) {
   const t = useTranslations('employee')
   const tc = useTranslations('common')
 
@@ -67,7 +66,6 @@ export default function WorkPermitsClient({
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState({
-  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmit)
     permitType: 'WORK_VISA',
     permitNumber: '',
     issuingCountry: '',
@@ -105,6 +103,8 @@ export default function WorkPermitsClient({
     setOpen(false)
     await loadPermits()
   }
+
+  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmit)
 
   const isExpiringSoon = (expiryDate: string | null) => {
     if (!expiryDate) return false
@@ -253,7 +253,10 @@ export default function WorkPermitsClient({
                 <TableCell className="text-sm text-[#666]">{p.notes ?? '-'}</TableCell>
               </TableRow>
             ))}
-            {!permits?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+            {!permits?.length && (
+              <TableRow>
+                <TableCell colSpan={7}>
+                  <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
                 </TableCell>
               </TableRow>
             )}

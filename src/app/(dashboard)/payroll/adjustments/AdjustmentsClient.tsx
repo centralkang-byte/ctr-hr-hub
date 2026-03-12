@@ -94,9 +94,10 @@ function formatKRW(amount: number) {
     return `${sign}${abs.toLocaleString('ko-KR')}원`
 }
 
-export default function AdjustmentsClient({
+export default function AdjustmentsClient({user }: Props) {
+  const t = useTranslations('payroll')
   const tCommon = useTranslations('common')
-  const t = useTranslations('payroll') user }: Props) {
+
     const [runs, setRuns] = useState<PayrollRun[]>([])
     const [selectedRun, setSelectedRun] = useState<PayrollRun | null>(null)
     const [adjustments, setAdjustments] = useState<Adjustment[]>([])
@@ -195,36 +196,38 @@ export default function AdjustmentsClient({
 
     const handleDelete = async (adjustmentId: string) => {
         if (!selectedRun) return
-        confirm({ variant: 'destructive', title: '이 조정 항목을 삭제하시겠습니까?', onConfirm: async () =>
-        const res = await fetch(`/api/v1/payroll/${selectedRun.id}/adjustments/${adjustmentId}`, {
-            method: 'DELETE',
-        })
-        if (res.ok) {
-            await loadAdjustments(selectedRun.id)
-            await loadRuns()
-        }
+        confirm({ variant: 'destructive', title: '이 조정 항목을 삭제하시겠습니까?', onConfirm: async () => {
+            const res = await fetch(`/api/v1/payroll/${selectedRun.id}/adjustments/${adjustmentId}`, {
+                method: 'DELETE',
+            })
+            if (res.ok) {
+                await loadAdjustments(selectedRun.id)
+                await loadRuns()
+            }
+        }})
     }
 
     const handleComplete = async () => {
         if (!selectedRun) return
-        confirm({ title: '조정을 완료하고 이상 검토 단계로 전환하시겠습니까? 이상 탐지 엔진이 실행됩니다.', onConfirm: async () =>
-        setCompleting(true)
-        try {
-            const res = await fetch(`/api/v1/payroll/${selectedRun.id}/adjustments/complete`, {
-                method: 'POST',
-            })
-            if (res.ok) {
-                const json = await res.json()
-                toast({ title: `이상 검토로 전환 완료.\n이상 항목: ${json.data?.anomalyCount ?? 0}건` })
-                setSelectedRun(null)
-                await loadRuns()
-            } else {
-                const err = await res.json()
+        confirm({ title: '조정을 완료하고 이상 검토 단계로 전환하시겠습니까? 이상 탐지 엔진이 실행됩니다.', onConfirm: async () => {
+            setCompleting(true)
+            try {
+                const res = await fetch(`/api/v1/payroll/${selectedRun.id}/adjustments/complete`, {
+                    method: 'POST',
+                })
+                if (res.ok) {
+                    const json = await res.json()
+                    toast({ title: `이상 검토로 전환 완료.\n이상 항목: ${json.data?.anomalyCount ?? 0}건` })
+                    setSelectedRun(null)
+                    await loadRuns()
+                } else {
+                    const err = await res.json()
                 toast({ title: err.error?.message ?? '오류가 발생했습니다.', variant: 'destructive' })
             }
         } finally {
             setCompleting(false)
         }
+    }})
     }
 
     const filteredAdj = adjustments

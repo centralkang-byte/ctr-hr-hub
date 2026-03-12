@@ -26,13 +26,12 @@ interface CycleOption {
 // ─── Component ────────────────────────────────────────────
 
 export default function NewGoalClient({
+ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const { isSubmitting, guardedSubmit } = useSubmitGuard()
   const t = useTranslations('performance')
- user }: { user: SessionUser }) {
-  const router = useRouter()
-  const t = useTranslations('performance')
   const tc = useTranslations('common')
+  const router = useRouter()
   const [cycles, setCycles] = useState<CycleOption[]>([])
   const [submitting, setSubmitting] = useState(false)
 
@@ -54,7 +53,7 @@ export default function NewGoalClient({
     formState: { errors },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } = useForm<FormValues>({ resolver: zodResolver(formSchema) as any)
+  } = useForm<FormValues>({ resolver: zodResolver(formSchema) as any })
 
   // ─── Fetch cycles ─────────────────────────────────────
 

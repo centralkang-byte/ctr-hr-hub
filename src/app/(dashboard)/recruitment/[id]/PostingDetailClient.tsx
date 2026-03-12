@@ -86,11 +86,10 @@ interface Props {
 // ─── Component ───────────────────────────────────────────
 
 export default function PostingDetailClient({
+ user, id }: Props) {
   const tCommon = useTranslations('common')
   const t = useTranslations('recruitment')
- user, id }: Props) {
   const router = useRouter()
-  const t = useTranslations('recruitment')
   const [data, setData] = useState<PostingDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)

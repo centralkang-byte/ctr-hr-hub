@@ -103,9 +103,10 @@ interface Props {
     runId: string
 }
 
-export default function PayrollPublishDashboardClient({
+export default function PayrollPublishDashboardClient({user: _user, runId }: Props) {
+  const t = useTranslations('payroll')
   const tCommon = useTranslations('common')
-  const t = useTranslations('payroll') user: _user, runId }: Props) {
+
     const router = useRouter()
     const [data, setData] = useState<PublishStatus | null>(null)
     const [loading, setLoading] = useState(true)

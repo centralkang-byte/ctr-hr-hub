@@ -90,7 +90,7 @@ export const POST = withPermission(
         }))
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await prisma.migrationLog.createMany({ data: errorLogs as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma createMany input type })
+        await prisma.migrationLog.createMany({ data: errorLogs as any})
       }
 
       // Log individual warnings
@@ -104,7 +104,7 @@ export const POST = withPermission(
         }))
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await prisma.migrationLog.createMany({ data: warningLogs as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma createMany input type })
+        await prisma.migrationLog.createMany({ data: warningLogs as any})
       }
 
       const { ip, userAgent } = extractRequestMeta(req.headers)

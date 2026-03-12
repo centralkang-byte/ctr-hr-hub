@@ -93,6 +93,6 @@ export default async function MyProfilePage() {
     birthDate: employee.birthDate?.toISOString() ?? null,
   }
 
-  return <MyProfileClient user={user} employee={serialized as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap} />
+  return <MyProfileClient user={user} employee={serialized as any} />
 }
 

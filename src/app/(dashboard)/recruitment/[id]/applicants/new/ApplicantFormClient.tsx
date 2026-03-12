@@ -50,12 +50,11 @@ interface Props {
 // ─── Component ──────────────────────────────────────────
 
 export default function ApplicantFormClient({
+ user, postingId }: Props) {
   const tCommon = useTranslations('common')
   const { isSubmitting, guardedSubmit } = useSubmitGuard()
   const t = useTranslations('recruitment')
- user, postingId }: Props) {
   const router = useRouter()
-  const t = useTranslations('recruitment')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [duplicates, setDuplicates] = useState<DuplicateMatch[]>([])

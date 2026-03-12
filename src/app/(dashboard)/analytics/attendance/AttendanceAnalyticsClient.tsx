@@ -26,7 +26,6 @@ import type { AttendanceData } from '@/lib/analytics/types'
 
 export default function AttendanceAnalyticsClient() {
   const tCommon = useTranslations('common')
-  const t = useTranslations('analytics')
 
   const searchParams = useSearchParams()
   const companyId = searchParams.get('company_id') ?? undefined

@@ -31,7 +31,7 @@ export const GET = withPermission(
               in: ['IN_PROGRESS', 'COMPLETED'] as OnboardingProgressStatus[],
             },
           }),
-      ...(planType ? { planType: planType as any // eslint-disable-line @typescript-eslint/no-explicit-any -- enum compatibility } : {}),
+      ...(planType ? { planType: planType as any} : {}),
       ...(companyId
         ? {
             OR: [

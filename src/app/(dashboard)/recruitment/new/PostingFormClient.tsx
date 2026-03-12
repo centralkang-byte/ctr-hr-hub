@@ -40,12 +40,11 @@ interface Props {
 // ─── Component ───────────────────────────────────────────
 
 export default function PostingFormClient({
+ user }: Props) {
   const tCommon = useTranslations('common')
   const { isSubmitting, guardedSubmit } = useSubmitGuard()
   const t = useTranslations('recruitment')
- user }: Props) {
   const router = useRouter()
-  const t = useTranslations('recruitment')
 
   // ─── Options (use t() for labels) ─────────────────────
   const EMPLOYMENT_TYPE_OPTIONS = [
@@ -100,7 +99,7 @@ export default function PostingFormClient({
     formState: { errors },
   } = useForm<FormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(formSchema) as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap,
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       title: '',
       description: '',

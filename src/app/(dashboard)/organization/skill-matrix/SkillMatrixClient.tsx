@@ -242,16 +242,14 @@ function RadarModal({
 
 // ── 메인 컴포넌트 ─────────────────────────────────────────
 
-export default function SkillMatrixClient({
-  const tCommon = useTranslations('common')
-  const t = useTranslations('skills')
-
-  user,
+export default function SkillMatrixClient({user,
   departments,
 }: {
   user: SessionUser
   departments: { id: string; name: string }[]
 }) {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('skills')
   const [period, setPeriod] = useState('2026-H1')
   const [deptId, setDeptId] = useState<string>('all')
   const [activeTab, setActiveTab] = useState<'matrix' | 'dept' | 'report'>('matrix')

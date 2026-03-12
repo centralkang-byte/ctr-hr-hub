@@ -123,7 +123,7 @@ export const POST = withPermission(
             requirements: requisition.requirements
               ? JSON.stringify(requisition.requirements)
               : null,
-            employmentType: (empTypeMap[requisition.employmentType] ?? 'FULL_TIME') as any // eslint-disable-line @typescript-eslint/no-explicit-any -- enum compatibility,
+            employmentType: (empTypeMap[requisition.employmentType] ?? 'FULL_TIME') as any,
             headcount: requisition.headcount,
             status: 'DRAFT',
             createdBy: requisition.requesterId,

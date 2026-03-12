@@ -21,7 +21,7 @@ import {
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { ROLE } from '@/lib/constants'
-import { BUTTON_SIZES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { BUTTON_SIZES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ─────────────────────────────────────────────────
@@ -107,7 +107,6 @@ function formatDate(d: string | null | undefined): string {
 function StatusBadge({ status }: { status: string }) {
   const color = STATUS_COLORS[status] ?? 'bg-[#F5F5F5] text-[#666]'
   return (
-    <>
     <span
       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${color}`}
     >
@@ -272,9 +271,10 @@ function SettlementDetailModal({
 
 // ─── Main Component ────────────────────────────────────────
 
-export default function YearEndHRClient({
+export default function YearEndHRClient({user, defaultYear }: YearEndHRClientProps) {
+  const t = useTranslations('payroll')
   const tCommon = useTranslations('common')
-  const t = useTranslations('payroll') user, defaultYear }: YearEndHRClientProps) {
+
   const [year, setYear] = useState(defaultYear)
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [settlements, setSettlements] = useState<SettlementRow[]>([])
@@ -292,6 +292,7 @@ export default function YearEndHRClient({
   const [issuingReceipt, setIssuingReceipt] = useState(false)
   const [bulkConfirming, setBulkConfirming] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const { confirm, dialogProps } = useConfirmDialog()
 
   const fetchSettlements = useCallback(async () => {
     setLoading(true)
@@ -394,7 +395,6 @@ export default function YearEndHRClient({
   }, [settlements, selectedIds, year, user.companyId, fetchSettlements])
 
   const handleBulkConfirmAll = useCallback(async () => {
-  const { confirm, dialogProps } = useConfirmDialog()
     const confirmable = settlements.filter(
       (s) => s.status === 'submitted' || s.status === 'hr_review',
     )
@@ -403,22 +403,22 @@ export default function YearEndHRClient({
       return
     }
 
-    confirm({ title: `${confirmable.length}건의 정산을 일괄 확정하시겠습니까?`, onConfirm: async () =>
-
-    setBulkConfirming(true)
-    try {
-      await apiClient.post('/api/v1/year-end/hr/bulk-confirm', {
-        year,
-        companyId: user.companyId,
-        settlementIds: confirmable.map((s) => s.id),
-      })
-      await fetchSettlements()
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : '일괄 확정에 실패했습니다.'
-      setError(msg)
-    } finally {
-      setBulkConfirming(false)
-    }
+    confirm({ title: `${confirmable.length}건의 정산을 일괄 확정하시겠습니까?`, onConfirm: async () => {
+      setBulkConfirming(true)
+      try {
+        await apiClient.post('/api/v1/year-end/hr/bulk-confirm', {
+          year,
+          companyId: user.companyId,
+          settlementIds: confirmable.map((s) => s.id),
+        })
+        await fetchSettlements()
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : '일괄 확정에 실패했습니다.'
+        setError(msg)
+      } finally {
+        setBulkConfirming(false)
+      }
+    }})
   }, [settlements, year, user.companyId, fetchSettlements])
 
   const toggleSelect = (id: string) => {
@@ -741,6 +741,5 @@ export default function YearEndHRClient({
       )}
     <ConfirmDialog {...dialogProps} />
     </div>
-  </>
   )
 }

@@ -28,11 +28,10 @@ const STAGE_ORDER = ['APPLIED', 'SCREENING', 'INTERVIEW', 'OFFER', 'HIRED']
 
 export default function RecruitmentAnalyticsClient() {
   const tCommon = useTranslations('common')
-  const t = useTranslations('analytics')
+  const t = useTranslations('analytics.recruitmentPage')
 
   const searchParams = useSearchParams()
   const companyId = searchParams.get('company_id') ?? undefined
-  const t = useTranslations('analytics.recruitmentPage')
 
   const STAGE_LABELS: Record<string, string> = {
     APPLIED: t('stages.APPLIED'),

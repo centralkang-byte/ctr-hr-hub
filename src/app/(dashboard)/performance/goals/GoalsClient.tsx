@@ -39,12 +39,11 @@ interface ProgressForm {
 // ─── Component ────────────────────────────────────────────
 
 export default function GoalsClient({
+ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
- user }: { user: SessionUser }) {
-  const router = useRouter()
-  const t = useTranslations('performance')
   const tc = useTranslations('common')
+  const router = useRouter()
 
   const [cycles, setCycles] = useState<CycleOption[]>([])
   const [selectedCycleId, setSelectedCycleId] = useState<string>('')
@@ -106,30 +105,31 @@ export default function GoalsClient({
   // ─── Handlers ─────────────────────────────────────────
 
   async function handleDelete(goalId: string) {
-    confirm({ title: t('confirmDeleteGoal'), onConfirm: async () =>
-    try {
-      await apiClient.delete(`/api/v1/performance/goals/${goalId}`)
-      await fetchGoals()
-    } catch {
-      toast({ title: t('deleteFailed'), variant: 'destructive' })
-    }
+    confirm({ title: t('confirmDeleteGoal'), onConfirm: async () => {
+      try {
+        await apiClient.delete(`/api/v1/performance/goals/${goalId}`)
+        await fetchGoals()
+      } catch {
+        toast({ title: t('deleteFailed'), variant: 'destructive' })
+      }
+    }})
   }
 
   async function handleSubmitAll() {
     if (!canSubmit) return
     const firstDraft = goals.find((g) => g.status === 'DRAFT')
     if (!firstDraft) return
-    confirm({ title: t('confirmSubmitAll'), onConfirm: async () =>
-
-    setSubmitting(true)
-    try {
-      await apiClient.put(`/api/v1/performance/goals/${firstDraft.id}/submit`)
-      await fetchGoals()
-    } catch {
-      toast({ title: t('submitFailed'), variant: 'destructive' })
-    } finally {
-      setSubmitting(false)
-    }
+    confirm({ title: t('confirmSubmitAll'), onConfirm: async () => {
+      setSubmitting(true)
+      try {
+        await apiClient.put(`/api/v1/performance/goals/${firstDraft.id}/submit`)
+        await fetchGoals()
+      } catch {
+        toast({ title: t('submitFailed'), variant: 'destructive' })
+      } finally {
+        setSubmitting(false)
+      }
+    }})
   }
 
   async function handleProgressSubmit() {

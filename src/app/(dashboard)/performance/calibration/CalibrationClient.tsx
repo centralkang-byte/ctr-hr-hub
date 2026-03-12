@@ -99,6 +99,9 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [newSessionName, setNewSessionName] = useState('')
 
+  const { confirm, dialogProps } = useConfirmDialog()
+  const tCommon = useTranslations('common')
+
   const [insightEmployeeId, setInsightEmployeeId] = useState<string | null>(null)
   const [insightEmployeeName, setInsightEmployeeName] = useState<string>('')
   const [readinessMap, setReadinessMap] = useState<Record<string, string>>({})
@@ -246,7 +249,6 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
   // ─── Employee chip click ────────────────────────────
 
   const handleEmployeeChipClick = useCallback((ev: EvalItem) => {
-  const { confirm, dialogProps } = useConfirmDialog()
     setInsightEmployeeId(ev.employeeId)
     setInsightEmployeeName(ev.employee.name)
   }, [])
@@ -549,14 +551,15 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                 <div className="flex justify-end">
                   <button
                     onClick={async () => {
-                      confirm({ title: '캘리브레이션을 완료하시겠습니까?', onConfirm: async () =>
-                      try {
-                        await apiClient.put(`/api/v1/performance/calibration/sessions/${selectedSession.id}`, {
-                          status: 'CALIBRATION_COMPLETED',
-                        })
-                        await loadSession(selectedSession.id)
-                        await fetchSessions()
-                      } catch { toast({ title: '완료 처리에 실패했습니다.', variant: 'destructive' }) }
+                      confirm({ title: '캘리브레이션을 완료하시겠습니까?', onConfirm: async () => {
+                        try {
+                          await apiClient.put(`/api/v1/performance/calibration/sessions/${selectedSession.id}`, {
+                            status: 'CALIBRATION_COMPLETED',
+                          })
+                          await loadSession(selectedSession.id)
+                          await fetchSessions()
+                        } catch { toast({ title: '완료 처리에 실패했습니다.', variant: 'destructive' }) }
+                      }})
                     }}
                     className="flex items-center gap-2 px-4 py-2 bg-[#059669] hover:bg-[#047857] text-white rounded-lg text-sm font-medium"
                   >

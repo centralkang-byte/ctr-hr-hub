@@ -67,10 +67,10 @@ const STEP_ROLE_LABELS: Record<string, string> = {
   finance: '경영관리',
 }
 
-export default function RequisitionListClient({
+export default function RequisitionListClient({user }: {
+  user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('recruitment')
- user }: { user: SessionUser }) {
   const router = useRouter()
   const [items, setItems] = useState<Requisition[]>([])
   const [loading, setLoading] = useState(true)

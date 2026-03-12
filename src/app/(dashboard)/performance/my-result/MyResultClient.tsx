@@ -59,10 +59,10 @@ const GRADE_STYLE: Record<string, { bg: string; text: string; label: string }> =
 
 // ─── Component ────────────────────────────────────────────
 
-export default function MyResultClient({
+export default function MyResultClient({user }: {
+  user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
- user }: { user: SessionUser }) {
     const [cycles, setCycles] = useState<CycleOption[]>([])
     const [selectedCycleId, setSelectedCycleId] = useState('')
     const [cycleStatus, setCycleStatus] = useState('')
@@ -112,13 +112,14 @@ export default function MyResultClient({
 
     async function handleAcknowledge() {
         if (!result?.reviewId) return
-        confirm({ title: '결과를 확인하시겠습니까? 결과 확인은 동의가 아닌 수신 확인입니다.', onConfirm: async () =>
-        setAcknowledging(true)
-        try {
-            await apiClient.post(`/api/v1/performance/reviews/${result.reviewId}/acknowledge`)
-            setResult((p) => p ? { ...p, acknowledgedAt: new Date().toISOString() } : p)
-        } catch { toast({ title: '확인 처리에 실패했습니다.', variant: 'destructive' }) }
-        finally { setAcknowledging(false) }
+        confirm({ title: '결과를 확인하시겠습니까? 결과 확인은 동의가 아닌 수신 확인입니다.', onConfirm: async () => {
+            setAcknowledging(true)
+            try {
+                await apiClient.post(`/api/v1/performance/reviews/${result.reviewId}/acknowledge`)
+                setResult((p) => p ? { ...p, acknowledgedAt: new Date().toISOString() } : p)
+            } catch { toast({ title: '확인 처리에 실패했습니다.', variant: 'destructive' }) }
+            finally { setAcknowledging(false) }
+        }})
     }
 
     // Route guard

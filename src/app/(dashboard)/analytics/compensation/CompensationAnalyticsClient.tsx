@@ -30,11 +30,10 @@ const BAND_COLORS = ['#EF4444', '#10B981', '#F59E0B']
 
 export default function CompensationAnalyticsClient() {
   const tCommon = useTranslations('common')
-  const t = useTranslations('analytics')
+  const t = useTranslations('analytics.compensationPage')
 
   const searchParams = useSearchParams()
   const companyId = searchParams.get('company_id') ?? undefined
-  const t = useTranslations('analytics.compensationPage')
 
   const [data, setData] = useState<CompensationData | null>(null)
   const [loading, setLoading] = useState(true)

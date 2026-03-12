@@ -96,7 +96,7 @@ export const POST = withPermission(
           description: description ?? null,
           effectiveDate: new Date(effectiveDate),
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          changes: changes as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma Json field,
+          changes: changes as any,
           status,
           createdBy: user.employeeId,
         },

@@ -135,14 +135,15 @@ export default function CoursesTab() {
   }
 
   const handleDelete = async (course: CourseRow) => {
-    confirm({ variant: 'destructive', title: `"${course.title}" 교육과정을 삭제하시겠습니까?`, onConfirm: async () =>
-    try {
-      await apiClient.delete(`/api/v1/training/courses/${course.id}`)
-      toast({ title: '교육과정이 삭제되었습니다.' })
-      fetchCourses()
-    } catch {
-      toast({ title: '삭제 실패', variant: 'destructive' })
-    }
+    confirm({ variant: 'destructive', title: `"${course.title}" 교육과정을 삭제하시겠습니까?`, onConfirm: async () => {
+      try {
+        await apiClient.delete(`/api/v1/training/courses/${course.id}`)
+        toast({ title: '교육과정이 삭제되었습니다.' })
+        fetchCourses()
+      } catch {
+        toast({ title: '삭제 실패', variant: 'destructive' })
+      }
+    }})
   }
 
   const columns: DataTableColumn<CourseRow>[] = [

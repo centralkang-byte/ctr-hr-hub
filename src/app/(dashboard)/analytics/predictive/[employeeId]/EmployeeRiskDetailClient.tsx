@@ -188,10 +188,9 @@ function RecommendedActions({ turnover, burnout }: {
 
 // ─── 메인 컴포넌트 ────────────────────────────────────
 
-export default function EmployeeRiskDetailClient({
+export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: string }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('analytics')
- employeeId }: { employeeId: string }) {
   const [data, setData] = useState<EmployeeRiskData | null>(null)
   const [loading, setLoading] = useState(true)
   const [recalculating, setRecalculating] = useState(false)

@@ -18,8 +18,8 @@ import {
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
-import {
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -124,19 +124,20 @@ export function InterviewCalendarScheduler({
   }
 
   const handleCancel = async () => {
-    confirm({ title: '캘린더 이벤트를 취소하시겠습니까?', onConfirm: async () =>
-    setSubmitting(true)
-    try {
-      await apiClient.delete(
-        `/api/v1/recruitment/interviews/${interviewId}/calendar`,
-      )
-      setOpen(false)
-      onScheduled()
-    } catch {
-      // Error handled by apiClient
-    } finally {
-      setSubmitting(false)
-    }
+    confirm({ title: '캘린더 이벤트를 취소하시겠습니까?', onConfirm: async () => {
+      setSubmitting(true)
+      try {
+        await apiClient.delete(
+          `/api/v1/recruitment/interviews/${interviewId}/calendar`,
+        )
+        setOpen(false)
+        onScheduled()
+      } catch {
+        // Error handled by apiClient
+      } finally {
+        setSubmitting(false)
+      }
+    }})
   }
 
   // Group slots by date

@@ -41,7 +41,7 @@ class EventBus {
     const name = handler.eventName as K
     if (!this.registry[name]) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(this.registry as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap)[name] = []
+      ;(this.registry as any)[name] = []
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(this.registry[name] as DomainEventHandler<K>[]).push(handler)

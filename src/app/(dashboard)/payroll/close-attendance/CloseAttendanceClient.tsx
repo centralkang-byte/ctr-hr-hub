@@ -64,7 +64,6 @@ function StatusBadge({ status }: { status: string | null }) {
     if (!status) return <span className="text-xs text-[#999]">—</span>
     const s = STATUS_LABELS[status] ?? { label: status, color: '#555', bg: '#FAFAFA' }
     return (
-        <>
         <span
             className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border"
             style={{ color: s.color, background: s.bg, borderColor: s.bg }}
@@ -136,24 +135,25 @@ export default function CloseAttendanceClient({ user }: Props) {
     }
 
     const handleReopen = async (payrollRunId: string, companyId: string) => {
-        confirm({ title: tCommon('confirmReopen'), onConfirm: async () =>
-        setReopening(companyId)
-        try {
-            const res = await fetch('/api/v1/payroll/attendance-reopen', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ payrollRunId }),
-            })
-            if (res.ok) {
-                await fetchStatus(companyId)
-                toast({ title: t('reopenSuccess') })
-            } else {
-                const err = await res.json()
-                toast({ title: err.error?.message ?? tCommon('saveFailed'), variant: 'destructive' })
+        confirm({ title: tCommon('confirmReopen'), onConfirm: async () => {
+            setReopening(companyId)
+            try {
+                const res = await fetch('/api/v1/payroll/attendance-reopen', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ payrollRunId }),
+                })
+                if (res.ok) {
+                    await fetchStatus(companyId)
+                    toast({ title: t('reopenSuccess') })
+                } else {
+                    const err = await res.json()
+                    toast({ title: err.error?.message ?? tCommon('saveFailed'), variant: 'destructive' })
+                }
+            } finally {
+                setReopening(null)
             }
-        } finally {
-            setReopening(null)
-        }
+        }})
     }
 
     const yearMonth = `${year}-${String(month).padStart(2, '0')}`
@@ -446,6 +446,5 @@ export default function CloseAttendanceClient({ user }: Props) {
             )}
         <ConfirmDialog {...dialogProps} />
         </div>
-      </>
     )
 }
