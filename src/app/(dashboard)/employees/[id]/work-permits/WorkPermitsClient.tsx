@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { apiClient } from '@/lib/api'
 import type { Permission } from '@/types'
+import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 interface WorkPermit {
   id: string
@@ -66,6 +67,7 @@ export default function WorkPermitsClient({
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState({
+  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmit)
     permitType: 'WORK_VISA',
     permitNumber: '',
     issuingCountry: '',
@@ -197,7 +199,7 @@ export default function WorkPermitsClient({
                   />
                 </div>
                 <Button
-                  onClick={handleSubmit}
+                  onClick={guardedSubmit}
                   disabled={!form.issuingCountry || !form.issueDate}
                   className="w-full bg-ctr-primary"
                 >

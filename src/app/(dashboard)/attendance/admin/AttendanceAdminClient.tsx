@@ -37,6 +37,7 @@ import {
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import type { SessionUser } from '@/types'
+import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -191,6 +192,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
   // ─── Submit correction ───
 
   const handleSubmitCorrection = useCallback(async () => {
+  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmitCorrection)
     if (!selectedAnomaly || !correction.note.trim()) return
     setSubmitting(true)
     try {
@@ -452,7 +454,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
               {tc('cancel')}
             </Button>
             <Button
-              onClick={handleSubmitCorrection}
+              onClick={guardedSubmit}
               disabled={submitting || !correction.note.trim()}
             >
               {submitting ? tc('loading') : tc('save')}

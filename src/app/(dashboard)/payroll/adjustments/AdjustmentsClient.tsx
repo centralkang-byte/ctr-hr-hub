@@ -23,6 +23,7 @@ import {
 import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 interface Employee {
     id: string
@@ -147,6 +148,7 @@ export default function AdjustmentsClient({
     // 직원 목록 로드
     const loadEmployees = useCallback(async () => {
   const { confirm, dialogProps } = useConfirmDialog()
+  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleCreate)
         const res = await fetch(`/api/v1/employees?companyId=${user.companyId}&limit=200`)
         if (res.ok) {
             const json = await res.json()
@@ -445,7 +447,7 @@ export default function AdjustmentsClient({
                                 <XCircle size={20} className="text-[#999]" />
                             </button>
                         </div>
-                        <form ref={formRef} onSubmit={handleCreate} className="px-6 py-5 space-y-4">
+                        <form ref={formRef} onSubmit={guardedSubmit} className="px-6 py-5 space-y-4">
                             {/* Employee */}
                             <div>
                                 <label className="block text-xs font-semibold text-[#444] mb-1.5">대상 직원 *</label>

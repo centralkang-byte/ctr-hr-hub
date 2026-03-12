@@ -43,6 +43,7 @@ import {
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import type { SessionUser, PaginationInfo } from '@/types'
+import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -389,7 +390,7 @@ function EvaluationModal({
             {t('cancelButton')}
           </Button>
           <Button
-            onClick={handleSubmit}
+            onClick={guardedSubmit}
             disabled={submitting}
             style={{
               borderRadius: 8,
@@ -437,6 +438,7 @@ export function InterviewListClient({
   ]
 
   const fetchInterviews = useCallback(async () => {
+  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmit)
     setLoading(true)
     try {
       const params: Record<string, string | number | undefined> = {

@@ -18,6 +18,7 @@ import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_SIZES, BUTTON_VARIANTS,  MODAL_STYLES } from '@/lib/styles'
+import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 // ─── Constants ──────────────────────────────────────────
 
@@ -139,6 +140,7 @@ export default function PipelineClient({ user, postingId }: Props) {
   // ─── Fetch data ──────────────────────────────────────
 
   const fetchData = useCallback(async () => {
+  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleRejectionSubmit)
     setLoading(true)
     try {
       const res = await apiClient.getList<ApplicationRecord>(
@@ -476,7 +478,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                 {t('cancelButton')}
               </button>
               <button
-                onClick={handleRejectionSubmit}
+                onClick={guardedSubmit}
                 disabled={!rejectionModal.reason.trim() || modalSubmitting}
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#F44336] hover:bg-[#D32F2F] text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
               >

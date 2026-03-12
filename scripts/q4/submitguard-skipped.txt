@@ -1,0 +1,50 @@
+# Q-4 P3: useSubmitGuard Skipped Files
+# Files that already have their own isSubmitting/saving/submitting state management
+
+## Collision files (existing guard pattern — skip useSubmitGuard)
+
+src/app/(dashboard)/leave/LeaveClient.tsx
+  REASON: Uses react-hook-form handleSubmit + has own isSubmitting flow via RHF formState
+  EXISTING: formState.isSubmitting from useForm()
+
+src/app/(dashboard)/my/year-end/YearEndWizardClient.tsx
+  REASON: Multi-step wizard with separate calculating + submitting states
+  EXISTING: const [submitting, setSubmitting] + const [calculating, setCalculating]
+
+src/app/(dashboard)/performance/cycles/CyclesClient.tsx
+  REASON: Has complex dual submit (create + status change) with saving state
+  EXISTING: const [saving, setSaving]
+
+src/app/(dashboard)/performance/my-goals/MyGoalsClient.tsx
+  REASON: Has dual action (save draft + submit all) with saving state
+  EXISTING: const [saving, setSaving]
+
+src/app/(dashboard)/performance/my-peer-review/MyPeerReviewClient.tsx
+  REASON: Has dual action (save draft + submit) with saving state
+  EXISTING: const [saving, setSaving]
+
+src/app/(dashboard)/performance/pulse/PulseSurveyClient.tsx
+  REASON: Has own saving state for create survey
+  EXISTING: const [saving, setSaving]
+
+src/components/compliance/gdpr/ConsentForm.tsx
+  REASON: Has own isSubmitting state
+  EXISTING: const [isSubmitting, setIsSubmitting]
+
+src/components/compliance/gdpr/DataRequestForm.tsx
+  REASON: Has own isSubmitting state
+  EXISTING: const [isSubmitting, setIsSubmitting]
+
+src/components/compliance/gdpr/DpiaForm.tsx
+  REASON: Has own isSubmitting state
+  EXISTING: const [isSubmitting, setIsSubmitting]
+
+src/components/compliance/gdpr/RetentionPolicyForm.tsx
+  REASON: Has own isSubmitting state
+  EXISTING: const [isSubmitting, setIsSubmitting]
+
+src/app/(dashboard)/recruitment/[id]/edit/PostingEditClient.tsx
+  REASON: Uses react-hook-form handleSubmit
+  EXISTING: formState.isSubmitting from useForm()
+
+## Total: 11 skipped (already have guard pattern)

@@ -14,6 +14,7 @@ import { ko } from 'date-fns/locale'
 import { BUTTON_VARIANTS, MODAL_STYLES } from '@/lib/styles'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
+import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 
 // ─── 타입 ─────────────────────────────────────────────────
@@ -137,7 +138,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
           <button onClick={onClose} className="text-[#999] hover:text-[#555] text-xl leading-none">✕</button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+        <form onSubmit={guardedSubmit} className="p-5 space-y-4">
           {error && (
             <div className="flex items-center gap-2 p-3 bg-[#FEE2E2] rounded-lg text-sm text-[#B91C1C]">
               <AlertTriangle className="w-4 h-4 shrink-0" />
@@ -278,6 +279,7 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
   void user
 
   const load = useCallback(async () => {
+  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmit)
     setLoading(true)
     setError(null)
     try {

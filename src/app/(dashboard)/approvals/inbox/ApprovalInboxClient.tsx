@@ -44,6 +44,7 @@ import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import type { ApprovalItem } from '@/app/api/v1/approvals/inbox/route'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 // ─── Constants ────────────────────────────────────────────
 
@@ -146,7 +147,7 @@ function RejectionModal({ item, onClose, onConfirm }: RejectionModalProps) {
           <Button
             size="sm"
             className="bg-[#EF4444] text-white hover:bg-[#DC2626]"
-            onClick={handleSubmit}
+            onClick={guardedSubmit}
             disabled={submitting}
           >
             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : '반려 확인'}
@@ -349,6 +350,7 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
   // ─── Fetch ───────────────────────────────────────────────
 
   const fetchItems = useCallback(async () => {
+  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmit)
     try {
       const [pendingRes, historyRes] = await Promise.all([
         apiClient.get<{ items: ApprovalItem[]; pendingCount: number }>(

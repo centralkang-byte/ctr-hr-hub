@@ -21,6 +21,7 @@ import {
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { CARD_STYLES, TABLE_STYLES } from '@/lib/styles'
+import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 // ─── Types ──────────────────────────────────────────────
 
@@ -493,6 +494,7 @@ export default function PayrollReviewClient({
   }, [runId, sortBy, sortOrder, deptFilter, anomalyOnly])
 
   const fetchWhitelist = useCallback(async () => {
+  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmit)
     if (!run?.id) return
     try {
       const res = await apiClient.get<{ items: WhitelistEntry[] }>(
@@ -979,7 +981,7 @@ export default function PayrollReviewClient({
                 취소
               </button>
               <button
-                onClick={handleSubmit}
+                onClick={guardedSubmit}
                 disabled={submitting}
                 className="px-5 py-2 rounded-lg bg-[#059669] hover:bg-[#047857] text-white text-sm font-semibold disabled:opacity-50"
               >

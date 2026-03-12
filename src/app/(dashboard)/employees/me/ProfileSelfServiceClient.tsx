@@ -28,6 +28,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -129,6 +130,7 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
   // ─── Fetch data ─────────────────────────────────────────
 
   const fetchData = useCallback(async () => {
+  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmit)
     setLoading(true)
     try {
       const [profileRes, requestsRes] = await Promise.all([
@@ -349,7 +351,7 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
             >
               {tc('cancel')}
             </Button>
-            <Button onClick={handleSubmit} disabled={submitting}>
+            <Button onClick={guardedSubmit} disabled={submitting}>
               {submitting ? t('requesting') : t('changeRequest')}
             </Button>
           </DialogFooter>

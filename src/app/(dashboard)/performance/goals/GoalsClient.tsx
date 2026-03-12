@@ -11,6 +11,7 @@ import type { SessionUser, MboGoal } from '@/types'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 // ─── Status config ────────────────────────────────────────
 
@@ -76,6 +77,7 @@ export default function GoalsClient({
 
   const fetchGoals = useCallback(async () => {
   const { confirm, dialogProps } = useConfirmDialog()
+  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmitAll)
     if (!selectedCycleId) return
     setLoading(true)
     try {
@@ -373,7 +375,7 @@ export default function GoalsClient({
               )}
             </div>
             <button
-              onClick={handleSubmitAll}
+              onClick={guardedSubmit}
               disabled={!canSubmit || submitting}
               className="rounded-lg bg-[#EF4444] px-5 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-40 transition-opacity"
             >

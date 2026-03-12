@@ -18,6 +18,7 @@ import { ChevronLeft, Briefcase, Sparkles, Loader2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS, BUTTON_SIZES } from '@/lib/styles'
+import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 // ─── Reference Types ─────────────────────────────────────
 

@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { apiClient } from '@/lib/api'
 import type { Permission } from '@/types'
+import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 interface ContractHistory {
   id: string
@@ -63,6 +64,7 @@ export default function ContractsClient({
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState({
+  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmit)
     contractType: 'PERMANENT',
     startDate: '',
     endDate: '',
@@ -174,7 +176,7 @@ export default function ContractsClient({
                     rows={3}
                   />
                 </div>
-                <Button onClick={handleSubmit} className="w-full bg-ctr-primary">
+                <Button onClick={guardedSubmit} className="w-full bg-ctr-primary">
                   {tc('create')}
                 </Button>
               </div>
