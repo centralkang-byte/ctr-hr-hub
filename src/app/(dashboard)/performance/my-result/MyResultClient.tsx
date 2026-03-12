@@ -189,7 +189,7 @@ export default function MyResultClient({
                 ) : !result ? (
                     <div className="rounded-xl border border-[#F0F0F3] bg-white p-16 text-center">
                         <Award className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                        <p className="text-[#8181A5]">{result === null && !result ? '아직 결과가 공개되지 않았습니다.' : '결과를 찾을 수 없습니다.'}</p>
+                        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
                     </div>
                 ) : (
                     <>

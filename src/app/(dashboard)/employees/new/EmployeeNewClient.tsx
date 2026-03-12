@@ -448,7 +448,8 @@ export function EmployeeNewClient({
                 {managerSearching && (
                   <p className="px-3 py-2 text-sm text-muted-foreground">{t('searching')}</p>
                 )}
-                {managerResults.map((emp) => (
+                {!managerResults?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+              {managerResults?.map((emp) => (
                   <button
                     key={emp.id}
                     type="button"

@@ -79,7 +79,8 @@ export default function CompensationClient() {
             value={selectedCycleId}
             onChange={(e) => setSelectedCycleId(e.target.value)}
           >
-            {cycles.map((c) => (
+            {!cycles?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+              {cycles?.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name} ({c.year})
               </option>

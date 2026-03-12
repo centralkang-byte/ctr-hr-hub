@@ -312,7 +312,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-[#555]">{ext.bio ?? '아직 자기소개가 없습니다.'}</p>
+              <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
             )}
           </div>
 
@@ -388,7 +388,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
               </button>
             </div>
             {emergencyContacts.length === 0 ? (
-              <p className="text-sm text-[#999] py-4 text-center">등록된 비상연락처가 없습니다.</p>
+              <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
             ) : (
               <div className="space-y-3">
                 {emergencyContacts.map((c) => (

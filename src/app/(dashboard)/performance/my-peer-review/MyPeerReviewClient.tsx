@@ -210,7 +210,7 @@ export default function MyPeerReviewClient({
                 ) : assignments.length === 0 ? (
                     <div className="rounded-xl border border-[#F0F0F3] bg-white p-16 text-center">
                         <Users className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                        <p className="text-[#8181A5]">현재 사이클에서 평가할 동료가 없습니다.</p>
+                        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
                     </div>
                 ) : (
                     <div className="space-y-3">

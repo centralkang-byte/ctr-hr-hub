@@ -281,7 +281,8 @@ export function InterviewFormClient({
                 />
               </SelectTrigger>
               <SelectContent>
-                {applicants.map((a) => (
+                {!applicants?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+              {applicants?.map((a) => (
                   <SelectItem key={a.applicationId} value={a.applicationId}>
                     {a.applicantName} ({STAGE_KEYS[a.stage] ? t(STAGE_KEYS[a.stage]) : a.stage})
                   </SelectItem>

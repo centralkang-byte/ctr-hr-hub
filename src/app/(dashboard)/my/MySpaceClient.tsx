@@ -185,7 +185,7 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
           <Bell className="w-4 h-4 text-[#00C853]" />
           <h2 className="text-base font-semibold text-[#1A1A1A]">최근 알림</h2>
         </div>
-        <p className="text-sm text-[#999] py-4 text-center">새 알림이 없습니다.</p>
+        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
       </div>
     </div>
   )

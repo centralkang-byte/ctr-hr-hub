@@ -173,7 +173,8 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
               </button>
             </div>
             <div className="space-y-3">
-              {questions.map((q, i) => (
+              {!questions?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+              {questions?.map((q, i) => (
                 <div key={i} className="bg-[#FAFAFA] rounded-lg p-3 space-y-2">
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-[#999] font-medium">Q{i + 1}</span>

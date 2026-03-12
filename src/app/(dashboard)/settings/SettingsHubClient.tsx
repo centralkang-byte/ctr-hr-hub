@@ -53,9 +53,7 @@ export function SettingsHubClient() {
         </div>
       ) : (
         <div className="py-16 text-center">
-          <p className="text-sm text-[#8181A5]">
-            &quot;{search}&quot;에 대한 검색 결과가 없습니다
-          </p>
+          <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
         </div>
       )}
     </>

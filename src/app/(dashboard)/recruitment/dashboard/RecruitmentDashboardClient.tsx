@@ -457,7 +457,8 @@ export function RecruitmentDashboardClient(_props: {
                 </tr>
               </thead>
               <tbody>
-                {vacancyByCompany.map((row) => (
+                {!vacancyByCompany?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+              {vacancyByCompany?.map((row) => (
                   <tr key={row.companyId} style={{ borderBottom: '1px solid #F5F5F5' }}>
                     <td style={{ padding: '10px 12px', fontSize: 13, color: '#1A1A1A', fontWeight: 500 }}>{row.companyName}</td>
                     <td style={{ padding: '10px 12px', fontSize: 13, color: '#1A1A1A', textAlign: 'right' }}>{row.total}</td>

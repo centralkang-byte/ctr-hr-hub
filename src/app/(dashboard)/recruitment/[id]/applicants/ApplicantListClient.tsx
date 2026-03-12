@@ -293,7 +293,8 @@ export default function ApplicantListClient({
                 </tr>
               </thead>
               <tbody>
-                {data.map((app) => (
+                {!data?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+              {data?.map((app) => (
                   <tr
                     key={app.id}
                     onClick={() => router.push(`/recruitment/${postingId}/applicants/${app.id}`)}

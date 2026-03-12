@@ -229,7 +229,7 @@ export default function EmployeeRiskDetailClient({
         <Link href="/analytics/predictive" className="flex items-center gap-2 text-sm text-[#666] hover:text-[#333] mb-6">
           <ArrowLeft className="w-4 h-4" /> 예측 애널리틱스로 돌아가기
         </Link>
-        <p className="text-sm text-[#999]">데이터를 불러올 수 없습니다.</p>
+        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
       </div>
     )
   }

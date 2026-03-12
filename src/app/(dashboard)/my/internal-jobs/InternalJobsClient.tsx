@@ -155,7 +155,7 @@ export default function InternalJobsClient({
       ) : items.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-48 text-[#999]">
           <BriefcaseBusiness size={40} className="mb-3 text-[#E8E8E8]" />
-          <p className="text-sm">현재 공개된 내부 채용 공고가 없습니다.</p>
+          <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
         </div>
       ) : (
         <div className="space-y-3">

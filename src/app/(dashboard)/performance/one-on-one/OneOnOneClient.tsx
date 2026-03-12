@@ -293,7 +293,7 @@ export default function OneOnOneClient() {
           {meetings.length === 0 && (
             <div className="text-center py-12 text-[#999]">
               <MessageSquare className="w-12 h-12 mx-auto mb-3 text-[#D4D4D4]" />
-              <p>등록된 1:1 미팅이 없습니다.</p>
+              <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
             </div>
           )}
 

@@ -221,9 +221,7 @@ export function ExitInterviewStatsClient({ user }: { user: SessionUser }) {
                             </div>
 
                             {stats.reasonBreakdown.length === 0 && (
-                                <p className="text-[#8181A5] text-center py-8">
-                                    표시할 데이터가 없습니다.
-                                </p>
+                                <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
                             )}
                         </CardContent>
                     </Card>

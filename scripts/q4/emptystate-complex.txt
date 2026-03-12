@@ -1,0 +1,60 @@
+COMPLEX: src/app/(dashboard)/attendance/team/AttendanceTeamClient.tsx
+COMPLEX: src/app/(dashboard)/attendance/AttendanceClient.tsx
+COMPLEX: src/app/(dashboard)/training/enrollments/TrainingEnrollmentsClient.tsx
+COMPLEX: src/app/(dashboard)/training/TrainingClient.tsx
+COMPLEX: src/app/(dashboard)/recruitment/[id]/applicants/new/ApplicantFormClient.tsx
+COMPLEX: src/app/(dashboard)/recruitment/[id]/PostingDetailClient.tsx
+COMPLEX: src/app/(dashboard)/recruitment/[id]/interviews/InterviewListClient.tsx
+COMPLEX: src/app/(dashboard)/compliance/cn/CnComplianceClient.tsx
+COMPLEX: src/app/(dashboard)/compliance/pii-audit/PiiAuditClient.tsx
+COMPLEX: src/app/(dashboard)/compliance/ru/RuComplianceClient.tsx
+COMPLEX: src/app/(dashboard)/compliance/gdpr/GdprClient.tsx
+COMPLEX: src/app/(dashboard)/compliance/kr/KrComplianceClient.tsx
+COMPLEX: src/app/(dashboard)/compliance/ComplianceClient.tsx
+COMPLEX: src/app/(dashboard)/dashboard/compare/CompareClient.tsx
+COMPLEX: src/app/(dashboard)/dashboard/DashboardClient.tsx
+COMPLEX: src/app/(dashboard)/succession/SuccessionClient.tsx
+COMPLEX: src/app/(dashboard)/my/skills/MySkillsClient.tsx
+COMPLEX: src/app/(dashboard)/benefits/BenefitsClient.tsx
+COMPLEX: src/app/(dashboard)/payroll/year-end/YearEndHRClient.tsx
+COMPLEX: src/app/(dashboard)/payroll/close-attendance/CloseAttendanceClient.tsx
+COMPLEX: src/app/(dashboard)/payroll/anomalies/PayrollAnomaliesClient.tsx
+COMPLEX: src/app/(dashboard)/payroll/PayrollClient.tsx
+COMPLEX: src/app/(dashboard)/payroll/[runId]/approve/PayrollApproveClient.tsx
+COMPLEX: src/app/(dashboard)/payroll/[runId]/publish/PayrollPublishDashboardClient.tsx
+COMPLEX: src/app/(dashboard)/payroll/me/[runId]/PayStubDetailClient.tsx
+COMPLEX: src/app/(dashboard)/payroll/global/GlobalPayrollClient.tsx
+COMPLEX: src/app/(dashboard)/performance/pulse/[id]/results/PulseResultsClient.tsx
+COMPLEX: src/app/(dashboard)/performance/pulse/[id]/respond/PulseRespondClient.tsx
+COMPLEX: src/app/(dashboard)/performance/peer-review/results/[cycleId]/PeerReviewResultsClient.tsx
+COMPLEX: src/app/(dashboard)/performance/peer-review/evaluate/[nominationId]/PeerEvalFormClient.tsx
+COMPLEX: src/app/(dashboard)/discipline/rewards/RewardsListClient.tsx
+COMPLEX: src/app/(dashboard)/discipline/rewards/[id]/RewardDetailClient.tsx
+COMPLEX: src/app/(dashboard)/discipline/DisciplineListClient.tsx
+COMPLEX: src/app/(dashboard)/discipline/[id]/DisciplineDetailClient.tsx
+COMPLEX: src/app/(dashboard)/onboarding/checkins/CheckinsAdminClient.tsx
+COMPLEX: src/app/(dashboard)/onboarding/checkin/CheckinFormClient.tsx
+COMPLEX: src/app/(dashboard)/analytics/attendance/AttendanceAnalyticsClient.tsx
+COMPLEX: src/app/(dashboard)/analytics/attendance/AttendanceClient.tsx
+COMPLEX: src/app/(dashboard)/analytics/predictive/PredictiveAnalyticsClient.tsx
+COMPLEX: src/app/(dashboard)/analytics/ExecutiveSummaryClient.tsx
+COMPLEX: src/app/(dashboard)/analytics/recruitment/RecruitmentAnalyticsClient.tsx
+COMPLEX: src/app/(dashboard)/analytics/compensation/CompensationAnalyticsClient.tsx
+COMPLEX: src/app/(dashboard)/analytics/team-health/TeamHealthClient.tsx
+COMPLEX: src/app/(dashboard)/analytics/report/ExecutiveReportClient.tsx
+COMPLEX: src/app/(dashboard)/analytics/payroll/PayrollClient.tsx
+COMPLEX: src/app/(dashboard)/analytics/performance/PerformanceClient.tsx
+COMPLEX: src/app/(dashboard)/analytics/attrition/AttritionRiskClient.tsx
+COMPLEX: src/app/(dashboard)/analytics/ai-report/AiReportClient.tsx
+COMPLEX: src/app/(dashboard)/org-studio/OrgStudioClient.tsx
+COMPLEX: src/app/(dashboard)/employees/EmployeeListClient.tsx
+COMPLEX: src/components/ui/EmptyState.tsx
+COMPLEX: src/components/shared/EmptyState.tsx
+src/app/(dashboard)/settings/attendance/AttendanceSettingsV2Client.tsx: settings page — always has configuration data
+src/app/(dashboard)/settings/attendance/AttendanceSettingsClient.tsx: settings page — always has configuration data
+src/app/(dashboard)/settings/organization/OrganizationSettingsClient.tsx: settings page — always has configuration data
+src/app/(dashboard)/settings/recruitment/RecruitmentSettingsClient.tsx: settings page — always has configuration data
+src/app/(dashboard)/settings/system/SystemSettingsClient.tsx: settings page — always has configuration data
+src/app/(dashboard)/settings/payroll/PayrollSettingsClient.tsx: settings page — always has configuration data
+src/app/(dashboard)/settings/performance/PerformanceSettingsClient.tsx: settings page — always has configuration data
+src/app/(dashboard)/my/settings/notifications/NotificationPreferenceClient.tsx: settings page — always has configuration data

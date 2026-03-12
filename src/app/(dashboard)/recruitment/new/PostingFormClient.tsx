@@ -252,7 +252,8 @@ export default function PostingFormClient({
               <label className={labelClass}>{t('departmentLabel')}</label>
               <select {...register('departmentId')} className={inputClass}>
                 <option value="">{t('noSelect')}</option>
-                {departments.map((d) => (
+                {!departments?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+              {departments?.map((d) => (
                   <option key={d.id} value={d.id}>{d.name}</option>
                 ))}
               </select>

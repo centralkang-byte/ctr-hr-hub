@@ -334,7 +334,8 @@ export default function PayrollSimulationClient({ user, companies, departments }
                   </div>
                   {showDropdown && searchResults.length > 0 && (
                     <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#F0F0F3] rounded-lg shadow-lg z-20 max-h-60 overflow-y-auto">
-                      {searchResults.map(emp => (
+                      {!searchResults?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+              {searchResults?.map(emp => (
                         <button key={emp.id} onClick={() => selectEmployee(emp)}
                           className="w-full text-left px-3 py-2.5 hover:bg-[#F5F5FA] text-sm border-b border-[#F0F0F3] last:border-0">
                           <span className="font-medium text-[#1C1D21]">{emp.name}</span>
@@ -443,7 +444,8 @@ export default function PayrollSimulationClient({ user, companies, departments }
                         </div>
                         {showDropdown && searchResults.length > 0 && (
                           <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#F0F0F3] rounded shadow-lg z-20 max-h-40 overflow-y-auto">
-                            {searchResults.map(emp => (
+                            {!searchResults?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+              {searchResults?.map(emp => (
                               <button key={emp.id} onClick={() => selectEmployee(emp)}
                                 className="w-full text-left px-2 py-1.5 hover:bg-[#F5F5FA] text-xs border-b border-[#F0F0F3] last:border-0">
                                 {emp.name} · {emp.department} ({emp.employeeNo})

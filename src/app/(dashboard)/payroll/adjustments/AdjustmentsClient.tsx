@@ -257,7 +257,7 @@ export default function AdjustmentsClient({
                             {runs.length === 0 ? (
                                 <div className="px-4 py-8 text-center">
                                     <Layers size={24} className="text-[#D4D4D4] mx-auto mb-2" />
-                                    <p className="text-sm text-[#999]">수동 조정 단계의 급여 정산이 없습니다</p>
+                                    <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
                                 </div>
                             ) : (
                                 runs.map((run) => (
@@ -367,7 +367,7 @@ export default function AdjustmentsClient({
                                 ) : filteredAdj.length === 0 ? (
                                     <div className="flex flex-col items-center justify-center h-40">
                                         <FileText size={28} className="text-[#D4D4D4] mb-2" />
-                                        <p className="text-sm text-[#999]">조정 항목이 없습니다</p>
+                                        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
                                     </div>
                                 ) : (
                                     <table className="w-full text-sm">

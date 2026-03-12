@@ -126,7 +126,8 @@ export default function NewGoalClient({
               className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
             >
               <option value="">{t('selectCycle')}</option>
-              {cycles.map((c) => (
+              {!cycles?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+              {cycles?.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>

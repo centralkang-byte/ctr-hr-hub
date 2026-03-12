@@ -185,7 +185,7 @@ function RadarModal({
               <div className="animate-spin w-6 h-6 border-2 border-[#00C853] border-t-transparent rounded-full" />
             </div>
           ) : !data?.radarData.length ? (
-            <p className="text-center text-[#666] py-12">평가 데이터가 없습니다.</p>
+            <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
           ) : (
             <>
               {/* KPI 요약 */}
@@ -386,7 +386,7 @@ export default function SkillMatrixClient({
                   {matrixData.matrix.length === 0 ? (
                     <div className="text-center py-12 text-[#666]">
                       <Users className="w-10 h-10 text-[#E8E8E8] mx-auto mb-3" />
-                      <p>평가 데이터가 없습니다.</p>
+                      <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
                     </div>
                   ) : (
                     <div className="overflow-x-auto">
@@ -526,7 +526,7 @@ export default function SkillMatrixClient({
                     </h3>
                     <div className="space-y-2">
                       {gapReport.topGaps.length === 0 ? (
-                        <p className="text-sm text-[#666]">데이터가 없습니다.</p>
+                        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
                       ) : gapReport.topGaps.map((g, i) => (
                         <div key={g.competencyId} className="flex items-center gap-3 p-3 bg-[#FAFAFA] rounded-lg">
                           <span className="text-sm font-bold text-[#999] w-5">{i + 1}</span>
@@ -552,7 +552,7 @@ export default function SkillMatrixClient({
                     </h3>
                     <div className="space-y-2">
                       {gapReport.topStrengths.length === 0 ? (
-                        <p className="text-sm text-[#666]">초과 달성 역량이 없습니다.</p>
+                        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
                       ) : gapReport.topStrengths.map((g, i) => (
                         <div key={g.competencyId} className="flex items-center gap-3 p-3 bg-[#FAFAFA] rounded-lg">
                           <span className="text-sm font-bold text-[#999] w-5">{i + 1}</span>
@@ -590,7 +590,7 @@ export default function SkillMatrixClient({
                         </div>
                       ))}
                       {gapReport.topGaps.length === 0 && (
-                        <p className="text-sm text-[#666] col-span-3">갭이 있는 역량이 없습니다.</p>
+                        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
                       )}
                     </div>
                   </div>

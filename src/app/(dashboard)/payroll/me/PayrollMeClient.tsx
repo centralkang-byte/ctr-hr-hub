@@ -108,7 +108,8 @@ export default function PayrollMeClient({
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {items.map((item, idx) => {
+          {!items?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+              {items?.map((item, idx) => {
             const prevItem = items[idx + 1]  // sorted desc — next item is previous month
             const isNew = !item.isViewed
             return (

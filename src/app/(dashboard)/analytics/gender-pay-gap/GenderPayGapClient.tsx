@@ -236,7 +236,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
             </CardHeader>
             <CardContent>
               {data.breakdown.length === 0 ? (
-                <p className="text-sm text-[#999] text-center py-12">데이터가 없습니다.</p>
+                <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">

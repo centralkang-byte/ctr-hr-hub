@@ -499,7 +499,7 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
         <Card className="border-[#F0F0F3] shadow-none">
           <CardContent className="flex flex-col items-center py-16 text-center">
             <CheckCircle2 className="mb-3 h-12 w-12 text-[#00C853] opacity-60" />
-            <p className="text-sm font-medium text-[#1C1D21]">처리할 승인 건이 없습니다 ✅</p>
+            <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
             <p className="mt-1 text-xs text-[#8181A5]">모든 요청이 처리되었습니다.</p>
           </CardContent>
         </Card>

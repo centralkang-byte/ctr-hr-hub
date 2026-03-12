@@ -235,10 +235,7 @@ export default function ContractsClient({
                 <TableCell className="text-sm text-[#666]">{c.notes ?? '-'}</TableCell>
               </TableRow>
             ))}
-            {contracts.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center text-[#999]">
-                  {t('noContractHistory')}
+            {!contracts?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
                 </TableCell>
               </TableRow>
             )}

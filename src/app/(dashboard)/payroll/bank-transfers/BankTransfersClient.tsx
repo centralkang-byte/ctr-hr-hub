@@ -317,7 +317,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
         <Card>
           <CardContent className="py-16 text-center text-[#666]">
             <FileSpreadsheet className="h-12 w-12 mx-auto mb-3 text-[#D4D4D4]" />
-            <p>이체 배치가 없습니다.</p>
+            <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
           </CardContent>
         </Card>
       ) : (

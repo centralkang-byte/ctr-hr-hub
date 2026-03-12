@@ -260,7 +260,8 @@ export default function PayrollImportClient({
               </div>
             ) : (
               <div className="flex gap-2 flex-wrap">
-                {mappings.map(m => (
+                {!mappings?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+              {mappings?.map(m => (
                   <button
                     key={m.id}
                     onClick={() => setSelectedMapping(m)}
@@ -366,7 +367,8 @@ export default function PayrollImportClient({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#F5F5F5]">
-                  {mappings.map(m => (
+                  {!mappings?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+              {mappings?.map(m => (
                     <tr key={m.id} className={TABLE_STYLES.row}>
                       <td className="px-4 py-3 font-medium text-[#1A1A1A]">{m.name}</td>
                       <td className="px-4 py-3 text-[#555]">{m.fileType.toUpperCase()}</td>

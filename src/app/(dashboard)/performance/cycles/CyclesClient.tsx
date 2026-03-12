@@ -106,7 +106,7 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
                 ) : cycles.length === 0 ? (
                     <div className="rounded-xl border border-[#F0F0F3] bg-white p-16 text-center">
                         <Settings2 className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                        <p className="text-[#8181A5]">등록된 사이클이 없습니다.</p>
+                        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
                         <button onClick={() => setShowCreateForm(true)}
                             className="mt-3 text-sm font-medium text-[#5E81F4] hover:underline">+ 첫 사이클 만들기</button>
                     </div>

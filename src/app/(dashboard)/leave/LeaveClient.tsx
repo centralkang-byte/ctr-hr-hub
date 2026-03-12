@@ -355,7 +355,8 @@ export function LeaveClient({ user }: { user: SessionUser }) {
 
       {/* ─── Section 1: Leave Balance Cards ─── */}
       <div className="flex gap-6 overflow-x-auto pb-2">
-        {balances.map((b) => {
+        {!balances?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+              {balances?.map((b) => {
           const remaining = getRemainingDays(b)
           const total = b.grantedDays + b.carryOverDays
           const usagePct = total > 0 ? Math.round(((total - remaining) / total) * 100) : 0

@@ -159,7 +159,8 @@ export default function DpiaClient() {
                 </tr>
               </thead>
               <tbody>
-                {dpias.map((d) => (
+                {!dpias?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+              {dpias?.map((d) => (
                   <tr key={d.id} className={TABLE_STYLES.header}>
                     <td className="px-4 py-3 text-sm">
                       <div className="font-medium text-[#1A1A1A]">{d.title}</div>

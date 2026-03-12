@@ -202,7 +202,7 @@ export default function PeerNominationSetupClient() {
           {loading ? (
             <p className="text-sm text-[#999] text-center py-4">{tCommon('loading')}</p>
           ) : nominations.length === 0 ? (
-            <p className="text-sm text-[#999] text-center py-4">지명된 평가자가 없습니다.</p>
+            <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
           ) : (
             <div className="space-y-3 max-h-[60vh] overflow-y-auto">
               {nominations.map((n) => (

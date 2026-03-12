@@ -712,7 +712,7 @@ export default function PayrollReviewClient({
           {openAnomalies.length === 0 ? (
             <div className="bg-white rounded-xl border border-[#E8E8E8] p-12 text-center">
               <CheckCircle2 className="h-12 w-12 text-[#059669] mx-auto mb-3" />
-              <p className="text-[#666] font-medium">처리할 이상 항목이 없습니다</p>
+              <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
             </div>
           ) : (
             openAnomalies
@@ -893,7 +893,7 @@ export default function PayrollReviewClient({
           {whitelistEntries.length === 0 ? (
             <div className="py-16 text-center">
               <ShieldCheck className="h-10 w-10 text-[#E8E8E8] mx-auto mb-3" />
-              <p className="text-sm text-[#999]">등록된 예외가 없습니다</p>
+              <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
             </div>
           ) : (
             <table className="w-full">

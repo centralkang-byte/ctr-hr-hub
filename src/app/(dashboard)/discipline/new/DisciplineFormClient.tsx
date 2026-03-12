@@ -201,7 +201,8 @@ export default function DisciplineFormClient({ user }: Props) {
                 className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 bg-white"
               >
                 <option value="">{t('selectEmployee')}</option>
-                {employees.map((emp) => (
+                {!employees?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+              {employees?.map((emp) => (
                   <option key={emp.id} value={emp.id}>
                     {emp.name} ({emp.employeeNo})
                   </option>
