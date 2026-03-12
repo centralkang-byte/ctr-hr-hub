@@ -1,6 +1,6 @@
 # SHARED.md — Project State (Single Source of Truth)
 
-> **Last Updated:** 2026-03-12 (Q-4 P5 — Code Quality)
+> **Last Updated:** 2026-03-12 (Q-4 P6 — RLS Design + E2E Verification)
 > **Project Path:** `/Users/sangwoo/VibeCoding/HR_Hub/ctr-hr-hub`
 
 ---
@@ -10,7 +10,7 @@
 - `npx tsc --noEmit` = **0 errors** ✅
 - `npm run build` = pass ✅
 - `export const dynamic = 'force-dynamic'` in `(dashboard)/layout.tsx` — covers all dashboard pages
-- Git: pushed to `main` (latest: `f264323`)
+- Git: pushed to `main` (latest: `ec6e5a4`)
 - Deployed on Vercel (auto-deploy from `main` branch)
 - **i18n**: 7 locales × 14+ namespaces — 146/146 Client files have `useTranslations` ✅
 
@@ -1231,3 +1231,43 @@ Keys added across **7 locales** (`ko`, `en`, `zh`, `vi`, `ru`, `es`, `pt`):
 3. `f264323` — remaining eslint-disable + push
 
 ### TypeScript: 0 errors ✅
+
+---
+
+## Q-4 P6: RLS Design + PROTECTED + E2E Verification (2026-03-12)
+
+### Part A: RLS Policy Design
+- **Document:** `docs/RLS_POLICY_DESIGN.md`
+- 194 models classified:
+  - Category A (Direct Tenant `companyId`): **115** models
+  - Category B (Indirect via `employeeId`): **36** models
+  - Category C (Global / No Tenant): **43** models
+- Implementation priority: P0 (salary data) → P4 (general)
+- ⚠️ Prisma Client Extension required for PostgreSQL session variables
+
+### Part B: PROTECTED Infrastructure Comments
+- **44 files** marked with `PROTECTED — DO NOT MODIFY without architecture review`
+- Categories: Auth (4), Events (14), Nudge (13), Pipeline (2), Business Logic (7), Config (4)
+
+### Part C: E2E Scenario Verification
+- **Document:** `docs/E2E_VERIFICATION.md`
+
+| Scenario | Chain | Gaps |
+|----------|:---:|------|
+| 1. 채용→온보딩 | ✅ | None |
+| 2. 성과 7-step | ⚠️ | Data masking pre-FINALIZED |
+| 3. 퇴직 처리 | ⚠️ | Duplicate complete files |
+| 4. 급여 파이프라인 | ✅ | None |
+| 5. 법인간 전입 | ⚠️ | Missing auto-crossboarding |
+
+### Commits
+1. `f088121` — RLS design doc + 44 PROTECTED files
+2. `ec6e5a4` — E2E verification + push
+
+### TypeScript: 0 errors ✅
+
+### 다음 단계 (Q-5)
+- RLS 실제 구현 (P0: 급여 데이터 우선)
+- E2E 갭 해소 (data masking, crossboarding template)
+- Tab/h1 i18n 완료
+- ESLint 경고 정리 (Node.js v24 EPERM 해결 후)
