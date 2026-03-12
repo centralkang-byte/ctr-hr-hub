@@ -1,6 +1,6 @@
 # SHARED.md — Project State (Single Source of Truth)
 
-> **Last Updated:** 2026-03-12 (Q-4 P3 — UX Safety)
+> **Last Updated:** 2026-03-12 (Q-4 P4 — i18n Remaining)
 > **Project Path:** `/Users/sangwoo/VibeCoding/HR_Hub/ctr-hr-hub`
 
 ---
@@ -10,7 +10,7 @@
 - `npx tsc --noEmit` = **0 errors** ✅
 - `npm run build` = pass ✅
 - `export const dynamic = 'force-dynamic'` in `(dashboard)/layout.tsx` — covers all dashboard pages
-- Git: pushed to `main` (latest: `b98d05d`)
+- Git: pushed to `main` (latest: `7a89db1`)
 - Deployed on Vercel (auto-deploy from `main` branch)
 - **i18n**: 7 locales × 14+ namespaces — 146/146 Client files have `useTranslations` ✅
 
@@ -1144,7 +1144,50 @@ Keys added across **7 locales** (`ko`, `en`, `zh`, `vi`, `ru`, `es`, `pt`):
 
 ### TypeScript: 0 errors ✅
 
-### 다음 단계 (Q-4 P4)
-- EmptyState JSX 추가 삽입 (121파일)
-- 나머지 59개 placeholder → 도메인 t() 키 활용
-- Tab 레이블 배열 → 컴포넌트 내부 이동 + t() 적용
+### 다음 단계 (Q-4 P5)
+- Tab 레이블 배열 → 컴포넌트 내부 이동 + t() 적용 (577개 status/filter 상수)
+- h1 Korean → t() (서버 컴포넌트 포함 29개)
+- EmptyState complex 58개 수동 처리
+
+---
+
+## Q-4 P4: i18n Remaining (2026-03-12)
+
+### Phase 1: Placeholder i18n
+| Metric | Before | After |
+|--------|--------|-------|
+| Korean placeholders | 98 | **45** (domain-specific retained) |
+| Files modified | — | 34 |
+| Common keys added | — | 46 (ko.json/en.json) |
+
+잔여 45개: form hint with examples ("(예: 시니어 백엔드 개발자)") — domain-specific, documented in `scripts/q4/placeholder-final-manual.txt`
+
+### Phase 2: EmptyState JSX
+| Metric | Value |
+|--------|-------|
+| Files with `<EmptyState>` JSX | **82** |
+| Import-only remaining | **58** |
+| └ Settings pages (always have data) | 8 |
+| └ Dashboard/analytics (widget-level) | ~30 |
+| └ Table-internal empty (i18n message) | ~14 |
+| └ EmptyState.tsx component files | 2 |
+| Documented in | `scripts/q4/emptystate-complex.txt` |
+
+### Phase 3: Tab Labels & h1
+| Item | Count | Decision |
+|------|-------|----------|
+| Tab label arrays (Korean) | 577 | **Deferred** — mostly status/filter option constants |
+| h1 Korean | 29 | **Deferred** — bilingual titles + server components |
+
+### Commits
+1. `5acfba0` — Placeholder i18n (53 replacements, 46 keys)
+2. `6a65a94` — EmptyState JSX Tier 1 (60 files)
+3. `7a89db1` — EmptyState Tier 2 + push
+
+### TypeScript: 0 errors ✅
+
+### 다음 단계 (Q-4 P5)
+- Tab 레이블 배열 577개 → status/filter 상수 i18n 화
+- h1 Korean 29개 → page title i18n
+- EmptyState complex 58개 수동 확인
+- Domain-specific placeholder 45개 → locale 별 변환
