@@ -36,6 +36,7 @@ import { BulkUploadWizard } from '@/components/employees/BulkUploadWizard'
 import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser, PaginationInfo, SortDirection } from '@/types'
+import { toast } from '@/hooks/use-toast'
 
 // ─── Types ──────────────────────────────────────────────────
 

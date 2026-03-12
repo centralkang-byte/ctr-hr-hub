@@ -7,13 +7,15 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { CheckCheck, Loader2 } from 'lucide-react'
+import { CheckCheck, Loader2, Bell } from 'lucide-react'
 
 import type { SessionUser, PaginationInfo } from '@/types'
 import { apiClient } from '@/lib/api'
 import { formatRelativeTime } from '@/lib/date-utils'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { Button } from '@/components/ui/button'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { toast } from '@/hooks/use-toast'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -98,7 +100,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
         prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
       )
     } catch {
-      // silent
+      toast({ title: '오류', description: '읽음 처리에 실패했습니다', variant: 'destructive' })
     }
   }
 
@@ -108,8 +110,9 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
     try {
       await apiClient.put('/api/v1/notifications/read-all')
       setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })))
+      toast({ title: t('allMarkedRead') })
     } catch {
-      // silent
+      toast({ title: '오류', description: '모두 읽음 처리에 실패했습니다', variant: 'destructive' })
     } finally {
       setMarkingAll(false)
     }
@@ -187,9 +190,11 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
           </div>
         ) : notifications.length === 0 ? (
-          <div className="py-16 text-center text-sm text-muted-foreground">
-            {t('noNotifications')}
-          </div>
+          <EmptyState
+            icon={Bell}
+            title={t('noNotifications')}
+            description={t('noNotificationsDesc')}
+          />
         ) : (
           <div className="divide-y divide-[#F5F5F5]">
             {notifications.map((item) => (

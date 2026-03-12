@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import React, { useEffect, useState, useCallback } from 'react'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -11,9 +13,12 @@ import { ChartCard } from '@/components/analytics/ChartCard'
 import { EmptyChart } from '@/components/analytics/EmptyChart'
 import { AnalyticsFilterBar } from '@/components/analytics/AnalyticsFilterBar'
 import { CHART_COLORS } from '@/components/analytics/chart-colors'
+import { CHART_THEME } from '@/lib/styles/chart' from '@/components/analytics/chart-colors'
 import type { WorkforceResponse } from '@/lib/analytics/types'
 
 export default function WorkforceClient() {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('analytics')
   const [data, setData] = useState<WorkforceResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [companies, setCompanies] = useState<{ id: string; name: string }[]>([])
@@ -54,7 +59,7 @@ export default function WorkforceClient() {
         {charts.positionLevelDist.length === 0 ? <EmptyChart /> : (
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={charts.positionLevelDist} layout="vertical">
-              <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
+              <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
               <XAxis type="number" fontSize={11} />
               <YAxis type="category" dataKey="level" width={80} fontSize={11} />
               <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
@@ -69,7 +74,7 @@ export default function WorkforceClient() {
           {charts.departmentDist.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={charts.departmentDist.slice(0, 10)}>
-                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
+                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                 <XAxis dataKey="department" fontSize={10} angle={-20} textAnchor="end" height={50} />
                 <YAxis fontSize={11} />
                 <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
@@ -83,7 +88,7 @@ export default function WorkforceClient() {
           {charts.tenureDist.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={charts.tenureDist}>
-                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
+                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                 <XAxis dataKey="range" fontSize={11} />
                 <YAxis fontSize={11} />
                 <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
@@ -98,7 +103,7 @@ export default function WorkforceClient() {
         {charts.monthlyHiresExits.length === 0 ? <EmptyChart /> : (
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={charts.monthlyHiresExits}>
-              <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
+              <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
               <XAxis dataKey="month" fontSize={11} tickFormatter={(v) => v.split('-')[1] + '월'} />
               <YAxis fontSize={11} />
               <Tooltip labelFormatter={(v) => `${String(v).split('-')[1]}월`} contentStyle={{ borderRadius: 8, fontSize: 12 }} />

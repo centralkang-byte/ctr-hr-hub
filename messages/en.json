@@ -1046,7 +1046,12 @@
     "emptyCycles": "No cycles registered",
     "emptyCyclesDesc": "Create a new cycle.",
     "emptyGoals": "No goals set",
-    "emptyGoalsDesc": "Add goals."
+    "emptyGoalsDesc": "Add goals.",
+    "cyclesDesc": "Create and manage performance cycles",
+    "noAccess": "Access denied",
+    "hrOnlyCycles": "Only HR admins can manage cycles.",
+    "fillRequired": "Please fill in all required fields.",
+    "createFailed": "Failed to create cycle."
   },
   "recruitment": {
     "title": "Recruitment",
@@ -1614,8 +1619,8 @@
   },
   "benefits": {
     "title": "Benefits",
-    "pageTitle": "Benefits",
-    "breadcrumb": "HR / Benefits",
+    "pageTitle": "Benefits Management",
+    "breadcrumb": "Talent",
     "policyManagement": "Policy Management",
     "applicationStatus": "Application Status",
     "enrollment": "Enrollment",
@@ -1636,7 +1641,10 @@
     "companyContribution": "Company Contribution",
     "employeeContribution": "Employee Contribution",
     "emptyTitle": "No benefits registered",
-    "emptyDesc": "Register benefit programs."
+    "emptyDesc": "Register benefit programs.",
+    "pendingApproval": "Pending Approval",
+    "allHistory": "All History",
+    "budgetMgmt": "Budget Management"
   },
   "training": {
     "title": "Training Management",
@@ -2239,7 +2247,9 @@
       "quietHoursEnd": "End",
       "save": "Save",
       "saved": "Saved"
-    }
+    },
+    "noNotificationsDesc": "Notifications will appear here.",
+    "allMarkedRead": "All notifications marked as read"
   },
   "succession": {
     "title": "Succession Planning",
@@ -3381,12 +3391,23 @@
     "emptyTasks": "No tasks assigned",
     "emptyTasksDesc": "No pending tasks.",
     "emptyPayslip": "No payslips",
-    "emptyPayslipDesc": "No processed payroll yet."
+    "emptyPayslipDesc": "No processed payroll yet.",
+    "profileDesc": "View and edit your personal information.",
+    "changeReqDone": "Change request submitted",
+    "changeReqDesc": "HR team will review and process your request."
   },
   "directory": {
     "pageTitle": "People Directory",
     "emptyTitle": "No employee data",
-    "emptyDesc": "Register employees first."
+    "emptyDesc": "Register employees first.",
+    "totalMembers": "{count} total members",
+    "searchPlaceholder": "Search by name, department, email...",
+    "allCompanies": "All Companies",
+    "allDepts": "All Departments",
+    "allGrades": "All Grades",
+    "company": "Company",
+    "contact": "Contact",
+    "skills": "Skills"
   },
   "notifications": {
     "pageTitle": "Notifications",

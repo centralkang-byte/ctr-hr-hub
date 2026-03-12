@@ -1081,7 +1081,12 @@
     "emptyCycles": "등록된 평가 사이클이 없습니다",
     "emptyCyclesDesc": "새로운 평가 사이클을 생성하세요.",
     "emptyGoals": "설정된 목표가 없습니다",
-    "emptyGoalsDesc": "목표를 추가하세요."
+    "emptyGoalsDesc": "목표를 추가하세요.",
+    "cyclesDesc": "성과 평가 사이클을 생성하고 관리합니다",
+    "noAccess": "접근 권한이 없습니다.",
+    "hrOnlyCycles": "HR 관리자만 사이클을 관리할 수 있습니다.",
+    "fillRequired": "필수 항목을 입력해주세요.",
+    "createFailed": "사이클 생성에 실패했습니다."
   },
   "recruitment": {
     "title": "채용 관리",
@@ -1649,8 +1654,8 @@
   },
   "benefits": {
     "title": "복리후생",
-    "pageTitle": "복리후생",
-    "breadcrumb": "인사관리 / 복리후생",
+    "pageTitle": "복리후생 관리",
+    "breadcrumb": "인재 관리",
     "policyManagement": "정책관리",
     "applicationStatus": "신청현황",
     "enrollment": "가입",
@@ -1671,7 +1676,10 @@
     "companyContribution": "회사 부담금",
     "employeeContribution": "본인 부담금",
     "emptyTitle": "등록된 복리후생이 없습니다",
-    "emptyDesc": "복리후생 프로그램을 등록하세요."
+    "emptyDesc": "복리후생 프로그램을 등록하세요.",
+    "pendingApproval": "승인 대기",
+    "allHistory": "전체 내역",
+    "budgetMgmt": "예산 관리"
   },
   "training": {
     "title": "교육 관리",
@@ -2274,7 +2282,9 @@
       "quietHoursEnd": "종료",
       "save": "저장",
       "saved": "저장됨"
-    }
+    },
+    "noNotificationsDesc": "알림이 발생하면 여기에 표시됩니다.",
+    "allMarkedRead": "모든 알림을 읽음 처리했습니다"
   },
   "succession": {
     "title": "후계자 관리",
@@ -3420,12 +3430,23 @@
     "emptyTasks": "할당된 업무가 없습니다",
     "emptyTasksDesc": "현재 대기 중인 업무가 없습니다.",
     "emptyPayslip": "급여명세서가 없습니다",
-    "emptyPayslipDesc": "아직 처리된 급여 내역이 없습니다."
+    "emptyPayslipDesc": "아직 처리된 급여 내역이 없습니다.",
+    "profileDesc": "개인 정보를 확인하고 편집합니다.",
+    "changeReqDone": "변경 요청 완료",
+    "changeReqDesc": "HR 담당자가 검토 후 처리합니다."
   },
   "directory": {
     "pageTitle": "인사 디렉터리",
     "emptyTitle": "직원 정보가 없습니다",
-    "emptyDesc": "직원 데이터를 먼저 등록하세요."
+    "emptyDesc": "직원 데이터를 먼저 등록하세요.",
+    "totalMembers": "총 {count}명의 구성원",
+    "searchPlaceholder": "이름, 부서, 이메일로 검색...",
+    "allCompanies": "법인 전체",
+    "allDepts": "부서 전체",
+    "allGrades": "직급 전체",
+    "company": "법인",
+    "contact": "연락처",
+    "skills": "스킬"
   },
   "notifications": {
     "pageTitle": "알림",

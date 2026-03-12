@@ -24,6 +24,7 @@ import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser, PaginationInfo } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
+import { toast } from '@/hooks/use-toast'
 
 // ─── Types ──────────────────────────────────────────────────
 

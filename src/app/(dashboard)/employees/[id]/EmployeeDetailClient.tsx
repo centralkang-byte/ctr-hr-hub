@@ -46,6 +46,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser, DeptOption, RefOption } from '@/types'
+import { toast } from '@/hooks/use-toast'
 
 // ─── Types ──────────────────────────────────────────────────
 

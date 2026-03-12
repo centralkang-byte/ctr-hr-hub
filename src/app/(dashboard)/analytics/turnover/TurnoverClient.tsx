@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import React, { useEffect, useState, useCallback } from 'react'
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -13,8 +15,11 @@ import { AnalyticsFilterBar } from '@/components/analytics/AnalyticsFilterBar'
 import { CHART_COLORS } from '@/components/analytics/chart-colors'
 import type { TurnoverResponse } from '@/lib/analytics/types'
 import { TABLE_STYLES } from '@/lib/styles'
+import { CHART_THEME } from '@/lib/styles/chart'
 
 export default function TurnoverClient() {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('analytics')
   const [data, setData] = useState<TurnoverResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [companies, setCompanies] = useState<{ id: string; name: string }[]>([])
@@ -63,11 +68,11 @@ export default function TurnoverClient() {
         {charts.turnoverTrend.length === 0 ? <EmptyChart /> : (
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={charts.turnoverTrend}>
-              <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
+              <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
               <XAxis dataKey="month" fontSize={10} tickFormatter={(v) => v.substring(2).replace('-', '/')} />
               <YAxis fontSize={11} unit="%" />
               <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
-              <ReferenceLine y={benchmarkRate} label={{ value: '업계 평균', position: 'insideTopRight', fill: '#EF4444', fontSize: 11 }} stroke={CHART_COLORS.danger} stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
+              <ReferenceLine y={benchmarkRate} label={{ value: '업계 평균', position: 'insideTopRight', fill: '#EF4444', fontSize: 11 }} stroke={CHART_COLORS.danger} strokeDasharray="3 3" />
               <Line type="monotone" dataKey="rate" name="이직률" stroke={CHART_COLORS.primary} strokeWidth={2} dot={{ r: 2 }} />
             </LineChart>
           </ResponsiveContainer>
@@ -96,7 +101,7 @@ export default function TurnoverClient() {
           {charts.departmentTurnover.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={charts.departmentTurnover} layout="vertical">
-                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
+                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                 <XAxis type="number" fontSize={11} unit="%" />
                 <YAxis type="category" dataKey="department" width={80} fontSize={11} />
                 <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
@@ -111,7 +116,7 @@ export default function TurnoverClient() {
         {charts.tenureAtExitDist.length === 0 ? <EmptyChart /> : (
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={charts.tenureAtExitDist}>
-              <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
+              <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
               <XAxis dataKey="range" fontSize={11} />
               <YAxis fontSize={11} />
               <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />

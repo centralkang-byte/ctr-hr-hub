@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect, useCallback } from 'react'
 import {
     Calendar,
@@ -16,6 +18,8 @@ import {
 } from 'lucide-react'
 import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS,  MODAL_STYLES } from '@/lib/styles'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { toast } from '@/hooks/use-toast'
 
 interface AttendanceStatus {
     yearMonth: string
@@ -94,8 +98,8 @@ export default function CloseAttendanceClient({ user }: Props) {
                 setStatuses((prev) => ({ ...prev, [companyId]: json.data }))
             }
         } catch {
-            // ignore
-        }
+      toast({ title: '오류', description: '처리 중 오류가 발생했습니다', variant: 'destructive' })
+    }
     }, [year, month])
 
     useEffect(() => {

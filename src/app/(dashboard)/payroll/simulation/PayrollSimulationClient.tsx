@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Calculator, Search, X, ChevronDown, ChevronRight, Download, Loader2 } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from 'recharts'
@@ -7,6 +9,8 @@ import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { CARD_STYLES, TABLE_STYLES, CHART_THEME } from '@/lib/styles'
 import type {
+import { EmptyState } from '@/components/ui/EmptyState'
+import { toast } from '@/hooks/use-toast'
   Company, Department, SimMode, BulkTargetType,
   SearchEmployee, SimResponse, EmployeeSimResult, PayDetail
 } from './types'

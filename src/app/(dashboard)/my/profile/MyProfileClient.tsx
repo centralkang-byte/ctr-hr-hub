@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useCallback } from 'react'
 import {
   User, Phone, AlertCircle, Eye, Camera, CheckCircle2, XCircle,
@@ -111,6 +113,9 @@ function VisibilityBadge({ level }: { level: string }) {
 // ─── Main Component ─────────────────────────────────────────
 
 export function MyProfileClient({ user: _user, employee }: MyProfileClientProps) {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('mySpace')
+
   const [activeTab, setActiveTab] = useState<TabId>('basic')
   const [ext, setExt] = useState<ProfileExtension>(
     employee.profileExtension ?? { bio: null, skills: [], languages: null, certifications: null, pronouns: null, timezone: null, avatarPath: null }
@@ -142,8 +147,8 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
   // ── Bio save ──
   const saveBio = useCallback(async () => {
     const updated = await apiClient.put<ProfileExtension>('/api/v1/employees/me/profile-extension', { bio: bioValue })
-    if (updated.data) { setExt((prev) => ({ ...prev, bio: updated.data!.bio })); setEditingBio(false) }
-    else toast({ title: '저장 실패', description: '바이오 저장 중 오류가 발생했습니다.', variant: 'destructive' })
+    if (updated.data) { setExt((prev) => ({ ...prev, bio: updated.data!.bio })); setEditingBio(false); toast({ title: tCommon('saved') }) }
+    else toast({ title: tCommon('saveFailed'), description: tCommon('errorDesc'), variant: 'destructive' })
   }, [bioValue])
 
   // ── Skill save ──
@@ -196,7 +201,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
     })
     setSavingChangeReq(false)
     if (res.data) {
-      toast({ title: '변경 요청 완료', description: 'HR 담당자가 검토 후 처리합니다.' })
+      toast({ title: t('changeReqDone'), description: t('changeReqDesc') })
       setChangeReqField(null)
       setChangeReqValue('')
       setChangeReqReason('')
@@ -207,8 +212,8 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
     <div className="p-6 max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">내 프로필</h1>
-        <p className="text-sm text-[#666] mt-1">개인 정보를 확인하고 편집합니다.</p>
+        <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('profileTitle')}</h1>
+        <p className="text-sm text-[#666] mt-1">{t('profileDesc')}</p>
       </div>
 
       {/* Profile card */}

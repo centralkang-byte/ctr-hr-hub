@@ -1,10 +1,14 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, ChevronRight, Settings2, Clock, ShieldAlert } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { toast } from '@/hooks/use-toast'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -34,6 +38,8 @@ const STATUS_BADGE: Record<string, { label: string; color: string }> = {
 // ─── Component ────────────────────────────────────────────
 
 export default function CyclesClient({ user }: { user: SessionUser }) {
+    const tCommon = useTranslations('common')
+    const t = useTranslations('performance')
     const router = useRouter()
     const [cycles, setCycles] = useState<Cycle[]>([])
     const [loading, setLoading] = useState(true)
@@ -48,7 +54,7 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
         try {
             const res = await apiClient.getList<Cycle>('/api/v1/performance/cycles', { page: 1, limit: 100 })
             setCycles(res.data)
-        } catch { setError('사이클 목록을 불러오지 못했습니다.') }
+        } catch { setError(tCommon('loadFailed')) }
         finally { setLoading(false) }
     }, [])
 
@@ -59,9 +65,9 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
                     <ShieldAlert className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">접근 권한이 없습니다.</h2>
-                    <p className="text-sm text-[#8181A5]">HR 관리자만 사이클을 관리할 수 있습니다.</p>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">← 돌아가기</a>
+                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">{t('noAccess')}</h2>
+                    <p className="text-sm text-[#8181A5]">{t('hrOnlyCycles')}</p>
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">← {tCommon('back')}</a>
                 </div>
             </div>
         )
@@ -73,18 +79,18 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
                 {/* Header */}
                 <div className="mb-6 flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-[#1C1D21]">성과 사이클 관리</h1>
-                        <p className="mt-1 text-sm text-[#8181A5]">성과 평가 사이클을 생성하고 관리합니다</p>
+                        <h1 className="text-2xl font-bold text-[#1C1D21]">{t('cyclesTitle')}</h1>
+                        <p className="mt-1 text-sm text-[#8181A5]">{t('cyclesDesc')}</p>
                     </div>
                     <button onClick={() => setShowCreateForm(true)}
                         className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] transition-colors">
-                        <Plus className="h-4 w-4" /> 새 사이클
+                        <Plus className="h-4 w-4" /> {t('newCycle')}
                     </button>
                 </div>
 
                 {error && (
                     <div className="mb-4 rounded-lg border border-[#FFEBEE] bg-[#FFEBEE] p-3 text-sm text-[#C62828]">
-                        {error} <button onClick={fetchCycles} className="ml-2 font-medium underline">다시 시도</button>
+                        {error} <button onClick={fetchCycles} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
 
@@ -144,6 +150,8 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
 // ─── Create Cycle Modal ───────────────────────────────────
 
 function CreateCycleModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
+    const tCommon = useTranslations('common')
+    const t = useTranslations('performance')
     const [form, setForm] = useState({
         name: '', companyId: '', startDate: '', endDate: '',
         checkInMode: 'MANDATORY', checkInDeadline: '',
@@ -154,12 +162,13 @@ function CreateCycleModal({ onClose, onCreated }: { onClose: () => void; onCreat
     const set = (k: string, v: unknown) => setForm((p) => ({ ...p, [k]: v }))
 
     async function handleSubmit() {
-        if (!form.name || !form.startDate || !form.endDate) { alert('필수 항목을 입력해주세요.'); return }
+        if (!form.name || !form.startDate || !form.endDate) { toast({ title: tCommon('required'), description: t('fillRequired'), variant: 'destructive' }); return }
         setSaving(true)
         try {
             await apiClient.post('/api/v1/performance/cycles', form)
+            toast({ title: tCommon('created') })
             onCreated()
-        } catch { alert('사이클 생성에 실패했습니다.') }
+        } catch { toast({ title: tCommon('error'), description: t('createFailed'), variant: 'destructive' }) }
         finally { setSaving(false) }
     }
 
@@ -245,9 +254,9 @@ function CreateCycleModal({ onClose, onCreated }: { onClose: () => void; onCreat
                     </div>
                 </div>
                 <div className="mt-6 flex justify-end gap-3">
-                    <button onClick={onClose} className="rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm font-medium text-[#1C1D21]">취소</button>
+                    <button onClick={onClose} className="rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm font-medium text-[#1C1D21]">{tCommon('cancel')}</button>
                     <button onClick={handleSubmit} disabled={saving}
-                        className="rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white disabled:opacity-40">{saving ? '생성 중...' : '생성'}</button>
+                        className="rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white disabled:opacity-40">{saving ? tCommon('loading') : tCommon('create')}</button>
                 </div>
             </div>
         </div>

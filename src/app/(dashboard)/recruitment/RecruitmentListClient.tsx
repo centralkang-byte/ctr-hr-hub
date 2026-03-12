@@ -12,6 +12,7 @@ import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_SIZES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { EmptyState } from '@/components/ui/EmptyState'
 
 // ─── Label Maps ──────────────────────────────────────────
 

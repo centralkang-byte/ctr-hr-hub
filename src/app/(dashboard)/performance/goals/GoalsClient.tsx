@@ -6,6 +6,8 @@ import { useTranslations } from 'next-intl'
 import { Plus, Pencil, Trash2, TrendingUp } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser, MboGoal } from '@/types'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { toast } from '@/hooks/use-toast'
 
 // ─── Status config ────────────────────────────────────────
 

@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Onboarding Instance Detail
 // /onboarding/[id] — Master-Detail layout
@@ -24,6 +26,7 @@ import { EmptyState } from '@/components/shared/EmptyState'
 import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { toast } from '@/hooks/use-toast'
 
 // ─── Types ──────────────────────────────────────────────────
 

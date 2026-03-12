@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, LayoutGrid, List, Building2, Users, Filter, X, Mail, Phone, MapPin, ExternalLink } from 'lucide-react'
@@ -13,6 +15,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Skeleton } from '@/components/ui/skeleton'
 import { useDebounce } from '@/hooks/useDebounce'
 import { CARD_STYLES, TABLE_STYLES } from '@/lib/styles'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { toast } from '@/hooks/use-toast'
 
 interface DirectoryEmployee {
   id: string
@@ -69,6 +73,9 @@ function InitialAvatar({ name, size = 'md' }: { name: string; size?: 'sm' | 'md'
 }
 
 export function DirectoryClient({ user, companies, departments, jobGrades }: DirectoryClientProps) {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('directory')
+
   const router = useRouter()
   const [viewMode, setViewMode] = useState<'card' | 'list'>('card')
   const [search, setSearch] = useState('')
@@ -95,7 +102,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
       setEmployees(res.data ?? [])
       setTotal(res.pagination?.total ?? 0)
     } catch {
-      // ignore
+      toast({ title: '오류', description: '처리 중 오류가 발생했습니다', variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -131,8 +138,8 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">People Directory</h1>
-          <p className="text-sm text-[#666] mt-0.5">총 {total.toLocaleString()}명의 구성원</p>
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('pageTitle')}</h1>
+          <p className="text-sm text-[#666] mt-0.5">{t('totalMembers', { count: total.toLocaleString() })}</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -155,7 +162,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#999]" size={16} />
           <Input
-            placeholder="이름, 부서, 이메일로 검색..."
+            placeholder={t('searchPlaceholder')}
             className="pl-9"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -168,7 +175,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
               <SelectValue placeholder="법인 전체" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">법인 전체</SelectItem>
+              <SelectItem value="all">{t('allCompanies')}</SelectItem>
               {companies.map((c) => (
                 <SelectItem key={c.id} value={c.id}>{c.code}</SelectItem>
               ))}
@@ -179,7 +186,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
               <SelectValue placeholder="부서 전체" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">부서 전체</SelectItem>
+              <SelectItem value="all">{t('allDepts')}</SelectItem>
               {filteredDepts.map((d) => (
                 <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
               ))}
@@ -190,7 +197,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
               <SelectValue placeholder="직급 전체" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">직급 전체</SelectItem>
+              <SelectItem value="all">{t('allGrades')}</SelectItem>
               {filteredGrades.map((g) => (
                 <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>
               ))}
@@ -201,7 +208,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
               onClick={clearFilters}
               className="flex items-center gap-1 text-xs text-[#666] hover:text-[#333]"
             >
-              <X size={12} /> 초기화
+              <X size={12} /> {tCommon('reset')}
             </button>
           )}
         </div>
@@ -215,10 +222,11 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
           ))}
         </div>
       ) : employees.length === 0 ? (
-        <div className="text-center py-16 text-[#999]">
-          <Users size={40} className="mx-auto mb-3 opacity-30" />
-          <p>검색 결과가 없습니다</p>
-        </div>
+        <EmptyState
+          icon={Users}
+          title={tCommon('noResults')}
+          description={t('emptyDesc')}
+        />
       ) : viewMode === 'card' ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {employees.map((emp) => (
@@ -230,12 +238,12 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
           <table className="w-full">
             <thead>
               <tr className={TABLE_STYLES.header}>
-                <th className={TABLE_STYLES.headerCell}>이름</th>
-                <th className={TABLE_STYLES.headerCell}>부서</th>
-                <th className={TABLE_STYLES.headerCell}>직급</th>
-                <th className={TABLE_STYLES.headerCell}>법인</th>
-                <th className={TABLE_STYLES.headerCell}>연락처</th>
-                <th className={TABLE_STYLES.headerCell}>스킬</th>
+                <th className={TABLE_STYLES.headerCell}>{tCommon('name')}</th>
+                <th className={TABLE_STYLES.headerCell}>{tCommon('department')}</th>
+                <th className={TABLE_STYLES.headerCell}>{tCommon('position')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('company')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('contact')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('skills')}</th>
               </tr>
             </thead>
             <tbody>
@@ -278,9 +286,9 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
       {/* Pagination */}
       {total > 20 && (
         <div className="flex items-center justify-center gap-2">
-          <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>이전</Button>
+          <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>{tCommon('previous')}</Button>
           <span className="text-sm text-[#666]">{page} / {Math.ceil(total / 20)}</span>
-          <Button variant="outline" size="sm" disabled={page >= Math.ceil(total / 20)} onClick={() => setPage(p => p + 1)}>다음</Button>
+          <Button variant="outline" size="sm" disabled={page >= Math.ceil(total / 20)} onClick={() => setPage(p => p + 1)}>{tCommon('next')}</Button>
         </div>
       )}
 
@@ -356,7 +364,7 @@ function EmployeeDetailPanel({ emp, onViewProfile }: { emp: DirectoryEmployee; o
 
       {emp.skills.length > 0 && (
         <div>
-          <p className="text-xs font-semibold text-[#666] uppercase tracking-wider mb-2">스킬</p>
+          <p className="text-xs font-semibold text-[#666] uppercase tracking-wider mb-2">Skills</p>
           <div className="flex flex-wrap gap-1.5">
             {emp.skills.map((s) => (
               <span key={s} className="text-xs px-2.5 py-1 rounded-full bg-[#E0E7FF] text-[#4338CA]">{s}</span>
@@ -367,7 +375,7 @@ function EmployeeDetailPanel({ emp, onViewProfile }: { emp: DirectoryEmployee; o
 
       {languages && Array.isArray(languages) && languages.length > 0 && (
         <div>
-          <p className="text-xs font-semibold text-[#666] uppercase tracking-wider mb-2">언어</p>
+          <p className="text-xs font-semibold text-[#666] uppercase tracking-wider mb-2">Languages</p>
           <div className="space-y-1">
             {languages.map((l, i) => (
               <div key={i} className="flex items-center justify-between text-sm">
@@ -381,7 +389,7 @@ function EmployeeDetailPanel({ emp, onViewProfile }: { emp: DirectoryEmployee; o
 
       {certifications && Array.isArray(certifications) && certifications.length > 0 && (
         <div>
-          <p className="text-xs font-semibold text-[#666] uppercase tracking-wider mb-2">자격/인증</p>
+          <p className="text-xs font-semibold text-[#666] uppercase tracking-wider mb-2">Certifications</p>
           <div className="space-y-1">
             {certifications.map((c, i) => (
               <div key={i} className="text-sm text-[#555]">
@@ -401,7 +409,7 @@ function EmployeeDetailPanel({ emp, onViewProfile }: { emp: DirectoryEmployee; o
           onClick={() => onViewProfile(emp.id)}
         >
           <ExternalLink size={14} className="mr-1.5" />
-          프로필 상세 보기
+          View Full Profile
         </Button>
       </div>
     </div>

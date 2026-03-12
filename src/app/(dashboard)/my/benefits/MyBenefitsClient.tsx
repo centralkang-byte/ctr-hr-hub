@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect, useCallback } from 'react'
 import { apiClient } from '@/lib/api'
 import {
@@ -257,6 +259,9 @@ function ClaimModal({ plans, onClose, onSubmit }: {
 // ─── 메인 컴포넌트 ─────────────────────────────────────────
 
 export function MyBenefitsClient({ user }: { user: SessionUser }) {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('mySpace')
+
   const [plans, setPlans] = useState<BenefitPlan[]>([])
   const [summary, setSummary] = useState<UsageSummaryItem[]>([])
   const [claims, setClaims] = useState<BenefitClaim[]>([])

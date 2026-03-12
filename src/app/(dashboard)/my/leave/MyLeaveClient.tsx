@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect, useCallback } from 'react'
 import { apiClient } from '@/lib/api'
 import {
@@ -56,6 +58,9 @@ const STATUS_LABELS: Record<string, { label: string; color: string; icon: React.
 // ─── 메인 컴포넌트 ─────────────────────────────────────────
 
 export function MyLeaveClient({ user }: { user: SessionUser }) {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('mySpace')
+
   const [year, setYear] = useState(new Date().getFullYear())
   const [balances, setBalances] = useState<YearBalance[]>([])
   const [requests, setRequests] = useState<LeaveRequest[]>([])

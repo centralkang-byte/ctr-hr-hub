@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — ATS 스윔레인 칸반 보드 (Client)
 // 공고별 가로 스윔레인 + 단계별 세로 컬럼
@@ -20,6 +22,8 @@ import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { MODAL_STYLES } from '@/lib/styles'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { toast } from '@/hooks/use-toast'
 
 // ─── Constants ──────────────────────────────────────────
 
