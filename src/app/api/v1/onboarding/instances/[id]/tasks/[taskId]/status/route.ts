@@ -48,7 +48,7 @@ export const PUT = withPermission(
             if (!validation.allowed) throw badRequest(validation.error ?? 'Invalid transition')
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const updateData: any = {
+            const updateData: any = { // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma where clause dynamic type
                 status: targetStatus,
                 note: note ?? task.note,
             }

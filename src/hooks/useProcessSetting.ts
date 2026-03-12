@@ -60,7 +60,7 @@ export function useProcessSetting<T>(opts: UseProcessSettingOptions<T>): UseProc
       const qs = companyId ? `?key=${key}&companyId=${companyId}` : `?key=${key}`
       const res = await apiClient.get(`/api/v1/process-settings/${category}${qs}`)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const items = (res as any)?.data ?? res ?? []
+      const items = (res as any // eslint-disable-line @typescript-eslint/no-explicit-any -- apiClient response shape)?.data ?? res ?? []
       const setting = Array.isArray(items) ? items[0] : null
 
       if (setting?.settingValue) {

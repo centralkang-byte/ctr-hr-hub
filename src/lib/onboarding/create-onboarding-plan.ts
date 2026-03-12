@@ -49,7 +49,7 @@ async function resolveAssigneeId(
   companyId: string,
   buddyId: string | null,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  db: any,
+  db: any, // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma where clause dynamic type
 ): Promise<string | null> {
   try {
     switch (assigneeType) {
@@ -123,7 +123,7 @@ async function resolveAssigneeId(
 export async function createOnboardingPlan(
   input: CreateOnboardingPlanInput,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  tx?: any,
+  tx?: any, // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma where clause dynamic type
 ): Promise<CreateOnboardingPlanResult | null> {
   const db = tx ?? prisma
 

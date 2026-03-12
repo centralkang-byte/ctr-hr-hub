@@ -48,9 +48,9 @@ export const POST = withPermission(
             effectiveDate: new Date(effectiveDate),
             affectedDepartmentId: affectedDepartmentId ?? null,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            fromData: fromData ? (JSON.parse(JSON.stringify(fromData)) as any) : undefined,
+            fromData: fromData ? (JSON.parse(JSON.stringify(fromData)) as any // eslint-disable-line @typescript-eslint/no-explicit-any -- JSON serialization) : undefined,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            toData: toData ? (JSON.parse(JSON.stringify(toData)) as any) : undefined,
+            toData: toData ? (JSON.parse(JSON.stringify(toData)) as any // eslint-disable-line @typescript-eslint/no-explicit-any -- JSON serialization) : undefined,
             reason: reason ?? null,
             approvedBy: approvedBy ?? null,
             documentKey: documentKey ?? null,

@@ -85,7 +85,7 @@ export const POST = withPermission(
 
       // Build all schedule records in memory first
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const scheduleRecords: any[] = []
+      const scheduleRecords: any[] = [] // eslint-disable-line @typescript-eslint/no-explicit-any -- dynamic array accumulator
 
       for (let groupIndex = 0; groupIndex < groups.length; groupIndex++) {
         const group = groups[groupIndex]

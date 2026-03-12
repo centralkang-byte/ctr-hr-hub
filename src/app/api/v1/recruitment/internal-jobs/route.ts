@@ -82,12 +82,12 @@ export const GET = withPermission(
       description: p.description,
       employmentType: p.employmentType,
       headcount: p.headcount,
-      location: (p as any).location,
-      workMode: (p as any).workMode,
-      deadlineDate: (p as any).deadlineDate,
-      salaryRangeMin: (p as any).salaryRangeMin ? Number((p as any).salaryRangeMin) : null,
-      salaryRangeMax: (p as any).salaryRangeMax ? Number((p as any).salaryRangeMax) : null,
-      salaryHidden: (p as any).salaryHidden,
+      location: (p as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma model field not in select type).location,
+      workMode: (p as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma model field not in select type).workMode,
+      deadlineDate: (p as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap).deadlineDate,
+      salaryRangeMin: (p as any).salaryRangeMin ? Number((p as any).salaryRangeMin) : null, // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap
+      salaryRangeMax: (p as any).salaryRangeMax ? Number((p as any).salaryRangeMax) : null, // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap
+      salaryHidden: (p as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap).salaryHidden,
       company: p.company,
       department: p.department,
       position: p.position,

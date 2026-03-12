@@ -30,7 +30,7 @@ export const GET = withPermission(
       const companyId = resolveCompanyId(user)
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const where: any = {
+      const where: any = { // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma where clause dynamic type
         resourceType: 'CompanyProcessSetting',
         companyId,
       }

@@ -126,30 +126,30 @@ export async function generateDataExport(employeeId: string) {
       department: assignment?.department?.name ?? '-',
       jobGrade: assignment?.jobGrade?.name ?? '-',
     },
-    attendanceRecords: employee.attendances.map((a: any) => ({
+    attendanceRecords: employee.attendances.map((a: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma result mapping callback
       date: a.clockIn,
       clockIn: a.clockIn,
       clockOut: a.clockOut,
       status: a.status,
     })),
-    leaveRecords: employee.leaveRequests.map((l: any) => ({
+    leaveRecords: employee.leaveRequests.map((l: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma where clause dynamic type
       policyId: l.policyId,
       startDate: l.startDate,
       endDate: l.endDate,
       status: l.status,
     })),
-    compensationHistory: employee.compensationHistories.map((c: any) => ({
+    compensationHistory: employee.compensationHistories.map((c: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma where clause dynamic type
       changeType: c.changeType,
       effectiveDate: c.effectiveDate,
       newBaseSalary: Number(c.newBaseSalary),
     })),
-    trainingRecords: employee.trainingEnrollments.map((t: any) => ({
+    trainingRecords: employee.trainingEnrollments.map((t: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma where clause dynamic type
       course: t.course.title,
       category: t.course.category,
       status: t.status,
       completedAt: t.completedAt,
     })),
-    consents: employee.gdprConsents.map((c: any) => ({
+    consents: employee.gdprConsents.map((c: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma where clause dynamic type
       purpose: c.purpose,
       status: c.status,
       consentedAt: c.consentedAt,

@@ -20,7 +20,7 @@ export const GET = withPermission(
         const statusFilter = url.searchParams.get('status') ?? undefined
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const where: any = {
+        const where: any = { // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma where clause dynamic type
             planType: 'ONBOARDING',
             ...(companyId ? { companyId } : {}),
             ...(statusFilter ? { status: statusFilter } : {}),

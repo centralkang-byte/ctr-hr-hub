@@ -224,7 +224,7 @@ export async function generateEmployeeRegistry(
     orderBy: [{ name: 'asc' }],
   })
 
-  const rows: EmployeeRegistryRow[] = (employees as any[]).map((emp) => {
+  const rows: EmployeeRegistryRow[] = (employees as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap[]).map((emp) => {
     const assignment = emp.assignments?.[0]
     return {
       employeeNo: emp.employeeNo,

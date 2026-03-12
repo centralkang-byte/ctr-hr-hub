@@ -24,7 +24,7 @@ export const POST = withPermission(
       where: { id, deletedAt: null },
     })
     if (!posting) throw notFound('공고를 찾을 수 없습니다.')
-    if (!(posting as any).isInternal) throw badRequest('내부 채용 공고가 아닙니다.')
+    if (!(posting as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma model field not in select type).isInternal) throw badRequest('내부 채용 공고가 아닙니다.')
     if (posting.status !== 'OPEN') throw badRequest('현재 지원 가능한 공고가 아닙니다.')
 
     // 직원 이메일로 기존 지원자 조회 또는 생성

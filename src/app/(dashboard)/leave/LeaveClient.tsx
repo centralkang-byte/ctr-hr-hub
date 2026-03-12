@@ -132,7 +132,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
     formState: { errors },
   } = useForm<z.input<typeof requestSchema>>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(requestSchema) as any,
+    resolver: zodResolver(requestSchema) as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap,
     defaultValues: {
       policyId: '',
       startDate: '',

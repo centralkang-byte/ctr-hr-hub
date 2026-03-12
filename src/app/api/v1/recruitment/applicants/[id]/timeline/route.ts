@@ -136,7 +136,7 @@ export const GET = withPermission(
           id: `app-${app.id}-rejected`,
           type: 'stage_change',
           label: 'REJECTED',
-          description: (app as any).rejectionReason ?? undefined,
+          description: (app as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap).rejectionReason ?? undefined,
           postingTitle: app.posting.title,
           companyName: app.posting.company.name,
           timestamp: app.updatedAt.toISOString(),

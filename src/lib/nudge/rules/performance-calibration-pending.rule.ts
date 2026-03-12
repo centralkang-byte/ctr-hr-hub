@@ -107,7 +107,7 @@ export const performanceCalibrationPendingRule: NudgeRule = {
 
     // FIX: Issue #1 — Check if assigneeId is an HR_ADMIN (via RBAC) OR session creator
     //   Previously: only session creator received this nudge (overly restrictive)
-    //   Now: any active HR_ADMIN or SUPER_ADMIN in the company receives it
+    //   Now: any active HR_ADMIN or SUPER_ADMIN in the company receives it // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma where clause dynamic type
     const hrAdminIds = await getHrAndSuperAdminIds(prisma, companyId)
     const isHrAdmin = hrAdminIds.includes(assigneeId)
     const isSessionCreator = pendingSessions.some((s) => s.createdBy === assigneeId)

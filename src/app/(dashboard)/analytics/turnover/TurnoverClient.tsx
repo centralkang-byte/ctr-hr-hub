@@ -86,7 +86,7 @@ export default function TurnoverClient() {
               <PieChart>
                 <Pie data={charts.exitReasons} dataKey="count" nameKey="reason" cx="50%" cy="50%" outerRadius={90} innerRadius={50}
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  label={(entry: any) => `${entry.reason} ${entry.percentage}%`} labelLine={{ strokeWidth: 1 }}>
+                  label={(entry: any) => `${entry.reason} ${entry.percentage}%`} labelLine={{ strokeWidth: 1 }}> // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma result mapping callback
                   {charts.exitReasons.map((_, i) => (
                     <Cell key={i} fill={[CHART_COLORS.primary, ...CHART_COLORS.secondary][i % 8]} />
                   ))}

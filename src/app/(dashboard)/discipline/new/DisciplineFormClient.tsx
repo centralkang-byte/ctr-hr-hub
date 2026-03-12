@@ -84,7 +84,7 @@ export default function DisciplineFormClient({ user }: Props) {
     formState: { errors },
   } = useForm<FormInput>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(formSchema) as any,
+    resolver: zodResolver(formSchema) as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap,
     defaultValues: {
       employeeId: '',
       actionType: '',

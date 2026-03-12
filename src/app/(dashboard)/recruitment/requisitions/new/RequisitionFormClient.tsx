@@ -21,10 +21,9 @@ interface Company { id: string; name: string }
 interface Department { id: string; name: string; companyId: string }
 interface Position { id: string; titleKo: string; code: string; isFilled: boolean }
 
-export default function RequisitionFormClient({
+export default function RequisitionFormClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('recruitment')
- user }: { user: SessionUser }) {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -91,8 +90,8 @@ export default function RequisitionFormClient({
         submitForApproval,
       })
       router.push(`/recruitment/requisitions`)
-    } catch (err: any) {
-      setError(err?.message ?? '저장 중 오류가 발생했습니다.')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : '저장 중 오류가 발생했습니다.')
     } finally {
       setSaving(false)
     }
@@ -190,7 +189,7 @@ export default function RequisitionFormClient({
             <label className="block text-sm font-medium text-[#333] mb-1.5">고용형태</label>
             <select
               value={form.employmentType}
-              onChange={(e) => setForm({ ...form, employmentType: e.target.value as any })}
+              onChange={(e) => setForm({ ...form, employmentType: e.target.value as 'permanent' | 'contract' | 'intern' })}
               className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853]"
             >
               <option value="permanent">정규직</option>

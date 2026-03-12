@@ -20,9 +20,10 @@ export async function sendEmail(input: SendEmailInput): Promise<{
   messageId?: string
 }> {
   if (env.NODE_ENV === 'development') {
-    console.log('[EMAIL STUB]', {
-      from: env.SES_FROM_EMAIL,
-      to: input.to,
+    // Mask email PII: user@domain.com → u***@domain.com
+    const masked = input.to.replace(/^(.).*(@.*)$/, '$1***$2')
+    console.info('[EMAIL STUB]', {
+      to: masked,
       subject: input.subject,
       bodyLength: input.htmlBody.length,
     })
@@ -42,6 +43,7 @@ export async function sendEmail(input: SendEmailInput): Promise<{
   // const result = await ses.send(command)
   // return { success: true, messageId: result.MessageId }
 
-  console.log('[EMAIL]', { to: input.to, subject: input.subject })
+  // eslint-disable-next-line no-console -- email send confirmation (PII masked)
+  console.info('[EMAIL]', { to: input.to.replace(/^(.).*(@.*)$/, '$1***$2'), subject: input.subject })
   return { success: true, messageId: `placeholder-${Date.now()}` }
 }

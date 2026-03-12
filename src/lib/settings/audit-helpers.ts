@@ -6,7 +6,7 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function generateChangeDescription(oldValue: any, newValue: any): string {
+export function generateChangeDescription(oldValue: any, newValue: any): string { // eslint-disable-line @typescript-eslint/no-explicit-any -- generic diff utility
   if (!oldValue && !newValue) return '변경 없음'
   if (!oldValue) return '초기 설정값 생성'
   if (!newValue) return '설정값 삭제 (기본값으로 복원)'

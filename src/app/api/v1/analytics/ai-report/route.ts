@@ -38,7 +38,7 @@ export const GET = withPermission(
 
       return apiSuccess({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        data: reports.map((r: any) => ({
+        data: reports.map((r: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma result mapping callback
           ...r,
           companyName: r.company?.name || '전사',
         })),

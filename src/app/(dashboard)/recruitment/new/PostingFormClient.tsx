@@ -100,7 +100,7 @@ export default function PostingFormClient({
     formState: { errors },
   } = useForm<FormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(formSchema) as any,
+    resolver: zodResolver(formSchema) as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap,
     defaultValues: {
       title: '',
       description: '',

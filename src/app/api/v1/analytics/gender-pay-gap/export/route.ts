@@ -117,7 +117,7 @@ export const GET = withRateLimit(withPermission(
       if (baseSalary == null) continue
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const a = emp.assignments?.[0] as any
+      const a = emp.assignments?.[0] as any // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap
 
       let groupId: string = ''
       let groupName: string = ''

@@ -43,7 +43,7 @@ export async function GET(
     const key = searchParams.get('key')
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const where: any = { settingType: upperCategory }
+    const where: any = { settingType: upperCategory } // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma where clause dynamic type
     if (key) where.settingKey = key
 
     // Get global defaults
