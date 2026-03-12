@@ -47,6 +47,11 @@ import {
 import {
   fetchPerformanceTasks,
 } from '@/lib/unified-task/mappers/performance.mapper'
+import {
+  benefitClaimMapper,
+  BENEFIT_CLAIM_INCLUDE,
+  type BenefitClaimWithRelations,
+} from '@/lib/unified-task/mappers/benefit.mapper'
 
 // ─── Priority 정렬 가중치 ────────────────────────────────
 
@@ -194,10 +199,11 @@ export const GET = withPermission(
     const fetchOnboarding = !types || types.includes(UnifiedTaskType.ONBOARDING_TASK)
     const fetchOffboarding = !types || types.includes(UnifiedTaskType.OFFBOARDING_TASK)
     const fetchPerformance = !types || types.includes(UnifiedTaskType.PERFORMANCE_REVIEW)
+    const fetchBenefit = !types || types.includes(UnifiedTaskType.BENEFIT_REQUEST)
 
     // ── 소스별 병렬 조회 ────────────────────────────────────
 
-    const [leaveRaw, payrollRaw, onboardingRaw, offboardingRaw, performanceTasks] = await Promise.all([
+    const [leaveRaw, payrollRaw, onboardingRaw, offboardingRaw, performanceTasks, benefitRaw] = await Promise.all([
       // 1. LeaveRequest
       (fetchLeave
         ? prisma.leaveRequest.findMany({
@@ -309,6 +315,30 @@ export const GET = withPermission(
         })
         : Promise.resolve([])
       ).catch(err => { console.error('[unified-tasks] performance query failed:', err); return [] as UnifiedTask[] }),
+
+      // 6. BenefitClaim (복리후생 승인 요청)
+      (fetchBenefit
+        ? prisma.benefitClaim.findMany({
+          where: {
+            status: 'pending',
+            ...(assigneeId ? { approvedBy: assigneeId } : {}),
+            ...(requesterId ? { employeeId: requesterId } : {}),
+            employee: {
+              assignments: {
+                some: {
+                  ...companyFilter,
+                  isPrimary: true,
+                  endDate: null,
+                },
+              },
+            },
+          },
+          include: BENEFIT_CLAIM_INCLUDE,
+          orderBy: { createdAt: 'desc' },
+          take: 200,
+        })
+        : Promise.resolve([])
+      ).catch(err => { console.error('[unified-tasks] benefit query failed:', err); return [] as never[] }),
     ])
 
     // ── 매퍼 적용 ──────────────────────────────────────────
@@ -325,13 +355,17 @@ export const GET = withPermission(
     const offboardingTasks = offboardingTaskMapper.toUnifiedTasks(
       offboardingRaw as OffboardingTaskWithRelations[]
     )
+    const benefitTasks = benefitClaimMapper.toUnifiedTasks(
+      benefitRaw as BenefitClaimWithRelations[]
+    )
 
     let allTasks: UnifiedTask[] = [
       ...leaveTasks,
       ...payrollTasks,
       ...onboardingTasks,
       ...offboardingTasks,
-      ...performanceTasks,  // 동적 계산 태스크 병합
+      ...performanceTasks,
+      ...benefitTasks,
     ]
 
     // ── F-2: 대결(위임)된 휴가 건 추가 조회 ──────────────────
