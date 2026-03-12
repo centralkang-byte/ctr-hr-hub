@@ -16,7 +16,7 @@
     "prev": "Previous",
     "close": "Close",
     "loading": "Loading...",
-    "noData": "No data available.",
+    "noData": "No data available",
     "required": "Required",
     "optional": "Optional",
     "total": "Total",
@@ -27,9 +27,9 @@
     "list": "List",
     "all": "All",
     "selectPlaceholder": "Select...",
-    "searchPlaceholder": "Enter search term",
+    "searchPlaceholder": "Search...",
     "success": "Successfully processed.",
-    "error": "An error occurred.",
+    "error": "An error occurred",
     "noPendingActions": "No pending actions",
     "today": "Today",
     "thisWeek": "This Week",
@@ -72,13 +72,13 @@
     "ascending": "Ascending",
     "descending": "Descending",
     "selected": "Selected",
-    "items": "items",
+    "items": "Items",
     "page": "Page",
     "of": "of",
     "rows": "Rows",
     "perPage": "Per Page",
-    "noResults": "No results found.",
-    "confirmDelete": "Are you sure you want to delete this?",
+    "noResults": "No results found",
+    "confirmDelete": "Are you sure you want to delete?",
     "confirmAction": "Are you sure you want to proceed?",
     "savedSuccess": "Saved successfully.",
     "deletedSuccess": "Deleted successfully.",
@@ -139,7 +139,31 @@
     "index": "No.",
     "id": "ID",
     "selectMonth": "Select Month",
-    "year": "Year"
+    "year": "Year",
+    "previous": "Previous",
+    "retry": "Retry",
+    "complete": "Complete",
+    "select": "Select",
+    "loadFailed": "Failed to load data",
+    "saveFailed": "Failed to save",
+    "deleteFailed": "Failed to delete",
+    "saved": "Saved successfully",
+    "deleted": "Deleted successfully",
+    "created": "Created successfully",
+    "updated": "Updated successfully",
+    "submitted": "Submitted successfully",
+    "approved": "Approved successfully",
+    "rejected": "Rejected successfully",
+    "confirmDeleteDesc": "This action cannot be undone.",
+    "confirmSubmit": "Do you want to submit?",
+    "confirmApprove": "Do you want to approve?",
+    "confirmReject": "Do you want to reject?",
+    "errorDesc": "Please try again later.",
+    "assignee": "Assignee",
+    "title": "Title",
+    "details": "Details",
+    "showing": "Showing",
+    "rowsPerPage": "Rows per page"
   },
   "auth": {
     "login": "Login",
@@ -411,7 +435,10 @@
     "daySat": "Sat",
     "daySun": "Sun",
     "totalEmployees": "Total Employees",
-    "averageWorkHours": "Work Hours (Average)"
+    "averageWorkHours": "Work Hours (Average)",
+    "pageTitle": "Attendance",
+    "emptyTitle": "No attendance records",
+    "emptyDesc": "No attendance data for this period."
   },
   "leave": {
     "title": "Leave Management",
@@ -499,7 +526,13 @@
     "paid": "Paid",
     "unpaid": "Unpaid",
     "carryOverAllowed": "Allowed",
-    "carryOverNotAllowed": "Not Allowed"
+    "carryOverNotAllowed": "Not Allowed",
+    "pageTitle": "Leave Management",
+    "teamTitle": "Team Leave",
+    "policiesTitle": "Leave Policies",
+    "calendarTitle": "Leave Calendar",
+    "emptyTitle": "No leave requests",
+    "emptyDesc": "No leave requests for this period."
   },
   "terminal": {
     "title": "Time Terminals",
@@ -844,7 +877,20 @@
     "behavioralIndicatorsPlaceholder": "e.g.,\nPresents a clear vision to team members\nDrives change proactively\nMediates conflicts effectively",
     "activeState": "Active Status",
     "deleteCompetency": "Delete Competency",
-    "deleteCompetencyConfirm": "Delete \"{name}\"? This action cannot be undone."
+    "deleteCompetencyConfirm": "Delete \"{name}\"? This action cannot be undone.",
+    "cyclesTitle": "Performance Cycles",
+    "goalsTitle": "Goals",
+    "evalTitle": "Evaluation",
+    "calibTitle": "Calibration",
+    "resultsTitle": "Results",
+    "peerTitle": "Peer Review",
+    "checkInTitle": "Check-In",
+    "emptyTitle": "No performance data",
+    "emptyDesc": "No data for this cycle.",
+    "emptyCycles": "No cycles registered",
+    "emptyCyclesDesc": "Create a new cycle.",
+    "emptyGoals": "No goals set",
+    "emptyGoalsDesc": "Add goals."
   },
   "recruitment": {
     "title": "Recruitment",
@@ -1141,7 +1187,14 @@
     "stageShortFINAL": "Final",
     "stageShortOFFER": "Offer",
     "stageShortHIRED": "Hired",
-    "stageShortREJECTED": "Rejected"
+    "stageShortREJECTED": "Rejected",
+    "boardTitle": "Recruitment Board",
+    "jobsTitle": "Job Postings",
+    "candidatesTitle": "Candidates",
+    "emptyJobs": "No job postings",
+    "emptyJobsDesc": "Create a new posting.",
+    "emptyCandidates": "No candidates",
+    "emptyCandidatesDesc": "No applicants yet."
   },
   "offboarding": {
     "title": "Offboarding",
@@ -1288,7 +1341,10 @@
     "itemsPerPage": "{n} items",
     "active": "Active",
     "inactive": "Inactive",
-    "actions": "Actions"
+    "actions": "Actions",
+    "pageTitle": "Offboarding",
+    "emptyTitle": "No active offboarding",
+    "emptyDesc": "No employees need exit processing."
   },
   "salary": {
     "title": "Compensation Management",
@@ -1379,7 +1435,7 @@
   },
   "benefits": {
     "title": "Benefits",
-    "pageTitle": "Benefits Management",
+    "pageTitle": "Benefits",
     "breadcrumb": "HR / Benefits",
     "policyManagement": "Policy Management",
     "applicationStatus": "Application Status",
@@ -1399,7 +1455,9 @@
     "coverageEnd": "Coverage End",
     "monthlyPremium": "Monthly Premium",
     "companyContribution": "Company Contribution",
-    "employeeContribution": "Employee Contribution"
+    "employeeContribution": "Employee Contribution",
+    "emptyTitle": "No benefits registered",
+    "emptyDesc": "Register benefit programs."
   },
   "training": {
     "title": "Training Management",
@@ -1629,7 +1687,10 @@
     "categoryIntroductionFull": "Introduction",
     "categoryOtherFull": "Other",
     "dueDaysAfter": "Due (days after hire)",
-    "deleteTemplateConfirm": "Delete template \"{name}\"?"
+    "deleteTemplateConfirm": "Delete template \"{name}\"?",
+    "pageTitle": "Onboarding",
+    "emptyTitle": "No active onboarding",
+    "emptyDesc": "Start onboarding for new hires."
   },
   "org": {
     "title": "Organization",
@@ -1698,7 +1759,13 @@
       "approved": "Approved",
       "finalized": "Finalized",
       "paid": "Paid"
-    }
+    },
+    "runsTitle": "Payroll Runs",
+    "closeTitle": "Close Attendance",
+    "simTitle": "Payroll Simulation",
+    "adjTitle": "Payroll Adjustments",
+    "emptyTitle": "No payroll runs",
+    "emptyDesc": "Start a new payroll run."
   },
   "analytics": {
     "title": "Analytics",
@@ -1893,7 +1960,12 @@
       "recalcFailed": "Recalculation Failed",
       "dataLoadFailed": "Data Load Failed",
       "dataLoadFailedDesc": "Unable to load attrition risk data."
-    }
+    },
+    "overviewTitle": "HR Analytics Dashboard",
+    "turnoverTitle": "Turnover Analysis",
+    "workforceTitle": "Workforce",
+    "emptyTitle": "No analytics data",
+    "emptyDesc": "Analytics will appear when enough data is collected."
   },
   "notification": {
     "title": "Notifications",
@@ -2954,5 +3026,51 @@
     "linkPerformance": "Performance Reviews",
     "viewAll": "View All",
     "totalCount": "{count} total"
+  },
+  "employees": {
+    "pageTitle": "Employee Management",
+    "newEmployee": "New Employee",
+    "emptyTitle": "No employees registered",
+    "emptyDesc": "Register a new employee."
+  },
+  "skills": {
+    "pageTitle": "Skills Matrix",
+    "emptyTitle": "No skills data",
+    "emptyDesc": "Register employee skills."
+  },
+  "lms": {
+    "pageTitle": "Learning Management",
+    "emptyTitle": "No courses registered",
+    "emptyDesc": "Add a new course."
+  },
+  "home": {
+    "greeting": ", have a great day!",
+    "quickActions": "Quick Actions",
+    "recentActivity": "Recent Activity",
+    "upcomingEvents": "Upcoming Events"
+  },
+  "mySpace": {
+    "tasksTitle": "My Tasks",
+    "profileTitle": "My Profile",
+    "attendanceTitle": "My Attendance",
+    "leaveTitle": "My Leave",
+    "payslipTitle": "Payslips",
+    "goalsTitle": "My Goals",
+    "benefitsTitle": "My Benefits",
+    "onboardingTitle": "My Onboarding",
+    "emptyTasks": "No tasks assigned",
+    "emptyTasksDesc": "No pending tasks.",
+    "emptyPayslip": "No payslips",
+    "emptyPayslipDesc": "No processed payroll yet."
+  },
+  "directory": {
+    "pageTitle": "People Directory",
+    "emptyTitle": "No employee data",
+    "emptyDesc": "Register employees first."
+  },
+  "notifications": {
+    "pageTitle": "Notifications",
+    "emptyTitle": "No new notifications",
+    "emptyDesc": "Notifications will appear here."
   }
 }

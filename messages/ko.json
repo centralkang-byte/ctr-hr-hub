@@ -15,21 +15,21 @@
     "next": "다음",
     "prev": "이전",
     "close": "닫기",
-    "loading": "로딩 중...",
-    "noData": "데이터가 없습니다.",
+    "loading": "불러오는 중...",
+    "noData": "데이터가 없습니다",
     "required": "필수 입력",
     "optional": "선택 사항",
-    "total": "전체",
+    "total": "합계",
     "yes": "예",
     "no": "아니요",
     "actions": "작업",
     "detail": "상세",
     "list": "목록",
     "all": "전체",
-    "selectPlaceholder": "선택하세요",
-    "searchPlaceholder": "검색어를 입력하세요",
+    "selectPlaceholder": "선택해주세요...",
+    "searchPlaceholder": "검색어를 입력하세요...",
     "success": "성공적으로 처리되었습니다.",
-    "error": "오류가 발생했습니다.",
+    "error": "오류가 발생했습니다",
     "noPendingActions": "처리할 항목이 없습니다",
     "today": "오늘",
     "thisWeek": "이번 주",
@@ -72,12 +72,12 @@
     "ascending": "오름차순",
     "descending": "내림차순",
     "selected": "선택됨",
-    "items": "건",
+    "items": "항목",
     "page": "페이지",
     "of": "/",
     "rows": "행",
     "perPage": "페이지당",
-    "noResults": "결과가 없습니다.",
+    "noResults": "검색 결과가 없습니다",
     "confirmDelete": "정말 삭제하시겠습니까?",
     "confirmAction": "이 작업을 진행하시겠습니까?",
     "savedSuccess": "저장되었습니다.",
@@ -103,7 +103,7 @@
     "company": "법인",
     "department": "부서",
     "team": "팀",
-    "position": "직책",
+    "position": "직위",
     "grade": "직급",
     "role": "역할",
     "email": "이메일",
@@ -139,7 +139,31 @@
     "index": "번호",
     "id": "ID",
     "selectMonth": "월 선택",
-    "year": "연도"
+    "year": "연도",
+    "previous": "이전",
+    "retry": "다시 시도",
+    "complete": "완료",
+    "select": "선택",
+    "loadFailed": "데이터를 불러오지 못했습니다",
+    "saveFailed": "저장에 실패했습니다",
+    "deleteFailed": "삭제에 실패했습니다",
+    "saved": "저장되었습니다",
+    "deleted": "삭제되었습니다",
+    "created": "등록되었습니다",
+    "updated": "수정되었습니다",
+    "submitted": "제출되었습니다",
+    "approved": "승인되었습니다",
+    "rejected": "반려되었습니다",
+    "confirmDeleteDesc": "이 작업은 되돌릴 수 없습니다.",
+    "confirmSubmit": "제출하시겠습니까?",
+    "confirmApprove": "승인하시겠습니까?",
+    "confirmReject": "반려하시겠습니까?",
+    "errorDesc": "잠시 후 다시 시도해주세요.",
+    "assignee": "담당자",
+    "title": "제목",
+    "details": "상세",
+    "showing": "표시 중",
+    "rowsPerPage": "페이지당 행 수"
   },
   "auth": {
     "login": "로그인",
@@ -599,7 +623,10 @@
     "daySat": "토",
     "daySun": "일",
     "totalEmployees": "전체 인원",
-    "averageWorkHours": "근무 시간 (평균)"
+    "averageWorkHours": "근무 시간 (평균)",
+    "pageTitle": "근태 관리",
+    "emptyTitle": "근태 기록이 없습니다",
+    "emptyDesc": "해당 기간의 근태 데이터가 없습니다."
   },
   "leave": {
     "title": "휴가 관리",
@@ -687,7 +714,13 @@
     "paid": "유급",
     "unpaid": "무급",
     "carryOverAllowed": "허용",
-    "carryOverNotAllowed": "불가"
+    "carryOverNotAllowed": "불가",
+    "pageTitle": "휴가 관리",
+    "teamTitle": "팀 휴가 현황",
+    "policiesTitle": "휴가 정책",
+    "calendarTitle": "휴가 캘린더",
+    "emptyTitle": "휴가 신청이 없습니다",
+    "emptyDesc": "해당 기간의 휴가 신청 내역이 없습니다."
   },
   "terminal": {
     "title": "출퇴근 단말기",
@@ -1035,7 +1068,20 @@
     "deleteCompetencyConfirm": "\"{name}\"을(를) 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
     "adminResults": "전체 결과",
     "results": "결과",
-    "teamResults": "팀 결과"
+    "teamResults": "팀 결과",
+    "cyclesTitle": "평가 사이클",
+    "goalsTitle": "목표 관리",
+    "evalTitle": "평가",
+    "calibTitle": "보정 회의",
+    "resultsTitle": "평가 결과",
+    "peerTitle": "동료 평가",
+    "checkInTitle": "체크인",
+    "emptyTitle": "평가 데이터가 없습니다",
+    "emptyDesc": "해당 사이클의 평가 데이터가 없습니다.",
+    "emptyCycles": "등록된 평가 사이클이 없습니다",
+    "emptyCyclesDesc": "새로운 평가 사이클을 생성하세요.",
+    "emptyGoals": "설정된 목표가 없습니다",
+    "emptyGoalsDesc": "목표를 추가하세요."
   },
   "recruitment": {
     "title": "채용 관리",
@@ -1332,7 +1378,14 @@
     "stageShortFINAL": "최종",
     "stageShortOFFER": "오퍼",
     "stageShortHIRED": "합격",
-    "stageShortREJECTED": "불합격"
+    "stageShortREJECTED": "불합격",
+    "boardTitle": "채용 보드",
+    "jobsTitle": "채용 공고",
+    "candidatesTitle": "후보자 관리",
+    "emptyJobs": "등록된 채용 공고가 없습니다",
+    "emptyJobsDesc": "새 채용 공고를 등록하세요.",
+    "emptyCandidates": "후보자가 없습니다",
+    "emptyCandidatesDesc": "아직 지원한 후보자가 없습니다."
   },
   "offboarding": {
     "title": "퇴직 관리",
@@ -1501,7 +1554,10 @@
     "myOffboardingTitle": "내 퇴직 처리",
     "myOffboardingEmpty": "진행 중인 퇴직 처리가 없습니다.",
     "selfServiceTitle": "퇴직자 셀프서비스",
-    "selfServiceDesc": "퇴직 과정에서 필요한 정보와 태스크를 확인합니다."
+    "selfServiceDesc": "퇴직 과정에서 필요한 정보와 태스크를 확인합니다.",
+    "pageTitle": "오프보딩 관리",
+    "emptyTitle": "진행 중인 오프보딩이 없습니다",
+    "emptyDesc": "퇴직 처리가 필요한 직원이 없습니다."
   },
   "salary": {
     "title": "보상 관리",
@@ -1593,7 +1649,7 @@
   },
   "benefits": {
     "title": "복리후생",
-    "pageTitle": "복리후생 관리",
+    "pageTitle": "복리후생",
     "breadcrumb": "인사관리 / 복리후생",
     "policyManagement": "정책관리",
     "applicationStatus": "신청현황",
@@ -1613,7 +1669,9 @@
     "coverageEnd": "보장 종료일",
     "monthlyPremium": "월 보험료",
     "companyContribution": "회사 부담금",
-    "employeeContribution": "본인 부담금"
+    "employeeContribution": "본인 부담금",
+    "emptyTitle": "등록된 복리후생이 없습니다",
+    "emptyDesc": "복리후생 프로그램을 등록하세요."
   },
   "training": {
     "title": "교육 관리",
@@ -1862,7 +1920,10 @@
     "transferType": "전배",
     "convertToEmployee": "직원으로 등록",
     "convertSuccess": "직원 등록 완료! 온보딩이 자동으로 시작됩니다.",
-    "convertAlready": "이미 직원으로 전환된 지원서입니다."
+    "convertAlready": "이미 직원으로 전환된 지원서입니다.",
+    "pageTitle": "온보딩 관리",
+    "emptyTitle": "진행 중인 온보딩이 없습니다",
+    "emptyDesc": "새로운 입사자의 온보딩을 시작하세요."
   },
   "org": {
     "title": "조직 관리",
@@ -1948,7 +2009,13 @@
       "approved": "승인됨",
       "finalized": "확정됨",
       "paid": "지급완료"
-    }
+    },
+    "runsTitle": "급여 처리",
+    "closeTitle": "근태 마감",
+    "simTitle": "급여 시뮬레이션",
+    "adjTitle": "급여 조정",
+    "emptyTitle": "급여 처리 내역이 없습니다",
+    "emptyDesc": "새 급여 처리를 시작하세요."
   },
   "analytics": {
     "title": "분석/리포트",
@@ -2144,7 +2211,12 @@
       "dataLoadFailed": "데이터 로드 실패",
       "dataLoadFailedDesc": "이탈 위험 데이터를 불러올 수 없습니다."
     },
-    "company_id": "법인"
+    "company_id": "법인",
+    "overviewTitle": "HR 분석 대시보드",
+    "turnoverTitle": "이직 분석",
+    "workforceTitle": "인력 현황",
+    "emptyTitle": "분석 데이터가 없습니다",
+    "emptyDesc": "충분한 데이터가 쌓이면 분석 결과가 표시됩니다."
   },
   "notification": {
     "title": "알림",
@@ -3313,5 +3385,51 @@
     "linkPerformance": "성과 평가 이력",
     "viewAll": "전체 보기",
     "totalCount": "총 {count}건"
+  },
+  "employees": {
+    "pageTitle": "직원 관리",
+    "newEmployee": "신규 직원 등록",
+    "emptyTitle": "등록된 직원이 없습니다",
+    "emptyDesc": "새 직원을 등록하세요."
+  },
+  "skills": {
+    "pageTitle": "스킬 매트릭스",
+    "emptyTitle": "스킬 데이터가 없습니다",
+    "emptyDesc": "직원 스킬 정보를 등록하세요."
+  },
+  "lms": {
+    "pageTitle": "교육 관리",
+    "emptyTitle": "등록된 교육 과정이 없습니다",
+    "emptyDesc": "새 교육 과정을 추가하세요."
+  },
+  "home": {
+    "greeting": "님, 좋은 하루 되세요!",
+    "quickActions": "빠른 실행",
+    "recentActivity": "최근 활동",
+    "upcomingEvents": "다가오는 일정"
+  },
+  "mySpace": {
+    "tasksTitle": "나의 업무",
+    "profileTitle": "내 프로필",
+    "attendanceTitle": "나의 출퇴근",
+    "leaveTitle": "나의 휴가",
+    "payslipTitle": "급여명세서",
+    "goalsTitle": "나의 목표",
+    "benefitsTitle": "나의 복리후생",
+    "onboardingTitle": "나의 온보딩",
+    "emptyTasks": "할당된 업무가 없습니다",
+    "emptyTasksDesc": "현재 대기 중인 업무가 없습니다.",
+    "emptyPayslip": "급여명세서가 없습니다",
+    "emptyPayslipDesc": "아직 처리된 급여 내역이 없습니다."
+  },
+  "directory": {
+    "pageTitle": "인사 디렉터리",
+    "emptyTitle": "직원 정보가 없습니다",
+    "emptyDesc": "직원 데이터를 먼저 등록하세요."
+  },
+  "notifications": {
+    "pageTitle": "알림",
+    "emptyTitle": "새로운 알림이 없습니다",
+    "emptyDesc": "알림이 발생하면 여기에 표시됩니다."
   }
 }
