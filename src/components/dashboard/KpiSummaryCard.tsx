@@ -1,6 +1,7 @@
 'use client'
 
 import { ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react'
+import { CARD_STYLES } from '@/lib/styles'
 
 interface KpiSummaryCardProps {
   label: string

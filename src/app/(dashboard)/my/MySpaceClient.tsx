@@ -6,6 +6,7 @@ import {
   ChevronRight, Target, FileText
 } from 'lucide-react'
 import type { SessionUser } from '@/types'
+import { CARD_STYLES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────────
 

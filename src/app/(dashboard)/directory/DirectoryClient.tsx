@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useDebounce } from '@/hooks/useDebounce'
-import { TABLE_STYLES } from '@/lib/styles'
+import { CARD_STYLES, TABLE_STYLES } from '@/lib/styles'
 
 interface DirectoryEmployee {
   id: string

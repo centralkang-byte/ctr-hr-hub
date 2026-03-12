@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Bell, Moon, Save, Check } from 'lucide-react'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+import { CARD_STYLES, BUTTON_VARIANTS } from '@/lib/styles'
 
 type Channel = 'in_app' | 'email' | 'teams'
 

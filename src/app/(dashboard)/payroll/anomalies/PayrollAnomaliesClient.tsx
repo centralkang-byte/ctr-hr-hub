@@ -7,7 +7,7 @@ import {
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-import { TABLE_STYLES } from '@/lib/styles'
+import { CARD_STYLES, TABLE_STYLES } from '@/lib/styles'
 
 interface Anomaly {
   rule: string

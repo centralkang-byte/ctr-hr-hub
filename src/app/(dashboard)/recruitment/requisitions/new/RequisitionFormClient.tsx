@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Save, Send, Building2, Users, AlertTriangle } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+import { CARD_STYLES, BUTTON_VARIANTS } from '@/lib/styles'
 
 interface Company { id: string; name: string }
 interface Department { id: string; name: string; companyId: string }

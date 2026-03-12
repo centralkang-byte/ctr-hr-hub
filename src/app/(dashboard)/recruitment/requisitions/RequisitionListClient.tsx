@@ -15,7 +15,7 @@ import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import RequisitionApproveModal from './RequisitionApproveModal'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+import { CARD_STYLES, BUTTON_VARIANTS } from '@/lib/styles'
 
 interface Requisition {
   id: string

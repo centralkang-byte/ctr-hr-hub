@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { WidgetSkeleton } from './WidgetSkeleton'
 import { WidgetEmpty } from './WidgetEmpty'
 import {
+import { CARD_STYLES } from '@/lib/styles'
   BarChart,
   Bar,
   LineChart,

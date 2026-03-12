@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { apiClient } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
 import type { SessionUser } from '@/types'
-import { TABLE_STYLES } from '@/lib/styles'
+import { CARD_STYLES, TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ───────────────────────────────────────────────
 

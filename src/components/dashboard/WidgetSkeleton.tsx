@@ -1,3 +1,4 @@
+import { CARD_STYLES } from '@/lib/styles'
 'use client'
 
 export function WidgetSkeleton({ height = 'h-48' }: { height?: string }) {

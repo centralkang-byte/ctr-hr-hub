@@ -17,6 +17,7 @@ import PayrollPipeline, { type PipelineEntry } from '@/components/payroll/Payrol
 import PayrollCalendar from '@/components/payroll/PayrollCalendar'
 import PayrollCreateDialog from '@/components/payroll/PayrollCreateDialog'
 import type { SessionUser } from '@/types'
+import { CARD_STYLES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────────
 

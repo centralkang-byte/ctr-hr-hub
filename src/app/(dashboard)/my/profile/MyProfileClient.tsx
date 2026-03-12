@@ -8,7 +8,7 @@ import {
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 import type { SessionUser } from '@/types'
-import { BUTTON_SIZES, BUTTON_VARIANTS,  MODAL_STYLES } from '@/lib/styles'
+import { CARD_STYLES, BUTTON_SIZES, BUTTON_VARIANTS,  MODAL_STYLES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────────
 

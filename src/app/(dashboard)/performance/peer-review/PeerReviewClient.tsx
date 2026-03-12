@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Users, Settings, ClipboardList, BarChart3 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
-import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { CARD_STYLES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ───────────────────────────────────────────────
 

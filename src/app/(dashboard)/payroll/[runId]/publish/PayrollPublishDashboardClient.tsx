@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { CARD_STYLES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────
 

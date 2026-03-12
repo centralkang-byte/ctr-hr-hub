@@ -6,7 +6,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Cart
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import type {
-import { TABLE_STYLES } from '@/lib/styles'
+import { CARD_STYLES, TABLE_STYLES } from '@/lib/styles'
   Company, Department, SimMode, BulkTargetType,
   SearchEmployee, SimResponse, EmployeeSimResult, PayDetail
 } from './types'

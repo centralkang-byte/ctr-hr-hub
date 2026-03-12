@@ -7,7 +7,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { apiClient } from '@/lib/api'
 import { useSession } from 'next-auth/react'
 import { ROLE } from '@/lib/constants'
-import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { CARD_STYLES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 
 
 // ─── Types ───────────────────────────────────────────────
