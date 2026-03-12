@@ -183,7 +183,7 @@ export default function MySkillsClient({
         items,
       })
       setSavedAssessments({ ...assessments })
-      if (submit) alert('자기평가가 제출되었습니다.')
+      if (submit) toast({ title: '자기평가가 제출되었습니다.' })
     } finally {
       setSaving(false)
     }

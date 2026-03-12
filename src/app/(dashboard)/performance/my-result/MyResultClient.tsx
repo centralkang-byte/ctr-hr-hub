@@ -117,7 +117,7 @@ export default function MyResultClient({
         try {
             await apiClient.post(`/api/v1/performance/reviews/${result.reviewId}/acknowledge`)
             setResult((p) => p ? { ...p, acknowledgedAt: new Date().toISOString() } : p)
-        } catch { alert('확인 처리에 실패했습니다.') }
+        } catch { toast({ title: '확인 처리에 실패했습니다.', variant: 'destructive' }) }
         finally { setAcknowledging(false) }
     }
 

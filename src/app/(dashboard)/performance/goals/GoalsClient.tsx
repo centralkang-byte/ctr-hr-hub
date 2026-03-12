@@ -109,7 +109,7 @@ export default function GoalsClient({
       await apiClient.delete(`/api/v1/performance/goals/${goalId}`)
       await fetchGoals()
     } catch {
-      alert(t('deleteFailed'))
+      toast({ title: t('deleteFailed'), variant: 'destructive' })
     }
   }
 
@@ -124,7 +124,7 @@ export default function GoalsClient({
       await apiClient.put(`/api/v1/performance/goals/${firstDraft.id}/submit`)
       await fetchGoals()
     } catch {
-      alert(t('submitFailed'))
+      toast({ title: t('submitFailed'), variant: 'destructive' })
     } finally {
       setSubmitting(false)
     }
@@ -144,7 +144,7 @@ export default function GoalsClient({
       setProgressForm(null)
       await fetchGoals()
     } catch {
-      alert(t('progressRecordFailed'))
+      toast({ title: t('progressRecordFailed'), variant: 'destructive' })
     } finally {
       setSubmitting(false)
     }

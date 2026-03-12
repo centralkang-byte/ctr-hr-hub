@@ -79,7 +79,7 @@ export default function NotificationsClient({
         try {
             await apiClient.post(`/api/v1/performance/reviews/${reviewId}/notify`)
             await fetchItems()
-        } catch { alert('통보에 실패했습니다.') }
+        } catch { toast({ title: '통보에 실패했습니다.', variant: 'destructive' }) }
         finally { setNotifying(null) }
     }
 
@@ -90,7 +90,7 @@ export default function NotificationsClient({
         try {
             await apiClient.post(`/api/v1/performance/cycles/${selectedCycleId}/bulk-notify`)
             await fetchItems()
-        } catch { alert('일괄 통보에 실패했습니다.') }
+        } catch { toast({ title: '일괄 통보에 실패했습니다.', variant: 'destructive' }) }
         finally { setBulkNotifying(false) }
     }
 

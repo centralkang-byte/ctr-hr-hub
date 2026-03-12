@@ -9,6 +9,7 @@ import type { EvaluationSettings } from '@/types/settings'
 import AiDraftModal from '@/components/performance/AiDraftModal'
 import { BUTTON_VARIANTS } from '@/lib/styles'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import { toast } from '@/hooks/use-toast'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -189,9 +190,9 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
         setCurrentEvaluationId(res.data.id)
       }
       await fetchTeam()
-      alert(status === 'DRAFT' ? '임시 저장되었습니다.' : '제출 완료되었습니다.')
+      toast({ title: status === 'DRAFT' ? '임시 저장되었습니다.' : '제출 완료되었습니다.' })
     } catch {
-      alert('저장에 실패했습니다.')
+      toast({ title: '저장에 실패했습니다.', variant: 'destructive' })
     } finally { setSubmitting(false) }
   }
 
@@ -215,7 +216,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
       })
       setOverallComment(res.data.suggested_comment)
     } catch {
-      alert('AI 코멘트 생성에 실패했습니다.')
+      toast({ title: 'AI 코멘트 생성에 실패했습니다.', variant: 'destructive' })
     } finally { setAiLoading(false) }
   }
 

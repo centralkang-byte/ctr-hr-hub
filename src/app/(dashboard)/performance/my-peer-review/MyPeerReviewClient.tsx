@@ -121,7 +121,7 @@ export default function MyPeerReviewClient({
         if (!activeReview) return
         if (status === 'SUBMITTED') {
             if (form.overallComment.trim().length < 20) {
-                alert('종합 의견은 최소 20자 이상 작성해주세요.')
+                toast({ title: '종합 의견은 최소 20자 이상 작성해주세요.', variant: 'destructive' })
                 return
             }
             confirm({ title: '제출하면 수정할 수 없습니다. 제출하시겠습니까?', onConfirm: async () =>
@@ -137,7 +137,7 @@ export default function MyPeerReviewClient({
             })
             setActiveReview(null)
             await fetchAssignments()
-        } catch { alert('저장에 실패했습니다.') }
+        } catch { toast({ title: '저장에 실패했습니다.', variant: 'destructive' }) }
         finally { setSaving(false) }
     }
 

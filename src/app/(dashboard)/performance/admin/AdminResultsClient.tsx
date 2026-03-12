@@ -7,6 +7,7 @@ import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import { toast } from '@/hooks/use-toast'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -83,18 +84,18 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
   const handleFinalize = async () => {
     const cycle = cycles.find((c) => c.id === selectedCycleId)
     if (cycle?.status !== 'CALIBRATION') {
-      alert('캘리브레이션 단계에서만 확정할 수 있습니다.')
+      toast({ title: '캘리브레이션 단계에서만 확정할 수 있습니다.' })
       return
     }
     confirm({ title: '성과 주기를 확정하시겠습니까? 확정 후에는 수정할 수 없습니다.', onConfirm: async () =>
     try {
       await apiClient.post(`/api/v1/performance/cycles/${selectedCycleId}/finalize`)
-      alert('성과 주기가 확정되었습니다.')
+      toast({ title: '성과 주기가 확정되었습니다.' })
       // Refresh
       const res = await apiClient.getList<CycleOption>('/api/v1/performance/cycles', { page: 1, limit: 100 })
       setCycles(res.data)
     } catch {
-      alert('확정에 실패했습니다.')
+      toast({ title: '확정에 실패했습니다.', variant: 'destructive' })
     }
   }
 

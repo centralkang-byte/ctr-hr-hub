@@ -85,7 +85,7 @@ export default function MyCheckinsClient({
                 note: memos[goalId] || undefined,
             })
             await fetchData()
-        } catch { alert('진행률 저장에 실패했습니다.') }
+        } catch { toast({ title: '진행률 저장에 실패했습니다.', variant: 'destructive' }) }
         finally { setSaving(null) }
     }
 

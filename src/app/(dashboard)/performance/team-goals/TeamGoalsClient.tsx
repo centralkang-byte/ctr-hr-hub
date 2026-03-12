@@ -177,7 +177,7 @@ export default function TeamGoalsClient({
       await apiClient.put(`/api/v1/performance/goals/${goalId}/approve`)
       await fetchTeamGoals()
     } catch {
-      alert(t('approveFailed'))
+      toast({ title: t('approveFailed'), variant: 'destructive' })
     } finally {
       setActionLoading(null)
     }
@@ -187,7 +187,7 @@ export default function TeamGoalsClient({
 
   async function handleRequestRevision(goalId: string) {
     if (!revisionComment.trim()) {
-      alert(t('enterRevisionReason'))
+      toast({ title: t('enterRevisionReason') })
       return
     }
     setActionLoading(goalId)
@@ -199,7 +199,7 @@ export default function TeamGoalsClient({
       setRevisionComment('')
       await fetchTeamGoals()
     } catch {
-      alert(t('revisionRequestFailed'))
+      toast({ title: t('revisionRequestFailed'), variant: 'destructive' })
     } finally {
       setActionLoading(null)
     }

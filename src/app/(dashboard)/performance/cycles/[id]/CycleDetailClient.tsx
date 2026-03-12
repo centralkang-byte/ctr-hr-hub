@@ -95,7 +95,7 @@ export default function CycleDetailClient({
         try {
             await apiClient.post(`/api/v1/performance/cycles/${cycleId}/advance`)
             await fetchData()
-        } catch { alert('상태 전환에 실패했습니다.') }
+        } catch { toast({ title: '상태 전환에 실패했습니다.', variant: 'destructive' }) }
         finally { setAdvancing(false) }
     }
 

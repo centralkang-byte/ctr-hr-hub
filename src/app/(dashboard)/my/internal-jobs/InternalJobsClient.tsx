@@ -105,7 +105,7 @@ export default function InternalJobsClient({
       await apiClient.post(`/api/v1/recruitment/internal-jobs/${jobId}/apply`, {})
       await load()
     } catch (e: any) {
-      alert(e?.message ?? '지원 중 오류가 발생했습니다.')
+      toast({ title: e?.message ?? '지원 중 오류가 발생했습니다.', variant: 'destructive' })
     } finally {
       setApplying(null)
     }

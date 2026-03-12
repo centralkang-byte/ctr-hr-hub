@@ -9,6 +9,7 @@ import EmployeeInsightPanel from '@/components/performance/EmployeeInsightPanel'
 import BiasDetectionBanner from '@/components/performance/BiasDetectionBanner'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import { toast } from '@/hooks/use-toast'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -184,7 +185,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
       setShowCreateForm(false)
       await fetchSessions()
     } catch {
-      alert('세션 생성에 실패했습니다.')
+      toast({ title: '세션 생성에 실패했습니다.', variant: 'destructive' })
     }
   }
 
@@ -205,7 +206,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
       setAdjReason('')
       await loadSession(selectedSession.id)
     } catch {
-      alert('조정 저장에 실패했습니다.')
+      toast({ title: '조정 저장에 실패했습니다.', variant: 'destructive' })
     }
   }, [adjEmployee, selectedSession, adjReason, adjPerfScore, adjCompScore, loadSession])
 
@@ -236,9 +237,9 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
         blockDistribution: blockDist,
       })
 
-      alert(`AI 분석 완료:\n${res.data.overall_assessment}\n\n권고사항:\n${res.data.recommendations.join('\n')}`)
+      toast({ title: `AI 분석 완료:\n${res.data.overall_assessment}\n\n권고사항:\n${res.data.recommendations.join('\n')}` })
     } catch {
-      alert('AI 분석에 실패했습니다.')
+      toast({ title: 'AI 분석에 실패했습니다.', variant: 'destructive' })
     } finally { setAiLoading(false) }
   }
 
@@ -555,7 +556,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                         })
                         await loadSession(selectedSession.id)
                         await fetchSessions()
-                      } catch { alert('완료 처리에 실패했습니다.') }
+                      } catch { toast({ title: '완료 처리에 실패했습니다.', variant: 'destructive' }) }
                     }}
                     className="flex items-center gap-2 px-4 py-2 bg-[#059669] hover:bg-[#047857] text-white rounded-lg text-sm font-medium"
                   >

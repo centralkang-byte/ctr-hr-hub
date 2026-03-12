@@ -145,13 +145,13 @@ export default function CompReviewClient({
         const updates = Object.entries(pendingUpdates).map(([employeeId, { pct, reason }]) => ({
             employeeId, appliedPct: pct, exceptionReason: reason
         }))
-        if (updates.length === 0) { alert('변경된 내용이 없습니다.'); return }
+        if (updates.length === 0) { toast({ title: '변경된 내용이 없습니다.' }); return }
         setSaving(true)
         try {
             await apiClient.put(`/api/v1/performance/compensation/${selectedCycleId}/apply`, { adjustments: updates })
             setPendingUpdates({})
             await fetchData()
-        } catch { alert('저장에 실패했습니다.') }
+        } catch { toast({ title: '저장에 실패했습니다.', variant: 'destructive' }) }
         finally { setSaving(false) }
     }
 
@@ -165,7 +165,7 @@ export default function CompReviewClient({
         try {
             await apiClient.post(`/api/v1/performance/compensation/${selectedCycleId}/approve`)
             await fetchData()
-        } catch { alert('승인에 실패했습니다.') }
+        } catch { toast({ title: '승인에 실패했습니다.', variant: 'destructive' }) }
         finally { setApproving(false) }
     }
 
@@ -176,7 +176,7 @@ export default function CompReviewClient({
             const url = URL.createObjectURL(blob)
             const a = document.createElement('a'); a.href = url; a.download = `comp-review-${selectedCycleId}.json`; a.click()
             URL.revokeObjectURL(url)
-        } catch { alert('내보내기에 실패했습니다.') }
+        } catch { toast({ title: '내보내기에 실패했습니다.', variant: 'destructive' }) }
     }
 
     // Auth guard

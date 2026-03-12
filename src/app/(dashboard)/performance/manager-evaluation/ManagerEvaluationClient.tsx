@@ -270,7 +270,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                 originalGradeEnum: finalGrade,
             })
             onSaved()
-        } catch { alert('저장에 실패했습니다.') }
+        } catch { toast({ title: '저장에 실패했습니다.', variant: 'destructive' }) }
         finally { setSaving(false) }
     }
 
@@ -430,7 +430,7 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
     }
 
     async function handleNominate() {
-        if (selected.size < 2) { alert('최소 2명을 지명해주세요.'); return }
+        if (selected.size < 2) { toast({ title: '최소 2명을 지명해주세요.', variant: 'destructive' }); return }
         confirm({ title: `${selected.size}명을 동료평가자로 지명하시겠습니까?`, onConfirm: async () =>
         setSaving(true)
         try {
@@ -438,7 +438,7 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
                 cycleId, employeeId: member.employeeId, reviewerIds: Array.from(selected),
             })
             onSaved()
-        } catch { alert('지명에 실패했습니다.') }
+        } catch { toast({ title: '지명에 실패했습니다.', variant: 'destructive' }) }
         finally { setSaving(false) }
     }
 

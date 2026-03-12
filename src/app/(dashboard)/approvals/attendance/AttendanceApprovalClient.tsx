@@ -144,7 +144,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
       setSelected(null)
       await load()
     } catch {
-      alert('처리에 실패했습니다.')
+      toast({ title: '처리에 실패했습니다.', variant: 'destructive' })
     } finally {
       setApproving(false)
     }
@@ -159,12 +159,12 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
         { ids: Array.from(selectedIds), action }
       )
       const { processed, skipped } = res.data
-      alert(`처리 완료: ${processed}건 처리됨${skipped > 0 ? `, ${skipped}건 건너뜀` : ''}`)
+      toast({ title: `처리 완료: ${processed}건 처리됨${skipped > 0 ? `, ${skipped}건 건너뜀` : ''}` })
       setSelectedIds(new Set())
       setSelected(null)
       await load()
     } catch {
-      alert('일괄 처리에 실패했습니다.')
+      toast({ title: '일괄 처리에 실패했습니다.', variant: 'destructive' })
     } finally {
       setBulkProcessing(false)
     }
@@ -180,7 +180,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
         <div className="flex items-center gap-3">
           <Inbox className="w-6 h-6 text-[#5E81F4]" />
           <div>
-            <h1 className="text-2xl font-bold text-[#1C1D21]">{tCommon('approvalsInbox')}</h1>
+            <h1 className="text-2xl font-bold text-[#1C1D21]">근태 승인함</h1>
             <p className="text-sm text-[#8181A5] mt-0.5">휴가, 초과근무, 근태수정, 교대변경 요청을 한 곳에서 처리합니다</p>
           </div>
         </div>

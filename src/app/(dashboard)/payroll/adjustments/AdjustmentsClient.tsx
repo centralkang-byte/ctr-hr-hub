@@ -184,7 +184,7 @@ export default function AdjustmentsClient({
                 await loadRuns()
             } else {
                 const err = await res.json()
-                alert(err.error?.message ?? '조정 추가 중 오류가 발생했습니다.')
+                toast({ title: err.error?.message ?? '조정 추가 중 오류가 발생했습니다.', variant: 'destructive' })
             }
         } finally {
             setSubmitting(false)
@@ -213,12 +213,12 @@ export default function AdjustmentsClient({
             })
             if (res.ok) {
                 const json = await res.json()
-                alert(`이상 검토로 전환 완료.\n이상 항목: ${json.data?.anomalyCount ?? 0}건`)
+                toast({ title: `이상 검토로 전환 완료.\n이상 항목: ${json.data?.anomalyCount ?? 0}건` })
                 setSelectedRun(null)
                 await loadRuns()
             } else {
                 const err = await res.json()
-                alert(err.error?.message ?? '오류가 발생했습니다.')
+                toast({ title: err.error?.message ?? '오류가 발생했습니다.', variant: 'destructive' })
             }
         } finally {
             setCompleting(false)

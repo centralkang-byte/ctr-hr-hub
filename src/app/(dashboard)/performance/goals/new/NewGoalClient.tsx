@@ -87,7 +87,7 @@ export default function NewGoalClient({
       })
       router.push('/performance/goals')
     } catch {
-      alert(t('registerFailed'))
+      toast({ title: t('registerFailed'), variant: 'destructive' })
     } finally {
       setSubmitting(false)
     }

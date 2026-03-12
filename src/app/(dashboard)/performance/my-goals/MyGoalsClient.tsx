@@ -148,14 +148,14 @@ export default function MyGoalsClient({
                 await apiClient.post('/api/v1/performance/goals', { ...form, cycleId: selectedCycleId })
             }
             setModal(null); await fetchGoals()
-        } catch { alert('저장에 실패했습니다.') }
+        } catch { toast({ title: '저장에 실패했습니다.', variant: 'destructive' }) }
         finally { setSaving(false) }
     }
 
     async function handleDelete(goalId: string) {
         confirm({ variant: 'destructive', title: '이 목표를 삭제하시겠습니까?', onConfirm: async () =>
         try { await apiClient.delete(`/api/v1/performance/goals/${goalId}`); await fetchGoals() }
-        catch { alert('삭제에 실패했습니다.') }
+        catch { toast({ title: '삭제에 실패했습니다.', variant: 'destructive' }) }
     }
 
     async function handleSubmitAll() {
@@ -168,7 +168,7 @@ export default function MyGoalsClient({
                 await apiClient.put(`/api/v1/performance/goals/${firstDraft.id}/submit`)
                 await fetchGoals()
             }
-        } catch { alert('제출에 실패했습니다.') }
+        } catch { toast({ title: '제출에 실패했습니다.', variant: 'destructive' }) }
         finally { setSaving(false) }
     }
 

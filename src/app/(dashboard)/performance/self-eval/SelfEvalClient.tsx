@@ -158,9 +158,9 @@ export default function SelfEvalClient({
         status,
       })
       await fetchEvalData()
-      alert(status === 'DRAFT' ? '임시 저장되었습니다.' : '제출 완료되었습니다.')
+      toast({ title: status === 'DRAFT' ? '임시 저장되었습니다.' : '제출 완료되었습니다.' })
     } catch {
-      alert('저장에 실패했습니다.')
+      toast({ title: '저장에 실패했습니다.', variant: 'destructive' })
     } finally {
       setSubmitting(false)
     }
@@ -191,7 +191,7 @@ export default function SelfEvalClient({
       })
       setOverallComment(res.data.suggested_comment)
     } catch {
-      alert('AI 코멘트 생성에 실패했습니다.')
+      toast({ title: 'AI 코멘트 생성에 실패했습니다.', variant: 'destructive' })
     } finally {
       setAiLoading(false)
     }

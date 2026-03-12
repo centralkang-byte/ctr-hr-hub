@@ -127,7 +127,7 @@ export default function MyEvaluationClient({
             const allCommentsNonEmpty = Object.values(evalData.goalScores).every((s) => s.comment.trim())
                 && Object.values(evalData.beiScores).every((s) => s.comment.trim())
             if (!allGoalsScored || !allBeiScored || !allCommentsNonEmpty) {
-                alert('모든 점수와 코멘트를 작성해주세요.')
+                toast({ title: '모든 점수와 코멘트를 작성해주세요.', variant: 'destructive' })
                 return
             }
             confirm({ title: '제출하면 수정할 수 없습니다. 제출하시겠습니까?', onConfirm: async () =>
