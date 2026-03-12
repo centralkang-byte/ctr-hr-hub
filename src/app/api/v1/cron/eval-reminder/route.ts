@@ -1,3 +1,4 @@
+// CRON: secured by CRON_SECRET header, not user session
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — POST /api/v1/cron/eval-reminder
 // 평가 미이행 리마인더 (D-7/D-3/D-day)

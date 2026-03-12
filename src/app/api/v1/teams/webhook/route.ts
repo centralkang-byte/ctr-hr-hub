@@ -1,3 +1,4 @@
+// WEBHOOK: secured by MS Teams webhook signature, not user session
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — POST /api/v1/teams/webhook
 // Adaptive Card 액션 콜백 (HMAC 검증, 세션 인증 없음)

@@ -1,3 +1,4 @@
+// CRON: secured by CRON_SECRET header, not user session
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Data Retention Cron Job
 // Runs retention policies automatically

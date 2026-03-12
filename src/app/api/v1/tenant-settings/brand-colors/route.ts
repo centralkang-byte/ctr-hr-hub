@@ -1,3 +1,4 @@
+// PUBLIC: no auth required — pre-login / public endpoint
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — GET /api/v1/tenant-settings/brand-colors
 // 테넌트 브랜딩 컬러 반환 (없으면 기본값 반환)

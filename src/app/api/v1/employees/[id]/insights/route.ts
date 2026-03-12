@@ -9,17 +9,22 @@ import { notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 
 export const GET = withPermission(
   async (
     _req: NextRequest,
     context: { params: Promise<Record<string, string>> },
-    _user: SessionUser,
+    user: SessionUser,
   ) => {
     const { id } = await context.params
+    const companyId = resolveCompanyId(user)
 
     const employee = await prisma.employee.findFirst({
-      where: { id },
+      where: {
+        id,
+        assignments: { some: { companyId, isPrimary: true, endDate: null } },
+      },
       select: { id: true, name: true },
     })
     if (!employee) throw notFound('직원을 찾을 수 없습니다.')

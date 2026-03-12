@@ -1,3 +1,4 @@
+// CRON: secured by CRON_SECRET header, not user session
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — GP#4 Cron: Overdue Check
 // GET /api/v1/cron/overdue-check

@@ -10,20 +10,26 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { notFound, isAppError, handlePrismaError } from '@/lib/errors'
 import type { SessionUser } from '@/types'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 
 export const GET = withPermission(
   async (
     req: NextRequest,
     context: { params: Promise<Record<string, string>> },
-    _user: SessionUser,
+    user: SessionUser,
   ) => {
     try {
       const { id: employeeId } = await context.params
       const { searchParams } = new URL(req.url)
       const limit = Math.min(Number(searchParams.get('limit') ?? '10'), 50)
+      const companyId = resolveCompanyId(user)
 
-      const employee = await prisma.employee.findUnique({
-        where: { id: employeeId, deletedAt: null },
+      const employee = await prisma.employee.findFirst({
+        where: {
+          id: employeeId,
+          deletedAt: null,
+          assignments: { some: { companyId, isPrimary: true, endDate: null } },
+        },
         select: { id: true },
       })
       if (!employee) throw notFound('직원을 찾을 수 없습니다.')

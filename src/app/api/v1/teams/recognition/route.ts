@@ -1,3 +1,4 @@
+// WEBHOOK: secured by MS Teams webhook signature, not user session
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — POST /api/v1/teams/recognition
 // Teams Bot 경유 칭찬/인정 생성

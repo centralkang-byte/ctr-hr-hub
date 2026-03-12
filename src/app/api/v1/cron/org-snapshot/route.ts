@@ -1,3 +1,4 @@
+// CRON: secured by CRON_SECRET header, not user session
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — POST /api/v1/cron/org-snapshot
 // 월별 조직도 스냅샷 (모든 활성 Company)

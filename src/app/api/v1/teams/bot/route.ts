@@ -1,3 +1,4 @@
+// WEBHOOK: secured by MS Teams webhook signature, not user session
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — POST /api/v1/teams/bot
 // Bot Framework Activity 수신 (시그니처 검증, 세션 인증 없음)

@@ -1,3 +1,4 @@
+// CRON: secured by CRON_SECRET header, not user session
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — POST /api/v1/cron/leave-promotion
 // 연차 사용 촉진 (KR 법인, step 1=60일/2=30일/3=10일)

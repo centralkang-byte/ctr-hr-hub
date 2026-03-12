@@ -1,3 +1,4 @@
+// PUBLIC: no auth required — pre-login / public endpoint
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — GET /api/v1/monitoring/health
 // 시스템 헬스체크 엔드포인트
