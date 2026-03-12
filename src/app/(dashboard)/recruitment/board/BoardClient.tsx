@@ -106,6 +106,8 @@ interface Props {
 // ─── Component ──────────────────────────────────────────
 
 export default function BoardClient({ user }: Props) {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('recruitment')
   const router = useRouter()
   const [postings, setPostings] = useState<PostingWithApplications[]>([])
   const [loading, setLoading] = useState(true)
@@ -353,7 +355,7 @@ export default function BoardClient({ user }: Props) {
       <div className="min-h-[400px] flex items-center justify-center bg-[#F5F5FA]">
         <div className="flex items-center gap-2 text-sm text-[#8181A5]">
           <Loader2 className="w-4 h-4 animate-spin" />
-          데이터 불러오는 중...
+          {tCommon('loading')}
         </div>
       </div>
     )
@@ -361,16 +363,12 @@ export default function BoardClient({ user }: Props) {
 
   if (postings.length === 0) {
     return (
-      <div className="min-h-[400px] flex flex-col items-center justify-center gap-3 bg-[#F5F5FA]">
-        <LayoutGrid className="w-10 h-10 text-[#C5C5D0]" />
-        <p className="text-sm text-[#8181A5]">진행 중인 공고가 없습니다.</p>
-        <button
-          onClick={() => router.push('/recruitment/new')}
-          className="px-4 py-2 text-sm font-medium bg-[#5E81F4] hover:bg-[#4B6FE0] text-white rounded-lg transition-colors duration-150"
-        >
-          공고 등록하기
-        </button>
-      </div>
+      <EmptyState
+        icon={LayoutGrid}
+        title={t('emptyBoard')}
+        description={t('emptyBoardDesc')}
+        action={{ label: t('newPosting'), onClick: () => router.push('/recruitment/new') }}
+      />
     )
   }
 
@@ -384,10 +382,10 @@ export default function BoardClient({ user }: Props) {
           </div>
           <div>
             <h1 className="text-xl font-bold text-[#1C1D21]" style={{ letterSpacing: '-0.02em' }}>
-              채용 칸반 보드
+              {t('kanbanBoard')}
             </h1>
             <p className="text-sm text-[#8181A5]">
-              공고별 스윔레인 — 카드를 드래그해 단계를 변경하세요
+              {t('kanbanBoardDesc')}
             </p>
           </div>
         </div>
@@ -395,7 +393,7 @@ export default function BoardClient({ user }: Props) {
           onClick={() => router.push('/recruitment')}
           className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-white border border-[#F0F0F3] text-[#1C1D21] rounded-lg hover:bg-[#F5F5FA] transition-colors duration-150"
         >
-          목록 보기
+          {t('listView')}
           <ChevronRight className="w-4 h-4" />
         </button>
       </div>
@@ -453,10 +451,10 @@ export default function BoardClient({ user }: Props) {
                 )}
                 <div className="flex items-center gap-1 ml-auto">
                   <Users className="w-3.5 h-3.5 text-[#8181A5]" />
-                  <span className="text-xs text-[#8181A5]">{totalCount}명</span>
+                  <span className="text-xs text-[#8181A5]">{totalCount}{tCommon('unit.person')}</span>
                   <span className="text-xs text-[#C5C5D0] mx-1">·</span>
                   <span className="text-xs text-[#8181A5]">
-                    모집 {posting.headcount}명
+                    {t('recruit')} {posting.headcount}{tCommon('unit.person')}
                   </span>
                 </div>
               </div>
@@ -538,7 +536,7 @@ export default function BoardClient({ user }: Props) {
                         {/* Empty slot placeholder */}
                         {cards.length === 0 && (
                           <div className="h-10 rounded-xl border border-dashed border-[#E8E8EF] flex items-center justify-center">
-                            <span className="text-[10px] text-[#C5C5D0]">비어 있음</span>
+                          <span className="text-[10px] text-[#C5C5D0]">{tCommon('empty')}</span>
                           </div>
                         )}
                       </div>
@@ -568,7 +566,7 @@ export default function BoardClient({ user }: Props) {
           <div className="relative bg-white border border-[#F0F0F3] rounded-2xl p-6 w-full max-w-md shadow-xl animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-bold text-[#1C1D21]" style={{ letterSpacing: '-0.02em' }}>
-                오퍼 정보 입력
+                {t('offerModal')}
               </h2>
               <button
                 onClick={() =>
@@ -587,7 +585,7 @@ export default function BoardClient({ user }: Props) {
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-[#1C1D21] mb-1">
-                  제안 연봉
+                  {t('offeredSalary')}
                 </label>
                 <input
                   type="number"
@@ -604,7 +602,7 @@ export default function BoardClient({ user }: Props) {
               </div>
               <div>
                 <label className="block text-xs font-semibold text-[#1C1D21] mb-1">
-                  제안일
+                  {t('offeredDate')}
                 </label>
                 <input
                   type="date"
@@ -620,7 +618,7 @@ export default function BoardClient({ user }: Props) {
               </div>
               <div>
                 <label className="block text-xs font-semibold text-[#1C1D21] mb-1">
-                  입사 예정일
+                  {t('expectedStartDate')}
                 </label>
                 <input
                   type="date"
@@ -647,7 +645,7 @@ export default function BoardClient({ user }: Props) {
                 }
                 className="px-4 py-2 text-sm font-medium text-[#1C1D21] border border-[#F0F0F3] rounded-lg hover:bg-[#F5F5FA] transition-colors"
               >
-                취소
+                {tCommon('cancel')}
               </button>
               <button
                 onClick={handleOfferSubmit}
@@ -660,7 +658,7 @@ export default function BoardClient({ user }: Props) {
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#5E81F4] hover:bg-[#4B6FE0] text-white rounded-lg transition-colors disabled:opacity-50"
               >
                 {modalSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                오퍼 확정
+                {modalSubmitting ? tCommon('loading') : t('confirmOffer')}
               </button>
             </div>
           </div>
@@ -679,7 +677,7 @@ export default function BoardClient({ user }: Props) {
           <div className="relative bg-white border border-[#F0F0F3] rounded-2xl p-6 w-full max-w-md shadow-xl animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-bold text-[#1C1D21]" style={{ letterSpacing: '-0.02em' }}>
-                불합격 처리
+                {t('rejectionModal')}
               </h2>
               <button
                 onClick={() =>
@@ -706,7 +704,7 @@ export default function BoardClient({ user }: Props) {
                 }
                 className="px-4 py-2 text-sm font-medium text-[#1C1D21] border border-[#F0F0F3] rounded-lg hover:bg-[#F5F5FA] transition-colors"
               >
-                취소
+                {tCommon('cancel')}
               </button>
               <button
                 onClick={async () => {
@@ -725,7 +723,7 @@ export default function BoardClient({ user }: Props) {
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#FF808B] hover:bg-[#E11D48] text-white rounded-lg transition-colors disabled:opacity-50"
               >
                 {modalSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                불합격 처리
+                {modalSubmitting ? tCommon('loading') : t('confirmRejection')}
               </button>
             </div>
           </div>

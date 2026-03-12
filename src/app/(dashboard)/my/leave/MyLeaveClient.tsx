@@ -4,6 +4,9 @@ import { useTranslations } from 'next-intl'
 
 import { useState, useEffect, useCallback } from 'react'
 import { apiClient } from '@/lib/api'
+import { toast } from '@/hooks/use-toast'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import {
   CalendarDays, Plus, Loader2, AlertTriangle, Clock,
   CheckCircle2, XCircle, ChevronLeft, ChevronRight,
@@ -74,7 +77,8 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
       const res = await apiClient.get<YearBalance[]>('/api/v1/leave/year-balances', { year: String(year) })
       setBalances(res.data ?? [])
     } catch {
-      setError('잔여 휴가 정보를 불러오지 못했습니다.')
+      toast({ title: tCommon('loadFailed'), variant: 'destructive' })
+      setError(tCommon('loadFailed'))
     } finally {
       setLoadingBalances(false)
     }
@@ -108,8 +112,8 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
         <div className="flex items-center gap-3">
           <CalendarDays className="w-6 h-6 text-[#00C853]" />
           <div>
-            <h1 className="text-2xl font-bold text-[#1A1A1A]">내 휴가</h1>
-            <p className="text-sm text-[#666] mt-0.5">연간 부여 현황 및 사용 내역을 확인합니다</p>
+            <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('myLeave')}</h1>
+            <p className="text-sm text-[#666] mt-0.5">{t('myLeaveDesc')}</p>
           </div>
         </div>
         {/* 연도 선택기 */}
@@ -117,7 +121,7 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
           <button onClick={() => setYear((y) => y - 1)} className="p-1.5 hover:bg-[#F5F5F5] rounded-lg">
             <ChevronLeft className="w-4 h-4 text-[#555]" />
           </button>
-          <span className="text-lg font-bold text-[#1A1A1A] min-w-16 text-center">{year}년</span>
+          <span className="text-lg font-bold text-[#1A1A1A] min-w-16 text-center">{year}{tCommon('unit.year')}</span>
           <button
             onClick={() => setYear((y) => y + 1)}
             disabled={year >= new Date().getFullYear()}
@@ -138,10 +142,10 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
       {/* KPI 카드 */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: '총 부여일수', value: totalEntitled, unit: '일', color: 'text-[#1A1A1A]' },
-          { label: '사용', value: totalUsed, unit: '일', color: 'text-[#059669]' },
-          { label: '대기중', value: totalPending, unit: '일', color: 'text-[#B45309]' },
-          { label: '잔여', value: totalRemaining, unit: '일', color: 'text-[#00C853]' },
+          { label: t('totalEntitled'), value: totalEntitled, unit: tCommon('unit.day'), color: 'text-[#1A1A1A]' },
+          { label: tCommon('used'), value: totalUsed, unit: tCommon('unit.day'), color: 'text-[#059669]' },
+          { label: tCommon('pending'), value: totalPending, unit: tCommon('unit.day'), color: 'text-[#B45309]' },
+          { label: tCommon('remaining'), value: totalRemaining, unit: tCommon('unit.day'), color: 'text-[#00C853]' },
         ].map((kpi) => (
           <div key={kpi.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <p className="text-xs text-[#666] mb-1">{kpi.label}</p>
@@ -156,16 +160,16 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
       {/* 유형별 잔여 현황 */}
       <div className="bg-white rounded-xl border border-[#E8E8E8]">
         <div className="px-5 py-4 border-b border-[#F5F5F5] flex items-center justify-between">
-          <h2 className="text-base font-semibold text-[#1A1A1A]">유형별 휴가 현황</h2>
+          <h2 className="text-base font-semibold text-[#1A1A1A]">{t('leaveByType')}</h2>
           {loadingBalances && <Loader2 className="w-4 h-4 animate-spin text-[#00C853]" />}
         </div>
 
         {!loadingBalances && balances.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-[#999]">
-            <CalendarDays className="w-10 h-10 mb-2 opacity-40" />
-            <p className="text-sm">{year}년 부여된 휴가 정보가 없습니다</p>
-            <p className="text-xs mt-1">관리자에게 연간 부여 실행을 요청하세요</p>
-          </div>
+            <EmptyState
+              icon={CalendarDays}
+              title={t('emptyLeaveBalance')}
+              description={t('emptyLeaveBalanceDesc')}
+            />
         ) : (
           <div className="p-5 space-y-4">
             {balances.map((b) => {
@@ -235,12 +239,16 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
       {/* 사용 내역 */}
       <div className="bg-white rounded-xl border border-[#E8E8E8]">
         <div className="px-5 py-4 border-b border-[#F5F5F5] flex items-center justify-between">
-          <h2 className="text-base font-semibold text-[#1A1A1A]">휴가 신청 내역</h2>
+          <h2 className="text-base font-semibold text-[#1A1A1A]">{t('leaveHistory')}</h2>
           {loadingRequests && <Loader2 className="w-4 h-4 animate-spin text-[#00C853]" />}
         </div>
 
         {!loadingRequests && requests.length === 0 ? (
-          <p className="text-center text-sm text-[#999] py-10">신청 내역이 없습니다</p>
+          <EmptyState
+            icon={CalendarDays}
+            title={t('emptyLeaveHistory')}
+            description={t('emptyLeaveHistoryDesc')}
+          />
         ) : (
           <table className="w-full">
             <thead>

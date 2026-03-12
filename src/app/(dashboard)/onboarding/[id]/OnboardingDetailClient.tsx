@@ -99,6 +99,8 @@ interface OnboardingDetail {
 // ─── Component ──────────────────────────────────────────────
 
 export default function OnboardingDetailClient({ user, onboardingId }: { user: SessionUser; onboardingId: string }) {
+    const tCommon = useTranslations('common')
+    const t = useTranslations('onboarding')
     const router = useRouter()
     const [data, setData] = useState<OnboardingDetail | null>(null)
     const [loading, setLoading] = useState(true)
@@ -119,9 +121,9 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
             setLoading(true)
             const res = await apiClient.get<OnboardingDetail>(`/api/v1/onboarding/instances/${onboardingId}`)
             if ('data' in res && res.data) setData(res.data)
-            else setError('데이터를 불러올 수 없습니다.')
+            else setError(tCommon('loadFailed'))
         } catch {
-            setError('온보딩 정보를 불러오는 중 오류가 발생했습니다.')
+            setError(tCommon('loadFailed'))
         } finally {
             setLoading(false)
         }
@@ -141,7 +143,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
             })
             await fetchDetail()
         } catch {
-            setError('상태 변경 실패')
+            setError(tCommon('saveFailed'))
         } finally {
             setActionLoading(null)
         }
@@ -155,7 +157,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
             setBlockDialog(null)
             setBlockReason('')
             await fetchDetail()
-        } catch { setError('차단 실패') }
+        } catch { setError(tCommon('saveFailed')) }
         finally { setActionLoading(null) }
     }
 
@@ -164,7 +166,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
         try {
             await apiClient.post(`/api/v1/onboarding/instances/${onboardingId}/tasks/${taskId}/unblock`, { resumeStatus: 'PENDING' })
             await fetchDetail()
-        } catch { setError('차단 해제 실패') }
+        } catch { setError(tCommon('saveFailed')) }
         finally { setActionLoading(null) }
     }
 
@@ -175,7 +177,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
             setSignOffDialog(false)
             setSignOffNote('')
             await fetchDetail()
-        } catch { setError('서명 실패') }
+        } catch { setError(tCommon('saveFailed')) }
         finally { setActionLoading(null) }
     }
 
@@ -214,7 +216,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                 </button>
                 <PageHeader title={`${data.employee.name} 온보딩`} description={`${data.employee.department ?? ''} · ${data.employee.position ?? ''}`} />
                 <span className={`ml-auto rounded-full px-3 py-1 text-xs font-semibold ${data.status === 'COMPLETED' ? 'bg-[#DCFCE7] text-[#16A34A]' : data.status === 'IN_PROGRESS' ? 'bg-[#F0F4FF] text-[#5E81F4]' : 'bg-[#F5F5FA] text-[#8181A5]'}`}>
-                    {data.status === 'COMPLETED' ? '완료' : data.status === 'IN_PROGRESS' ? '진행 중' : data.status}
+                    {data.status === 'COMPLETED' ? t('statusCompleted') : data.status === 'IN_PROGRESS' ? t('statusInProgress') : data.status}
                 </span>
             </div>
 
@@ -275,7 +277,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                                     {canSignOff && (
                                         <button onClick={() => setSignOffDialog(true)} disabled={actionLoading === 'sign-off'}
                                             className="w-full rounded-lg bg-[#5E81F4] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#4A6DE0] disabled:opacity-50">
-                                            {actionLoading === 'sign-off' ? '처리 중...' : '온보딩 완료 승인'}
+                                            {actionLoading === 'sign-off' ? tCommon('processing') : t('approveOnboarding')}
                                         </button>
                                     )}
                                 </>
@@ -313,12 +315,15 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                 <div className="flex-1 min-w-0">
                     {/* Tab Bar */}
                     <div className="mb-4 flex gap-1 rounded-xl bg-[#F5F5FA] p-1">
-                        {(['tasks', 'checkins', 'timeline'] as const).map((t) => (
-                            <button key={t} onClick={() => setTab(t)}
-                                className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${tab === t ? 'bg-white text-[#1C1D21] shadow-sm' : 'text-[#8181A5] hover:text-[#1C1D21]'}`}>
-                                {t === 'tasks' ? '태스크' : t === 'checkins' ? '감정 체크인' : '타임라인'}
-                            </button>
-                        ))}
+                        {(['tasks', 'checkins', 'timeline'] as const).map((tabKey) => {
+                            const tabLabel = tabKey === 'tasks' ? t('tabTasks') : tabKey === 'checkins' ? t('tabCheckins') : t('tabTimeline')
+                            return (
+                                <button key={tabKey} onClick={() => setTab(tabKey)}
+                                    className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${tab === tabKey ? 'bg-white text-[#1C1D21] shadow-sm' : 'text-[#8181A5] hover:text-[#1C1D21]'}`}>
+                                    {tabLabel}
+                                </button>
+                            )
+                        })}
                     </div>
 
                     {/* Tasks Tab */}
@@ -409,7 +414,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                         <div className="rounded-2xl border border-[#F0F0F3] bg-white p-5">
                             <h3 className="mb-4 text-sm font-semibold text-[#1C1D21]">차단 이력</h3>
                             {data.blockedHistory.length === 0 ? (
-                                <p className="text-sm text-[#8181A5]">차단 이력이 없습니다.</p>
+                                <p className="text-sm text-[#8181A5]">{t('emptyBlockedHistory')}</p>
                             ) : (
                                 <div className="space-y-3">
                                     {data.blockedHistory.map((b, i) => (
@@ -442,7 +447,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                     <Textarea placeholder="차단 사유를 입력하세요 (필수)" value={blockReason} onChange={(e) => setBlockReason(e.target.value)} rows={3} />
                     <DialogFooter>
                         <button onClick={() => setBlockDialog(null)} className="rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm text-[#8181A5] hover:bg-[#F5F5FA]">
-                            취소
+                        {tCommon('cancel')}
                         </button>
                         <button onClick={blockTask} disabled={!blockReason.trim() || !!actionLoading}
                             className="rounded-lg bg-[#EF4444] px-4 py-2 text-sm font-semibold text-white hover:bg-[#DC2626] disabled:opacity-50">
@@ -468,11 +473,11 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                     </div>
                     <DialogFooter>
                         <button onClick={() => setSignOffDialog(false)} className="rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm text-[#8181A5] hover:bg-[#F5F5FA]">
-                            취소
+                        {tCommon('cancel')}
                         </button>
                         <button onClick={handleSignOff} disabled={actionLoading === 'sign-off'}
                             className="rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-semibold text-white hover:bg-[#4A6DE0] disabled:opacity-50">
-                            {actionLoading === 'sign-off' ? '처리 중...' : '승인하기'}
+                            {actionLoading === 'sign-off' ? tCommon('processing') : t('approve')}
                         </button>
                     </DialogFooter>
                 </DialogContent>

@@ -6,7 +6,10 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Users, Settings, ClipboardList, BarChart3 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
-import { CARD_STYLES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { toast } from '@/hooks/use-toast'
+import { CARD_STYLES, BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -52,6 +55,9 @@ const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
 // ─── Component ───────────────────────────────────────────
 
 export default function PeerReviewClient() {
+  // ✅ ALL hooks at top — before any conditions
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
   const router = useRouter()
   const [tab, setTab] = useState<'my-reviews' | 'setup' | 'results'>('my-reviews')
   const [cycles, setCycles] = useState<Cycle[]>([])
@@ -59,6 +65,13 @@ export default function PeerReviewClient() {
   const [myReviews, setMyReviews] = useState<MyReviewItem[]>([])
   const [teamResults, setTeamResults] = useState<TeamResult | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  const TABS = [
+    { key: 'my-reviews' as const, label: t('myReviews'), icon: ClipboardList },
+    { key: 'setup' as const, label: t('setupNomination'), icon: Settings },
+    { key: 'results' as const, label: t('teamResults'), icon: BarChart3 },
+  ]
 
   const fetchCycles = useCallback(async () => {
     try {
@@ -68,12 +81,15 @@ export default function PeerReviewClient() {
       if (items.length > 0 && !selectedCycleId) {
         setSelectedCycleId(items[0].id)
       }
-    } catch { /* ignore */ }
-  }, [selectedCycleId])
+    } catch {
+      toast({ title: tCommon('loadFailed'), variant: 'destructive' })
+    }
+  }, [selectedCycleId, tCommon])
 
   const fetchData = useCallback(async () => {
     if (!selectedCycleId) return
     setLoading(true)
+    setError('')
     try {
       if (tab === 'my-reviews') {
         const res = await apiClient.get<MyReviewItem[]>(`/api/v1/peer-review/my-reviews?cycleId=${selectedCycleId}`)
@@ -82,35 +98,31 @@ export default function PeerReviewClient() {
         const res = await apiClient.get<TeamResult>(`/api/v1/peer-review/results/team?cycleId=${selectedCycleId}`)
         setTeamResults(res.data)
       }
-    } catch { /* ignore */ }
+    } catch {
+      setError(tCommon('loadFailed'))
+    }
     setLoading(false)
-  }, [selectedCycleId, tab])
+  }, [selectedCycleId, tab, tCommon])
 
   useEffect(() => { fetchCycles() }, [fetchCycles])
   useEffect(() => { fetchData() }, [fetchData])
-
-  const TABS = [
-    { key: 'my-reviews' as const, label: '내 평가', icon: ClipboardList },
-    { key: 'setup' as const, label: '추천/지정', icon: Settings },
-    { key: 'results' as const, label: '팀 결과', icon: BarChart3 },
-  ]
 
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Users className="w-6 h-6 text-[#00C853]" />
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">360° 동료 평가</h1>
+        <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('peerReviewTitle')}</h1>
       </div>
 
       {/* Cycle Selector + Tabs */}
       <div className="flex items-center justify-between">
         <div className="flex border-b border-[#E8E8E8]">
-          {TABS.map((t) => (
-            <button key={t.key} onClick={() => setTab(t.key)}
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 ${tab === t.key ? 'border-[#00C853] text-[#00C853]' : 'border-transparent text-[#666] hover:text-[#333]'}`}>
-              <t.icon className="w-4 h-4" />
-              {t.label}
+          {TABS.map((tab_) => (
+            <button key={tab_.key} onClick={() => setTab(tab_.key)}
+              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 ${tab === tab_.key ? 'border-[#00C853] text-[#00C853]' : 'border-transparent text-[#666] hover:text-[#333]'}`}>
+              <tab_.icon className="w-4 h-4" />
+              {tab_.label}
             </button>
           ))}
         </div>
@@ -123,12 +135,18 @@ export default function PeerReviewClient() {
       </div>
 
       {loading ? (
-        <div className="text-center text-[#999] py-10">로딩 중...</div>
+        <TableSkeleton rows={5} cols={5} />
+      ) : error ? (
+        <div className="text-center text-sm text-red-600 py-8">{error} <button onClick={fetchData} className="underline ml-2">{tCommon('retry')}</button></div>
       ) : tab === 'my-reviews' ? (
         /* My Reviews Tab */
         <div className="space-y-4">
           {myReviews.length === 0 ? (
-            <div className="text-center text-[#999] py-10 text-sm">할당된 동료 평가가 없습니다.</div>
+            <EmptyState
+              icon={ClipboardList}
+              title={t('emptyPeerReviews')}
+              description={t('emptyPeerReviewsDesc')}
+            />
           ) : (
             myReviews.map((r) => (
               <div key={r.nominationId} className={`${CARD_STYLES.kpi} flex items-center justify-between`}>
@@ -147,7 +165,7 @@ export default function PeerReviewClient() {
                   ) : (
                     <button onClick={() => router.push(`/performance/peer-review/evaluate/${r.nominationId}`)}
                       className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}>
-                      평가하기
+                      {t('evaluate')}
                     </button>
                   )}
                 </div>
@@ -160,7 +178,7 @@ export default function PeerReviewClient() {
         <div className="text-center py-10">
           <button onClick={() => router.push(`/performance/peer-review/${selectedCycleId}/setup`)}
             className={`px-6 py-3 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}>
-            추천/지정 관리 열기
+            {t('openSetup')}
           </button>
         </div>
       ) : (
@@ -170,15 +188,15 @@ export default function PeerReviewClient() {
             {/* KPIs */}
             <div className="grid grid-cols-3 gap-4">
               <div className={CARD_STYLES.padded}>
-                <p className="text-xs text-[#666] mb-1">대상 직원</p>
-                <p className="text-3xl font-bold text-[#1A1A1A]">{teamResults.totalEmployees}명</p>
+                <p className="text-xs text-[#666] mb-1">{t('targetEmployees')}</p>
+                <p className="text-3xl font-bold text-[#1A1A1A]">{teamResults.totalEmployees}{tCommon('unit.person')}</p>
               </div>
               <div className={CARD_STYLES.padded}>
-                <p className="text-xs text-[#666] mb-1">총 지명</p>
-                <p className="text-3xl font-bold text-[#1A1A1A]">{teamResults.totalNominations}건</p>
+                <p className="text-xs text-[#666] mb-1">{t('totalNominations')}</p>
+                <p className="text-3xl font-bold text-[#1A1A1A]">{teamResults.totalNominations}{tCommon('unit.count')}</p>
               </div>
               <div className={CARD_STYLES.padded}>
-                <p className="text-xs text-[#666] mb-1">완료율</p>
+                <p className="text-xs text-[#666] mb-1">{tCommon('completionRate')}</p>
                 <p className="text-3xl font-bold text-[#00C853]">{teamResults.completionRate}%</p>
               </div>
             </div>
@@ -188,17 +206,17 @@ export default function PeerReviewClient() {
               <table className="w-full">
                 <thead>
                   <tr className={TABLE_STYLES.header}>
-                    <th className={TABLE_STYLES.headerCell}>직원</th>
-                    <th className={TABLE_STYLES.headerCell}>부서</th>
-                    <th className={TABLE_STYLES.headerCell}>지명 수</th>
-                    <th className={TABLE_STYLES.headerCell}>완료</th>
-                    <th className={TABLE_STYLES.headerCell}>평균 점수</th>
-                    <th className={TABLE_STYLES.headerCell}>상세</th>
+                    <th className={TABLE_STYLES.headerCell}>{tCommon('employee')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{tCommon('department')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('nominationCount')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{tCommon('completed')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('avgScore')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{tCommon('detail')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {teamResults.employees.map((e) => (
-                    <tr key={e.employee.id} className={TABLE_STYLES.header}>
+                    <tr key={e.employee.id} className={TABLE_STYLES.row}>
                       <td className="px-4 py-3 text-sm text-[#1A1A1A] font-medium">{e.employee.name}</td>
                       <td className="px-4 py-3 text-sm text-[#555]">{e.employee.department}</td>
                       <td className="px-4 py-3 text-sm text-center text-[#555]">{e.nominationCount}</td>
@@ -208,7 +226,7 @@ export default function PeerReviewClient() {
                       </td>
                       <td className="px-4 py-3 text-center">
                         <button onClick={() => router.push(`/performance/peer-review/results/${selectedCycleId}?employeeId=${e.employee.id}`)}
-                          className="text-sm text-[#00C853] hover:text-[#00A844] font-medium">보기</button>
+                          className="text-sm text-[#00C853] hover:text-[#00A844] font-medium">{tCommon('view')}</button>
                       </td>
                     </tr>
                   ))}

@@ -1,16 +1,15 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Calculator, Search, X, ChevronDown, ChevronRight, Download, Loader2 } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { CARD_STYLES, TABLE_STYLES, CHART_THEME } from '@/lib/styles'
-import type {
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
+import type {
   Company, Department, SimMode, BulkTargetType,
   SearchEmployee, SimResponse, EmployeeSimResult, PayDetail
 } from './types'
@@ -129,6 +128,8 @@ function EmployeeExpandedDetail({ emp }: { emp: EmployeeSimResult }) {
 export default function PayrollSimulationClient({ user, companies, departments }: {
   user: SessionUser; companies: Company[]; departments: Department[]
 }) {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('payroll')
   const [mode, setMode] = useState<SimMode>('SINGLE')
   const [isLoading, setIsLoading] = useState(false)
   const [isExporting, setIsExporting] = useState(false)
@@ -238,7 +239,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
       const res = await apiClient.post<SimResponse>('/api/v1/payroll/simulation', body)
       setResult(res.data)
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : '시뮬레이션 계산 중 오류가 발생했습니다')
+      setError(e instanceof Error ? e.message : tCommon('errorDesc'))
     } finally { setIsLoading(false) }
   }
 
@@ -255,22 +256,22 @@ export default function PayrollSimulationClient({ user, companies, departments }
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `CTR_급여시뮬레이션_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.xlsx`
+      a.download = `CTR_PayrollSimulation_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.xlsx`
       a.click()
       window.URL.revokeObjectURL(url)
     } finally { setIsExporting(false) }
   }
 
   const sm = result?.summary
-  const t = sm?.totals
+  const totals = sm?.totals
 
   // Chart data for single mode
   const chartData = result && mode === 'SINGLE' && result.employees[0] ? (() => {
     const c = result.employees[0].current
     const s = result.employees[0].simulated
     return [
-      { name: '현재', 기본급: c.baseSalary, 수당: c.overtimePay + c.mealAllowance + c.transportAllowance, 상여: c.bonusAmount },
-      { name: '시뮬', 기본급: s.baseSalary, 수당: s.overtimePay + s.mealAllowance + s.transportAllowance, 상여: s.bonusAmount },
+      { name: t('current'), 기본급: c.baseSalary, 수당: c.overtimePay + c.mealAllowance + c.transportAllowance, 상여: c.bonusAmount },
+      { name: t('simulated'), 기본급: s.baseSalary, 수당: s.overtimePay + s.mealAllowance + s.transportAllowance, 상여: s.bonusAmount },
     ]
   })() : null
 
@@ -283,15 +284,15 @@ export default function PayrollSimulationClient({ user, companies, departments }
             <Calculator className="w-5 h-5 text-[#5E81F4]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#1C1D21]">급여 시뮬레이션</h1>
-            <p className="text-sm text-[#8181A5]">급여 인상·수당 변경의 영향을 사전에 분석합니다</p>
+            <h1 className="text-2xl font-bold text-[#1C1D21]">{t('simulation')}</h1>
+            <p className="text-sm text-[#8181A5]">{t('simulationDesc')}</p>
           </div>
         </div>
         {result && (
           <button onClick={handleExcelDownload} disabled={isExporting}
             className="flex items-center gap-2 px-4 py-2 border border-[#F0F0F3] rounded-lg text-sm text-[#1C1D21] hover:bg-[#F5F5FA] disabled:opacity-50">
             {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-            엑셀 다운로드
+            {t('excelDownload')}
           </button>
         )}
       </div>
@@ -304,7 +305,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
             {(['SINGLE', 'BULK'] as SimMode[]).map(m => (
               <button key={m} onClick={() => { setMode(m); setResult(null) }}
                 className={`flex-1 px-3 py-2 text-sm font-medium transition-colors ${mode === m ? 'bg-[#5E81F4] text-white' : 'bg-white text-[#8181A5] hover:text-[#1C1D21]'}`}>
-                {m === 'SINGLE' ? '개별 시뮬레이션' : '일괄 시뮬레이션'}
+                {m === 'SINGLE' ? t('singleSim') : t('bulkSim')}
               </button>
             ))}
           </div>
@@ -312,7 +313,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
           {/* ─ SINGLE: Employee Search ─ */}
           {mode === 'SINGLE' && (
             <div className={`${CARD_STYLES.kpi} space-y-3`}>
-              <h3 className="text-sm font-semibold text-[#1C1D21]">대상 직원</h3>
+              <h3 className="text-sm font-semibold text-[#1C1D21]">{t('targetEmployee')}</h3>
               {selectedEmployee ? (
                 <div className="bg-[#F5F5FA] rounded-lg p-3 flex items-center justify-between">
                   <div>
@@ -328,7 +329,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
                   <div className="flex items-center border border-[#F0F0F3] rounded-lg px-3">
                     <Search className="w-4 h-4 text-[#8181A5]" />
                     <input value={searchQuery} onChange={e => handleSearchChange(e.target.value)}
-                      placeholder="이름, 영문명, 사번으로 검색"
+                      placeholder={t('searchPlaceholder')}
                       className="flex-1 px-2 py-2 text-sm outline-none bg-transparent" />
                   </div>
                   {showDropdown && searchResults.length > 0 && (
@@ -345,7 +346,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
                   )}
                   {showDropdown && searchResults.length === 0 && searchQuery.length >= 1 && (
                     <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#F0F0F3] rounded-lg shadow-lg z-20 p-4 text-center text-sm text-[#8181A5]">
-                      검색 결과가 없습니다
+                      {tCommon('noResults')}
                     </div>
                   )}
                 </div>
@@ -356,11 +357,11 @@ export default function PayrollSimulationClient({ user, companies, departments }
           {/* ─ SINGLE: Parameters ─ */}
           {mode === 'SINGLE' && (
             <div className={`${CARD_STYLES.kpi} space-y-3`}>
-              <h3 className="text-sm font-semibold text-[#1C1D21]">기본급</h3>
+              <h3 className="text-sm font-semibold text-[#1C1D21]">{t('baseSalary')}</h3>
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-sm text-[#1C1D21]">
                   <input type="radio" name="salaryMode" checked={salaryMode === 'rate'} onChange={() => setSalaryMode('rate')} />
-                  인상률
+                  {t('adjustRate')}
                 </label>
                 {salaryMode === 'rate' && (
                   <div className="ml-6 flex items-center gap-1">
@@ -371,7 +372,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
                 )}
                 <label className="flex items-center gap-2 text-sm text-[#1C1D21]">
                   <input type="radio" name="salaryMode" checked={salaryMode === 'override'} onChange={() => setSalaryMode('override')} />
-                  금액 지정
+                  {t('amountOverride')}
                 </label>
                 {salaryMode === 'override' && (
                   <div className="ml-6 flex items-center gap-1">
@@ -381,7 +382,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
                   </div>
                 )}
               </div>
-              <h3 className="text-sm font-semibold text-[#1C1D21] pt-2">근로시간 (선택)</h3>
+              <h3 className="text-sm font-semibold text-[#1C1D21] pt-2">{t('workHoursOptional')}</h3>
               <div className="grid grid-cols-3 gap-2">
                 {([['시간외', overtimeHours, setOvertimeHours], ['야간', nightHours, setNightHours], ['휴일', holidayHours, setHolidayHours]] as [string, number, (v: number) => void][]).map(([l, v, fn]) => (
                   <div key={l}>
@@ -394,7 +395,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
                   </div>
                 ))}
               </div>
-              <h3 className="text-sm font-semibold text-[#1C1D21] pt-2">상여금 (선택)</h3>
+              <h3 className="text-sm font-semibold text-[#1C1D21] pt-2">{t('bonusOptional')}</h3>
               <div className="flex items-center gap-1">
                 <span className="text-sm text-[#8181A5]">₩</span>
                 <input type="number" value={bonusAmount} onChange={e => setBonusAmount(Number(e.target.value))}
@@ -406,20 +407,20 @@ export default function PayrollSimulationClient({ user, companies, departments }
           {/* ─ BULK: Target ─ */}
           {mode === 'BULK' && (
             <div className={`${CARD_STYLES.kpi} space-y-3`}>
-              <h3 className="text-sm font-semibold text-[#1C1D21]">대상 선택</h3>
-              {(['COMPANY', 'DEPARTMENT', 'SELECTED'] as BulkTargetType[]).map(t => (
-                <div key={t}>
+              <h3 className="text-sm font-semibold text-[#1C1D21]">{t('selectTarget')}</h3>
+              {(['COMPANY', 'DEPARTMENT', 'SELECTED'] as BulkTargetType[]).map(bKey => (
+                <div key={bKey}>
                   <label className="flex items-center gap-2 text-sm text-[#1C1D21]">
-                    <input type="radio" name="bulkTarget" checked={bulkTarget === t} onChange={() => setBulkTarget(t)} />
-                    {t === 'COMPANY' ? '법인 전체' : t === 'DEPARTMENT' ? '부서 단위' : '직원 선택'}
+                    <input type="radio" name="bulkTarget" checked={bulkTarget === bKey} onChange={() => setBulkTarget(bKey)} />
+                    {bKey === 'COMPANY' ? t('wholeCompany') : bKey === 'DEPARTMENT' ? t('byDept') : t('selectEmployees')}
                   </label>
-                  {bulkTarget === 'COMPANY' && t === 'COMPANY' && (
+                  {bulkTarget === 'COMPANY' && bKey === 'COMPANY' && (
                     <select value={selectedCompanyId} onChange={e => setSelectedCompanyId(e.target.value)}
                       className="mt-1 ml-6 w-48 px-2 py-1.5 border border-[#F0F0F3] rounded text-sm">
                       {companies.map(c => <option key={c.id} value={c.id}>{c.code} ({c.name})</option>)}
                     </select>
                   )}
-                  {bulkTarget === 'DEPARTMENT' && t === 'DEPARTMENT' && (
+                  {bulkTarget === 'DEPARTMENT' && bKey === 'DEPARTMENT' && (
                     <div className="mt-1 ml-6 space-y-1">
                       <select value={selectedCompanyId} onChange={e => { setSelectedCompanyId(e.target.value); setSelectedDeptId('') }}
                         className="w-48 px-2 py-1.5 border border-[#F0F0F3] rounded text-sm">
@@ -432,7 +433,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
                       </select>
                     </div>
                   )}
-                  {bulkTarget === 'SELECTED' && t === 'SELECTED' && (
+                  {bulkTarget === 'SELECTED' && bKey === 'SELECTED' && (
                     <div className="mt-2 ml-6 space-y-2">
                       <div ref={searchRef} className="relative">
                         <div className="flex items-center border border-[#F0F0F3] rounded px-2">
@@ -460,7 +461,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
                                 className="ml-1 text-[#8181A5] hover:text-red-500"><X className="w-3 h-3" /></button>
                             </span>
                           ))}
-                          <p className="text-xs text-[#8181A5] w-full mt-1">{selectedEmployees.length}명 선택됨</p>
+                        <p className="text-xs text-[#8181A5] w-full mt-1">{selectedEmployees.length}{tCommon('unit.person')} {tCommon('selected')}</p>
                         </div>
                       )}
                     </div>
@@ -473,9 +474,9 @@ export default function PayrollSimulationClient({ user, companies, departments }
           {/* ─ BULK: Parameters ─ */}
           {mode === 'BULK' && (
             <div className={`${CARD_STYLES.kpi} space-y-3`}>
-              <h3 className="text-sm font-semibold text-[#1C1D21]">인상 조건</h3>
+              <h3 className="text-sm font-semibold text-[#1C1D21]">{t('adjustConditions')}</h3>
               <div>
-                <label className="text-xs text-[#8181A5]">기본급 인상률</label>
+                <label className="text-xs text-[#8181A5]">{t('baseSalaryRate')}</label>
                 <div className="flex items-center gap-1 mt-1">
                   <input type="number" value={bulkRate} onChange={e => setBulkRate(Number(e.target.value))}
                     className="w-20 px-2 py-1.5 border border-[#F0F0F3] rounded text-sm text-right" min={-50} max={50} step={0.5} />
@@ -483,11 +484,11 @@ export default function PayrollSimulationClient({ user, companies, departments }
                 </div>
               </div>
               <div>
-                <label className="text-xs text-[#8181A5]">상여금 (월수)</label>
+                <label className="text-xs text-[#8181A5]">{t('bonusMonths')}</label>
                 <div className="flex items-center gap-1 mt-1">
                   <input type="number" value={bonusMonths} onChange={e => setBonusMonths(Number(e.target.value))}
                     className="w-20 px-2 py-1.5 border border-[#F0F0F3] rounded text-sm text-right" min={0} max={12} step={0.5} />
-                  <span className="text-sm text-[#8181A5]">개월</span>
+                  <span className="text-sm text-[#8181A5]">{tCommon('unit.month')}</span>
                 </div>
               </div>
             </div>
@@ -497,7 +498,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
 
           <button onClick={handleCalculate} disabled={!isValid || isLoading}
             className="w-full px-4 py-3 bg-[#5E81F4] text-white rounded-lg text-sm font-medium hover:bg-[#4B6FE0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-            {isLoading ? <><Loader2 className="w-4 h-4 animate-spin" />계산 중...</> : '시뮬레이션 계산'}
+            {isLoading ? <><Loader2 className="w-4 h-4 animate-spin" />{tCommon('loading')}</> : t('calculate')}
           </button>
         </div>
 
@@ -506,41 +507,41 @@ export default function PayrollSimulationClient({ user, companies, departments }
           {!result && !isLoading && (
             <div className="flex flex-col items-center justify-center h-[500px] text-[#8181A5]">
               <Calculator className="w-12 h-12 mb-3 opacity-50" />
-              <p className="text-sm">좌측에서 조건을 설정하고 계산 버튼을 클릭하세요</p>
+              <p className="text-sm">{t('simPrompt')}</p>
             </div>
           )}
 
           {isLoading && (
             <div className="flex flex-col items-center justify-center h-[500px] text-[#8181A5]">
               <Loader2 className="w-10 h-10 animate-spin mb-3" />
-              <p className="text-sm">시뮬레이션 계산 중...</p>
+              <p className="text-sm">{t('simCalculating')}</p>
             </div>
           )}
 
-          {result && t && sm && (
+          {result && totals && sm && (
             <div className="space-y-6">
               {/* KPI Cards */}
               <div className="grid grid-cols-4 gap-4">
-                <KPICard label="현재 총 지급액" value={fmtKRW(t.currentGross)} />
-                <KPICard label="시뮬레이션 총 지급액" value={fmtKRW(t.simulatedGross)}
-                  diff={signedKRW(t.grossDifference)} rate={pctStr(t.grossChangeRate)} variant="neutral" />
-                <KPICard label="총 공제액 변동" value={signedKRW(t.simulatedTotalDeductions - t.currentTotalDeductions)}
-                  rate={t.currentTotalDeductions > 0
-                    ? pctStr((t.simulatedTotalDeductions - t.currentTotalDeductions) / t.currentTotalDeductions)
+                <KPICard label={t('kpiCurrentGross')} value={fmtKRW(totals.currentGross)} />
+                <KPICard label={t('kpiSimGross')} value={fmtKRW(totals.simulatedGross)}
+                  diff={signedKRW(totals.grossDifference)} rate={pctStr(totals.grossChangeRate)} variant="neutral" />
+                <KPICard label={t('kpiDeductionChange')} value={signedKRW(totals.simulatedTotalDeductions - totals.currentTotalDeductions)}
+                  rate={totals.currentTotalDeductions > 0
+                    ? pctStr((totals.simulatedTotalDeductions - totals.currentTotalDeductions) / totals.currentTotalDeductions)
                     : undefined} variant="cost" />
-                <KPICard label="실수령액 변동" value={signedKRW(t.netDifference)} rate={pctStr(t.netChangeRate)} variant="neutral" />
+                <KPICard label={t('kpiNetChange')} value={signedKRW(totals.netDifference)} rate={pctStr(totals.netChangeRate)} variant="neutral" />
               </div>
 
               {/* Chart (single mode) */}
               {chartData && (
                 <div className={CARD_STYLES.padded}>
-                  <h3 className="text-sm font-semibold text-[#1C1D21] mb-4">현재 vs 시뮬레이션 비교</h3>
+                  <h3 className="text-sm font-semibold text-[#1C1D21] mb-4">{t('currentVsSimulation')}</h3>
                   <ResponsiveContainer width="100%" height={200}>
                     <BarChart data={chartData} layout="vertical" margin={{ left: 20 }}>
                       <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                       <XAxis type="number" tickFormatter={v => `₩${(v / 10000).toFixed(0)}만`} />
                       <YAxis type="category" dataKey="name" width={40} />
-                      <Tooltip formatter={(v: number) => fmtKRW(v)} />
+                      <Tooltip formatter={(v: number | undefined) => v !== undefined ? fmtKRW(v) : ''} />
                       <Legend />
                       <Bar dataKey="기본급" fill={CHART_THEME.colors[0]} stackId="a" />
                       <Bar dataKey="수당" fill={CHART_THEME.colors[3]} stackId="a" />
@@ -553,7 +554,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
               {/* Department Table (bulk) */}
               {sm.byDepartment && sm.byDepartment.length > 0 && (
                 <div className={CARD_STYLES.padded}>
-                  <h3 className="text-sm font-semibold text-[#1C1D21] mb-3">부서별 요약</h3>
+                  <h3 className="text-sm font-semibold text-[#1C1D21] mb-3">{t('deptSummary')}</h3>
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="text-xs text-[#8181A5] border-b border-[#F0F0F3]">
@@ -566,25 +567,25 @@ export default function PayrollSimulationClient({ user, companies, departments }
                       </tr>
                     </thead>
                     <tbody>
-                      {sm.byDepartment.map(d => (
-                        <tr key={d.department} className={TABLE_STYLES.header}>
-                          <td className="py-2.5">{d.department}</td>
-                          <td className="py-2.5 text-right">{d.employeeCount}명</td>
-                          <td className="py-2.5 text-right font-mono">{fmtKRW(d.currentGross)}</td>
-                          <td className="py-2.5 text-right font-mono">{fmtKRW(d.simulatedGross)}</td>
-                          <td className={`py-2.5 text-right font-mono ${diffColor(d.difference)}`}>{signedKRW(d.difference)}</td>
-                          <td className={`py-2.5 text-right ${diffColor(d.difference)}`}>
-                            {d.currentGross > 0 ? pctStr(d.difference / d.currentGross) : '—'}
+                      {sm.byDepartment.map(dept => (
+                        <tr key={dept.department} className={TABLE_STYLES.header}>
+                          <td className="py-2.5">{dept.department}</td>
+                          <td className="py-2.5 text-right">{dept.employeeCount}명</td>
+                          <td className="py-2.5 text-right font-mono">{fmtKRW(dept.currentGross)}</td>
+                          <td className="py-2.5 text-right font-mono">{fmtKRW(dept.simulatedGross)}</td>
+                          <td className={`py-2.5 text-right font-mono ${diffColor(dept.difference)}`}>{signedKRW(dept.difference)}</td>
+                          <td className={`py-2.5 text-right ${diffColor(dept.difference)}`}>
+                            {dept.currentGross > 0 ? pctStr(dept.difference / dept.currentGross) : '—'}
                           </td>
                         </tr>
                       ))}
                       <tr className="font-semibold border-t-2 border-[#1C1D21]">
                         <td className="py-2.5">합계</td>
-                        <td className="py-2.5 text-right">{sm.employeeCount}명</td>
-                        <td className="py-2.5 text-right font-mono">{fmtKRW(t.currentGross)}</td>
-                        <td className="py-2.5 text-right font-mono">{fmtKRW(t.simulatedGross)}</td>
-                        <td className={`py-2.5 text-right font-mono ${diffColor(t.grossDifference)}`}>{signedKRW(t.grossDifference)}</td>
-                        <td className={`py-2.5 text-right ${diffColor(t.grossDifference)}`}>{pctStr(t.grossChangeRate)}</td>
+                        <td className="py-2.5 text-right">{sm.employeeCount}{tCommon('unit.person')}</td>
+                        <td className="py-2.5 text-right font-mono">{fmtKRW(totals.currentGross)}</td>
+                        <td className="py-2.5 text-right font-mono">{fmtKRW(totals.simulatedGross)}</td>
+                        <td className={`py-2.5 text-right font-mono ${diffColor(totals.grossDifference)}`}>{signedKRW(totals.grossDifference)}</td>
+                        <td className={`py-2.5 text-right ${diffColor(totals.grossDifference)}`}>{pctStr(totals.grossChangeRate)}</td>
                       </tr>
                     </tbody>
                   </table>

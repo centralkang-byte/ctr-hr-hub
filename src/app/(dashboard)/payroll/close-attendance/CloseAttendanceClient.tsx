@@ -73,6 +73,8 @@ function StatusBadge({ status }: { status: string | null }) {
 }
 
 export default function CloseAttendanceClient({ user }: Props) {
+    const tCommon = useTranslations('common')
+    const t = useTranslations('payroll')
     const now = new Date()
     const [year, setYear] = useState(now.getFullYear())
     const [month, setMonth] = useState(now.getMonth() + 1)
@@ -120,9 +122,10 @@ export default function CloseAttendanceClient({ user }: Props) {
             if (res.ok) {
                 await fetchStatus(companyId)
                 setConfirmModal(null)
+                toast({ title: t('attendanceClosed') })
             } else {
                 const err = await res.json()
-                alert(err.error?.message ?? '마감 처리 중 오류가 발생했습니다.')
+                toast({ title: err.error?.message ?? tCommon('saveFailed'), variant: 'destructive' })
             }
         } finally {
             setClosing(null)
@@ -130,7 +133,7 @@ export default function CloseAttendanceClient({ user }: Props) {
     }
 
     const handleReopen = async (payrollRunId: string, companyId: string) => {
-        if (!confirm('마감을 해제하시겠습니까? 계산이 시작된 이후에는 해제할 수 없습니다.')) return
+        if (!confirm(tCommon('confirmReopen'))) return
         setReopening(companyId)
         try {
             const res = await fetch('/api/v1/payroll/attendance-reopen', {
@@ -140,9 +143,10 @@ export default function CloseAttendanceClient({ user }: Props) {
             })
             if (res.ok) {
                 await fetchStatus(companyId)
+                toast({ title: t('reopenSuccess') })
             } else {
                 const err = await res.json()
-                alert(err.error?.message ?? '마감 해제 중 오류가 발생했습니다.')
+                toast({ title: err.error?.message ?? tCommon('saveFailed'), variant: 'destructive' })
             }
         } finally {
             setReopening(null)
@@ -157,9 +161,9 @@ export default function CloseAttendanceClient({ user }: Props) {
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <nav className="text-xs text-[#999] mb-1">급여 / 근태 마감</nav>
-                    <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-tight">근태 마감</h1>
+                    <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-tight">{t('closeAttendance')}</h1>
                     <p className="text-sm text-[#666] mt-0.5">
-                        월별 근태를 마감하여 급여 계산을 시작합니다.
+                        {t('closeAttendanceDesc')}
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -229,7 +233,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                             className="flex items-center gap-1.5 px-3 py-1.5 border border-[#D4D4D4] hover:bg-[#F5F5F5] text-[#555] rounded-lg text-sm transition-colors disabled:opacity-50"
                                         >
                                             <Unlock size={14} />
-                                            마감 해제
+                                            {tCommon('unlock')}
                                         </button>
                                     ) : !isAlreadyCalculating ? (
                                         <button
@@ -238,10 +242,10 @@ export default function CloseAttendanceClient({ user }: Props) {
                                             className={`flex items-center gap-1.5 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-semibold transition-colors disabled:opacity-50`}
                                         >
                                             <Lock size={14} />
-                                            마감하기
+                                            {t('close')}
                                         </button>
                                     ) : (
-                                        <span className="text-xs text-[#999]">처리 중</span>
+                                        <span className="text-xs text-[#999]">{tCommon('processing')}</span>
                                     )}
                                 </div>
                             </div>
@@ -416,7 +420,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                 onClick={() => setConfirmModal(null)}
                                 className="px-4 py-2 border border-[#D4D4D4] hover:bg-[#F5F5F5] text-[#333] rounded-lg text-sm font-medium transition-colors"
                             >
-                                취소
+                                {tCommon('cancel')}
                             </button>
                             <button
                                 onClick={() =>
@@ -431,7 +435,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                 className={`flex items-center gap-1.5 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-semibold transition-colors disabled:opacity-50`}
                             >
                                 <Lock size={14} />
-                                {closing === confirmModal.companyId ? '마감 처리 중...' : '마감하기'}
+                                {closing === confirmModal.companyId ? tCommon('processing') : t('close')}
                             </button>
                         </div>
                     </div>

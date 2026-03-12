@@ -11,7 +11,10 @@ import {
 import type { SessionUser } from '@/types'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
-import { BUTTON_VARIANTS,  MODAL_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS, MODAL_STYLES } from '@/lib/styles'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { toast } from '@/hooks/use-toast'
+
 
 // ─── 타입 ─────────────────────────────────────────────────
 
@@ -73,6 +76,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
   onClose: () => void
   onSubmit: () => void
 }) {
+  const tCommon = useTranslations('common')
   const [selectedPlanId, setSelectedPlanId] = useState('')
   const [claimAmount, setClaimAmount] = useState('')
   const [eventDate, setEventDate] = useState('')
@@ -118,7 +122,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
       onSubmit()
       onClose()
     } catch (err: unknown) {
-      const msg = (err as { message?: string })?.message ?? '신청 중 오류가 발생했습니다.'
+      const msg = (err as { message?: string })?.message ?? tCommon('errorDesc')
       setError(msg)
     } finally {
       setSubmitting(false)
@@ -129,7 +133,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
     <div className={MODAL_STYLES.container}>
       <div className={`${MODAL_STYLES.content.md}`}>
         <div className="flex items-center justify-between p-5 border-b border-[#E8E8E8]">
-          <h2 className="text-lg font-semibold text-[#1A1A1A]">복리후생 신청</h2>
+          <h2 className="text-lg font-semibold text-[#1A1A1A]">{tCommon('benefit.apply')}</h2>
           <button onClick={onClose} className="text-[#999] hover:text-[#555] text-xl leading-none">✕</button>
         </div>
 
@@ -240,15 +244,15 @@ function ClaimModal({ plans, onClose, onSubmit }: {
             onClick={onClose}
             className="px-4 py-2 bg-white border border-[#D4D4D4] hover:bg-[#FAFAFA] text-[#333] rounded-lg text-sm font-medium"
           >
-            취소
+            {tCommon('cancel')}
           </button>
           <button
-            onClick={handleSubmit}
+            onClick={(e) => { e.preventDefault(); void handleSubmit(e as unknown as React.FormEvent) }}
             disabled={submitting}
             className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50 flex items-center gap-2`}
           >
             {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-            신청
+            {submitting ? tCommon('loading') : tCommon('apply')}
           </button>
         </div>
       </div>
@@ -308,14 +312,14 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
       <div className="flex items-center justify-between">
         <div>
           <nav className="text-xs text-[#999] mb-1">나의 공간</nav>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">나의 복리후생</h1>
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('myBenefits')}</h1>
         </div>
         <button
           onClick={() => setShowModal(true)}
           className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}
         >
           <Plus className="w-4 h-4" />
-          복리후생 신청
+          {t('applyBenefit')}
         </button>
       </div>
 
@@ -328,7 +332,7 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
 
       {summary.length > 0 && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-base font-semibold text-[#1A1A1A] mb-4">📊 {year}년 사용 현황</h2>
+          <h2 className="text-base font-semibold text-[#1A1A1A] mb-4">📊 {year}{tCommon('unit.year')} {t('usageSummary')}</h2>
           <div className="space-y-4">
             {summary.map((item) => {
               const total = item.maxAmount ?? 0
@@ -365,13 +369,15 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
 
       <div className="bg-white rounded-xl border border-[#E8E8E8]">
         <div className="p-5 border-b border-[#E8E8E8]">
-          <h2 className="text-base font-semibold text-[#1A1A1A]">신청 내역</h2>
+          <h2 className="text-base font-semibold text-[#1A1A1A]">{t('claimHistory')}</h2>
         </div>
         {claims.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-[#999]">
-            <Gift className="w-10 h-10 mb-3" />
-            <p className="text-sm">신청 내역이 없습니다.</p>
-          </div>
+          <EmptyState
+            icon={Gift}
+            title={t('emptyBenefitClaim')}
+            description={t('emptyBenefitClaimDesc')}
+            action={{ label: t('applyBenefit'), onClick: () => setShowModal(true) }}
+          />
         ) : (
           <div className="divide-y divide-[#F5F5F5]">
             {claims.map((claim) => {
