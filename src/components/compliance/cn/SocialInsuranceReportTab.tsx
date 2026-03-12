@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Calculator, Download } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface ReportRow {
   insuranceType: string

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { X, Sparkles, AlertTriangle, CheckCircle2, Trash2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
-import { MODAL_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS,  MODAL_STYLES } from '@/lib/styles'
 
 interface DraftContent {
   performanceComment: string

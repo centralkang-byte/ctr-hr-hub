@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Plus, Pencil, Play, Trash2 } from 'lucide-react'
 import RetentionPolicyForm from './RetentionPolicyForm'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface RetentionPolicy {
   id: string

@@ -26,7 +26,7 @@ import {
   Tooltip,
 } from 'recharts'
 import { apiClient } from '@/lib/api'
-import { TABLE_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 
 // ─── 타입 ────────────────────────────────────────────────
 

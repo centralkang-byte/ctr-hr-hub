@@ -7,7 +7,7 @@ import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import EmployeeInsightPanel from '@/components/performance/EmployeeInsightPanel'
 import BiasDetectionBanner from '@/components/performance/BiasDetectionBanner'
-import { TABLE_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ────────────────────────────────────────────────
 

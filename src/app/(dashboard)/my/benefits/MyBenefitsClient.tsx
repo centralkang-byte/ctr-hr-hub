@@ -9,7 +9,7 @@ import {
 import type { SessionUser } from '@/types'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
-import { MODAL_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS,  MODAL_STYLES } from '@/lib/styles'
 
 // ─── 타입 ─────────────────────────────────────────────────
 

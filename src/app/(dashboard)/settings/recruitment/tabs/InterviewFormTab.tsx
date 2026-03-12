@@ -4,6 +4,7 @@ import { Save, RotateCcw, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import type { InterviewFormSetting, InterviewFormCategoryEntry } from '@/types/process-settings'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface Props { companyId: string | null }
 

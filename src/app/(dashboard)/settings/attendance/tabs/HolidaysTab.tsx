@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import { Loader2, Plus, Calendar, Trash2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface Holiday {
   id: string

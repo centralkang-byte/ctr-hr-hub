@@ -33,7 +33,7 @@ import {
 } from '@/components/ui/dialog'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-import { TABLE_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────────
 

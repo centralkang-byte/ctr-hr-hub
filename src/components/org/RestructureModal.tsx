@@ -11,7 +11,7 @@ import { X, Plus, Trash2, ChevronRight, GitBranch, ArrowRight } from 'lucide-rea
 import { apiClient } from '@/lib/api'
 import { EffectiveDatePicker } from '@/components/shared/EffectiveDatePicker'
 import { RestructureDiffView } from '@/components/org/RestructureDiffView'
-import { MODAL_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS,  MODAL_STYLES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────────
 

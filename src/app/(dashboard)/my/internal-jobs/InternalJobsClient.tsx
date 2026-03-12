@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface InternalJob {
   id: string

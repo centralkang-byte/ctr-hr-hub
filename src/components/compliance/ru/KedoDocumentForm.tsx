@@ -13,6 +13,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { apiClient } from '@/lib/api'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface KedoDocument {
   id: string

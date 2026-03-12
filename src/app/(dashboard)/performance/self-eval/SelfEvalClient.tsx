@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Save, Send, Sparkles, CheckCircle2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 // ─── Types ────────────────────────────────────────────────
 

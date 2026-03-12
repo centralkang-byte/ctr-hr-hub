@@ -12,7 +12,7 @@ import { apiClient } from '@/lib/api'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { TABLE_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 
 interface OvertimeTabProps {
   companyId: string | null

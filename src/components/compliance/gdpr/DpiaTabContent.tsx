@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Plus, Pencil, Eye } from 'lucide-react'
 import DpiaForm from './DpiaForm'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface Dpia {
   id: string

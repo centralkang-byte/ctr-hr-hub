@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Loader2, Plus, ClipboardList } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
-import { TABLE_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 
 interface Template { id: string; name: string; targetType: string; isActive: boolean; _count?: { onboardingTasks?: number } }
 interface Props { companyId: string | null }

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2, X } from 'lucide-react'
 import { apiClient } from '@/lib/api'
-import { MODAL_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS,  MODAL_STYLES } from '@/lib/styles'
 
 interface Props {
   applicationId: string

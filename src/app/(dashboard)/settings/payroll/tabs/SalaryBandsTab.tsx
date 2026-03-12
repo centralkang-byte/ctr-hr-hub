@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Loader2, Plus, TrendingUp } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
-import { TABLE_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 
 interface SalaryBand { id: string; minSalary: number; midSalary: number; maxSalary: number; jobGrade?: { code: string; name: string }; jobCategory?: { code: string; name: string } }
 interface Props { companyId: string | null }

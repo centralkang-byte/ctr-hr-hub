@@ -4,6 +4,7 @@ import { Save, RotateCcw, Loader2, Bell, Mail, MessageSquare, Smartphone, type L
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import type { NotificationChannelsSetting, NotificationChannelEntry } from '@/types/process-settings'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface Props { companyId: string | null }
 

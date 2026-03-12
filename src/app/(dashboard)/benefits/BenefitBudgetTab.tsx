@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { apiClient } from '@/lib/api'
 import { Loader2, AlertTriangle, Pencil, Check } from 'lucide-react'
 import type { SessionUser } from '@/types'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface BenefitBudget {
   id: string

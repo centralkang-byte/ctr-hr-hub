@@ -13,6 +13,7 @@ import { z } from 'zod'
 import { ChevronLeft, Gavel, ChevronDown, ChevronUp } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { BUTTON_VARIANTS, BUTTON_SIZES } from '@/lib/styles'
 
 // ─── Schema ──────────────────────────────────────────────
 

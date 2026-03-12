@@ -10,6 +10,7 @@ import {
   Star, AlertCircle, User as UserIcon,
 } from 'lucide-react'
 import type { SessionUser } from '@/types'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 // ── 타입 ──────────────────────────────────────────────────
 

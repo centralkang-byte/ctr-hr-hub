@@ -7,6 +7,7 @@
 import { useState } from 'react'
 import { Download, FileBarChart2, BarChart3 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface P4Report {
   year: number

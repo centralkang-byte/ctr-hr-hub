@@ -5,6 +5,7 @@ import { Save } from 'lucide-react'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface Props { companyId: string | null }
 

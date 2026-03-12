@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Loader2, Plus, DollarSign } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
-import { TABLE_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 
 interface AllowanceType { id: string; code: string; name: string; nameEn?: string; category: string; isTaxable: boolean; isActive: boolean }
 interface Props { companyId: string | null }

@@ -5,7 +5,7 @@ import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWith
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
-import { FORM_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS,  FORM_STYLES } from '@/lib/styles'
 
 interface Props { companyId: string | null }
 

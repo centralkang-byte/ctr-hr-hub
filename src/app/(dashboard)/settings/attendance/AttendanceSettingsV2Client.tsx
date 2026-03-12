@@ -22,6 +22,7 @@ import { LeaveAccrualTab } from './tabs/LeaveAccrualTab'
 import { LeavePromotionTab } from './tabs/LeavePromotionTab'
 import { HolidaysTab } from './tabs/HolidaysTab'
 import { OvertimeTab } from './tabs/OvertimeTab'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 const config = getCategoryConfig('attendance')
 

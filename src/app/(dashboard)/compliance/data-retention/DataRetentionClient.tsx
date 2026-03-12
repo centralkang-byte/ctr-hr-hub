@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Database, Plus, Pencil, Play, Trash2 } from 'lucide-react'
 import RetentionPolicyForm from '@/components/compliance/gdpr/RetentionPolicyForm'
-import { TABLE_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 
 interface RetentionPolicy {
   id: string

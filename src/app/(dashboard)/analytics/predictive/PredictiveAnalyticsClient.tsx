@@ -38,7 +38,7 @@ import {
 } from 'recharts'
 import { apiClient } from '@/lib/api'
 import { AnalyticsPageLayout } from '@/components/analytics/AnalyticsPageLayout'
-import { TABLE_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 
 // ─── 타입 ────────────────────────────────────────────────
 

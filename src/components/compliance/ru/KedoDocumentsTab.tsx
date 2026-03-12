@@ -10,6 +10,7 @@ import { apiClient } from '@/lib/api'
 import KedoDocumentForm from './KedoDocumentForm'
 import KedoSignDialog from './KedoSignDialog'
 import type { PaginationInfo } from '@/types'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface KedoDocument {
   id: string

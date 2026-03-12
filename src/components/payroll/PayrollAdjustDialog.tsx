@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { apiClient } from '@/lib/api'
 import { formatCurrency } from '@/lib/compensation'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface PayrollAdjustDialogProps {
   open: boolean

@@ -8,6 +8,7 @@
 import { useState, useEffect } from 'react'
 import { Plus, BookOpen, AlertCircle, Calendar, Users, ChevronDown } from 'lucide-react'
 import MandatoryTrainingForm from './MandatoryTrainingForm'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface TrainingRecord {
   id: string

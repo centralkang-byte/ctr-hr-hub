@@ -22,6 +22,7 @@ import { Badge } from '@/components/ui/badge'
 import { UnifiedTaskHub } from './UnifiedTaskHub'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 // ─── Types ────────────────────────────────────────────────
 

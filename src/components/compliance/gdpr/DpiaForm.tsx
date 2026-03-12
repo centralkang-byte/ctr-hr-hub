@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import {
+import { BUTTON_VARIANTS } from '@/lib/styles'
   Dialog,
   DialogContent,
   DialogHeader,

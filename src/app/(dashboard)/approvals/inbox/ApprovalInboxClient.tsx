@@ -38,6 +38,7 @@ import { Badge } from '@/components/ui/badge'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import type { ApprovalItem } from '@/app/api/v1/approvals/inbox/route'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 // ─── Constants ────────────────────────────────────────────
 

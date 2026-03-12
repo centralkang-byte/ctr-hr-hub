@@ -15,7 +15,7 @@ import {
     RefreshCw,
 } from 'lucide-react'
 import type { SessionUser } from '@/types'
-import { MODAL_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS,  MODAL_STYLES } from '@/lib/styles'
 
 interface AttendanceStatus {
     yearMonth: string

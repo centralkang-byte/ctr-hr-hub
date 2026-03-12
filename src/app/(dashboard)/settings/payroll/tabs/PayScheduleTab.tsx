@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/api'
-import { FORM_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS,  FORM_STYLES } from '@/lib/styles'
 
 interface Props { companyId: string | null }
 

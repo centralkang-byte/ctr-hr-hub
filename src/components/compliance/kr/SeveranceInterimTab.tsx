@@ -15,6 +15,7 @@ import {
   FileText,
 } from 'lucide-react'
 import SeveranceInterimForm from './SeveranceInterimForm'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 type SipStatus = 'SIP_PENDING' | 'SIP_APPROVED' | 'SIP_REJECTED' | 'SIP_PAID'
 

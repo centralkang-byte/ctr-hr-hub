@@ -11,6 +11,7 @@ import { formatCurrency, calculateBudgetSummary } from '@/lib/compensation'
 import { apiClient } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
 import type { PaginationInfo } from '@/types'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 // ─── Types ───────────────────────────────────────────────
 

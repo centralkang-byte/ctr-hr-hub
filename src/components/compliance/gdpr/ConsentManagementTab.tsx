@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Plus, ShieldCheck, XCircle } from 'lucide-react'
 import ConsentForm from './ConsentForm'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface Consent {
   id: string

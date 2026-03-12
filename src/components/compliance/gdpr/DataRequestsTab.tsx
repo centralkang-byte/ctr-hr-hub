@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Plus, Eye, CheckCircle2, Clock } from 'lucide-react'
 import DataRequestForm from './DataRequestForm'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface DataRequest {
   id: string

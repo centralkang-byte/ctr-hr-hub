@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Plus, Trash2, TestTube, Webhook, Check, X } from 'lucide-react'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 const ALL_EVENT_TYPES = [
   { key: 'overtime_blocked_52h', label: '52시간 차단' },

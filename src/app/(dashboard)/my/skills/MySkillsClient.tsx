@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import type { SessionUser } from '@/types'
 import {
+import { BUTTON_VARIANTS } from '@/lib/styles'
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar as RechartsRadar,
   ResponsiveContainer, Legend, Tooltip,
 } from 'recharts'

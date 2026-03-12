@@ -12,6 +12,7 @@ import { apiClient } from '@/lib/api'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import DuplicateWarningModal from '@/components/recruitment/DuplicateWarningModal'
 import type { SessionUser } from '@/types'
+import { BUTTON_VARIANTS, BUTTON_SIZES } from '@/lib/styles'
 
 interface DuplicateMatch {
   applicantId: string

@@ -9,6 +9,7 @@ import { Plus, Download, Search, RefreshCw } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import MilitaryRegistrationForm from './MilitaryRegistrationForm'
 import type { PaginationInfo } from '@/types'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface MilitaryRegistration {
   id: string

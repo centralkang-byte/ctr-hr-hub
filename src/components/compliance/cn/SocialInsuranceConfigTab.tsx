@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Plus, Pencil } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import SocialInsuranceConfigForm from './SocialInsuranceConfigForm'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface SocialInsuranceConfig {
   id: string

@@ -30,7 +30,7 @@ import type { SessionUser, RefOption } from '@/types'
 import { ROLE } from '@/lib/constants'
 import { EffectiveDatePicker } from '@/components/shared/EffectiveDatePicker'
 import { RestructureModal } from '@/components/org/RestructureModal'
-import { TABLE_STYLES } from '@/lib/styles'
+import { BUTTON_SIZES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ─────────────────────────────────────────────────
 

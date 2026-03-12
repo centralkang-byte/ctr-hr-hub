@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import type { AiScreeningSetting, AiScreeningFeatureEntry } from '@/types/process-settings'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface Props { companyId: string | null }
 

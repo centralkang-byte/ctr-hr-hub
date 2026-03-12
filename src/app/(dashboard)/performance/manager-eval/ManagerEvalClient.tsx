@@ -7,6 +7,7 @@ import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import type { EvaluationSettings } from '@/types/settings'
 import AiDraftModal from '@/components/performance/AiDraftModal'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 // ─── Types ────────────────────────────────────────────────
 

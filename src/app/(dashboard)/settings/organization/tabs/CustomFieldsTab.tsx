@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Loader2, Plus, Settings2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
-import { TABLE_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 
 interface CustomField { id: string; entityType: string; fieldKey: string; fieldLabel: string; fieldType: string; isRequired: boolean; isSearchable: boolean; sortOrder: number }
 interface Props { companyId: string | null }

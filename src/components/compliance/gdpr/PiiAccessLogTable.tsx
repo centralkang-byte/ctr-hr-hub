@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { Search, SlidersHorizontal, RefreshCw } from 'lucide-react'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface PiiAccessLog {
   id: string

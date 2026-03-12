@@ -10,6 +10,7 @@ import * as XLSX from 'xlsx'
 import { Upload, Download, CheckCircle2, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────────
 

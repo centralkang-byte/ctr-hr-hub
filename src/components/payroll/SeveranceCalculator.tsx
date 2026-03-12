@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { apiClient } from '@/lib/api'
 import { formatCurrency } from '@/lib/compensation'
 import type { SeveranceDetail } from '@/lib/payroll/types'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface SeveranceCalculatorProps {
   employeeId: string

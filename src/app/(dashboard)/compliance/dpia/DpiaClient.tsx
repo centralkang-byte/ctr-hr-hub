@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { FileSearch, Plus, Pencil, Eye, AlertTriangle } from 'lucide-react'
 import DpiaForm from '@/components/compliance/gdpr/DpiaForm'
-import { TABLE_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 
 interface Dpia {
   id: string
