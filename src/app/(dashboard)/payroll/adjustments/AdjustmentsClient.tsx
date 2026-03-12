@@ -523,7 +523,7 @@ export default function AdjustmentsClient({
                                     onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                                     required
                                     rows={2}
-                                    placeholder="조정 사유를 입력하세요"
+                                    placeholder={tCommon('placeholderAdjustmentReason')}
                                     className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm resize-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
                                 />
                             </div>

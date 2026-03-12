@@ -149,7 +149,7 @@ export function HrDocumentManager({ user }: HrDocumentManagerProps) {
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
                   className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
-                  placeholder="문서 제목"
+                  placeholder={tCommon('placeholderDocTitle')}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -190,7 +190,7 @@ export function HrDocumentManager({ user }: HrDocumentManagerProps) {
                   onChange={(e) => setFormContent(e.target.value)}
                   rows={10}
                   className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
-                  placeholder="문서 내용을 입력하세요..."
+                  placeholder={tCommon('placeholderDocContent')}
                 />
               </div>
             </div>

@@ -159,7 +159,7 @@ export function EmployeeFilterPanel({
           <div className="space-y-1">
             <Label className="text-xs text-[#666]">법인</Label>
             <Select value={filters.companyId ?? '__ALL__'} onValueChange={(v) => set('companyId', v === '__ALL__' ? undefined : v)}>
-              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="전체" /></SelectTrigger>
+              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={tCommon('filterAll')} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="__ALL__">전체</SelectItem>
                 {companies.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
@@ -170,7 +170,7 @@ export function EmployeeFilterPanel({
           <div className="space-y-1">
             <Label className="text-xs text-[#666]">부서</Label>
             <Select value={filters.departmentId ?? '__ALL__'} onValueChange={(v) => set('departmentId', v === '__ALL__' ? undefined : v)}>
-              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="전체" /></SelectTrigger>
+              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={tCommon('filterAll')} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="__ALL__">전체</SelectItem>
                 {filteredDepts.map((d) => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
@@ -181,7 +181,7 @@ export function EmployeeFilterPanel({
           <div className="space-y-1">
             <Label className="text-xs text-[#666]">직급</Label>
             <Select value={filters.jobGradeId ?? '__ALL__'} onValueChange={(v) => set('jobGradeId', v === '__ALL__' ? undefined : v)}>
-              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="전체" /></SelectTrigger>
+              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={tCommon('filterAll')} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="__ALL__">전체</SelectItem>
                 {jobGrades.map((g) => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
@@ -192,7 +192,7 @@ export function EmployeeFilterPanel({
           <div className="space-y-1">
             <Label className="text-xs text-[#666]">재직상태</Label>
             <Select value={filters.status ?? '__ALL__'} onValueChange={(v) => set('status', v === '__ALL__' ? undefined : v)}>
-              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="전체" /></SelectTrigger>
+              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={tCommon('filterAll')} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="__ALL__">전체</SelectItem>
                 <SelectItem value="ACTIVE">재직</SelectItem>
@@ -206,7 +206,7 @@ export function EmployeeFilterPanel({
           <div className="space-y-1">
             <Label className="text-xs text-[#666]">고용형태</Label>
             <Select value={filters.employmentType ?? '__ALL__'} onValueChange={(v) => set('employmentType', v === '__ALL__' ? undefined : v)}>
-              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="전체" /></SelectTrigger>
+              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={tCommon('filterAll')} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="__ALL__">전체</SelectItem>
                 <SelectItem value="FULL_TIME">정규직</SelectItem>

@@ -316,7 +316,7 @@ export function ScheduleAdjustmentModal({
                   <textarea
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
-                    placeholder="조정 사유를 간략히 입력하세요..."
+                    placeholder={tCommon('placeholderAdjustmentReasonBrief')}
                     rows={3}
                     className="w-full resize-none rounded-xl border border-[#F0F0F3] px-4 py-2.5 text-sm text-[#1C1D21] placeholder:text-[#8181A5] focus:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
                   />

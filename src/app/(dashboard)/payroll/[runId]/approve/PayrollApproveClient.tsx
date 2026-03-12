@@ -284,7 +284,7 @@ export default function PayrollApproveClient({
                     <textarea
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
-                        placeholder="결재 의견을 입력하세요 (선택)"
+                        placeholder={tCommon('placeholderApprovalComment')}
                         rows={3}
                         className="w-full px-3 py-2.5 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 resize-none"
                     />
@@ -333,7 +333,7 @@ export default function PayrollApproveClient({
                             <textarea
                                 value={rejectComment}
                                 onChange={(e) => setRejectComment(e.target.value)}
-                                placeholder="반려 사유를 구체적으로 입력해 주세요. (필수)"
+                                placeholder={tCommon('placeholderRejectReasonRequiredAlt')}
                                 rows={4}
                                 className="w-full px-3 py-2.5 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#DC2626] focus:ring-2 focus:ring-[#DC2626]/10 resize-none"
                             />

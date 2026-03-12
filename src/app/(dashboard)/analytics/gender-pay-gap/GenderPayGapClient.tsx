@@ -157,7 +157,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
           </Select>
           <Select value={year || 'ALL'} onValueChange={(v) => setYear(v === 'ALL' ? '' : v)}>
             <SelectTrigger className="w-28">
-              <SelectValue placeholder="전체 연도" />
+              <SelectValue placeholder={tCommon('filterAllYears')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">전체</SelectItem>

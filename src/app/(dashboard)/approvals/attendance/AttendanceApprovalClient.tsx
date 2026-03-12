@@ -448,7 +448,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
                     rows={3}
-                    placeholder="승인/반려 사유를 입력하세요..."
+                    placeholder={tCommon('placeholderApprovalReason')}
                     className="w-full px-3 py-2 border border-[#F0F0F3] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] resize-none placeholder:text-[#C0C0D0]"
                   />
                   <div className="flex gap-2">

@@ -39,7 +39,7 @@ export function SettingsHubClient() {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="설정 항목 검색... (예: 휴가, 급여, 등급)"
+          placeholder={tCommon('placeholderSettingsSearch')}
           className="w-full rounded-xl border border-[#F0F0F3] bg-white py-3 pl-10 pr-4 text-sm text-[#1C1D21] placeholder:text-[#8181A5] shadow-sm transition-colors focus:border-[#5E81F4]/40 focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
         />
       </div>

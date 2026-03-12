@@ -299,7 +299,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                   maxLength={500}
                   rows={4}
                   className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853] resize-none"
-                  placeholder="자기소개를 입력하세요..."
+                  placeholder={tCommon('placeholderSelfIntro')}
                 />
                 <p className="text-xs text-[#999] text-right">{bioValue.length}/500</p>
                 <div className="flex gap-2">
@@ -335,7 +335,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                 value={newSkill}
                 onChange={(e) => setNewSkill(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') addSkill() }}
-                placeholder="스킬 추가 (Enter)"
+                placeholder={tCommon('placeholderSkillAdd')}
                 maxLength={50}
                 className="flex-1 px-3 py-1.5 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
               />
@@ -493,7 +493,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                 <input
                   value={changeReqValue}
                   onChange={(e) => setChangeReqValue(e.target.value)}
-                  placeholder="변경할 새 값을 입력하세요"
+                  placeholder={tCommon('placeholderChangeNewValue')}
                   className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
                 />
               </div>
@@ -504,7 +504,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                   onChange={(e) => setChangeReqReason(e.target.value)}
                   maxLength={500}
                   rows={3}
-                  placeholder="변경 사유를 입력하세요..."
+                  placeholder={tCommon('placeholderChangeReason')}
                   className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 resize-none"
                 />
               </div>

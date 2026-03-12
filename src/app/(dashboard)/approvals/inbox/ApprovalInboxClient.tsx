@@ -128,7 +128,7 @@ function RejectionModal({ item, onClose, onConfirm }: RejectionModalProps) {
         <textarea
           className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm text-[#1C1D21] placeholder:text-[#C0C0D0] focus:border-[#5E81F4] focus:outline-none"
           rows={4}
-          placeholder="반려 사유를 구체적으로 입력해주세요. (필수)"
+          placeholder={tCommon('placeholderRejectReasonRequired')}
           value={reason}
           onChange={(e) => { setReason(e.target.value); setError('') }}
         />

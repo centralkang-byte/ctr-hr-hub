@@ -444,7 +444,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                         <DialogTitle>태스크 차단</DialogTitle>
                         <DialogDescription>{blockDialog?.title}</DialogDescription>
                     </DialogHeader>
-                    <Textarea placeholder="차단 사유를 입력하세요 (필수)" value={blockReason} onChange={(e) => setBlockReason(e.target.value)} rows={3} />
+                    <Textarea placeholder={tCommon('placeholderBlockReason')} value={blockReason} onChange={(e) => setBlockReason(e.target.value)} rows={3} />
                     <DialogFooter>
                         <button onClick={() => setBlockDialog(null)} className="rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm text-[#8181A5] hover:bg-[#F5F5FA]">
                         {tCommon('cancel')}

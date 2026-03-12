@@ -210,7 +210,7 @@ export function TeamsWebhookSection() {
         <div className="bg-white rounded-xl border border-[#00C853]/30 p-4 space-y-3">
           <input
             type="text"
-            placeholder="채널명 (예: HR-알림)"
+            placeholder={tCommon('placeholderChannelName')}
             value={newChannel}
             onChange={(e) => setNewChannel(e.target.value)}
             className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 focus:outline-none"

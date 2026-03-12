@@ -92,7 +92,7 @@ export function CompanySelector({
       <SelectTrigger className="w-[200px]">
         <div className="flex items-center gap-2">
           <Building2 className="h-4 w-4 shrink-0" />
-          <SelectValue placeholder="법인 선택" />
+          <SelectValue placeholder={tCommon('filterSelectCompany')} />
         </div>
       </SelectTrigger>
       <SelectContent>

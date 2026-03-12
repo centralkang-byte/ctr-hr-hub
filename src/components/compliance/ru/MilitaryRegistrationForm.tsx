@@ -130,7 +130,7 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
                 value={form.employeeId}
                 onChange={handleChange}
                 required
-                placeholder="직원 UUID 입력"
+                placeholder={tCommon('placeholderEmployeeUuid')}
                 className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"
               />
             </div>
@@ -256,7 +256,7 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
               value={form.notes}
               onChange={handleChange}
               rows={3}
-              placeholder="추가 메모"
+              placeholder={tCommon('placeholderMemo')}
               className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999] resize-none"
             />
           </div>

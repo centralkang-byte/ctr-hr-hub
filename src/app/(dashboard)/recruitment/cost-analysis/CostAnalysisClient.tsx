@@ -557,7 +557,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
               <div>
                 <label className="block text-sm font-medium text-[#1A1A1A] mb-1">설명</label>
                 <input
-                  placeholder="비용 설명 (선택)"
+                  placeholder={tCommon('placeholderCostDesc')}
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"

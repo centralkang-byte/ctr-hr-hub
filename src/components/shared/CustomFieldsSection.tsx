@@ -235,7 +235,7 @@ export function CustomFieldsSection({
                   onValueChange={(val) => handleChange(field.fieldKey, val)}
                 >
                   <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="선택" />
+                    <SelectValue placeholder={tCommon('filterSelect')} />
                   </SelectTrigger>
                   <SelectContent>
                     {Array.isArray(field.options) &&

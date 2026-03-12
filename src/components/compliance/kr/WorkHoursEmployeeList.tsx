@@ -107,7 +107,7 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#999]" />
             <input
               type="text"
-              placeholder="이름 / 사번 / 부서 검색"
+              placeholder={tCommon('placeholderSearchNameIdDept')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-8 pr-3 py-1.5 text-sm border border-[#E0E0E0] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 w-48"

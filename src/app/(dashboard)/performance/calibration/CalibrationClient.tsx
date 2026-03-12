@@ -499,7 +499,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                       rows={2}
                       value={adjReason}
                       onChange={(e) => setAdjReason(e.target.value)}
-                      placeholder="조정 사유를 입력하세요"
+                      placeholder={tCommon('placeholderAdjustmentReason')}
                       className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999] resize-none"
                     />
                   </div>

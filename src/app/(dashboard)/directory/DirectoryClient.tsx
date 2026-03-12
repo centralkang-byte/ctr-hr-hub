@@ -172,7 +172,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
           <Filter size={14} className="text-[#666]" />
           <Select value={selectedCompany} onValueChange={setSelectedCompany}>
             <SelectTrigger className="w-36 h-8 text-xs">
-              <SelectValue placeholder="법인 전체" />
+              <SelectValue placeholder={tCommon('filterAllCompanies')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t('allCompanies')}</SelectItem>
@@ -183,7 +183,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
           </Select>
           <Select value={selectedDept} onValueChange={setSelectedDept}>
             <SelectTrigger className="w-36 h-8 text-xs">
-              <SelectValue placeholder="부서 전체" />
+              <SelectValue placeholder={tCommon('filterAllDepartments')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t('allDepts')}</SelectItem>
@@ -194,7 +194,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
           </Select>
           <Select value={selectedGrade} onValueChange={setSelectedGrade}>
             <SelectTrigger className="w-36 h-8 text-xs">
-              <SelectValue placeholder="직급 전체" />
+              <SelectValue placeholder={tCommon('filterAllGrades')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t('allGrades')}</SelectItem>

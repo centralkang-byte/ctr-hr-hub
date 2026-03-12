@@ -100,7 +100,7 @@ export default function KedoDocumentForm({ document, onClose, onSuccess }: Props
                 value={form.employeeId}
                 onChange={handleChange}
                 required
-                placeholder="직원 UUID 입력"
+                placeholder={tCommon('placeholderEmployeeUuid')}
                 className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"
               />
             </div>
@@ -147,7 +147,7 @@ export default function KedoDocumentForm({ document, onClose, onSuccess }: Props
               value={form.title}
               onChange={handleChange}
               required
-              placeholder="문서 제목"
+              placeholder={tCommon('placeholderDocTitle')}
               className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"
             />
           </div>
@@ -187,7 +187,7 @@ export default function KedoDocumentForm({ document, onClose, onSuccess }: Props
               value={form.content}
               onChange={handleChange}
               rows={4}
-              placeholder="문서 내용 (선택)"
+              placeholder={tCommon('placeholderDocContentOptional')}
               className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999] resize-none"
             />
           </div>

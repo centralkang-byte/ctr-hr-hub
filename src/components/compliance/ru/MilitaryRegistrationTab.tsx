@@ -129,7 +129,7 @@ export default function MilitaryRegistrationTab() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
               <input
                 type="text"
-                placeholder="이름 또는 사번 검색..."
+                placeholder={tCommon('placeholderSearchNameIdAlt')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-9 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"

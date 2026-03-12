@@ -65,7 +65,7 @@ const MeritRowComponent = memo(function MeritRowComponent({
                     {isOutOfRange && <AlertTriangle className="h-3.5 w-3.5 text-[#EF4444]" />}
                 </div>
                 {isOutOfRange && (
-                    <input type="text" placeholder="예외 사유 (필수)" value={localReason}
+                    <input type="text" placeholder={tCommon('placeholderExceptionReasonRequired')} value={localReason}
                         onChange={(e) => setLocalReason(e.target.value)}
                         onBlur={() => onUpdate(row.employeeId, localPct, localReason)}
                         className="mt-1 w-full rounded-lg border border-[#FDE68A] px-2 py-1 text-xs focus:border-[#5E81F4] focus:outline-none" />

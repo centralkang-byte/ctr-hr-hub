@@ -166,7 +166,7 @@ export default function EmployeeRegistryTab() {
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="이름, 사번 검색..."
+          placeholder={tCommon('placeholderSearchNameId')}
           className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853] placeholder:text-[#999] w-56"
         />
         <select

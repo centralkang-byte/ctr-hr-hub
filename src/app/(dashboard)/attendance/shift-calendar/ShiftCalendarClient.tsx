@@ -336,7 +336,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
         <div className="flex items-center gap-3">
           <Select value={selectedGroup} onValueChange={setSelectedGroup}>
             <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder="교대조 선택" />
+              <SelectValue placeholder={tCommon('filterSelectShift')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">전체 교대조</SelectItem>

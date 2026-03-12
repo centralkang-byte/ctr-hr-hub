@@ -249,7 +249,7 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
               <textarea
                 value={whitelistNote}
                 onChange={(e) => setWhitelistNote(e.target.value)}
-                placeholder="예외 사유를 입력하세요 (예: 대표이사 승인된 특별 근무)"
+                placeholder={tCommon('placeholderExceptionReason')}
                 rows={3}
                 className="w-full px-3 py-2.5 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 resize-none"
               />
@@ -967,7 +967,7 @@ export default function PayrollReviewClient({
                 <textarea
                   value={submitNote}
                   onChange={(e) => setSubmitNote(e.target.value)}
-                  placeholder="승인 요청 메모를 입력하세요"
+                  placeholder={tCommon('placeholderApprovalMemo')}
                   rows={3}
                   className="w-full px-3 py-2.5 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 resize-none"
                 />

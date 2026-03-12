@@ -82,7 +82,7 @@ export function ApprovalFlowEditor({ flow, onChange, disabled = false }: Approva
             <input
               type="number"
               min={0}
-              placeholder="자동승인 일수"
+              placeholder={tCommon('placeholderAutoApproveDays')}
               value={step.autoApproveDays ?? ''}
               onChange={(e) => updateStep(index, {
                 autoApproveDays: e.target.value ? parseInt(e.target.value) : null

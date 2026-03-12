@@ -301,7 +301,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
       <div className="flex items-center gap-3">
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="상태 필터" />
+            <SelectValue placeholder={tCommon('filterAllStatuses')} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">전체 상태</SelectItem>
@@ -495,7 +495,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
               <Input
                 value={newBatch.note}
                 onChange={e => setNewBatch(prev => ({ ...prev, note: e.target.value }))}
-                placeholder="비고 입력 (선택)"
+                placeholder={tCommon('placeholderNoteOptional')}
               />
             </div>
           </div>

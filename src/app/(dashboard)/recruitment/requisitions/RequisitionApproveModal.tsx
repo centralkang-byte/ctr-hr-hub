@@ -83,7 +83,7 @@ export default function RequisitionApproveModal({ requisition, onClose, onSucces
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               rows={3}
-              placeholder="승인 또는 반려 사유를 입력하세요..."
+              placeholder={tCommon('placeholderApprovalReasonAlt')}
               className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853] resize-none placeholder:text-[#999]"
             />
           </div>
