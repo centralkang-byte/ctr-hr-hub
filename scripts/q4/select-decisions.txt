@@ -1,0 +1,77 @@
+# Q-4 P2 Select Field Restriction Decisions
+# Generated: 2026-03-12
+
+## Decision: DEFER all payroll over-fetch fixes to P3
+
+### Rationale
+
+All 12 over-fetch candidates are payroll module APIs handling:
+- Configuration data (allowance-types, deduction-types, import-mappings, exchange-rates)
+- Mutation endpoints (bulk-resolve, complete, paid)
+- Single-record endpoints ([id] routes)
+
+Configuration models (AllowanceType, DeductionType, ImportMapping, ExchangeRate) have 5-10 fields each — the overhead of full-object fetch is negligible.
+
+Mutation endpoints return the modified record for client-side state update — restricting fields would break optimistic UI patterns.
+
+### Per-route reasoning
+
+ROUTE: /api/v1/payroll/import-mappings (GET)
+CONSUMER: PayrollImportClient.tsx
+DECISION: Keep full object — ImportMapping has only ~5 fields, all used in the mapping UI
+ACTION: None
+
+ROUTE: /api/v1/payroll/allowance-types (GET list)
+CONSUMER: AllowanceTypeClient.tsx
+DECISION: Keep full object — configuration model, all fields rendered
+ACTION: None
+
+ROUTE: /api/v1/payroll/allowance-types/[id] (GET/PUT/DELETE)
+CONSUMER: AllowanceTypeClient.tsx (detail view)
+DECISION: Keep full object — single record, all fields editable
+ACTION: None
+
+ROUTE: /api/v1/payroll/deduction-types (GET list)
+CONSUMER: DeductionTypeClient.tsx
+DECISION: Keep full object — configuration model, all fields rendered
+ACTION: None
+
+ROUTE: /api/v1/payroll/deduction-types/[id] (GET/PUT/DELETE)
+CONSUMER: DeductionTypeClient.tsx (detail view)
+DECISION: Keep full object — single record, all fields editable
+ACTION: None
+
+ROUTE: /api/v1/payroll/[runId]/anomalies/bulk-resolve (POST)
+CONSUMER: PayrollRunDetailClient.tsx
+DECISION: Keep full object — mutation endpoint returning updated records
+ACTION: None
+
+ROUTE: /api/v1/payroll/[runId]/adjustments/complete (POST)
+CONSUMER: PayrollRunDetailClient.tsx
+DECISION: Keep full object — mutation endpoint
+ACTION: None
+
+ROUTE: /api/v1/payroll/attendance-reopen (POST)
+CONSUMER: PayrollRunClient.tsx
+DECISION: Keep full object — mutation endpoint
+ACTION: None
+
+ROUTE: /api/v1/payroll/exchange-rates (GET/POST)
+CONSUMER: ExchangeRateClient.tsx
+DECISION: Keep full object — configuration model
+ACTION: None
+
+ROUTE: /api/v1/payroll/exchange-rates/copy-prev (POST)
+CONSUMER: ExchangeRateClient.tsx
+DECISION: Keep full object — mutation endpoint
+ACTION: None
+
+ROUTE: /api/v1/payroll/runs/[id]/paid (POST)
+CONSUMER: PayrollRunDetailClient.tsx
+DECISION: Keep full object — mutation endpoint changing run status
+ACTION: None
+
+ROUTE: /api/v1/payroll/runs/[id]/items/[itemId] (GET/PUT)
+CONSUMER: PayrollRunDetailClient.tsx
+DECISION: Keep full object — single pay item with all fields rendered
+ACTION: None

@@ -1,3 +1,4 @@
+// PUBLIC: no auth required — pre-login i18n locale switching
 import { NextRequest, NextResponse } from 'next/server'
 import { locales, type Locale } from '@/i18n/config'
 import { apiError } from '@/lib/api'

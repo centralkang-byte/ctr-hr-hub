@@ -1,0 +1,12 @@
+FULL_OBJECT: src/app/api/v1/payroll/import-mappings/route.ts
+FULL_OBJECT: src/app/api/v1/payroll/allowance-types/route.ts
+FULL_OBJECT: src/app/api/v1/payroll/allowance-types/[id]/route.ts
+FULL_OBJECT: src/app/api/v1/payroll/deduction-types/route.ts
+FULL_OBJECT: src/app/api/v1/payroll/deduction-types/[id]/route.ts
+FULL_OBJECT: src/app/api/v1/payroll/[runId]/anomalies/bulk-resolve/route.ts
+FULL_OBJECT: src/app/api/v1/payroll/[runId]/adjustments/complete/route.ts
+FULL_OBJECT: src/app/api/v1/payroll/attendance-reopen/route.ts
+FULL_OBJECT: src/app/api/v1/payroll/exchange-rates/route.ts
+FULL_OBJECT: src/app/api/v1/payroll/exchange-rates/copy-prev/route.ts
+FULL_OBJECT: src/app/api/v1/payroll/runs/[id]/paid/route.ts
+FULL_OBJECT: src/app/api/v1/payroll/runs/[id]/items/[itemId]/route.ts
