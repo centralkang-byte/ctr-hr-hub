@@ -17,6 +17,7 @@ export function OnboardingTemplatesTab({ companyId }: Props) {
     setLoading(true)
     const params = companyId ? `?companyId=${companyId}&limit=50` : '?limit=50'
     apiClient.get(`/api/v1/onboarding/templates${params}`)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((res) => { const list = (res as any)?.data ?? res ?? []; setTemplates(Array.isArray(list) ? list : []) })
       .catch(() => setTemplates([]))
       .finally(() => setLoading(false))

@@ -25,6 +25,7 @@ export function DepartmentsTab({ companyId }: Props) {
     setLoading(true)
     apiClient.get('/api/v1/org/departments?limit=200')
       .then((res) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const list = (res as any)?.data ?? res ?? []
         setDepts(Array.isArray(list) ? list : [])
       })

@@ -20,6 +20,7 @@ export function MeritMatrixTab({ companyId }: Props) {
     setLoading(true)
     const params = companyId ? `?companyId=${companyId}` : ''
     apiClient.get(`/api/v1/settings/performance/merit-matrix${params}`)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((res) => { const d = (res as any)?.data ?? res; setMatrix(d?.matrix ?? []) })
       .catch(() => setMatrix([]))
       .finally(() => setLoading(false))

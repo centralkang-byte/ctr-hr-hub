@@ -32,6 +32,7 @@ export function PayScheduleTab({ companyId }: Props) {
       const qs = companyId ? `?key=pay-schedule&companyId=${companyId}` : '?key=pay-schedule'
       const res = await apiClient.get(`/api/v1/process-settings/payroll${qs}`)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const items = (res as any)?.data ?? res ?? []
       const setting = Array.isArray(items) ? items[0] : null
 

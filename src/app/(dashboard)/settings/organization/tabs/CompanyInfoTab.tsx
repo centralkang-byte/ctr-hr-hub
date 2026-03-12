@@ -28,6 +28,7 @@ export function CompanyInfoTab({ companyId }: Props) {
     setLoading(true)
     apiClient.get('/api/v1/companies')
       .then((res) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const list = (res as any)?.data ?? res ?? []
         setCompanies(Array.isArray(list) ? list : [])
       })

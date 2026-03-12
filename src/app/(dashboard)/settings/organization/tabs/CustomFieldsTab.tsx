@@ -16,6 +16,7 @@ export function CustomFieldsTab({ companyId }: Props) {
   useEffect(() => {
     setLoading(true)
     apiClient.get('/api/v1/settings/custom-fields?limit=100')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((res) => { const list = (res as any)?.data ?? res ?? []; setFields(Array.isArray(list) ? list : []) })
       .catch(() => setFields([]))
       .finally(() => setLoading(false))

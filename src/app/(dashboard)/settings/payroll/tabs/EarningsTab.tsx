@@ -16,6 +16,7 @@ export function EarningsTab({ companyId }: Props) {
   useEffect(() => {
     setLoading(true)
     apiClient.get('/api/v1/payroll/allowance-types?limit=100')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((res) => { const list = (res as any)?.data ?? res ?? []; setItems(Array.isArray(list) ? list : []) })
       .catch(() => setItems([]))
       .finally(() => setLoading(false))

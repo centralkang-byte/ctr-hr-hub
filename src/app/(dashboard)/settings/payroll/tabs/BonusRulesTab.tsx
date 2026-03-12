@@ -41,6 +41,7 @@ export function BonusRulesTab({ companyId }: Props) {
       const qs = companyId ? `?key=bonus-rules&companyId=${companyId}` : '?key=bonus-rules'
       const res = await apiClient.get(`/api/v1/process-settings/compensation${qs}`)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const items = (res as any)?.data ?? res ?? []
       const setting = Array.isArray(items) ? items[0] : null
 

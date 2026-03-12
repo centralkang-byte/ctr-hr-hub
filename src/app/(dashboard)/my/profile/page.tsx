@@ -69,8 +69,11 @@ export default async function MyProfilePage() {
       })
       // Add empty defaults for missing relations
       if (employee) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (employee as any).profileExtension = null;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (employee as any).emergencyContacts = [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (employee as any).profileVisibility = null;
       }
     } catch (err2) {

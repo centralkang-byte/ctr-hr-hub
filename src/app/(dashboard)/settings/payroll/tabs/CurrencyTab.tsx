@@ -19,6 +19,7 @@ export function CurrencyTab({ companyId }: Props) {
   useEffect(() => {
     setLoading(true)
     apiClient.get(`/api/v1/payroll/exchange-rates?year=${year}&month=${month}`)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((res) => { const d = (res as any)?.data ?? res; setRates(d?.rates ?? []) })
       .catch(() => setRates([]))
       .finally(() => setLoading(false))

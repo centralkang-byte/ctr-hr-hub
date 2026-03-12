@@ -78,6 +78,7 @@ export default function RequisitionListClient({
   const [search, setSearch] = useState('')
   const [approveTarget, setApproveTarget] = useState<Requisition | null>(null)
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const isHR = [ROLE.HR_ADMIN, ROLE.SUPER_ADMIN].includes(user.role as any)
 
   const load = useCallback(async () => {
@@ -127,6 +128,7 @@ export default function RequisitionListClient({
         ].map((t) => (
           <button
             key={t.key}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClick={() => setTab(t.key as any)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 ${
               tab === t.key

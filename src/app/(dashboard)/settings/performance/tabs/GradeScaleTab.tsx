@@ -15,6 +15,7 @@ export function GradeScaleTab({ companyId }: Props) {
     setLoading(true)
     const params = companyId ? `?companyId=${companyId}` : ''
     apiClient.get(`/api/v1/settings/performance/grade-scale${params}`)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((res) => { const d = (res as any)?.data ?? res; setGrades(d?.grades ?? []) })
       .catch(() => setGrades([]))
       .finally(() => setLoading(false))

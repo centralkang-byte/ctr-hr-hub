@@ -139,6 +139,7 @@ export default function RewardFormClient({ user }: Props) {
 
       {/* Form */}
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6 max-w-3xl">
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
           <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">

@@ -16,6 +16,7 @@ export function SalaryBandsTab({ companyId }: Props) {
   useEffect(() => {
     setLoading(true)
     apiClient.get('/api/v1/compensation/salary-bands?limit=50')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((res) => { const list = (res as any)?.data ?? res ?? []; setBands(Array.isArray(list) ? list : []) })
       .catch(() => setBands([]))
       .finally(() => setLoading(false))

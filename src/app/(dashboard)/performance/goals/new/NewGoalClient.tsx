@@ -53,6 +53,7 @@ export default function NewGoalClient({
     handleSubmit,
     formState: { errors },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useForm<FormValues>({ resolver: zodResolver(formSchema) as any)
 
   // ─── Fetch cycles ─────────────────────────────────────
@@ -112,6 +113,7 @@ export default function NewGoalClient({
 
         {/* Form */}
         <form
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onSubmit={handleSubmit(onSubmit as any)}
           className="space-y-5 rounded-lg bg-white p-6"

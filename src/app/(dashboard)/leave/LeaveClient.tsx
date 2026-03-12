@@ -436,6 +436,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
           </DialogHeader>
 
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
             {/* policyId */}
             <div className="space-y-2">

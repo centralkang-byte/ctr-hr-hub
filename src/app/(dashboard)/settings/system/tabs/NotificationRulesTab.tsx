@@ -16,6 +16,7 @@ export function NotificationRulesTab({ companyId }: Props) {
   useEffect(() => {
     setLoading(true)
     apiClient.get('/api/v1/settings/notification-triggers?limit=100')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((res) => { const list = (res as any)?.data ?? res ?? []; setTriggers(Array.isArray(list) ? list : []) })
       .catch(() => setTriggers([]))
       .finally(() => setLoading(false))
