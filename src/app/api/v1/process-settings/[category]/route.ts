@@ -1,13 +1,18 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Unified Process Settings API (H-2c + H-3 Audit)
 // GET/PUT/DELETE for CompanyProcessSetting by category+key
+// Auth: GET — authenticated users; PUT/DELETE — HR_ADMIN+
 // ═══════════════════════════════════════════════════════════
 
 import { NextRequest } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiError } from '@/lib/api'
-import { badRequest } from '@/lib/errors'
+import { badRequest, unauthorized, forbidden } from '@/lib/errors'
 import { generateChangeDescription } from '@/lib/settings/audit-helpers'
+import { ROLE } from '@/lib/constants'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,6 +26,9 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ category: string }> }
 ) {
+  const session = await getServerSession(authOptions)
+  if (!session?.user) return apiError(unauthorized())
+
   try {
     const { category } = await params
     const upperCategory = category.toUpperCase()
@@ -28,11 +36,12 @@ export async function GET(
       return apiError(badRequest(`Invalid category: ${category}`))
     }
 
+    const user = session.user
     const { searchParams } = new URL(req.url)
-    const companyId = searchParams.get('companyId')
+    const requestedCompanyId = searchParams.get('companyId')
+    const companyId = resolveCompanyId(user, requestedCompanyId)
     const key = searchParams.get('key')
 
-    // Build where clause
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const where: any = { settingType: upperCategory }
     if (key) where.settingKey = key
@@ -43,14 +52,11 @@ export async function GET(
       orderBy: { settingKey: 'asc' },
     })
 
-    // Get company overrides if companyId provided
-    let companySettings: typeof globalSettings = []
-    if (companyId) {
-      companySettings = await prisma.companyProcessSetting.findMany({
-        where: { ...where, companyId },
-        orderBy: { settingKey: 'asc' },
-      })
-    }
+    // Get company overrides
+    const companySettings = await prisma.companyProcessSetting.findMany({
+      where: { ...where, companyId },
+      orderBy: { settingKey: 'asc' },
+    })
 
     // Merge: company overrides global
     const companyMap = new Map(companySettings.map((s) => [s.settingKey, s]))
@@ -68,7 +74,6 @@ export async function GET(
       }
     })
 
-    // Add any company-only settings that have no global counterpart
     for (const cs of companySettings) {
       if (!globalSettings.some((g) => g.settingKey === cs.settingKey)) {
         merged.push({
@@ -95,6 +100,14 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ category: string }> }
 ) {
+  const session = await getServerSession(authOptions)
+  if (!session?.user) return apiError(unauthorized())
+
+  const user = session.user
+  if (user.role !== ROLE.HR_ADMIN && user.role !== ROLE.SUPER_ADMIN) {
+    return apiError(forbidden('Modifying process settings requires HR_ADMIN role'))
+  }
+
   try {
     const { category } = await params
     const upperCategory = category.toUpperCase()
@@ -109,13 +122,8 @@ export async function PUT(
       return apiError(badRequest('key and value are required'))
     }
 
-    // Fetch existing record for audit diff
     const existing = await prisma.companyProcessSetting.findFirst({
-      where: {
-        settingType: upperCategory,
-        settingKey: key,
-        companyId: companyId ?? null,
-      },
+      where: { settingType: upperCategory, settingKey: key, companyId: companyId ?? null },
     })
 
     const setting = await prisma.companyProcessSetting.upsert({
@@ -126,10 +134,7 @@ export async function PUT(
           settingKey: key,
         },
       },
-      update: {
-        settingValue: value,
-        description: description ?? undefined,
-      },
+      update: { settingValue: value, description: description ?? undefined },
       create: {
         companyId: companyId ?? null,
         settingType: upperCategory,
@@ -139,10 +144,10 @@ export async function PUT(
       },
     })
 
-    // Audit log (fire-and-forget)
+    // Audit log (fire-and-forget) — now with real actorId
     prisma.auditLog.create({
       data: {
-        actorId: 'system', // TODO: extract from session when auth is wired
+        actorId: user.id,
         action: existing ? 'SETTINGS_UPDATE' : 'SETTINGS_CREATE',
         resourceType: 'CompanyProcessSetting',
         resourceId: setting.id,
@@ -172,6 +177,14 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ category: string }> }
 ) {
+  const session = await getServerSession(authOptions)
+  if (!session?.user) return apiError(unauthorized())
+
+  const user = session.user
+  if (user.role !== ROLE.HR_ADMIN && user.role !== ROLE.SUPER_ADMIN) {
+    return apiError(forbidden('Deleting process settings requires HR_ADMIN role'))
+  }
+
   try {
     const { category } = await params
     const upperCategory = category.toUpperCase()
@@ -184,24 +197,18 @@ export async function DELETE(
       return apiError(badRequest('key and companyId are required to delete an override'))
     }
 
-    // Fetch existing for audit log
     const existing = await prisma.companyProcessSetting.findFirst({
       where: { settingType: upperCategory, settingKey: key, companyId },
     })
 
     await prisma.companyProcessSetting.deleteMany({
-      where: {
-        settingType: upperCategory,
-        settingKey: key,
-        companyId,
-      },
+      where: { settingType: upperCategory, settingKey: key, companyId },
     })
 
-    // Audit log (fire-and-forget)
     if (existing) {
       prisma.auditLog.create({
         data: {
-          actorId: 'system',
+          actorId: user.id,
           action: 'SETTINGS_REVERT',
           resourceType: 'CompanyProcessSetting',
           resourceId: existing.id,

@@ -6,54 +6,56 @@
 
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { withPermission } from '@/lib/permissions'
+import type { SessionUser } from '@/types'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 
-export async function GET(req: NextRequest) {
-  try {
-    const companyId = new URL(req.url).searchParams.get('companyId')
+export const GET = withPermission(
+  async (req: NextRequest, _ctx, user: SessionUser) => {
+    try {
+      const requestedCompanyId = new URL(req.url).searchParams.get('companyId')
+      const companyId = resolveCompanyId(user, requestedCompanyId)
 
-    const where: Record<string, unknown> = { isActive: true, deletedAt: null }
-    if (companyId) where.companyId = companyId
+      const departments = await prisma.department.findMany({
+        where: { isActive: true, deletedAt: null, companyId },
+        select: {
+          id: true,
+          name: true,
+          nameEn: true,
+          parentId: true,
+          level: true,
+          companyId: true,
+          sortOrder: true,
+        },
+        orderBy: [{ level: 'asc' }, { sortOrder: 'asc' }, { name: 'asc' }],
+      })
 
-    // Fetch all departments with their parent-child relationships
-    const departments = await prisma.department.findMany({
-      where,
-      select: {
-        id: true,
-        name: true,
-        nameEn: true,
-        parentId: true,
-        level: true,
-        companyId: true,
-        sortOrder: true,
-      },
-      orderBy: [{ level: 'asc' }, { sortOrder: 'asc' }, { name: 'asc' }],
-    })
-
-    // Build hierarchy: top-level (parentId = null) → children
-    const topLevel = departments.filter((d) => !d.parentId)
-    const childMap = new Map<string, typeof departments>()
-    for (const d of departments) {
-      if (d.parentId) {
-        const existing = childMap.get(d.parentId) || []
-        existing.push(d)
-        childMap.set(d.parentId, existing)
+      const topLevel = departments.filter((d) => !d.parentId)
+      const childMap = new Map<string, typeof departments>()
+      for (const d of departments) {
+        if (d.parentId) {
+          const existing = childMap.get(d.parentId) || []
+          existing.push(d)
+          childMap.set(d.parentId, existing)
+        }
       }
+
+      const hierarchy = topLevel.map((parent) => ({
+        id: parent.id,
+        name: parent.name,
+        nameEn: parent.nameEn,
+        companyId: parent.companyId,
+        children: (childMap.get(parent.id) || []).map((child) => ({
+          id: child.id,
+          name: child.name,
+          nameEn: child.nameEn,
+        })),
+      }))
+
+      return NextResponse.json({ data: hierarchy })
+    } catch {
+      return NextResponse.json({ data: [] })
     }
-
-    const hierarchy = topLevel.map((parent) => ({
-      id: parent.id,
-      name: parent.name,
-      nameEn: parent.nameEn,
-      companyId: parent.companyId,
-      children: (childMap.get(parent.id) || []).map((child) => ({
-        id: child.id,
-        name: child.name,
-        nameEn: child.nameEn,
-      })),
-    }))
-
-    return NextResponse.json({ data: hierarchy })
-  } catch {
-    return NextResponse.json({ data: [] })
-  }
-}
+  },
+  { module: 'EMPLOYEE', action: 'read' },
+)

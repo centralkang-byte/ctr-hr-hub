@@ -1,0 +1,16 @@
+NO_AUTH: src/app/api/v1/tenant-settings/brand-colors/route.ts
+NO_AUTH: src/app/api/v1/locale/route.ts
+NO_AUTH: src/app/api/v1/departments/hierarchy/route.ts
+NO_AUTH: src/app/api/v1/compliance/cron/retention/route.ts
+NO_AUTH: src/app/api/v1/settings-audit-log/route.ts
+NO_AUTH: src/app/api/v1/teams/webhook/route.ts
+NO_AUTH: src/app/api/v1/teams/bot/route.ts
+NO_AUTH: src/app/api/v1/teams/recognition/route.ts
+NO_AUTH: src/app/api/v1/process-settings/[category]/route.ts
+NO_AUTH: src/app/api/v1/monitoring/health/route.ts
+NO_AUTH: src/app/api/v1/cron/leave-promotion/route.ts
+NO_AUTH: src/app/api/v1/cron/auto-acknowledge/route.ts
+NO_AUTH: src/app/api/v1/cron/org-snapshot/route.ts
+NO_AUTH: src/app/api/v1/cron/overdue-check/route.ts
+NO_AUTH: src/app/api/v1/cron/eval-reminder/route.ts
+NO_AUTH: src/app/api/auth/[...nextauth]/route.ts

@@ -1,0 +1,2 @@
+⚠️ NO_ROLE: src/app/api/v1/compliance/cron/retention/route.ts
+⚠️ NO_ROLE: src/app/api/v1/process-settings/[category]/route.ts
