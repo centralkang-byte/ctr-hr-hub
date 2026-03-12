@@ -3,10 +3,10 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import {
-import { TABLE_STYLES } from '@/lib/styles'
   Sparkles, FileText, Loader2, AlertCircle, RefreshCw,
   Calendar, Building2, ChevronDown, Clock,
 } from 'lucide-react'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface AiReport {
   id: string

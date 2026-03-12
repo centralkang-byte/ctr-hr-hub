@@ -3,13 +3,13 @@
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import {
-import { BUTTON_VARIANTS } from '@/lib/styles'
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 
 interface Dpia {
   id: string

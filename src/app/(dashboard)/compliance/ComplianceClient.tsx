@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import {
-import { CARD_STYLES } from '@/lib/styles'
   ShieldCheck,
   Shield,
   Eye,
@@ -20,6 +19,7 @@ import { CARD_STYLES } from '@/lib/styles'
   ClipboardCheck,
   ArrowRight,
 } from 'lucide-react'
+import { CARD_STYLES } from '@/lib/styles'
 
 interface GdprStats {
   activeConsents: number

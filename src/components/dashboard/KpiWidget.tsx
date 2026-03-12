@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { WidgetSkeleton } from './WidgetSkeleton'
 import { WidgetEmpty } from './WidgetEmpty'
 import {
-import { CARD_STYLES } from '@/lib/styles'
   BarChart,
   Bar,
   LineChart,
@@ -20,6 +19,7 @@ import { CARD_STYLES } from '@/lib/styles'
   Legend,
   ResponsiveContainer,
 } from 'recharts'
+import { CARD_STYLES } from '@/lib/styles'
 
 export type ChartType = 'bar' | 'bar-horizontal' | 'line' | 'donut' | 'number'
 
