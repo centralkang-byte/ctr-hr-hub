@@ -238,7 +238,7 @@ export default function InternalJobsClient({ user }: { user: SessionUser }) {
                         <button
                           onClick={() => handleApply(job.id)}
                           disabled={applying === job.id}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium disabled:opacity-50"
+                          className={`flex items-center gap-1.5 px-3 py-1.5 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}
                         >
                           <ArrowRight size={14} />
                           {applying === job.id ? '지원 중...' : '지원하기'}

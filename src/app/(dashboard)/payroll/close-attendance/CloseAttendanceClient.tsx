@@ -15,6 +15,7 @@ import {
     RefreshCw,
 } from 'lucide-react'
 import type { SessionUser } from '@/types'
+import { MODAL_STYLES } from '@/lib/styles'
 
 interface AttendanceStatus {
     yearMonth: string
@@ -230,7 +231,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                         <button
                                             onClick={() => status && setConfirmModal({ companyId, status, excludeUnconfirmed: false })}
                                             disabled={closing === companyId || !status}
-                                            className="flex items-center gap-1.5 px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+                                            className={`flex items-center gap-1.5 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-semibold transition-colors disabled:opacity-50`}
                                         >
                                             <Lock size={14} />
                                             마감하기
@@ -350,8 +351,8 @@ export default function CloseAttendanceClient({ user }: Props) {
 
             {/* Confirm Modal */}
             {confirmModal && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-                    <div className="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 overflow-hidden">
+                <div className={MODAL_STYLES.container}>
+                    <div className={`${MODAL_STYLES.content.sm} mx-4 overflow-hidden`}>
                         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8E8E8]">
                             <h2 className="text-lg font-bold text-[#1A1A1A]">근태 마감 확인</h2>
                             <button
@@ -423,7 +424,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                     )
                                 }
                                 disabled={closing === confirmModal.companyId}
-                                className="flex items-center gap-1.5 px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+                                className={`flex items-center gap-1.5 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-semibold transition-colors disabled:opacity-50`}
                             >
                                 <Lock size={14} />
                                 {closing === confirmModal.companyId ? '마감 처리 중...' : '마감하기'}

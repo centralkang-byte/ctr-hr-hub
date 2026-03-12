@@ -24,6 +24,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { FORM_STYLES } from '@/lib/styles'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -331,7 +332,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
           <select
             value={settings.timezone}
             onChange={(e) => patchSettings({ timezone: e.target.value })}
-            className="mt-1 w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:outline-none bg-white"
+            className={`mt-1 ${FORM_STYLES.input}`}
           >
             <option value="Asia/Seoul">Asia/Seoul (KST, UTC+9)</option>
             <option value="Asia/Shanghai">Asia/Shanghai (CST, UTC+8)</option>
@@ -611,7 +612,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
                 size="sm"
                 onClick={() => { void handleSave() }}
                 disabled={saving}
-                className="bg-[#00C853] hover:bg-[#00A844] text-white"
+                className={BUTTON_VARIANTS.primary}
               >
                 {saving ? (
                   <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />

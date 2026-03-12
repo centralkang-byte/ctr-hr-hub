@@ -254,7 +254,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
         <button
           onClick={() => fetchData(true)}
           disabled={recalculating}
-          className="flex items-center gap-2 px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium"
+          className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}
         >
           {recalculating ? (
             <Loader2 className="w-4 h-4 animate-spin" />

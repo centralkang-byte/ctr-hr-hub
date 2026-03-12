@@ -207,7 +207,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
           </select>
           <button
             onClick={() => setShowCreate(true)}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg transition-colors duration-150"
+            className={`inline-flex items-center gap-2 ${BUTTON_SIZES.md} ${BUTTON_VARIANTS.primary}`}
           >
             <Plus className="w-4 h-4" />
             비용 등록
@@ -471,7 +471,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
 
       {/* Create Modal */}
       {showCreate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className={MODAL_STYLES.container}>
           <div className="bg-white rounded-xl w-full max-w-lg mx-4">
             <div className="flex items-center justify-between p-6 pb-0">
               <h2 className="text-lg font-bold text-[#1A1A1A] tracking-[-0.02em]">채용 비용 등록</h2>
@@ -566,7 +566,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
               <button
                 onClick={handleCreate}
                 disabled={creating || !form.amount}
-                className="flex items-center gap-2 px-6 py-2 text-sm font-medium bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
+                className={`inline-flex items-center gap-2 ${BUTTON_SIZES.md} ${BUTTON_VARIANTS.primary} disabled:opacity-50`}
               >
                 {creating && <Loader2 className="w-4 h-4 animate-spin" />}
                 등록
@@ -578,7 +578,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
 
       {/* Detail Modal */}
       {detailCost && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className={MODAL_STYLES.container}>
           <div className="bg-white rounded-xl w-full max-w-md mx-4">
             <div className="flex items-center justify-between p-6 pb-0">
               <h2 className="text-lg font-bold text-[#1A1A1A] tracking-[-0.02em]">비용 상세</h2>

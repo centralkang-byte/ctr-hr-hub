@@ -351,7 +351,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
           </select>
           <button
             onClick={() => setShowCreateForm(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium"
+            className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}
           >
             <Plus className="w-4 h-4" />
             새 세션
@@ -372,7 +372,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
             />
             <button
               onClick={handleCreateSession}
-              className="px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium"
+              className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}
             >
               생성
             </button>
@@ -503,7 +503,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                   <button
                     onClick={handleAdjustment}
                     disabled={!adjReason.trim()}
-                    className="px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium disabled:opacity-50"
+                    className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}
                   >
                     조정 저장
                   </button>

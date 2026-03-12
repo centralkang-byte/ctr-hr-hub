@@ -209,7 +209,7 @@ export default function KedoDocumentForm({ document, onClose, onSuccess }: Props
             <button
               type="submit"
               disabled={saving}
-              className="bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
+              className={`${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50`}
             >
               {saving ? '저장 중...' : editing ? '수정' : '생성'}
             </button>

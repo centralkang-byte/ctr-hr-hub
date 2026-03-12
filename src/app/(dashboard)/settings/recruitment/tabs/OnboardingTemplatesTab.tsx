@@ -30,7 +30,7 @@ export function OnboardingTemplatesTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div><h3 className="text-base font-semibold text-[#1C1D21]">온보딩 템플릿</h3><p className="text-sm text-[#8181A5]">{templates.length}개 템플릿</p></div>
-        <Button className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]"><Plus className="mr-2 h-4 w-4" />템플릿 추가</Button>
+        <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />템플릿 추가</Button>
       </div>
       {templates.length > 0 ? (
         <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">

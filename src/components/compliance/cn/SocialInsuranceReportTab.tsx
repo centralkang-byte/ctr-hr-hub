@@ -184,7 +184,7 @@ export default function SocialInsuranceReportTab() {
         <button
           onClick={handleCalculate}
           disabled={calculating}
-          className="flex items-center gap-2 bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
         >
           <Calculator className="w-4 h-4" />
           {calculating ? '계산 중...' : '월간 보험 계산'}

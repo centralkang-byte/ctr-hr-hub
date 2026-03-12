@@ -77,7 +77,7 @@ export default function PulseRespondClient() {
         <h2 className="text-xl font-bold text-[#1A1A1A]">응답이 제출되었습니다</h2>
         <p className="text-sm text-[#666]">소중한 의견 감사합니다.</p>
         <button onClick={() => router.push('/performance/pulse')}
-          className="px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium">
+          className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}>
           돌아가기
         </button>
       </div>
@@ -168,7 +168,7 @@ export default function PulseRespondClient() {
       {/* Submit */}
       <div className="flex justify-end">
         <button onClick={handleSubmit} disabled={submitting || !allRequiredAnswered}
-          className="flex items-center gap-2 px-6 py-2.5 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium disabled:opacity-50">
+          className={`flex items-center gap-2 px-6 py-2.5 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}>
           <Send className="w-4 h-4" />
           {submitting ? '제출 중...' : '응답 제출'}
         </button>

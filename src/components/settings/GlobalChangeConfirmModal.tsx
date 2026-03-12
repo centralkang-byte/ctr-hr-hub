@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { AlertTriangle, X } from 'lucide-react'
+import { MODAL_STYLES } from '@/lib/styles'
 
 interface Company {
   id: string
@@ -37,7 +38,7 @@ export function GlobalChangeConfirmModal({
   const unaffected = companies.filter((c) => c.hasOverride)
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className={MODAL_STYLES.container}>
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 

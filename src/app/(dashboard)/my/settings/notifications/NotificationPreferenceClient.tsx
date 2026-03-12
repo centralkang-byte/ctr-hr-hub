@@ -217,7 +217,7 @@ export function NotificationPreferenceClient() {
       <button
         onClick={handleSave}
         disabled={saving}
-        className="flex items-center gap-2 bg-[#00C853] hover:bg-[#00A844] text-white px-5 py-2.5 rounded-lg font-semibold text-sm transition-colors disabled:opacity-50"
+        className={`flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-5 py-2.5 rounded-lg font-semibold text-sm transition-colors disabled:opacity-50`}
       >
         {saved ? (
           <>

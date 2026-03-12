@@ -8,6 +8,7 @@
 import { useState } from 'react'
 import { X, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { MODAL_STYLES } from '@/lib/styles'
 
 interface Props {
   requisition: {
@@ -47,8 +48,8 @@ export default function RequisitionApproveModal({ requisition, onClose, onSucces
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg">
+    <div className={MODAL_STYLES.container}>
+      <div className={MODAL_STYLES.content.md}>
         {/* 헤더 */}
         <div className="flex items-center justify-between p-6 border-b border-[#E8E8E8]">
           <h2 className="text-lg font-semibold text-[#1A1A1A]">채용 요청 결재</h2>

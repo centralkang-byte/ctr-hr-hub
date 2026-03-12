@@ -333,7 +333,7 @@ export default function AdjustmentsClient({ user }: Props) {
                                 <div className="flex items-center gap-2">
                                     <button
                                         onClick={() => setShowForm(true)}
-                                        className="flex items-center gap-1.5 px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-semibold transition-colors"
+                                        className={`flex items-center gap-1.5 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-semibold transition-colors`}
                                     >
                                         <Plus size={15} />
                                         조정 추가
@@ -428,7 +428,7 @@ export default function AdjustmentsClient({ user }: Props) {
 
             {/* Add Adjustment Modal */}
             {showForm && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+                <div className={MODAL_STYLES.container}>
                     <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full mx-4 overflow-hidden">
                         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8E8E8]">
                             <h2 className="text-lg font-bold text-[#1A1A1A]">조정 추가</h2>
@@ -544,7 +544,7 @@ export default function AdjustmentsClient({ user }: Props) {
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="flex items-center gap-1.5 px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-semibold disabled:opacity-50"
+                                    className={`flex items-center gap-1.5 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-semibold disabled:opacity-50`}
                                 >
                                     {submitting ? '저장 중...' : (
                                         <>

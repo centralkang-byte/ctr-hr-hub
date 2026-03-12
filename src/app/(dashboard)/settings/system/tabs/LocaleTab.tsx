@@ -5,6 +5,7 @@ import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWith
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import type { LocaleSetting } from '@/types/process-settings'
+import { FORM_STYLES } from '@/lib/styles'
 
 interface Props { companyId: string | null }
 
@@ -45,13 +46,13 @@ export function LocaleTab({ companyId }: Props) {
       </div>
 
       <SettingFieldWithOverride label="기본 언어" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
-        <select className="rounded-xl border border-[#F0F0F3] px-3 py-2 text-sm" value={settings.defaultLocale} onChange={(e) => setSettings((p) => ({ ...p, defaultLocale: e.target.value }))}>
+        <select className={FORM_STYLES.select} value={settings.defaultLocale} onChange={(e) => setSettings((p) => ({ ...p, defaultLocale: e.target.value }))}>
           {settings.supportedLocales.map((l) => <option key={l} value={l}>{LOCALE_LABELS[l] ?? l}</option>)}
         </select>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="기본 타임존" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
-        <select className="rounded-xl border border-[#F0F0F3] px-3 py-2 text-sm" value={settings.defaultTimezone} onChange={(e) => setSettings((p) => ({ ...p, defaultTimezone: e.target.value }))}>
+        <select className={FORM_STYLES.select} value={settings.defaultTimezone} onChange={(e) => setSettings((p) => ({ ...p, defaultTimezone: e.target.value }))}>
           <option value="Asia/Seoul">Asia/Seoul (KST, UTC+9)</option>
           <option value="America/New_York">America/New_York (EST, UTC-5)</option>
           <option value="Asia/Shanghai">Asia/Shanghai (CST, UTC+8)</option>
@@ -71,7 +72,7 @@ export function LocaleTab({ companyId }: Props) {
         <Button variant="outline" onClick={revert} disabled={!hasChanges}>
           <RotateCcw className="mr-2 h-4 w-4" />되돌리기
         </Button>
-        <Button className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]" onClick={save} disabled={!hasChanges || saving}>
+        <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
         </Button>
       </div>

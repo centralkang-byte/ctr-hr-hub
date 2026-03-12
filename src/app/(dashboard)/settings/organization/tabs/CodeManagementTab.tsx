@@ -29,7 +29,7 @@ export function CodeManagementTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div><h3 className="text-base font-semibold text-[#1C1D21]">코드 관리</h3><p className="text-sm text-[#8181A5]">시스템 코드/열거형 {Object.keys(grouped).length}개 그룹</p></div>
-        <Button className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]"><Plus className="mr-2 h-4 w-4" />코드 추가</Button>
+        <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />코드 추가</Button>
       </div>
       {Object.keys(grouped).length > 0 ? Object.entries(grouped).sort(([a],[b]) => a.localeCompare(b)).map(([group, items]) => (
         <div key={group}>

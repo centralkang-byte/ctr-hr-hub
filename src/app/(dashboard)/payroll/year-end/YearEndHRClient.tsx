@@ -130,7 +130,7 @@ function SettlementDetailModal({
   const isRefund = finalNum >= 0
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div className={MODAL_STYLES.container}>
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8E8E8]">
@@ -250,7 +250,7 @@ function SettlementDetailModal({
                 type="button"
                 onClick={() => onConfirm(settlement.id)}
                 disabled={confirming}
-                className="flex items-center gap-2 px-4 py-2 text-sm bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg disabled:opacity-50"
+                className={`flex items-center gap-2 px-4 py-2 text-sm ${BUTTON_VARIANTS.primary} rounded-lg disabled:opacity-50`}
               >
                 <CheckCircle2 className="h-4 w-4" />
                 {confirming ? '처리 중...' : '확정'}
@@ -477,7 +477,7 @@ export default function YearEndHRClient({ user, defaultYear }: YearEndHRClientPr
               type="button"
               onClick={handleBulkConfirmAll}
               disabled={bulkConfirming}
-              className="flex items-center gap-2 px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white text-sm font-medium rounded-lg disabled:opacity-50"
+              className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} text-sm font-medium rounded-lg disabled:opacity-50`}
             >
               <CheckCircle2 className="h-4 w-4" />
               {bulkConfirming
@@ -671,7 +671,7 @@ export default function YearEndHRClient({ user, defaultYear }: YearEndHRClientPr
                               type="button"
                               onClick={() => handleConfirm(s.id)}
                               disabled={confirming}
-                              className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-white bg-[#00C853] hover:bg-[#00A844] rounded-lg disabled:opacity-50"
+                              className={`inline-flex items-center gap-1 ${BUTTON_SIZES.sm} ${BUTTON_VARIANTS.primary} disabled:opacity-50`}
                             >
                               <CheckCircle2 className="h-3.5 w-3.5" />
                               확정
@@ -709,7 +709,7 @@ export default function YearEndHRClient({ user, defaultYear }: YearEndHRClientPr
               type="button"
               onClick={handleBulkConfirm}
               disabled={bulkConfirming}
-              className="flex items-center gap-2 px-4 py-2 text-sm bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg disabled:opacity-50"
+              className={`flex items-center gap-2 px-4 py-2 text-sm ${BUTTON_VARIANTS.primary} rounded-lg disabled:opacity-50`}
             >
               <CheckCircle2 className="h-4 w-4" />
               {bulkConfirming ? '처리 중...' : '선택 항목 확정'}

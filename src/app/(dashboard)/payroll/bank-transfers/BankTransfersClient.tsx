@@ -257,7 +257,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
         </div>
         <Button
           onClick={() => setCreateOpen(true)}
-          className="bg-[#00C853] hover:bg-[#00A844] text-white"
+          className={BUTTON_VARIANTS.primary}
         >
           <Plus className="h-4 w-4 mr-2" />
           이체 배치 생성
@@ -367,7 +367,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                             size="sm"
                             onClick={() => handleGenerate(batch.id)}
                             disabled={isProcessing}
-                            className="bg-[#00C853] hover:bg-[#00A844] text-white"
+                            className={BUTTON_VARIANTS.primary}
                           >
                             {isProcessing ? (
                               <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
@@ -499,7 +499,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
             <Button
               onClick={handleCreate}
               disabled={creating}
-              className="bg-[#00C853] hover:bg-[#00A844] text-white"
+              className={BUTTON_VARIANTS.primary}
             >
               {creating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
               생성

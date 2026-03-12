@@ -53,7 +53,7 @@ function InitialAvatar({ name, size = 'md' }: { name: string; size?: 'sm' | 'md'
   }[size]
 
   const colors = [
-    'bg-[#00C853] text-white',
+    'bg-primary text-white',
     'bg-[#4338CA] text-white',
     'bg-[#059669] text-white',
     'bg-[#B45309] text-white',
@@ -137,13 +137,13 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
         <div className="flex items-center gap-2">
           <button
             onClick={() => setViewMode('card')}
-            className={`p-2 rounded-lg ${viewMode === 'card' ? 'bg-[#00C853] text-white' : 'text-[#666] hover:bg-[#F5F5F5]'}`}
+            className={`p-2 rounded-lg ${viewMode === 'card' ? 'bg-primary text-white' : 'text-[#666] hover:bg-[#F5F5F5]'}`}
           >
             <LayoutGrid size={18} />
           </button>
           <button
             onClick={() => setViewMode('list')}
-            className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-[#00C853] text-white' : 'text-[#666] hover:bg-[#F5F5F5]'}`}
+            className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-primary text-white' : 'text-[#666] hover:bg-[#F5F5F5]'}`}
           >
             <List size={18} />
           </button>

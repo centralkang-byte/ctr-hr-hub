@@ -1,6 +1,6 @@
 # SHARED.md — Project State (Single Source of Truth)
 
-> **Last Updated:** 2026-03-12 (Q-2a — Global Fixes + Table Pattern Bulk Update)
+> **Last Updated:** 2026-03-12 (Q-2b — Form + Modal + Button Pattern)
 > **Project Path:** `/Users/sangwoo/Documents/VibeCoding/HR_Hub/ctr-hr-hub`
 
 ---
@@ -59,6 +59,7 @@
 | **Q-0** (Full Page Scan: 152 pages cataloged, 25-checkpoint Layer 3 analysis, 13 events + 11 nudges mapped, HR calendar generated) | ✅ Complete |
 | **Q-1** (Design Tokens + Utilities + Animation + UX Charter: 30 new files, 11 style constants, 4 format utils, 4 UI components, 2 hooks, 6 animation files, 3 docs) | ✅ Complete |
 | **Q-2a** (Global Fixes + Table Pattern: blue-*→primary 15→0, rounded-lg→xl on cards, TABLE_STYLES applied to 68 table files with 497 replacements) | ✅ Complete |
+| **Q-2b** (Form + Modal + Button: BUTTON_VARIANTS 105 files, MODAL_STYLES 21 files, FORM_STYLES 5 files, green#00C853→primary, 0 broken template literals) | ✅ Complete |
 
 ---
 

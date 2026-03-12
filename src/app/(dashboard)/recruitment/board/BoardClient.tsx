@@ -19,6 +19,7 @@ import {
 import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { MODAL_STYLES } from '@/lib/styles'
 
 // ─── Constants ──────────────────────────────────────────
 
@@ -548,7 +549,7 @@ export default function BoardClient({ user }: Props) {
 
       {/* Offer Modal */}
       {offerModal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className={MODAL_STYLES.container}>
           <div
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() =>
@@ -664,7 +665,7 @@ export default function BoardClient({ user }: Props) {
 
       {/* Rejection Modal (triggered from per-posting pipeline link only) */}
       {rejectionModal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className={MODAL_STYLES.container}>
           <div
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() =>

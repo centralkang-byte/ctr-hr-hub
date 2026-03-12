@@ -114,7 +114,7 @@ export default function PayrollAdjustDialog({
             <Button
               type="submit"
               disabled={loading}
-              className="bg-[#00C853] hover:bg-[#00A844] text-white"
+              className={BUTTON_VARIANTS.primary}
             >
               {loading ? '저장 중...' : '저장'}
             </Button>

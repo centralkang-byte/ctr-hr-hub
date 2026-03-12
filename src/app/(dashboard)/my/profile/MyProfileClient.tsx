@@ -8,6 +8,7 @@ import {
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 import type { SessionUser } from '@/types'
+import { MODAL_STYLES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -294,7 +295,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                 />
                 <p className="text-xs text-[#999] text-right">{bioValue.length}/500</p>
                 <div className="flex gap-2">
-                  <button onClick={saveBio} className="flex items-center gap-1 bg-[#00C853] hover:bg-[#00A844] text-white px-3 py-1.5 rounded-lg text-sm font-medium">
+                  <button onClick={saveBio} className={`flex items-center gap-1 ${BUTTON_VARIANTS.primary} px-3 py-1.5 rounded-lg text-sm font-medium`}>
                     <Save className="w-3.5 h-3.5" /> 저장
                   </button>
                   <button onClick={() => setEditingBio(false)} className="flex items-center gap-1 border border-[#D4D4D4] text-[#555] px-3 py-1.5 rounded-lg text-sm">
@@ -330,7 +331,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                 maxLength={50}
                 className="flex-1 px-3 py-1.5 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
               />
-              <button onClick={addSkill} className="bg-[#00C853] hover:bg-[#00A844] text-white px-3 py-1.5 rounded-lg text-sm">
+              <button onClick={addSkill} className={`${BUTTON_VARIANTS.primary} px-3 py-1.5 rounded-lg text-sm`}>
                 <Plus className="w-4 h-4" />
               </button>
             </div>
@@ -374,7 +375,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
           <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-semibold text-[#1A1A1A]">비상연락처</h2>
-              <button onClick={() => setShowEcForm(true)} className="flex items-center gap-1 bg-[#00C853] hover:bg-[#00A844] text-white px-3 py-1.5 rounded-lg text-sm font-medium">
+              <button onClick={() => setShowEcForm(true)} className={`flex items-center gap-1 ${BUTTON_VARIANTS.primary} px-3 py-1.5 rounded-lg text-sm font-medium`}>
                 <Plus className="w-4 h-4" /> 추가
               </button>
             </div>
@@ -423,7 +424,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                 주요 연락처로 설정
               </label>
               <div className="flex gap-2">
-                <button onClick={addEmergencyContact} className="bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg text-sm font-medium">저장</button>
+                <button onClick={addEmergencyContact} className={`${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg text-sm font-medium`}>저장</button>
                 <button onClick={() => setShowEcForm(false)} className="border border-[#D4D4D4] text-[#555] px-4 py-2 rounded-lg text-sm">취소</button>
               </div>
             </div>
@@ -471,7 +472,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
 
       {/* ── Change Request Modal ── */}
       {changeReqField && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className={MODAL_STYLES.container}>
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-[#1A1A1A]">변경 요청</h3>
@@ -504,7 +505,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
               <button
                 onClick={submitChangeRequest}
                 disabled={savingChangeReq || !changeReqValue.trim()}
-                className="flex-1 bg-[#00C853] hover:bg-[#00A844] disabled:opacity-50 text-white py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1"
+                className={`flex-1 inline-flex items-center justify-center gap-1 ${BUTTON_SIZES.md} ${BUTTON_VARIANTS.primary} disabled:opacity-50`}
               >
                 <CheckCircle2 className="w-4 h-4" /> 요청 제출
               </button>

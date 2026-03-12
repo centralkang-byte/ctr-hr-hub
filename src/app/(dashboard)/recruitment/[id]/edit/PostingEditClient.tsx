@@ -362,7 +362,7 @@ export default function PostingEditClient({ user, id }: Props) {
 
         <div className="flex items-center justify-end gap-3">
           <button type="button" onClick={() => router.back()} className="px-6 py-2.5 text-sm font-medium border border-[#E8E8E8] text-[#1A1A1A] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150">{t('cancelButton')}</button>
-          <button type="submit" disabled={submitting} className="px-6 py-2.5 text-sm font-medium bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg transition-colors duration-150 disabled:opacity-50">
+          <button type="submit" disabled={submitting} className={`${BUTTON_SIZES.md} ${BUTTON_VARIANTS.primary} disabled:opacity-50`}>
             {submitting ? t('saving') : t('saveEditButton')}
           </button>
         </div>

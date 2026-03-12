@@ -110,7 +110,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div className={MODAL_STYLES.container}>
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-[#E8E8E8]">
           <h2 className="text-lg font-semibold text-[#1A1A1A]">새 펄스 서베이</h2>
@@ -203,7 +203,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
         </div>
         <div className="p-6 border-t border-[#E8E8E8] flex justify-end gap-3">
           <button onClick={onClose} className="px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#333] hover:bg-[#FAFAFA]">취소</button>
-          <button onClick={handleSubmit} disabled={saving} className="px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium disabled:opacity-50">
+          <button onClick={handleSubmit} disabled={saving} className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}>
             {saving ? '생성 중...' : '생성'}
           </button>
         </div>
@@ -266,7 +266,7 @@ export default function PulseSurveyClient() {
           <h1 className="text-2xl font-bold text-[#1A1A1A]">펄스 서베이</h1>
         </div>
         <button onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium">
+          className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}>
           <Plus className="w-4 h-4" /> 새 설문
         </button>
       </div>
@@ -380,7 +380,7 @@ export default function PulseSurveyClient() {
                   </div>
                 </div>
                 <button onClick={() => router.push(`/performance/pulse/${s.id}/respond`)}
-                  className="px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium">
+                  className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}>
                   응답하기
                 </button>
               </div>

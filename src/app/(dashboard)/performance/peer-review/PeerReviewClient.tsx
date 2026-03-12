@@ -144,7 +144,7 @@ export default function PeerReviewClient() {
                     </span>
                   ) : (
                     <button onClick={() => router.push(`/performance/peer-review/evaluate/${r.nominationId}`)}
-                      className="px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium">
+                      className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}>
                       평가하기
                     </button>
                   )}
@@ -157,7 +157,7 @@ export default function PeerReviewClient() {
         /* Setup Tab */
         <div className="text-center py-10">
           <button onClick={() => router.push(`/performance/peer-review/${selectedCycleId}/setup`)}
-            className="px-6 py-3 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium">
+            className={`px-6 py-3 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}>
             추천/지정 관리 열기
           </button>
         </div>

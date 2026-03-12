@@ -30,7 +30,7 @@ export function OffboardingChecklistTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div><h3 className="text-base font-semibold text-[#1C1D21]">오프보딩 체크리스트</h3><p className="text-sm text-[#8181A5]">{checklists.length}개 체크리스트</p></div>
-        <Button className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]"><Plus className="mr-2 h-4 w-4" />체크리스트 추가</Button>
+        <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />체크리스트 추가</Button>
       </div>
       {checklists.length > 0 ? (
         <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">

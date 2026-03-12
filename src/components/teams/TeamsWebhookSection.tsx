@@ -124,7 +124,7 @@ export function TeamsWebhookSection() {
         </div>
         <button
           onClick={() => setAdding(true)}
-          className="flex items-center gap-1.5 text-sm bg-[#00C853] hover:bg-[#00A844] text-white px-3 py-1.5 rounded-lg font-medium transition-colors"
+          className={`flex items-center gap-1.5 text-sm ${BUTTON_VARIANTS.primary} px-3 py-1.5 rounded-lg font-medium transition-colors`}
         >
           <Plus className="w-3.5 h-3.5" />
           채널 추가
@@ -240,7 +240,7 @@ export function TeamsWebhookSection() {
             <button
               onClick={handleAdd}
               disabled={!newChannel.trim() || !newUrl.trim()}
-              className="bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+              className={`${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50`}
             >
               저장
             </button>

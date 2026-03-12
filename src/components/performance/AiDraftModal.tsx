@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { X, Sparkles, AlertTriangle, CheckCircle2, Trash2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { MODAL_STYLES } from '@/lib/styles'
 
 interface DraftContent {
   performanceComment: string
@@ -56,7 +57,7 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div className={MODAL_STYLES.container}>
       <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-[#E8E8E8]">
@@ -196,7 +197,7 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
                 </button>
                 <button
                   onClick={handleApply}
-                  className="flex items-center gap-1.5 px-5 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium"
+                  className={`flex items-center gap-1.5 px-5 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   초안 적용

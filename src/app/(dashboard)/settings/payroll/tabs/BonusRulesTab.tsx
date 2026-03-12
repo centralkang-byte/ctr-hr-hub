@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/api'
-import { TABLE_STYLES } from '@/lib/styles'
+import { FORM_STYLES, TABLE_STYLES } from '@/lib/styles'
 
 interface Props { companyId: string | null }
 
@@ -108,7 +108,7 @@ export function BonusRulesTab({ companyId }: Props) {
       </div>
 
       <SettingFieldWithOverride label="성과급 기준" description="성과급 산정 기준" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
-        <select className="rounded-xl border border-[#F0F0F3] px-3 py-2 text-sm" value={settings.bonusType} onChange={(e) => setSettings((p) => ({ ...p, bonusType: e.target.value as BonusSettings['bonusType'] }))}>
+        <select className={FORM_STYLES.select} value={settings.bonusType} onChange={(e) => setSettings((p) => ({ ...p, bonusType: e.target.value as BonusSettings['bonusType'] }))}>
           <option value="MONTHLY_SALARY">월 기본급 기준</option>
           <option value="ANNUAL_SALARY">연봉 기준</option>
           <option value="FIXED_AMOUNT">정액</option>
@@ -133,7 +133,7 @@ export function BonusRulesTab({ companyId }: Props) {
         <Button variant="outline" onClick={handleRevert} disabled={!hasChanges}>
           <RotateCcw className="mr-2 h-4 w-4" />되돌리기
         </Button>
-        <Button className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]" onClick={handleSave} disabled={!hasChanges || saving}>
+        <Button className={BUTTON_VARIANTS.primary} onClick={handleSave} disabled={!hasChanges || saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
         </Button>
       </div>

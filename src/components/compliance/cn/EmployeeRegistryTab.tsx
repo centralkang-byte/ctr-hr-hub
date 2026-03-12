@@ -151,7 +151,7 @@ export default function EmployeeRegistryTab() {
           <button
             onClick={handleExport}
             disabled={exporting || !registryData}
-            className="flex items-center gap-2 bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             <Download className="w-4 h-4" />
             {exporting ? '내보내는 중...' : '명부 내보내기'}

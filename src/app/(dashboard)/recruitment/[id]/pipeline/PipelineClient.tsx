@@ -17,6 +17,7 @@ import {
 import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { MODAL_STYLES } from '@/lib/styles'
 
 // ─── Constants ──────────────────────────────────────────
 
@@ -432,7 +433,7 @@ export default function PipelineClient({ user, postingId }: Props) {
 
       {/* Rejection Modal */}
       {rejectionModal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className={MODAL_STYLES.container}>
           <div
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() =>
@@ -489,7 +490,7 @@ export default function PipelineClient({ user, postingId }: Props) {
 
       {/* Offer Modal */}
       {offerModal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className={MODAL_STYLES.container}>
           <div
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() =>
@@ -596,7 +597,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                   !offerModal.form.expectedStartDate ||
                   modalSubmitting
                 }
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
+                className={`inline-flex items-center gap-2 ${BUTTON_SIZES.md} ${BUTTON_VARIANTS.primary} disabled:opacity-50`}
               >
                 {modalSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                 {t('confirmButton')}

@@ -194,7 +194,7 @@ export default function PostingDetailClient({ user, id }: Props) {
               <button
                 onClick={handlePublish}
                 disabled={actionLoading}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
+                className={`inline-flex items-center gap-2 ${BUTTON_SIZES.md} ${BUTTON_VARIANTS.primary} disabled:opacity-50`}
               >
                 <Globe className="w-4 h-4" />
                 {t('publishButton')}

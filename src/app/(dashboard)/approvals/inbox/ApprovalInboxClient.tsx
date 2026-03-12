@@ -193,7 +193,7 @@ function BulkConfirmModal({ count, onClose, onConfirm }: BulkConfirmModalProps) 
           </Button>
           <Button
             size="sm"
-            className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]"
+            className={BUTTON_VARIANTS.primary}
             onClick={handleConfirm}
             disabled={submitting}
           >
@@ -446,7 +446,7 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
         {selectedIds.size > 0 && (
           <Button
             size="sm"
-            className="gap-1.5 bg-[#5E81F4] text-white hover:bg-[#4A6FE0]"
+            className={`gap-1.5 ${BUTTON_VARIANTS.primary}`}
             onClick={() => setShowBulkConfirm(true)}
           >
             <CheckCheck className="h-4 w-4" />
@@ -556,7 +556,7 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
             <span className="text-sm font-medium">{selectedIds.size}건 선택됨</span>
             <Button
               size="sm"
-              className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]"
+              className={BUTTON_VARIANTS.primary}
               onClick={() => setShowBulkConfirm(true)}
             >
               일괄 승인

@@ -217,7 +217,7 @@ function Step1Dependents({ dependents, onChange }: Step1Props) {
         </div>
         <button
           onClick={addDependent}
-          className="flex items-center gap-1.5 bg-[#00C853] hover:bg-[#00A844] text-white px-3 py-2 rounded-lg text-sm font-medium"
+          className={`flex items-center gap-1.5 ${BUTTON_VARIANTS.primary} px-3 py-2 rounded-lg text-sm font-medium`}
         >
           <Plus className="w-4 h-4" />
           부양가족 추가
@@ -386,7 +386,7 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
             <Upload className="w-10 h-10 text-[#999] mx-auto mb-3" />
             <p className="text-sm font-medium text-[#333] mb-1">홈택스 간소화자료 PDF 업로드</p>
             <p className="text-xs text-[#999] mb-4">국세청 홈택스 → 연말정산 → 소득·세액공제자료 조회/발급</p>
-            <label className="cursor-pointer inline-flex items-center gap-2 bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg text-sm font-medium">
+            <label className={`cursor-pointer inline-flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg text-sm font-medium`}>
               {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
               {uploading ? '업로드 중...' : 'PDF 파일 선택'}
               <input
@@ -605,7 +605,7 @@ function Step4Result({ settlement, onCalculate, onSubmit, calculating, submittin
         <button
           onClick={onSubmit}
           disabled={submitting || calculating}
-          className="w-full flex items-center justify-center gap-2 bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-3 rounded-xl font-semibold disabled:opacity-50"
+          className={`w-full flex items-center justify-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-3 rounded-xl font-semibold disabled:opacity-50`}
         >
           {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
           {submitting ? '제출 중...' : '연말정산 제출'}
@@ -898,7 +898,7 @@ export function YearEndWizardClient({ user, year }: { user: SessionUser; year: n
           <button
             onClick={() => void goNext()}
             disabled={saving}
-            className="flex items-center gap-2 bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
+            className={`flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50`}
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
             {saving ? '저장 중...' : '다음'}

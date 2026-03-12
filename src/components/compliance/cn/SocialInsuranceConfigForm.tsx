@@ -273,7 +273,7 @@ export default function SocialInsuranceConfigForm({
             <button
               type="submit"
               disabled={submitting}
-              className="bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {submitting ? '저장 중...' : isEdit ? '수정' : '추가'}
             </button>

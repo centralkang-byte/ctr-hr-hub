@@ -142,7 +142,7 @@ export default function KedoDocumentsTab() {
           </div>
           <button
             onClick={() => { setSelectedDoc(null); setShowForm(true) }}
-            className="flex items-center gap-2 bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm"
+            className={`flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm`}
           >
             <Plus className="w-4 h-4" />
             문서 생성

@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { MODAL_STYLES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────
 
@@ -312,7 +313,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
 
             {/* Reject Modal */}
             {showReject && (
-                <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+                <div className={MODAL_STYLES.container}>
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
                         <div className="p-5 border-b border-[#E8E8E8] flex items-center justify-between">
                             <h3 className="font-bold text-lg text-[#1A1A1A]">반려 사유 입력</h3>

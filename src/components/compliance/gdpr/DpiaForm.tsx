@@ -219,7 +219,7 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
           <button
             onClick={handleSubmit}
             disabled={saving}
-            className="bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
+            className={`${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50`}
           >
             {saving ? tc('loading') : tc('save')}
           </button>

@@ -335,7 +335,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
         <Button
           onClick={handlePrepareConfirm}
           disabled={rows.length === 0}
-          className="bg-[#00C853] hover:bg-[#00A844] text-white px-6 py-2 rounded-lg font-medium text-sm"
+          className={`${BUTTON_VARIANTS.primary} px-6 py-2 rounded-lg font-medium text-sm`}
         >
           연봉 조정 확정으로 이동 →
         </Button>

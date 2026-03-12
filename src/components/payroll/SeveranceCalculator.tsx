@@ -58,7 +58,7 @@ export default function SeveranceCalculator({
         <Button
           type="submit"
           disabled={loading}
-          className="bg-[#00C853] hover:bg-[#00A844] text-white"
+          className={BUTTON_VARIANTS.primary}
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : '계산'}
         </Button>

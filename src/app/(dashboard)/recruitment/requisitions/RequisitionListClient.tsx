@@ -102,7 +102,7 @@ export default function RequisitionListClient({ user }: { user: SessionUser }) {
         </div>
         <button
           onClick={() => router.push('/recruitment/requisitions/new')}
-          className="flex items-center gap-2 bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg text-sm font-medium"
+          className={`flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg text-sm font-medium`}
         >
           <Plus size={16} />
           채용 요청 작성

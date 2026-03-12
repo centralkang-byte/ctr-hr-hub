@@ -76,7 +76,7 @@ export default function DataRequestsTab() {
         <h2 className="text-lg font-semibold text-[#1A1A1A]">{t('gdpr.requests')}</h2>
         <button
           onClick={() => { setSelected(null); setShowForm(true) }}
-          className="inline-flex items-center gap-2 bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm"
+          className={`inline-flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm`}
         >
           <Plus className="w-4 h-4" />
           {t('gdpr.newRequest')}

@@ -128,7 +128,7 @@ export default function PiiAccessLogTable() {
         <div className="flex gap-2 mt-3">
           <button
             onClick={handleFilterApply}
-            className="inline-flex items-center gap-1.5 bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm"
+            className={`inline-flex items-center gap-1.5 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm`}
           >
             <Search className="w-3.5 h-3.5" />
             {tc('search')}

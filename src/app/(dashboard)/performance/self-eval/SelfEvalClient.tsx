@@ -356,7 +356,7 @@ export default function SelfEvalClient({ user }: { user: SessionUser }) {
           <button
             onClick={() => handleSave('SUBMITTED')}
             disabled={submitting}
-            className="flex items-center gap-2 px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium disabled:opacity-50"
+            className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}
           >
             <Send className="w-4 h-4" />
             제출

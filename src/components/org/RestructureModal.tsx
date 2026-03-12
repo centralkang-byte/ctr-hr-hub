@@ -11,6 +11,7 @@ import { X, Plus, Trash2, ChevronRight, GitBranch, ArrowRight } from 'lucide-rea
 import { apiClient } from '@/lib/api'
 import { EffectiveDatePicker } from '@/components/shared/EffectiveDatePicker'
 import { RestructureDiffView } from '@/components/org/RestructureDiffView'
+import { MODAL_STYLES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -473,7 +474,7 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div className={MODAL_STYLES.container}>
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8E8E8] shrink-0">
@@ -641,7 +642,7 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
                 }
               }}
               disabled={!canProceedToDiff || saving}
-              className="px-4 py-2 text-sm bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`px-4 py-2 text-sm ${BUTTON_VARIANTS.primary} rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {saving
                 ? '처리 중...'

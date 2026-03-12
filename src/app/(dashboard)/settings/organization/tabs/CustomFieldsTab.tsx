@@ -29,7 +29,7 @@ export function CustomFieldsTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div><h3 className="text-base font-semibold text-[#1C1D21]">커스텀 필드</h3><p className="text-sm text-[#8181A5]">사용자 정의 필드 {fields.length}개</p></div>
-        <Button className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]"><Plus className="mr-2 h-4 w-4" />필드 추가</Button>
+        <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />필드 추가</Button>
       </div>
       {fields.length > 0 ? Object.entries(grouped).map(([entity, items]) => (
         <div key={entity}>

@@ -117,7 +117,7 @@ function WorkSchedulesTab({ companyId }: { companyId: string | null }) {
       </SettingFieldWithOverride>
 
       <div className="flex justify-end pt-4">
-        <Button className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]">
+        <Button className={BUTTON_VARIANTS.primary}>
           <Save className="mr-2 h-4 w-4" />
           저장
         </Button>
@@ -193,7 +193,7 @@ function WeeklyHoursTab({ companyId }: { companyId: string | null }) {
       </SettingFieldWithOverride>
 
       <div className="flex justify-end pt-4">
-        <Button className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]">
+        <Button className={BUTTON_VARIANTS.primary}>
           <Save className="mr-2 h-4 w-4" />
           저장
         </Button>

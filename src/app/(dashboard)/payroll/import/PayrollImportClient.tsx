@@ -316,7 +316,7 @@ export default function PayrollImportClient({
           <button
             onClick={handleUpload}
             disabled={!selectedFile || !selectedMapping || uploading}
-            className="w-full flex items-center justify-center gap-2 py-3 bg-[#00C853] hover:bg-[#00A844] text-white rounded-xl font-medium disabled:opacity-50"
+            className={`w-full flex items-center justify-center gap-2 py-3 ${BUTTON_VARIANTS.primary} rounded-xl font-medium disabled:opacity-50`}
           >
             <Upload className="w-4 h-4" />
             {uploading ? '업로드 중...' : '업로드 시작'}

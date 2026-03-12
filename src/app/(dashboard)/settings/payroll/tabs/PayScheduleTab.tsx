@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/api'
+import { FORM_STYLES } from '@/lib/styles'
 
 interface Props { companyId: string | null }
 
@@ -114,7 +115,7 @@ export function PayScheduleTab({ companyId }: Props) {
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="지급 방법" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
-        <select className="rounded-xl border border-[#F0F0F3] px-3 py-2 text-sm" value={settings.paymentMethod} onChange={(e) => setSettings((p) => ({ ...p, paymentMethod: e.target.value as PayScheduleSettings['paymentMethod'] }))}>
+        <select className={FORM_STYLES.select} value={settings.paymentMethod} onChange={(e) => setSettings((p) => ({ ...p, paymentMethod: e.target.value as PayScheduleSettings['paymentMethod'] }))}>
           <option value="BANK_TRANSFER">계좌이체</option>
           <option value="CHECK">수표</option>
         </select>
@@ -124,7 +125,7 @@ export function PayScheduleTab({ companyId }: Props) {
         <Button variant="outline" onClick={handleRevert} disabled={!hasChanges}>
           <RotateCcw className="mr-2 h-4 w-4" />되돌리기
         </Button>
-        <Button className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]" onClick={handleSave} disabled={!hasChanges || saving}>
+        <Button className={BUTTON_VARIANTS.primary} onClick={handleSave} disabled={!hasChanges || saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
         </Button>
       </div>

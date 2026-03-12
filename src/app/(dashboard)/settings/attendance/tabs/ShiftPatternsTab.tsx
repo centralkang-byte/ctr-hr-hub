@@ -73,7 +73,7 @@ export function ShiftPatternsTab({ companyId }: ShiftPatternsTabProps) {
             교대 근무 패턴을 생성하고 조별로 배정합니다
           </p>
         </div>
-        <Button className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]">
+        <Button className={BUTTON_VARIANTS.primary}>
           <Plus className="mr-2 h-4 w-4" />
           새 패턴 추가
         </Button>

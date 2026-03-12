@@ -27,7 +27,7 @@ export function DeductionsTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div><h3 className="text-base font-semibold text-[#1C1D21]">공제 항목</h3><p className="text-sm text-[#8181A5]">공제 항목 {items.length}개</p></div>
-        <Button className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]"><Plus className="mr-2 h-4 w-4" />항목 추가</Button>
+        <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />항목 추가</Button>
       </div>
       {items.length > 0 ? (
         <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">

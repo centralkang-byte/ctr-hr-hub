@@ -71,7 +71,7 @@ export function LeaveTypesTab({ companyId }: LeaveTypesTabProps) {
             글로벌 표준 유형 {globalTypes.length}개{companyTypes.length > 0 ? ` + 법인 커스텀 ${companyTypes.length}개` : ''}
           </p>
         </div>
-        <Button className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]">
+        <Button className={BUTTON_VARIANTS.primary}>
           <Plus className="mr-2 h-4 w-4" />
           유형 추가
         </Button>

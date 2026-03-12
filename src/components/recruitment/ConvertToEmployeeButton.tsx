@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2, X } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { MODAL_STYLES } from '@/lib/styles'
 
 interface Props {
   applicationId: string
@@ -46,13 +47,13 @@ export default function ConvertToEmployeeButton({ applicationId, applicantName }
     <>
       <button
         onClick={() => setOpen(true)}
-        className="px-3 py-1.5 text-sm font-medium bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg transition-colors duration-150"
+        className={`px-3 py-1.5 text-sm font-medium ${BUTTON_VARIANTS.primary} rounded-lg transition-colors duration-150`}
       >
         직원 전환
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className={MODAL_STYLES.container}>
           <div className="bg-white rounded-xl w-full max-w-md mx-4">
             <div className="flex items-center justify-between p-6 pb-0">
               <h2 className="text-lg font-bold text-[#1A1A1A] tracking-[-0.02em]">
@@ -89,7 +90,7 @@ export default function ConvertToEmployeeButton({ applicationId, applicantName }
               <button
                 onClick={handleConvert}
                 disabled={loading || !form.startDate}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
+                className={`w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium ${BUTTON_VARIANTS.primary} rounded-lg transition-colors duration-150 disabled:opacity-50`}
               >
                 {loading ? (
                   <>

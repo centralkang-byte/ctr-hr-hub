@@ -419,7 +419,7 @@ export default function PostingFormClient({ user }: Props) {
           <button
             type="submit"
             disabled={submitting}
-            className="px-6 py-2.5 text-sm font-medium bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
+            className={`${BUTTON_SIZES.md} ${BUTTON_VARIANTS.primary} disabled:opacity-50`}
           >
             {submitting ? t('saving') : t('registerButton')}
           </button>

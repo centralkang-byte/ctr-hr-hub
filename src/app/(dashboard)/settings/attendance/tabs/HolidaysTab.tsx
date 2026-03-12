@@ -88,7 +88,7 @@ export function HolidaysTab({ companyId }: HolidaysTabProps) {
               <option key={y} value={y}>{y}년</option>
             ))}
           </select>
-          <Button className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]">
+          <Button className={BUTTON_VARIANTS.primary}>
             <Plus className="mr-2 h-4 w-4" />
             공휴일 추가
           </Button>

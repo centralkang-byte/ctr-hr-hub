@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { AlertTriangle, X, UserCheck, ArrowRight } from 'lucide-react'
+import { MODAL_STYLES } from '@/lib/styles'
 
 interface DuplicateMatch {
   applicantId: string
@@ -38,8 +39,8 @@ const MATCH_TYPE_COLORS: Record<string, string> = {
 
 export default function DuplicateWarningModal({ matches, onProceed, onCancel }: Props) {
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg">
+    <div className={MODAL_STYLES.container}>
+      <div className={MODAL_STYLES.content.md}>
         {/* 헤더 */}
         <div className="flex items-center justify-between p-6 border-b border-[#E8E8E8]">
           <div className="flex items-center gap-3">

@@ -151,7 +151,7 @@ export default function OneOnOneClient() {
         {isManager && (
           <button
             onClick={openCreateModal}
-            className="flex items-center gap-2 bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm"
+            className={`flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm`}
           >
             <Plus className="w-4 h-4" /> 새 1:1 예약
           </button>
@@ -353,7 +353,7 @@ export default function OneOnOneClient() {
 
       {/* Create Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className={MODAL_STYLES.container}>
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
             <div className="p-6 border-b border-[#E8E8E8]">
               <h3 className="text-lg font-semibold text-[#1A1A1A]">새 1:1 예약</h3>
@@ -420,7 +420,7 @@ export default function OneOnOneClient() {
               <button
                 onClick={handleCreate}
                 disabled={creating || !newMeeting.employeeId || !newMeeting.scheduledAt}
-                className="px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium disabled:opacity-50"
+                className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}
               >
                 {creating ? '예약 중...' : '예약'}
               </button>

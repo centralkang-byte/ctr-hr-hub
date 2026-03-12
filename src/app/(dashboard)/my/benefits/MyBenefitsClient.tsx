@@ -9,6 +9,7 @@ import {
 import type { SessionUser } from '@/types'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
+import { MODAL_STYLES } from '@/lib/styles'
 
 // ─── 타입 ─────────────────────────────────────────────────
 
@@ -123,8 +124,8 @@ function ClaimModal({ plans, onClose, onSubmit }: {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg">
+    <div className={MODAL_STYLES.container}>
+      <div className={`${MODAL_STYLES.content.md}`}>
         <div className="flex items-center justify-between p-5 border-b border-[#E8E8E8]">
           <h2 className="text-lg font-semibold text-[#1A1A1A]">복리후생 신청</h2>
           <button onClick={onClose} className="text-[#999] hover:text-[#555] text-xl leading-none">✕</button>
@@ -242,7 +243,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
           <button
             onClick={handleSubmit}
             disabled={submitting}
-            className="px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium disabled:opacity-50 flex items-center gap-2"
+            className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50 flex items-center gap-2`}
           >
             {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
             신청
@@ -306,7 +307,7 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium"
+          className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}
         >
           <Plus className="w-4 h-4" />
           복리후생 신청

@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { MODAL_STYLES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────
 
@@ -132,7 +133,7 @@ export function HrDocumentManager({ user }: HrDocumentManagerProps) {
 
       {/* Upload Dialog */}
       {showUpload && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className={MODAL_STYLES.container}>
           <div className="mx-4 w-full max-w-2xl rounded-xl bg-white p-6 shadow-xl">
             <h3 className="mb-4 text-lg font-semibold text-ctr-gray-900">
               <Upload className="mr-2 inline h-5 w-5" />
@@ -220,7 +221,7 @@ export function HrDocumentManager({ user }: HrDocumentManagerProps) {
 
       {/* Delete Confirmation */}
       {deleteId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className={MODAL_STYLES.container}>
           <div className="mx-4 w-full max-w-sm rounded-xl bg-white p-6 shadow-xl">
             <h3 className="mb-2 text-lg font-semibold text-ctr-gray-900">
               문서 삭제

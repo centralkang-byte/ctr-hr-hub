@@ -6,6 +6,7 @@ import { PieChart, Pie, Cell, BarChart, Bar, LineChart, Line, XAxis, YAxis, Cart
 import { apiClient } from '@/lib/api'
 import { useSession } from 'next-auth/react'
 import { ROLE } from '@/lib/constants'
+import { MODAL_STYLES } from '@/lib/styles'
 
 
 // ─── Types ───────────────────────────────────────────────
@@ -160,7 +161,7 @@ export default function RecognitionClient() {
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 bg-[#00C853] hover:bg-[#00A844] text-white px-4 py-2 rounded-lg font-medium text-sm"
+          className={`flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm`}
         >
           <Send className="w-4 h-4" /> 칭찬 보내기
         </button>
@@ -377,7 +378,7 @@ export default function RecognitionClient() {
 
       {/* Create Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className={MODAL_STYLES.container}>
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
             <div className="p-6 border-b border-[#E8E8E8]">
               <h3 className="text-lg font-semibold text-[#1A1A1A]">칭찬 보내기</h3>
@@ -466,7 +467,7 @@ export default function RecognitionClient() {
               <button
                 onClick={handleCreate}
                 disabled={creating || !selectedReceiver || !selectedValue || message.length < 10}
-                className="px-4 py-2 bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg text-sm font-medium disabled:opacity-50"
+                className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}
               >
                 {creating ? '보내는 중...' : '보내기'}
               </button>

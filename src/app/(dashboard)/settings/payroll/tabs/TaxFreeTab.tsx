@@ -143,7 +143,7 @@ export function TaxFreeTab({ companyId }: Props) {
         <Button variant="outline" onClick={handleRevert} disabled={!hasChanges}>
           <RotateCcw className="mr-2 h-4 w-4" />되돌리기
         </Button>
-        <Button className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]" onClick={handleSave} disabled={!hasChanges || saving}>
+        <Button className={BUTTON_VARIANTS.primary} onClick={handleSave} disabled={!hasChanges || saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
         </Button>
       </div>

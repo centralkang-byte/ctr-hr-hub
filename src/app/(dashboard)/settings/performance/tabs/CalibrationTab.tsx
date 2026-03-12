@@ -5,6 +5,7 @@ import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWith
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
+import { FORM_STYLES } from '@/lib/styles'
 
 interface Props { companyId: string | null }
 
@@ -54,7 +55,7 @@ export function CalibrationTab({ companyId }: Props) {
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="참여 범위" description="캘리브레이션 회의 단위" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
-        <select className="rounded-xl border border-[#F0F0F3] px-3 py-2 text-sm" value={settings.scope} onChange={(e) => setSettings((p) => ({ ...p, scope: e.target.value as CalibSettings['scope'] }))}>
+        <select className={FORM_STYLES.select} value={settings.scope} onChange={(e) => setSettings((p) => ({ ...p, scope: e.target.value as CalibSettings['scope'] }))}>
           <option value="DEPARTMENT">부서 단위</option>
           <option value="DIVISION">본부 단위</option>
           <option value="COMPANY">법인 전체</option>
@@ -79,7 +80,7 @@ export function CalibrationTab({ companyId }: Props) {
         <Button variant="outline" onClick={revert} disabled={!hasChanges}>
           <RotateCcw className="mr-2 h-4 w-4" />되돌리기
         </Button>
-        <Button className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]" onClick={save} disabled={!hasChanges || saving}>
+        <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
         </Button>
       </div>

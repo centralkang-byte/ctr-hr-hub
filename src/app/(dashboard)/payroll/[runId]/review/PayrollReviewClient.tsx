@@ -228,7 +228,7 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
       </div>
 
       {showWhitelistModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className={MODAL_STYLES.container}>
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
             <div className="p-5 border-b border-[#E8E8E8] flex items-center justify-between">
               <h3 className="font-semibold text-[#1A1A1A]">예외 등록</h3>
@@ -931,8 +931,8 @@ export default function PayrollReviewClient({ user: _user, runId }: Props) {
 
       {/* ── Submit for Approval Modal ──────────────────────────── */}
       {showSubmitModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg">
+        <div className={MODAL_STYLES.container}>
+          <div className={MODAL_STYLES.content.md}>
             <div className="p-5 border-b border-[#E8E8E8] flex items-center justify-between">
               <h3 className="font-bold text-lg text-[#1A1A1A]">승인 요청</h3>
               <button onClick={() => setShowSubmitModal(false)} className="text-[#999] hover:text-[#333]">

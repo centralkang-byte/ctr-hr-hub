@@ -283,7 +283,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
         <Button
           onClick={handleGenerate}
           disabled={generating}
-          className="bg-[#00C853] hover:bg-[#00A844] text-white"
+          className={BUTTON_VARIANTS.primary}
         >
           {generating ? (
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />

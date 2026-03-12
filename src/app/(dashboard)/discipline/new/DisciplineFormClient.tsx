@@ -434,7 +434,7 @@ export default function DisciplineFormClient({ user }: Props) {
           <button
             type="submit"
             disabled={submitting}
-            className="px-6 py-2.5 text-sm font-medium bg-[#00C853] hover:bg-[#00A844] text-white rounded-lg transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
+            className={`${BUTTON_SIZES.md} ${BUTTON_VARIANTS.primary} disabled:opacity-60 disabled:cursor-not-allowed`}
           >
             {submitting ? t('submitting') : t('submitButton')}
           </button>

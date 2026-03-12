@@ -202,7 +202,7 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
               </Button>
               <Button
                 onClick={() => setStep(2)}
-                className="bg-[#00C853] hover:bg-[#00A844] text-white"
+                className={BUTTON_VARIANTS.primary}
               >
                 다음: 파일 업로드
               </Button>
@@ -328,7 +328,7 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
               <Button
                 onClick={handleSubmit}
                 disabled={submitting || errors.length > 0}
-                className="bg-[#00C853] hover:bg-[#00A844] text-white"
+                className={BUTTON_VARIANTS.primary}
               >
                 {submitting ? '처리 중...' : `${preview.length}건 전체 적용`}
               </Button>
@@ -349,7 +349,7 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
                 onSuccess()
                 handleClose()
               }}
-              className="bg-[#00C853] hover:bg-[#00A844] text-white"
+              className={BUTTON_VARIANTS.primary}
             >
               완료
             </Button>

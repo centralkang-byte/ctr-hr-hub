@@ -489,7 +489,7 @@ function ViewModeButton({ mode, current, icon, label, onClick }: ViewModeButtonP
       title={label}
       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
         active
-          ? 'bg-[#00C853] text-white'
+          ? 'bg-primary text-white'
           : 'bg-white border border-[#D4D4D4] text-[#555] hover:bg-[#FAFAFA]'
       }`}
     >
@@ -654,7 +654,7 @@ export function OrgClient({ user, companies }: OrgClientProps) {
           {isSnapshot && (
             <button
               onClick={() => setEffectiveDate(new Date())}
-              className="text-sm px-3 py-1.5 rounded-lg bg-[#00C853] text-white hover:bg-[#00A844] transition-colors"
+              className={`${BUTTON_SIZES.sm} ${BUTTON_VARIANTS.primary}`}
             >
               {t('current')}
             </button>
@@ -680,7 +680,7 @@ export function OrgClient({ user, companies }: OrgClientProps) {
           {canRestructure && (
             <button
               onClick={() => setShowRestructureModal(true)}
-              className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-[#00C853] hover:bg-[#00A844] text-white text-sm font-medium transition-colors"
+              className={`inline-flex items-center gap-1.5 ${BUTTON_SIZES.md} ${BUTTON_VARIANTS.primary}`}
             >
               <GitBranch size={14} />
               {t('restructure')}

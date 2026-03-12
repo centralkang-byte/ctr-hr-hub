@@ -66,7 +66,7 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
       <div className="flex flex-wrap gap-2">
         <Button
           size="sm"
-          className="gap-1.5 bg-[#5E81F4] text-white hover:bg-[#4A6FE0]"
+          className={`gap-1.5 ${BUTTON_VARIANTS.primary}`}
         >
           <LogIn className="h-4 w-4" />
           출근

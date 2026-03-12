@@ -141,7 +141,7 @@ export function BenefitBudgetTab({ user }: { user: SessionUser }) {
                         <button
                           onClick={() => void handleSave(budget)}
                           disabled={saving}
-                          className="p-1.5 bg-[#00C853] text-white rounded hover:bg-[#00A844]"
+                          className={`p-1.5 ${BUTTON_VARIANTS.primary} rounded`}
                         >
                           <Check className="w-3.5 h-3.5" />
                         </button>
