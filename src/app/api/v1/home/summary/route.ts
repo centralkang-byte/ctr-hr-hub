@@ -106,37 +106,36 @@ export const GET = withCache(withPermission(
         })
       }
 
-      // HR_ADMIN / SUPER_ADMIN
-      const newHires = await prisma.employee.count({
-        where: {
-          hireDate: { gte: thirtyDaysAgo },
-          assignments: {
-            some: { companyId, isPrimary: true, endDate: null },
+      // HR_ADMIN / SUPER_ADMIN — 4 independent count queries parallelized
+      const [newHires, terminations, openPositions, pendingLeaves] = await Promise.all([
+        prisma.employee.count({
+          where: {
+            hireDate: { gte: thirtyDaysAgo },
+            assignments: {
+              some: { companyId, isPrimary: true, endDate: null },
+            },
           },
-        },
-      })
-
-      const terminations = await prisma.employeeAssignment.count({
-        where: {
-          companyId,
-          status: 'TERMINATED',
-          isPrimary: true,
-          updatedAt: { gte: thirtyDaysAgo },
-        },
-      })
+        }),
+        prisma.employeeAssignment.count({
+          where: {
+            companyId,
+            status: 'TERMINATED',
+            isPrimary: true,
+            updatedAt: { gte: thirtyDaysAgo },
+          },
+        }),
+        prisma.jobPosting.count({
+          where: { companyId, status: 'OPEN', deletedAt: null },
+        }),
+        prisma.leaveRequest.count({
+          where: { companyId, status: 'PENDING' },
+        }),
+      ])
 
       const turnoverRate =
         totalEmployees > 0
           ? Math.round((terminations / totalEmployees) * 1000) / 10
           : 0
-
-      const openPositions = await prisma.jobPosting.count({
-        where: { companyId, status: 'OPEN', deletedAt: null },
-      })
-
-      const pendingLeaves = await prisma.leaveRequest.count({
-        where: { companyId, status: 'PENDING' },
-      })
 
       return apiSuccess({
         role: user.role,
