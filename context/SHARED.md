@@ -1,6 +1,6 @@
 # SHARED.md — Project State (Single Source of Truth)
 
-> **Last Updated:** 2026-03-12 (Q-4 P2 — Security Patch)
+> **Last Updated:** 2026-03-12 (Q-4 P3 — UX Safety)
 > **Project Path:** `/Users/sangwoo/VibeCoding/HR_Hub/ctr-hr-hub`
 
 ---
@@ -10,7 +10,7 @@
 - `npx tsc --noEmit` = **0 errors** ✅
 - `npm run build` = pass ✅
 - `export const dynamic = 'force-dynamic'` in `(dashboard)/layout.tsx` — covers all dashboard pages
-- Git: pushed to `main` (latest: `eeefb19`)
+- Git: pushed to `main` (latest: `b98d05d`)
 - Deployed on Vercel (auto-deploy from `main` branch)
 - **i18n**: 7 locales × 14+ namespaces — 146/146 Client files have `useTranslations` ✅
 
@@ -1090,9 +1090,61 @@ Keys added across **7 locales** (`ko`, `en`, `zh`, `vi`, `ru`, `es`, `pt`):
 ### TypeScript: 0 errors ✅
 ### Build: pass ✅
 
-### 다음 단계 (Q-4 P3)
-- confirm() → toast 다이얼로그 변환 (21파일, `scripts/q4/confirm-manual.txt`)
-- useSubmitGuard 추가 적용 (22개 form, `scripts/q4/submitguard-manual.txt`)
+### 다음 단계 (Q-4 P4)
 - EmptyState JSX 추가 삽입 (121파일, `scripts/q4/emptystate-manual.txt`)
+- 나머지 59개 placeholder → 도메인 t() 키 활용
+- Tab 레이블 배열 → 컴포넌트 내부 이동 + t() 적용
+
+---
+
+## Q-4 P3: UX Safety (2026-03-12)
+
+### Phase 1: ConfirmDialog Component
+- Created `src/components/ui/confirm-dialog.tsx`
+- Wraps Shadcn AlertDialog with `isExecuting` state for double-click defense
+- `e.preventDefault()` prevents Radix auto-close during async `onConfirm`
+- `useConfirmDialog` hook for imperative usage pattern
+- Destructive variant (`bg-red-600`) for delete/reject actions
+
+### Phase 2: confirm() → AlertDialog (28 files)
+| Metric | Value |
+|--------|-------|
+| Files migrated | **28** |
+| Total replacements | **37** |
+| Remaining confirm() | **0** ✅ |
+
+### Phase 3: alert() → toast (22 files)
+| Metric | Value |
+|--------|-------|
+| Files migrated | **22** |
+| Total replacements | **49** |
+| Remaining alert() | **0** ✅ |
+
+### Phase 4: useSubmitGuard
+| Metric | Value |
+|--------|-------|
+| P1 (existing) | 10 files |
+| P3 (new) | 11 files |
+| Extra (components) | 1 file |
+| **Total applied** | **22 files** |
+| Skipped (own guard) | 11 files |
+
+### Skipped Files (documented in `scripts/q4/submitguard-skipped.txt`)
+- 4 compliance/gdpr forms (own `isSubmitting` useState)
+- 3 performance files (dual action with `saving` state)
+- 2 react-hook-form files (LeaveClient, PostingEditClient)
+- 2 multi-step files (YearEndWizard, PulseSurvey)
+
+### Module-by-Module Commits
+1. `65736e5` — ConfirmDialog component + useConfirmDialog hook
+2. `a421046` — confirm() → AlertDialog (21 files)
+3. `73aee25` — alert() → toast (20 files)
+4. `a39e6ac` — useSubmitGuard (11 files)
+5. `b98d05d` — Extra components cleanup + push
+
+### TypeScript: 0 errors ✅
+
+### 다음 단계 (Q-4 P4)
+- EmptyState JSX 추가 삽입 (121파일)
 - 나머지 59개 placeholder → 도메인 t() 키 활용
 - Tab 레이블 배열 → 컴포넌트 내부 이동 + t() 적용
