@@ -38,13 +38,36 @@ export default async function MyProfilePage() {
         profileExtension: true,
         emergencyContacts: { orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] },
         profileVisibility: true,
+        employeeHistories: {
+          orderBy: { effectiveDate: 'desc' },
+          take: 10,
+          include: {
+            toDept: { select: { name: true } },
+            toGrade: { select: { name: true } },
+            toCompany: { select: { name: true } },
+          }
+        },
+        compensationHistories: {
+          orderBy: { effectiveDate: 'desc' },
+          take: 5,
+          select: {
+            id: true, effectiveDate: true, changeType: true, newBaseSalary: true, currency: true
+          }
+        },
+        employeeDocuments: {
+          orderBy: { createdAt: 'desc' },
+          take: 10,
+          select: {
+            id: true, docType: true, title: true, createdAt: true, fileKey: true
+          }
+        }
       },
     })
   } catch (err) {
     console.error('[my/profile] Prisma query failed:', err)
     // Fallback: fetch without optional relations that may not have tables
     try {
-      employee = await prisma.employee.findUnique({
+      const fallbackEmployee = await prisma.employee.findUnique({
         where: { id: user.employeeId },
         select: {
           id: true,
@@ -67,6 +90,9 @@ export default async function MyProfilePage() {
           },
         },
       })
+      
+      employee = fallbackEmployee as any;
+
       // Add empty defaults for missing relations
       if (employee) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,6 +101,12 @@ export default async function MyProfilePage() {
         (employee as any).emergencyContacts = [];
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (employee as any).profileVisibility = null;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (employee as any).employeeHistories = [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (employee as any).compensationHistories = [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (employee as any).employeeDocuments = [];
       }
     } catch (err2) {
       console.error('[my/profile] Fallback query also failed:', err2)
@@ -91,6 +123,20 @@ export default async function MyProfilePage() {
     ...employee,
     hireDate:  employee.hireDate?.toISOString() ?? new Date().toISOString(),
     birthDate: employee.birthDate?.toISOString() ?? null,
+    employeeHistories: employee.employeeHistories?.map((h: any) => ({
+      ...h,
+      effectiveDate: h.effectiveDate?.toISOString() ?? new Date().toISOString(),
+      createdAt: h.createdAt?.toISOString() ?? new Date().toISOString(),
+    })) ?? [],
+    compensationHistories: employee.compensationHistories?.map((h: any) => ({
+      ...h,
+      effectiveDate: h.effectiveDate?.toISOString() ?? new Date().toISOString(),
+      newBaseSalary: h.newBaseSalary ? h.newBaseSalary.toString() : '0' // Convert Decimal to string
+    })) ?? [],
+    employeeDocuments: employee.employeeDocuments?.map((d: any) => ({
+      ...d,
+      createdAt: d.createdAt?.toISOString() ?? new Date().toISOString()
+    })) ?? []
   }
 
   return <MyProfileClient user={user} employee={serialized as any} />
