@@ -1,6 +1,6 @@
 # SHARED.md — Project State (Single Source of Truth)
 
-> **Last Updated:** 2026-03-12 (Q-4 P4 — i18n Remaining)
+> **Last Updated:** 2026-03-12 (Q-4 P5 — Code Quality)
 > **Project Path:** `/Users/sangwoo/VibeCoding/HR_Hub/ctr-hr-hub`
 
 ---
@@ -10,7 +10,7 @@
 - `npx tsc --noEmit` = **0 errors** ✅
 - `npm run build` = pass ✅
 - `export const dynamic = 'force-dynamic'` in `(dashboard)/layout.tsx` — covers all dashboard pages
-- Git: pushed to `main` (latest: `7a89db1`)
+- Git: pushed to `main` (latest: `f264323`)
 - Deployed on Vercel (auto-deploy from `main` branch)
 - **i18n**: 7 locales × 14+ namespaces — 146/146 Client files have `useTranslations` ✅
 
@@ -1186,8 +1186,48 @@ Keys added across **7 locales** (`ko`, `en`, `zh`, `vi`, `ru`, `es`, `pt`):
 
 ### TypeScript: 0 errors ✅
 
-### 다음 단계 (Q-4 P5)
-- Tab 레이블 배열 577개 → status/filter 상수 i18n 화
+### 다음 단계 (Q-5)
+- Tab 레이블 배열 577개 → status/filter 상수 i18n
 - h1 Korean 29개 → page title i18n
 - EmptyState complex 58개 수동 확인
 - Domain-specific placeholder 45개 → locale 별 변환
+- ESLint 경고 정리 (Node.js v24 EPERM 해결 후)
+
+---
+
+## Q-4 P5: Code Quality (2026-03-12)
+
+### Phase 2: console.log Purge
+| Metric | Before | After |
+|--------|--------|-------|
+| console.log | 2 | **0** ✅ |
+| PII Risk | email logged raw | masked (`u***@domain.com`) |
+
+### Phase 3: `any` Type Cleanup
+| Metric | Before | After |
+|--------|--------|-------|
+| Total `any` | 116 | **111** |
+| With eslint-disable | 48 | **111** (100%) |
+| `catch (err: any)` → `unknown` | — | 2 files |
+| `as any` → proper union type | — | 1 file (RequisitionForm) |
+
+### Phase 4: N+1 Query Optimization
+| Route | Fix |
+|-------|-----|
+| `home/summary` | 4 sequential count → `Promise.all` |
+| General | No `Promise.all(items.map(i => prisma...))` patterns |
+
+### Phase 5: Pagination
+- 77 `findMany` without `take/skip` — mostly bounded queries (settings, enums, tree)
+- No unbounded list APIs found
+
+### Bug Fixes During Process
+- Fixed `RequisitionFormClient`: Q-3c hook injection broke function declaration
+- Fixed 30 `.tsx` files: `// eslint-disable` inside JSX expressions consumed code
+
+### Commits
+1. `c37c50a` — console.log PII mask + any annotations
+2. `f4bbd24` — home/summary Promise.all
+3. `f264323` — remaining eslint-disable + push
+
+### TypeScript: 0 errors ✅
