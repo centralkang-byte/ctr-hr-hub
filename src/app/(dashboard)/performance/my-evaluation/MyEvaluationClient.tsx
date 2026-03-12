@@ -9,6 +9,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Save, Send, Star, ArrowLeft, Loader2, CheckCircle2, XCircle } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -85,6 +86,7 @@ export default function MyEvaluationClient({
 
     // ─── Fetch evaluation data
     const fetchEvalData = useCallback(async () => {
+  const { confirm, dialogProps } = useConfirmDialog()
         if (!selectedCycleId) return
         setLoading(true); setError('')
         try {
@@ -128,7 +130,7 @@ export default function MyEvaluationClient({
                 alert('모든 점수와 코멘트를 작성해주세요.')
                 return
             }
-            if (!confirm('제출하면 수정할 수 없습니다. 제출하시겠습니까?')) return
+            confirm({ title: '제출하면 수정할 수 없습니다. 제출하시겠습니까?', onConfirm: async () =>
         }
 
         // Abort previous in-flight request (GEMINI FIX #2)
@@ -373,7 +375,8 @@ export default function MyEvaluationClient({
                                 </button>
                             </div>
                         )}
-                    </>
+                      <ConfirmDialog {...dialogProps} />
+      </>
                 )}
             </div>
         </div>

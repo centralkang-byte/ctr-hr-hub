@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Plus, ShieldCheck, XCircle } from 'lucide-react'
 import ConsentForm from './ConsentForm'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 interface Consent {
   id: string
@@ -26,6 +27,7 @@ function StatusBadge({ status }: { status: string }) {
     pending: 'bg-[#FEF3C7] text-[#B45309] border border-[#FCD34D]',
   }
   return (
+    <>
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[status] ?? map.pending}`}>
       {status}
     </span>
@@ -39,6 +41,7 @@ export default function ConsentManagementTab() {
   const [consents, setConsents] = useState<Consent[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
+  const { confirm, dialogProps } = useConfirmDialog()
 
   const fetchConsents = () => {
     setLoading(true)
@@ -56,7 +59,7 @@ export default function ConsentManagementTab() {
   }, [])
 
   const handleRevoke = (id: string) => {
-    if (!confirm(tc('confirmAction'))) return
+    confirm({ title: tc('confirmAction'), onConfirm: async () =>
     fetch(`/api/v1/compliance/gdpr/consents/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -149,6 +152,8 @@ export default function ConsentManagementTab() {
           }}
         />
       )}
+    <ConfirmDialog {...dialogProps} />
     </div>
+  </>
   )
 }

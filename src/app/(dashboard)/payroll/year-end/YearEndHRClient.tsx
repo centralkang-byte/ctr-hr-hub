@@ -22,6 +22,7 @@ import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { ROLE } from '@/lib/constants'
 import { BUTTON_SIZES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ─────────────────────────────────────────────────
 
@@ -106,6 +107,7 @@ function formatDate(d: string | null | undefined): string {
 function StatusBadge({ status }: { status: string }) {
   const color = STATUS_COLORS[status] ?? 'bg-[#F5F5F5] text-[#666]'
   return (
+    <>
     <span
       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${color}`}
     >
@@ -392,6 +394,7 @@ export default function YearEndHRClient({
   }, [settlements, selectedIds, year, user.companyId, fetchSettlements])
 
   const handleBulkConfirmAll = useCallback(async () => {
+  const { confirm, dialogProps } = useConfirmDialog()
     const confirmable = settlements.filter(
       (s) => s.status === 'submitted' || s.status === 'hr_review',
     )
@@ -400,7 +403,7 @@ export default function YearEndHRClient({
       return
     }
 
-    if (!window.confirm(`${confirmable.length}건의 정산을 일괄 확정하시겠습니까?`)) return
+    confirm({ title: `${confirmable.length}건의 정산을 일괄 확정하시겠습니까?`, onConfirm: async () =>
 
     setBulkConfirming(true)
     try {
@@ -736,6 +739,8 @@ export default function YearEndHRClient({
           issuingReceipt={issuingReceipt}
         />
       )}
+    <ConfirmDialog {...dialogProps} />
     </div>
+  </>
   )
 }

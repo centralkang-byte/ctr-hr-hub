@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Plus, Pencil, Play, Trash2 } from 'lucide-react'
 import RetentionPolicyForm from './RetentionPolicyForm'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 interface RetentionPolicy {
   id: string
@@ -24,6 +25,7 @@ export default function DataRetentionTabContent() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [selected, setSelected] = useState<RetentionPolicy | null>(null)
+  const { confirm, dialogProps } = useConfirmDialog()
 
   const fetchPolicies = () => {
     setLoading(true)
@@ -41,20 +43,21 @@ export default function DataRetentionTabContent() {
   }, [])
 
   const handleRunPolicy = (id: string) => {
-    if (!confirm(tc('confirmAction'))) return
+    confirm({ title: tc('confirmAction'), onConfirm: async () =>
     fetch(`/api/v1/compliance/gdpr/retention-policies/${id}/run`, { method: 'POST' }).then(() =>
       fetchPolicies()
     )
   }
 
   const handleDelete = (id: string) => {
-    if (!confirm(tc('confirmDelete'))) return
+    confirm({ title: tc('confirmDelete'), onConfirm: async () =>
     fetch(`/api/v1/compliance/gdpr/retention-policies/${id}`, { method: 'DELETE' }).then(() =>
       fetchPolicies()
     )
   }
 
   return (
+    <>
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-[#1A1A1A]">{t('gdpr.retention')}</h2>
@@ -152,6 +155,8 @@ export default function DataRetentionTabContent() {
           onSaved={() => { setShowForm(false); fetchPolicies() }}
         />
       )}
+    <ConfirmDialog {...dialogProps} />
     </div>
+  </>
   )
 }

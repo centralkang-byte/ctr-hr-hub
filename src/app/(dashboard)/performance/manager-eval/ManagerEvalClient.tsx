@@ -8,6 +8,7 @@ import type { SessionUser } from '@/types'
 import type { EvaluationSettings } from '@/types/settings'
 import AiDraftModal from '@/components/performance/AiDraftModal'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -106,6 +107,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
   // ─── Load employee eval form ────────────────────────
 
   const loadEmployeeForm = useCallback(async (employeeId: string) => {
+  const { confirm, dialogProps } = useConfirmDialog()
     setFormLoading(true)
     setSelectedEmployee(employeeId)
     setCurrentEvaluationId(null)
@@ -163,8 +165,9 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
   // ─── Save / Submit ──────────────────────────────────
 
   const handleSave = async (status: 'DRAFT' | 'SUBMITTED') => {
-    if (!selectedEmployee) return
-    if (status === 'SUBMITTED' && !confirm('제출하면 수정할 수 없습니다. 제출하시겠습니까?')) return
+    if (!(!selectedEmployee) return
+    if (status === 'SUBMITTED')) return
+        confirm({ title: '제출하면 수정할 수 없습니다. 제출하시겠습니까?', onConfirm: async () =>
     setSubmitting(true)
     try {
       const res = await apiClient.post<{ id: string }>('/api/v1/performance/evaluations/manager', {
@@ -488,7 +491,8 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                   </button>
                 </div>
               </div>
-            </>
+              <ConfirmDialog {...dialogProps} />
+      </>
           )}
         </div>
       </div>

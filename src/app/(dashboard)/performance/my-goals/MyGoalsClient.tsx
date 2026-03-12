@@ -9,6 +9,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Plus, Pencil, Trash2, Lock, AlertTriangle, Target, X } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -37,6 +38,7 @@ function GoalModal({ initial, onSave, onClose, saving }: {
     const set = (k: keyof GoalForm, v: string | number) => setForm((p) => ({ ...p, [k]: v }))
 
     return (
+        <>
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={onClose}>
             <div className="w-full max-w-lg rounded-xl bg-white p-6" onClick={(e) => e.stopPropagation()}>
                 <div className="mb-5 flex items-center justify-between">
@@ -117,6 +119,7 @@ export default function MyGoalsClient({
 
     // ─── Fetch goals
     const fetchGoals = useCallback(async () => {
+  const { confirm, dialogProps } = useConfirmDialog()
         if (!selectedCycleId) return
         setLoading(true); setError('')
         try {
@@ -150,13 +153,14 @@ export default function MyGoalsClient({
     }
 
     async function handleDelete(goalId: string) {
-        if (!confirm('이 목표를 삭제하시겠습니까?')) return
+        confirm({ variant: 'destructive', title: '이 목표를 삭제하시겠습니까?', onConfirm: async () =>
         try { await apiClient.delete(`/api/v1/performance/goals/${goalId}`); await fetchGoals() }
         catch { alert('삭제에 실패했습니다.') }
     }
 
     async function handleSubmitAll() {
-        if (!canSubmit || !confirm('모든 초안 목표를 제출하시겠습니까? 제출 후에는 수정할 수 없습니다.')) return
+        if (!canSubmit) return
+        confirm({ title: '모든 초안 목표를 제출하시겠습니까? 제출 후에는 수정할 수 없습니다.', onConfirm: async () =>
         setSaving(true)
         try {
             const firstDraft = goals.find((g) => g.status === 'DRAFT')
@@ -341,6 +345,8 @@ export default function MyGoalsClient({
 
             {/* Modal */}
             {modal && <GoalModal initial={modal.initial} onSave={handleSave} onClose={() => setModal(null)} saving={saving} />}
+        <ConfirmDialog {...dialogProps} />
         </div>
+      </>
     )
 }

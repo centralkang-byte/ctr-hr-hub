@@ -10,6 +10,7 @@ import { Star, Send, Save, AlertTriangle, CheckCircle2, Clock, X, ArrowLeft, Shi
 import { apiClient } from '@/lib/api'
 import { getGradeLabel } from '@/lib/performance/data-masking'
 import type { SessionUser } from '@/types'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -34,6 +35,7 @@ const GRADES = ['E', 'M_PLUS', 'M', 'B']
 
 function Stars({ value, onChange, disabled }: { value: number; onChange: (v: number) => void; disabled: boolean }) {
     return (
+        <>
         <div className="flex items-center gap-0.5">
             {[1, 2, 3, 4, 5].map((i) => (
                 <button key={i} disabled={disabled} onClick={() => onChange(i)}
@@ -257,7 +259,8 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
     const totalScore = Math.round(((mboAvg * 60 + beiAvg * 40) / 100) * 100) / 100
 
     async function handleSave(status: 'DRAFT' | 'SUBMITTED') {
-        if (status === 'SUBMITTED' && !confirm('평가를 확정하시겠습니까? 확정 후에는 수정이 제한됩니다.')) return
+        if (!(status === 'SUBMITTED')) return
+        confirm({ title: '평가를 확정하시겠습니까? 확정 후에는 수정이 제한됩니다.', onConfirm: async () =>
         setSaving(true)
         try {
             await apiClient.put(`/api/v1/performance/evaluations/${member.managerEval?.id ?? 'new'}`, {
@@ -409,6 +412,7 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
     const [selected, setSelected] = useState<Set<string>>(new Set())
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
+  const { confirm, dialogProps } = useConfirmDialog()
 
     useEffect(() => {
         async function load() {
@@ -427,7 +431,7 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
 
     async function handleNominate() {
         if (selected.size < 2) { alert('최소 2명을 지명해주세요.'); return }
-        if (!confirm(`${selected.size}명을 동료평가자로 지명하시겠습니까?`)) return
+        confirm({ title: `${selected.size}명을 동료평가자로 지명하시겠습니까?`, onConfirm: async () =>
         setSaving(true)
         try {
             await apiClient.post('/api/v1/performance/peer-review/nominate', {
@@ -478,6 +482,8 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
                     </button>
                 </div>
             </div>
+        <ConfirmDialog {...dialogProps} />
         </div>
+      </>
     )
 }

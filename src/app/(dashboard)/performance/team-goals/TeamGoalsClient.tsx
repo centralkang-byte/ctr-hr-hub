@@ -3,6 +3,7 @@
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Team Goals Management (Client)
@@ -133,6 +134,7 @@ export default function TeamGoalsClient({
   // ─── Fetch team goals ─────────────────────────────────
 
   const fetchTeamGoals = useCallback(async () => {
+  const { confirm, dialogProps } = useConfirmDialog()
     if (!selectedCycleId) return
     setLoading(true)
     try {
@@ -169,7 +171,7 @@ export default function TeamGoalsClient({
   // ─── Approve goal ─────────────────────────────────────
 
   async function handleApprove(goalId: string) {
-    if (!confirm(t('confirmApprove'))) return
+    confirm({ title: t('confirmApprove'), onConfirm: async () =>
     setActionLoading(goalId)
     try {
       await apiClient.put(`/api/v1/performance/goals/${goalId}/approve`)
@@ -206,6 +208,7 @@ export default function TeamGoalsClient({
   // ─── Render ───────────────────────────────────────────
 
   return (
+    <>
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -471,6 +474,8 @@ export default function TeamGoalsClient({
             </div>
           )
         })}
+    <ConfirmDialog {...dialogProps} />
     </div>
+  </>
   )
 }

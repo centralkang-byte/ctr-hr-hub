@@ -11,6 +11,7 @@ import { ArrowLeft, ChevronRight, AlertTriangle, CheckCircle2, Clock, Users, Shi
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -64,6 +65,7 @@ export default function CycleDetailClient({
     const [deptFilter, setDeptFilter] = useState('')
 
     const fetchData = useCallback(async () => {
+  const { confirm, dialogProps } = useConfirmDialog()
         setLoading(true); setError('')
         try {
             const [cycleRes, partRes] = await Promise.all([
@@ -88,7 +90,7 @@ export default function CycleDetailClient({
             ? `다음 단계(${nextState})로 진행합니다.\n\n⚠️ 미완료 ${overdueCount}명은 Overdue 처리됩니다.\n\n되돌릴 수 없습니다. 계속하시겠습니까?`
             : `다음 단계(${nextState})로 진행합니다.\n\n되돌릴 수 없습니다. 계속하시겠습니까?`
 
-        if (!confirm(msg)) return
+        confirm({ title: msg, onConfirm: async () =>
         setAdvancing(true)
         try {
             await apiClient.post(`/api/v1/performance/cycles/${cycleId}/advance`)
@@ -196,7 +198,8 @@ export default function CycleDetailClient({
                             </div>
                             <button onClick={handleAdvance} disabled={advancing}
                                 className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-5 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40 transition-colors">
-                                {advancing ? '전환 중...' : <><span>다음 단계로 진행</span><ChevronRight className="h-4 w-4" /></>}
+                                {advancing ? '전환 중...' : <><span>다음 단계로 진행</span><ChevronRight className="h-4 w-4" />  <ConfirmDialog {...dialogProps} />
+      </>}
                             </button>
                         </div>
                     )}

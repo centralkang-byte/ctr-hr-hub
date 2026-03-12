@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Award, Target, TrendingUp, Users, CheckCircle2, Clock, Info, ArrowLeft, Shield } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -87,6 +88,7 @@ export default function MyResultClient({
     }, [])
 
     const fetchResult = useCallback(async () => {
+  const { confirm, dialogProps } = useConfirmDialog()
         if (!selectedCycleId) return
         setLoading(true); setError('')
         try {
@@ -110,7 +112,7 @@ export default function MyResultClient({
 
     async function handleAcknowledge() {
         if (!result?.reviewId) return
-        if (!confirm('결과를 확인하시겠습니까? 결과 확인은 동의가 아닌 수신 확인입니다.')) return
+        confirm({ title: '결과를 확인하시겠습니까? 결과 확인은 동의가 아닌 수신 확인입니다.', onConfirm: async () =>
         setAcknowledging(true)
         try {
             await apiClient.post(`/api/v1/performance/reviews/${result.reviewId}/acknowledge`)
@@ -324,7 +326,8 @@ export default function MyResultClient({
                                 </>
                             )}
                         </div>
-                    </>
+                      <ConfirmDialog {...dialogProps} />
+      </>
                 )}
             </div>
         </div>

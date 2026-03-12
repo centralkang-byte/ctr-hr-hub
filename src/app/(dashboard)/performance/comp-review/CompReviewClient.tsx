@@ -11,6 +11,7 @@ import { apiClient } from '@/lib/api'
 import { getGradeLabel } from '@/lib/performance/data-masking'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -113,6 +114,7 @@ export default function CompReviewClient({
     }, [])
 
     const fetchData = useCallback(async () => {
+  const { confirm, dialogProps } = useConfirmDialog()
         if (!selectedCycleId) return
         setLoading(true); setError('')
         try {
@@ -158,7 +160,7 @@ export default function CompReviewClient({
         const msg = exceptionCount > 0
             ? `최종 승인을 요청합니다.\n\n⚠️ ${exceptionCount}건의 예외가 포함되어 있습니다.\n\n승인 후에는 되돌릴 수 없습니다.`
             : '최종 승인을 요청합니다.\n\n승인 후에는 되돌릴 수 없습니다.'
-        if (!confirm(msg)) return
+        confirm({ title: msg, onConfirm: async () =>
         setApproving(true)
         try {
             await apiClient.post(`/api/v1/performance/compensation/${selectedCycleId}/approve`)
@@ -369,7 +371,8 @@ export default function CompReviewClient({
                                 )}
                             </div>
                         )}
-                    </>
+                      <ConfirmDialog {...dialogProps} />
+      </>
                 )}
             </div>
         </div>

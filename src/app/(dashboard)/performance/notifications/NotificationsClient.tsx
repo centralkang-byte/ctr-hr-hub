@@ -11,6 +11,7 @@ import { apiClient } from '@/lib/api'
 import { getGradeLabel } from '@/lib/performance/data-masking'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -54,6 +55,7 @@ export default function NotificationsClient({
     }, [])
 
     const fetchItems = useCallback(async () => {
+  const { confirm, dialogProps } = useConfirmDialog()
         if (!selectedCycleId) return
         setLoading(true); setError('')
         try {
@@ -72,7 +74,7 @@ export default function NotificationsClient({
     }
 
     async function handleNotify(reviewId: string) {
-        if (!confirm('이 직원에게 결과를 통보하시겠습니까?')) return
+        confirm({ title: '이 직원에게 결과를 통보하시겠습니까?', onConfirm: async () =>
         setNotifying(reviewId)
         try {
             await apiClient.post(`/api/v1/performance/reviews/${reviewId}/notify`)
@@ -83,7 +85,7 @@ export default function NotificationsClient({
 
     async function handleBulkNotify() {
         const pendingCount = items.filter((i) => !i.notifiedAt).length
-        if (!confirm(`미통보 ${pendingCount}명에게 일괄 통보하시겠습니까?`)) return
+        confirm({ title: `미통보 ${pendingCount}명에게 일괄 통보하시겠습니까?`, onConfirm: async () =>
         setBulkNotifying(true)
         try {
             await apiClient.post(`/api/v1/performance/cycles/${selectedCycleId}/bulk-notify`)
@@ -96,6 +98,7 @@ export default function NotificationsClient({
     const isBlocked = cycleStatus !== '' && !['FINALIZED', 'CLOSED', 'COMP_REVIEW', 'COMP_COMPLETED'].includes(cycleStatus)
     if (isBlocked) {
         return (
+            <>
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
                     <Bell className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
@@ -243,6 +246,8 @@ export default function NotificationsClient({
                     </div>
                 )}
             </div>
+        <ConfirmDialog {...dialogProps} />
         </div>
+      </>
     )
 }

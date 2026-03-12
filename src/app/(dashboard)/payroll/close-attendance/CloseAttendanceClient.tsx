@@ -20,6 +20,7 @@ import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS,  MODAL_STYLES } from '@/lib/styles'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 interface AttendanceStatus {
     yearMonth: string
@@ -63,6 +64,7 @@ function StatusBadge({ status }: { status: string | null }) {
     if (!status) return <span className="text-xs text-[#999]">—</span>
     const s = STATUS_LABELS[status] ?? { label: status, color: '#555', bg: '#FAFAFA' }
     return (
+        <>
         <span
             className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border"
             style={{ color: s.color, background: s.bg, borderColor: s.bg }}
@@ -91,6 +93,7 @@ export default function CloseAttendanceClient({ user }: Props) {
     } | null>(null)
 
     const fetchStatus = useCallback(async (companyId: string) => {
+  const { confirm, dialogProps } = useConfirmDialog()
         try {
             const res = await fetch(
                 `/api/v1/payroll/attendance-status?companyId=${companyId}&year=${year}&month=${month}`,
@@ -133,7 +136,7 @@ export default function CloseAttendanceClient({ user }: Props) {
     }
 
     const handleReopen = async (payrollRunId: string, companyId: string) => {
-        if (!confirm(tCommon('confirmReopen'))) return
+        confirm({ title: tCommon('confirmReopen'), onConfirm: async () =>
         setReopening(companyId)
         try {
             const res = await fetch('/api/v1/payroll/attendance-reopen', {
@@ -441,6 +444,8 @@ export default function CloseAttendanceClient({ user }: Props) {
                     </div>
                 </div>
             )}
+        <ConfirmDialog {...dialogProps} />
         </div>
+      </>
     )
 }

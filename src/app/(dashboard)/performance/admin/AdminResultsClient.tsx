@@ -6,6 +6,7 @@ import { BarChart3, Download, Lock } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -57,6 +58,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
   }, [])
 
   const fetchResults = useCallback(async () => {
+  const { confirm, dialogProps } = useConfirmDialog()
     if (!selectedCycleId) return
     setLoading(true)
     try {
@@ -84,7 +86,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
       alert('캘리브레이션 단계에서만 확정할 수 있습니다.')
       return
     }
-    if (!confirm('성과 주기를 확정하시겠습니까? 확정 후에는 수정할 수 없습니다.')) return
+    confirm({ title: '성과 주기를 확정하시겠습니까? 확정 후에는 수정할 수 없습니다.', onConfirm: async () =>
     try {
       await apiClient.post(`/api/v1/performance/cycles/${selectedCycleId}/finalize`)
       alert('성과 주기가 확정되었습니다.')
@@ -101,6 +103,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
   }
 
   return (
+    <>
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -221,6 +224,8 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
           )}
         </div>
       </div>
+    <ConfirmDialog {...dialogProps} />
     </div>
+  </>
   )
 }

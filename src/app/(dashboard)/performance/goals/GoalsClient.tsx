@@ -10,6 +10,7 @@ import { apiClient } from '@/lib/api'
 import type { SessionUser, MboGoal } from '@/types'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Status config ────────────────────────────────────────
 
@@ -74,6 +75,7 @@ export default function GoalsClient({
   // ─── Fetch goals ──────────────────────────────────────
 
   const fetchGoals = useCallback(async () => {
+  const { confirm, dialogProps } = useConfirmDialog()
     if (!selectedCycleId) return
     setLoading(true)
     try {
@@ -102,7 +104,7 @@ export default function GoalsClient({
   // ─── Handlers ─────────────────────────────────────────
 
   async function handleDelete(goalId: string) {
-    if (!confirm(t('confirmDeleteGoal'))) return
+    confirm({ title: t('confirmDeleteGoal'), onConfirm: async () =>
     try {
       await apiClient.delete(`/api/v1/performance/goals/${goalId}`)
       await fetchGoals()
@@ -115,7 +117,7 @@ export default function GoalsClient({
     if (!canSubmit) return
     const firstDraft = goals.find((g) => g.status === 'DRAFT')
     if (!firstDraft) return
-    if (!confirm(t('confirmSubmitAll'))) return
+    confirm({ title: t('confirmSubmitAll'), onConfirm: async () =>
 
     setSubmitting(true)
     try {
@@ -151,6 +153,7 @@ export default function GoalsClient({
   // ─── Render ───────────────────────────────────────────
 
   return (
+    <>
     <div className="min-h-screen bg-[#FAFAFA] p-6">
       <div className="mx-auto max-w-4xl">
         {/* Header */}
@@ -379,6 +382,8 @@ export default function GoalsClient({
           </div>
         )}
       </div>
+    <ConfirmDialog {...dialogProps} />
     </div>
+  </>
   )
 }

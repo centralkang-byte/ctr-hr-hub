@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Recruitment Cost Analysis Client
@@ -135,6 +136,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
   }, [year])
 
   const fetchCosts = useCallback(async () => {
+  const { confirm, dialogProps } = useConfirmDialog()
     try {
       const params: Record<string, string | number | undefined> = { page: 1, limit: 50 }
       if (costFilter !== 'ALL') params.costType = costFilter
@@ -172,7 +174,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
 
   // ─── Delete ────────────────────────────────────────────
   const handleDelete = async (id: string) => {
-    if (!confirm('삭제하시겠습니까?')) return
+    confirm({ variant: 'destructive', title: '삭제하시겠습니까?', onConfirm: async () =>
     try {
       await apiClient.delete(`/api/v1/recruitment/costs/${id}`)
       fetchCosts()
@@ -186,6 +188,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
   // ─── Render ────────────────────────────────────────────
   if (loading) {
     return (
+      <>
       <div className="flex items-center justify-center h-96">
         <Loader2 className="w-8 h-8 animate-spin text-[#00C853]" />
       </div>
@@ -636,6 +639,8 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
           </div>
         </div>
       )}
+    <ConfirmDialog {...dialogProps} />
     </div>
+  </>
   )
 }

@@ -22,6 +22,7 @@ import {
 } from 'lucide-react'
 import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 interface Employee {
     id: string
@@ -145,6 +146,7 @@ export default function AdjustmentsClient({
 
     // 직원 목록 로드
     const loadEmployees = useCallback(async () => {
+  const { confirm, dialogProps } = useConfirmDialog()
         const res = await fetch(`/api/v1/employees?companyId=${user.companyId}&limit=200`)
         if (res.ok) {
             const json = await res.json()
@@ -191,7 +193,7 @@ export default function AdjustmentsClient({
 
     const handleDelete = async (adjustmentId: string) => {
         if (!selectedRun) return
-        if (!confirm('이 조정 항목을 삭제하시겠습니까?')) return
+        confirm({ variant: 'destructive', title: '이 조정 항목을 삭제하시겠습니까?', onConfirm: async () =>
         const res = await fetch(`/api/v1/payroll/${selectedRun.id}/adjustments/${adjustmentId}`, {
             method: 'DELETE',
         })
@@ -203,7 +205,7 @@ export default function AdjustmentsClient({
 
     const handleComplete = async () => {
         if (!selectedRun) return
-        if (!confirm('조정을 완료하고 이상 검토 단계로 전환하시겠습니까? 이상 탐지 엔진이 실행됩니다.')) return
+        confirm({ title: '조정을 완료하고 이상 검토 단계로 전환하시겠습니까? 이상 탐지 엔진이 실행됩니다.', onConfirm: async () =>
         setCompleting(true)
         try {
             const res = await fetch(`/api/v1/payroll/${selectedRun.id}/adjustments/complete`, {
@@ -557,7 +559,8 @@ export default function AdjustmentsClient({
                                         <>
                                             <CheckCircle2 size={14} />
                                             저장
-                                        </>
+                                          <ConfirmDialog {...dialogProps} />
+      </>
                                     )}
                                 </button>
                             </div>

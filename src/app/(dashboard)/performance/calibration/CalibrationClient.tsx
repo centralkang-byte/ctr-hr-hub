@@ -8,6 +8,7 @@ import type { SessionUser } from '@/types'
 import EmployeeInsightPanel from '@/components/performance/EmployeeInsightPanel'
 import BiasDetectionBanner from '@/components/performance/BiasDetectionBanner'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -244,6 +245,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
   // ─── Employee chip click ────────────────────────────
 
   const handleEmployeeChipClick = useCallback((ev: EvalItem) => {
+  const { confirm, dialogProps } = useConfirmDialog()
     setInsightEmployeeId(ev.employeeId)
     setInsightEmployeeName(ev.employee.name)
   }, [])
@@ -546,7 +548,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                 <div className="flex justify-end">
                   <button
                     onClick={async () => {
-                      if (!confirm('캘리브레이션을 완료하시겠습니까?')) return
+                      confirm({ title: '캘리브레이션을 완료하시겠습니까?', onConfirm: async () =>
                       try {
                         await apiClient.put(`/api/v1/performance/calibration/sessions/${selectedSession.id}`, {
                           status: 'CALIBRATION_COMPLETED',
@@ -574,6 +576,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
       employeeName={insightEmployeeName}
       onClose={() => setInsightEmployeeId(null)}
     />
-    </>
+      <ConfirmDialog {...dialogProps} />
+      </>
   )
 }

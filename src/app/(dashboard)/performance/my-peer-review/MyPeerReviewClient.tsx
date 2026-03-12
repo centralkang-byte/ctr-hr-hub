@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Star, Send, Save, CheckCircle2, Clock, AlertCircle, ArrowLeft, Users, X } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -39,6 +40,7 @@ const STATUS_BADGE: Record<string, { label: string; icon: typeof CheckCircle2; c
 
 function Stars({ value, onChange, disabled }: { value: number; onChange: (v: number) => void; disabled: boolean }) {
     return (
+        <>
         <div className="flex items-center gap-0.5">
             {[1, 2, 3, 4, 5].map((i) => (
                 <button key={i} disabled={disabled} onClick={() => onChange(i)}
@@ -92,6 +94,7 @@ export default function MyPeerReviewClient({
     }, [])
 
     const fetchAssignments = useCallback(async () => {
+  const { confirm, dialogProps } = useConfirmDialog()
         if (!selectedCycleId) return
         setLoading(true); setError('')
         try {
@@ -121,7 +124,7 @@ export default function MyPeerReviewClient({
                 alert('종합 의견은 최소 20자 이상 작성해주세요.')
                 return
             }
-            if (!confirm('제출하면 수정할 수 없습니다. 제출하시겠습니까?')) return
+            confirm({ title: '제출하면 수정할 수 없습니다. 제출하시겠습니까?', onConfirm: async () =>
         }
 
         setSaving(true)
@@ -302,6 +305,8 @@ export default function MyPeerReviewClient({
                     </div>
                 </div>
             )}
+        <ConfirmDialog {...dialogProps} />
         </div>
+      </>
     )
 }

@@ -10,6 +10,7 @@ import { Save, Send, Sparkles, CheckCircle2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -99,6 +100,7 @@ export default function SelfEvalClient({
   // ─── Fetch evaluation data ──────────────────────────
 
   const fetchEvalData = useCallback(async () => {
+  const { confirm, dialogProps } = useConfirmDialog()
     if (!selectedCycleId) return
     setLoading(true)
     try {
@@ -144,7 +146,8 @@ export default function SelfEvalClient({
   // ─── Save / Submit ──────────────────────────────────
 
   const handleSave = async (status: 'DRAFT' | 'SUBMITTED') => {
-    if (status === 'SUBMITTED' && !confirm('제출하면 수정할 수 없습니다. 제출하시겠습니까?')) return
+    if (!(status === 'SUBMITTED')) return
+        confirm({ title: '제출하면 수정할 수 없습니다. 제출하시겠습니까?', onConfirm: async () =>
     setSubmitting(true)
     try {
       await apiClient.post('/api/v1/performance/evaluations/self', {
@@ -198,6 +201,7 @@ export default function SelfEvalClient({
 
   if (loading) {
     return (
+      <>
       <div className="p-6">
         <div className="flex items-center justify-center h-64 text-[#666]">
           {tc('loading')}...
@@ -371,6 +375,8 @@ export default function SelfEvalClient({
           </button>
         </div>
       )}
+    <ConfirmDialog {...dialogProps} />
     </div>
+  </>
   )
 }
