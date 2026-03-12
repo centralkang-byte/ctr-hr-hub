@@ -1,5 +1,5 @@
-import { CARD_STYLES } from '@/lib/styles'
 'use client'
+import { CARD_STYLES } from '@/lib/styles'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Generic Widget Skeleton

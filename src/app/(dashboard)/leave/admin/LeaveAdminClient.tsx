@@ -35,9 +35,9 @@ import { Label } from '@/components/ui/label'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
+import { TABLE_STYLES } from '@/lib/styles'
 import type { SessionUser } from '@/types'
 import {
-import { TABLE_STYLES } from '@/lib/styles'
   CalendarDays,
   TrendingUp,
   AlertTriangle,

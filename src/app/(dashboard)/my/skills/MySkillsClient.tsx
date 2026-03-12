@@ -9,9 +9,9 @@ import {
   Target, ChevronDown, ChevronUp, CheckCircle2, Clock, AlertCircle,
   Radar, Save, Send, BookOpen,
 } from 'lucide-react'
+import { BUTTON_VARIANTS } from '@/lib/styles'
 import type { SessionUser } from '@/types'
 import {
-import { BUTTON_VARIANTS } from '@/lib/styles'
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar as RechartsRadar,
   ResponsiveContainer, Legend, Tooltip,
 } from 'recharts'

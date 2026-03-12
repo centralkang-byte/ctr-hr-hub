@@ -5,8 +5,8 @@ import { Calculator, Search, X, ChevronDown, ChevronRight, Download, Loader2 } f
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { CARD_STYLES, TABLE_STYLES, CHART_THEME } from '@/lib/styles'
 import type {
-import { CARD_STYLES, TABLE_STYLES } from '@/lib/styles'
   Company, Department, SimMode, BulkTargetType,
   SearchEmployee, SimResponse, EmployeeSimResult, PayDetail
 } from './types'
