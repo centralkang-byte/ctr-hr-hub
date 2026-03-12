@@ -469,7 +469,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                             <p className="text-sm text-[#5E81F4]">✅ {data.signOffEligibility.requiredDone}/{data.signOffEligibility.requiredTotal} 필수 태스크 완료</p>
                             <p className="text-xs text-[#8181A5] mt-1">감정 체크인 {data.checkins.length}회 기록됨</p>
                         </div>
-                        <Textarea placeholder="코멘트 (선택)" value={signOffNote} onChange={(e) => setSignOffNote(e.target.value)} rows={3} />
+                        <Textarea placeholder={tCommon('enterComment')} value={signOffNote} onChange={(e) => setSignOffNote(e.target.value)} rows={3} />
                     </div>
                     <DialogFooter>
                         <button onClick={() => setSignOffDialog(false)} className="rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm text-[#8181A5] hover:bg-[#F5F5FA]">

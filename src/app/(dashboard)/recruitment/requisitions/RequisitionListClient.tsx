@@ -106,7 +106,7 @@ export default function RequisitionListClient({
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">채용 요청</h1>
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('requisitionTitle')}</h1>
           <p className="text-sm text-[#666] mt-0.5">부서장 채용 요청 및 결재 관리</p>
         </div>
         <button

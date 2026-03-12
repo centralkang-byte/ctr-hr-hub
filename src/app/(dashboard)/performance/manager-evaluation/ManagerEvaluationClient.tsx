@@ -120,7 +120,7 @@ export default function ManagerEvaluationClient({
                 {/* Header */}
                 <div className="mb-6 flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-[#1C1D21]">팀원 평가 (Manager Evaluation)</h1>
+                        <h1 className="text-2xl font-bold text-[#1C1D21]">{t('managerEvalTitle')}</h1>
                         <p className="mt-1 text-sm text-[#8181A5]">
                             내 팀원: {teamMembers.length}명 | 평가 완료: {completedCount}/{teamMembers.length}
                             {overdueCount > 0 && <span className="ml-2 text-[#EF4444]">| Overdue: {overdueCount}명 🚨</span>}
@@ -312,7 +312,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                                         <Stars value={goalScores[goal.id]?.score ?? 3}
                                             onChange={(v) => setGoalScores((p) => ({ ...p, [goal.id]: { ...p[goal.id], score: v } }))} disabled={false} />
                                     </div>
-                                    <input type="text" placeholder="코멘트" value={goalScores[goal.id]?.comment ?? ''}
+                                    <input type="text" placeholder={tCommon('enterComment')} value={goalScores[goal.id]?.comment ?? ''}
                                         onChange={(e) => setGoalScores((p) => ({ ...p, [goal.id]: { ...p[goal.id], comment: e.target.value } }))}
                                         className="w-full rounded-lg border border-[#F0F0F3] px-3 py-1.5 text-sm focus:border-[#5E81F4] focus:outline-none" />
                                 </div>
@@ -329,7 +329,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                                         <Stars value={beiScores[v.key]?.score ?? 3}
                                             onChange={(val) => setBeiScores((p) => ({ ...p, [v.key]: { ...p[v.key], score: val } }))} disabled={false} />
                                     </div>
-                                    <input type="text" placeholder="코멘트" value={beiScores[v.key]?.comment ?? ''}
+                                    <input type="text" placeholder={tCommon('enterComment')} value={beiScores[v.key]?.comment ?? ''}
                                         onChange={(e) => setBeiScores((p) => ({ ...p, [v.key]: { ...p[v.key], comment: e.target.value } }))}
                                         className="w-full rounded-lg border border-[#F0F0F3] px-3 py-1.5 text-sm focus:border-[#5E81F4] focus:outline-none" />
                                 </div>

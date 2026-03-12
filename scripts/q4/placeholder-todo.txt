@@ -1,0 +1,75 @@
+src/app/(dashboard)/attendance/shift-calendar/ShiftCalendarClient.tsx:339:              <SelectValue placeholder="교대조 선택" />
+src/app/(dashboard)/settings/SettingsHubClient.tsx:42:          placeholder="설정 항목 검색... (예: 휴가, 급여, 등급)"
+src/app/(dashboard)/offboarding/OffboardingDashboardClient.tsx:327:              <SelectValue placeholder="전체 법인" />
+src/app/(dashboard)/recruitment/board/BoardClient.tsx:599:                  placeholder="예: 60000000"
+src/app/(dashboard)/recruitment/board/BoardClient.tsx:696:              placeholder="불합격 사유를 입력해주세요."
+src/app/(dashboard)/recruitment/requisitions/RequisitionListClient.tsx:149:            placeholder="직무명, 부서, 요청자 검색..."
+src/app/(dashboard)/recruitment/requisitions/RequisitionApproveModal.tsx:86:              placeholder="승인 또는 반려 사유를 입력하세요..."
+src/app/(dashboard)/recruitment/requisitions/new/RequisitionFormClient.tsx:162:            placeholder="예: 시니어 백엔드 개발자"
+src/app/(dashboard)/recruitment/requisitions/new/RequisitionFormClient.tsx:184:              placeholder="예: 과장"
+src/app/(dashboard)/recruitment/requisitions/new/RequisitionFormClient.tsx:263:            placeholder="채용이 필요한 사유를 상세히 작성해주세요. (예: 신규 프로젝트 인력 확충, 퇴직자 대체 충원 등)"
+src/app/(dashboard)/recruitment/talent-pool/TalentPoolClient.tsx:152:            placeholder="이름, 이메일, 연락처 검색..."
+src/app/(dashboard)/recruitment/cost-analysis/CostAnalysisClient.tsx:539:                  placeholder="거래처명"
+src/app/(dashboard)/recruitment/cost-analysis/CostAnalysisClient.tsx:557:                  placeholder="비용 설명 (선택)"
+src/app/(dashboard)/directory/DirectoryClient.tsx:175:              <SelectValue placeholder="법인 전체" />
+src/app/(dashboard)/directory/DirectoryClient.tsx:186:              <SelectValue placeholder="부서 전체" />
+src/app/(dashboard)/directory/DirectoryClient.tsx:197:              <SelectValue placeholder="직급 전체" />
+src/app/(dashboard)/delegation/settings/DelegationSettingsClient.tsx:471:                      placeholder="이름 또는 이메일로 검색..."
+src/app/(dashboard)/delegation/settings/DelegationSettingsClient.tsx:552:                placeholder="출장, 휴가 등..."
+src/app/(dashboard)/team/skills/TeamSkillsClient.tsx:286:                              placeholder="평가 코멘트 (선택)"
+src/app/(dashboard)/my/year-end/YearEndWizardClient.tsx:261:                    placeholder="이름 입력"
+src/app/(dashboard)/my/internal-jobs/InternalJobsClient.tsx:136:            placeholder="공고명 또는 부서 검색..."
+src/app/(dashboard)/my/profile/MyProfileClient.tsx:302:                  placeholder="자기소개를 입력하세요..."
+src/app/(dashboard)/my/profile/MyProfileClient.tsx:338:                placeholder="스킬 추가 (Enter)"
+src/app/(dashboard)/my/profile/MyProfileClient.tsx:496:                  placeholder="변경할 새 값을 입력하세요"
+src/app/(dashboard)/my/profile/MyProfileClient.tsx:507:                  placeholder="변경 사유를 입력하세요..."
+src/app/(dashboard)/my/benefits/MyBenefitsClient.tsx:207:              placeholder="예: 본인 결혼"
+src/app/(dashboard)/my/skills/MySkillsClient.tsx:378:                              placeholder="코멘트 입력 (선택)"
+src/app/(dashboard)/benefits/BenefitApprovalTab.tsx:228:                      placeholder="반려 사유를 입력해 주세요."
+src/app/(dashboard)/payroll/simulation/PayrollSimulationClient.tsx:442:                            placeholder="직원 검색" className="flex-1 px-2 py-1.5 text-sm outline-none bg-transparent" />
+src/app/(dashboard)/payroll/bank-transfers/BankTransfersClient.tsx:304:            <SelectValue placeholder="상태 필터" />
+src/app/(dashboard)/payroll/bank-transfers/BankTransfersClient.tsx:498:                placeholder="비고 입력 (선택)"
+src/app/(dashboard)/payroll/adjustments/AdjustmentsClient.tsx:320:                                            placeholder="직원명, 설명 검색"
+src/app/(dashboard)/payroll/adjustments/AdjustmentsClient.tsx:509:                                    placeholder="예: 500000 또는 -200000"
+src/app/(dashboard)/payroll/adjustments/AdjustmentsClient.tsx:522:                                    placeholder="조정 사유를 입력하세요"
+src/app/(dashboard)/payroll/[runId]/approve/PayrollApproveClient.tsx:287:                        placeholder="결재 의견을 입력하세요 (선택)"
+src/app/(dashboard)/payroll/[runId]/approve/PayrollApproveClient.tsx:336:                                placeholder="반려 사유를 구체적으로 입력해 주세요. (필수)"
+src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx:251:                placeholder="예외 사유를 입력하세요 (예: 대표이사 승인된 특별 근무)"
+src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx:968:                  placeholder="승인 요청 메모를 입력하세요"
+src/app/(dashboard)/payroll/import/PayrollImportClient.tsx:396:                    placeholder="예: 기본 급여 양식"
+src/app/(dashboard)/payroll/import/PayrollImportClient.tsx:439:                        placeholder="파일 헤더명"
+src/app/(dashboard)/performance/my-peer-review/MyPeerReviewClient.tsx:285:                                    placeholder="동료에 대한 종합적인 의견을 작성해주세요..."
+src/app/(dashboard)/performance/my-goals/MyGoalsClient.tsx:50:                            className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" placeholder="목표 제목" />
+src/app/(dashboard)/performance/my-goals/MyGoalsClient.tsx:55:                            className="w-full resize-none rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" placeholder="목표 상세 설명" />
+src/app/(dashboard)/performance/my-goals/MyGoalsClient.tsx:60:                            className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" placeholder="매출액, 수주잔고" />
+src/app/(dashboard)/performance/calibration/CalibrationClient.tsx:370:              placeholder="세션 이름"
+src/app/(dashboard)/performance/calibration/CalibrationClient.tsx:499:                      placeholder="조정 사유를 입력하세요"
+src/app/(dashboard)/performance/my-checkins/MyCheckinsClient.tsx:231:                                                            placeholder="체크인 메모"
+src/app/(dashboard)/performance/pulse/PulseSurveyClient.tsx:126:            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="서베이 제목"
+src/app/(dashboard)/performance/pulse/PulseSurveyClient.tsx:181:                      placeholder="질문 내용" className="flex-1 px-3 py-1.5 border border-[#D4D4D4] rounded-lg text-sm placeholder:text-[#999]" />
+src/app/(dashboard)/performance/pulse/PulseSurveyClient.tsx:199:                        placeholder="보기를 쉼표로 구분 (예: 매우 만족, 만족, 보통, 불만족)"
+src/app/(dashboard)/performance/pulse/[id]/respond/PulseRespondClient.tsx:153:                placeholder="의견을 입력하세요..."
+src/app/(dashboard)/performance/my-evaluation/MyEvaluationClient.tsx:320:                                                placeholder="달성 내용을 기술하세요..."
+src/app/(dashboard)/performance/my-evaluation/MyEvaluationClient.tsx:351:                                                placeholder="근거를 기술하세요..."
+src/app/(dashboard)/performance/manager-eval/ManagerEvalClient.tsx:456:                  placeholder="팀원에 대한 종합 평가 의견을 작성하세요..."
+src/app/(dashboard)/performance/manager-evaluation/ManagerEvaluationClient.tsx:315:                                    <input type="text" placeholder="코멘트" value={goalScores[goal.id]?.comment ?? ''}
+src/app/(dashboard)/performance/manager-evaluation/ManagerEvaluationClient.tsx:332:                                    <input type="text" placeholder="코멘트" value={beiScores[v.key]?.comment ?? ''}
+src/app/(dashboard)/performance/recognition/RecognitionClient.tsx:412:                      placeholder="직원 이름 또는 사번 검색"
+src/app/(dashboard)/performance/recognition/RecognitionClient.tsx:460:                  placeholder="칭찬 메시지를 작성하세요..."
+src/app/(dashboard)/performance/one-on-one/OneOnOneClient.tsx:415:                  placeholder="논의할 내용을 입력하세요"
+src/app/(dashboard)/performance/one-on-one/[id]/OneOnOneDetailClient.tsx:225:          placeholder="미팅 내용을 기록하세요..."
+src/app/(dashboard)/performance/one-on-one/[id]/OneOnOneDetailClient.tsx:276:                placeholder="액션 아이템 입력"
+src/app/(dashboard)/performance/comp-review/CompReviewClient.tsx:67:                    <input type="text" placeholder="예외 사유 (필수)" value={localReason}
+src/app/(dashboard)/performance/self-eval/SelfEvalClient.tsx:272:                  placeholder="평가 코멘트 (선택)"
+src/app/(dashboard)/performance/self-eval/SelfEvalClient.tsx:348:          placeholder="이번 평가 주기에 대한 종합 의견을 작성하세요..."
+src/app/(dashboard)/performance/peer-review/evaluate/[nominationId]/PeerEvalFormClient.tsx:133:          placeholder="건설적인 피드백을 작성해 주세요..."
+src/app/(dashboard)/performance/peer-review/[cycleId]/setup/PeerNominationSetupClient.tsx:154:                placeholder="이름 또는 사번으로 검색..."
+src/app/(dashboard)/approvals/attendance/AttendanceApprovalClient.tsx:451:                    placeholder="승인/반려 사유를 입력하세요..."
+src/app/(dashboard)/approvals/inbox/ApprovalInboxClient.tsx:130:          placeholder="반려 사유를 구체적으로 입력해주세요. (필수)"
+src/app/(dashboard)/onboarding/[id]/OnboardingDetailClient.tsx:447:                    <Textarea placeholder="차단 사유를 입력하세요 (필수)" value={blockReason} onChange={(e) => setBlockReason(e.target.value)} rows={3} />
+src/app/(dashboard)/onboarding/[id]/OnboardingDetailClient.tsx:472:                        <Textarea placeholder="코멘트 (선택)" value={signOffNote} onChange={(e) => setSignOffNote(e.target.value)} rows={3} />
+src/app/(dashboard)/leave/admin/LeaveAdminClient.tsx:536:                <SelectTrigger><SelectValue placeholder="선택" /></SelectTrigger>
+src/app/(dashboard)/leave/admin/LeaveAdminClient.tsx:545:                <SelectTrigger><SelectValue placeholder="선택" /></SelectTrigger>
+src/app/(dashboard)/leave/admin/LeaveAdminClient.tsx:558:                <Input type="number" value={bulkForm.days} onChange={(e) => setBulkForm((f) => ({ ...f, days: e.target.value }))} min={0} step={0.5} placeholder="예: 1.0" />
+src/app/(dashboard)/analytics/gender-pay-gap/GenderPayGapClient.tsx:160:              <SelectValue placeholder="전체 연도" />
+src/app/(dashboard)/employees/new/EmployeeNewClient.tsx:270:        <Input value={data.name} onChange={(e) => set('name', e.target.value)} placeholder="홍길동" />

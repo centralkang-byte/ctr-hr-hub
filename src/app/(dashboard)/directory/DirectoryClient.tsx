@@ -102,7 +102,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
       setEmployees(res.data ?? [])
       setTotal(res.pagination?.total ?? 0)
     } catch {
-      toast({ title: '오류', description: '처리 중 오류가 발생했습니다', variant: 'destructive' })
+      toast({ title: tCommon('error'), description: '처리 중 오류가 발생했습니다', variant: 'destructive' })
     } finally {
       setLoading(false)
     }

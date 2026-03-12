@@ -1,0 +1,30 @@
+src/app/(dashboard)/recruitment/cost-analysis/CostAnalysisClient.tsx:175:    if (!confirm('삭제하시겠습니까?')) return
+src/app/(dashboard)/compliance/data-retention/DataRetentionClient.tsx:50:    if (!confirm(tc('confirmAction'))) return
+src/app/(dashboard)/payroll/year-end/YearEndHRClient.tsx:403:    if (!window.confirm(`${confirmable.length}건의 정산을 일괄 확정하시겠습니까?`)) return
+src/app/(dashboard)/payroll/close-attendance/CloseAttendanceClient.tsx:136:        if (!confirm(tCommon('confirmReopen'))) return
+src/app/(dashboard)/payroll/adjustments/AdjustmentsClient.tsx:194:        if (!confirm('이 조정 항목을 삭제하시겠습니까?')) return
+src/app/(dashboard)/payroll/adjustments/AdjustmentsClient.tsx:206:        if (!confirm('조정을 완료하고 이상 검토 단계로 전환하시겠습니까? 이상 탐지 엔진이 실행됩니다.')) return
+src/app/(dashboard)/performance/cycles/[id]/CycleDetailClient.tsx:91:        if (!confirm(msg)) return
+src/app/(dashboard)/performance/my-peer-review/MyPeerReviewClient.tsx:124:            if (!confirm('제출하면 수정할 수 없습니다. 제출하시겠습니까?')) return
+src/app/(dashboard)/performance/my-goals/MyGoalsClient.tsx:153:        if (!confirm('이 목표를 삭제하시겠습니까?')) return
+src/app/(dashboard)/performance/my-goals/MyGoalsClient.tsx:159:        if (!canSubmit || !confirm('모든 초안 목표를 제출하시겠습니까? 제출 후에는 수정할 수 없습니다.')) return
+src/app/(dashboard)/performance/calibration/CalibrationClient.tsx:549:                      if (!confirm('캘리브레이션을 완료하시겠습니까?')) return
+src/app/(dashboard)/performance/admin/AdminResultsClient.tsx:87:    if (!confirm('성과 주기를 확정하시겠습니까? 확정 후에는 수정할 수 없습니다.')) return
+src/app/(dashboard)/performance/my-evaluation/MyEvaluationClient.tsx:131:            if (!confirm('제출하면 수정할 수 없습니다. 제출하시겠습니까?')) return
+src/app/(dashboard)/performance/manager-eval/ManagerEvalClient.tsx:167:    if (status === 'SUBMITTED' && !confirm('제출하면 수정할 수 없습니다. 제출하시겠습니까?')) return
+src/app/(dashboard)/performance/manager-evaluation/ManagerEvaluationClient.tsx:260:        if (status === 'SUBMITTED' && !confirm('평가를 확정하시겠습니까? 확정 후에는 수정이 제한됩니다.')) return
+src/app/(dashboard)/performance/manager-evaluation/ManagerEvaluationClient.tsx:430:        if (!confirm(`${selected.size}명을 동료평가자로 지명하시겠습니까?`)) return
+src/app/(dashboard)/performance/my-result/MyResultClient.tsx:113:        if (!confirm('결과를 확인하시겠습니까? 결과 확인은 동의가 아닌 수신 확인입니다.')) return
+src/app/(dashboard)/performance/comp-review/CompReviewClient.tsx:161:        if (!confirm(msg)) return
+src/app/(dashboard)/performance/self-eval/SelfEvalClient.tsx:147:    if (status === 'SUBMITTED' && !confirm('제출하면 수정할 수 없습니다. 제출하시겠습니까?')) return
+src/app/(dashboard)/performance/notifications/NotificationsClient.tsx:75:        if (!confirm('이 직원에게 결과를 통보하시겠습니까?')) return
+src/app/(dashboard)/performance/notifications/NotificationsClient.tsx:86:        if (!confirm(`미통보 ${pendingCount}명에게 일괄 통보하시겠습니까?`)) return
+src/components/training/MandatoryConfigTab.tsx:182:    if (!confirm(`"${config.course.title}" 의무교육 설정을 삭제하시겠습니까?`)) return
+src/components/training/MandatoryConfigTab.tsx:193:    if (!confirm('현재 활성화된 모든 의무교육 설정으로 자동 수강 신청하시겠습니까?')) return
+src/components/training/CoursesTab.tsx:136:    if (!confirm(`"${course.title}" 교육과정을 삭제하시겠습니까?`)) return
+src/components/recruitment/InterviewCalendarScheduler.tsx:125:    if (!confirm('캘린더 이벤트를 취소하시겠습니까?')) return
+src/components/compliance/gdpr/ConsentManagementTab.tsx:59:    if (!confirm(tc('confirmAction'))) return
+src/components/compliance/gdpr/DataRetentionTabContent.tsx:44:    if (!confirm(tc('confirmAction'))) return
+src/components/succession/PlansTab.tsx:104:    if (!confirm(`"${plan.positionTitle}" 계획을 삭제하시겠습니까?`)) return
+src/components/teams/TeamsWebhookSection.tsx:75:    if (!confirm('이 Webhook 설정을 삭제할까요?')) return
+src/components/benefits/BenefitPoliciesTab.tsx:158:    if (!confirm(`"${policy.name}" 정책을 삭제하시겠습니까?`)) return

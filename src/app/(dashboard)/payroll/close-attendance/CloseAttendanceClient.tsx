@@ -100,7 +100,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                 setStatuses((prev) => ({ ...prev, [companyId]: json.data }))
             }
         } catch {
-      toast({ title: '오류', description: '처리 중 오류가 발생했습니다', variant: 'destructive' })
+      toast({ title: tCommon('error'), description: '처리 중 오류가 발생했습니다', variant: 'destructive' })
     }
     }, [year, month])
 

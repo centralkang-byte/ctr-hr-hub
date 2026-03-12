@@ -197,7 +197,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-[-0.02em]">채용단가 ROI 분석</h1>
+          <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-[-0.02em]">{t('costAnalysisTitle')}</h1>
           <p className="text-sm text-[#999] mt-1">채용 비용 추적 및 투자 대비 효율 분석</p>
         </div>
         <div className="flex items-center gap-3">

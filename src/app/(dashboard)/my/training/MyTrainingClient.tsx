@@ -138,10 +138,10 @@ export default function MyTrainingClient({
         courseId,
         source: 'manual',
       })
-      toast({ title: '수강 신청이 완료되었습니다.' })
+      toast({ title: tCommon('created') })
       fetchData()
     } catch {
-      toast({ title: '수강 신청 실패', variant: 'destructive' })
+      toast({ title: tCommon('error'), variant: 'destructive' })
     } finally {
       setEnrollingId(null)
     }
@@ -152,10 +152,10 @@ export default function MyTrainingClient({
       await apiClient.patch(`/api/v1/training/enrollments/${enrollmentId}`, {
         status: 'IN_PROGRESS',
       })
-      toast({ title: '학습을 시작합니다.' })
+      toast({ title: tCommon('completed') })
       fetchData()
     } catch {
-      toast({ title: '상태 변경 실패', variant: 'destructive' })
+      toast({ title: tCommon('saveFailed'), variant: 'destructive' })
     }
   }
 
@@ -165,10 +165,10 @@ export default function MyTrainingClient({
         status: 'ENROLLMENT_COMPLETED',
         completedAt: new Date().toISOString(),
       })
-      toast({ title: '이수 완료 처리되었습니다.' })
+      toast({ title: tCommon('completed') })
       fetchData()
     } catch {
-      toast({ title: '완료 처리 실패', variant: 'destructive' })
+      toast({ title: tCommon('error'), variant: 'destructive' })
     }
   }
 

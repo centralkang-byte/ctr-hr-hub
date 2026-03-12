@@ -27,6 +27,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
 import type { SessionUser, DeptOption, RefOption } from '@/types'
 import { toast } from '@/hooks/use-toast'
+import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 // ─── Types ──────────────────────────────────────────────────
 

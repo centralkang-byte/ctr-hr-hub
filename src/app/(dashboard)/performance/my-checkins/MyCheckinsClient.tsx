@@ -228,7 +228,7 @@ export default function MyCheckinsClient({
                                                         <label className="mb-1 block text-xs text-[#8181A5]">메모 (선택)</label>
                                                         <input type="text" value={memos[goal.id] ?? ''}
                                                             onChange={(e) => setMemos((p) => ({ ...p, [goal.id]: e.target.value }))}
-                                                            placeholder="체크인 메모"
+                                                            placeholder={tCommon('enterNote')}
                                                             className="w-full rounded-lg border border-[#F0F0F3] px-3 py-1.5 text-sm focus:border-[#5E81F4] focus:outline-none" />
                                                     </div>
                                                     <button onClick={() => handleSaveProgress(goal.id)}

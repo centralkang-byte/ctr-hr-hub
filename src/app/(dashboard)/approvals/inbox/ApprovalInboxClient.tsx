@@ -444,7 +444,7 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
       {/* ── Page Header ── */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-[#1C1D21]">승인함</h1>
+          <h1 className="text-xl font-bold text-[#1C1D21]">{tCommon('approvalsInbox')}</h1>
           <p className="mt-0.5 text-sm text-[#8181A5]">
             처리가 필요한 승인 요청을 확인하세요.
           </p>

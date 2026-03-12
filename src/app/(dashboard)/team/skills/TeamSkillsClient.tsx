@@ -156,7 +156,7 @@ export default function TeamSkillsClient({
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">팀원 역량 평가</h1>
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('pageTitle')}</h1>
           <p className="text-sm text-[#666] mt-1">팀원의 역량 수준을 평가하세요. 자기평가를 참고할 수 있습니다.</p>
         </div>
         <select
@@ -283,7 +283,7 @@ export default function TeamSkillsClient({
                           {current && (
                             <input
                               type="text"
-                              placeholder="평가 코멘트 (선택)"
+                              placeholder={t('enterComment')}
                               value={current.managerComment}
                               onChange={(e) =>
                                 setEvalItems((prev) => ({

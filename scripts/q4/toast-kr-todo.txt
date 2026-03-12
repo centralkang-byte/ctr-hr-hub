@@ -1,0 +1,47 @@
+src/app/(dashboard)/settings/payroll/tabs/TaxFreeTab.tsx:83:      toast({ title: '저장되었습니다', description: '비과세 한도가 업데이트되었습니다.' })
+src/app/(dashboard)/settings/payroll/tabs/TaxFreeTab.tsx:86:      toast({ title: '저장 실패', description: '다시 시도해 주세요.', variant: 'destructive' })
+src/app/(dashboard)/settings/payroll/tabs/TaxFreeTab.tsx:94:    toast({ title: '변경을 취소했습니다' })
+src/app/(dashboard)/settings/payroll/tabs/PayScheduleTab.tsx:71:      toast({ title: '저장되었습니다', description: '급여 일정이 업데이트되었습니다.' })
+src/app/(dashboard)/settings/payroll/tabs/PayScheduleTab.tsx:74:      toast({ title: '저장 실패', description: '다시 시도해 주세요.', variant: 'destructive' })
+src/app/(dashboard)/settings/payroll/tabs/PayScheduleTab.tsx:82:    toast({ title: '변경을 취소했습니다' })
+src/app/(dashboard)/settings/payroll/tabs/BonusRulesTab.tsx:80:      toast({ title: '저장되었습니다', description: '성과급 규칙이 업데이트되었습니다.' })
+src/app/(dashboard)/settings/payroll/tabs/BonusRulesTab.tsx:83:      toast({ title: '저장 실패', description: '다시 시도해 주세요.', variant: 'destructive' })
+src/app/(dashboard)/settings/payroll/tabs/BonusRulesTab.tsx:91:    toast({ title: '변경을 취소했습니다' })
+src/app/(dashboard)/directory/DirectoryClient.tsx:105:      toast({ title: '오류', description: '처리 중 오류가 발생했습니다', variant: 'destructive' })
+src/app/(dashboard)/dashboard/compare/page.tsx:8:export const metadata = { title: '글로벌 법인 비교 | CTR HR Hub' }
+src/app/(dashboard)/my/year-end/page.tsx:12:export const metadata = { title: '연말정산 | CTR HR Hub' }
+src/app/(dashboard)/my/training/MyTrainingClient.tsx:128:      toast({ title: '교육 현황 로드 실패', variant: 'destructive' })
+src/app/(dashboard)/my/training/MyTrainingClient.tsx:141:      toast({ title: '수강 신청이 완료되었습니다.' })
+src/app/(dashboard)/my/training/MyTrainingClient.tsx:144:      toast({ title: '수강 신청 실패', variant: 'destructive' })
+src/app/(dashboard)/my/training/MyTrainingClient.tsx:155:      toast({ title: '학습을 시작합니다.' })
+src/app/(dashboard)/my/training/MyTrainingClient.tsx:158:      toast({ title: '상태 변경 실패', variant: 'destructive' })
+src/app/(dashboard)/my/training/MyTrainingClient.tsx:168:      toast({ title: '이수 완료 처리되었습니다.' })
+src/app/(dashboard)/my/training/MyTrainingClient.tsx:171:      toast({ title: '완료 처리 실패', variant: 'destructive' })
+src/app/(dashboard)/my/offboarding/page.tsx:13:  title: '나의 퇴직처리 — CTR HR Hub',
+src/app/(dashboard)/my/profile/page.tsx:8:export const metadata = { title: '내 프로필 | CTR HR Hub' }
+src/app/(dashboard)/my/benefits/page.tsx:7:export const metadata = { title: '나의 복리후생 | CTR HR Hub' }
+src/app/(dashboard)/my/page.tsx:8:export const metadata = { title: '나의 공간 | CTR HR Hub' }
+src/app/(dashboard)/my/leave/page.tsx:7:export const metadata = { title: '내 휴가 | CTR HR Hub' }
+src/app/(dashboard)/benefits/page.tsx:7:export const metadata = { title: '복리후생 관리 | CTR HR Hub' }
+src/app/(dashboard)/payroll/close-attendance/CloseAttendanceClient.tsx:103:      toast({ title: '오류', description: '처리 중 오류가 발생했습니다', variant: 'destructive' })
+src/app/(dashboard)/payroll/close-attendance/page.tsx:8:    title: '근태 마감 | CTR HR Hub',
+src/app/(dashboard)/payroll/anomalies/page.tsx:7:export const metadata = { title: '급여 이상 탐지 | CTR HR Hub' }
+src/app/(dashboard)/payroll/simulation/page.tsx:8:export const metadata = { title: '급여 시뮬레이션 | CTR HR Hub' }
+src/app/(dashboard)/payroll/adjustments/page.tsx:8:    title: '수동 조정 | CTR HR Hub',
+src/app/(dashboard)/payroll/import/page.tsx:8:export const metadata = { title: '해외 급여 업로드 | CTR HR Hub' }
+src/app/(dashboard)/payroll/global/page.tsx:7:export const metadata = { title: '글로벌 급여 현황 | CTR HR Hub' }
+src/app/(dashboard)/performance/pulse/[id]/results/page.tsx:4:export const metadata: Metadata = { title: '설문 결과 | CTR HR Hub' }
+src/app/(dashboard)/performance/pulse/[id]/respond/page.tsx:4:export const metadata: Metadata = { title: '설문 응답 | CTR HR Hub' }
+src/app/(dashboard)/performance/pulse/page.tsx:4:export const metadata: Metadata = { title: '펄스 서베이 | CTR HR Hub' }
+src/app/(dashboard)/performance/peer-review/results/[cycleId]/page.tsx:4:export const metadata: Metadata = { title: '동료 평가 결과 | CTR HR Hub' }
+src/app/(dashboard)/performance/peer-review/evaluate/[nominationId]/page.tsx:4:export const metadata: Metadata = { title: '동료 평가 작성 | CTR HR Hub' }
+src/app/(dashboard)/performance/peer-review/[cycleId]/setup/page.tsx:4:export const metadata: Metadata = { title: '동료 평가 지정 | CTR HR Hub' }
+src/app/(dashboard)/approvals/attendance/page.tsx:7:export const metadata = { title: '통합 승인함 | CTR HR Hub' }
+src/app/(dashboard)/approvals/inbox/page.tsx:14:  title: '승인함 — CTR HR Hub',
+src/app/(dashboard)/notifications/NotificationsClient.tsx:103:      toast({ title: '오류', description: '읽음 처리에 실패했습니다', variant: 'destructive' })
+src/app/(dashboard)/notifications/NotificationsClient.tsx:115:      toast({ title: '오류', description: '모두 읽음 처리에 실패했습니다', variant: 'destructive' })
+src/app/(dashboard)/leave/LeaveClient.tsx:247:      toast({ title: '휴가 신청이 완료되었습니다', description: '담당자 승인 후 확정됩니다.' })
+src/app/(dashboard)/leave/LeaveClient.tsx:252:      toast({ title: '신청 실패', description: msg, variant: 'destructive' })
+src/app/(dashboard)/leave/admin/LeaveAdminClient.tsx:216:      toast({ title: '일괄 부여 실패', description: '오류가 발생했습니다.', variant: 'destructive' })
+src/app/(dashboard)/leave/team/LeaveTeamClient.tsx:207:        toast({ title: '오류', description: '승인 처리 중 오류가 발생했습니다', variant: 'destructive' })
+src/app/(dashboard)/leave/team/LeaveTeamClient.tsx:236:      toast({ title: '오류', description: '반려 처리 중 오류가 발생했습니다', variant: 'destructive' })

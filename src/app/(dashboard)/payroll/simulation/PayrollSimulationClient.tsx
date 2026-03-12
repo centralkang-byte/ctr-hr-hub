@@ -439,7 +439,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
                         <div className="flex items-center border border-[#F0F0F3] rounded px-2">
                           <Search className="w-3.5 h-3.5 text-[#8181A5]" />
                           <input value={searchQuery} onChange={e => handleSearchChange(e.target.value)}
-                            placeholder="직원 검색" className="flex-1 px-2 py-1.5 text-sm outline-none bg-transparent" />
+                            placeholder={tCommon('searchEmployee')} className="flex-1 px-2 py-1.5 text-sm outline-none bg-transparent" />
                         </div>
                         {showDropdown && searchResults.length > 0 && (
                           <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#F0F0F3] rounded shadow-lg z-20 max-h-40 overflow-y-auto">

@@ -149,7 +149,7 @@ export default function TalentPoolClient({
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="이름, 이메일, 연락처 검색..."
+            placeholder={tCommon('searchPlaceholder')}
             className="w-full pl-9 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853]"
           />
         </div>

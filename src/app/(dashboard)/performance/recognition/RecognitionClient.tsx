@@ -409,7 +409,7 @@ export default function RecognitionClient() {
                       type="text"
                       value={searchQuery}
                       onChange={(e) => searchEmployees(e.target.value)}
-                      placeholder="직원 이름 또는 사번 검색"
+                      placeholder={tCommon('searchEmployee')}
                       className="w-full pl-9 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"
                     />
                     {searchResults.length > 0 && (

@@ -100,7 +100,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
         prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
       )
     } catch {
-      toast({ title: '오류', description: '읽음 처리에 실패했습니다', variant: 'destructive' })
+      toast({ title: tCommon('error'), description: '읽음 처리에 실패했습니다', variant: 'destructive' })
     }
   }
 
@@ -112,7 +112,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
       setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })))
       toast({ title: t('allMarkedRead') })
     } catch {
-      toast({ title: '오류', description: '모두 읽음 처리에 실패했습니다', variant: 'destructive' })
+      toast({ title: tCommon('error'), description: '모두 읽음 처리에 실패했습니다', variant: 'destructive' })
     } finally {
       setMarkingAll(false)
     }

@@ -3,6 +3,7 @@
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
+import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -26,6 +27,7 @@ interface CycleOption {
 
 export default function NewGoalClient({
   const tCommon = useTranslations('common')
+  const { isSubmitting, guardedSubmit } = useSubmitGuard()
   const t = useTranslations('performance')
  user }: { user: SessionUser }) {
   const router = useRouter()

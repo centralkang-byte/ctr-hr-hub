@@ -190,7 +190,13 @@ export default function RecruitmentListClient({ user }: Props) {
                 </td>
               </tr>
             ) : (
-              data.map((row) => (
+              {!(data?.length) && (
+          <EmptyState
+            title={tCommon('emptyTitle')}
+            description={tCommon('emptyDesc')}
+          />
+        )}
+        data.map((row) => (
                 <tr
                   key={row.id}
                   onClick={() => router.push(`/recruitment/${row.id}`)}

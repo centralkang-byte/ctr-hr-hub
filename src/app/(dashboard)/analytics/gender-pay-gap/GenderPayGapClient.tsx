@@ -141,7 +141,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">성별 급여 격차 분석</h1>
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('genderPayGapTitle')}</h1>
           <p className="text-sm text-[#666] mt-1">직급·직무·부서별 성별 보상 비교 분석</p>
         </div>
         <div className="flex items-center gap-3">

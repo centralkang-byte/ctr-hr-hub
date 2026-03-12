@@ -257,7 +257,13 @@ export default function MyGoalsClient({
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        {goals.map((goal) => {
+                        {!(goals?.length) && (
+          <EmptyState
+            title={tCommon('emptyTitle')}
+            description={tCommon('emptyDesc')}
+          />
+        )}
+        {goals.map((goal) => {
                             const pct = Number(goal.achievementScore ?? 0)
                             const locked = goal.isLocked || goal.status === 'APPROVED'
                             const badge = STATUS_BADGE[goal.status] ?? { label: goal.status, cls: 'bg-[#F5F5FA] text-[#8181A5]' }

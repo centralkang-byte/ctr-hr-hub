@@ -3,6 +3,7 @@
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
+import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — 포상 등록 폼 (Client)
@@ -57,6 +58,7 @@ export default function RewardFormClient({ user }: Props) {
   const t = useTranslations('rewardForm')
   const tRewards = useTranslations('rewardsPage')
   const tCommon = useTranslations('common')
+  const { isSubmitting, guardedSubmit } = useSubmitGuard()
 
   const [employees, setEmployees] = useState<EmployeeOption[]>([])
   const [submitting, setSubmitting] = useState(false)

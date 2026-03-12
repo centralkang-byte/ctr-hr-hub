@@ -29,7 +29,7 @@
     "selectPlaceholder": "선택해주세요...",
     "searchPlaceholder": "검색어를 입력하세요...",
     "success": "성공적으로 처리되었습니다.",
-    "error": "오류가 발생했습니다",
+    "error": "오류",
     "noPendingActions": "처리할 항목이 없습니다",
     "today": "오늘",
     "thisWeek": "이번 주",
@@ -144,8 +144,8 @@
     "retry": "다시 시도",
     "complete": "완료",
     "select": "선택",
-    "loadFailed": "데이터를 불러오지 못했습니다",
-    "saveFailed": "저장에 실패했습니다",
+    "loadFailed": "불러오기 실패",
+    "saveFailed": "저장 실패",
     "deleteFailed": "삭제에 실패했습니다",
     "saved": "저장되었습니다",
     "deleted": "삭제되었습니다",
@@ -171,14 +171,28 @@
     "used": "사용",
     "remaining": "잔여",
     "pending": "대기중",
-    "completed": "완료",
+    "completed": "완료되었습니다",
     "unit.day": "일",
     "unit.year": "년",
     "unit.person": "명",
     "unit.count": "건",
     "empty": "비어 있음",
     "unit.month": "개월",
-    "saving": "저장 중..."
+    "saving": "저장 중...",
+    "searchByName": "이름으로 검색",
+    "enterNote": "메모를 입력하세요",
+    "enterContent": "내용을 입력하세요",
+    "enterTitle": "제목을 입력하세요",
+    "enterReason": "사유를 입력하세요",
+    "enterDescription": "설명을 입력하세요",
+    "enterComment": "코멘트를 입력하세요",
+    "enterMessage": "메시지를 입력하세요",
+    "searchEmployee": "직원 검색",
+    "cancelled": "취소되었습니다",
+    "registered": "등록되었습니다",
+    "approvalsInbox": "통합 승인함",
+    "emptyTitle": "데이터가 없습니다",
+    "emptyDesc": "아직 등록된 내용이 없습니다"
   },
   "auth": {
     "login": "로그인",
@@ -641,7 +655,8 @@
     "averageWorkHours": "근무 시간 (평균)",
     "pageTitle": "근태 관리",
     "emptyTitle": "근태 데이터가 없습니다",
-    "emptyDesc": "해당 기간의 근태 데이터가 없습니다"
+    "emptyDesc": "해당 기간의 근태 데이터가 없습니다",
+    "shiftCalendarTitle": "시프트 캘린더"
   },
   "leave": {
     "title": "휴가 관리",
@@ -1091,8 +1106,8 @@
     "resultsTitle": "평가 결과",
     "peerTitle": "동료 평가",
     "checkInTitle": "체크인",
-    "emptyTitle": "데이터가 없습니다",
-    "emptyDesc": "아직 등록된 성과 데이터가 없습니다",
+    "emptyTitle": "성과 데이터가 없습니다",
+    "emptyDesc": "등록된 성과 데이터가 없습니다",
     "emptyCycles": "등록된 평가 사이클이 없습니다",
     "emptyCyclesDesc": "새로운 평가 사이클을 생성하세요.",
     "emptyGoals": "설정된 목표가 없습니다",
@@ -1113,7 +1128,28 @@
     "totalNominations": "총 지명",
     "nominationCount": "지명 수",
     "avgScore": "평균 점수",
-    "pageTitle": "성과 관리"
+    "pageTitle": "성과 관리",
+    "enterGoal": "목표를 입력하세요",
+    "enterFeedback": "피드백을 입력하세요",
+    "enterEvaluation": "평가 의견을 입력하세요",
+    "enterComment": "코멘트를 입력하세요 (선택)",
+    "managerEvalTitle": "팀원 평가 (Manager Evaluation)",
+    "selfEvalTitle": "자기평가 (Self Evaluation)",
+    "pulseSurveyTitle": "펄스 서베이",
+    "teamGoalsTitle": "팀 목표",
+    "recognitionTitle": "칭찬/인정",
+    "compReviewTitle": "보상 검토",
+    "oneOnOneTitle": "1:1 미팅",
+    "notificationsTitle": "알림",
+    "cycleDetailTitle": "성과 주기 상세",
+    "myCheckinsTitle": "나의 체크인",
+    "myEvalTitle": "나의 평가",
+    "myGoalsTitle": "나의 목표",
+    "myResultTitle": "나의 성과 결과",
+    "myPeerReviewTitle": "나의 동료 평가",
+    "peerEvalTitle": "동료 평가 작성",
+    "peerSetupTitle": "동료 평가 지정",
+    "peerResultsTitle": "동료 평가 결과"
   },
   "recruitment": {
     "title": "채용 관리",
@@ -1433,7 +1469,11 @@
     "confirmRejection": "불합격 처리",
     "emptyTitle": "채용 공고가 없습니다",
     "emptyDesc": "등록된 채용 공고가 없습니다",
-    "pageTitle": "채용 관리"
+    "pageTitle": "채용 관리",
+    "costAnalysisTitle": "채용단가 ROI 분석",
+    "requisitionTitle": "채용 요청",
+    "requisitionFormTitle": "채용 요청서 작성",
+    "searchPayrollItem": "급여 항목 검색"
   },
   "offboarding": {
     "title": "퇴직 관리",
@@ -2109,7 +2149,18 @@
     "kpiDeductionChange": "총 공제액 변동",
     "kpiNetChange": "실수령액 변동",
     "current": "현재",
-    "simulated": "시뮬레이션"
+    "simulated": "시뮬레이션",
+    "adjustmentReasonPlaceholder": "조정 사유를 입력하세요",
+    "reviewTitle": "급여 검토",
+    "adjustmentsTitle": "수동 조정",
+    "importTitle": "해외 급여 업로드",
+    "bankTransfersTitle": "계좌 이체",
+    "globalTitle": "글로벌 급여",
+    "anomaliesTitle": "이상 탐지",
+    "yearEndTitle": "연말정산",
+    "publishTitle": "급여 발행",
+    "approveTitle": "급여 승인",
+    "pageTitle": "급여 관리"
   },
   "analytics": {
     "title": "분석/리포트",
@@ -2308,10 +2359,18 @@
     "company_id": "법인",
     "overviewTitle": "HR 분석 대시보드",
     "turnoverTitle": "이직 분석",
-    "workforceTitle": "인력 현황",
+    "workforceTitle": "인력 분석",
     "emptyTitle": "분석 데이터가 없습니다",
     "emptyDesc": "분석할 데이터가 충분하지 않습니다",
-    "pageTitle": "분석"
+    "pageTitle": "분석",
+    "executiveTitle": "경영진 요약",
+    "payrollTitle": "급여 분석",
+    "performanceTitle": "성과 분석",
+    "attendanceTitle": "근태 분석",
+    "teamHealthTitle": "팀 건강 대시보드",
+    "aiReportTitle": "AI 리포트",
+    "genderPayGapTitle": "성별 급여 격차 분석",
+    "predictiveTitle": "예측 분석"
   },
   "notification": {
     "title": "알림",
@@ -2745,7 +2804,8 @@
     "input": "입력",
     "pageTitle": "설정",
     "saved": "설정이 저장되었습니다",
-    "saveFailed": "설정 저장에 실패했습니다"
+    "saveFailed": "설정 저장에 실패했습니다",
+    "attendanceTitle": "근태 설정"
   },
   "ai": {
     "generated": "AI 생성",
@@ -3493,9 +3553,11 @@
     "emptyDesc": "새 직원을 등록하세요."
   },
   "skills": {
-    "pageTitle": "스킬 매트릭스",
+    "pageTitle": "스킬 관리",
     "emptyTitle": "스킬 데이터가 없습니다",
-    "emptyDesc": "아직 등록된 스킬이 없습니다"
+    "emptyDesc": "아직 등록된 스킬이 없습니다",
+    "skillMatrixTitle": "스킬 매트릭스",
+    "teamSkillsTitle": "팀 스킬"
   },
   "lms": {
     "pageTitle": "교육 관리",
@@ -3510,7 +3572,7 @@
   },
   "mySpace": {
     "tasksTitle": "나의 업무",
-    "profileTitle": "내 프로필",
+    "profileTitle": "나의 프로필",
     "attendanceTitle": "나의 출퇴근",
     "leaveTitle": "나의 휴가",
     "payslipTitle": "급여명세서",
@@ -3540,9 +3602,16 @@
     "claimHistory": "신청 내역",
     "emptyBenefitClaim": "신청 내역이 없습니다",
     "emptyBenefitClaimDesc": "아직 복리후생 신청 내역이 없습니다.",
-    "pageTitle": "마이스페이스",
+    "pageTitle": "나의 공간",
     "emptyTitle": "데이터가 없습니다",
-    "emptyDesc": "아직 등록된 내용이 없습니다"
+    "emptyDesc": "아직 등록된 내용이 없습니다",
+    "yearEndTitle": "연말정산",
+    "skillsTitle": "나의 스킬",
+    "trainingTitle": "나의 교육",
+    "internalJobsTitle": "사내 공모",
+    "offboardingTitle": "나의 퇴직처리",
+    "notificationSettingsTitle": "알림 설정",
+    "settingsTitle": "나의 설정"
   },
   "directory": {
     "pageTitle": "인사 디렉터리",

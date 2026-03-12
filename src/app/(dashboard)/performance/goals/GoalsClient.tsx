@@ -199,7 +199,13 @@ export default function GoalsClient({
           </div>
         ) : (
           <div className="space-y-4">
-            {goals.map((goal) => {
+            {!(goals?.length) && (
+          <EmptyState
+            title={t('emptyTitle')}
+            description={t('emptyDesc')}
+          />
+        )}
+        {goals.map((goal) => {
               const pct = Number(goal.achievementScore ?? 0)
               return (
                 <div

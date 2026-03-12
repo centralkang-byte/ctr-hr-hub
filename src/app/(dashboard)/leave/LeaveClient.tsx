@@ -244,12 +244,12 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       }
       await apiClient.post('/api/v1/leave/requests', payload)
       setDialogOpen(false)
-      toast({ title: '휴가 신청이 완료되었습니다', description: '담당자 승인 후 확정됩니다.' })
+      toast({ title: tCommon('submitted'), description: '담당자 승인 후 확정됩니다.' })
       void fetchBalances()
       void fetchRequests()
     } catch (err) {
       const msg = err instanceof Error ? err.message : '휴가 신청 중 오류가 발생했습니다.'
-      toast({ title: '신청 실패', description: msg, variant: 'destructive' })
+      toast({ title: tCommon('error'), description: msg, variant: 'destructive' })
     } finally {
       setSaving(false)
     }

@@ -213,7 +213,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
       toast({ title: tc('success'), description: `${employeeIds.length}명에게 연차가 부여되었습니다.` })
     } catch (error) {
       console.error('[LeaveAdmin] Bulk grant failed:', error)
-      toast({ title: '일괄 부여 실패', description: '오류가 발생했습니다.', variant: 'destructive' })
+      toast({ title: tCommon('error'), description: '오류가 발생했습니다.', variant: 'destructive' })
     } finally {
       setBulkLoading(false)
     }
@@ -533,7 +533,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
             <div className="space-y-2">
               <Label>휴가 정책</Label>
               <Select value={bulkForm.policyId} onValueChange={(v) => setBulkForm((f) => ({ ...f, policyId: v }))}>
-                <SelectTrigger><SelectValue placeholder="선택" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={tCommon('selectPlaceholder')} /></SelectTrigger>
                 <SelectContent>
                   {policies.map((p) => (<SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>))}
                 </SelectContent>
@@ -542,7 +542,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
             <div className="space-y-2">
               <Label>대상 부서</Label>
               <Select value={bulkForm.departmentId} onValueChange={(v) => setBulkForm((f) => ({ ...f, departmentId: v }))}>
-                <SelectTrigger><SelectValue placeholder="선택" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={tCommon('selectPlaceholder')} /></SelectTrigger>
                 <SelectContent>
                   {departments.map((d) => (<SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>))}
                 </SelectContent>

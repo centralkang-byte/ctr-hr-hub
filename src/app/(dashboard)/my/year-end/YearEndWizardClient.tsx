@@ -258,7 +258,7 @@ function Step1Dependents({ dependents, onChange }: Step1Props) {
                     value={dep.name}
                     onChange={(e) => updateDependent(index, { name: e.target.value })}
                     disabled={dep.relationship === '본인'}
-                    placeholder="이름 입력"
+                    placeholder={tCommon('enterTitle')}
                     className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999] disabled:bg-[#F5F5F5] disabled:text-[#999]"
                   />
                 </div>

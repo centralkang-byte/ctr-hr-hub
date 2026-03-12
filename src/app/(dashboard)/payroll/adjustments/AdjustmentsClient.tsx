@@ -238,7 +238,7 @@ export default function AdjustmentsClient({
             {/* Header */}
             <div className="mb-6">
                 <nav className="text-xs text-[#999] mb-1">급여 / 수동 조정</nav>
-                <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-tight">수동 조정</h1>
+                <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-tight">{t('adjustmentsTitle')}</h1>
                 <p className="text-sm text-[#666] mt-0.5">소급 지급, 보너스, 공제 등 수동 조정을 추가합니다.</p>
             </div>
 
@@ -317,7 +317,7 @@ export default function AdjustmentsClient({
                                             type="text"
                                             value={search}
                                             onChange={(e) => setSearch(e.target.value)}
-                                            placeholder="직원명, 설명 검색"
+                                            placeholder={tCommon('searchPlaceholder')}
                                             className="pl-8 pr-3 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 w-48"
                                         />
                                     </div>

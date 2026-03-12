@@ -204,7 +204,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
         scheduleRowFadeAndRefresh(requestId)
       } catch {
         revertOptimistic(requestId)
-        toast({ title: '오류', description: '승인 처리 중 오류가 발생했습니다', variant: 'destructive' })
+        toast({ title: tCommon('error'), description: '승인 처리 중 오류가 발생했습니다', variant: 'destructive' })
       }
     },
     [scheduleRowFadeAndRefresh, revertOptimistic],
@@ -233,7 +233,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
       scheduleRowFadeAndRefresh(requestId)
     } catch {
       revertOptimistic(requestId)
-      toast({ title: '오류', description: '반려 처리 중 오류가 발생했습니다', variant: 'destructive' })
+      toast({ title: tCommon('error'), description: '반려 처리 중 오류가 발생했습니다', variant: 'destructive' })
     }
   }, [rejectTargetId, rejectionReason, scheduleRowFadeAndRefresh, revertOptimistic])
 

@@ -1,0 +1,3 @@
+src/app/(dashboard)/my/year-end/YearEndWizardClient.tsx: >닫기</button>
+src/app/(dashboard)/performance/calibration/CalibrationClient.tsx: >닫기</button>
+src/app/(dashboard)/performance/recognition/RecognitionClient.tsx: >변경</button>

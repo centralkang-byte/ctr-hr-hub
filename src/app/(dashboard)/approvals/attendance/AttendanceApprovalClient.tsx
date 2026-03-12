@@ -180,7 +180,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
         <div className="flex items-center gap-3">
           <Inbox className="w-6 h-6 text-[#5E81F4]" />
           <div>
-            <h1 className="text-2xl font-bold text-[#1C1D21]">통합 승인함</h1>
+            <h1 className="text-2xl font-bold text-[#1C1D21]">{tCommon('approvalsInbox')}</h1>
             <p className="text-sm text-[#8181A5] mt-0.5">휴가, 초과근무, 근태수정, 교대변경 요청을 한 곳에서 처리합니다</p>
           </div>
         </div>

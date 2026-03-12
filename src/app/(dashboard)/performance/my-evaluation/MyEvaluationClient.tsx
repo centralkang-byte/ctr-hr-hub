@@ -217,7 +217,7 @@ export default function MyEvaluationClient({
                 {/* Header */}
                 <div className="mb-6 flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-[#1C1D21]">자기평가 (Self Evaluation)</h1>
+                        <h1 className="text-2xl font-bold text-[#1C1D21]">{t('selfEvalTitle')}</h1>
                         <p className="mt-1 text-sm text-[#8181A5]">MBO 업적과 BEI 역량을 평가합니다</p>
                     </div>
                     <div className="flex items-center gap-3">

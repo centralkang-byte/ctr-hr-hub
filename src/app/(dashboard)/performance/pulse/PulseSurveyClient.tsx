@@ -271,7 +271,7 @@ export default function PulseSurveyClient() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <BarChart3 className="w-6 h-6 text-[#00C853]" />
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">펄스 서베이</h1>
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('pulseSurveyTitle')}</h1>
         </div>
         <button onClick={() => setShowCreate(true)}
           className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}>

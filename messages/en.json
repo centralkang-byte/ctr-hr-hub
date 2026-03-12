@@ -29,7 +29,7 @@
     "selectPlaceholder": "Select...",
     "searchPlaceholder": "Search...",
     "success": "Successfully processed.",
-    "error": "An error occurred",
+    "error": "Error",
     "noPendingActions": "No pending actions",
     "today": "Today",
     "thisWeek": "This Week",
@@ -144,16 +144,16 @@
     "retry": "Retry",
     "complete": "Complete",
     "select": "Select",
-    "loadFailed": "Failed to load data",
-    "saveFailed": "Failed to save",
+    "loadFailed": "Load failed",
+    "saveFailed": "Save failed",
     "deleteFailed": "Failed to delete",
-    "saved": "Saved successfully",
-    "deleted": "Deleted successfully",
-    "created": "Created successfully",
-    "updated": "Updated successfully",
-    "submitted": "Submitted successfully",
-    "approved": "Approved successfully",
-    "rejected": "Rejected successfully",
+    "saved": "Saved",
+    "deleted": "Deleted",
+    "created": "Created",
+    "updated": "Updated",
+    "submitted": "Submitted",
+    "approved": "Approved",
+    "rejected": "Rejected",
     "confirmDeleteDesc": "This action cannot be undone",
     "confirmSubmit": "Submit?",
     "confirmApprove": "Approve?",
@@ -178,7 +178,21 @@
     "unit.count": " items",
     "empty": "Empty",
     "unit.month": " month(s)",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "searchByName": "Search by name",
+    "enterNote": "Enter note",
+    "enterContent": "Enter content",
+    "enterTitle": "Enter title",
+    "enterReason": "Enter reason",
+    "enterDescription": "Enter description",
+    "enterComment": "Enter comment",
+    "enterMessage": "Enter message",
+    "searchEmployee": "Search employee",
+    "cancelled": "Cancelled",
+    "registered": "Registered",
+    "approvalsInbox": "Approvals Inbox",
+    "emptyTitle": "No data",
+    "emptyDesc": "Nothing has been added yet"
   },
   "auth": {
     "login": "Login",
@@ -606,7 +620,8 @@
     "averageWorkHours": "Work Hours (Average)",
     "pageTitle": "Attendance",
     "emptyTitle": "No attendance data",
-    "emptyDesc": "No attendance data for this period"
+    "emptyDesc": "No attendance data for this period",
+    "shiftCalendarTitle": "Shift Calendar"
   },
   "leave": {
     "title": "Leave Management",
@@ -1056,8 +1071,8 @@
     "resultsTitle": "Results",
     "peerTitle": "Peer Review",
     "checkInTitle": "Check-In",
-    "emptyTitle": "No data",
-    "emptyDesc": "No performance data yet",
+    "emptyTitle": "No performance data",
+    "emptyDesc": "No performance data available",
     "emptyCycles": "No cycles registered",
     "emptyCyclesDesc": "Create a new cycle.",
     "emptyGoals": "No goals set",
@@ -1078,7 +1093,28 @@
     "totalNominations": "Total Nominations",
     "nominationCount": "# Nominations",
     "avgScore": "Avg Score",
-    "pageTitle": "Performance"
+    "pageTitle": "Performance",
+    "enterGoal": "Enter goal",
+    "enterFeedback": "Enter feedback",
+    "enterEvaluation": "Enter evaluation",
+    "enterComment": "Enter comment (optional)",
+    "managerEvalTitle": "Manager Evaluation",
+    "selfEvalTitle": "Self Evaluation",
+    "pulseSurveyTitle": "Pulse Survey",
+    "teamGoalsTitle": "Team Goals",
+    "recognitionTitle": "Recognition",
+    "compReviewTitle": "Compensation Review",
+    "oneOnOneTitle": "1:1 Meeting",
+    "notificationsTitle": "Notifications",
+    "cycleDetailTitle": "Cycle Detail",
+    "myCheckinsTitle": "My Check-ins",
+    "myEvalTitle": "My Evaluation",
+    "myGoalsTitle": "My Goals",
+    "myResultTitle": "My Result",
+    "myPeerReviewTitle": "My Peer Review",
+    "peerEvalTitle": "Peer Evaluation",
+    "peerSetupTitle": "Peer Nomination Setup",
+    "peerResultsTitle": "Peer Review Results"
   },
   "recruitment": {
     "title": "Recruitment",
@@ -1398,7 +1434,11 @@
     "confirmRejection": "Reject",
     "emptyTitle": "No job postings",
     "emptyDesc": "No job postings have been created",
-    "pageTitle": "Recruitment"
+    "pageTitle": "Recruitment",
+    "costAnalysisTitle": "Cost Analysis",
+    "requisitionTitle": "Requisition",
+    "requisitionFormTitle": "New Requisition",
+    "searchPayrollItem": "Search payroll item"
   },
   "offboarding": {
     "title": "Offboarding",
@@ -2074,7 +2114,18 @@
     "kpiDeductionChange": "Total Deductions Change",
     "kpiNetChange": "Net Pay Change",
     "current": "Current",
-    "simulated": "Simulated"
+    "simulated": "Simulated",
+    "adjustmentReasonPlaceholder": "Enter adjustment reason",
+    "reviewTitle": "Payroll Review",
+    "adjustmentsTitle": "Adjustments",
+    "importTitle": "Import Payroll",
+    "bankTransfersTitle": "Bank Transfers",
+    "globalTitle": "Global Payroll",
+    "anomaliesTitle": "Anomaly Detection",
+    "yearEndTitle": "Year-End Settlement",
+    "publishTitle": "Payroll Publishing",
+    "approveTitle": "Payroll Approval",
+    "pageTitle": "Payroll"
   },
   "analytics": {
     "title": "Analytics",
@@ -2272,11 +2323,19 @@
     },
     "company_id": "Company",
     "overviewTitle": "HR Analytics Dashboard",
-    "turnoverTitle": "Turnover Analysis",
-    "workforceTitle": "Workforce",
+    "turnoverTitle": "Turnover Analytics",
+    "workforceTitle": "Workforce Analytics",
     "emptyTitle": "No analytics data",
     "emptyDesc": "Insufficient data for analysis",
-    "pageTitle": "Analytics"
+    "pageTitle": "Analytics",
+    "executiveTitle": "Executive Summary",
+    "payrollTitle": "Payroll Analytics",
+    "performanceTitle": "Performance Analytics",
+    "attendanceTitle": "Attendance Analytics",
+    "teamHealthTitle": "Team Health Dashboard",
+    "aiReportTitle": "AI Report",
+    "genderPayGapTitle": "Gender Pay Gap Analysis",
+    "predictiveTitle": "Predictive Analytics"
   },
   "notification": {
     "title": "Notifications",
@@ -2710,7 +2769,8 @@
     "input": "Input",
     "pageTitle": "Settings",
     "saved": "Settings saved",
-    "saveFailed": "Failed to save settings"
+    "saveFailed": "Failed to save settings",
+    "attendanceTitle": "Attendance Settings"
   },
   "ai": {
     "generated": "AI Generated",
@@ -3454,9 +3514,11 @@
     "emptyDesc": "Register a new employee."
   },
   "skills": {
-    "pageTitle": "Skills Matrix",
+    "pageTitle": "Skills",
     "emptyTitle": "No skill data",
-    "emptyDesc": "No skills have been added yet"
+    "emptyDesc": "No skills have been added yet",
+    "skillMatrixTitle": "Skill Matrix",
+    "teamSkillsTitle": "Team Skills"
   },
   "lms": {
     "pageTitle": "Learning Management",
@@ -3503,7 +3565,14 @@
     "emptyBenefitClaimDesc": "You haven't submitted any benefit claims yet.",
     "pageTitle": "My Space",
     "emptyTitle": "No data",
-    "emptyDesc": "Nothing has been added yet"
+    "emptyDesc": "Nothing has been added yet",
+    "yearEndTitle": "Year-End Settlement",
+    "skillsTitle": "My Skills",
+    "trainingTitle": "My Training",
+    "internalJobsTitle": "Internal Jobs",
+    "offboardingTitle": "My Offboarding",
+    "notificationSettingsTitle": "Notification Settings",
+    "settingsTitle": "My Settings"
   },
   "directory": {
     "pageTitle": "People Directory",

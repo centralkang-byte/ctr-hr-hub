@@ -375,7 +375,7 @@ export default function MySkillsClient({
                           {/* 코멘트 */}
                           {a && (
                             <textarea
-                              placeholder="코멘트 입력 (선택)"
+                              placeholder={tCommon('enterComment')}
                               value={a.selfComment}
                               onChange={(e) =>
                                 setAssessments((prev) => ({

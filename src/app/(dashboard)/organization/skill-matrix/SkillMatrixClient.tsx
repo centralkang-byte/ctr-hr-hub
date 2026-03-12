@@ -298,7 +298,7 @@ export default function SkillMatrixClient({
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">스킬 매트릭스</h1>
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('skillMatrixTitle')}</h1>
           <p className="text-sm text-[#666] mt-1">팀/조직 역량 수준을 히트맵으로 확인하세요.</p>
         </div>
         <div className="flex items-center gap-2">

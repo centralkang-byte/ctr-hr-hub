@@ -269,7 +269,7 @@ export default function SelfEvalClient({
                 <p className="text-xs text-[#999]">{SCORE_LABELS[goalScores[goal.id]?.score ?? 3]}</p>
                 <input
                   type="text"
-                  placeholder="평가 코멘트 (선택)"
+                  placeholder={t('enterComment')}
                   disabled={isSubmitted}
                   value={goalScores[goal.id]?.comment ?? ''}
                   onChange={(e) => setGoalScores((prev) => ({

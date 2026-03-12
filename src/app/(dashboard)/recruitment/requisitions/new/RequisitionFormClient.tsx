@@ -109,7 +109,7 @@ export default function RequisitionFormClient({
           <ArrowLeft size={18} />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">채용 요청서 작성</h1>
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('requisitionFormTitle')}</h1>
           <p className="text-sm text-[#666] mt-0.5">부서장이 HR에 채용을 요청합니다.</p>
         </div>
       </div>

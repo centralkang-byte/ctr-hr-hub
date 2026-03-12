@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
+import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
@@ -37,6 +38,7 @@ const LIKERT_LABELS = ['매우 부정', '부정', '보통', '긍정', '매우 �
 
 export default function PulseRespondClient() {
   const tCommon = useTranslations('common')
+  const { isSubmitting, guardedSubmit } = useSubmitGuard()
   const t = useTranslations('performance')
 
   const { id } = useParams<{ id: string }>()
@@ -150,7 +152,7 @@ export default function PulseRespondClient() {
               <textarea
                 value={answers[q.id] ?? ''}
                 onChange={(e) => setAnswer(q.id, e.target.value)}
-                placeholder="의견을 입력하세요..."
+                placeholder={tCommon('enterContent')}
                 rows={3}
                 className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"
               />

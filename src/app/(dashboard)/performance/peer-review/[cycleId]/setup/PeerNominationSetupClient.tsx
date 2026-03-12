@@ -151,7 +151,7 @@ export default function PeerNominationSetupClient() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
               <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="이름 또는 사번으로 검색..."
+                placeholder={tCommon('searchEmployee')}
                 className="w-full pl-9 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm placeholder:text-[#999]" />
             </div>
             {empLoading && <p className="text-xs text-[#999] mt-2">검색 중...</p>}

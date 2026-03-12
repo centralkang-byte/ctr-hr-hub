@@ -197,7 +197,7 @@ export default function PayrollImportClient({
           <Upload className="w-5 h-5 text-[#00C853]" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">해외 급여 업로드</h1>
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('importTitle')}</h1>
           <p className="text-sm text-[#666]">해외 법인 급여 파일을 업로드하여 글로벌 급여 현황에 통합합니다</p>
         </div>
       </div>
