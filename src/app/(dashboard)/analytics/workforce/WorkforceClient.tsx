@@ -13,7 +13,7 @@ import { ChartCard } from '@/components/analytics/ChartCard'
 import { EmptyChart } from '@/components/analytics/EmptyChart'
 import { AnalyticsFilterBar } from '@/components/analytics/AnalyticsFilterBar'
 import { CHART_COLORS } from '@/components/analytics/chart-colors'
-import { CHART_THEME } from '@/lib/styles/chart' from '@/components/analytics/chart-colors'
+import { CHART_THEME } from '@/lib/styles/chart'
 import type { WorkforceResponse } from '@/lib/analytics/types'
 
 export default function WorkforceClient() {
