@@ -2,6 +2,12 @@
 // CTR HR Hub — Onboarding Check-in Missing Nudge Rule
 // src/lib/nudge/rules/onboarding-checkin-missing.rule.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: nudge rule — onboarding checkin missing
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // 조건: EmployeeOnboarding.status IN [NOT_STARTED, IN_PROGRESS]
 //       AND 예상 체크인 주차가 지났는데 OnboardingCheckin 미존재

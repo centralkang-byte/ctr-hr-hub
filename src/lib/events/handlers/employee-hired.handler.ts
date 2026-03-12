@@ -2,6 +2,12 @@
 // CTR HR Hub — EMPLOYEE_HIRED Handler
 // src/lib/events/handlers/employee-hired.handler.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: auto-creates OnboardingPlan when employee is hired
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // 트리거: EMPLOYEE_HIRED 이벤트 (POST /api/v1/employees 직후 fire-and-forget)
 //

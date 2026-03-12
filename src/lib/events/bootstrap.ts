@@ -2,6 +2,12 @@
 // CTR HR Hub — Event Bus Bootstrap
 // src/lib/events/bootstrap.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: 13 event handlers across 4 Golden Paths (Hire→Onboard, Payroll, Performance, Offboarding)
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // 앱 시작 시 1회 호출하여 모든 핸들러를 EventBus에 등록.
 // Next.js: src/instrumentation.ts 또는 최상위 layout.tsx에서 호출.

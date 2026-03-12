@@ -2,6 +2,12 @@
 // CTR HR Hub — PAYROLL_CALCULATED Handler
 // src/lib/events/handlers/payroll-calculated.handler.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: runs anomaly detection after payroll calculation
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // Side-effects on PAYROLL_CALCULATED:
 //   현재 calculator.ts는 leave/attendance 데이터를 직접 read함 (cross-module).

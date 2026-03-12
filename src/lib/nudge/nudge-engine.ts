@@ -2,6 +2,12 @@
 // CTR HR Hub — Nudge Engine (Core)
 // src/lib/nudge/nudge-engine.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: nudge rule execution engine — schedules and deduplicates reminders
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // 작동 방식:
 //   1. 각 룰의 thresholds.triggerAfterDays 이전 cutoffDate 계산

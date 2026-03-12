@@ -2,6 +2,12 @@
 // CTR HR Hub — Navigation Configuration (10-Section IA)
 // HR 라이프사이클: People → Hire → Develop → Perform → Reward → Analyze
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: sidebar navigation IA — 30+ menu items, role-based visibility, 4 layers
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 
 import {
   Home,

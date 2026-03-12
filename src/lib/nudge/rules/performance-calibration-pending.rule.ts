@@ -2,6 +2,12 @@
 // CTR HR Hub — Performance Calibration Pending Nudge Rule
 // src/lib/nudge/rules/performance-calibration-pending.rule.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: nudge rule — performance calibration pending
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // 조건:
 //   - PerformanceCycle.status = CALIBRATION

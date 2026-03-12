@@ -5,6 +5,12 @@
 // E-2: GP#2 Offboarding Pipeline
 // Used for exit interview isolation enforcement
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: manager hierarchy validation for approval flows
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
 

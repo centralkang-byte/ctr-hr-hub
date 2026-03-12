@@ -2,6 +2,12 @@
 // G-2: Turnover Risk Prediction Model
 // 7-variable weighted scoring (spec section 4-1)
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: ML-based turnover risk scoring — employee attrition prediction
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 
 export interface TurnoverRiskInput {
   compaRatio: number | null         // from CompensationHistory.compaRatio

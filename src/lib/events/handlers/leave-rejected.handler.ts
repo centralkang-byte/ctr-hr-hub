@@ -2,6 +2,12 @@
 // CTR HR Hub — LEAVE_REJECTED Handler
 // src/lib/events/handlers/leave-rejected.handler.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: restores pending days when leave is rejected
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // Side-effects on LEAVE_REJECTED:
 //   1. [TX] EmployeeLeaveBalance: pendingDays-- (used는 건드리지 않음)

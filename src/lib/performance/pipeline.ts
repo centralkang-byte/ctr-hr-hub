@@ -5,6 +5,12 @@
 // Central module for pipeline transitions + overdue processing
 // Used by: advance/route.ts, cron/overdue-check, cron/auto-acknowledge
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: 7-step performance cycle state machine (DRAFT→CLOSED)
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 
 import type { CycleStatus } from '@/generated/prisma/client'
 

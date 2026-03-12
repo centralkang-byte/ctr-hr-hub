@@ -2,6 +2,12 @@
 // CTR HR Hub — LEAVE_CANCELLED Handler
 // src/lib/events/handlers/leave-cancelled.handler.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: reverses leave balance when leave is cancelled
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // Side-effects on LEAVE_CANCELLED:
 //   1. [TX] EmployeeLeaveBalance:

@@ -2,6 +2,12 @@
 // CTR HR Hub — PAYROLL_APPROVED Handler
 // src/lib/events/handlers/payroll-approved.handler.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: triggers payslip generation and employee notification
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // Side-effects on PAYROLL_APPROVED:
 //   1. [TX] Payslip.createMany — 직원별 명세서 자동 생성

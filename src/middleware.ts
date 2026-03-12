@@ -1,6 +1,12 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Next.js Middleware (Security Headers + i18n)
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: auth flow for all 523 API routes + RBAC enforcement
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 
 import { NextRequest, NextResponse } from 'next/server'
 

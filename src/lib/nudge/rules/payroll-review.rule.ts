@@ -2,6 +2,12 @@
 // CTR HR Hub — Payroll Review Nudge Rule
 // src/lib/nudge/rules/payroll-review.rule.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: nudge rule — payroll review
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // 조건: PayrollRun.status = 'REVIEW' AND updatedAt < cutoffDate
 //       (REVIEW 진입 시각 기준 — updatedAt이 최선)

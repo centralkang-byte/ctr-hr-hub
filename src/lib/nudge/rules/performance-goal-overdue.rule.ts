@@ -2,6 +2,12 @@
 // CTR HR Hub — Performance Goal Overdue Nudge Rule
 // src/lib/nudge/rules/performance-goal-overdue.rule.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: nudge rule — performance goal overdue
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // 조건:
 //   - PerformanceCycle.status = ACTIVE

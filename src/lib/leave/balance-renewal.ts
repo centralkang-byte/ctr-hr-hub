@@ -8,6 +8,12 @@
 //   3. Grant new year entitlement (via accrualEngine)
 //   4. Update EmployeeLeaveBalance
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: annual leave balance renewal — carry-over, expiration, adjustment
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
 

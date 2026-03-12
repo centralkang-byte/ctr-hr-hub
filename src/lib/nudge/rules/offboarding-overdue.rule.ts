@@ -2,6 +2,12 @@
 // CTR HR Hub — Offboarding Task Overdue Nudge Rule
 // src/lib/nudge/rules/offboarding-overdue.rule.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: nudge rule — offboarding overdue
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // 조건: EmployeeOffboardingTask.status = PENDING
 //       AND calculated dueDate (lastWorkingDate - dueDaysBefore) < now

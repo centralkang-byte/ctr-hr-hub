@@ -3,6 +3,12 @@
 // 3-condition composite: sustained overtime + leave unused + performance decline
 // Risk = 2 of 3 conditions met
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: burnout risk detection — overtime + leave pattern analysis
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 
 export interface BurnoutInput {
   weeklyOvertimeHistory: number[]   // last 12 weeks (overtime hours per week)

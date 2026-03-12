@@ -2,6 +2,12 @@
 // CTR HR Hub — PAYROLL_ATTENDANCE_CLOSED Handler
 // src/lib/events/handlers/payroll-attendance-closed.handler.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: auto-triggers payroll calculation after attendance close
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 
 import { logAudit } from '@/lib/audit'
 import { sendNotification } from '@/lib/notifications'

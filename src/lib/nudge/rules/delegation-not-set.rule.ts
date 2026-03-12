@@ -2,6 +2,12 @@
 // CTR HR Hub — Delegation Not Set Nudge Rule
 // src/lib/nudge/rules/delegation-not-set.rule.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: nudge rule — delegation not set
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // 조건: 매니저 역할인데 active delegation이 없고,
 //       PENDING leave request가 3건 이상 있을 때

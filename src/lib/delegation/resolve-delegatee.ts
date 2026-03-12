@@ -2,6 +2,12 @@
 // CTR HR Hub — Delegation Resolver
 // src/lib/delegation/resolve-delegatee.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: approval delegation resolution chain — prevents orphaned approvals
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // 핵심 로직: 현재 사용자가 특정 LeaveRequest를 대결 승인할
 // 권한이 있는지 판단한다.

@@ -1,3 +1,9 @@
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: multi-tenant companyId isolation for all API routes
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 import type { SessionUser } from '@/types'
 
 /**

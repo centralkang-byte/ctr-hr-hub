@@ -2,6 +2,12 @@
 // CTR HR Hub — PAYROLL_REVIEW_READY Handler
 // src/lib/events/handlers/payroll-review-ready.handler.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: notifies HR that payroll is ready for review
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 
 import { logAudit } from '@/lib/audit'
 import { sendNotification } from '@/lib/notifications'

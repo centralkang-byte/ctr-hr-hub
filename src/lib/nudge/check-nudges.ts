@@ -2,6 +2,12 @@
 // CTR HR Hub — Nudge Engine Singleton + Check Nudges Entry
 // src/lib/nudge/check-nudges.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: 11 nudge rules — dashboard reminder system for overdue items
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // D-3 Lazy Trigger:
 //   - Login 또는 Dashboard 로드 시 호출

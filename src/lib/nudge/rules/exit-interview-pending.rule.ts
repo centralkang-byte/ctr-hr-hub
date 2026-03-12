@@ -2,6 +2,12 @@
 // CTR HR Hub — Exit Interview Pending Nudge Rule
 // src/lib/nudge/rules/exit-interview-pending.rule.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: nudge rule — exit interview pending
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // 조건: EmployeeOffboarding.status = IN_PROGRESS
 //       AND lastWorkingDate <= now + 7일 (7일 이내 퇴직 예정)

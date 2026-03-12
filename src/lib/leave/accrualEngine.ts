@@ -1,3 +1,9 @@
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: leave accrual calculation — tenure-based, pro-rata, carry-over rules
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 /**
  * B6-2 Leave Accrual Engine
  *

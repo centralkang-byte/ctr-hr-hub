@@ -2,6 +2,12 @@
 // CTR HR Hub — 번아웃 감지 엔진
 // 5개 지표 가중합 + 방어 코딩
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: burnout prediction model — scoring algorithm
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
 import { subWeeks, subMonths, differenceInDays } from 'date-fns'

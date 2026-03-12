@@ -2,6 +2,12 @@
 // CTR HR Hub — PERFORMANCE_MBO_GOAL_REVIEWED Handler
 // src/lib/events/handlers/mbo-goal-reviewed.handler.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: MBO goal approval flow state transition
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // 트리거: PERFORMANCE_MBO_GOAL_REVIEWED 이벤트
 //   - PUT /api/v1/performance/goals/[id]/approve            (decision: APPROVED)

@@ -2,6 +2,12 @@
 // CTR HR Hub — PERFORMANCE_MANAGER_EVAL_SUBMITTED Handler
 // src/lib/events/handlers/manager-eval-submitted.handler.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: triggers calibration readiness check in performance pipeline
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // 트리거: PERFORMANCE_MANAGER_EVAL_SUBMITTED 이벤트
 //         (POST /api/v1/performance/evaluations/manager, status='SUBMITTED')

@@ -1,3 +1,10 @@
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: entire database seed data — 16 seed scripts, company/employee/config data
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
+
 /**
  * CTR HR Hub v3.2 — Database Seed
  * Tasks 21-23: Companies, Roles, Permissions, Test Accounts, v3.2 Customization

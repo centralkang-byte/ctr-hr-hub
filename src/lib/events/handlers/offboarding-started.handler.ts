@@ -2,6 +2,12 @@
 // CTR HR Hub — Offboarding Started Event Handler
 // src/lib/events/handlers/offboarding-started.handler.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: cancels active onboarding, notifies stakeholders, creates exit tasks
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // EMPLOYEE_OFFBOARDING_STARTED 이벤트 수신 시:
 //   1. 태스크 중복 생성 가드 (start/route.ts에서 이미 생성됨)

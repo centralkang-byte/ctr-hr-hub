@@ -2,6 +2,12 @@
 // CTR HR Hub — PERFORMANCE_MBO_GOAL_SUBMITTED Handler
 // src/lib/events/handlers/mbo-goal-submitted.handler.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: MBO goal submission notification chain
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // 트리거: PERFORMANCE_MBO_GOAL_SUBMITTED 이벤트
 //         (PUT /api/v1/performance/goals/[id]/submit 직후 fire-and-forget)

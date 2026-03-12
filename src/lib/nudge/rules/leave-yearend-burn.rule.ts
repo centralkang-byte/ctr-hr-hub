@@ -8,6 +8,12 @@
 //   - Active period: November 1 ~ December 25 only
 //   - Interval: Every 7 days / Max: 3 times
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: nudge rule — leave yearend burn
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
 import type { NudgeRule, OverdueItem } from '../types'

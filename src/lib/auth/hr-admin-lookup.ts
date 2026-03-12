@@ -5,6 +5,12 @@
 // FIX: Issue #1 — Shared, reliable HR_ADMIN lookup using RBAC
 //      EmployeeRole table instead of ad-hoc Employee queries.
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: HR admin resolution for multi-company queries
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 
 import type { PrismaClient } from '@/generated/prisma/client'
 

@@ -15,6 +15,12 @@
 //   BLOCKED     → IN_PROGRESS (unblock + resume)
 //   DONE / SKIPPED → terminal (no further transitions)
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: universal task state machine for onboarding/offboarding flows
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 
 import type { TaskProgressStatus } from '@/generated/prisma/client'
 

@@ -2,6 +2,12 @@
 // CTR HR Hub — Performance Evaluation Overdue Nudge Rule
 // src/lib/nudge/rules/performance-eval-overdue.rule.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: nudge rule — performance eval overdue
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // EVAL_OPEN 페이즈에서 두 가지 시나리오를 한 룰에서 처리:
 //

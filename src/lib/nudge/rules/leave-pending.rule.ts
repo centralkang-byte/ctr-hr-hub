@@ -2,6 +2,12 @@
 // CTR HR Hub — Leave Pending Approval Nudge Rule
 // src/lib/nudge/rules/leave-pending.rule.ts
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: nudge rule — leave pending
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 //
 // 조건: LeaveRequest.status = 'PENDING' AND createdAt < cutoffDate
 // 대상: request.approvedBy (매니저) — 미지정이면 HR_ADMINs

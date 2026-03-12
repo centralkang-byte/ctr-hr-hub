@@ -5,6 +5,12 @@
 // Refactored (H-2c): hardcoded constants preserved as DEFAULTS,
 // async variants added that fetch from CompanyProcessSetting.
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// PROTECTED — DO NOT MODIFY without architecture review
+// This file is a core infrastructure component. Changes here
+// can break: Korean payroll tax calculations — 6 deduction categories, income tax tables
+// Last verified: 2026-03-12 (Q-4 P6)
+// ═══════════════════════════════════════════════════════════════
 
 import { getPayrollSetting } from '@/lib/settings/get-setting'
 
