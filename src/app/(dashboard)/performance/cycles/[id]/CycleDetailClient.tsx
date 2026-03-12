@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, ChevronRight, AlertTriangle, CheckCircle2, Clock, Users, ShieldAlert } from 'lucide-react'
@@ -43,7 +48,10 @@ const TRANSITIONS: Record<string, string> = {
 
 // ─── Component ────────────────────────────────────────────
 
-export default function CycleDetailClient({ user, cycleId }: { user: SessionUser; cycleId: string }) {
+export default function CycleDetailClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+ user, cycleId }: { user: SessionUser; cycleId: string }) {
     const router = useRouter()
     const isHrAdmin = user.role === 'SUPER_ADMIN' || user.role === 'HR_ADMIN'
 

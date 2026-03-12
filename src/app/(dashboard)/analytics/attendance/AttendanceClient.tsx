@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import React, { useEffect, useState, useCallback } from 'react'
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -14,6 +19,9 @@ import { CHART_COLORS } from '@/components/analytics/chart-colors'
 import type { AttendanceResponse } from '@/lib/analytics/types'
 
 export default function AttendanceClient() {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('analytics')
+
   const [data, setData] = useState<AttendanceResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [companies, setCompanies] = useState<{ id: string; name: string }[]>([])

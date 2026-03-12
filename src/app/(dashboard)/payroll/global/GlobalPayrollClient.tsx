@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useState, useEffect, useCallback } from 'react'
 import {
   Globe, ChevronLeft, ChevronRight, TrendingUp, Users,
@@ -56,7 +61,9 @@ const fmtBillion = (n: number) => {
   return fmt(n)
 }
 
-export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
+export default function GlobalPayrollClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('payroll') user }: { user: SessionUser }) {
   const now = new Date()
   const [year, setYear] = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth() + 1)

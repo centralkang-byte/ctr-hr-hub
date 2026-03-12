@@ -1,5 +1,8 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+
 import { useTranslations } from 'next-intl'
 
 import { useState, useCallback } from 'react'

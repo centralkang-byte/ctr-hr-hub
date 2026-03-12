@@ -1,5 +1,8 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { RefreshCw, Loader2 } from 'lucide-react'
@@ -99,6 +102,9 @@ function parseFactors(
 // ═════════════════════════════════════════════════════════
 
 export default function AttritionRiskClient() {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('analytics')
+
   const { toast } = useToast()
   const t = useTranslations('analytics.attritionPage')
   const [loading, setLoading] = useState(true)

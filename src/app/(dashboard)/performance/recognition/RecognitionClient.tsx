@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Heart, ThumbsUp, Search, Send, Sparkles } from 'lucide-react'
 import { PieChart, Pie, Cell, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
@@ -52,6 +57,9 @@ const CHART_COLORS = ['#EF4444', '#00C853', '#F59E0B', '#3B82F6']
 // ─── Component ───────────────────────────────────────────
 
 export default function RecognitionClient() {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+
   const { data: session } = useSession()
   const isAdmin = session?.user?.role === ROLE.HR_ADMIN || session?.user?.role === ROLE.SUPER_ADMIN
 

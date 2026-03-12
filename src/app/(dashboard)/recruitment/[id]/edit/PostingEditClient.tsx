@@ -1,5 +1,9 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — 채용공고 수정 폼 (Client)
 // ═══════════════════════════════════════════════════════════
@@ -56,7 +60,10 @@ interface Props {
 
 // ─── Component ───────────────────────────────────────────
 
-export default function PostingEditClient({ user, id }: Props) {
+export default function PostingEditClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('recruitment')
+ user, id }: Props) {
   const router = useRouter()
   const t = useTranslations('recruitment')
 

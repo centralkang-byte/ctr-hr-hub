@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import React, { useEffect, useState, useCallback } from 'react'
 import {
   AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -16,6 +21,9 @@ import type { ExecutiveSummaryResponse } from '@/lib/analytics/types'
 import { TABLE_STYLES } from '@/lib/styles'
 
 export default function ExecutiveSummaryClient() {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('analytics')
+
   const [data, setData] = useState<ExecutiveSummaryResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [companies, setCompanies] = useState<{ id: string; name: string }[]>([])

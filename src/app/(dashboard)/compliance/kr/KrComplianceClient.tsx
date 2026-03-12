@@ -1,5 +1,9 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Korean Compliance Client Component
 // 탭: 52시간 모니터링 / 법정의무교육 / 퇴직금 중간정산
@@ -21,6 +25,8 @@ const TABS: { key: TabKey; labelKey: string }[] = [
 ]
 
 export default function KrComplianceClient() {
+  const tCommon = useTranslations('common')
+
   const t = useTranslations('compliance')
   const [activeTab, setActiveTab] = useState<TabKey>('workHours')
 

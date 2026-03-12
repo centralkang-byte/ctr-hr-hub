@@ -1,5 +1,9 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Recruitment Analytics Client
 // 채용 분석 (퍼널/전환율)
@@ -23,6 +27,9 @@ import { TABLE_STYLES } from '@/lib/styles'
 const STAGE_ORDER = ['APPLIED', 'SCREENING', 'INTERVIEW', 'OFFER', 'HIRED']
 
 export default function RecruitmentAnalyticsClient() {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('analytics')
+
   const searchParams = useSearchParams()
   const companyId = searchParams.get('company_id') ?? undefined
   const t = useTranslations('analytics.recruitmentPage')

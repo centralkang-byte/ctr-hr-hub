@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Gender Pay Gap Analytics Client
 // 성별 급여 격차 분석: 그룹별 비교 + CSV 내보내기

@@ -1,5 +1,9 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -55,7 +59,10 @@ function MoMDelta({ current, previous }: { current: number; previous: number | n
   )
 }
 
-export default function PayrollMeClient({ user: _user }: PayrollMeClientProps) {
+export default function PayrollMeClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('payroll')
+ user: _user }: PayrollMeClientProps) {
   const router = useRouter()
   const t = useTranslations('payrollMe')
   const [items, setItems] = useState<PayslipItem[]>([])
@@ -75,13 +82,7 @@ export default function PayrollMeClient({ user: _user }: PayrollMeClientProps) {
     void fetchItems()
   }, [])
 
-  if (loading) {
-    return (
-      <div className="p-6 flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin h-8 w-8 border-4 border-[#00C853] border-t-transparent rounded-full" />
-      </div>
-    )
-  }
+  if (loading) return <TableSkeleton rows={8} />
 
   const newCount = items.filter((i) => !i.isViewed).length
 

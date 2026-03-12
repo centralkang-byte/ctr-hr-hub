@@ -1,5 +1,7 @@
 'use client'
 
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Offboarding Detail Client
 // 퇴직 처리 상세: 태스크 목록, 인수인계, 퇴직 면담

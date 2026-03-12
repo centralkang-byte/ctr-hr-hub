@@ -1,5 +1,9 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -20,7 +24,10 @@ interface CycleOption {
 
 // ─── Component ────────────────────────────────────────────
 
-export default function NewGoalClient({ user }: { user: SessionUser }) {
+export default function NewGoalClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+ user }: { user: SessionUser }) {
   const router = useRouter()
   const t = useTranslations('performance')
   const tc = useTranslations('common')

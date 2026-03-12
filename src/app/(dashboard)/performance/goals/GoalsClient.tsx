@@ -1,5 +1,7 @@
 'use client'
 
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -34,7 +36,10 @@ interface ProgressForm {
 
 // ─── Component ────────────────────────────────────────────
 
-export default function GoalsClient({ user }: { user: SessionUser }) {
+export default function GoalsClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+ user }: { user: SessionUser }) {
   const router = useRouter()
   const t = useTranslations('performance')
   const tc = useTranslations('common')

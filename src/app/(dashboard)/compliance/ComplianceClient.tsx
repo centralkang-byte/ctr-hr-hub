@@ -1,5 +1,9 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Compliance Dashboard Landing Page
 // Shows GDPR status summary + country-specific compliance cards
@@ -29,6 +33,8 @@ interface GdprStats {
 }
 
 export default function ComplianceClient() {
+  const tCommon = useTranslations('common')
+
   const t = useTranslations('compliance')
   const [stats, setStats] = useState<GdprStats | null>(null)
   const [loading, setLoading] = useState(true)

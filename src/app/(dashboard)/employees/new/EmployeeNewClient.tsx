@@ -1,5 +1,8 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Employee New Client
 // 직원 등록 4-step 위자드

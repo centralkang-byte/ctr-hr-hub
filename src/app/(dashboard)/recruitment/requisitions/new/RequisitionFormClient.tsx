@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — 채용 요청서 작성 폼
 // B4: Requisition Form
@@ -16,7 +21,10 @@ interface Company { id: string; name: string }
 interface Department { id: string; name: string; companyId: string }
 interface Position { id: string; titleKo: string; code: string; isFilled: boolean }
 
-export default function RequisitionFormClient({ user }: { user: SessionUser }) {
+export default function RequisitionFormClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('recruitment')
+ user }: { user: SessionUser }) {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')

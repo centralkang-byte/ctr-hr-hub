@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import React, { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import {
@@ -20,6 +25,9 @@ interface AiReport {
 }
 
 export default function AiReportClient() {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('analytics')
+
   const [reports, setReports] = useState<AiReport[]>([])
   const [currentReport, setCurrentReport] = useState<AiReport | null>(null)
   const [loading, setLoading] = useState(true)

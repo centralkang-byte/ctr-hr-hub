@@ -1,5 +1,7 @@
 'use client'
 
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Attendance Client
 // 내 근태: 출퇴근 기록, 주간 요약, 상태 배지

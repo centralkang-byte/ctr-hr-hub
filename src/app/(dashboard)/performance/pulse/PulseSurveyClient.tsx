@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { BarChart3, Plus, Eye, Trash2, Play, Square, Calendar } from 'lucide-react'
@@ -215,6 +220,9 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
 // ─── Component ───────────────────────────────────────────
 
 export default function PulseSurveyClient() {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+
   const router = useRouter()
   const [surveys, setSurveys] = useState<Survey[]>([])
   const [pending, setPending] = useState<PendingSurvey[]>([])

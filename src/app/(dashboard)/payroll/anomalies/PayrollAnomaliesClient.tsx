@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useState, useEffect, useCallback } from 'react'
 import {
   AlertTriangle, ChevronLeft, ChevronRight, RefreshCw,
@@ -40,7 +45,9 @@ const RULE_ICONS: Record<string, string> = {
   '급격한 변화': '⚡',
 }
 
-export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) {
+export default function PayrollAnomaliesClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('payroll') user }: { user: SessionUser }) {
   const now = new Date()
   const [year, setYear] = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth() + 1)

@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useCallback, useEffect, useState } from 'react'
 import { Bell, CheckCircle2, Clock, Send, ShieldAlert, ArrowLeft } from 'lucide-react'
 import { apiClient } from '@/lib/api'
@@ -20,7 +25,10 @@ type FilterType = 'all' | 'pending' | 'waiting' | 'done'
 
 // ─── Component ────────────────────────────────────────────
 
-export default function NotificationsClient({ user }: { user: SessionUser }) {
+export default function NotificationsClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+ user }: { user: SessionUser }) {
     const isHrAdmin = user.role === 'SUPER_ADMIN' || user.role === 'HR_ADMIN'
 
     const [cycles, setCycles] = useState<CycleOption[]>([])

@@ -1,5 +1,9 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — 채용공고 등록 폼 (Client)
 // ═══════════════════════════════════════════════════════════
@@ -34,7 +38,10 @@ interface Props {
 
 // ─── Component ───────────────────────────────────────────
 
-export default function PostingFormClient({ user }: Props) {
+export default function PostingFormClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('recruitment')
+ user }: Props) {
   const router = useRouter()
   const t = useTranslations('recruitment')
 

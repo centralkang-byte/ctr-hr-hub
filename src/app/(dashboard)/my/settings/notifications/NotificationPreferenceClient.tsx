@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useState, useEffect, useCallback } from 'react'
 import { Bell, Moon, Save, Check } from 'lucide-react'
 import { CARD_STYLES, BUTTON_VARIANTS } from '@/lib/styles'

@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Send, CheckCircle2 } from 'lucide-react'
@@ -31,6 +36,9 @@ const LIKERT_LABELS = ['매우 부정', '부정', '보통', '긍정', '매우 �
 // ─── Component ───────────────────────────────────────────
 
 export default function PulseRespondClient() {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
 

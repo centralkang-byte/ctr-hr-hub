@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — 내부 공고 (직원 자기 지원)
 // B4: /my/internal-jobs
@@ -67,7 +72,10 @@ const STAGE_LABELS: Record<string, string> = {
   REJECTED: '불합격',
 }
 
-export default function InternalJobsClient({ user }: { user: SessionUser }) {
+export default function InternalJobsClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('mySpace')
+ user }: { user: SessionUser }) {
   const [items, setItems] = useState<InternalJob[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')

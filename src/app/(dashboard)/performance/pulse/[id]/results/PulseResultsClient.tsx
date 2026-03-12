@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, BarChart3, Sparkles } from 'lucide-react'
@@ -39,6 +44,9 @@ const CHART_COLORS = ['#00C853', '#059669', '#F59E0B', '#8B5CF6', '#EC4899', '#0
 // ─── Component ───────────────────────────────────────────
 
 export default function PulseResultsClient() {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
 

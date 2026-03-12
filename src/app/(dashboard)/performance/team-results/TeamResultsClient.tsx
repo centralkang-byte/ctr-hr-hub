@@ -1,5 +1,9 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Users, Target, TrendingUp } from 'lucide-react'
@@ -24,7 +28,10 @@ interface TeamResult {
 
 // ─── Component ────────────────────────────────────────────
 
-export default function TeamResultsClient({ user }: { user: SessionUser }) {
+export default function TeamResultsClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+ user }: { user: SessionUser }) {
   const t = useTranslations('performance')
   const tc = useTranslations('common')
 

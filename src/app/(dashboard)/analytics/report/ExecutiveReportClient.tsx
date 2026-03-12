@@ -1,5 +1,8 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Executive Report Client
 // AI 경영진 보고서 생성 + 마크다운 렌더링
@@ -16,6 +19,9 @@ import { AnalyticsPageLayout } from '@/components/analytics/AnalyticsPageLayout'
 import type { ExecutiveReport } from '@/lib/analytics/types'
 
 export default function ExecutiveReportClient() {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('analytics')
+
   const searchParams = useSearchParams()
   const companyId = searchParams.get('company_id') ?? undefined
   const { toast } = useToast()

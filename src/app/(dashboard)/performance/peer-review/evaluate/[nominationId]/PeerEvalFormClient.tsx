@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Users, Send, CheckCircle2 } from 'lucide-react'
@@ -24,6 +29,9 @@ const SCORE_LABELS = ['매우 부족', '부족', '보통', '우수', '탁월']
 // ─── Component ───────────────────────────────────────────
 
 export default function PeerEvalFormClient() {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+
   const { nominationId } = useParams<{ nominationId: string }>()
   const router = useRouter()
 

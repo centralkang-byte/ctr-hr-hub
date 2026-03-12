@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — 채용 요청 목록 + 승인함
 // B4: Requisition List & Approval Queue
@@ -62,7 +67,10 @@ const STEP_ROLE_LABELS: Record<string, string> = {
   finance: '경영관리',
 }
 
-export default function RequisitionListClient({ user }: { user: SessionUser }) {
+export default function RequisitionListClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('recruitment')
+ user }: { user: SessionUser }) {
   const router = useRouter()
   const [items, setItems] = useState<Requisition[]>([])
   const [loading, setLoading] = useState(true)

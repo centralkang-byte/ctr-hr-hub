@@ -1,5 +1,8 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Leave Client
 // 직원 휴가 관리 (잔여, 신청, 이력)

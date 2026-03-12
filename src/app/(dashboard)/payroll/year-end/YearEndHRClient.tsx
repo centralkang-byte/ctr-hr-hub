@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useState, useCallback, useEffect } from 'react'
 import {
   FileText,
@@ -265,7 +270,9 @@ function SettlementDetailModal({
 
 // ─── Main Component ────────────────────────────────────────
 
-export default function YearEndHRClient({ user, defaultYear }: YearEndHRClientProps) {
+export default function YearEndHRClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('payroll') user, defaultYear }: YearEndHRClientProps) {
   const [year, setYear] = useState(defaultYear)
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [settlements, setSettlements] = useState<SettlementRow[]>([])

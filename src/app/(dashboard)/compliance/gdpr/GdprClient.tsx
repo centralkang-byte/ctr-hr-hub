@@ -1,5 +1,9 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Shield } from 'lucide-react'
@@ -11,6 +15,8 @@ import DpiaTabContent from '@/components/compliance/gdpr/DpiaTabContent'
 type TabKey = 'consents' | 'requests' | 'retention' | 'dpia'
 
 export default function GdprClient() {
+  const tCommon = useTranslations('common')
+
   const t = useTranslations('compliance')
   const [activeTab, setActiveTab] = useState<TabKey>('consents')
 

@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import React, { useEffect, useState, useCallback } from 'react'
 import { Heart, Clock, CalendarDays, Target, AlertTriangle, Flame } from 'lucide-react'
 import { ChartCard } from '@/components/analytics/ChartCard'
@@ -24,6 +29,9 @@ const STATUS_LABELS = { GREEN: '🟢', YELLOW: '🟡', RED: '🔴' }
 const RISK_COLORS = { HIGH: 'text-red-600 bg-red-50', MEDIUM: 'text-amber-600 bg-amber-50', LOW: 'text-emerald-600 bg-emerald-50' }
 
 export default function TeamHealthClient() {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('analytics')
+
   const [data, setData] = useState<TeamHealthResponse | null>(null)
   const [loading, setLoading] = useState(true)
 

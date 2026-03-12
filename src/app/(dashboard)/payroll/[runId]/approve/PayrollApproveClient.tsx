@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 // ═══════════════════════════════════════════════════════════
 // GP#3-C: 급여 결재 페이지 — /payroll/[runId]/approve
 // 결재선 진행 현황 + 승인/반려 액션
@@ -113,7 +118,9 @@ interface Props {
     runId: string
 }
 
-export default function PayrollApproveClient({ user: _user, runId }: Props) {
+export default function PayrollApproveClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('payroll') user: _user, runId }: Props) {
     const router = useRouter()
     const [run, setRun] = useState<RunInfo | null>(null)
     const [approval, setApproval] = useState<ApprovalStatus | null>(null)

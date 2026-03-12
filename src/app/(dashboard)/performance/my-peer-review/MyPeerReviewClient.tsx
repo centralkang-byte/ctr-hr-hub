@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useCallback, useEffect, useState } from 'react'
 import { Star, Send, Save, CheckCircle2, Clock, AlertCircle, ArrowLeft, Users, X } from 'lucide-react'
 import { apiClient } from '@/lib/api'
@@ -57,7 +62,10 @@ const CTR_VALUES = [
 
 // ─── Main Component ───────────────────────────────────────
 
-export default function MyPeerReviewClient({ user }: { user: SessionUser }) {
+export default function MyPeerReviewClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+ user }: { user: SessionUser }) {
     const [cycles, setCycles] = useState<CycleOption[]>([])
     const [selectedCycleId, setSelectedCycleId] = useState('')
     const [cycleStatus, setCycleStatus] = useState('')

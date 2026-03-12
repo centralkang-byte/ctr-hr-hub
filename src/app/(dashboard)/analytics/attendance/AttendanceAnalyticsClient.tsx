@@ -1,5 +1,9 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Attendance Analytics Client
 // 근태 분석 (주별트렌드/초과근무/지각)
@@ -21,6 +25,9 @@ import { AnalyticsKpiCard } from '@/components/analytics/AnalyticsKpiCard'
 import type { AttendanceData } from '@/lib/analytics/types'
 
 export default function AttendanceAnalyticsClient() {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('analytics')
+
   const searchParams = useSearchParams()
   const companyId = searchParams.get('company_id') ?? undefined
   const t = useTranslations('analytics.attendancePage')

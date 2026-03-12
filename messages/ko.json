@@ -15,7 +15,7 @@
     "next": "다음",
     "prev": "이전",
     "close": "닫기",
-    "loading": "불러오는 중...",
+    "loading": "처리 중...",
     "noData": "데이터가 없습니다",
     "required": "필수 입력",
     "optional": "선택 사항",
@@ -154,11 +154,11 @@
     "submitted": "제출되었습니다",
     "approved": "승인되었습니다",
     "rejected": "반려되었습니다",
-    "confirmDeleteDesc": "이 작업은 되돌릴 수 없습니다.",
+    "confirmDeleteDesc": "이 작업은 되돌릴 수 없습니다",
     "confirmSubmit": "제출하시겠습니까?",
     "confirmApprove": "승인하시겠습니까?",
     "confirmReject": "반려하시겠습니까?",
-    "errorDesc": "처리 중 오류가 발생했습니다",
+    "errorDesc": "잠시 후 다시 시도해주세요",
     "assignee": "담당자",
     "title": "제목",
     "details": "상세",
@@ -177,7 +177,8 @@
     "unit.person": "명",
     "unit.count": "건",
     "empty": "비어 있음",
-    "unit.month": "개월"
+    "unit.month": "개월",
+    "saving": "저장 중..."
   },
   "auth": {
     "login": "로그인",
@@ -639,8 +640,8 @@
     "totalEmployees": "전체 인원",
     "averageWorkHours": "근무 시간 (평균)",
     "pageTitle": "근태 관리",
-    "emptyTitle": "근태 기록이 없습니다",
-    "emptyDesc": "해당 기간의 근태 데이터가 없습니다."
+    "emptyTitle": "근태 데이터가 없습니다",
+    "emptyDesc": "해당 기간의 근태 데이터가 없습니다"
   },
   "leave": {
     "title": "휴가 관리",
@@ -1090,8 +1091,8 @@
     "resultsTitle": "평가 결과",
     "peerTitle": "동료 평가",
     "checkInTitle": "체크인",
-    "emptyTitle": "평가 데이터가 없습니다",
-    "emptyDesc": "해당 사이클의 평가 데이터가 없습니다.",
+    "emptyTitle": "데이터가 없습니다",
+    "emptyDesc": "아직 등록된 성과 데이터가 없습니다",
     "emptyCycles": "등록된 평가 사이클이 없습니다",
     "emptyCyclesDesc": "새로운 평가 사이클을 생성하세요.",
     "emptyGoals": "설정된 목표가 없습니다",
@@ -1111,7 +1112,8 @@
     "targetEmployees": "대상 직원",
     "totalNominations": "총 지명",
     "nominationCount": "지명 수",
-    "avgScore": "평균 점수"
+    "avgScore": "평균 점수",
+    "pageTitle": "성과 관리"
   },
   "recruitment": {
     "title": "채용 관리",
@@ -1428,7 +1430,10 @@
     "expectedStartDate": "입사 예정일",
     "confirmOffer": "오퍼 확정",
     "rejectionModal": "불합격 처리",
-    "confirmRejection": "불합격 처리"
+    "confirmRejection": "불합격 처리",
+    "emptyTitle": "채용 공고가 없습니다",
+    "emptyDesc": "등록된 채용 공고가 없습니다",
+    "pageTitle": "채용 관리"
   },
   "offboarding": {
     "title": "퇴직 관리",
@@ -2305,7 +2310,8 @@
     "turnoverTitle": "이직 분석",
     "workforceTitle": "인력 현황",
     "emptyTitle": "분석 데이터가 없습니다",
-    "emptyDesc": "충분한 데이터가 쌓이면 분석 결과가 표시됩니다."
+    "emptyDesc": "분석할 데이터가 충분하지 않습니다",
+    "pageTitle": "분석"
   },
   "notification": {
     "title": "알림",
@@ -2736,7 +2742,10 @@
     "active": "활성",
     "inactive": "비활성",
     "name": "이름",
-    "input": "입력"
+    "input": "입력",
+    "pageTitle": "설정",
+    "saved": "설정이 저장되었습니다",
+    "saveFailed": "설정 저장에 실패했습니다"
   },
   "ai": {
     "generated": "AI 생성",
@@ -3486,7 +3495,7 @@
   "skills": {
     "pageTitle": "스킬 매트릭스",
     "emptyTitle": "스킬 데이터가 없습니다",
-    "emptyDesc": "직원 스킬 정보를 등록하세요."
+    "emptyDesc": "아직 등록된 스킬이 없습니다"
   },
   "lms": {
     "pageTitle": "교육 관리",
@@ -3530,7 +3539,10 @@
     "usageSummary": "사용 현황",
     "claimHistory": "신청 내역",
     "emptyBenefitClaim": "신청 내역이 없습니다",
-    "emptyBenefitClaimDesc": "아직 복리후생 신청 내역이 없습니다."
+    "emptyBenefitClaimDesc": "아직 복리후생 신청 내역이 없습니다.",
+    "pageTitle": "마이스페이스",
+    "emptyTitle": "데이터가 없습니다",
+    "emptyDesc": "아직 등록된 내용이 없습니다"
   },
   "directory": {
     "pageTitle": "인사 디렉터리",

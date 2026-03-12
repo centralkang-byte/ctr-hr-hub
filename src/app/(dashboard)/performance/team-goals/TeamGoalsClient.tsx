@@ -1,5 +1,9 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Team Goals Management (Client)
 // Manager view: review, approve, request revision on team goals
@@ -70,7 +74,10 @@ interface TeamMemberGoals {
 
 // ─── Component ────────────────────────────────────────────
 
-export default function TeamGoalsClient({ user }: { user: SessionUser }) {
+export default function TeamGoalsClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+ user }: { user: SessionUser }) {
   const t = useTranslations('performance')
   const tc = useTranslations('common')
 

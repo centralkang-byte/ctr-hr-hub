@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Plus, Pencil, Trash2, Lock, AlertTriangle, Target, X } from 'lucide-react'
 import { apiClient } from '@/lib/api'
@@ -81,7 +86,10 @@ function GoalModal({ initial, onSave, onClose, saving }: {
 
 // ─── Main Component ───────────────────────────────────────
 
-export default function MyGoalsClient({ user }: { user: SessionUser }) {
+export default function MyGoalsClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+ user }: { user: SessionUser }) {
     const [cycles, setCycles] = useState<CycleOption[]>([])
     const [selectedCycleId, setSelectedCycleId] = useState('')
     const [cycleStatus, setCycleStatus] = useState('')

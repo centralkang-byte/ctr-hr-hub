@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useState, useEffect, useRef } from 'react'
 import {
   Upload, FileSpreadsheet, Settings2, CheckCircle2, Clock,
@@ -58,6 +63,8 @@ const STANDARD_FIELDS = [
 type Tab = 'upload' | 'mapping' | 'history'
 
 export default function PayrollImportClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('payroll')
   user, companies
 }: {
   user: SessionUser

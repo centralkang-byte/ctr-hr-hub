@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useCallback, useEffect, useState } from 'react'
 import { CheckCircle2, Circle, Clock, ClipboardCheck, ArrowLeft } from 'lucide-react'
 import { apiClient } from '@/lib/api'
@@ -18,7 +23,10 @@ interface GoalProgress {
 
 // ─── Component ────────────────────────────────────────────
 
-export default function MyCheckinsClient({ user }: { user: SessionUser }) {
+export default function MyCheckinsClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+ user }: { user: SessionUser }) {
     const [cycles, setCycles] = useState<CycleOption[]>([])
     const [selectedCycleId, setSelectedCycleId] = useState('')
     const [cycleStatus, setCycleStatus] = useState('')

@@ -1,5 +1,9 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Save, Send, Sparkles, CheckCircle2 } from 'lucide-react'
@@ -56,7 +60,10 @@ const SCORE_LABELS = ['', '매우 부족', '부족', '보통', '우수', '탁월
 
 // ─── Component ────────────────────────────────────────────
 
-export default function SelfEvalClient({ user }: { user: SessionUser }) {
+export default function SelfEvalClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+ user }: { user: SessionUser }) {
   const t = useTranslations('performance')
   const tc = useTranslations('common')
 

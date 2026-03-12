@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Save, Send, Star, ArrowLeft, Loader2, CheckCircle2, XCircle } from 'lucide-react'
 import { apiClient } from '@/lib/api'
@@ -45,7 +50,10 @@ function StarRating({ value, onChange, disabled }: { value: number; onChange: (v
 
 // ─── Main Component ───────────────────────────────────────
 
-export default function MyEvaluationClient({ user }: { user: SessionUser }) {
+export default function MyEvaluationClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+ user }: { user: SessionUser }) {
     const [cycles, setCycles] = useState<CycleOption[]>([])
     const [selectedCycleId, setSelectedCycleId] = useState('')
     const [cycleStatus, setCycleStatus] = useState('')

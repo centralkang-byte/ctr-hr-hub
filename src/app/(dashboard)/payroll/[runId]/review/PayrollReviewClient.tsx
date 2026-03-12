@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 // ═══════════════════════════════════════════════════════════
 // GP#3-B: Payroll Anomaly Review UI — 3-탭 이상검토 페이지
 // src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx
@@ -421,7 +426,9 @@ interface Props {
   runId: string
 }
 
-export default function PayrollReviewClient({ user: _user, runId }: Props) {
+export default function PayrollReviewClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('payroll') user: _user, runId }: Props) {
   const router = useRouter()
   const [run, setRun] = useState<PayrollRunInfo | null>(null)
   const [anomalies, setAnomalies] = useState<Anomaly[]>([])

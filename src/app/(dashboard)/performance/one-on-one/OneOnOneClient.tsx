@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { MessageSquare, Plus, Calendar, AlertTriangle, CheckCircle2, Clock, Users } from 'lucide-react'
@@ -62,6 +67,9 @@ const MEETING_TYPE_LABELS: Record<string, string> = {
 // ─── Component ───────────────────────────────────────────
 
 export default function OneOnOneClient() {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+
   const { data: session } = useSession()
   const router = useRouter()
   const isManager = session?.user?.role === ROLE.MANAGER || session?.user?.role === ROLE.HR_ADMIN || session?.user?.role === ROLE.EXECUTIVE

@@ -1,5 +1,9 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useState, useCallback, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -16,6 +20,8 @@ interface CycleOption {
 }
 
 export default function CompensationClient() {
+  const tCommon = useTranslations('common')
+
   const t = useTranslations('compensation')
   const tMenu = useTranslations('menu')
 

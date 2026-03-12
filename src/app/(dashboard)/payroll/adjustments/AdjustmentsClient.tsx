@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useState, useEffect, useCallback, useRef } from 'react'
 import {
     Plus,
@@ -87,7 +92,9 @@ function formatKRW(amount: number) {
     return `${sign}${abs.toLocaleString('ko-KR')}원`
 }
 
-export default function AdjustmentsClient({ user }: Props) {
+export default function AdjustmentsClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('payroll') user }: Props) {
     const [runs, setRuns] = useState<PayrollRun[]>([])
     const [selectedRun, setSelectedRun] = useState<PayrollRun | null>(null)
     const [adjustments, setAdjustments] = useState<Adjustment[]>([])

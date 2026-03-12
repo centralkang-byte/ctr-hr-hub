@@ -1,4 +1,9 @@
 'use client'
+
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — 나의 역량 자기평가 Client (B8-3)
 // ═══════════════════════════════════════════════════════════
@@ -107,7 +112,10 @@ function LevelSelector({
 
 // ── 메인 컴포넌트 ─────────────────────────────────────────
 
-export default function MySkillsClient({ user, competencies, requirementMap, grade }: Props) {
+export default function MySkillsClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('mySpace')
+ user, competencies, requirementMap, grade }: Props) {
   const [period, setPeriod] = useState('2026-H1')
   const [assessments, setAssessments] = useState<Record<string, AssessmentItem>>({})
   const [savedAssessments, setSavedAssessments] = useState<Record<string, AssessmentItem>>({})

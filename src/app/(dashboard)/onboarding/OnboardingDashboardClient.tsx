@@ -1,5 +1,7 @@
 'use client'
 
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Onboarding Dashboard Client
 // B5 강화: 법인 필터, planType 탭, 감정 펄스, 지연 하이라이트

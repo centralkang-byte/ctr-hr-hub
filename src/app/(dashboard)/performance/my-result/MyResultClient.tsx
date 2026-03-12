@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useCallback, useEffect, useState } from 'react'
 import { Award, Target, TrendingUp, Users, CheckCircle2, Clock, Info, ArrowLeft, Shield } from 'lucide-react'
 import { apiClient } from '@/lib/api'
@@ -53,7 +58,10 @@ const GRADE_STYLE: Record<string, { bg: string; text: string; label: string }> =
 
 // ─── Component ────────────────────────────────────────────
 
-export default function MyResultClient({ user }: { user: SessionUser }) {
+export default function MyResultClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+ user }: { user: SessionUser }) {
     const [cycles, setCycles] = useState<CycleOption[]>([])
     const [selectedCycleId, setSelectedCycleId] = useState('')
     const [cycleStatus, setCycleStatus] = useState('')

@@ -1,5 +1,8 @@
 'use client'
 
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Onboarding Self-View Client
 // 내 온보딩: 환영 배너, 버디 정보, 진행률, 태스크 목록

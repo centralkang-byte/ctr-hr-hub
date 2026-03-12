@@ -1,5 +1,7 @@
 'use client'
 
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Leave Team Client
 // 팀 휴가 캘린더: 팀원 휴가 현황, 승인/반려

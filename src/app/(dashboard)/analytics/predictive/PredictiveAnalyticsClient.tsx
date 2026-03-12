@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — 예측 애널리틱스 대시보드
 // 4탭: 이직예측 | 번아웃 | 팀건강 | 인력현황
@@ -639,6 +644,9 @@ function WorkforceTab({
 // ─── 메인 컴포넌트 ────────────────────────────────────
 
 export default function PredictiveAnalyticsClient() {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('analytics')
+
   const searchParams = useSearchParams()
   const router = useRouter()
   const companyId = searchParams.get('company_id') ?? undefined

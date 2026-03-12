@@ -1,5 +1,9 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useState } from 'react'
 import { format, differenceInDays } from 'date-fns'
 import { useTranslations } from 'next-intl'
@@ -41,7 +45,9 @@ const CONTRACT_TYPE_COLORS: Record<string, string> = {
   PROBATION_ONLY: 'bg-[#FFEDD5] text-[#9A3412]',
 }
 
-export default function ContractsClient({ employeeId, permissions }: Props) {
+export default function ContractsClient({
+  const tCommon = useTranslations('common')
+ employeeId, permissions }: Props) {
   const t = useTranslations('employee')
   const tc = useTranslations('common')
 

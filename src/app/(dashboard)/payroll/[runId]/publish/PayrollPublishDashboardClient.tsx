@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 // ═══════════════════════════════════════════════════════════
 // GP#3-C: HR 급여 발행 대시보드 — /payroll/[runId]/publish
 // 발행 현황 + 열람률 + 다운로드 + 승인 이력 + 재알림
@@ -98,7 +103,9 @@ interface Props {
     runId: string
 }
 
-export default function PayrollPublishDashboardClient({ user: _user, runId }: Props) {
+export default function PayrollPublishDashboardClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('payroll') user: _user, runId }: Props) {
     const router = useRouter()
     const [data, setData] = useState<PublishStatus | null>(null)
     const [loading, setLoading] = useState(true)

@@ -1,5 +1,9 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — 지원자 관리 목록 (Client)
 // ═══════════════════════════════════════════════════════════
@@ -107,7 +111,10 @@ interface Props {
 
 // ─── Component ──────────────────────────────────────────
 
-export default function ApplicantListClient({ user, postingId }: Props) {
+export default function ApplicantListClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('recruitment')
+ user, postingId }: Props) {
   const router = useRouter()
   const t = useTranslations('recruitment')
   const [data, setData] = useState<ApplicationRecord[]>([])

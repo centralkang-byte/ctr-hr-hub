@@ -15,7 +15,7 @@
     "next": "Next",
     "prev": "Previous",
     "close": "Close",
-    "loading": "Loading...",
+    "loading": "Processing...",
     "noData": "No data available",
     "required": "Required",
     "optional": "Optional",
@@ -154,11 +154,11 @@
     "submitted": "Submitted successfully",
     "approved": "Approved successfully",
     "rejected": "Rejected successfully",
-    "confirmDeleteDesc": "This action cannot be undone.",
+    "confirmDeleteDesc": "This action cannot be undone",
     "confirmSubmit": "Do you want to submit?",
     "confirmApprove": "Do you want to approve?",
     "confirmReject": "Do you want to reject?",
-    "errorDesc": "An error occurred during processing",
+    "errorDesc": "Please try again later",
     "assignee": "Assignee",
     "title": "Title",
     "details": "Details",
@@ -174,10 +174,11 @@
     "completed": "Completed",
     "unit.day": "d",
     "unit.year": "",
-    "unit.person": "",
-    "unit.count": "",
+    "unit.person": " people",
+    "unit.count": " items",
     "empty": "Empty",
-    "unit.month": " month(s)"
+    "unit.month": " month(s)",
+    "saving": "Saving..."
   },
   "auth": {
     "login": "Login",
@@ -604,8 +605,8 @@
     "totalEmployees": "Total Employees",
     "averageWorkHours": "Work Hours (Average)",
     "pageTitle": "Attendance",
-    "emptyTitle": "No attendance records",
-    "emptyDesc": "No attendance data for this period."
+    "emptyTitle": "No attendance data",
+    "emptyDesc": "No attendance data for this period"
   },
   "leave": {
     "title": "Leave Management",
@@ -1055,8 +1056,8 @@
     "resultsTitle": "Results",
     "peerTitle": "Peer Review",
     "checkInTitle": "Check-In",
-    "emptyTitle": "No performance data",
-    "emptyDesc": "No data for this cycle.",
+    "emptyTitle": "No data",
+    "emptyDesc": "No performance data yet",
     "emptyCycles": "No cycles registered",
     "emptyCyclesDesc": "Create a new cycle.",
     "emptyGoals": "No goals set",
@@ -1076,7 +1077,8 @@
     "targetEmployees": "Target Employees",
     "totalNominations": "Total Nominations",
     "nominationCount": "# Nominations",
-    "avgScore": "Avg Score"
+    "avgScore": "Avg Score",
+    "pageTitle": "Performance"
   },
   "recruitment": {
     "title": "Recruitment",
@@ -1393,7 +1395,10 @@
     "expectedStartDate": "Expected Start Date",
     "confirmOffer": "Confirm Offer",
     "rejectionModal": "Reject Application",
-    "confirmRejection": "Reject"
+    "confirmRejection": "Reject",
+    "emptyTitle": "No job postings",
+    "emptyDesc": "No job postings have been created",
+    "pageTitle": "Recruitment"
   },
   "offboarding": {
     "title": "Offboarding",
@@ -2270,7 +2275,8 @@
     "turnoverTitle": "Turnover Analysis",
     "workforceTitle": "Workforce",
     "emptyTitle": "No analytics data",
-    "emptyDesc": "Analytics will appear when enough data is collected."
+    "emptyDesc": "Insufficient data for analysis",
+    "pageTitle": "Analytics"
   },
   "notification": {
     "title": "Notifications",
@@ -2701,7 +2707,10 @@
     "active": "Active",
     "inactive": "Inactive",
     "name": "Name",
-    "input": "Input"
+    "input": "Input",
+    "pageTitle": "Settings",
+    "saved": "Settings saved",
+    "saveFailed": "Failed to save settings"
   },
   "ai": {
     "generated": "AI Generated",
@@ -3446,8 +3455,8 @@
   },
   "skills": {
     "pageTitle": "Skills Matrix",
-    "emptyTitle": "No skills data",
-    "emptyDesc": "Register employee skills."
+    "emptyTitle": "No skill data",
+    "emptyDesc": "No skills have been added yet"
   },
   "lms": {
     "pageTitle": "Learning Management",
@@ -3491,7 +3500,10 @@
     "usageSummary": "Usage Summary",
     "claimHistory": "Claim History",
     "emptyBenefitClaim": "No claims yet",
-    "emptyBenefitClaimDesc": "You haven't submitted any benefit claims yet."
+    "emptyBenefitClaimDesc": "You haven't submitted any benefit claims yet.",
+    "pageTitle": "My Space",
+    "emptyTitle": "No data",
+    "emptyDesc": "Nothing has been added yet"
   },
   "directory": {
     "pageTitle": "People Directory",

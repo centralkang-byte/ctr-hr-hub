@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Talent Pool 관리
 // B4: /recruitment/talent-pool
@@ -60,7 +65,10 @@ function daysUntil(date: string): number {
   return Math.ceil((new Date(date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
 }
 
-export default function TalentPoolClient({ user }: { user: SessionUser }) {
+export default function TalentPoolClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('recruitment')
+ user }: { user: SessionUser }) {
   const [items, setItems] = useState<TalentPoolEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')

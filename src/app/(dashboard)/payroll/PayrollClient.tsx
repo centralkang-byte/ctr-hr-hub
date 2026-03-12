@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 // ═══════════════════════════════════════════════════════════
 // GP#3-D: 급여 통합 대시보드 — /payroll
 // Pipeline 시각화 + 캘린더 + 요약 KPIs + 빠른 실행

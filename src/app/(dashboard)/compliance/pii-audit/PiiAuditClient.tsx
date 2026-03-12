@@ -1,11 +1,17 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useTranslations } from 'next-intl'
 import { ShieldAlert } from 'lucide-react'
 import PiiAccessDashboard from '@/components/compliance/gdpr/PiiAccessDashboard'
 import PiiAccessLogTable from '@/components/compliance/gdpr/PiiAccessLogTable'
 
 export default function PiiAuditClient() {
+  const tCommon = useTranslations('common')
+
   const t = useTranslations('compliance')
 
   return (

@@ -1,4 +1,9 @@
 'use client'
+
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — 팀원 역량 평가 Client (매니저용) (B8-3)
 // ═══════════════════════════════════════════════════════════
@@ -51,7 +56,10 @@ function getGapBadge(gap: number | null) {
   return <span className="px-1.5 py-0.5 rounded-full text-xs bg-[#DBEAFE] text-[#1D4ED8]">초과 +{Math.abs(gap)}</span>
 }
 
-export default function TeamSkillsClient({ user }: { user: SessionUser }) {
+export default function TeamSkillsClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('skills')
+ user }: { user: SessionUser }) {
   const [period, setPeriod] = useState('2026-H1')
   const [teamData, setTeamData] = useState<{
     teamMembers: TeamMember[]
@@ -130,13 +138,7 @@ export default function TeamSkillsClient({ user }: { user: SessionUser }) {
     return acc
   }, {}) ?? {}
 
-  if (loading) {
-    return (
-      <div className="p-6 flex items-center justify-center h-64">
-        <div className="animate-spin w-6 h-6 border-2 border-[#00C853] border-t-transparent rounded-full" />
-      </div>
-    )
-  }
+  if (loading) return <TableSkeleton rows={8} />
 
   if (!teamData?.teamMembers.length) {
     return (

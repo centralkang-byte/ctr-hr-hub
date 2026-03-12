@@ -1,5 +1,7 @@
 'use client'
 
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Offboarding Dashboard Client
 // 퇴직처리 현황: 진행률, D-day 경고, 태스크 완료, 취소

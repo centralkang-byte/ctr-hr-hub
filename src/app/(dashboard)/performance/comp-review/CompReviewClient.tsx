@@ -1,5 +1,10 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useCallback, useEffect, useState, memo } from 'react'
 import { DollarSign, Users, TrendingUp, AlertTriangle, Download, ShieldAlert, ArrowLeft, CheckCircle2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
@@ -75,7 +80,10 @@ const MeritRowComponent = memo(function MeritRowComponent({
 
 // ─── Main Component ───────────────────────────────────────
 
-export default function CompReviewClient({ user }: { user: SessionUser }) {
+export default function CompReviewClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+ user }: { user: SessionUser }) {
     const isHrAdmin = user.role === 'SUPER_ADMIN' || user.role === 'HR_ADMIN'
     const isExecutive = user.role === 'EXECUTIVE'
     const hasAccess = isHrAdmin || isExecutive

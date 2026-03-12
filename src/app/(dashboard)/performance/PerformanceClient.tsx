@@ -1,5 +1,9 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -74,7 +78,10 @@ function formatDate(dateStr: string | null): string {
 
 // ─── Component ────────────────────────────────────────────
 
-export default function PerformanceClient({ user }: { user: SessionUser }) {
+export default function PerformanceClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+ user }: { user: SessionUser }) {
   const t = useTranslations('performance')
   const [cycles, setCycles] = useState<CycleInfo[]>([])
   const [activeCycle, setActiveCycle] = useState<CycleInfo | null>(null)

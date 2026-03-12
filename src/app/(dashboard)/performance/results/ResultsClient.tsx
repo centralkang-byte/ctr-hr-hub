@@ -1,5 +1,9 @@
 'use client'
 
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { toast } from '@/hooks/use-toast'
+
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Target, TrendingUp, Award } from 'lucide-react'
@@ -38,7 +42,10 @@ const SCORE_LABELS = ['', '매우 부족', '부족', '보통', '우수', '탁월
 
 // ─── Component ────────────────────────────────────────────
 
-export default function ResultsClient({ user }: { user: SessionUser }) {
+export default function ResultsClient({
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+ user }: { user: SessionUser }) {
   const t = useTranslations('performance')
   const tc = useTranslations('common')
 
