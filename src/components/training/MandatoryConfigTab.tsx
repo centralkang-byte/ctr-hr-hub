@@ -243,7 +243,7 @@ export default function MandatoryConfigTab() {
         ) : (
           <div className="space-y-3">
             {statuses.map((s) => (
-              <div key={s.courseId} className="bg-white rounded-xl border border-[#E8E8E8] p-4">
+              <div key={s.courseId} className={}>
                 <div className="flex items-center justify-between mb-2">
                   <div>
                     <span className="font-semibold text-[#1A1A1A] text-sm">{s.title}</span>

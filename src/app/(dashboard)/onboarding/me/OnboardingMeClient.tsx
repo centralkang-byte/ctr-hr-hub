@@ -199,7 +199,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
       {/* ─── Buddy + Progress Row ─── */}
       <div className="grid gap-4 md:grid-cols-2">
         {/* Buddy Card */}
-        <div className="bg-white rounded-xl border border-[#F0F0F3] p-6">
+        <div className={}>
           <h3 className="text-base font-bold text-[#1C1D21] tracking-[-0.02em] mb-4">{t('onboardingBuddy')}</h3>
           {data.buddy ? (
             <div className="flex items-center gap-4">
@@ -219,7 +219,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
         </div>
 
         {/* Progress Card */}
-        <div className="bg-white rounded-xl border border-[#F0F0F3] p-6">
+        <div className={}>
           <h3 className="text-base font-bold text-[#1C1D21] tracking-[-0.02em] mb-4">{t('overallProgress')}</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between text-sm">
@@ -249,7 +249,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
         {categoryOrder
           .filter((cat) => grouped[cat] && grouped[cat].length > 0)
           .map((cat) => (
-            <div key={cat} className="bg-white rounded-xl border border-[#F0F0F3] p-6">
+            <div key={cat} className={}>
               <div className="flex items-center gap-2 mb-4">
                 <span>{CATEGORY_ICONS[cat]}</span>
                 <h3 className="text-base font-bold text-[#1C1D21] tracking-[-0.02em]">

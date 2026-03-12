@@ -77,15 +77,15 @@ export default function DataRetentionClient() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <p className="text-xs text-[#666] mb-1">Total Policies</p>
           <p className="text-3xl font-bold text-[#1A1A1A]">{policies.length}</p>
         </div>
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <p className="text-xs text-[#666] mb-1">{t('gdpr.autoDelete')} Enabled</p>
           <p className="text-3xl font-bold text-[#1A1A1A]">{policies.filter((p) => p.auto_delete).length}</p>
         </div>
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <p className="text-xs text-[#666] mb-1">{t('gdpr.anonymize')} Enabled</p>
           <p className="text-3xl font-bold text-[#1A1A1A]">{policies.filter((p) => p.anonymize).length}</p>
         </div>

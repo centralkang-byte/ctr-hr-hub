@@ -111,7 +111,7 @@ export default function PulseRespondClient() {
       {/* Questions */}
       <div className="space-y-6">
         {survey.questions.map((q, i) => (
-          <div key={q.id} className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+          <div key={q.id} className={}>
             <div className="flex items-start gap-2 mb-3">
               <span className="text-xs font-medium text-[#999]">Q{i + 1}</span>
               <div>

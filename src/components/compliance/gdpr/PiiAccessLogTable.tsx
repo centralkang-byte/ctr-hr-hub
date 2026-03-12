@@ -81,7 +81,7 @@ export default function PiiAccessLogTable() {
   return (
     <div className="space-y-4">
       {/* Filter Bar */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8] p-4">
+      <div className={}>
         <div className="flex items-center gap-2 mb-3">
           <SlidersHorizontal className="w-4 h-4 text-[#666]" />
           <span className="text-sm font-medium text-[#333]">{tc('filter')}</span>

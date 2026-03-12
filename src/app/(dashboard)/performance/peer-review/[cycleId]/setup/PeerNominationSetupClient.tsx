@@ -138,7 +138,7 @@ export default function PeerNominationSetupClient() {
       <div className="grid grid-cols-2 gap-6">
         {/* Left: Employee Search + AI Recommendations */}
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+          <div className={}>
             <h2 className="text-base font-semibold text-[#1A1A1A] mb-3">대상 직원 선택</h2>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
@@ -187,7 +187,7 @@ export default function PeerNominationSetupClient() {
         </div>
 
         {/* Right: Nominations List */}
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <h2 className="text-base font-semibold text-[#1A1A1A] mb-3">
             현재 지명 목록 ({nominations.length}건)
           </h2>

@@ -129,7 +129,7 @@ export default function PeerReviewClient() {
             <div className="text-center text-[#999] py-10 text-sm">할당된 동료 평가가 없습니다.</div>
           ) : (
             myReviews.map((r) => (
-              <div key={r.nominationId} className="bg-white rounded-xl border border-[#E8E8E8] p-5 flex items-center justify-between">
+              <div key={r.nominationId} className={`${CARD_STYLES.kpi} flex items-center justify-between`}>
                 <div>
                   <h3 className="text-sm font-semibold text-[#1A1A1A]">{r.employee.name}</h3>
                   <p className="text-xs text-[#666] mt-1">
@@ -167,15 +167,15 @@ export default function PeerReviewClient() {
           <div className="space-y-4">
             {/* KPIs */}
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+              <div className={}>
                 <p className="text-xs text-[#666] mb-1">대상 직원</p>
                 <p className="text-3xl font-bold text-[#1A1A1A]">{teamResults.totalEmployees}명</p>
               </div>
-              <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+              <div className={}>
                 <p className="text-xs text-[#666] mb-1">총 지명</p>
                 <p className="text-3xl font-bold text-[#1A1A1A]">{teamResults.totalNominations}건</p>
               </div>
-              <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+              <div className={}>
                 <p className="text-xs text-[#666] mb-1">완료율</p>
                 <p className="text-3xl font-bold text-[#00C853]">{teamResults.completionRate}%</p>
               </div>

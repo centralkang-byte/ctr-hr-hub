@@ -229,14 +229,14 @@ export default function MySkillsClient({ user, competencies, requirementMap, gra
 
       {/* 진행률 KPI */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <p className="text-xs text-[#666] mb-1">평가 완료</p>
           <p className="text-3xl font-bold text-[#1A1A1A]">{completedCount}<span className="text-lg font-normal text-[#999]">/{totalCount}</span></p>
           <div className="mt-2 bg-[#F5F5F5] rounded-full h-2">
             <div className="bg-[#00C853] h-2 rounded-full" style={{ width: `${completionRate}%` }} />
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <p className="text-xs text-[#666] mb-1">미달 역량</p>
           <p className="text-3xl font-bold text-[#EF4444]">
             {competencies.filter((c) => {
@@ -247,7 +247,7 @@ export default function MySkillsClient({ user, competencies, requirementMap, gra
           </p>
           <p className="text-xs text-[#EF4444] mt-1">기대 수준 미달</p>
         </div>
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <p className="text-xs text-[#666] mb-1">강점 역량</p>
           <p className="text-3xl font-bold text-[#059669]">
             {competencies.filter((c) => {
@@ -262,7 +262,7 @@ export default function MySkillsClient({ user, competencies, requirementMap, gra
 
       {/* 레이더 차트 */}
       {showRadar && (
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <h2 className="text-base font-semibold text-[#1A1A1A] mb-4">역량 레이더 차트</h2>
           <ResponsiveContainer width="100%" height={320}>
             <RadarChart data={radarData}>
@@ -280,12 +280,12 @@ export default function MySkillsClient({ user, competencies, requirementMap, gra
               <RechartsRadar
                 name="자기평가"
                 dataKey="실제"
-                stroke="#00C853"
-                fill="#00C853"
+                stroke={CHART_THEME.colors[3]}
+                fill={CHART_THEME.colors[3]}
                 fillOpacity={0.3}
               />
               <Legend />
-              <Tooltip />
+              <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
             </RadarChart>
           </ResponsiveContainer>
         </div>

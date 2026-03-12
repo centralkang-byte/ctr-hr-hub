@@ -60,7 +60,7 @@ export default function AttendanceClient() {
           {charts.overtimeTrend.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <LineChart data={charts.overtimeTrend}>
-                <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
+                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
                 <XAxis dataKey="month" fontSize={11} tickFormatter={(v) => v.split('-')[1] + '월'} />
                 <YAxis fontSize={11} label={{ value: '분', position: 'insideLeft', style: { fontSize: 11 } }} />
                 <Tooltip labelFormatter={(v) => `${String(v).split('-')[1]}월`} contentStyle={{ borderRadius: 8, fontSize: 12 }} />
@@ -74,7 +74,7 @@ export default function AttendanceClient() {
           {charts.violationTrend.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={charts.violationTrend}>
-                <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
+                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
                 <XAxis dataKey="month" fontSize={11} tickFormatter={(v) => v.split('-')[1] + '월'} />
                 <YAxis fontSize={11} />
                 <Tooltip labelFormatter={(v) => `${String(v).split('-')[1]}월`} contentStyle={{ borderRadius: 8, fontSize: 12 }} />

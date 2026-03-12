@@ -108,7 +108,7 @@ export default function KedoDocumentsTab() {
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8] p-4">
+      <div className={}>
         <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
           <div className="flex gap-2 flex-1">
             {/* Status Filter */}

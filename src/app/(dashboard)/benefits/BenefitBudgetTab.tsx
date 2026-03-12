@@ -117,7 +117,7 @@ export function BenefitBudgetTab({ user }: { user: SessionUser }) {
             const isKRW = budget.totalBudget > 100000
 
             return (
-              <div key={budget.id} className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+              <div key={budget.id} className={}>
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <span className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />

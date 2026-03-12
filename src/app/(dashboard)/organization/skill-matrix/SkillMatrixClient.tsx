@@ -214,8 +214,8 @@ function RadarModal({
                   <Radar
                     name="현재 수준"
                     dataKey="actual"
-                    stroke="#00C853"
-                    fill="#00C853"
+                    stroke={CHART_THEME.colors[3]}
+                    fill={CHART_THEME.colors[3]}
                     fillOpacity={0.3}
                   />
                   <Legend
@@ -325,7 +325,7 @@ export default function SkillMatrixClient({
             { label: '주요 갭 역량', value: gapReport.topGaps.length, icon: TrendingDown, color: 'text-[#B91C1C]' },
             { label: '강점 역량', value: gapReport.topStrengths.length, icon: TrendingUp, color: 'text-[#047857]' },
           ].map((k) => (
-            <div key={k.label} className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+            <div key={k.label} className={}>
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs text-[#666]">{k.label}</p>
                 <k.icon className="w-4 h-4 text-[#D4D4D4]" />

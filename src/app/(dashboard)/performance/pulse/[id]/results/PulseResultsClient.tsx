@@ -127,7 +127,7 @@ export default function PulseResultsClient() {
       {/* Question Results */}
       <div className="space-y-6">
         {results.questionResults.map((q, i) => (
-          <div key={q.questionId} className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+          <div key={q.questionId} className={}>
             <div className="flex items-start justify-between mb-4">
               <div>
                 <span className="text-xs text-[#999] font-medium">Q{i + 1}</span>
@@ -148,11 +148,11 @@ export default function PulseResultsClient() {
                       label: String(v),
                       count: q.distribution![String(v)] ?? 0,
                     }))}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#E8E8E8" />
+                      <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                       <XAxis dataKey="label" tick={{ fontSize: 12, fill: '#666' }} />
                       <YAxis tick={{ fontSize: 12, fill: '#666' }} />
-                      <Tooltip />
-                      <Bar dataKey="count" fill="#00C853" radius={[4, 4, 0, 0]} />
+                      <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
+                      <Bar dataKey="count" fill={CHART_THEME.colors[3]} radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -172,7 +172,7 @@ export default function PulseResultsClient() {
                         <Cell key={idx} fill={CHART_COLORS[idx % CHART_COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>

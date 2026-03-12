@@ -147,23 +147,23 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
         <>
           {/* Summary KPI */}
           <div className="grid grid-cols-4 gap-4 mb-6">
-            <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+            <div className={}>
               <p className="text-xs text-[#666] mb-1">총 이상 건수</p>
               <p className={`text-3xl font-bold ${data.totalAnomalies > 0 ? 'text-[#DC2626]' : 'text-[#059669]'}`}>
                 {data.totalAnomalies}
               </p>
             </div>
-            <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+            <div className={}>
               <p className="text-xs text-[#666] mb-1">High 이상</p>
               <p className="text-3xl font-bold text-[#DC2626]">
                 {data.anomalies.filter(a => a.severity === 'high').reduce((s, a) => s + a.affectedCount, 0)}
               </p>
             </div>
-            <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+            <div className={}>
               <p className="text-xs text-[#666] mb-1">분석 규칙</p>
               <p className="text-3xl font-bold text-[#1A1A1A]">4</p>
             </div>
-            <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+            <div className={}>
               <p className="text-xs text-[#666] mb-1">스캔 인원</p>
               <p className="text-3xl font-bold text-[#1A1A1A]">{data.scannedCount}</p>
             </div>
@@ -223,7 +223,7 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
             {(['밴드 이탈', '내부 분산 과다', '법인간 격차', '급격한 변화'] as const)
               .filter(rule => !data.anomalies.find(a => a.rule === rule))
               .map(rule => (
-                <div key={rule} className="bg-white rounded-xl border border-[#E8E8E8] p-5 flex items-center gap-3 opacity-60">
+                <div key={rule} className={`${CARD_STYLES.kpi} flex items-center gap-3 opacity-60`}>
                   <CheckCircle2 className="w-5 h-5 text-[#059669] shrink-0" />
                   <div>
                     <h3 className="font-medium text-[#555]">{rule}</h3>

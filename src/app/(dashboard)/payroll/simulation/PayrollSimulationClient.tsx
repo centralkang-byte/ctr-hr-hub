@@ -41,7 +41,7 @@ function KPICard({ label, value, diff, rate, variant }: {
       rate.startsWith('-') ? 'bg-green-50 text-green-600' : 'bg-primary/5 text-primary'
 
   return (
-    <div className="bg-white rounded-xl border border-[#F0F0F3] p-4">
+    <div className={}>
       <div className="flex items-center justify-between mb-1">
         <p className="text-xs text-[#8181A5]">{label}</p>
         {rate && <span className={`text-xs px-2 py-0.5 rounded-full ${badgeColor}`}>{rate}</span>}
@@ -307,7 +307,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
 
           {/* ─ SINGLE: Employee Search ─ */}
           {mode === 'SINGLE' && (
-            <div className="bg-white rounded-xl border border-[#F0F0F3] p-4 space-y-3">
+            <div className={`${CARD_STYLES.kpi} space-y-3`}>
               <h3 className="text-sm font-semibold text-[#1C1D21]">대상 직원</h3>
               {selectedEmployee ? (
                 <div className="bg-[#F5F5FA] rounded-lg p-3 flex items-center justify-between">
@@ -351,7 +351,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
 
           {/* ─ SINGLE: Parameters ─ */}
           {mode === 'SINGLE' && (
-            <div className="bg-white rounded-xl border border-[#F0F0F3] p-4 space-y-3">
+            <div className={`${CARD_STYLES.kpi} space-y-3`}>
               <h3 className="text-sm font-semibold text-[#1C1D21]">기본급</h3>
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-sm text-[#1C1D21]">
@@ -401,7 +401,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
 
           {/* ─ BULK: Target ─ */}
           {mode === 'BULK' && (
-            <div className="bg-white rounded-xl border border-[#F0F0F3] p-4 space-y-3">
+            <div className={`${CARD_STYLES.kpi} space-y-3`}>
               <h3 className="text-sm font-semibold text-[#1C1D21]">대상 선택</h3>
               {(['COMPANY', 'DEPARTMENT', 'SELECTED'] as BulkTargetType[]).map(t => (
                 <div key={t}>
@@ -468,7 +468,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
 
           {/* ─ BULK: Parameters ─ */}
           {mode === 'BULK' && (
-            <div className="bg-white rounded-xl border border-[#F0F0F3] p-4 space-y-3">
+            <div className={`${CARD_STYLES.kpi} space-y-3`}>
               <h3 className="text-sm font-semibold text-[#1C1D21]">인상 조건</h3>
               <div>
                 <label className="text-xs text-[#8181A5]">기본급 인상률</label>
@@ -529,18 +529,18 @@ export default function PayrollSimulationClient({ user, companies, departments }
 
               {/* Chart (single mode) */}
               {chartData && (
-                <div className="bg-white rounded-xl border border-[#F0F0F3] p-5">
+                <div className={}>
                   <h3 className="text-sm font-semibold text-[#1C1D21] mb-4">현재 vs 시뮬레이션 비교</h3>
                   <ResponsiveContainer width="100%" height={200}>
                     <BarChart data={chartData} layout="vertical" margin={{ left: 20 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F3" />
+                      <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                       <XAxis type="number" tickFormatter={v => `₩${(v / 10000).toFixed(0)}만`} />
                       <YAxis type="category" dataKey="name" width={40} />
                       <Tooltip formatter={(v: number) => fmtKRW(v)} />
                       <Legend />
-                      <Bar dataKey="기본급" fill="#5E81F4" stackId="a" />
-                      <Bar dataKey="수당" fill="#34D399" stackId="a" />
-                      <Bar dataKey="상여" fill="#FBBF24" stackId="a" />
+                      <Bar dataKey="기본급" fill={CHART_THEME.colors[0]} stackId="a" />
+                      <Bar dataKey="수당" fill={CHART_THEME.colors[3]} stackId="a" />
+                      <Bar dataKey="상여" fill={CHART_THEME.colors[2]} stackId="a" />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -548,7 +548,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
 
               {/* Department Table (bulk) */}
               {sm.byDepartment && sm.byDepartment.length > 0 && (
-                <div className="bg-white rounded-xl border border-[#F0F0F3] p-5">
+                <div className={}>
                   <h3 className="text-sm font-semibold text-[#1C1D21] mb-3">부서별 요약</h3>
                   <table className="w-full text-sm">
                     <thead>
@@ -588,7 +588,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
               )}
 
               {/* Employee Detail Table */}
-              <div className="bg-white rounded-xl border border-[#F0F0F3] p-5">
+              <div className={}>
                 <h3 className="text-sm font-semibold text-[#1C1D21] mb-3">직원별 상세 ({result.employees.length}명)</h3>
                 <table className="w-full text-sm">
                   <thead>

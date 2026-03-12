@@ -188,7 +188,7 @@ export function NotificationPreferenceClient() {
       </div>
 
       {/* Quiet Hours */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8] p-5 mb-6">
+      <div className={`${CARD_STYLES.kpi} mb-6`}>
         <div className="flex items-center gap-2 mb-4">
           <Moon className="w-4 h-4 text-[#666]" />
           <h2 className="text-base font-semibold text-[#1A1A1A]">방해금지 시간</h2>

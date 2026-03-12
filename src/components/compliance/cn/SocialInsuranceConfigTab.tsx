@@ -70,7 +70,7 @@ export default function SocialInsuranceConfigTab() {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+    <div className={}>
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>

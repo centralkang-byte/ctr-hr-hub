@@ -360,8 +360,7 @@ export function RecruitmentDashboardClient(_props: {
               margin={{ top: 0, right: 40, left: 0, bottom: 0 }}
             >
               <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="#F0F0F0"
+                stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray}
                 horizontal={false}
               />
               <XAxis type="number" tick={{ fontSize: 12, fill: '#999' }} />

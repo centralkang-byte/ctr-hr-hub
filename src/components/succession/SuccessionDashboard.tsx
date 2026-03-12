@@ -69,7 +69,7 @@ export default function SuccessionDashboard() {
     <div className="space-y-6">
       {/* ─── KPI Cards ─── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-[#E8F5E9] flex items-center justify-center">
               <Crown className="h-5 w-5 text-[#00C853]" />
@@ -80,7 +80,7 @@ export default function SuccessionDashboard() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-[#D1FAE5] flex items-center justify-center">
               <Shield className="h-5 w-5 text-[#059669]" />
@@ -91,7 +91,7 @@ export default function SuccessionDashboard() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-[#FEE2E2] flex items-center justify-center">
               <AlertTriangle className="h-5 w-5 text-[#DC2626]" />
@@ -102,7 +102,7 @@ export default function SuccessionDashboard() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-[#FEF3C7] flex items-center justify-center">
               <Users className="h-5 w-5 text-[#D97706]" />
@@ -117,7 +117,7 @@ export default function SuccessionDashboard() {
 
       {/* ─── Readiness Distribution ─── */}
       {pieData.length > 0 && (
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <h3 className="text-lg font-semibold text-[#1A1A1A] mb-4">준비도 분포</h3>
           <div className="flex items-center gap-6">
             <div className="relative w-48 h-48">

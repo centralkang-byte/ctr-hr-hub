@@ -100,7 +100,7 @@ export default function DpiaClient() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <p className="text-xs text-[#666] mb-1">Total DPIAs</p>
           <p className="text-3xl font-bold text-[#1A1A1A]">{dpias.length}</p>
         </div>

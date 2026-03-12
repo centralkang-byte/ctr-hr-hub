@@ -107,7 +107,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
       </div>
 
       {/* 폼 */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8] p-6 space-y-5">
+      <div className={`${CARD_STYLES.padded} space-y-5`}>
 
         {/* 법인 / 부서 */}
         <div className="grid grid-cols-2 gap-4">

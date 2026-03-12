@@ -240,7 +240,7 @@ export default function PayrollImportClient({
       {tab === 'upload' && (
         <div className="max-w-2xl space-y-6">
           {/* Mapping selector */}
-          <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+          <div className={}>
             <h3 className="text-sm font-semibold text-[#1A1A1A] mb-3">컬럼 매핑 선택</h3>
             {loadingMappings ? (
               <div className="text-sm text-[#999]">로딩 중...</div>
@@ -271,7 +271,7 @@ export default function PayrollImportClient({
           </div>
 
           {/* Period */}
-          <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+          <div className={}>
             <h3 className="text-sm font-semibold text-[#1A1A1A] mb-3">급여 지급 월</h3>
             <div className="flex gap-3">
               <select

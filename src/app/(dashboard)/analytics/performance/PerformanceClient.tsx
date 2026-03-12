@@ -60,7 +60,7 @@ export default function PerformanceClient() {
         {charts.gradeDistribution.length === 0 ? <EmptyChart /> : (
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={charts.gradeDistribution}>
-              <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
+              <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
               <XAxis dataKey="grade" fontSize={11} />
               <YAxis fontSize={11} unit="%" />
               <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
@@ -77,7 +77,7 @@ export default function PerformanceClient() {
           {charts.departmentGradeDist.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={charts.departmentGradeDist}>
-                <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
+                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
                 <XAxis dataKey="department" fontSize={10} angle={-15} textAnchor="end" height={50} />
                 <YAxis fontSize={11} unit="%" domain={[0, 100]} />
                 <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />

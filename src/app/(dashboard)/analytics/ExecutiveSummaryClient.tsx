@@ -82,7 +82,7 @@ export default function ExecutiveSummaryClient() {
           {charts.headcountTrend.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <AreaChart data={charts.headcountTrend}>
-                <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
+                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
                 <XAxis dataKey="month" fontSize={11} tickFormatter={(v) => v.split('-')[1] + '월'} />
                 <YAxis fontSize={11} />
                 <Tooltip labelFormatter={(v) => `${String(v).split('-')[1]}월`} contentStyle={{ borderRadius: 8, fontSize: 12 }} />
@@ -99,11 +99,11 @@ export default function ExecutiveSummaryClient() {
           {charts.turnoverTrend.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <LineChart data={charts.turnoverTrend}>
-                <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
+                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
                 <XAxis dataKey="month" fontSize={11} tickFormatter={(v) => v.split('-')[1] + '월'} />
                 <YAxis fontSize={11} unit="%" />
                 <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
-                <ReferenceLine y={4.5} label="업계 평균" stroke={CHART_COLORS.danger} strokeDasharray="3 3" />
+                <ReferenceLine y={4.5} label="업계 평균" stroke={CHART_COLORS.danger} stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                 <Line type="monotone" dataKey="rate" name="이직률" stroke={CHART_COLORS.primary} strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>

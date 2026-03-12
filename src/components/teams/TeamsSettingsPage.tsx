@@ -291,7 +291,7 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
       </div>
 
       {/* ─── Webhook Channels ─── */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+      <div className={}>
         <TeamsWebhookSection />
       </div>
 

@@ -18,10 +18,12 @@ import {
   ArrowUpRight,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { WidgetSkeleton } from '@/components/shared/WidgetSkeleton'
 import { UnifiedTaskHub } from './UnifiedTaskHub'
 import { NudgeCards } from './NudgeCards'
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
+import { StatusBadge } from '@/components/ui/StatusBadge'
+import { TYPOGRAPHY, CARD_STYLES } from '@/lib/styles'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 
@@ -59,10 +61,10 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
     <div className="space-y-6">
       {/* ── Greeting ── */}
       <div>
-        <h1 className="text-2xl font-bold text-[#1C1D21]">
+        <h1 className={TYPOGRAPHY.pageTitle}>
           안녕하세요, {user.name}님 👋
         </h1>
-        <p className="mt-1 text-sm text-[#8181A5]">전사 인사 현황을 확인하세요.</p>
+        <p className={`mt-1 ${TYPOGRAPHY.caption}`}>전사 인사 현황을 확인하세요.</p>
       </div>
 
       {/* ── AI Nudge Cards ── */}
@@ -77,78 +79,77 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Card className="border-[#F0F0F3] shadow-none">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-medium text-[#8181A5]">전사 인원</p>
-                  <p className="text-2xl font-bold text-[#1C1D21]">
-                    {summary?.totalEmployees?.toLocaleString() ?? '-'}
-                  </p>
-                </div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#EEF1FF]">
-                  <Users className="h-5 w-5 text-[#5E81F4]" />
-                </div>
+          {/* 전사 인원 */}
+          <div className={CARD_STYLES.kpi}>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className={TYPOGRAPHY.label}>전사 인원</p>
+                <p className={`mt-1 ${TYPOGRAPHY.stat}`}>
+                  <AnimatedNumber value={summary?.totalEmployees ?? 0} />
+                </p>
               </div>
-              <div className="mt-2 flex items-center gap-1 text-xs text-[#00C853]">
-                <TrendingUp className="h-3 w-3" />
-                +{summary?.newHires ?? 0} 이번 달
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#EEF1FF]">
+                <Users className="h-5 w-5 text-primary" />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+            <div className="mt-3 flex items-center gap-1">
+              <TrendingUp className="h-3 w-3 text-emerald-500" />
+              <span className="text-xs text-emerald-600 font-medium">+{summary?.newHires ?? 0} 이번 달</span>
+            </div>
+          </div>
 
-          <Card className="border-[#F0F0F3] shadow-none">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-medium text-[#8181A5]">신규 입사</p>
-                  <p className="text-2xl font-bold text-[#00C853]">
-                    {summary?.newHires ?? '-'}
-                  </p>
-                </div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E8F5E9]">
-                  <ArrowUpRight className="h-5 w-5 text-[#00C853]" />
-                </div>
+          {/* 신규 입사 */}
+          <div className={CARD_STYLES.kpi}>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className={TYPOGRAPHY.label}>신규 입사</p>
+                <p className={`mt-1 text-3xl font-bold tabular-nums text-emerald-600`}>
+                  <AnimatedNumber value={summary?.newHires ?? 0} />
+                </p>
               </div>
-              <p className="mt-2 text-xs text-[#8181A5]">최근 30일</p>
-            </CardContent>
-          </Card>
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50">
+                <ArrowUpRight className="h-5 w-5 text-emerald-500" />
+              </div>
+            </div>
+            <p className={`mt-3 ${TYPOGRAPHY.caption}`}>최근 30일</p>
+          </div>
 
-          <Card className="border-[#F0F0F3] shadow-none">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-medium text-[#8181A5]">퇴사자</p>
-                  <p className="text-2xl font-bold text-[#EF4444]">
-                    {summary?.terminations ?? '-'}
-                  </p>
-                </div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FEE2E2]">
-                  <TrendingDown className="h-5 w-5 text-[#EF4444]" />
-                </div>
+          {/* 퇴사자 */}
+          <div className={CARD_STYLES.kpi}>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className={TYPOGRAPHY.label}>퇴사자</p>
+                <p className={`mt-1 text-3xl font-bold tabular-nums text-red-500`}>
+                  <AnimatedNumber value={summary?.terminations ?? 0} />
+                </p>
               </div>
-              <p className="mt-2 text-xs text-[#8181A5]">최근 30일</p>
-            </CardContent>
-          </Card>
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-50">
+                <TrendingDown className="h-5 w-5 text-red-400" />
+              </div>
+            </div>
+            <p className={`mt-3 ${TYPOGRAPHY.caption}`}>최근 30일</p>
+          </div>
 
-          <Card className="border-[#F0F0F3] shadow-none">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-medium text-[#8181A5]">이직률</p>
-                  <p className="text-2xl font-bold text-[#1C1D21]">
-                    {summary?.turnoverRate ?? '-'}%
-                  </p>
-                </div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FEFCE8]">
-                  <AlertTriangle className="h-5 w-5 text-[#CA8A04]" />
-                </div>
+          {/* 이직률 */}
+          <div className={CARD_STYLES.kpi}>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className={TYPOGRAPHY.label}>이직률</p>
+                <p className={`mt-1 ${TYPOGRAPHY.stat}`}>
+                  <AnimatedNumber
+                    value={summary?.turnoverRate ?? 0}
+                    formatter={(n) => `${n.toFixed(1)}%`}
+                  />
+                </p>
               </div>
-              <p className="mt-2 text-xs text-[#8181A5]">
-                대기 휴가: {summary?.pendingLeaves ?? 0}건
-              </p>
-            </CardContent>
-          </Card>
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-50">
+                <AlertTriangle className="h-5 w-5 text-amber-500" />
+              </div>
+            </div>
+            <p className={`mt-3 ${TYPOGRAPHY.caption}`}>
+              대기 휴가: {summary?.pendingLeaves ?? 0}건
+            </p>
+          </div>
         </div>
       )}
 
@@ -160,31 +161,29 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
         {/* Right sidebar — compact above-fold cards only */}
         <div className="space-y-4">
           {/* 승인 대기 현황 */}
-          <Card className="border-l-4 border-[#F0F0F3] border-l-[#5E81F4] shadow-none">
+          <Card className="border-l-4 border-[#F0F0F3] border-l-primary shadow-none">
             <CardHeader className="pb-2 pt-4">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1C1D21]">
-                <CheckSquare className="h-4 w-4 text-[#5E81F4]" />
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+                <CheckSquare className="h-4 w-4 text-primary" />
                 승인 대기 현황
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 pb-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-[#8181A5]">휴가 신청</span>
-                <Badge className="bg-[#5E81F4] text-[10px] text-white">
-                  {summary?.pendingLeaves ?? 0}건
-                </Badge>
+                <span className="text-sm text-gray-500">휴가 신청</span>
+                <StatusBadge variant="info">{summary?.pendingLeaves ?? 0}건</StatusBadge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-[#8181A5]">프로필 변경</span>
-                <Badge className="bg-[#5E81F4] text-[10px] text-white">5건</Badge>
+                <span className="text-sm text-gray-500">프로필 변경</span>
+                <StatusBadge variant="info">5건</StatusBadge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-[#8181A5]">급여 조정</span>
-                <Badge className="bg-[#5E81F4] text-[10px] text-white">3건</Badge>
+                <span className="text-sm text-gray-500">급여 조정</span>
+                <StatusBadge variant="info">3건</StatusBadge>
               </div>
               <Link
                 href="/approvals/inbox"
-                className="block pt-1 text-center text-xs font-medium text-[#5E81F4] hover:underline"
+                className="block pt-1 text-center text-xs font-medium text-primary hover:underline"
               >
                 승인함 바로가기 →
               </Link>
@@ -194,31 +193,27 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
           {/* 퇴직 진행 현황 */}
           <Card className="border-[#F0F0F3] shadow-none">
             <CardHeader className="pb-2 pt-4">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1C1D21]">
-                <UserMinus className="h-4 w-4 text-[#F59E0B]" />
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+                <UserMinus className="h-4 w-4 text-amber-500" />
                 퇴직 진행 현황
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 pb-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-[#8181A5]">퇴직 예정</span>
-                <Badge variant="secondary" className="text-[10px]">
-                  {summary?.terminations ?? 0}명
-                </Badge>
+                <span className="text-sm text-gray-500">퇴직 예정</span>
+                <StatusBadge variant="warning">{summary?.terminations ?? 0}명</StatusBadge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-[#8181A5]">인수인계 진행 중</span>
-                <Badge variant="secondary" className="text-[10px]">1명</Badge>
+                <span className="text-sm text-gray-500">인수인계 진행 중</span>
+                <StatusBadge variant="warning">1명</StatusBadge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-[#8181A5]">이번 달 퇴직</span>
-                <Badge className="bg-[#5E81F4] text-[10px] text-white">
-                  {summary?.terminations ?? 0}명
-                </Badge>
+                <span className="text-sm text-gray-500">이번 달 퇴직</span>
+                <StatusBadge variant="danger">{summary?.terminations ?? 0}명</StatusBadge>
               </div>
               <Link
                 href="/offboarding"
-                className="block pt-1 text-center text-xs font-medium text-[#5E81F4] hover:underline"
+                className="block pt-1 text-center text-xs font-medium text-primary hover:underline"
               >
                 퇴직관리 →
               </Link>

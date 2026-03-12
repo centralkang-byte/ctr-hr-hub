@@ -138,7 +138,7 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
           { label: '대기중', value: totalPending, unit: '일', color: 'text-[#B45309]' },
           { label: '잔여', value: totalRemaining, unit: '일', color: 'text-[#00C853]' },
         ].map((kpi) => (
-          <div key={kpi.label} className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+          <div key={kpi.label} className={}>
             <p className="text-xs text-[#666] mb-1">{kpi.label}</p>
             <p className={`text-3xl font-bold ${kpi.color}`}>
               {kpi.value}

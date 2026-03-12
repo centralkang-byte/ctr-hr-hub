@@ -248,23 +248,23 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
     <div className="space-y-4">
       {/* ─── 예산 요약 카드 ─── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <p className="text-xs text-[#666] mb-1">대상 인원</p>
           <p className="text-3xl font-bold text-[#1A1A1A]">{budget.headcount}명</p>
         </div>
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <p className="text-xs text-[#666] mb-1">현재 총 연봉</p>
           <p className="text-xl font-bold text-[#1A1A1A]">
             {formatCurrency(budget.totalCurrentSalary)}
           </p>
         </div>
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <p className="text-xs text-[#666] mb-1">총 인상액</p>
           <p className="text-xl font-bold text-[#059669]">
             +{formatCurrency(budget.totalIncrease)}
           </p>
         </div>
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <p className="text-xs text-[#666] mb-1">평균 인상률</p>
           <p className="text-3xl font-bold text-[#00C853]">{budget.avgIncreasePct}%</p>
         </div>

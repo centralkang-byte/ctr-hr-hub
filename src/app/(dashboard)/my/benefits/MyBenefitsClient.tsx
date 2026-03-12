@@ -322,7 +322,7 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
       )}
 
       {summary.length > 0 && (
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <h2 className="text-base font-semibold text-[#1A1A1A] mb-4">📊 {year}년 사용 현황</h2>
           <div className="space-y-4">
             {summary.map((item) => {

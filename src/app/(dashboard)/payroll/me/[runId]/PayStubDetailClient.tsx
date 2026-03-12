@@ -222,7 +222,7 @@ export default function PayStubDetailClient({ user: _user, runId }: PayStubDetai
       </div>
 
       {/* Pay Period Info */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+      <div className={}>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
           <div>
             <p className="text-[#666]">{t('payPeriod')}</p>
@@ -240,7 +240,7 @@ export default function PayStubDetailClient({ user: _user, runId }: PayStubDetai
       </div>
 
       {/* Breakdown */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+      <div className={}>
         <PayStubBreakdown detail={detail} />
       </div>
     </div>

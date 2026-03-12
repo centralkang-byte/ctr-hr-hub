@@ -63,11 +63,11 @@ export default function TurnoverClient() {
         {charts.turnoverTrend.length === 0 ? <EmptyChart /> : (
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={charts.turnoverTrend}>
-              <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
+              <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
               <XAxis dataKey="month" fontSize={10} tickFormatter={(v) => v.substring(2).replace('-', '/')} />
               <YAxis fontSize={11} unit="%" />
               <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
-              <ReferenceLine y={benchmarkRate} label={{ value: '업계 평균', position: 'insideTopRight', fill: '#EF4444', fontSize: 11 }} stroke={CHART_COLORS.danger} strokeDasharray="3 3" />
+              <ReferenceLine y={benchmarkRate} label={{ value: '업계 평균', position: 'insideTopRight', fill: '#EF4444', fontSize: 11 }} stroke={CHART_COLORS.danger} stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
               <Line type="monotone" dataKey="rate" name="이직률" stroke={CHART_COLORS.primary} strokeWidth={2} dot={{ r: 2 }} />
             </LineChart>
           </ResponsiveContainer>
@@ -96,7 +96,7 @@ export default function TurnoverClient() {
           {charts.departmentTurnover.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={charts.departmentTurnover} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
+                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
                 <XAxis type="number" fontSize={11} unit="%" />
                 <YAxis type="category" dataKey="department" width={80} fontSize={11} />
                 <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
@@ -111,7 +111,7 @@ export default function TurnoverClient() {
         {charts.tenureAtExitDist.length === 0 ? <EmptyChart /> : (
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={charts.tenureAtExitDist}>
-              <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
+              <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
               <XAxis dataKey="range" fontSize={11} />
               <YAxis fontSize={11} />
               <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
@@ -250,7 +250,7 @@ export default function TurnoverClient() {
               <div className="relative w-24 h-24">
                 <svg viewBox="0 0 36 36" className="w-24 h-24">
                   <path d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#E5E7EB" strokeWidth="3" />
-                  <path d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#5E81F4" strokeWidth="3"
+                  <path d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke={CHART_THEME.colors[0]} strokeWidth="3"
                     strokeDasharray={`${exitInterviewStats.wouldRejoinRate || 0} ${100 - (exitInterviewStats.wouldRejoinRate || 0)}`} />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">

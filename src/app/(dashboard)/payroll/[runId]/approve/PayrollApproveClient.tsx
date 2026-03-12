@@ -75,7 +75,7 @@ const fmtDate = (d: string | null | undefined) => {
 
 function ApprovalProgressBar({ chain, currentStep }: { chain: ApprovalChainStep[]; currentStep: number }) {
     return (
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
             <p className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-4">결재 진행 현황</p>
             <div className="flex items-center gap-0">
                 {chain.map((step, idx) => {
@@ -220,7 +220,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                     { label: '이상 항목', value: run.allAnomaliesResolved ? '없음 ✅' : '있음 ⚠️', icon: <AlertTriangle className="h-4 w-4 text-[#F59E0B]" /> },
                     { label: '수동 조정', value: `${run.adjustmentCount ?? 0}건`, icon: <CheckCircle2 className="h-4 w-4 text-[#999]" /> },
                 ].map((kpi) => (
-                    <div key={kpi.label} className="bg-white rounded-xl border border-[#E8E8E8] p-4">
+                    <div key={kpi.label} className={}>
                         <div className="flex items-center justify-between mb-1">
                             <p className="text-xs text-[#666]">{kpi.label}</p>
                             {kpi.icon}
@@ -240,7 +240,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
 
             {/* Step History */}
             {chain.filter((s) => s.status !== 'PENDING').length > 0 && (
-                <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+                <div className={}>
                     <p className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-3">결재 이력</p>
                     <div className="space-y-3">
                         {chain.filter((s) => s.status !== 'PENDING').map((step) => (
@@ -272,7 +272,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
 
             {/* Action Area (pending only) */}
             {isPending && !isComplete && !isRejected && (
-                <div className="bg-white rounded-xl border border-[#E8E8E8] p-5 space-y-4">
+                <div className={`${CARD_STYLES.kpi} space-y-4`}>
                     <p className="text-xs font-semibold text-[#999] uppercase tracking-wider">내 결재 의견</p>
                     <textarea
                         value={comment}

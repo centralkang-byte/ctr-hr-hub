@@ -151,7 +151,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
       </div>
 
       {/* Search + Filters */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8] p-4 space-y-3">
+      <div className={`${CARD_STYLES.kpi} space-y-3`}>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#999]" size={16} />
           <Input
@@ -298,7 +298,7 @@ function EmployeeCard({ emp, onClick }: { emp: DirectoryEmployee; onClick: () =>
   return (
     <button
       onClick={onClick}
-      className="bg-white rounded-xl border border-[#E8E8E8] p-4 text-left hover:border-[#00C853] hover:shadow-sm transition-all flex flex-col items-center gap-2"
+      className={`${CARD_STYLES.kpi} text-left hover:border-[#00C853] hover:shadow-sm transition-all flex flex-col items-center gap-2`}
     >
       <InitialAvatar name={emp.name} size="lg" />
       <div className="text-center">

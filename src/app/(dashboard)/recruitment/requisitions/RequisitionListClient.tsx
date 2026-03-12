@@ -171,7 +171,7 @@ export default function RequisitionListClient({ user }: { user: SessionUser }) {
             return (
               <div
                 key={item.id}
-                className="bg-white rounded-xl border border-[#E8E8E8] p-5 hover:border-[#00C853]/40 transition-colors"
+                className={`${CARD_STYLES.kpi} hover:border-[#00C853]/40 transition-colors`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">

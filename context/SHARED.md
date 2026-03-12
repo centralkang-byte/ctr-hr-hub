@@ -60,6 +60,7 @@
 | **Q-1** (Design Tokens + Utilities + Animation + UX Charter: 30 new files, 11 style constants, 4 format utils, 4 UI components, 2 hooks, 6 animation files, 3 docs) | ✅ Complete |
 | **Q-2a** (Global Fixes + Table Pattern: blue-*→primary 15→0, rounded-lg→xl on cards, TABLE_STYLES applied to 68 table files with 497 replacements) | ✅ Complete |
 | **Q-2b** (Form + Modal + Button: BUTTON_VARIANTS 105 files, MODAL_STYLES 21 files, FORM_STYLES 5 files, green#00C853→primary, 0 broken template literals) | ✅ Complete |
+| **Q-2c** (Card+Chart+KPI+Badge: CARD_STYLES 76 files, CHART_THEME 23 chart files, AnimatedNumber 5 KPI pages, --primary CSS var fixed to #5E81F4) | ✅ Complete |
 
 ---
 

@@ -174,7 +174,7 @@ export default function OneOnOneDetailClient() {
 
       {/* Previous Action Items */}
       {prevActions.length > 0 && (
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <h2 className="text-base font-semibold text-[#1A1A1A] mb-3">이전 액션 아이템 추적</h2>
           <div className="space-y-2">
             {prevActions.map((a, i) => (
@@ -209,7 +209,7 @@ export default function OneOnOneDetailClient() {
       )}
 
       {/* Notes */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+      <div className={}>
         <h2 className="text-base font-semibold text-[#1A1A1A] mb-3">논의 내용 요약</h2>
         <textarea
           value={notes}
@@ -221,7 +221,7 @@ export default function OneOnOneDetailClient() {
       </div>
 
       {/* 미팅 분위기 */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+      <div className={}>
         <h2 className="text-base font-semibold text-[#1A1A1A] mb-3">미팅 분위기</h2>
         <div className="flex gap-2">
           {[
@@ -248,7 +248,7 @@ export default function OneOnOneDetailClient() {
       </div>
 
       {/* New Action Items */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+      <div className={}>
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-base font-semibold text-[#1A1A1A]">새 액션 아이템</h2>
           <button

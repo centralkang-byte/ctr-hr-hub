@@ -22,7 +22,7 @@ export function WidgetSkeleton({
 }: WidgetSkeletonProps) {
   return (
     <div
-      className={`bg-white rounded-xl border border-[#F0F0F3] p-6 ${height} animate-pulse`}
+      className={`${CARD_STYLES.padded} ${height} animate-pulse`}
     >
       {/* Title bar */}
       <div className="h-4 bg-[#F0F0F3] rounded w-1/3 mb-5" />

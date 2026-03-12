@@ -14,6 +14,7 @@ import type { DataTableColumn } from '@/components/shared/DataTable'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { SessionUser } from '@/types'
+import { TYPOGRAPHY } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -147,17 +148,17 @@ export function AttendanceTeamClient({ user }: { user: SessionUser }) {
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
           <p className="text-xs text-[#999] font-medium mb-2">{t('clockIn')}</p>
-          <p className="text-3xl font-bold text-[#00C853] tracking-[-0.02em]">{presentCount}</p>
+          <p className="text-3xl font-bold tabular-nums text-emerald-600"><AnimatedNumber value={presentCount} /></p>
         </div>
 
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6 border-l-4 border-l-[#FF9800]">
           <p className="text-xs text-[#999] font-medium mb-2">{t('notClockedIn')}</p>
-          <p className="text-3xl font-bold text-[#FF9800] tracking-[-0.02em]">{absentCount}</p>
+          <p className="text-3xl font-bold tabular-nums text-amber-500"><AnimatedNumber value={absentCount} /></p>
         </div>
 
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
           <p className="text-xs text-[#999] font-medium mb-2">{t('late')}</p>
-          <p className={`text-3xl font-bold tracking-[-0.02em] ${lateCount > 0 ? 'text-[#F44336]' : 'text-[#1A1A1A]'}`}>{lateCount}</p>
+          <p className={`text-3xl font-bold tabular-nums ${lateCount > 0 ? 'text-[#F44336]' : 'text-[#1A1A1A]'}`}><AnimatedNumber value={lateCount} /></p>
         </div>
       </div>
 

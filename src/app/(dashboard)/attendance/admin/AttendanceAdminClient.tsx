@@ -262,38 +262,30 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
           <p className="text-xs text-[#999] font-medium mb-2">{t('totalEmployees')}</p>
-          <p className="text-3xl font-bold text-[#1A1A1A] tracking-[-0.02em]">{kpi?.totalEmployees ?? 0}</p>
+          <p className={TYPOGRAPHY.stat}><AnimatedNumber value={kpi?.totalEmployees ?? 0} /></p>
         </div>
 
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
           <p className="text-xs text-[#999] font-medium mb-2">{t('clockIn')}</p>
-          <p className="text-3xl font-bold text-[#1A1A1A] tracking-[-0.02em]">
-            {kpi?.presentCount ?? 0}
-          </p>
+          <p className={TYPOGRAPHY.stat}><AnimatedNumber value={kpi?.presentCount ?? 0} /></p>
           <span className="text-xs font-semibold text-[#00C853]">{presentPct}%</span>
         </div>
 
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
           <p className="text-xs text-[#999] font-medium mb-2">{t('late')}</p>
-          <p className={`text-3xl font-bold tracking-[-0.02em] ${(kpi?.lateCount ?? 0) > 0 ? 'text-[#F44336]' : 'text-[#1A1A1A]'}`}>
-            {kpi?.lateCount ?? 0}
-          </p>
+          <p className={`text-3xl font-bold tabular-nums ${(kpi?.lateCount ?? 0) > 0 ? 'text-[#F44336]' : 'text-[#1A1A1A]'}`}><AnimatedNumber value={kpi?.lateCount ?? 0} /></p>
         </div>
 
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
           <p className="text-xs text-[#999] font-medium mb-2">{t('absent')}</p>
-          <p className={`text-3xl font-bold tracking-[-0.02em] ${(kpi?.absentCount ?? 0) > 0 ? 'text-[#F44336]' : 'text-[#1A1A1A]'}`}>
-            {kpi?.absentCount ?? 0}
-          </p>
+          <p className={`text-3xl font-bold tabular-nums ${(kpi?.absentCount ?? 0) > 0 ? 'text-[#F44336]' : 'text-[#1A1A1A]'}`}><AnimatedNumber value={kpi?.absentCount ?? 0} /></p>
         </div>
       </div>
 
       {/* Average work hours */}
       <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
         <p className="text-xs text-[#999] font-medium mb-2">{t('averageWorkHours')}</p>
-        <p className="text-3xl font-bold text-[#1A1A1A] tracking-[-0.02em]">
-          {kpi ? formatMinutes(kpi.avgTotalMinutes) : '—'}
-        </p>
+        <p className={TYPOGRAPHY.stat}><AnimatedNumber value={kpi ? formatMinutes(kpi.avgTotalMinutes) : '—'} /></p>
       </div>
 
       {/* 52시간 모니터링 위젯 */}

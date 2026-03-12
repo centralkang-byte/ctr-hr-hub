@@ -22,7 +22,7 @@ export default function AttritionKpiCards({
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+      <div className={}>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-[#F5F5F5] flex items-center justify-center">
             <Users className="h-5 w-5 text-[#555]" />
@@ -71,7 +71,7 @@ export default function AttritionKpiCards({
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+      <div className={}>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-[#E8F5E9] flex items-center justify-center">
             <TrendingUp className="h-5 w-5 text-[#00C853]" />

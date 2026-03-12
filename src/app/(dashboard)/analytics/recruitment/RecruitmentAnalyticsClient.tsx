@@ -99,11 +99,11 @@ export default function RecruitmentAnalyticsClient() {
           {sortedFunnel.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={sortedFunnel} layout="vertical" margin={{ left: 80 }}>
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                 <XAxis type="number" />
                 <YAxis type="category" dataKey="stage_label" width={70} tick={{ fontSize: 12 }} />
-                <Tooltip />
-                <Bar dataKey="candidate_count" fill="#00C853" radius={[0, 4, 4, 0]} name={t('headcount')} />
+                <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
+                <Bar dataKey="candidate_count" fill={CHART_THEME.colors[3]} radius={[0, 4, 4, 0]} name={t('headcount')} />
               </BarChart>
             </ResponsiveContainer>
           ) : (

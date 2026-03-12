@@ -298,19 +298,19 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
           <p className="text-xs text-[#999] font-medium mb-2">배정 인원</p>
-          <p className="text-3xl font-bold text-[#1A1A1A] tracking-[-0.02em]">{totalEmployees}</p>
+          <p className={TYPOGRAPHY.stat}><AnimatedNumber value={totalEmployees} /></p>
         </div>
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
           <p className="text-xs text-[#999] font-medium mb-2">예정 스케줄</p>
-          <p className="text-3xl font-bold text-[#2196F3] tracking-[-0.02em]">{totalScheduled}</p>
+          <p className="text-3xl font-bold tabular-nums text-primary"><AnimatedNumber value={totalScheduled} /></p>
         </div>
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
           <p className="text-xs text-[#999] font-medium mb-2">완료</p>
-          <p className="text-3xl font-bold text-[#00C853] tracking-[-0.02em]">{totalWorked}</p>
+          <p className="text-3xl font-bold tabular-nums text-emerald-600"><AnimatedNumber value={totalWorked} /></p>
         </div>
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
           <p className="text-xs text-[#999] font-medium mb-2">교대변경 요청</p>
-          <p className="text-3xl font-bold text-[#FF9800] tracking-[-0.02em]">{pendingSwaps}</p>
+          <p className="text-3xl font-bold tabular-nums text-amber-500"><AnimatedNumber value={pendingSwaps} /></p>
         </div>
       </div>
 

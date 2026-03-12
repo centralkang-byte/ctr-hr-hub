@@ -734,7 +734,7 @@ export default function PayrollReviewClient({ user: _user, runId }: Props) {
                 { label: '감소', value: comparisonSummary.employeesDecreased, color: 'text-[#DC2626]', icon: <TrendingDown className="h-4 w-4 text-[#DC2626]" /> },
                 { label: '동일', value: comparisonSummary.employeesUnchanged, color: 'text-[#999]', icon: <Minus className="h-4 w-4 text-[#999]" /> },
               ].map((item) => (
-                <div key={item.label} className="bg-white rounded-xl border border-[#E8E8E8] p-4 flex items-center gap-3">
+                <div key={item.label} className={`${CARD_STYLES.kpi} flex items-center gap-3`}>
                   {item.icon}
                   <div>
                     <p className="text-xs text-[#666]">{item.label}</p>

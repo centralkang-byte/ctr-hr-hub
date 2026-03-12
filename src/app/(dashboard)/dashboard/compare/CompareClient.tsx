@@ -104,7 +104,7 @@ export function CompareClient() {
         </div>
       ) : (
         <>
-          <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+          <div className={}>
             <p className="text-sm font-semibold text-[#1A1A1A] mb-4">
               {kpiOption?.label} 법인 비교 ({year}년, {kpiOption?.unit})
             </p>
@@ -114,7 +114,7 @@ export function CompareClient() {
                 layout="vertical"
                 margin={{ left: 20, right: 20, top: 4, bottom: 4 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />
+                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                 <XAxis type="number" tick={{ fontSize: 11, fill: '#666' }} />
                 <YAxis
                   dataKey="company"
@@ -136,21 +136,21 @@ export function CompareClient() {
           </div>
 
           {data.trend.length > 0 && (
-            <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+            <div className={}>
               <p className="text-sm font-semibold text-[#1A1A1A] mb-4">월별 추이</p>
               <ResponsiveContainer width="100%" height={250}>
                 <LineChart
                   data={data.trend}
                   margin={{ top: 4, right: 8, bottom: 4, left: 0 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />
+                  <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                   <XAxis dataKey="snapshotDate" tick={{ fontSize: 11, fill: '#666' }} />
                   <YAxis tick={{ fontSize: 11, fill: '#666' }} />
                   <Tooltip contentStyle={{ fontSize: 12, borderColor: '#E8E8E8' }} />
                   <Line
                     type="monotone"
                     dataKey="value"
-                    stroke="#00C853"
+                    stroke={CHART_THEME.colors[3]}
                     strokeWidth={2}
                     dot={false}
                   />

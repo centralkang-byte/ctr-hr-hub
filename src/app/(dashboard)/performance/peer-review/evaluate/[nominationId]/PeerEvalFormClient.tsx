@@ -87,7 +87,7 @@ export default function PeerEvalFormClient() {
       {/* Questions */}
       <div className="space-y-4">
         {PEER_QUESTIONS.map((q) => (
-          <div key={q.key} className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+          <div key={q.key} className={}>
             <h3 className="text-sm font-semibold text-[#1A1A1A]">{q.label}</h3>
             <p className="text-xs text-[#666] mt-1 mb-3">{q.desc}</p>
             <div className="flex gap-2">
@@ -116,7 +116,7 @@ export default function PeerEvalFormClient() {
       )}
 
       {/* Comment */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+      <div className={}>
         <h3 className="text-sm font-semibold text-[#1A1A1A] mb-2">종합 코멘트 <span className="text-[#EF4444]">*</span></h3>
         <p className="text-xs text-[#666] mb-3">동료의 강점과 발전 가능성에 대한 구체적인 피드백을 남겨주세요. (최소 10자)</p>
         <textarea

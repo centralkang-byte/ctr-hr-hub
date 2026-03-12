@@ -95,21 +95,21 @@ export default function ResultsClient({ user }: { user: SessionUser }) {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Target className="w-3.5 h-3.5" /> 성과 점수</p>
           <p className="text-3xl font-bold text-[#1A1A1A]">
             {final?.performanceScore?.toFixed(1) ?? '-'}
           </p>
           <p className="text-xs text-[#999] mt-1">/5.0</p>
         </div>
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5" /> 역량 점수</p>
           <p className="text-3xl font-bold text-[#1A1A1A]">
             {final?.competencyScore?.toFixed(1) ?? '-'}
           </p>
           <p className="text-xs text-[#999] mt-1">/5.0</p>
         </div>
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Award className="w-3.5 h-3.5" /> EMS 블록</p>
           <p className="text-3xl font-bold text-[#00C853]">
             {final?.emsBlock ?? '-'}

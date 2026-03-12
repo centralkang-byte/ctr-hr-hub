@@ -213,19 +213,19 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
 
       {/* ─── KPI 요약 ─── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-4 text-center">
+        <div className={`${CARD_STYLES.kpi} text-center`}>
           <p className="text-xs text-[#666] mb-1">미이수 필수</p>
           <p className="text-3xl font-bold text-[#EF4444]">{requiredPending.length}</p>
         </div>
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-4 text-center">
+        <div className={`${CARD_STYLES.kpi} text-center`}>
           <p className="text-xs text-[#666] mb-1">신청 필요</p>
           <p className="text-3xl font-bold text-[#B45309]">{jobRequired.length}</p>
         </div>
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-4 text-center">
+        <div className={`${CARD_STYLES.kpi} text-center`}>
           <p className="text-xs text-[#666] mb-1">추천 과정</p>
           <p className="text-3xl font-bold text-[#4338CA]">{recommended.length}</p>
         </div>
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-4 text-center">
+        <div className={`${CARD_STYLES.kpi} text-center`}>
           <p className="text-xs text-[#666] mb-1">이수 완료</p>
           <p className="text-3xl font-bold text-[#047857]">{history.length}</p>
         </div>
@@ -242,7 +242,7 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
             {requiredPending.map((item) => {
               const statusInfo = STATUS_LABELS[item.status] ?? { label: item.status, className: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' }
               return (
-                <div key={item.enrollmentId} className="bg-white rounded-xl border border-[#E8E8E8] p-4">
+                <div key={item.enrollmentId} className={}>
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -288,7 +288,7 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
           </h2>
           <div className="space-y-3">
             {jobRequired.map((course) => (
-              <div key={course.id} className="bg-white rounded-xl border border-[#E8E8E8] p-4">
+              <div key={course.id} className={}>
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -325,7 +325,7 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
           </h2>
           <div className="space-y-3">
             {recommended.map((course) => (
-              <div key={course.id} className="bg-white rounded-xl border border-[#E8E8E8] p-4">
+              <div key={course.id} className={}>
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">

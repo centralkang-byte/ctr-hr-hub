@@ -368,7 +368,7 @@ export default function PulseSurveyClient() {
             <div className="text-center text-[#999] py-10 text-sm">응답 대기 중인 설문이 없습니다.</div>
           ) : (
             pending.map((s) => (
-              <div key={s.id} className="bg-white rounded-xl border border-[#E8E8E8] p-5 flex items-center justify-between">
+              <div key={s.id} className={`${CARD_STYLES.kpi} flex items-center justify-between`}>
                 <div>
                   <h3 className="text-sm font-semibold text-[#1A1A1A]">{s.title}</h3>
                   {s.description && <p className="text-xs text-[#666] mt-1">{s.description}</p>}

@@ -194,7 +194,7 @@ function SummaryCards({
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       {cards.map((c) => (
-        <div key={c.label} className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div key={c.label} className={}>
           <div className="flex items-center gap-3 mb-3">
             <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: c.bg }}>
               <c.icon className="w-5 h-5" style={{ color: c.color }} />
@@ -224,14 +224,14 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 분포 차트 */}
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">위험도 분포</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: -20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />
+              <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
               <XAxis dataKey="level" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} />
-              <Tooltip />
+              <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
               <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                 {chartData.map((entry, i) => (
                   <Cell key={i} fill={entry.fill} />
@@ -242,7 +242,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
         </div>
 
         {/* 고위험 Top 5 */}
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">고위험 상위 5명</h3>
           <div className="space-y-3">
             {data.slice(0, 5).map((row) => (
@@ -349,14 +349,14 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">번아웃 위험 분포</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: -20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />
+              <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
               <XAxis dataKey="level" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} />
-              <Tooltip />
+              <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
               <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                 {chartData.map((entry, i) => (
                   <Cell key={i} fill={entry.fill} />
@@ -366,7 +366,7 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">번아웃 고위험 상위 5명</h3>
           <div className="space-y-3">
             {data.slice(0, 5).map((row) => (
@@ -446,19 +446,19 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">팀별 건강도</h3>
           <ResponsiveContainer width="100%" height={220}>
             <RadarChart data={radarData}>
               <PolarGrid />
               <PolarAngleAxis dataKey="team" tick={{ fontSize: 11 }} />
               <PolarRadiusAxis domain={[0, 100]} tick={{ fontSize: 10 }} />
-              <Radar dataKey="score" stroke="#00C853" fill="#00C853" fillOpacity={0.2} />
+              <Radar dataKey="score" stroke={CHART_THEME.colors[3]} fill={CHART_THEME.colors[3]} fillOpacity={0.2} />
             </RadarChart>
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+        <div className={}>
           <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">팀 건강 위험 현황</h3>
           <div className="space-y-3">
             {data
@@ -568,16 +568,16 @@ function WorkforceTab({
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+      <div className={}>
         <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">부서별 위험 인원 현황</h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 20, left: -20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />
+            <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
             <XAxis dataKey="dept" tick={{ fontSize: 11 }} angle={-30} textAnchor="end" />
             <YAxis tick={{ fontSize: 12 }} />
-            <Tooltip />
-            <Bar dataKey="이직위험" fill="#EF4444" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="번아웃위험" fill="#F59E0B" radius={[4, 4, 0, 0]} />
+            <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
+            <Bar dataKey="이직위험" fill={CHART_THEME.colors[4]} radius={[4, 4, 0, 0]} />
+            <Bar dataKey="번아웃위험" fill={CHART_THEME.colors[2]} radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

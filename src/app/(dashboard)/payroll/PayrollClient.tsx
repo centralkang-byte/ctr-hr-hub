@@ -73,7 +73,7 @@ function KpiCard({ label, value, sub, icon, accent, onClick }: KpiCardProps) {
     <button
       onClick={onClick}
       disabled={!onClick}
-      className={`bg-white rounded-xl border border-[#E8E8E8] p-4 text-left w-full ${onClick ? 'hover:shadow-md hover:border-[#D0D0D0] transition-all cursor-pointer' : 'cursor-default'}`}
+      className={`${CARD_STYLES.kpi} text-left w-full ${onClick ? 'hover:shadow-md hover:border-[#D0D0D0] transition-all cursor-pointer' : 'cursor-default'}`}
     >
       <div className="flex items-center justify-between mb-2">
         <p className="text-xs text-[#666]">{label}</p>

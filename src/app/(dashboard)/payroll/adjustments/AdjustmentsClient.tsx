@@ -279,19 +279,19 @@ export default function AdjustmentsClient({ user }: Props) {
                             {/* Summary cards */}
                             {summary && (
                                 <div className="grid grid-cols-3 gap-4 mb-4">
-                                    <div className="bg-white rounded-xl border border-[#E8E8E8] p-4">
+                                    <div className={}>
                                         <p className="text-xs text-[#666] mb-1">추가 합계</p>
                                         <p className="text-xl font-bold text-[#059669]">
                                             +{summary.totalAdd.toLocaleString()}원
                                         </p>
                                     </div>
-                                    <div className="bg-white rounded-xl border border-[#E8E8E8] p-4">
+                                    <div className={}>
                                         <p className="text-xs text-[#666] mb-1">공제 합계</p>
                                         <p className="text-xl font-bold text-[#EF4444]">
                                             −{summary.totalDeduct.toLocaleString()}원
                                         </p>
                                     </div>
-                                    <div className="bg-white rounded-xl border border-[#E8E8E8] p-4">
+                                    <div className={}>
                                         <p className="text-xs text-[#666] mb-1">순 조정액</p>
                                         <p className={`text-xl font-bold ${summary.netAdjustment >= 0 ? 'text-[#059669]' : 'text-[#EF4444]'}`}>
                                             {formatKRW(summary.netAdjustment)}

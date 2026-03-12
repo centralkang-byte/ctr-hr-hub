@@ -218,7 +218,7 @@ export default function RecognitionClient() {
               {feed.map((item) => {
                 const config = VALUE_CONFIG[item.coreValue]
                 return (
-                  <div key={item.id} className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+                  <div key={item.id} className={}>
                     <div className="flex items-center gap-2 mb-3">
                       <div className="w-8 h-8 rounded-full bg-[#E8F5E9] flex items-center justify-center text-sm font-semibold text-[#00C853]">
                         {item.sender.name.charAt(0)}
@@ -277,7 +277,7 @@ export default function RecognitionClient() {
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Value Distribution */}
-            <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+            <div className={}>
               <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">핵심가치별 분포</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -296,25 +296,25 @@ export default function RecognitionClient() {
                         <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
             {/* Department Activity */}
-            <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+            <div className={}>
               <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">부서별 활성도</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={stats.departmentActivity.slice(0, 8)}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E8E8E8" />
+                    <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#666' }} />
                     <YAxis tick={{ fontSize: 12, fill: '#666' }} allowDecimals={false} />
-                    <Tooltip />
+                    <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
                     <Legend />
-                    <Bar dataKey="sent" name="보낸 수" fill="#00C853" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="received" name="받은 수" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="sent" name="보낸 수" fill={CHART_THEME.colors[3]} radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="received" name="받은 수" fill={CHART_THEME.colors[1]} radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -322,16 +322,16 @@ export default function RecognitionClient() {
           </div>
 
           {/* Monthly Trend */}
-          <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+          <div className={}>
             <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">월별 추이</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={stats.monthlyTrend}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E8E8E8" />
+                  <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#666' }} />
                   <YAxis tick={{ fontSize: 12, fill: '#666' }} allowDecimals={false} />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="count" name="Recognition 수" stroke="#00C853" strokeWidth={2} dot={{ fill: '#00C853' }} />
+                  <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
+                  <Line type="monotone" dataKey="count" name="Recognition 수" stroke={CHART_THEME.colors[3]} strokeWidth={2} dot={{ fill: '#00C853' }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -339,7 +339,7 @@ export default function RecognitionClient() {
 
           {/* Rankings */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+            <div className={}>
               <h3 className="text-base font-semibold text-[#1A1A1A] mb-4 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#F59E0B]" /> Top Recognizers
               </h3>
@@ -356,7 +356,7 @@ export default function RecognitionClient() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+            <div className={}>
               <h3 className="text-base font-semibold text-[#1A1A1A] mb-4 flex items-center gap-2">
                 <Heart className="w-4 h-4 text-[#EF4444]" /> Top Recognized
               </h3>

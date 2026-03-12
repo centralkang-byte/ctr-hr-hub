@@ -82,13 +82,13 @@ export default function AttendanceAnalyticsClient() {
           {data.weeklyTrend.length > 0 ? (
             <ResponsiveContainer width="100%" height={350}>
               <AreaChart data={data.weeklyTrend}>
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                 <XAxis dataKey="week_start" tick={{ fontSize: 11 }} />
                 <YAxis />
-                <Tooltip />
+                <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
                 <Legend />
-                <Area type="monotone" dataKey="avg_total_hours" stroke="#00C853" fill="#00C853" fillOpacity={0.1} strokeWidth={2} name={t('avgWorkHours')} />
-                <Area type="monotone" dataKey="avg_overtime_hours" stroke="#F59E0B" fill="#F59E0B" fillOpacity={0.1} strokeWidth={2} name={t('avgOvertime')} />
+                <Area type="monotone" dataKey="avg_total_hours" stroke={CHART_THEME.colors[3]} fill={CHART_THEME.colors[3]} fillOpacity={0.1} strokeWidth={2} name={t('avgWorkHours')} />
+                <Area type="monotone" dataKey="avg_overtime_hours" stroke={CHART_THEME.colors[2]} fill={CHART_THEME.colors[2]} fillOpacity={0.1} strokeWidth={2} name={t('avgOvertime')} />
               </AreaChart>
             </ResponsiveContainer>
           ) : (
@@ -101,11 +101,11 @@ export default function AttendanceAnalyticsClient() {
           {data.overtimeByDept.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={data.overtimeByDept} layout="vertical" margin={{ left: 80 }}>
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                 <XAxis type="number" unit="h" />
                 <YAxis type="category" dataKey="department_name" width={70} tick={{ fontSize: 12 }} />
-                <Tooltip />
-                <Bar dataKey="avg_overtime_hours" fill="#F97316" radius={[0, 4, 4, 0]} name={t('avgOvertimeHours')} />
+                <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
+                <Bar dataKey="avg_overtime_hours" fill={CHART_THEME.colors[2]} radius={[0, 4, 4, 0]} name={t('avgOvertimeHours')} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
@@ -118,14 +118,14 @@ export default function AttendanceAnalyticsClient() {
           {data.issuesTrend.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={data.issuesTrend}>
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                 <XAxis dataKey="week_start" tick={{ fontSize: 11 }} />
                 <YAxis />
-                <Tooltip />
+                <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
                 <Legend />
-                <Bar dataKey="late_count" stackId="a" fill="#F59E0B" name={t('late')} />
-                <Bar dataKey="absent_count" stackId="a" fill="#EF4444" name={t('absent')} />
-                <Bar dataKey="early_out_count" stackId="a" fill="#F97316" name={t('earlyOut')} radius={[4, 4, 0, 0]} />
+                <Bar dataKey="late_count" stackId="a" fill={CHART_THEME.colors[2]} name={t('late')} />
+                <Bar dataKey="absent_count" stackId="a" fill={CHART_THEME.colors[4]} name={t('absent')} />
+                <Bar dataKey="early_out_count" stackId="a" fill={CHART_THEME.colors[2]} name={t('earlyOut')} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (

@@ -82,7 +82,7 @@ export function KpiWidget({
 
   return (
     <div
-      className={`bg-white rounded-xl border border-[#E8E8E8] p-5 ${
+      className={`${CARD_STYLES.kpi} ${
         drilldownPath ? 'cursor-pointer hover:border-[#00C853] transition-colors' : ''
       }`}
       onClick={() => drilldownPath && router.push(drilldownPath)}

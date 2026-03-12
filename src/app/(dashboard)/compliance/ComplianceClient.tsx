@@ -137,7 +137,7 @@ export default function ComplianceClient() {
       {/* GDPR KPI Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpiCards.map((card) => (
-          <div key={card.label} className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+          <div key={card.label} className={}>
             <div className="flex items-center gap-3">
               <div className={`rounded-lg p-2 ${card.color} bg-opacity-10`}>
                 <card.icon className={`h-5 w-5 ${card.color}`} />
@@ -161,7 +161,7 @@ export default function ComplianceClient() {
             <Link
               key={card.href}
               href={card.href}
-              className="bg-white rounded-xl border border-[#E8E8E8] p-5 hover:transition-shadow group"
+              className={`${CARD_STYLES.kpi} hover:transition-shadow group`}
             >
               <div className={`inline-flex rounded-lg p-2 ${card.color} mb-3`}>
                 <card.icon className="h-5 w-5" />
@@ -184,7 +184,7 @@ export default function ComplianceClient() {
             <Link
               key={card.href}
               href={card.href}
-              className="bg-white rounded-xl border border-[#E8E8E8] p-5 hover:transition-shadow group"
+              className={`${CARD_STYLES.kpi} hover:transition-shadow group`}
             >
               <div className="flex items-center gap-3 mb-3">
                 <span className="text-2xl">{card.flag}</span>

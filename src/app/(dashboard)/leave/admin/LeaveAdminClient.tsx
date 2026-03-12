@@ -354,7 +354,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
             ) : (
               <ResponsiveContainer width="100%" height={Math.max(200, deptUsage.length * 40)}>
                 <BarChart layout="vertical" data={deptUsage} margin={{ left: 8, right: 24 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F3" />
+                  <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                   <XAxis type="number" domain={[0, 100]} tickFormatter={(v: number) => `${v}%`} fontSize={11} />
                   <YAxis type="category" dataKey="department" width={100} fontSize={11} tick={{ fill: '#1C1D21' }} />
                   <Tooltip
@@ -386,14 +386,14 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
             ) : (
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={distribution} margin={{ bottom: 8 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F3" />
+                  <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                   <XAxis dataKey="range" fontSize={11} tick={{ fill: '#1C1D21' }} />
                   <YAxis fontSize={11} allowDecimals={false} />
                   <Tooltip
                     formatter={(value) => [`${value ?? 0}명`, '인원']}
                     contentStyle={{ borderRadius: 8, border: '1px solid #E8EBFF', fontSize: 12 }}
                   />
-                  <Bar dataKey="count" fill="#8B5CF6" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                  <Bar dataKey="count" fill={CHART_THEME.colors[1]} radius={[4, 4, 0, 0]} maxBarSize={40} />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -429,7 +429,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
           ) : (
             <ResponsiveContainer width="100%" height={280}>
               <LineChart data={forecast}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F3" />
+                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                 <XAxis
                   dataKey="month"
                   fontSize={11}
@@ -444,7 +444,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
                 <Line
                   type="monotone"
                   dataKey="actual"
-                  stroke="#5E81F4"
+                  stroke={CHART_THEME.colors[0]}
                   strokeWidth={2.5}
                   dot={{ r: 4, fill: '#5E81F4' }}
                   name="실제 사용"

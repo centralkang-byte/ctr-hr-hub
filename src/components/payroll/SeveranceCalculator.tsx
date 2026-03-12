@@ -43,7 +43,7 @@ export default function SeveranceCalculator({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+    <div className={}>
       <div className="flex items-center gap-2 mb-4">
         <Calculator className="h-5 w-5 text-[#00C853]" />
         <h3 className="text-sm font-semibold text-[#1A1A1A]">

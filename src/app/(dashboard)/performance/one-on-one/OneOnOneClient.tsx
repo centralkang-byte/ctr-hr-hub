@@ -187,7 +187,7 @@ export default function OneOnOneClient() {
               </h2>
               <div className="space-y-3">
                 {scheduled.map((m) => (
-                  <div key={m.id} className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+                  <div key={m.id} className={}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-[#E8F5E9] flex items-center justify-center text-[#00C853] font-semibold">
@@ -298,14 +298,14 @@ export default function OneOnOneClient() {
                   <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
                     <Users className="w-5 h-5 text-[#8B5CF6]" /> 1:1 빈도 대시보드
                   </h2>
-                  <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+                  <div className={}>
                     <div className="h-64">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={chartData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#E8E8E8" />
+                          <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                           <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#666' }} />
                           <YAxis tick={{ fontSize: 12, fill: '#666' }} allowDecimals={false} />
-                          <Tooltip />
+                          <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
                           {dashboard.teamMembers.map((member, i) => (
                             <Bar key={member.employeeId} dataKey={member.name} fill={chartColors[i % chartColors.length]} radius={[4, 4, 0, 0]} />
                           ))}
@@ -332,7 +332,7 @@ export default function OneOnOneClient() {
                   <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
                     <Clock className="w-5 h-5 text-[#F59E0B]" /> 미완료 액션 아이템
                   </h2>
-                  <div className="bg-white rounded-xl border border-[#E8E8E8] p-5 space-y-2">
+                  <div className={`${CARD_STYLES.kpi} space-y-2`}>
                     {dashboard.pendingActionItems.map((a, i) => (
                       <div key={i} className="flex items-center gap-3 py-2 border-b border-[#F5F5F5] last:border-0">
                         <div className="w-4 h-4 rounded border border-[#D4D4D4]" />
