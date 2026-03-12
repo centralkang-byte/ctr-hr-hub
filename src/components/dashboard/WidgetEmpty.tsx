@@ -7,7 +7,7 @@ interface WidgetEmptyProps {
 
 export function WidgetEmpty({ title, message = '데이터가 없습니다' }: WidgetEmptyProps) {
   return (
-    <div className={}>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <p className="text-xs text-[#666] mb-3">{title}</p>
       <div className="flex items-center justify-center h-32 text-sm text-[#999]">
         {message}

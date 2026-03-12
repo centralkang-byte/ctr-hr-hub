@@ -43,7 +43,7 @@ export default function AnomalyPanel({ runId }: AnomalyPanelProps) {
 
   if (!result) {
     return (
-      <div className={}>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-[#6366F1]" />
@@ -80,7 +80,7 @@ export default function AnomalyPanel({ runId }: AnomalyPanelProps) {
   }
 
   return (
-    <div className={}>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-[#6366F1]" />

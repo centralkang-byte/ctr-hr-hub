@@ -115,7 +115,7 @@ export default function WorkHoursMonitorTab() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {loading
           ? Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className={}>
+              <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <div className="h-4 w-20 bg-[#F5F5F5] rounded animate-pulse mb-3" />
                 <div className="h-8 w-16 bg-[#F5F5F5] rounded animate-pulse" />
               </div>
@@ -125,7 +125,7 @@ export default function WorkHoursMonitorTab() {
               return (
                 <div
                   key={card.label}
-                  className={}
+                  className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-xs text-[#999] font-medium">{card.label}</p>
@@ -140,7 +140,7 @@ export default function WorkHoursMonitorTab() {
       </div>
 
       {/* Week Selector */}
-      <div className={}>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em]">주간 근무시간 현황</h2>
           <div className="flex items-center gap-2">

@@ -38,7 +38,7 @@ export default function AttritionDonutChart({
   }))
 
   return (
-    <div className={}>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <h3 className="text-lg font-semibold text-[#1A1A1A] mb-4">위험 분포</h3>
       <div className="flex items-center gap-6">
         <div className="relative w-48 h-48">

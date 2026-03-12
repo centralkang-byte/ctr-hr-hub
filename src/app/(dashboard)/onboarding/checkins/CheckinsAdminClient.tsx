@@ -298,7 +298,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
       {/* ─── Employee Detail Section ─── */}
       {selectedEmployeeId && (
         <div className="space-y-4">
-          <div className={}>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-bold text-[#1C1D21] tracking-[-0.02em]">
                 {selectedEmployeeName} - {t('checkinTrend')}
@@ -376,7 +376,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
 
           {/* ─── AI Summary ─── */}
           {aiSummary && (
-            <div className={}>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="h-4 w-4 text-[#5E81F4]" />
                 <h3 className="text-base font-bold text-[#1C1D21] tracking-[-0.02em]">

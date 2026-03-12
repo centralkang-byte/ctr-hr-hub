@@ -143,7 +143,7 @@ export default function SocialInsuranceReportTab() {
   const months = Array.from({ length: 12 }, (_, i) => i + 1)
 
   return (
-    <div className={}>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>

@@ -77,21 +77,21 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
     <div className="space-y-6">
       {/* ─── 요약 ─── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className={}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">확정 인원</p>
           <p className="text-3xl font-bold text-[#1A1A1A]">{budget.headcount}명</p>
         </div>
-        <div className={}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">총 인상액</p>
           <p className="text-xl font-bold text-[#059669]">
             +{formatCurrency(budget.totalIncrease)}
           </p>
         </div>
-        <div className={}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">평균 인상률</p>
           <p className="text-3xl font-bold text-[#00C853]">{budget.avgIncreasePct}%</p>
         </div>
-        <div className={}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">적용일</p>
           <input
             type="date"

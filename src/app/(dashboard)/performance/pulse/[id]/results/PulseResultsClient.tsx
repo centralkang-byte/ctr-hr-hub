@@ -127,7 +127,7 @@ export default function PulseResultsClient() {
       {/* Question Results */}
       <div className="space-y-6">
         {results.questionResults.map((q, i) => (
-          <div key={q.questionId} className={}>
+          <div key={q.questionId} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <span className="text-xs text-[#999] font-medium">Q{i + 1}</span>

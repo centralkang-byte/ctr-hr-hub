@@ -96,26 +96,26 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
 
       {/* KPI Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className={}>
+        <div className={CARD_STYLES.padded}>
           <p className="text-xs text-[#666] mb-1">연차 잔여</p>
           <p className="text-2xl font-bold text-[#1A1A1A]">
             {annualLeave ? (Number(annualLeave.grantedDays) - Number(annualLeave.usedDays)).toFixed(1) : '-'}
           </p>
           <p className="text-xs text-[#999] mt-1">일</p>
         </div>
-        <div className={}>
+        <div className={CARD_STYLES.padded}>
           <p className="text-xs text-[#666] mb-1">사용 연차</p>
           <p className="text-2xl font-bold text-[#1A1A1A]">
             {annualLeave ? Number(annualLeave.usedDays).toFixed(1) : '-'}
           </p>
           <p className="text-xs text-[#999] mt-1">일</p>
         </div>
-        <div className={}>
+        <div className={CARD_STYLES.padded}>
           <p className="text-xs text-[#666] mb-1">대기 중 변경 요청</p>
           <p className="text-2xl font-bold text-[#1A1A1A]">{pendingChangeRequests}</p>
           <p className="text-xs text-[#999] mt-1">건</p>
         </div>
-        <div className={}>
+        <div className={CARD_STYLES.padded}>
           <p className="text-xs text-[#666] mb-1">재직 기간</p>
           <p className="text-lg font-bold text-[#1A1A1A]">{getYearsOfService(employee.hireDate)}</p>
         </div>
@@ -143,7 +143,7 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
 
       {/* Leave Balances */}
       {leaveBalances.length > 0 && (
-        <div className={}>
+        <div className={CARD_STYLES.padded}>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-[#00C853]" />
@@ -174,7 +174,7 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
       )}
 
       {/* Notifications placeholder */}
-      <div className={}>
+      <div className={CARD_STYLES.padded}>
         <div className="flex items-center gap-2 mb-3">
           <Bell className="w-4 h-4 text-[#00C853]" />
           <h2 className="text-base font-semibold text-[#1A1A1A]">최근 알림</h2>

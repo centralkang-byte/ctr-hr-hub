@@ -227,7 +227,7 @@ function Step1Dependents({ dependents, onChange }: Step1Props) {
 
       <div className="space-y-3">
         {dependents.map((dep, index) => (
-          <div key={dep.id} className={}>
+          <div key={dep.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className="flex items-start gap-3">
               <div className="flex-1 grid grid-cols-2 gap-3">
                 {/* Relationship */}
@@ -847,7 +847,7 @@ export function YearEndWizardClient({ user, year }: { user: SessionUser; year: n
       <StepIndicator current={step} />
 
       {/* Step content */}
-      <div className={}>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         {step === 0 && (
           <Step1Dependents
             dependents={dependents}

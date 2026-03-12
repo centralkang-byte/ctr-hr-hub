@@ -160,7 +160,7 @@ export default function HistoryTab() {
     <div className="space-y-6">
       {/* ─── Compa-Ratio 분포 차트 ─── */}
       {chartData.length > 0 && (
-        <div className={}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-lg font-semibold text-[#1A1A1A] mb-4">Compa-Ratio 분포</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData}>

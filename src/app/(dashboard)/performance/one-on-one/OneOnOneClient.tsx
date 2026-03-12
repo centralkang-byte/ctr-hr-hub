@@ -187,7 +187,7 @@ export default function OneOnOneClient() {
               </h2>
               <div className="space-y-3">
                 {scheduled.map((m) => (
-                  <div key={m.id} className={}>
+                  <div key={m.id} className={CARD_STYLES.padded}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-[#E8F5E9] flex items-center justify-center text-[#00C853] font-semibold">
@@ -298,7 +298,7 @@ export default function OneOnOneClient() {
                   <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
                     <Users className="w-5 h-5 text-[#8B5CF6]" /> 1:1 빈도 대시보드
                   </h2>
-                  <div className={}>
+                  <div className={CARD_STYLES.padded}>
                     <div className="h-64">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={chartData}>

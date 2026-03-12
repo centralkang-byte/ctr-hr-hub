@@ -156,7 +156,7 @@ export default function MandatoryTrainingTab() {
       {loading ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className={}>
+            <div key={i} className={CARD_STYLES.padded}>
               <div className="space-y-3">
                 <div className="h-4 w-32 bg-[#F5F5F5] rounded animate-pulse" />
                 <div className="h-5 w-48 bg-[#F5F5F5] rounded animate-pulse" />

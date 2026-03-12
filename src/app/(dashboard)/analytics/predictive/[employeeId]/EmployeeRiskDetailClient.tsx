@@ -160,7 +160,7 @@ function RecommendedActions({ turnover, burnout }: {
   }
 
   return (
-    <div className={}>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">권고 액션</h3>
       <div className="space-y-3">
         {actions.map((action, i) => (
@@ -268,7 +268,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
       {/* 상단 스코어 카드 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 이직 위험 */}
-        <div className={}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-2 mb-4">
             <TrendingDown className="w-5 h-5 text-[#EF4444]" />
             <h3 className="text-base font-semibold text-[#1A1A1A]">이직 위험도</h3>
@@ -300,7 +300,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
         </div>
 
         {/* 번아웃 */}
-        <div className={}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-2 mb-4">
             <Activity className="w-5 h-5 text-[#F59E0B]" />
             <h3 className="text-base font-semibold text-[#1A1A1A]">번아웃 위험도</h3>
@@ -346,7 +346,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
       {/* 레이더 차트 + 권고 액션 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {radarData.length > 0 && (
-          <div className={}>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">이직 위험 신호 레이더</h3>
             <ResponsiveContainer width="100%" height={250}>
               <RadarChart data={radarData}>

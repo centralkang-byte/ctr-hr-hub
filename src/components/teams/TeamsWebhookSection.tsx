@@ -140,7 +140,7 @@ export function TeamsWebhookSection() {
       )}
 
       {webhooks.map((wh) => (
-        <div key={wh.id} className={}>
+        <div key={wh.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-start justify-between mb-3">
             <div>
               <p className="text-sm font-semibold text-[#1A1A1A]">{wh.channelName}</p>

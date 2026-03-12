@@ -81,7 +81,7 @@ export default function RuReportsTab() {
   return (
     <div className="space-y-6">
       {/* Year/Quarter Selector */}
-      <div className={}>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">보고서 기간 설정</h3>
         <div className="flex flex-wrap gap-4 items-end">
           <div>
@@ -122,7 +122,7 @@ export default function RuReportsTab() {
       )}
 
       {/* P-4 Report */}
-      <div className={}>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-[#E8F5E9] rounded-lg">
@@ -212,7 +212,7 @@ export default function RuReportsTab() {
       </div>
 
       {/* 57-T Report */}
-      <div className={}>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-[#E0E7FF] rounded-lg">

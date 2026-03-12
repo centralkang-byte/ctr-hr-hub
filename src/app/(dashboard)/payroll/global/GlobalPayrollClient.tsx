@@ -169,24 +169,24 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
         <>
           {/* KPI Cards */}
           <div className="grid grid-cols-4 gap-4 mb-6">
-            <div className={}>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <p className="text-xs text-[#666] mb-1">전사 총 급여 (KRW)</p>
               <p className="text-3xl font-bold text-[#1A1A1A]">₩{fmtBillion(data.totalKRW)}</p>
               <p className="text-xs text-[#999] mt-1">{fmt(Math.round(data.totalKRW / 10000))}만원</p>
             </div>
-            <div className={}>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <p className="text-xs text-[#666] mb-1">전체 급여 인원</p>
               <p className="text-3xl font-bold text-[#1A1A1A]">{data.totalHeadcount.toLocaleString()}명</p>
               <p className="text-xs text-[#999] mt-1">{data.companies.filter(c => c.hasData).length}개 법인 집계</p>
             </div>
-            <div className={}>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <p className="text-xs text-[#666] mb-1">인당 평균 급여 (KRW)</p>
               <p className="text-3xl font-bold text-[#1A1A1A]">
                 ₩{data.totalHeadcount > 0 ? fmtBillion(data.totalKRW / data.totalHeadcount) : '—'}
               </p>
               <p className="text-xs text-[#999] mt-1">전사 평균</p>
             </div>
-            <div className={}>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <p className="text-xs text-[#666] mb-1">데이터 있는 법인</p>
               <p className="text-3xl font-bold text-[#1A1A1A]">
                 {data.companies.filter(c => c.hasData).length} / {data.companies.length}
@@ -198,7 +198,7 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
           {/* Charts Row 1 */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             {/* Bar: 법인별 총지급 */}
-            <div className={}>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <h3 className="text-sm font-semibold text-[#1A1A1A] mb-4">법인별 급여 총액 (KRW 만원)</h3>
               {barData.length === 0 ? (
                 <div className="h-52 flex items-center justify-center text-sm text-[#999]">데이터 없음</div>
@@ -218,7 +218,7 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
             </div>
 
             {/* Pie: 법인 비중 */}
-            <div className={}>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <h3 className="text-sm font-semibold text-[#1A1A1A] mb-4">법인별 급여 비중</h3>
               {pieData.length === 0 ? (
                 <div className="h-52 flex items-center justify-center text-sm text-[#999]">데이터 없음</div>
@@ -248,7 +248,7 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
           {/* Charts Row 2 */}
           <div className="grid grid-cols-2 gap-4 mb-6">
             {/* Line: 월별 트렌드 */}
-            <div className={}>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <h3 className="text-sm font-semibold text-[#1A1A1A] mb-4">최근 6개월 급여 트렌드 (KRW 만원)</h3>
               <ResponsiveContainer width="100%" height={210}>
                 <LineChart data={trendData} margin={{ top: 0, right: 16, bottom: 0, left: 0 }}>
@@ -263,7 +263,7 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
             </div>
 
             {/* Bar: 인당 평균 */}
-            <div className={}>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <h3 className="text-sm font-semibold text-[#1A1A1A] mb-4">법인별 인당 평균 급여 (KRW 만원)</h3>
               {headcountData.length === 0 ? (
                 <div className="h-52 flex items-center justify-center text-sm text-[#999]">데이터 없음</div>

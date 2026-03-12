@@ -242,7 +242,7 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
             {requiredPending.map((item) => {
               const statusInfo = STATUS_LABELS[item.status] ?? { label: item.status, className: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' }
               return (
-                <div key={item.enrollmentId} className={}>
+                <div key={item.enrollmentId} className={CARD_STYLES.padded}>
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -288,7 +288,7 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
           </h2>
           <div className="space-y-3">
             {jobRequired.map((course) => (
-              <div key={course.id} className={}>
+              <div key={course.id} className={CARD_STYLES.padded}>
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -325,7 +325,7 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
           </h2>
           <div className="space-y-3">
             {recommended.map((course) => (
-              <div key={course.id} className={}>
+              <div key={course.id} className={CARD_STYLES.padded}>
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">

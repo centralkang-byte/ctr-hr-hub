@@ -167,15 +167,15 @@ export default function PeerReviewClient() {
           <div className="space-y-4">
             {/* KPIs */}
             <div className="grid grid-cols-3 gap-4">
-              <div className={}>
+              <div className={CARD_STYLES.padded}>
                 <p className="text-xs text-[#666] mb-1">대상 직원</p>
                 <p className="text-3xl font-bold text-[#1A1A1A]">{teamResults.totalEmployees}명</p>
               </div>
-              <div className={}>
+              <div className={CARD_STYLES.padded}>
                 <p className="text-xs text-[#666] mb-1">총 지명</p>
                 <p className="text-3xl font-bold text-[#1A1A1A]">{teamResults.totalNominations}건</p>
               </div>
-              <div className={}>
+              <div className={CARD_STYLES.padded}>
                 <p className="text-xs text-[#666] mb-1">완료율</p>
                 <p className="text-3xl font-bold text-[#00C853]">{teamResults.completionRate}%</p>
               </div>

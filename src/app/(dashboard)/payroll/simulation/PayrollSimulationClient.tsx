@@ -41,7 +41,7 @@ function KPICard({ label, value, diff, rate, variant }: {
       rate.startsWith('-') ? 'bg-green-50 text-green-600' : 'bg-primary/5 text-primary'
 
   return (
-    <div className={}>
+    <div className={CARD_STYLES.padded}>
       <div className="flex items-center justify-between mb-1">
         <p className="text-xs text-[#8181A5]">{label}</p>
         {rate && <span className={`text-xs px-2 py-0.5 rounded-full ${badgeColor}`}>{rate}</span>}
@@ -529,7 +529,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
 
               {/* Chart (single mode) */}
               {chartData && (
-                <div className={}>
+                <div className={CARD_STYLES.padded}>
                   <h3 className="text-sm font-semibold text-[#1C1D21] mb-4">현재 vs 시뮬레이션 비교</h3>
                   <ResponsiveContainer width="100%" height={200}>
                     <BarChart data={chartData} layout="vertical" margin={{ left: 20 }}>
@@ -548,7 +548,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
 
               {/* Department Table (bulk) */}
               {sm.byDepartment && sm.byDepartment.length > 0 && (
-                <div className={}>
+                <div className={CARD_STYLES.padded}>
                   <h3 className="text-sm font-semibold text-[#1C1D21] mb-3">부서별 요약</h3>
                   <table className="w-full text-sm">
                     <thead>
@@ -588,7 +588,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
               )}
 
               {/* Employee Detail Table */}
-              <div className={}>
+              <div className={CARD_STYLES.padded}>
                 <h3 className="text-sm font-semibold text-[#1C1D21] mb-3">직원별 상세 ({result.employees.length}명)</h3>
                 <table className="w-full text-sm">
                   <thead>

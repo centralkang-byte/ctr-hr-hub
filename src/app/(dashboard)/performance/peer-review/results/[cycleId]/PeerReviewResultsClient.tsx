@@ -113,7 +113,7 @@ export default function PeerReviewResultsClient() {
 
       {/* KPI + Radar */}
       <div className="grid grid-cols-2 gap-6">
-        <div className={}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">종합 점수</p>
           <p className="text-4xl font-bold text-[#00C853]">{results.summary.averageScore} <span className="text-lg text-[#666]">/ 5.0</span></p>
           <div className="mt-4 space-y-2">
@@ -132,7 +132,7 @@ export default function PeerReviewResultsClient() {
         </div>
 
         {radarData.length > 0 && (
-          <div className={}>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="text-base font-semibold text-[#1A1A1A] mb-2">역량 레이더</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -178,7 +178,7 @@ export default function PeerReviewResultsClient() {
       )}
 
       {/* Individual Comments */}
-      <div className={}>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h3 className="text-base font-semibold text-[#1A1A1A] mb-3">개별 코멘트</h3>
         <div className="space-y-3">
           {results.evaluations.filter((e) => e.comment).map((e, i) => (

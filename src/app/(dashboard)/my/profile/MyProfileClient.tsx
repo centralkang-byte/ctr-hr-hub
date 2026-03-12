@@ -274,7 +274,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
           </div>
 
           {/* Bio */}
-          <div className={}>
+          <div className={CARD_STYLES.padded}>
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-base font-semibold text-[#1A1A1A]">자기소개</h2>
               {!editingBio && (
@@ -309,7 +309,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
           </div>
 
           {/* Skills */}
-          <div className={}>
+          <div className={CARD_STYLES.padded}>
             <h2 className="text-base font-semibold text-[#1A1A1A] mb-3">스킬</h2>
             <div className="flex flex-wrap gap-2 mb-3">
               {ext.skills.map((skill) => (
@@ -372,7 +372,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
       {/* ── Tab: 비상연락처 ── */}
       {activeTab === 'emergency' && (
         <div className="space-y-4">
-          <div className={}>
+          <div className={CARD_STYLES.padded}>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-semibold text-[#1A1A1A]">비상연락처</h2>
               <button onClick={() => setShowEcForm(true)} className={`flex items-center gap-1 ${BUTTON_VARIANTS.primary} px-3 py-1.5 rounded-lg text-sm font-medium`}>
@@ -434,7 +434,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
 
       {/* ── Tab: 공개 설정 ── */}
       {activeTab === 'visibility' && (
-        <div className={}>
+        <div className={CARD_STYLES.padded}>
           <div className="flex items-center gap-2 mb-1">
             <Globe className="w-4 h-4 text-[#00C853]" />
             <h2 className="text-base font-semibold text-[#1A1A1A]">공개 설정</h2>

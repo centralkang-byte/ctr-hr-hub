@@ -147,23 +147,23 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
         <>
           {/* Summary KPI */}
           <div className="grid grid-cols-4 gap-4 mb-6">
-            <div className={}>
+            <div className={CARD_STYLES.padded}>
               <p className="text-xs text-[#666] mb-1">총 이상 건수</p>
               <p className={`text-3xl font-bold ${data.totalAnomalies > 0 ? 'text-[#DC2626]' : 'text-[#059669]'}`}>
                 {data.totalAnomalies}
               </p>
             </div>
-            <div className={}>
+            <div className={CARD_STYLES.padded}>
               <p className="text-xs text-[#666] mb-1">High 이상</p>
               <p className="text-3xl font-bold text-[#DC2626]">
                 {data.anomalies.filter(a => a.severity === 'high').reduce((s, a) => s + a.affectedCount, 0)}
               </p>
             </div>
-            <div className={}>
+            <div className={CARD_STYLES.padded}>
               <p className="text-xs text-[#666] mb-1">분석 규칙</p>
               <p className="text-3xl font-bold text-[#1A1A1A]">4</p>
             </div>
-            <div className={}>
+            <div className={CARD_STYLES.padded}>
               <p className="text-xs text-[#666] mb-1">스캔 인원</p>
               <p className="text-3xl font-bold text-[#1A1A1A]">{data.scannedCount}</p>
             </div>

@@ -104,7 +104,7 @@ export function CompareClient() {
         </div>
       ) : (
         <>
-          <div className={}>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <p className="text-sm font-semibold text-[#1A1A1A] mb-4">
               {kpiOption?.label} 법인 비교 ({year}년, {kpiOption?.unit})
             </p>
@@ -136,7 +136,7 @@ export function CompareClient() {
           </div>
 
           {data.trend.length > 0 && (
-            <div className={}>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <p className="text-sm font-semibold text-[#1A1A1A] mb-4">월별 추이</p>
               <ResponsiveContainer width="100%" height={250}>
                 <LineChart

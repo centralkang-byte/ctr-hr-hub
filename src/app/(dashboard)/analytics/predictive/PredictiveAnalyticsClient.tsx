@@ -194,7 +194,7 @@ function SummaryCards({
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       {cards.map((c) => (
-        <div key={c.label} className={}>
+        <div key={c.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: c.bg }}>
               <c.icon className="w-5 h-5" style={{ color: c.color }} />
@@ -224,7 +224,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 분포 차트 */}
-        <div className={}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">위험도 분포</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: -20 }}>
@@ -242,7 +242,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
         </div>
 
         {/* 고위험 Top 5 */}
-        <div className={}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">고위험 상위 5명</h3>
           <div className="space-y-3">
             {data.slice(0, 5).map((row) => (
@@ -349,7 +349,7 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className={}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">번아웃 위험 분포</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: -20 }}>
@@ -366,7 +366,7 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
           </ResponsiveContainer>
         </div>
 
-        <div className={}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">번아웃 고위험 상위 5명</h3>
           <div className="space-y-3">
             {data.slice(0, 5).map((row) => (
@@ -446,7 +446,7 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className={}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">팀별 건강도</h3>
           <ResponsiveContainer width="100%" height={220}>
             <RadarChart data={radarData}>
@@ -458,7 +458,7 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
           </ResponsiveContainer>
         </div>
 
-        <div className={}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">팀 건강 위험 현황</h3>
           <div className="space-y-3">
             {data
@@ -568,7 +568,7 @@ function WorkforceTab({
 
   return (
     <div className="space-y-6">
-      <div className={}>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">부서별 위험 인원 현황</h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 20, left: -20 }}>

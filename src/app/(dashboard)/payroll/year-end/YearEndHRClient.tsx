@@ -512,7 +512,7 @@ export default function YearEndHRClient({ user, defaultYear }: YearEndHRClientPr
           { key: 'hr_review', label: 'HR검토중', icon: Eye, color: 'text-[#C2410C]' },
           { key: 'confirmed', label: '확정', icon: CheckCircle2, color: 'text-[#059669]' },
         ].map(({ key, label, icon: Icon, color }) => (
-          <div key={key} className={}>
+          <div key={key} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className={`flex items-center gap-1.5 text-xs ${color} mb-1`}>
               <Icon className="h-3.5 w-3.5" />
               <span>{label}</span>
@@ -524,7 +524,7 @@ export default function YearEndHRClient({ user, defaultYear }: YearEndHRClientPr
         ))}
 
         {/* Progress bar card */}
-        <div className={}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">전체 완료율</p>
           <p className="text-2xl font-bold text-[#00C853]">{completionPct}%</p>
           <div className="mt-2 h-1.5 bg-[#F5F5F5] rounded-full overflow-hidden">

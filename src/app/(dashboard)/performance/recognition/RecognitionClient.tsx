@@ -218,7 +218,7 @@ export default function RecognitionClient() {
               {feed.map((item) => {
                 const config = VALUE_CONFIG[item.coreValue]
                 return (
-                  <div key={item.id} className={}>
+                  <div key={item.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                     <div className="flex items-center gap-2 mb-3">
                       <div className="w-8 h-8 rounded-full bg-[#E8F5E9] flex items-center justify-center text-sm font-semibold text-[#00C853]">
                         {item.sender.name.charAt(0)}
@@ -277,7 +277,7 @@ export default function RecognitionClient() {
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Value Distribution */}
-            <div className={}>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">핵심가치별 분포</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -303,7 +303,7 @@ export default function RecognitionClient() {
             </div>
 
             {/* Department Activity */}
-            <div className={}>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">부서별 활성도</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -322,7 +322,7 @@ export default function RecognitionClient() {
           </div>
 
           {/* Monthly Trend */}
-          <div className={}>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">월별 추이</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -339,7 +339,7 @@ export default function RecognitionClient() {
 
           {/* Rankings */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className={}>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <h3 className="text-base font-semibold text-[#1A1A1A] mb-4 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#F59E0B]" /> Top Recognizers
               </h3>
@@ -356,7 +356,7 @@ export default function RecognitionClient() {
               </div>
             </div>
 
-            <div className={}>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <h3 className="text-base font-semibold text-[#1A1A1A] mb-4 flex items-center gap-2">
                 <Heart className="w-4 h-4 text-[#EF4444]" /> Top Recognized
               </h3>

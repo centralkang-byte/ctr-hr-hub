@@ -176,7 +176,7 @@ export default function PayrollPublishDashboardClient({ user: _user, runId }: Pr
                     { label: '명세서 발행', value: `${payslipStats.total}건`, icon: <FileText className="h-4 w-4 text-[#5E81F4]" /> },
                     { label: '열람완료', value: `${payslipStats.viewed}명 (${payslipStats.viewRate}%)`, icon: <Eye className="h-4 w-4 text-[#A855F7]" /> },
                 ].map((kpi) => (
-                    <div key={kpi.label} className={}>
+                    <div key={kpi.label} className={CARD_STYLES.padded}>
                         <div className="flex items-center justify-between mb-1">
                             <p className="text-xs text-[#666]">{kpi.label}</p>
                             {kpi.icon}
@@ -206,7 +206,7 @@ export default function PayrollPublishDashboardClient({ user: _user, runId }: Pr
             </div>
 
             {/* Downloads */}
-            <div className={}>
+            <div className={CARD_STYLES.padded}>
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="font-semibold text-[#1A1A1A]">파일 다운로드</h2>
                     <button
@@ -288,7 +288,7 @@ export default function PayrollPublishDashboardClient({ user: _user, runId }: Pr
 
             {/* Approval History */}
             {approvalHistory.length > 0 && (
-                <div className={}>
+                <div className={CARD_STYLES.padded}>
                     <h2 className="font-semibold text-[#1A1A1A] mb-4">승인 이력</h2>
                     <div className="space-y-3">
                         {approvalHistory.map((step) => (

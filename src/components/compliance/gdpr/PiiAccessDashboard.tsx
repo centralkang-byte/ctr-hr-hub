@@ -23,7 +23,7 @@ function StatCard({
   color: string
 }) {
   return (
-    <div className={}>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs text-[#666] mb-1">{label}</p>
@@ -85,7 +85,7 @@ export default function PiiAccessDashboard() {
       {/* Access by Type + Top Actors */}
       <div className="grid grid-cols-2 gap-4">
         {/* Access by Type */}
-        <div className={}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-2 mb-4">
             <TrendingUp className="w-4 h-4 text-[#666]" />
             <h3 className="text-sm font-semibold text-[#333]">{t('gdpr.accessByType')}</h3>
@@ -113,7 +113,7 @@ export default function PiiAccessDashboard() {
         </div>
 
         {/* Top Actors */}
-        <div className={}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-2 mb-4">
             <Users className="w-4 h-4 text-[#666]" />
             <h3 className="text-sm font-semibold text-[#333]">{t('gdpr.topActors')}</h3>

@@ -28,7 +28,7 @@ export default function CandidateCard({ candidate, onDelete }: CandidateCardProp
   const readiness = READINESS_BADGE[candidate.readiness]
 
   return (
-    <div className={}>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-[#E8F5E9] flex items-center justify-center text-[#00A844] font-semibold text-sm">

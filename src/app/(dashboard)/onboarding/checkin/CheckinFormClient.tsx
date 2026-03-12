@@ -111,7 +111,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
     return (
       <div className="space-y-6 p-6">
         <PageHeader title={t('weeklyCheckin')} description={t('weeklyCheckinCompleted')} />
-        <div className={}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex flex-col items-center gap-4 py-12">
             <div className="text-5xl">{'\u{2705}'}</div>
             <h2 className="text-xl font-semibold text-[#5E81F4]">{t('checkinComplete')}</h2>
@@ -144,7 +144,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
         description={t('checkinDescription', { name: user.name })}
       />
 
-      <div className={}>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h3 className="text-base font-bold text-[#1C1D21] tracking-[-0.02em] mb-6">
           {t('weekCheckin', { week: checkinWeek })}
         </h3>

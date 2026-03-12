@@ -126,7 +126,7 @@ export default function TalentPoolClient({ user }: { user: SessionUser }) {
           { label: '접촉 중', value: stats.contacted, icon: <Mail size={18} />, color: 'text-[#B45309]' },
           { label: '30일 내 만료', value: stats.expiringSoon, icon: <Clock size={18} />, color: 'text-[#B91C1C]' },
         ].map((kpi) => (
-          <div key={kpi.label} className={}>
+          <div key={kpi.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className={`${kpi.color} mb-1`}>{kpi.icon}</div>
             <p className="text-2xl font-bold text-[#1A1A1A]">{kpi.value}</p>
             <p className="text-xs text-[#666] mt-0.5">{kpi.label}</p>
@@ -175,7 +175,7 @@ export default function TalentPoolClient({ user }: { user: SessionUser }) {
             const isExpiringSoon = entry.status === 'active' && daysLeft <= 30
 
             return (
-              <div key={entry.id} className={}>
+              <div key={entry.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     {/* 배지 행 */}

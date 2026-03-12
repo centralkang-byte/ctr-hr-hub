@@ -137,7 +137,7 @@ export default function ComplianceClient() {
       {/* GDPR KPI Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpiCards.map((card) => (
-          <div key={card.label} className={}>
+          <div key={card.label} className={CARD_STYLES.padded}>
             <div className="flex items-center gap-3">
               <div className={`rounded-lg p-2 ${card.color} bg-opacity-10`}>
                 <card.icon className={`h-5 w-5 ${card.color}`} />
