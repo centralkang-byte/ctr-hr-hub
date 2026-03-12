@@ -580,7 +580,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
                         </tr>
                       ))}
                       <tr className="font-semibold border-t-2 border-[#1C1D21]">
-                        <td className="py-2.5">합계</td>
+                        <td className="py-2.5">{tCommon('total')}</td>
                         <td className="py-2.5 text-right">{sm.employeeCount}{tCommon('unit.person')}</td>
                         <td className="py-2.5 text-right font-mono">{fmtKRW(totals.currentGross)}</td>
                         <td className="py-2.5 text-right font-mono">{fmtKRW(totals.simulatedGross)}</td>

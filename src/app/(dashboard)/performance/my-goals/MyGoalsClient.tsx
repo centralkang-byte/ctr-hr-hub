@@ -73,10 +73,10 @@ function GoalModal({ initial, onSave, onClose, saving }: {
                     </div>
                 </div>
                 <div className="mt-6 flex justify-end gap-3">
-                    <button onClick={onClose} className="rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm font-medium text-[#1C1D21]">취소</button>
+                    <button onClick={onClose} className="rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm font-medium text-[#1C1D21]">{tCommon('cancel')}</button>
                     <button onClick={() => onSave(form)} disabled={!form.title || !form.description || !form.targetDate || saving}
                         className="rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white disabled:opacity-40">
-                        {saving ? '저장 중...' : '저장'}
+                        {saving ? tCommon('loading') : tCommon('save')}
                     </button>
                 </div>
             </div>
@@ -229,7 +229,7 @@ export default function MyGoalsClient({
                 {/* Error */}
                 {error && (
                     <div className="mb-4 rounded-lg border border-[#FFEBEE] bg-[#FFEBEE] p-3 text-sm text-[#C62828]">
-                        {error} <button onClick={fetchGoals} className="ml-2 font-medium underline">다시 시도</button>
+                        {error} <button onClick={fetchGoals} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
 

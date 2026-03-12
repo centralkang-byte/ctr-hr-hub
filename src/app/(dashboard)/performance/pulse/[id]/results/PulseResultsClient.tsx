@@ -74,7 +74,7 @@ export default function PulseResultsClient() {
     setAiLoading(false)
   }
 
-  if (loading) return <div className="p-6 text-center text-[#999]">로딩 중...</div>
+  if (loading) return <div className="p-6 text-center text-[#999]">{tCommon('loading')}</div>
   if (!results) return <div className="p-6 text-center text-[#999]">결과를 불러올 수 없습니다.</div>
 
   return (

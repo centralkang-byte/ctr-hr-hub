@@ -171,7 +171,7 @@ export default function MyResultClient({
 
                 {error && (
                     <div className="mb-4 rounded-lg border border-[#FFEBEE] bg-[#FFEBEE] p-3 text-sm text-[#C62828]">
-                        {error} <button onClick={fetchResult} className="ml-2 font-medium underline">다시 시도</button>
+                        {error} <button onClick={fetchResult} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
 

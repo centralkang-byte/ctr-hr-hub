@@ -158,7 +158,7 @@ export default function OneOnOneDetailClient() {
   }
 
   if (loading || !meeting) {
-    return <div className="p-6 text-center text-[#999]">로딩 중...</div>
+    return <div className="p-6 text-center text-[#999]">{tCommon('loading')}</div>
   }
 
   return (

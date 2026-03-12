@@ -89,7 +89,7 @@ export default function PeerReviewResultsClient() {
     setAiLoading(false)
   }
 
-  if (loading) return <div className="p-6 text-center text-[#999]">로딩 중...</div>
+  if (loading) return <div className="p-6 text-center text-[#999]">{tCommon('loading')}</div>
   if (!results || !results.summary) return <div className="p-6 text-center text-[#999]">결과가 없습니다.</div>
 
   const radarData = Object.entries(results.summary.competencyAvg).map(([key, value]) => ({

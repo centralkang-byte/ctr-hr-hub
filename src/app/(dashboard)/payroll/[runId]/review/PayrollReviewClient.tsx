@@ -759,7 +759,7 @@ export default function PayrollReviewClient({
               <input
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
-                placeholder="이름 또는 부서 검색"
+                placeholder={tCommon('searchPlaceholder')}
                 className="w-full pl-9 pr-3 py-2 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
               />
             </div>

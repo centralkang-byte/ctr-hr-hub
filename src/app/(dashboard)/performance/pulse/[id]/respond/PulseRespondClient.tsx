@@ -76,7 +76,7 @@ export default function PulseRespondClient() {
     setSubmitting(false)
   }
 
-  if (loading) return <div className="p-6 text-center text-[#999]">로딩 중...</div>
+  if (loading) return <div className="p-6 text-center text-[#999]">{tCommon('loading')}</div>
   if (!survey) return <div className="p-6 text-center text-[#999]">설문을 찾을 수 없습니다.</div>
 
   if (submitted) {

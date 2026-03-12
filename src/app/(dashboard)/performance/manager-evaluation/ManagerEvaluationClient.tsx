@@ -134,7 +134,7 @@ export default function ManagerEvaluationClient({
 
                 {error && (
                     <div className="mb-4 rounded-lg border border-[#FFEBEE] bg-[#FFEBEE] p-3 text-sm text-[#C62828]">
-                        {error} <button onClick={fetchTeam} className="ml-2 font-medium underline">다시 시도</button>
+                        {error} <button onClick={fetchTeam} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
 
@@ -448,7 +448,7 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
                 <p className="mb-4 text-sm text-[#8181A5]">최소 2명, 최대 4명 선택 | 선택: {selected.size}명</p>
 
                 {loading ? (
-                    <div className="py-8 text-center text-sm text-[#8181A5]">로딩 중...</div>
+                    <div className="py-8 text-center text-sm text-[#8181A5]">{tCommon('loading')}</div>
                 ) : candidates.length === 0 ? (
                     <div className="py-8 text-center text-sm text-[#8181A5]">추천 후보가 없습니다.</div>
                 ) : (
@@ -471,7 +471,7 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
                 )}
 
                 <div className="mt-6 flex justify-end gap-3">
-                    <button onClick={onClose} className="rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm font-medium text-[#1C1D21]">취소</button>
+                    <button onClick={onClose} className="rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm font-medium text-[#1C1D21]">{tCommon('cancel')}</button>
                     <button onClick={handleNominate} disabled={saving || selected.size < 2}
                         className="rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white disabled:opacity-40">
                         {saving ? '지명 중...' : '지명 확정'}

@@ -359,7 +359,7 @@ export default function AdjustmentsClient({
                             {/* Adjustments table */}
                             <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
                                 {loading ? (
-                                    <div className="flex items-center justify-center h-40 text-[#999]">로딩 중...</div>
+                                    <div className="flex items-center justify-center h-40 text-[#999]">{tCommon('loading')}</div>
                                 ) : filteredAdj.length === 0 ? (
                                     <div className="flex flex-col items-center justify-center h-40">
                                         <FileText size={28} className="text-[#D4D4D4] mb-2" />

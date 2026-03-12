@@ -184,7 +184,7 @@ export default function OneOnOneClient() {
       </div>
 
       {loading ? (
-        <div className="text-center py-12 text-[#999]">로딩 중...</div>
+        <div className="text-center py-12 text-[#999]">{tCommon('loading')}</div>
       ) : (
         <div className="space-y-6">
           {/* Scheduled Meetings */}

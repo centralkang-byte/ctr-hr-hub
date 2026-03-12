@@ -153,7 +153,7 @@ export default function MyCheckinsClient({
                 {/* Error */}
                 {error && (
                     <div className="mb-4 rounded-lg border border-[#FFEBEE] bg-[#FFEBEE] p-3 text-sm text-[#C62828]">
-                        {error} <button onClick={fetchData} className="ml-2 font-medium underline">다시 시도</button>
+                        {error} <button onClick={fetchData} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
 
@@ -234,7 +234,7 @@ export default function MyCheckinsClient({
                                                     <button onClick={() => handleSaveProgress(goal.id)}
                                                         disabled={saving === goal.id}
                                                         className="rounded-lg bg-[#5E81F4] px-4 py-1.5 text-sm font-medium text-white disabled:opacity-40 hover:bg-[#4A6FE0] transition-colors">
-                                                        {saving === goal.id ? '저장 중...' : '저장'}
+                                                        {saving === goal.id ? tCommon('loading') : tCommon('save')}
                                                     </button>
                                                 </div>
                                             )}

@@ -203,7 +203,7 @@ export default function RecognitionClient() {
             onChange={(e) => setValueFilter(e.target.value)}
             className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
           >
-            <option value="">전체</option>
+            <option value="">{tCommon('all')}</option>
             {Object.entries(VALUE_CONFIG).map(([key, config]) => (
               <option key={key} value={key}>{config.emoji} {config.label}</option>
             ))}
@@ -215,7 +215,7 @@ export default function RecognitionClient() {
       {activeTab === 'feed' && (
         <div className="space-y-4">
           {loading ? (
-            <div className="text-center py-12 text-[#999]">로딩 중...</div>
+            <div className="text-center py-12 text-[#999]">{tCommon('loading')}</div>
           ) : feed.length === 0 ? (
             <div className="text-center py-12 text-[#999]">
               <Heart className="w-12 h-12 mx-auto mb-3 text-[#D4D4D4]" />

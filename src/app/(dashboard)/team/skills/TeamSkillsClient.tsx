@@ -321,7 +321,7 @@ export default function TeamSkillsClient({
                 className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}
               >
                 <Save className="w-4 h-4" />
-                {saving ? '저장 중...' : '저장'}
+                {saving ? tCommon('loading') : tCommon('save')}
               </button>
               <button
                 onClick={() =>

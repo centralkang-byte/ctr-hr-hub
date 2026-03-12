@@ -351,7 +351,7 @@ export default function GlobalPayrollClient({
                 </tbody>
                 <tfoot>
                   <tr className={TABLE_STYLES.header}>
-                    <td colSpan={4} className="px-4 py-3 font-semibold text-sm text-[#1A1A1A]">합계</td>
+                    <td colSpan={4} className="px-4 py-3 font-semibold text-sm text-[#1A1A1A]">{tCommon('total')}</td>
                     <td className="px-4 py-3 text-right font-mono font-bold text-[#1A1A1A]">₩{fmtBillion(data.totalKRW)}</td>
                     <td className="px-4 py-3 text-right font-semibold text-[#1A1A1A]">{data.totalHeadcount}명</td>
                     <td className="px-4 py-3 text-right font-mono font-semibold text-[#1A1A1A]">

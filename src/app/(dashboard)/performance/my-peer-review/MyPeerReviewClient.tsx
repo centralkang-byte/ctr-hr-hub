@@ -191,7 +191,7 @@ export default function MyPeerReviewClient({
 
                 {error && (
                     <div className="mb-4 rounded-lg border border-[#FFEBEE] bg-[#FFEBEE] p-3 text-sm text-[#C62828]">
-                        {error} <button onClick={fetchAssignments} className="ml-2 font-medium underline">다시 시도</button>
+                        {error} <button onClick={fetchAssignments} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
 
@@ -295,7 +295,7 @@ export default function MyPeerReviewClient({
                                 </button>
                                 <button onClick={() => handleSubmit('SUBMITTED')} disabled={saving}
                                     className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40">
-                                    <Send className="h-4 w-4" /> {saving ? '제출 중...' : '제출'}
+                                    <Send className="h-4 w-4" /> {saving ? tCommon('loading') : tCommon('submit')}
                                 </button>
                             </div>
                         </div>

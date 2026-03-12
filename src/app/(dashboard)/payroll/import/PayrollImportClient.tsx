@@ -250,7 +250,7 @@ export default function PayrollImportClient({
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="text-sm font-semibold text-[#1A1A1A] mb-3">컬럼 매핑 선택</h3>
             {loadingMappings ? (
-              <div className="text-sm text-[#999]">로딩 중...</div>
+              <div className="text-sm text-[#999]">{tCommon('loading')}</div>
             ) : mappings.length === 0 ? (
               <div className="text-sm text-[#999]">
                 선택한 법인에 매핑 설정이 없습니다.{' '}
@@ -467,7 +467,7 @@ export default function PayrollImportClient({
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-[#00C853] text-white rounded-lg text-sm disabled:opacity-50"
                   >
                     <Save className="w-4 h-4" />
-                    {savingMapping ? '저장 중...' : '저장'}
+                    {savingMapping ? tCommon('loading') : tCommon('save')}
                   </button>
                 </div>
               </div>
@@ -491,7 +491,7 @@ export default function PayrollImportClient({
             </div>
           </div>
           {loadingLogs ? (
-            <div className="py-12 text-center text-sm text-[#999]">로딩 중...</div>
+            <div className="py-12 text-center text-sm text-[#999]">{tCommon('loading')}</div>
           ) : logs.length === 0 ? (
             <div className="py-12 text-center text-sm text-[#999]">업로드 이력이 없습니다.</div>
           ) : (

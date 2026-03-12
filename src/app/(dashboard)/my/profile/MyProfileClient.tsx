@@ -432,8 +432,8 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                 주요 연락처로 설정
               </label>
               <div className="flex gap-2">
-                <button onClick={addEmergencyContact} className={`${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg text-sm font-medium`}>저장</button>
-                <button onClick={() => setShowEcForm(false)} className="border border-[#D4D4D4] text-[#555] px-4 py-2 rounded-lg text-sm">취소</button>
+                <button onClick={addEmergencyContact} className={`${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg text-sm font-medium`}>{tCommon('save')}</button>
+                <button onClick={() => setShowEcForm(false)} className="border border-[#D4D4D4] text-[#555] px-4 py-2 rounded-lg text-sm">{tCommon('cancel')}</button>
               </div>
             </div>
           )}

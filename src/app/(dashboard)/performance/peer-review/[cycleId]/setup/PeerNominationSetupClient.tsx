@@ -200,7 +200,7 @@ export default function PeerNominationSetupClient() {
             현재 지명 목록 ({nominations.length}건)
           </h2>
           {loading ? (
-            <p className="text-sm text-[#999] text-center py-4">로딩 중...</p>
+            <p className="text-sm text-[#999] text-center py-4">{tCommon('loading')}</p>
           ) : nominations.length === 0 ? (
             <p className="text-sm text-[#999] text-center py-4">지명된 평가자가 없습니다.</p>
           ) : (

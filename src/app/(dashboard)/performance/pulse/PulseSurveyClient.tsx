@@ -207,7 +207,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
           </div>
         </div>
         <div className="p-6 border-t border-[#E8E8E8] flex justify-end gap-3">
-          <button onClick={onClose} className="px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#333] hover:bg-[#FAFAFA]">취소</button>
+          <button onClick={onClose} className="px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#333] hover:bg-[#FAFAFA]">{tCommon('cancel')}</button>
           <button onClick={handleSubmit} disabled={saving} className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}>
             {saving ? '생성 중...' : '생성'}
           </button>
@@ -290,7 +290,7 @@ export default function PulseSurveyClient() {
       </div>
 
       {loading ? (
-        <div className="text-center text-[#999] py-10">로딩 중...</div>
+        <div className="text-center text-[#999] py-10">{tCommon('loading')}</div>
       ) : tab === 'manage' ? (
         <>
           {/* Status Filter */}

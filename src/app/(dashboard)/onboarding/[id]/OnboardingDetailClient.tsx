@@ -523,7 +523,7 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
                         {task.task.title}
                     </span>
                     {task.task.isRequired && <span className="rounded bg-[#F0F4FF] px-1.5 py-0.5 text-[10px] font-medium text-[#5E81F4]">필수</span>}
-                    {!task.task.isRequired && <span className="rounded bg-[#F5F5FA] px-1.5 py-0.5 text-[10px] text-[#8181A5]">선택</span>}
+                    {!task.task.isRequired && <span className="rounded bg-[#F5F5FA] px-1.5 py-0.5 text-[10px] text-[#8181A5]">{tCommon('select')}</span>}
                 </div>
                 {task.task.description && <p className="mt-0.5 text-xs text-[#8181A5]">{task.task.description}</p>}
                 <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-[#8181A5]">

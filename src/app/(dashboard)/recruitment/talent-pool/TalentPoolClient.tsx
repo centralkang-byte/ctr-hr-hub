@@ -168,7 +168,7 @@ export default function TalentPoolClient({
 
       {/* 목록 */}
       {loading ? (
-        <div className="flex items-center justify-center h-48 text-[#999] text-sm">로딩 중...</div>
+        <div className="flex items-center justify-center h-48 text-[#999] text-sm">{tCommon('loading')}</div>
       ) : items.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-48 text-[#999]">
           <UserPlus size={40} className="mb-3 text-[#E8E8E8]" />

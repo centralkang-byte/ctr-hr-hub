@@ -231,7 +231,7 @@ export default function MyEvaluationClient({
                         {saveStatus === 'error' && (
                             <span className="flex items-center gap-1.5 text-xs text-[#C62828]">
                                 <XCircle className="h-3.5 w-3.5" /> 저장 실패
-                                <button onClick={() => handleSave('DRAFT')} className="font-medium underline">다시 시도</button>
+                                <button onClick={() => handleSave('DRAFT')} className="font-medium underline">{tCommon('retry')}</button>
                             </span>
                         )}
                         <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
@@ -270,7 +270,7 @@ export default function MyEvaluationClient({
 
                 {error && (
                     <div className="mb-4 rounded-lg border border-[#FFEBEE] bg-[#FFEBEE] p-3 text-sm text-[#C62828]">
-                        {error} <button onClick={fetchEvalData} className="ml-2 font-medium underline">다시 시도</button>
+                        {error} <button onClick={fetchEvalData} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
 
@@ -369,7 +369,7 @@ export default function MyEvaluationClient({
                                 </button>
                                 <button onClick={() => handleSave('SUBMITTED')} disabled={submitting}
                                     className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40 transition-colors">
-                                    <Send className="h-4 w-4" /> {submitting ? '제출 중...' : '제출'}
+                                    <Send className="h-4 w-4" /> {submitting ? tCommon('loading') : tCommon('submit')}
                                 </button>
                             </div>
                         )}

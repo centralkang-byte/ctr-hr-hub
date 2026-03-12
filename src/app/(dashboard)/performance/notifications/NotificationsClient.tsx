@@ -173,7 +173,7 @@ export default function NotificationsClient({
 
                 {error && (
                     <div className="mb-4 rounded-lg border border-[#FFEBEE] bg-[#FFEBEE] p-3 text-sm text-[#C62828]">
-                        {error} <button onClick={fetchItems} className="ml-2 font-medium underline">다시 시도</button>
+                        {error} <button onClick={fetchItems} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
 
