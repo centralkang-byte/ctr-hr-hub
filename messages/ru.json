@@ -1661,7 +1661,8 @@
     "subDepartments": "Sub-departments",
     "employees": "Employees",
     "noEmployees": "No employees",
-    "close": "Close"
+    "close": "Close",
+    "searchDepts": "Search departments..."
   },
   "payroll": {
     "title": "Payroll",
@@ -2816,7 +2817,8 @@
       "results": "Результаты команды",
       "managerEval": "Оценка менеджера",
       "oneOnOne": "Встреча 1:1",
-      "skills": "Оценка компетенций команды"
+      "skills": "Оценка компетенций команды",
+      "delegation": "Delegation Settings"
     },
     "hrOps": {
       "label": "HR операции",
@@ -2921,6 +2923,9 @@
       "monitoring": "Мониторинг",
       "m365": "Интеграция M365",
       "auditLogs": "Журнал аудита"
+    },
+    "hrMgmt": {
+      "exitInterviewStats": "Exit Interview Stats"
     }
   },
   "myTasks": {

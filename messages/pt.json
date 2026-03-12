@@ -1661,7 +1661,8 @@
     "subDepartments": "Sub-departments",
     "employees": "Employees",
     "noEmployees": "No employees",
-    "close": "Close"
+    "close": "Close",
+    "searchDepts": "Search departments..."
   },
   "payroll": {
     "title": "Payroll",
@@ -2816,7 +2817,8 @@
       "results": "Desempenho da equipe",
       "managerEval": "Avaliação do gerente",
       "oneOnOne": "Reunião 1:1",
-      "skills": "Avaliação de competências da equipe"
+      "skills": "Avaliação de competências da equipe",
+      "delegation": "Delegation Settings"
     },
     "hrOps": {
       "label": "Operações de RH",
@@ -2921,6 +2923,9 @@
       "monitoring": "Monitoramento",
       "m365": "Integração M365",
       "auditLogs": "Registros de auditoria"
+    },
+    "hrMgmt": {
+      "exitInterviewStats": "Exit Interview Stats"
     }
   },
   "myTasks": {

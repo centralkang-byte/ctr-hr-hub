@@ -1876,7 +1876,8 @@
     "confirmApply": "Confirm Apply",
     "applyWarning": "This action cannot be undone. All changes in the plan will take effect immediately.",
     "restructureSuccess": "Restructuring completed successfully.",
-    "draftSaved": "Draft saved successfully."
+    "draftSaved": "Draft saved successfully.",
+    "searchDepts": "Search departments..."
   },
   "payroll": {
     "title": "Payroll",
@@ -3072,7 +3073,8 @@
       "goalsPerformance": "Team Goals & Performance",
       "managerEval": "Manager Evaluation",
       "oneOnOne": "1:1 Meetings",
-      "skills": "Team Skills"
+      "skills": "Team Skills",
+      "delegation": "Delegation Settings"
     },
     "hrMgmt": {
       "label": "HR Management",
@@ -3082,7 +3084,8 @@
       "attendanceAdmin": "Attendance Admin",
       "leaveAdmin": "Leave Admin",
       "onboardingOffboarding": "Onboarding/Offboarding",
-      "disciplineRewards": "Discipline & Rewards"
+      "disciplineRewards": "Discipline & Rewards",
+      "exitInterviewStats": "Exit Interview Stats"
     },
     "hrOps": {
       "label": "HR Operations",
