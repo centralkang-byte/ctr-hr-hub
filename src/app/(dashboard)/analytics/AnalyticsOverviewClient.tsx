@@ -5,7 +5,7 @@
 // 전사 KPI 6개 + 서브 대시보드 네비게이션
 // ═══════════════════════════════════════════════════════════
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
@@ -23,11 +23,21 @@ import {
   Heart,
   FileText,
   Loader2,
+  RefreshCw,
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { AnalyticsPageLayout } from '@/components/analytics/AnalyticsPageLayout'
 import { AnalyticsKpiCard } from '@/components/analytics/AnalyticsKpiCard'
-import type { OverviewKpi } from '@/lib/analytics/types'
+import { EmptyState } from '@/components/ui/EmptyState'
+
+interface OverviewKpi {
+  totalHeadcount: number
+  newHires30d: number
+  resignations30d: number
+  turnoverRateAnnualized: number
+  avgOvertimeHours: number
+  burnoutRiskCount: number
+}
 
 // ─── Component ──────────────────────────────────────────
 
@@ -38,6 +48,9 @@ export default function AnalyticsOverviewClient() {
 
   const [kpi, setKpi] = useState<OverviewKpi | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+  const [timedOut, setTimedOut] = useState(false)
+  const timerRef = useRef<NodeJS.Timeout>()
 
   // ─── Sub-dashboard navigation config ────────────────────
   const SUB_DASHBOARDS = [
@@ -53,13 +66,15 @@ export default function AnalyticsOverviewClient() {
 
   const fetchData = useCallback(async () => {
     setLoading(true)
+    setError(false)
+    setTimedOut(false)
     try {
       const res = await apiClient.get<OverviewKpi>('/api/v1/analytics/overview', {
         company_id: companyId,
       })
       setKpi(res.data)
     } catch {
-      // silently handle
+      setError(true)
     } finally {
       setLoading(false)
     }
@@ -69,16 +84,40 @@ export default function AnalyticsOverviewClient() {
     fetchData()
   }, [fetchData])
 
+  // Art.27: Loading timeout fallback (5s)
+  useEffect(() => {
+    if (loading) {
+      timerRef.current = setTimeout(() => setTimedOut(true), 5000)
+    } else {
+      clearTimeout(timerRef.current)
+    }
+    return () => clearTimeout(timerRef.current)
+  }, [loading])
+
   return (
     <AnalyticsPageLayout
       title="HR Analytics"
       description={t('hrAnalyticsDescription')}
     >
       {/* KPI Cards */}
-      {loading ? (
+      {loading && !timedOut ? (
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-[#999]" />
         </div>
+      ) : timedOut && loading ? (
+        <EmptyState
+          icon={BarChart3}
+          title="데이터를 불러오지 못했습니다"
+          description="새로고침하거나 잠시 후 다시 시도해주세요."
+          action={{ label: '새로고침', onClick: () => fetchData() }}
+        />
+      ) : error ? (
+        <EmptyState
+          icon={AlertTriangle}
+          title="인사이트 데이터 로드 실패"
+          description="데이터를 불러올 수 없습니다. 잠시 후 다시 시도해주세요."
+          action={{ label: '다시 시도', onClick: () => fetchData() }}
+        />
       ) : kpi ? (
         <>
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
@@ -150,9 +189,11 @@ export default function AnalyticsOverviewClient() {
           </div>
         </>
       ) : (
-        <div className="py-20 text-center text-sm text-[#666]">
-          {t('dataLoadFailed')}
-        </div>
+        <EmptyState
+          icon={BarChart3}
+          title="데이터가 아직 없습니다"
+          description="인사 데이터가 충분히 쌓이면 HR Analytics가 자동으로 생성됩니다."
+        />
       )}
     </AnalyticsPageLayout>
   )

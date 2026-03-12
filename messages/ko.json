@@ -291,7 +291,31 @@
     "global": "글로벌 급여",
     "simulation": "급여 시뮬레이션",
     "dashboard": "대시보드",
-    "my": "나의 공간"
+    "my": "나의 공간",
+    "directory": "인사 디렉터리",
+    "import": "급여 가져오기",
+    "turnover": "이직 분석",
+    "workforce": "인력 현황",
+    "team-health": "팀 건강도",
+    "gender-pay-gap": "성별 임금 격차",
+    "predictive": "예측 분석",
+    "compare": "비교 분석",
+    "report": "리포트",
+    "peer-review": "동료 평가",
+    "self-eval": "자기 평가",
+    "comp-review": "보상 리뷰",
+    "one-on-one": "1:1 미팅",
+    "pulse": "펄스 서베이",
+    "cycles": "평가 사이클",
+    "admin": "관리",
+    "team": "팀",
+    "profile": "프로필",
+    "tasks": "할 일",
+    "rewards": "포상",
+    "new": "신규",
+    "edit": "편집",
+    "review": "검토",
+    "me": "나"
   },
   "employee": {
     "title": "직원 관리",
@@ -1887,7 +1911,8 @@
     "confirmApply": "적용 확인",
     "applyWarning": "이 작업은 되돌릴 수 없습니다. 계획의 모든 변경 사항이 즉시 반영됩니다.",
     "restructureSuccess": "조직 개편이 완료되었습니다.",
-    "draftSaved": "초안이 저장되었습니다."
+    "draftSaved": "초안이 저장되었습니다.",
+    "searchDepts": "부서 검색..."
   },
   "payroll": {
     "title": "급여 관리",
@@ -3083,7 +3108,8 @@
       "goalsPerformance": "팀 목표/성과",
       "managerEval": "매니저 평가",
       "oneOnOne": "1:1 미팅",
-      "skills": "팀원 역량 평가"
+      "skills": "팀원 역량 평가",
+      "delegation": "업무 위임"
     },
     "hrMgmt": {
       "label": "인사 관리",
@@ -3093,7 +3119,8 @@
       "attendanceAdmin": "근태 관리",
       "leaveAdmin": "휴가 관리",
       "onboardingOffboarding": "온보딩/오프보딩",
-      "disciplineRewards": "징계/포상"
+      "disciplineRewards": "징계/포상",
+      "exitInterviewStats": "퇴직 면담 통계"
     },
     "hrOps": {
       "label": "인사 운영",

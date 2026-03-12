@@ -62,6 +62,7 @@ const BREADCRUMB_KEYS: Record<string, string> = {
   settings: 'settings',
   notifications: 'notifications',
   compliance: 'compliance',
+  directory: 'directory',
   // Payroll sub-routes
   'year-end': 'year-end',
   'close-attendance': 'close-attendance',
@@ -72,7 +73,37 @@ const BREADCRUMB_KEYS: Record<string, string> = {
   'bank-transfers': 'bank-transfers',
   global: 'global',
   simulation: 'simulation',
+  import: 'import',
+  // Analytics sub-routes
+  turnover: 'turnover',
+  workforce: 'workforce',
+  'team-health': 'team-health',
+  'gender-pay-gap': 'gender-pay-gap',
+  predictive: 'predictive',
+  compare: 'compare',
+  report: 'report',
+  // Performance sub-routes
+  'peer-review': 'peer-review',
+  'self-eval': 'self-eval',
+  'comp-review': 'comp-review',
+  recognition: 'recognition',
+  'one-on-one': 'one-on-one',
+  pulse: 'pulse',
+  cycles: 'cycles',
+  // Other sub-routes
+  admin: 'admin',
+  team: 'team',
+  profile: 'profile',
+  tasks: 'tasks',
+  rewards: 'rewards',
+  new: 'new',
+  edit: 'edit',
+  review: 'review',
+  me: 'me',
 }
+
+// UUID pattern: detects 8-4-4-4-12 hex or any 32+ char hex string
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 // ─── Component ──────────────────────────────────────────────
 
@@ -90,6 +121,7 @@ export function Header({ user, companies }: HeaderProps) {
   const breadcrumbs = pathname
     .split('/')
     .filter(Boolean)
+    .filter((seg) => !UUID_RE.test(seg))  // Hide UUID segments
     .map((seg) => {
       const key = BREADCRUMB_KEYS[seg]
       return key ? t(key) : seg

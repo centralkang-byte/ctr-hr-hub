@@ -184,7 +184,7 @@ function FlowCanvas({ initNodes, initEdges }: FlowCanvasProps) {
   useEffect(() => {
     setNodes(initNodes)
     setEdges(initEdges)
-    setTimeout(() => fitView({ padding: 0.15, duration: 400 }), 50)
+    setTimeout(() => fitView({ padding: 0.3, duration: 400 }), 50)
   }, [initNodes, initEdges, setNodes, setEdges, fitView])
 
   return (
@@ -195,8 +195,8 @@ function FlowCanvas({ initNodes, initEdges }: FlowCanvasProps) {
       onEdgesChange={onEdgesChange}
       nodeTypes={nodeTypes}
       fitView
-      fitViewOptions={{ padding: 0.15 }}
-      minZoom={0.2}
+      fitViewOptions={{ padding: 0.3 }}
+      minZoom={0.4}
       maxZoom={2}
       className="bg-[#FAFAFA]"
     >

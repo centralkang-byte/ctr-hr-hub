@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Check, X } from 'lucide-react'
+import { Check, X, CalendarOff } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -24,6 +24,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
+import { EmptyState } from '@/components/ui/EmptyState'
 import type { SessionUser } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -250,6 +251,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
   const hasPending = members.some((m) =>
     m.requests.some((r) => r.status === 'PENDING'),
   )
+  const hasAnyRequests = members.some((m) => m.requests.length > 0)
 
   return (
     <div className="space-y-6 p-6">
@@ -274,18 +276,31 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
 
       {/* ─── Team Members ─── */}
       {members.length === 0 ? (
-        <div className="bg-white border border-[#E8E8E8] rounded-xl p-12 text-center text-sm text-[#999]">
-          {tc('noData')}
+        <EmptyState
+          icon={CalendarOff}
+          title="팀원이 없습니다"
+          description="팀원이 배정되면 여기에 휴가 현황이 표시됩니다."
+        />
+      ) : !hasAnyRequests ? (
+        <div className="space-y-4">
+          <EmptyState
+            icon={CalendarOff}
+            title="이번 달 팀 휴가 신청이 없습니다"
+            description="팀원의 휴가 신청이 있으면 여기에 표시됩니다."
+          />
+          <div className="bg-white border border-[#E8E8E8] rounded-xl divide-y divide-[#F0F0F3]">
+            {members.map((member) => (
+              <div key={member.employeeId} className="flex items-center justify-between px-4 py-3">
+                <span className="text-sm font-medium text-[#1A1A1A]">{member.name}</span>
+                <span className="text-xs text-[#999]">휴가 없음</span>
+              </div>
+            ))}
+          </div>
         </div>
       ) : (
         members.map((member) => (
           <div key={member.employeeId} className="bg-white border border-[#E8E8E8] rounded-xl p-6">
             <h3 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em] mb-4">{member.name}</h3>
-              {member.requests.length === 0 ? (
-                <p className="text-sm text-[#999]">
-                  {t('noRequestsThisMonth')}
-                </p>
-              ) : (
                 <div className="space-y-3">
                   {member.requests.map((req) => {
                     const optimisticStatus = optimisticMap[req.id]
@@ -364,7 +379,6 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                     )
                   })}
                 </div>
-              )}
           </div>
         ))
       )}
