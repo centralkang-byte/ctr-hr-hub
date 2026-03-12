@@ -17,6 +17,7 @@ import PlanDetailDialog from '@/components/succession/PlanDetailDialog'
 import { apiClient } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
 import type { PaginationInfo } from '@/types'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -63,6 +64,7 @@ export default function PlansTab() {
   })
 
   const fetchPlans = useCallback(async (page = 1) => {
+  const { confirm, dialogProps } = useConfirmDialog()
     setLoading(true)
     try {
       const res = await apiClient.getList<PlanRow>('/api/v1/succession/plans', {
@@ -101,7 +103,7 @@ export default function PlansTab() {
   }
 
   const handleDelete = async (plan: PlanRow) => {
-    if (!confirm(`"${plan.positionTitle}" 계획을 삭제하시겠습니까?`)) return
+    confirm({ variant: 'destructive', title: `"${plan.positionTitle}" 계획을 삭제하시겠습니까?`, onConfirm: async () =>
     try {
       await apiClient.delete(`/api/v1/succession/plans/${plan.id}`)
       toast({ title: '핵심직책이 삭제되었습니다.' })
@@ -176,6 +178,7 @@ export default function PlansTab() {
   ]
 
   return (
+    <>
     <div className="space-y-4">
       <div className="flex justify-end">
         <Button onClick={() => {
@@ -254,5 +257,7 @@ export default function PlansTab() {
         />
       )}
     </div>
+      <ConfirmDialog {...dialogProps} />
+      </>
   )
 }

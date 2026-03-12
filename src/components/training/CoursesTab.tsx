@@ -16,6 +16,7 @@ import {
 import { apiClient } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
 import type { PaginationInfo } from '@/types'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -63,6 +64,7 @@ export default function CoursesTab() {
   })
 
   const fetchCourses = useCallback(async (page = 1) => {
+  const { confirm, dialogProps } = useConfirmDialog()
     setLoading(true)
     try {
       const res = await apiClient.getList<CourseRow>('/api/v1/training/courses', {
@@ -133,7 +135,7 @@ export default function CoursesTab() {
   }
 
   const handleDelete = async (course: CourseRow) => {
-    if (!confirm(`"${course.title}" 교육과정을 삭제하시겠습니까?`)) return
+    confirm({ variant: 'destructive', title: `"${course.title}" 교육과정을 삭제하시겠습니까?`, onConfirm: async () =>
     try {
       await apiClient.delete(`/api/v1/training/courses/${course.id}`)
       toast({ title: '교육과정이 삭제되었습니다.' })
@@ -212,6 +214,7 @@ export default function CoursesTab() {
   ]
 
   return (
+    <>
     <div className="space-y-4">
       <div className="flex justify-end">
         <Button onClick={openCreate}>
@@ -316,5 +319,7 @@ export default function CoursesTab() {
         </DialogContent>
       </Dialog>
     </div>
+      <ConfirmDialog {...dialogProps} />
+      </>
   )
 }

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Plus, Trash2, TestTube, Webhook, Check, X } from 'lucide-react'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 const ALL_EVENT_TYPES = [
   { key: 'overtime_blocked_52h', label: '52시간 차단' },
@@ -34,6 +35,7 @@ export function TeamsWebhookSection() {
   const [testResult, setTestResult] = useState<Record<string, boolean>>({})
 
   const loadWebhooks = useCallback(async () => {
+  const { confirm, dialogProps } = useConfirmDialog()
     try {
       const res = await fetch('/api/v1/settings/teams-webhooks')
       const data = await res.json()
@@ -72,7 +74,7 @@ export function TeamsWebhookSection() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('이 Webhook 설정을 삭제할까요?')) return
+    confirm({ variant: 'destructive', title: '이 Webhook 설정을 삭제할까요?', onConfirm: async () =>
     try {
       await fetch(`/api/v1/settings/teams-webhooks/${id}`, { method: 'DELETE' })
       loadWebhooks()
@@ -168,7 +170,8 @@ export function TeamsWebhookSection() {
                   <>
                     <TestTube className="w-3 h-3" />
                     테스트
-                  </>
+                    <ConfirmDialog {...dialogProps} />
+      </>
                 )}
               </button>
               <button

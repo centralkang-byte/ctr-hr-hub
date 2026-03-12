@@ -19,6 +19,7 @@ import {
 import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import {
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
   Dialog,
   DialogContent,
   DialogHeader,
@@ -66,6 +67,7 @@ export function InterviewCalendarScheduler({
   const [interviewerName, setInterviewerName] = useState('')
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null)
   const [mode, setMode] = useState<'view' | 'reschedule'>('view')
+  const { confirm, dialogProps } = useConfirmDialog()
 
   const hasEvent = !!calendarEventId
 
@@ -122,7 +124,7 @@ export function InterviewCalendarScheduler({
   }
 
   const handleCancel = async () => {
-    if (!confirm('캘린더 이벤트를 취소하시겠습니까?')) return
+    confirm({ title: '캘린더 이벤트를 취소하시겠습니까?', onConfirm: async () =>
     setSubmitting(true)
     try {
       await apiClient.delete(
@@ -394,6 +396,7 @@ export function InterviewCalendarScheduler({
           )}
         </DialogContent>
       </Dialog>
-    </>
+      <ConfirmDialog {...dialogProps} />
+      </>
   )
 }

@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dialog'
 import { apiClient } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -118,6 +119,7 @@ export default function MandatoryConfigTab() {
   }, [toast, statusYear])
 
   const fetchCourseOptions = useCallback(async () => {
+  const { confirm, dialogProps } = useConfirmDialog()
     try {
       const res = await apiClient.getList<CourseOption>('/api/v1/training/courses', { limit: '100', isActive: 'true', isMandatory: 'true' })
       setCourseOptions(res.data ?? [])
@@ -179,7 +181,7 @@ export default function MandatoryConfigTab() {
   }
 
   const handleDelete = async (config: MandatoryConfig) => {
-    if (!confirm(`"${config.course.title}" 의무교육 설정을 삭제하시겠습니까?`)) return
+    confirm({ variant: 'destructive', title: `"${config.course.title}" 의무교육 설정을 삭제하시겠습니까?`, onConfirm: async () =>
     try {
       await apiClient.delete(`/api/v1/training/mandatory-config/${config.id}`)
       toast({ title: '설정이 삭제되었습니다.' })
@@ -190,7 +192,7 @@ export default function MandatoryConfigTab() {
   }
 
   const handleAutoEnroll = async () => {
-    if (!confirm('현재 활성화된 모든 의무교육 설정으로 자동 수강 신청하시겠습니까?')) return
+    confirm({ title: '현재 활성화된 모든 의무교육 설정으로 자동 수강 신청하시겠습니까?', onConfirm: async () =>
     setEnrolling(true)
     try {
       const res = await apiClient.post<{ totalEnrolled: number; totalSkipped: number; configsProcessed: number }>('/api/v1/training/mandatory-config/enroll', {})
@@ -205,6 +207,7 @@ export default function MandatoryConfigTab() {
   }
 
   return (
+    <>
     <div className="space-y-8">
       {/* ─── 이수 현황 대시보드 ─── */}
       <section>
@@ -437,5 +440,7 @@ export default function MandatoryConfigTab() {
         </DialogContent>
       </Dialog>
     </div>
+      <ConfirmDialog {...dialogProps} />
+      </>
   )
 }

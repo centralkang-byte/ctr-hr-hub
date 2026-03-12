@@ -16,6 +16,7 @@ import {
 import { apiClient } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
 import type { PaginationInfo } from '@/types'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -74,6 +75,7 @@ export default function BenefitPoliciesTab() {
   })
 
   const fetchPolicies = useCallback(async (page = 1) => {
+  const { confirm, dialogProps } = useConfirmDialog()
     setLoading(true)
     try {
       const res = await apiClient.getList<PolicyRow>('/api/v1/benefits/policies', {
@@ -155,7 +157,7 @@ export default function BenefitPoliciesTab() {
   }
 
   const handleDelete = async (policy: PolicyRow) => {
-    if (!confirm(`"${policy.name}" 정책을 삭제하시겠습니까?`)) return
+    confirm({ variant: 'destructive', title: `"${policy.name}" 정책을 삭제하시겠습니까?`, onConfirm: async () =>
     try {
       await apiClient.delete(`/api/v1/benefits/policies/${policy.id}`)
       toast({ title: '정책이 삭제되었습니다.' })
@@ -222,6 +224,7 @@ export default function BenefitPoliciesTab() {
   ]
 
   return (
+    <>
     <div className="space-y-4">
       <div className="flex justify-end">
         <Button onClick={openCreate}>
@@ -321,5 +324,7 @@ export default function BenefitPoliciesTab() {
         </DialogContent>
       </Dialog>
     </div>
+      <ConfirmDialog {...dialogProps} />
+      </>
   )
 }

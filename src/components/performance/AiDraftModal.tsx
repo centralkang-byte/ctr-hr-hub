@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { X, Sparkles, AlertTriangle, CheckCircle2, Trash2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { BUTTON_VARIANTS,  MODAL_STYLES } from '@/lib/styles'
+import { toast } from '@/hooks/use-toast'
 
 interface DraftContent {
   performanceComment: string
@@ -43,7 +44,7 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
       setDraft(res.data)
       setGenerated(true)
     } catch {
-      alert('AI 초안 생성에 실패했습니다. 잠시 후 다시 시도하세요.')
+      toast({ title: 'AI 초안 생성에 실패했습니다. 잠시 후 다시 시도하세요.', variant: 'destructive' })
     } finally {
       setLoading(false)
     }

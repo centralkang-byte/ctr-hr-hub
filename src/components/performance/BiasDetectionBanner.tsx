@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { toast } from '@/hooks/use-toast'
 
 interface BiasLog {
   id: string; reviewerId: string; biasType: string; severity: string
@@ -59,7 +60,7 @@ export default function BiasDetectionBanner({ cycleId, onRunCheck }: Props) {
       await fetchLogs()
       onRunCheck?.()
     } catch {
-      alert('편향 감지 분석에 실패했습니다.')
+      toast({ title: '편향 감지 분석에 실패했습니다.', variant: 'destructive' })
     } finally {
       setChecking(false)
     }
