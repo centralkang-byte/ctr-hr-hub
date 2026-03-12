@@ -18,6 +18,7 @@ import {
 import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Constants ──────────────────────────────────────────
 

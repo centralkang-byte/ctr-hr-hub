@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Database, Plus, Pencil, Play, Trash2 } from 'lucide-react'
 import RetentionPolicyForm from '@/components/compliance/gdpr/RetentionPolicyForm'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface RetentionPolicy {
   id: string
@@ -100,19 +101,19 @@ export default function DataRetentionClient() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#FAFAFA] border-b border-[#E8E8E8]">
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tc('category')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.retentionMonths')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tc('description')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.autoDelete')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.anonymize')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.lastRunAt')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tc('actions')}</th>
+                <tr className={TABLE_STYLES.header}>
+                  <th className={TABLE_STYLES.headerCell}>{tc('category')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('gdpr.retentionMonths')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{tc('description')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('gdpr.autoDelete')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('gdpr.anonymize')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('gdpr.lastRunAt')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{tc('actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {policies.map((p) => (
-                  <tr key={p.id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                  <tr key={p.id} className={TABLE_STYLES.header}>
                     <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">{p.category}</td>
                     <td className="px-4 py-3 text-sm text-[#333]">
                       {p.retention_months} mo

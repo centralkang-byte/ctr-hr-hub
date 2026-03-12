@@ -114,7 +114,7 @@ export function PayScheduleTab({ companyId }: Props) {
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="지급 방법" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
-        <select className="rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm" value={settings.paymentMethod} onChange={(e) => setSettings((p) => ({ ...p, paymentMethod: e.target.value as PayScheduleSettings['paymentMethod'] }))}>
+        <select className="rounded-xl border border-[#F0F0F3] px-3 py-2 text-sm" value={settings.paymentMethod} onChange={(e) => setSettings((p) => ({ ...p, paymentMethod: e.target.value as PayScheduleSettings['paymentMethod'] }))}>
           <option value="BANK_TRANSFER">계좌이체</option>
           <option value="CHECK">수표</option>
         </select>

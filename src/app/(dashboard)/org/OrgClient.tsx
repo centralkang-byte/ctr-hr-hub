@@ -30,6 +30,7 @@ import type { SessionUser, RefOption } from '@/types'
 import { ROLE } from '@/lib/constants'
 import { EffectiveDatePicker } from '@/components/shared/EffectiveDatePicker'
 import { RestructureModal } from '@/components/org/RestructureModal'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ─────────────────────────────────────────────────
 
@@ -229,12 +230,12 @@ function ListView({ depts, onSelect, selectedId }: ListViewProps) {
     <div className="overflow-auto h-full">
       <table className="w-full text-sm border-collapse">
         <thead className="sticky top-0 z-10">
-          <tr className="bg-[#FAFAFA] border-b border-[#E8E8E8]">
-            <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tOrg('code')}</th>
-            <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tOrg('name')}</th>
-            <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tOrg('level')}</th>
-            <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tOrg('headcount')}</th>
-            <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tOrg('status')}</th>
+          <tr className={TABLE_STYLES.header}>
+            <th className={TABLE_STYLES.headerCell}>{tOrg('code')}</th>
+            <th className={TABLE_STYLES.headerCell}>{tOrg('name')}</th>
+            <th className={TABLE_STYLES.headerCell}>{tOrg('level')}</th>
+            <th className={TABLE_STYLES.headerCell}>{tOrg('headcount')}</th>
+            <th className={TABLE_STYLES.headerCell}>{tOrg('status')}</th>
           </tr>
         </thead>
         <tbody>

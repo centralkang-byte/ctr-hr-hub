@@ -82,7 +82,7 @@ export function TeamsConnectionStatus({
       </CardHeader>
       <CardContent className="space-y-4">
         {connected && (
-          <div className="rounded-lg border border-[#E8E8E8] p-4 space-y-2">
+          <div className="rounded-xl border border-[#E8E8E8] p-4 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-[#666]">Tenant ID</span>
               <span className="font-mono text-xs">{config.tenantId}</span>

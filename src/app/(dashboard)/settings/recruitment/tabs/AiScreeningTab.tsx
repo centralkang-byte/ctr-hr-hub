@@ -58,7 +58,7 @@ export function AiScreeningTab({ companyId }: Props) {
         )}
       </div>
 
-      <div className="flex items-center gap-4 rounded-lg border border-[#F0F0F3] p-4">
+      <div className="flex items-center gap-4 rounded-xl border border-[#F0F0F3] p-4">
         <span className="text-sm font-medium text-[#1C1D21]">최소 합격 점수</span>
         <Input
           type="number"
@@ -72,7 +72,7 @@ export function AiScreeningTab({ companyId }: Props) {
       </div>
 
       <div className="space-y-3">{settings.features.map((f, i) => (
-        <div key={f.key} className="flex items-start gap-4 rounded-lg border border-[#F0F0F3] p-4 hover:bg-[#F5F5FA] transition-colors">
+        <div key={f.key} className="flex items-start gap-4 rounded-xl border border-[#F0F0F3] p-4 hover:bg-[#F5F5FA] transition-colors">
           <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg bg-[#7C5CFC]/10">
             <Bot className="h-4 w-4 text-[#7C5CFC]" />
           </div>

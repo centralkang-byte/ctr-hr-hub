@@ -4,6 +4,7 @@ import { Save, RotateCcw, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import type { AssignmentRulesSetting } from '@/types/process-settings'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface Props { companyId: string | null }
 
@@ -52,26 +53,26 @@ export function AssignmentRulesTab({ companyId }: Props) {
         )}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-[#F0F0F3]">
+      <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-[#F0F0F3] bg-[#F5F5FA]">
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">코드</th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">유형</th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">설명</th>
-              <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#8181A5]">승인 필요</th>
+            <tr className={TABLE_STYLES.header}>
+              <th className={TABLE_STYLES.headerCell}>코드</th>
+              <th className={TABLE_STYLES.headerCell}>유형</th>
+              <th className={TABLE_STYLES.headerCell}>설명</th>
+              <th className={TABLE_STYLES.headerCell}>승인 필요</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#F0F0F3]">
             {settings.rules.map((t, i) => (
               <tr key={t.code} className="hover:bg-[#F5F5FA] transition-colors">
                 <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{t.code}</td>
-                <td className="px-4 py-3 text-sm font-medium text-[#1C1D21]">{t.label}</td>
-                <td className="px-4 py-3 text-sm text-[#8181A5]">{t.desc}</td>
+                <td className={TABLE_STYLES.cell}>{t.label}</td>
+                <td className={TABLE_STYLES.cellMuted}>{t.desc}</td>
                 <td className="px-4 py-3 text-center">
                   <button
                     onClick={() => toggleApproval(i)}
-                    className={`rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${t.requiresApproval ? 'bg-blue-50 text-blue-600 hover:bg-blue-100' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
+                    className={`rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${t.requiresApproval ? 'bg-primary/5 text-primary hover:bg-primary/10' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
                   >
                     {t.requiresApproval ? '필수' : '불필요'}
                   </button>

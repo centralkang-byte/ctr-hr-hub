@@ -53,7 +53,7 @@ export function ApprovalFlowEditor({ flow, onChange, disabled = false }: Approva
       {flow.steps.map((step, index) => (
         <div
           key={step.id}
-          className="flex items-center gap-3 rounded-lg border border-[#E8E8E8] bg-white px-4 py-3"
+          className="flex items-center gap-3 rounded-xl border border-[#E8E8E8] bg-white px-4 py-3"
         >
           {/* 순서 */}
           <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[#00C853] text-xs font-bold text-white">
@@ -110,7 +110,7 @@ export function ApprovalFlowEditor({ flow, onChange, disabled = false }: Approva
         <button
           type="button"
           onClick={addStep}
-          className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-[#D4D4D4] py-2.5 text-sm text-[#666] hover:border-[#00C853] hover:text-[#00C853]"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-[#D4D4D4] py-2.5 text-sm text-[#666] hover:border-[#00C853] hover:text-[#00C853]"
         >
           <Plus className="h-4 w-4" />
           단계 추가

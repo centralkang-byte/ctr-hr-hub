@@ -270,7 +270,7 @@ export default function MyResultClient({ user }: { user: SessionUser }) {
                                     {peerResult.reviews.length > 0 && (
                                         <div className="space-y-3">
                                             {peerResult.reviews.map((r, i) => (
-                                                <div key={i} className="rounded-lg border border-[#F0F0F3] p-3">
+                                                <div key={i} className="rounded-xl border border-[#F0F0F3] p-3">
                                                     <p className="mb-1 text-xs font-medium text-[#8181A5]">{r.reviewerName}</p>
                                                     <p className="text-sm text-[#1C1D21]">{r.overallComment || '(의견 없음)'}</p>
                                                 </div>

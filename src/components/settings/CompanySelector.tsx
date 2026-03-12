@@ -36,7 +36,7 @@ export function CompanySelector({ selectedCompanyId, onCompanyChange, className 
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center gap-2 rounded-lg border border-[#E8E8E8] bg-white px-3 py-2 text-sm hover:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/20"
+        className="flex items-center gap-2 rounded-xl border border-[#E8E8E8] bg-white px-3 py-2 text-sm hover:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/20"
       >
         <Building2 className="h-4 w-4 text-[#666]" />
         <span className="font-medium text-[#1A1A1A]">

@@ -54,7 +54,7 @@ export function CalibrationTab({ companyId }: Props) {
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="참여 범위" description="캘리브레이션 회의 단위" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
-        <select className="rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm" value={settings.scope} onChange={(e) => setSettings((p) => ({ ...p, scope: e.target.value as CalibSettings['scope'] }))}>
+        <select className="rounded-xl border border-[#F0F0F3] px-3 py-2 text-sm" value={settings.scope} onChange={(e) => setSettings((p) => ({ ...p, scope: e.target.value as CalibSettings['scope'] }))}>
           <option value="DEPARTMENT">부서 단위</option>
           <option value="DIVISION">본부 단위</option>
           <option value="COMPANY">법인 전체</option>

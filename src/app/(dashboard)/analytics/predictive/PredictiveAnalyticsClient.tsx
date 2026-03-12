@@ -38,6 +38,7 @@ import {
 } from 'recharts'
 import { apiClient } from '@/lib/api'
 import { AnalyticsPageLayout } from '@/components/analytics/AnalyticsPageLayout'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── 타입 ────────────────────────────────────────────────
 
@@ -278,19 +279,19 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#FAFAFA]">
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">이름</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">부서</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">직급</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">위험 점수</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">위험도</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">주요 요인</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider"></th>
+              <tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>이름</th>
+                <th className={TABLE_STYLES.headerCell}>부서</th>
+                <th className={TABLE_STYLES.headerCell}>직급</th>
+                <th className={TABLE_STYLES.headerCell}>위험 점수</th>
+                <th className={TABLE_STYLES.headerCell}>위험도</th>
+                <th className={TABLE_STYLES.headerCell}>주요 요인</th>
+                <th className={TABLE_STYLES.headerCell}></th>
               </tr>
             </thead>
             <tbody>
               {data.map((row) => (
-                <tr key={row.employeeId} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                <tr key={row.employeeId} className={TABLE_STYLES.header}>
                   <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">{row.employeeName}</td>
                   <td className="px-4 py-3 text-sm text-[#555]">{row.departmentName ?? '—'}</td>
                   <td className="px-4 py-3 text-sm text-[#555]">{row.jobGradeName ?? '—'}</td>
@@ -391,17 +392,17 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#FAFAFA]">
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">이름</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">부서</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">번아웃 점수</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">위험도</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">계산일</th>
+              <tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>이름</th>
+                <th className={TABLE_STYLES.headerCell}>부서</th>
+                <th className={TABLE_STYLES.headerCell}>번아웃 점수</th>
+                <th className={TABLE_STYLES.headerCell}>위험도</th>
+                <th className={TABLE_STYLES.headerCell}>계산일</th>
               </tr>
             </thead>
             <tbody>
               {data.map((row) => (
-                <tr key={row.employeeId} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                <tr key={row.employeeId} className={TABLE_STYLES.header}>
                   <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">{row.employeeName}</td>
                   <td className="px-4 py-3 text-sm text-[#555]">{row.departmentName ?? '—'}</td>
                   <td className="px-4 py-3">
@@ -486,17 +487,17 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#FAFAFA]">
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">팀</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">인원</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">건강도 점수</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">위험도</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">계산일</th>
+              <tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>팀</th>
+                <th className={TABLE_STYLES.headerCell}>인원</th>
+                <th className={TABLE_STYLES.headerCell}>건강도 점수</th>
+                <th className={TABLE_STYLES.headerCell}>위험도</th>
+                <th className={TABLE_STYLES.headerCell}>계산일</th>
               </tr>
             </thead>
             <tbody>
               {data.map((row) => (
-                <tr key={row.departmentId} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                <tr key={row.departmentId} className={TABLE_STYLES.header}>
                   <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">{row.departmentName}</td>
                   <td className="px-4 py-3 text-sm text-[#555]">{row.latestScore?.memberCount ?? '—'}</td>
                   <td className="px-4 py-3">
@@ -588,19 +589,19 @@ function WorkforceTab({
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#FAFAFA]">
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">부서</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">분석 인원</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">이직 고위험</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">번아웃 고위험</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">위험률</th>
+              <tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>부서</th>
+                <th className={TABLE_STYLES.headerCell}>분석 인원</th>
+                <th className={TABLE_STYLES.headerCell}>이직 고위험</th>
+                <th className={TABLE_STYLES.headerCell}>번아웃 고위험</th>
+                <th className={TABLE_STYLES.headerCell}>위험률</th>
               </tr>
             </thead>
             <tbody>
               {Object.entries(deptMap).map(([dept, stats]) => {
                 const riskRate = stats.total > 0 ? Math.round(((stats.turnoverHigh + stats.burnoutHigh) / (stats.total * 2)) * 100) : 0
                 return (
-                  <tr key={dept} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                  <tr key={dept} className={TABLE_STYLES.header}>
                     <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">{dept}</td>
                     <td className="px-4 py-3 text-sm text-[#555]">{stats.total}</td>
                     <td className="px-4 py-3 text-sm text-[#B91C1C]">{stats.turnoverHigh}</td>

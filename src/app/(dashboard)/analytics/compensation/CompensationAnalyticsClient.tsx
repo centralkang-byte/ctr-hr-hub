@@ -20,6 +20,7 @@ import { EmptyChart } from '@/components/analytics/EmptyChart'
 import { AnalyticsKpiCard } from '@/components/analytics/AnalyticsKpiCard'
 import type { CompensationData } from '@/lib/analytics/types'
 import { Banknote } from 'lucide-react'
+import { TABLE_STYLES } from '@/lib/styles'
 
 const BAND_COLORS = ['#EF4444', '#10B981', '#F59E0B']
 
@@ -148,19 +149,19 @@ export default function CompensationAnalyticsClient() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-[#F5F5F5] bg-[#FAFAFA]">
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#666]">{t('grade')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#666]">{t('jobCategory')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('headcount')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('average')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">P25</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">{t('median')}</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">P75</th>
+                  <tr className={TABLE_STYLES.header}>
+                    <th className={TABLE_STYLES.headerCell}>{t('grade')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('jobCategory')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('headcount')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('average')}</th>
+                    <th className={TABLE_STYLES.headerCell}>P25</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('median')}</th>
+                    <th className={TABLE_STYLES.headerCell}>P75</th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.distribution.map((r, i) => (
-                    <tr key={i} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                    <tr key={i} className={TABLE_STYLES.header}>
                       <td className="px-4 py-3 font-medium text-[#333]">{r.grade_name}</td>
                       <td className="px-4 py-3 text-[#555]">{r.job_category_code}</td>
                       <td className="px-4 py-3 text-center text-[#555]">{r.employee_count}</td>

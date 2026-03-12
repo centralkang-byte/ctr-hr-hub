@@ -5,6 +5,7 @@ import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWith
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface Props { companyId: string | null }
 
@@ -45,13 +46,13 @@ export function DistributionTab({ companyId }: Props) {
         )}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-[#F0F0F3]">
-        <table className="w-full"><thead><tr className="border-b border-[#F0F0F3] bg-[#F5F5FA]">
-          <th className="px-4 py-3 text-left text-xs font-medium uppercase text-[#8181A5]">등급</th>
-          <th className="px-4 py-3 text-right text-xs font-medium uppercase text-[#8181A5]">권장 비율 (%)</th>
+      <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
+        <table className="w-full"><thead><tr className={TABLE_STYLES.header}>
+          <th className={TABLE_STYLES.headerCell}>등급</th>
+          <th className={TABLE_STYLES.headerCellRight}>권장 비율 (%)</th>
         </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{settings.guidePcts.map((pct, i) => (
-          <tr key={i} className="hover:bg-[#F5F5FA]">
-            <td className="px-4 py-3 text-sm font-medium text-[#1C1D21]">{GRADE_LABELS[i]}</td>
+          <tr key={i} className={TABLE_STYLES.row}>
+            <td className={TABLE_STYLES.cell}>{GRADE_LABELS[i]}</td>
             <td className="px-4 py-3 text-right"><Input type="number" value={pct} min={0} max={100} onChange={(e) => { const next = structuredClone(settings); next.guidePcts[i] = Number(e.target.value); setSettings(next) }} className="ml-auto w-20 text-right" /></td>
           </tr>
         ))}</tbody></table>

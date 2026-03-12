@@ -11,6 +11,7 @@ import { Search, Plus, ChevronLeft, ChevronRight, Award, Filter } from 'lucide-r
 import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Badge Styles ────────────────────────────────────────
 
@@ -172,12 +173,12 @@ export default function RewardsListClient({ user }: Props) {
         <table className="w-full">
           <thead>
             <tr className="border-b border-[#E8E8E8]">
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('employeeName')}</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('employeeNo')}</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('rewardType')}</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('rewardName')}</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('awardedDate')}</th>
-              <th className="px-4 py-3 text-right text-xs font-semibold text-[#999]">{tCommon('amount')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('employeeName')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('employeeNo')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('rewardType')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('rewardName')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('awardedDate')}</th>
+              <th className={TABLE_STYLES.headerCellRight}>{tCommon('amount')}</th>
             </tr>
           </thead>
           <tbody>

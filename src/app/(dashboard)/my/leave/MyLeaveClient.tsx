@@ -9,6 +9,7 @@ import {
 import type { SessionUser } from '@/types'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── 타입 ─────────────────────────────────────────────────
 
@@ -238,7 +239,7 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="bg-[#FAFAFA] border-b border-[#E8E8E8]">
+              <tr className={TABLE_STYLES.header}>
                 {['휴가 유형', '기간', '일수', '상태', '신청일'].map((h) => (
                   <th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-[#666] uppercase tracking-wider">{h}</th>
                 ))}
@@ -248,7 +249,7 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
               {requests.slice(0, 20).map((r) => {
                 const st = STATUS_LABELS[r.status] ?? STATUS_LABELS.PENDING
                 return (
-                  <tr key={r.id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                  <tr key={r.id} className={TABLE_STYLES.header}>
                     <td className="px-4 py-3 text-sm text-[#1A1A1A]">
                       {r.policy?.name ?? r.policy?.leaveType ?? '—'}
                     </td>

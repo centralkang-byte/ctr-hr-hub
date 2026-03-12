@@ -5,6 +5,7 @@ import { Save, AlertTriangle } from 'lucide-react'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface Props { companyId: string | null }
 
@@ -34,23 +35,23 @@ export function JobGradesTab({ companyId }: Props) {
         <p className="text-xs text-[#8181A5]">직급 체계는 현재 시스템에서 관리됩니다. API 연결 후 편집이 가능합니다.</p>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-[#F0F0F3]">
+      <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-[#F0F0F3] bg-[#F5F5FA]">
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">코드</th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">직급명</th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">영문명</th>
-              <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#8181A5]">최소 연차</th>
-              <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#8181A5]">승진 소요</th>
+            <tr className={TABLE_STYLES.header}>
+              <th className={TABLE_STYLES.headerCell}>코드</th>
+              <th className={TABLE_STYLES.headerCell}>직급명</th>
+              <th className={TABLE_STYLES.headerCell}>영문명</th>
+              <th className={TABLE_STYLES.headerCell}>최소 연차</th>
+              <th className={TABLE_STYLES.headerCell}>승진 소요</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#F0F0F3]">
             {grades.map((g) => (
               <tr key={g.code} className="hover:bg-[#F5F5FA] transition-colors">
                 <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{g.code}</td>
-                <td className="px-4 py-3 text-sm font-medium text-[#1C1D21]">{g.name}</td>
-                <td className="px-4 py-3 text-sm text-[#8181A5]">{g.nameEn}</td>
+                <td className={TABLE_STYLES.cell}>{g.name}</td>
+                <td className={TABLE_STYLES.cellMuted}>{g.nameEn}</td>
                 <td className="px-4 py-3 text-center text-sm text-[#8181A5]">{g.minYears != null ? `${g.minYears}년` : '—'}</td>
                 <td className="px-4 py-3 text-center text-sm text-[#8181A5]">{g.promoYears != null ? `${g.promoYears}년` : '—'}</td>
               </tr>

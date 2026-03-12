@@ -82,7 +82,7 @@ export function HolidaysTab({ companyId }: HolidaysTabProps) {
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="rounded-lg border border-[#F0F0F3] bg-[#F5F5FA] px-3 py-2 text-sm text-[#1C1D21]"
+            className="rounded-xl border border-[#F0F0F3] bg-[#F5F5FA] px-3 py-2 text-sm text-[#1C1D21]"
           >
             {[2024, 2025, 2026, 2027].map((y) => (
               <option key={y} value={y}>{y}년</option>
@@ -109,7 +109,7 @@ export function HolidaysTab({ companyId }: HolidaysTabProps) {
                     .map((holiday) => (
                       <div
                         key={holiday.id}
-                        className="flex items-center gap-3 rounded-lg border border-[#F0F0F3] px-4 py-3 transition-colors hover:bg-[#F5F5FA]"
+                        className="flex items-center gap-3 rounded-xl border border-[#F0F0F3] px-4 py-3 transition-colors hover:bg-[#F5F5FA]"
                       >
                         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#5E81F4]/10">
                           <Calendar className="h-4 w-4 text-[#5E81F4]" />
@@ -130,7 +130,7 @@ export function HolidaysTab({ companyId }: HolidaysTabProps) {
             ))}
         </div>
       ) : (
-        <div className="rounded-lg border border-dashed border-[#F0F0F3] py-12 text-center">
+        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
           <Calendar className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" />
           <p className="text-sm font-medium text-[#1C1D21]">{selectedYear}년 공휴일이 등록되지 않았습니다</p>
           <p className="mt-1 text-xs text-[#8181A5]">

@@ -18,6 +18,7 @@ import { AnalyticsPageLayout } from '@/components/analytics/AnalyticsPageLayout'
 import { ChartCard } from '@/components/analytics/ChartCard'
 import { EmptyChart } from '@/components/analytics/EmptyChart'
 import type { RecruitmentData } from '@/lib/analytics/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 const STAGE_ORDER = ['APPLIED', 'SCREENING', 'INTERVIEW', 'OFFER', 'HIRED']
 
@@ -116,10 +117,10 @@ export default function RecruitmentAnalyticsClient() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-[#F5F5F5] bg-[#FAFAFA]">
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#666]">{t('posting')}</th>
+                  <tr className={TABLE_STYLES.header}>
+                    <th className={TABLE_STYLES.headerCell}>{t('posting')}</th>
                     {STAGE_ORDER.map((s) => (
-                      <th key={s} className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">
+                      <th key={s} className={TABLE_STYLES.headerCell}>
                         {STAGE_LABELS[s] ?? s}
                       </th>
                     ))}
@@ -127,7 +128,7 @@ export default function RecruitmentAnalyticsClient() {
                 </thead>
                 <tbody>
                   {[...postingMap.entries()].map(([id, { title, stages }]) => (
-                    <tr key={id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                    <tr key={id} className={TABLE_STYLES.header}>
                       <td className="px-4 py-3 font-medium text-[#333]">{title}</td>
                       {STAGE_ORDER.map((s) => (
                         <td key={s} className="px-4 py-3 text-center text-[#555]">

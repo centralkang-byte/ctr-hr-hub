@@ -11,6 +11,7 @@ import { Search, Plus, ChevronLeft, ChevronRight, Briefcase, Filter } from 'luci
 import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Label Maps ──────────────────────────────────────────
 
@@ -161,14 +162,14 @@ export default function RecruitmentListClient({ user }: Props) {
         <table className="w-full">
           <thead>
             <tr className="border-b border-[#E8E8E8]">
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('postingTitleCol')}</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('department')}</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('jobGrade')}</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('employmentType')}</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('headcountColumn')}</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('applicantCountCol')}</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('statusCol')}</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('registeredDate')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('postingTitleCol')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('department')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('jobGrade')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('employmentType')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('headcountColumn')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('applicantCountCol')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('statusCol')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('registeredDate')}</th>
             </tr>
           </thead>
           <tbody>

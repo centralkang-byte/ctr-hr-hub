@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Loader2, Info } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Input } from '@/components/ui/input'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface MatrixCell { id?: string; gradeKey: string; comparatioBand: string; minPct: number | null; maxPct: number | null; recommendedPct: number | null }
 interface Props { companyId: string | null }
@@ -37,15 +38,15 @@ export function MeritMatrixTab({ companyId }: Props) {
         <p className="text-sm text-[#8181A5]">등급 × 밴드위치 기반 연봉 인상률 (%)</p>
       </div>
       {matrix.length > 0 ? (
-        <div className="overflow-hidden rounded-lg border border-[#F0F0F3]">
+        <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
           <table className="w-full">
-            <thead><tr className="border-b border-[#F0F0F3] bg-[#F5F5FA]">
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-[#8181A5]">등급</th>
+            <thead><tr className={TABLE_STYLES.header}>
+              <th className={TABLE_STYLES.headerCell}>등급</th>
               {bands.map((b) => <th key={b} className="px-4 py-3 text-center text-xs font-medium uppercase text-[#8181A5]">{BAND_LABELS[b]} ({b})</th>)}
             </tr></thead>
             <tbody className="divide-y divide-[#F0F0F3]">{grades.map((g) => (
-              <tr key={g} className="hover:bg-[#F5F5FA]">
-                <td className="px-4 py-3 text-sm font-medium text-[#1C1D21]">{GRADE_LABELS[g]} ({g})</td>
+              <tr key={g} className={TABLE_STYLES.row}>
+                <td className={TABLE_STYLES.cell}>{GRADE_LABELS[g]} ({g})</td>
                 {bands.map((b) => { const c = getCell(g, b); return (
                   <td key={b} className="px-4 py-3 text-center">
                     <div className="flex items-center justify-center gap-1 text-sm">
@@ -63,7 +64,7 @@ export function MeritMatrixTab({ companyId }: Props) {
           </table>
         </div>
       ) : (
-        <div className="rounded-lg border border-dashed border-[#F0F0F3] py-12 text-center">
+        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
           <Info className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">인상률 매트릭스가 설정되지 않았습니다</p>
         </div>
       )}

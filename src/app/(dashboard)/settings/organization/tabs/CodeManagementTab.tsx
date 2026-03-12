@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Loader2, Plus, Hash } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface EnumOption { id: string; enumGroup: string; optionKey: string; label: string; color?: string; sortOrder: number }
 interface Props { companyId: string | null }
@@ -33,16 +34,16 @@ export function CodeManagementTab({ companyId }: Props) {
       {Object.keys(grouped).length > 0 ? Object.entries(grouped).sort(([a],[b]) => a.localeCompare(b)).map(([group, items]) => (
         <div key={group}>
           <h4 className="mb-2 text-sm font-semibold text-[#8181A5]">{group} ({items.length})</h4>
-          <div className="overflow-hidden rounded-lg border border-[#F0F0F3]">
+          <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
             <table className="w-full">
-              <thead><tr className="border-b border-[#F0F0F3] bg-[#F5F5FA]">
-                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-[#8181A5]">키</th>
-                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-[#8181A5]">라벨</th>
-                <th className="px-4 py-2 text-center text-xs font-medium uppercase text-[#8181A5]">색상</th>
-                <th className="px-4 py-2 text-center text-xs font-medium uppercase text-[#8181A5]">순서</th>
+              <thead><tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>키</th>
+                <th className={TABLE_STYLES.headerCell}>라벨</th>
+                <th className={TABLE_STYLES.headerCell}>색상</th>
+                <th className={TABLE_STYLES.headerCell}>순서</th>
               </tr></thead>
               <tbody className="divide-y divide-[#F0F0F3]">{items.sort((a,b) => a.sortOrder - b.sortOrder).map((o) => (
-                <tr key={o.id} className="hover:bg-[#F5F5FA]">
+                <tr key={o.id} className={TABLE_STYLES.row}>
                   <td className="px-4 py-2 text-sm font-medium text-[#5E81F4]">{o.optionKey}</td>
                   <td className="px-4 py-2 text-sm text-[#1C1D21]">{o.label}</td>
                   <td className="px-4 py-2 text-center">{o.color ? <span className="inline-block h-4 w-4 rounded-full" style={{ backgroundColor: o.color }} /> : '—'}</td>
@@ -53,7 +54,7 @@ export function CodeManagementTab({ companyId }: Props) {
           </div>
         </div>
       )) : (
-        <div className="rounded-lg border border-dashed border-[#F0F0F3] py-12 text-center">
+        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
           <Hash className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">등록된 코드가 없습니다</p>
         </div>
       )}

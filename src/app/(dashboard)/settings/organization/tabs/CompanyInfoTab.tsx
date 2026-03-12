@@ -6,6 +6,7 @@ import { apiClient } from '@/lib/api'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface Company {
   id: string
@@ -44,32 +45,32 @@ export function CompanyInfoTab({ companyId }: Props) {
       </div>
 
       {companies.length > 0 ? (
-        <div className="overflow-hidden rounded-lg border border-[#F0F0F3]">
+        <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[#F0F0F3] bg-[#F5F5FA]">
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">코드</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">법인명</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">국가</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">통화</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">타임존</th>
+              <tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>코드</th>
+                <th className={TABLE_STYLES.headerCell}>법인명</th>
+                <th className={TABLE_STYLES.headerCell}>국가</th>
+                <th className={TABLE_STYLES.headerCell}>통화</th>
+                <th className={TABLE_STYLES.headerCell}>타임존</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F0F0F3]">
               {companies.map((c) => (
                 <tr key={c.id} className="hover:bg-[#F5F5FA] transition-colors">
                   <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{c.code}</td>
-                  <td className="px-4 py-3 text-sm text-[#1C1D21]">{c.name}</td>
-                  <td className="px-4 py-3 text-sm text-[#1C1D21]">{c.country}</td>
-                  <td className="px-4 py-3 text-sm text-[#8181A5]">{c.currency}</td>
-                  <td className="px-4 py-3 text-sm text-[#8181A5]">{c.timezone ?? '—'}</td>
+                  <td className={TABLE_STYLES.cell}>{c.name}</td>
+                  <td className={TABLE_STYLES.cell}>{c.country}</td>
+                  <td className={TABLE_STYLES.cellMuted}>{c.currency}</td>
+                  <td className={TABLE_STYLES.cellMuted}>{c.timezone ?? '—'}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       ) : (
-        <div className="rounded-lg border border-dashed border-[#F0F0F3] py-12 text-center">
+        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
           <Building2 className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" />
           <p className="text-sm font-medium text-[#1C1D21]">등록된 법인이 없습니다</p>
         </div>

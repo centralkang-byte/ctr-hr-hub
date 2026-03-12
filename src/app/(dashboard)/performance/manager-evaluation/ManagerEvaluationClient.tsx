@@ -292,7 +292,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                     {tab === 'mbo' && (
                         <div className="space-y-4">
                             {member.goals.map((goal) => (
-                                <div key={goal.id} className="rounded-lg border border-[#F0F0F3] p-4 space-y-2">
+                                <div key={goal.id} className="rounded-xl border border-[#F0F0F3] p-4 space-y-2">
                                     <div className="flex items-center justify-between">
                                         <div>
                                             <p className="text-sm font-medium text-[#1C1D21]">{goal.title} ({goal.weight}%)</p>
@@ -315,7 +315,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                     {tab === 'bei' && (
                         <div className="space-y-4">
                             {CTR_VALUES.map((v) => (
-                                <div key={v.key} className="rounded-lg border border-[#F0F0F3] p-4 space-y-2">
+                                <div key={v.key} className="rounded-xl border border-[#F0F0F3] p-4 space-y-2">
                                     <div className="flex items-center justify-between">
                                         <span className="text-sm font-medium text-[#1C1D21]">{v.label}</span>
                                         <Stars value={beiScores[v.key]?.score ?? 3}
@@ -334,7 +334,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                             {peerResults.length === 0 ? (
                                 <p className="py-8 text-center text-sm text-[#8181A5]">동료평가 결과가 없습니다.</p>
                             ) : peerResults.map((r, i) => (
-                                <div key={i} className="rounded-lg border border-[#F0F0F3] p-4">
+                                <div key={i} className="rounded-xl border border-[#F0F0F3] p-4">
                                     <p className="mb-2 text-sm font-medium text-[#1C1D21]">평가자: {r.reviewerName}</p>
                                     <div className="mb-2 grid grid-cols-4 gap-2 text-xs text-[#8181A5]">
                                         <span>도전: {r.scoreChallenge}/5</span>
@@ -351,11 +351,11 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                     {tab === 'summary' && (
                         <div className="space-y-4">
                             <div className="grid grid-cols-3 gap-4">
-                                <div className="rounded-lg border border-[#F0F0F3] p-3 text-center">
+                                <div className="rounded-xl border border-[#F0F0F3] p-3 text-center">
                                     <p className="text-xs text-[#8181A5]">MBO (60%)</p>
                                     <p className="text-xl font-bold text-[#1C1D21]">{mboAvg.toFixed(1)}</p>
                                 </div>
-                                <div className="rounded-lg border border-[#F0F0F3] p-3 text-center">
+                                <div className="rounded-xl border border-[#F0F0F3] p-3 text-center">
                                     <p className="text-xs text-[#8181A5]">BEI (40%)</p>
                                     <p className="text-xl font-bold text-[#1C1D21]">{beiAvg.toFixed(1)}</p>
                                 </div>
@@ -365,7 +365,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                                 </div>
                             </div>
 
-                            <div className="rounded-lg border border-[#F0F0F3] p-4">
+                            <div className="rounded-xl border border-[#F0F0F3] p-4">
                                 <label className="mb-2 block text-sm font-medium text-[#1C1D21]">매니저 최종 등급</label>
                                 <select value={finalGrade} onChange={(e) => setFinalGrade(e.target.value)}
                                     className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none">

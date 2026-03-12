@@ -1,6 +1,6 @@
 # SHARED.md — Project State (Single Source of Truth)
 
-> **Last Updated:** 2026-03-12 (Q-1 — Design Tokens + Utilities + Animation + UX Charter)
+> **Last Updated:** 2026-03-12 (Q-2a — Global Fixes + Table Pattern Bulk Update)
 > **Project Path:** `/Users/sangwoo/Documents/VibeCoding/HR_Hub/ctr-hr-hub`
 
 ---
@@ -58,6 +58,7 @@
 | **H-3** (Audit Trail + Legacy Cleanup: 39 legacy pages removed, 10 orphaned components deleted, settings audit log, AuditLogTab rewrite) | ✅ Complete |
 | **Q-0** (Full Page Scan: 152 pages cataloged, 25-checkpoint Layer 3 analysis, 13 events + 11 nudges mapped, HR calendar generated) | ✅ Complete |
 | **Q-1** (Design Tokens + Utilities + Animation + UX Charter: 30 new files, 11 style constants, 4 format utils, 4 UI components, 2 hooks, 6 animation files, 3 docs) | ✅ Complete |
+| **Q-2a** (Global Fixes + Table Pattern: blue-*→primary 15→0, rounded-lg→xl on cards, TABLE_STYLES applied to 68 table files with 497 replacements) | ✅ Complete |
 
 ---
 
@@ -782,4 +783,23 @@ New `*FromSettings` async variants added alongside. Callers migrate incrementall
 - **Dependency**: framer-motion (needs manual install: `npm install framer-motion`)
 - **TypeScript**: 0 errors
 
-### Next: Q-2 pattern-based bulk fixes (table → form → modal → card → chart → badge)
+### Next: Q-2b pattern-based bulk fixes (form → modal → card → chart → badge)
+
+---
+
+## Q-2a: Global Fixes + Table Pattern — ✅ COMPLETE (2026-03-12)
+
+### Phase A: Global Fixes
+- **A1**: `rounded-lg` → `rounded-xl` on card containers (129→7 remaining, 7 are buttons/inputs)
+- **A2**: `blue-*` Tailwind → `primary` token (15→0 — all replaced)
+- **A3**: Debug badges — none found (Next.js dev overlay only)
+
+### Phase B: Table Pattern (68 files, 497 TABLE_STYLES usages)
+- `TABLE_STYLES.header` on all table header rows
+- `TABLE_STYLES.headerCell` / `headerCellRight` on 221+ th elements
+- `TABLE_STYLES.row` / `rowClickable` on data rows
+- `TABLE_STYLES.cell` / `cellRight` / `cellMuted` on td elements
+- 13 special th remaining (sticky headers, width-constrained, etc.)
+- **TypeScript**: 0 errors
+
+### Next: Q-2b form + modal pattern

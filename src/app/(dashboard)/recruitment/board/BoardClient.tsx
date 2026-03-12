@@ -504,7 +504,7 @@ export default function BoardClient({ user }: Props) {
                               handleDragStart(e, app.id, posting.id)
                             }
                             onDragEnd={handleDragEnd}
-                            className={`group bg-white border border-[#F0F0F3] rounded-lg p-2.5 cursor-grab active:cursor-grabbing transition-all duration-150 hover:border-[#C5C5D0] hover:shadow-sm ${
+                            className={`group bg-white border border-[#F0F0F3] rounded-xl p-2.5 cursor-grab active:cursor-grabbing transition-all duration-150 hover:border-[#C5C5D0] hover:shadow-sm ${
                               draggingApplicationId === app.id
                                 ? 'opacity-40 scale-95'
                                 : 'opacity-100'
@@ -532,7 +532,7 @@ export default function BoardClient({ user }: Props) {
 
                         {/* Empty slot placeholder */}
                         {cards.length === 0 && (
-                          <div className="h-10 rounded-lg border border-dashed border-[#E8E8EF] flex items-center justify-center">
+                          <div className="h-10 rounded-xl border border-dashed border-[#E8E8EF] flex items-center justify-center">
                             <span className="text-[10px] text-[#C5C5D0]">비어 있음</span>
                           </div>
                         )}

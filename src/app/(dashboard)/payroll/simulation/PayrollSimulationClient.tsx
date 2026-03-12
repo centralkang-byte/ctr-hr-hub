@@ -6,6 +6,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Cart
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import type {
+import { TABLE_STYLES } from '@/lib/styles'
   Company, Department, SimMode, BulkTargetType,
   SearchEmployee, SimResponse, EmployeeSimResult, PayDetail
 } from './types'
@@ -18,7 +19,7 @@ const signedKRW = (n: number) => n === 0 ? '₩0' : `${n > 0 ? '+' : '-'}${fmtKR
 const pctStr = (r: number) => `${r >= 0 ? '+' : ''}${(r * 100).toFixed(1)}%`
 
 function diffColor(n: number) {
-  if (n > 0) return 'text-blue-600'
+  if (n > 0) return 'text-primary'
   if (n < 0) return 'text-red-600'
   return 'text-[#8181A5]'
 }
@@ -37,7 +38,7 @@ function KPICard({ label, value, diff, rate, variant }: {
 }) {
   const badgeColor = !rate ? '' :
     variant === 'cost' ? 'bg-red-50 text-red-600' :
-      rate.startsWith('-') ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'
+      rate.startsWith('-') ? 'bg-green-50 text-green-600' : 'bg-primary/5 text-primary'
 
   return (
     <div className="bg-white rounded-xl border border-[#F0F0F3] p-4">
@@ -274,7 +275,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center">
+          <div className="w-9 h-9 bg-primary/5 rounded-lg flex items-center justify-center">
             <Calculator className="w-5 h-5 text-[#5E81F4]" />
           </div>
           <div>
@@ -562,7 +563,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
                     </thead>
                     <tbody>
                       {sm.byDepartment.map(d => (
-                        <tr key={d.department} className="border-b border-[#F0F0F3] hover:bg-[#FAFAFA]">
+                        <tr key={d.department} className={TABLE_STYLES.header}>
                           <td className="py-2.5">{d.department}</td>
                           <td className="py-2.5 text-right">{d.employeeCount}명</td>
                           <td className="py-2.5 text-right font-mono">{fmtKRW(d.currentGross)}</td>

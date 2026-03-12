@@ -6,6 +6,7 @@ import { apiClient } from '@/lib/api'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/use-toast'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface NontaxableLimit {
   code: string
@@ -112,16 +113,16 @@ export function TaxFreeTab({ companyId }: Props) {
         <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
         <p className="text-xs text-[#8181A5]">세법 개정 시 관리자가 직접 한도액을 수정할 수 있습니다. 변경 사항은 급여 계산에 즉시 반영됩니다.</p>
       </div>
-      <div className="overflow-hidden rounded-lg border border-[#F0F0F3]">
-        <table className="w-full"><thead><tr className="border-b border-[#F0F0F3] bg-[#F5F5FA]">
-          <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">코드</th>
-          <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">항목</th>
-          <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-[#8181A5]">한도액 (월)</th>
-          <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">근거</th>
+      <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
+        <table className="w-full"><thead><tr className={TABLE_STYLES.header}>
+          <th className={TABLE_STYLES.headerCell}>코드</th>
+          <th className={TABLE_STYLES.headerCell}>항목</th>
+          <th className={TABLE_STYLES.headerCellRight}>한도액 (월)</th>
+          <th className={TABLE_STYLES.headerCell}>근거</th>
         </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{limits.map((l, i) => (
-          <tr key={l.code} className="hover:bg-[#F5F5FA]">
+          <tr key={l.code} className={TABLE_STYLES.row}>
             <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{l.code}</td>
-            <td className="px-4 py-3 text-sm font-medium text-[#1C1D21]">{l.label}</td>
+            <td className={TABLE_STYLES.cell}>{l.label}</td>
             <td className="px-4 py-3 text-right">
               <Input
                 type="number"
@@ -134,7 +135,7 @@ export function TaxFreeTab({ companyId }: Props) {
                 className="ml-auto w-32 text-right"
               />
             </td>
-            <td className="px-4 py-3 text-sm text-[#8181A5]">{l.note}</td>
+            <td className={TABLE_STYLES.cellMuted}>{l.note}</td>
           </tr>
         ))}</tbody></table>
       </div>

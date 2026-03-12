@@ -16,6 +16,7 @@ import {
     Layers,
 } from 'lucide-react'
 import type { SessionUser } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface Employee {
     id: string

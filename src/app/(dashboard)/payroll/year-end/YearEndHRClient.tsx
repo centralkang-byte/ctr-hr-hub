@@ -16,6 +16,7 @@ import {
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { ROLE } from '@/lib/constants'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ─────────────────────────────────────────────────
 
@@ -569,8 +570,8 @@ export default function YearEndHRClient({ user, defaultYear }: YearEndHRClientPr
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#FAFAFA] border-b border-[#E8E8E8]">
-                <th className="px-4 py-3 text-left">
+              <tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>
                   <input
                     type="checkbox"
                     className="w-4 h-4 rounded border-[#D4D4D4] text-[#00C853]"
@@ -591,7 +592,7 @@ export default function YearEndHRClient({ user, defaultYear }: YearEndHRClientPr
                   (h) => (
                     <th
                       key={h}
-                      className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider"
+                      className={TABLE_STYLES.headerCell}
                     >
                       {h}
                     </th>
@@ -619,7 +620,7 @@ export default function YearEndHRClient({ user, defaultYear }: YearEndHRClientPr
                   return (
                     <tr
                       key={s.id}
-                      className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA] cursor-pointer"
+                      className={TABLE_STYLES.header}
                       onClick={() => setSelectedSettlement(s)}
                     >
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>

@@ -12,6 +12,7 @@ import {
 import Link from 'next/link'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface CompanyStat {
   companyId: string
@@ -292,20 +293,20 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-[#FAFAFA] border-b border-[#F5F5F5]">
-                    <th className="px-4 py-3 text-left text-xs text-[#666] font-medium">법인</th>
-                    <th className="px-4 py-3 text-left text-xs text-[#666] font-medium">통화</th>
-                    <th className="px-4 py-3 text-right text-xs text-[#666] font-medium">환율 (→KRW)</th>
-                    <th className="px-4 py-3 text-right text-xs text-[#666] font-medium">총지급 (현지)</th>
-                    <th className="px-4 py-3 text-right text-xs text-[#666] font-medium">총지급 (KRW)</th>
-                    <th className="px-4 py-3 text-right text-xs text-[#666] font-medium">인원</th>
-                    <th className="px-4 py-3 text-right text-xs text-[#666] font-medium">인당 평균 (KRW)</th>
-                    <th className="px-4 py-3 text-center text-xs text-[#666] font-medium">데이터</th>
+                  <tr className={TABLE_STYLES.header}>
+                    <th className={TABLE_STYLES.headerCell}>법인</th>
+                    <th className={TABLE_STYLES.headerCell}>통화</th>
+                    <th className={TABLE_STYLES.headerCellRight}>환율 (→KRW)</th>
+                    <th className={TABLE_STYLES.headerCellRight}>총지급 (현지)</th>
+                    <th className={TABLE_STYLES.headerCellRight}>총지급 (KRW)</th>
+                    <th className={TABLE_STYLES.headerCellRight}>인원</th>
+                    <th className={TABLE_STYLES.headerCellRight}>인당 평균 (KRW)</th>
+                    <th className={TABLE_STYLES.headerCell}>데이터</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#F5F5F5]">
                   {data.companies.map(co => (
-                    <tr key={co.companyId} className="hover:bg-[#FAFAFA]">
+                    <tr key={co.companyId} className={TABLE_STYLES.row}>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <span className="text-lg">{FLAG[co.companyCode] ?? '🏢'}</span>
@@ -342,7 +343,7 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr className="bg-[#FAFAFA] border-t border-[#E8E8E8]">
+                  <tr className={TABLE_STYLES.header}>
                     <td colSpan={4} className="px-4 py-3 font-semibold text-sm text-[#1A1A1A]">합계</td>
                     <td className="px-4 py-3 text-right font-mono font-bold text-[#1A1A1A]">₩{fmtBillion(data.totalKRW)}</td>
                     <td className="px-4 py-3 text-right font-semibold text-[#1A1A1A]">{data.totalHeadcount}명</td>

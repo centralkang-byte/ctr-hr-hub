@@ -26,7 +26,7 @@ export function IntegrationsTab({ companyId }: Props) {
         <p className="text-xs text-[#8181A5]">ℹ️ 연동 기능은 향후 업데이트에서 지원 예정입니다.</p>
       </div>
       <div className="space-y-3">{INTEGRATIONS.map((int) => (
-        <div key={int.key} className="flex items-center gap-4 rounded-lg border border-[#F0F0F3] p-4 hover:bg-[#F5F5FA] transition-colors">
+        <div key={int.key} className="flex items-center gap-4 rounded-xl border border-[#F0F0F3] p-4 hover:bg-[#F5F5FA] transition-colors">
           <span className="text-2xl">{int.icon}</span>
           <div className="flex-1">
             <div className="flex items-center gap-2">

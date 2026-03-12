@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface Anomaly {
   rule: string
@@ -75,7 +76,7 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
       <div className="mt-4 overflow-x-auto">
         <table className="w-full text-xs">
           <thead>
-            <tr className="bg-[#FAFAFA] border-b border-[#F5F5F5]">
+            <tr className={TABLE_STYLES.header}>
               {Object.keys(sample).filter(k => k !== 'employeeId').map(k => (
                 <th key={k} className="px-3 py-2 text-left text-[#666] font-medium capitalize">
                   {k.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}
@@ -87,7 +88,7 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
             {details.slice(0, 8).map((row, i) => {
               const r = row as Record<string, unknown>
               return (
-                <tr key={i} className="hover:bg-[#FAFAFA]">
+                <tr key={i} className={TABLE_STYLES.row}>
                   {Object.entries(r).filter(([k]) => k !== 'employeeId').map(([k, v]) => (
                     <td key={k} className="px-3 py-2 text-[#555]">
                       {typeof v === 'number' ? v.toLocaleString() : String(v ?? '—')}

@@ -33,6 +33,7 @@ import {
 } from '@/components/ui/dialog'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -498,7 +499,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
                 <thead>
-                  <tr className="bg-[#FAFAFA]">
+                  <tr className={TABLE_STYLES.header}>
                     <th className="sticky left-0 z-10 bg-[#FAFAFA] px-4 py-3 text-left text-xs font-medium text-[#999] font-semibold">
                       직원
                     </th>

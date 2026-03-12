@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Loader2, BookOpen, Lock } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface Competency { id: string; name: string; nameEn?: string; category: string; description?: string; _count?: { indicators?: number } }
 interface Props { companyId: string | null }
@@ -33,23 +34,23 @@ export function CompetencyTab({ companyId }: Props) {
         </div>
       </div>
       {items.length > 0 ? (
-        <div className="overflow-hidden rounded-lg border border-[#F0F0F3]">
-          <table className="w-full"><thead><tr className="border-b border-[#F0F0F3] bg-[#F5F5FA]">
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">역량명</th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">영문</th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">카테고리</th>
-            <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#8181A5]">행동지표</th>
+        <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
+          <table className="w-full"><thead><tr className={TABLE_STYLES.header}>
+            <th className={TABLE_STYLES.headerCell}>역량명</th>
+            <th className={TABLE_STYLES.headerCell}>영문</th>
+            <th className={TABLE_STYLES.headerCell}>카테고리</th>
+            <th className={TABLE_STYLES.headerCell}>행동지표</th>
           </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{items.map((c) => (
-            <tr key={c.id} className="hover:bg-[#F5F5FA]">
-              <td className="px-4 py-3 text-sm font-medium text-[#1C1D21]">{c.name}</td>
-              <td className="px-4 py-3 text-sm text-[#8181A5]">{c.nameEn ?? '—'}</td>
-              <td className="px-4 py-3 text-sm text-[#8181A5]">{c.category}</td>
+            <tr key={c.id} className={TABLE_STYLES.row}>
+              <td className={TABLE_STYLES.cell}>{c.name}</td>
+              <td className={TABLE_STYLES.cellMuted}>{c.nameEn ?? '—'}</td>
+              <td className={TABLE_STYLES.cellMuted}>{c.category}</td>
               <td className="px-4 py-3 text-center text-sm text-[#8181A5]">{c._count?.indicators ?? 0}개</td>
             </tr>
           ))}</tbody></table>
         </div>
       ) : (
-        <div className="rounded-lg border border-dashed border-[#F0F0F3] py-12 text-center">
+        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
           <BookOpen className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">등록된 역량이 없습니다</p>
         </div>
       )}

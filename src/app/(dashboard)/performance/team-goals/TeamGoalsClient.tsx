@@ -340,7 +340,7 @@ export default function TeamGoalsClient({ user }: { user: SessionUser }) {
                         return (
                           <div
                             key={goal.id}
-                            className="rounded-lg border border-[#E8E8E8] bg-white p-4"
+                            className="rounded-xl border border-[#E8E8E8] bg-white p-4"
                           >
                             <div className="flex items-start justify-between gap-4">
                               {/* Goal info */}

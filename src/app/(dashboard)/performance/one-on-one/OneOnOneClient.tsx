@@ -7,6 +7,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { apiClient } from '@/lib/api'
 import { useSession } from 'next-auth/react'
 import { ROLE } from '@/lib/constants'
+import { TABLE_STYLES } from '@/lib/styles'
 
 
 // ─── Types ───────────────────────────────────────────────
@@ -233,13 +234,13 @@ export default function OneOnOneClient() {
                 <table className="w-full">
                   <thead className="bg-[#FAFAFA]">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">
+                      <th className={TABLE_STYLES.headerCell}>
                         {isManager ? '팀원' : '매니저'}
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">일시</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">유형</th>
+                      <th className={TABLE_STYLES.headerCell}>일시</th>
+                      <th className={TABLE_STYLES.headerCell}>유형</th>
                       {isManager && (
-                        <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">액션 미완료</th>
+                        <th className={TABLE_STYLES.headerCell}>액션 미완료</th>
                       )}
                     </tr>
                   </thead>
@@ -249,7 +250,7 @@ export default function OneOnOneClient() {
                       return (
                         <tr
                           key={m.id}
-                          className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA] cursor-pointer"
+                          className={TABLE_STYLES.header}
                           onClick={() => router.push(`/performance/one-on-one/${m.id}`)}
                         >
                           <td className="px-4 py-3 text-sm text-[#1A1A1A]">

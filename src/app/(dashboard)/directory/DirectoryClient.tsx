@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useDebounce } from '@/hooks/useDebounce'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface DirectoryEmployee {
   id: string
@@ -228,20 +229,20 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
         <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#FAFAFA] border-b border-[#E8E8E8]">
-                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">이름</th>
-                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">부서</th>
-                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">직급</th>
-                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">법인</th>
-                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">연락처</th>
-                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">스킬</th>
+              <tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>이름</th>
+                <th className={TABLE_STYLES.headerCell}>부서</th>
+                <th className={TABLE_STYLES.headerCell}>직급</th>
+                <th className={TABLE_STYLES.headerCell}>법인</th>
+                <th className={TABLE_STYLES.headerCell}>연락처</th>
+                <th className={TABLE_STYLES.headerCell}>스킬</th>
               </tr>
             </thead>
             <tbody>
               {employees.map((emp) => (
                 <tr
                   key={emp.id}
-                  className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA] cursor-pointer"
+                  className={TABLE_STYLES.header}
                   onClick={() => setSelectedEmployee(emp)}
                 >
                   <td className="px-4 py-3">

@@ -687,7 +687,7 @@ function ShiftCell({
 function EmptyCell({ isDropTarget }: { isDropTarget: boolean }) {
   return (
     <div
-      className={`flex h-12 w-full items-center justify-center rounded-lg border border-dashed transition-colors ${
+      className={`flex h-12 w-full items-center justify-center rounded-xl border border-dashed transition-colors ${
         isDropTarget
           ? 'border-[#5E81F4] bg-[#5E81F4]/5'
           : 'border-[#F0F0F3] bg-transparent hover:border-[#C4C4D4] hover:bg-[#F5F5FA]'

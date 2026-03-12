@@ -194,7 +194,7 @@ export default function SeveranceInterimForm({ onClose, onSuccess }: SeveranceIn
 
           {/* Pre-calculation Result */}
           {form.employeeId && (
-            <div className="bg-[#FAFAFA] rounded-lg border border-[#E8E8E8] p-4">
+            <div className="bg-[#FAFAFA] rounded-xl border border-[#E8E8E8] p-4">
               <div className="flex items-center gap-2 mb-3">
                 <Calculator className="w-4 h-4 text-[#00C853]" />
                 <span className="text-sm font-medium text-[#333]">사전 계산 결과</span>

@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { Heart, Clock, CalendarDays, Target, AlertTriangle, Flame } from 'lucide-react'
 import { ChartCard } from '@/components/analytics/ChartCard'
 import type { TeamHealthResponse } from '@/lib/analytics/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 const SCORE_COLORS: Record<string, string> = {
   HEALTHY: '#10B981', CAUTION: '#F59E0B', WARNING: '#F97316', CRITICAL: '#EF4444',

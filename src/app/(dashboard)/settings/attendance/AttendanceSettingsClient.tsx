@@ -72,7 +72,7 @@ function Toggle({
   description?: string
 }) {
   return (
-    <div className="flex items-center justify-between rounded-lg border border-[#E8E8E8] bg-white p-4">
+    <div className="flex items-center justify-between rounded-xl border border-[#E8E8E8] bg-white p-4">
       <div>
         <p className="text-sm font-medium text-[#1A1A1A]">{label}</p>
         {description && <p className="text-xs text-[#666] mt-0.5">{description}</p>}

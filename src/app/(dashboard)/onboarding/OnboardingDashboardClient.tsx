@@ -23,6 +23,7 @@ import { EmptyState } from '@/components/shared/EmptyState'
 import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser, PaginationInfo } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -297,7 +298,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                 <tr className="border-b border-[#F0F0F3]">
                   {[t('employeeName'), t('hireDate'), t('buddy'), t('templateLabel'), t('progress'), t('statusLabel'), t('delayed'), '감정', ''].map(
                     (h) => (
-                      <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5]">{h}</th>
+                      <th key={h} className={TABLE_STYLES.headerCell}>{h}</th>
                     ),
                   )}
                 </tr>
@@ -330,14 +331,14 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-[#F0F0F3]">
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5]">{t('employeeName')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5]">{t('hireDate')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5]">{t('buddy')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5]">{t('templateLabel')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('employeeName')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('hireDate')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('buddy')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('templateLabel')}</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5] w-48">{t('progress')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5]">{t('statusLabel')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5]">{t('delayed')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5]">감정</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('statusLabel')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('delayed')}</th>
+                    <th className={TABLE_STYLES.headerCell}>감정</th>
                     {isHrAdmin && <th className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5] w-24" />}
                   </tr>
                 </thead>
@@ -348,18 +349,18 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                       className={`border-b border-[#F0F0F3] hover:bg-[#F5F5FA] transition-colors cursor-pointer ${row.isDelayed ? 'bg-[#FEF2F2]/30' : ''}`}
                       onClick={() => router.push(`/onboarding/${row.id}`)}
                     >
-                      <td className="px-4 py-3 text-sm font-medium text-[#1C1D21]">
+                      <td className={TABLE_STYLES.cell}>
                         {row.employee.name}
                       </td>
-                      <td className="px-4 py-3 text-sm text-[#8181A5]">
+                      <td className={TABLE_STYLES.cellMuted}>
                         {row.employee.hireDate
                           ? new Date(row.employee.hireDate).toLocaleDateString(
                             'ko-KR',
                           )
                           : '-'}
                       </td>
-                      <td className="px-4 py-3 text-sm text-[#8181A5]">{row.buddy?.name ?? '-'}</td>
-                      <td className="px-4 py-3 text-sm text-[#8181A5]">{row.template.name}</td>
+                      <td className={TABLE_STYLES.cellMuted}>{row.buddy?.name ?? '-'}</td>
+                      <td className={TABLE_STYLES.cellMuted}>{row.template.name}</td>
                       <td className="px-4 py-3">
                         <ProgressBar
                           completed={row.progress.completed}

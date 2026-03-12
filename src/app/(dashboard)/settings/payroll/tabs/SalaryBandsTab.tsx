@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Loader2, Plus, TrendingUp } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface SalaryBand { id: string; minSalary: number; midSalary: number; maxSalary: number; jobGrade?: { code: string; name: string }; jobCategory?: { code: string; name: string } }
 interface Props { companyId: string | null }
@@ -31,17 +32,17 @@ export function SalaryBandsTab({ companyId }: Props) {
         <Button className="bg-[#5E81F4] text-white hover:bg-[#4A6FE0]"><Plus className="mr-2 h-4 w-4" />밴드 추가</Button>
       </div>
       {bands.length > 0 ? (
-        <div className="overflow-hidden rounded-lg border border-[#F0F0F3]">
-          <table className="w-full"><thead><tr className="border-b border-[#F0F0F3] bg-[#F5F5FA]">
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">직급</th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">직종</th>
-            <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-[#8181A5]">최소</th>
-            <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-[#8181A5]">중간</th>
-            <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-[#8181A5]">최대</th>
+        <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
+          <table className="w-full"><thead><tr className={TABLE_STYLES.header}>
+            <th className={TABLE_STYLES.headerCell}>직급</th>
+            <th className={TABLE_STYLES.headerCell}>직종</th>
+            <th className={TABLE_STYLES.headerCellRight}>최소</th>
+            <th className={TABLE_STYLES.headerCellRight}>중간</th>
+            <th className={TABLE_STYLES.headerCellRight}>최대</th>
           </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{bands.map((b) => (
-            <tr key={b.id} className="hover:bg-[#F5F5FA]">
+            <tr key={b.id} className={TABLE_STYLES.row}>
               <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{b.jobGrade?.code ?? '—'} <span className="text-[#8181A5]">{b.jobGrade?.name ?? ''}</span></td>
-              <td className="px-4 py-3 text-sm text-[#8181A5]">{b.jobCategory?.name ?? '—'}</td>
+              <td className={TABLE_STYLES.cellMuted}>{b.jobCategory?.name ?? '—'}</td>
               <td className="px-4 py-3 text-right text-sm text-[#1C1D21]">{fmt(b.minSalary)}</td>
               <td className="px-4 py-3 text-right text-sm font-medium text-[#1C1D21]">{fmt(b.midSalary)}</td>
               <td className="px-4 py-3 text-right text-sm text-[#1C1D21]">{fmt(b.maxSalary)}</td>
@@ -49,7 +50,7 @@ export function SalaryBandsTab({ companyId }: Props) {
           ))}</tbody></table>
         </div>
       ) : (
-        <div className="rounded-lg border border-dashed border-[#F0F0F3] py-12 text-center">
+        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
           <TrendingUp className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">등록된 연봉 밴드가 없습니다</p>
         </div>
       )}

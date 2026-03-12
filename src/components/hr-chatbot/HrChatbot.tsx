@@ -294,7 +294,7 @@ export function HrChatbot() {
       {isOpen && (
         <div
           className={cn(
-            'fixed z-50 flex flex-col overflow-hidden rounded-lg border bg-background shadow-xl',
+            'fixed z-50 flex flex-col overflow-hidden rounded-xl border bg-background shadow-xl',
             'bottom-6 right-6 h-[500px] w-[360px]',
             'max-md:inset-0 max-md:bottom-0 max-md:right-0 max-md:h-full max-md:w-full max-md:rounded-none',
           )}

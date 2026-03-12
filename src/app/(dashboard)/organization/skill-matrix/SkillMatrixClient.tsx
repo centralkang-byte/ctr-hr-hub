@@ -14,6 +14,7 @@ import {
   Users, BookOpen, BarChart2,
 } from 'lucide-react'
 import type { SessionUser } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ── 타입 ──────────────────────────────────────────────────
 
@@ -413,7 +414,7 @@ export default function SkillMatrixClient({
                         </thead>
                         <tbody>
                           {matrixData.matrix.map((emp) => (
-                            <tr key={emp.employeeId} className="hover:bg-[#FAFAFA]">
+                            <tr key={emp.employeeId} className={TABLE_STYLES.row}>
                               <td className="px-3 py-2 border border-[#E8E8E8] whitespace-nowrap">
                                 <button
                                   onClick={() => setRadarTarget(emp.employeeId)}
@@ -479,7 +480,7 @@ export default function SkillMatrixClient({
                         </thead>
                         <tbody>
                           {gapReport.departmentMatrix.map((row) => (
-                            <tr key={row.department.id} className="hover:bg-[#FAFAFA]">
+                            <tr key={row.department.id} className={TABLE_STYLES.row}>
                               <td className="px-3 py-2 border border-[#E8E8E8] whitespace-nowrap">
                                 <p className="font-medium text-[#1A1A1A]">{row.department.name}</p>
                                 <p className="text-[#999]">{row.memberCount}명</p>

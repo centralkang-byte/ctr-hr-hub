@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import { Loader2, Plus, Clock, Users } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface ShiftSlot {
   name: string
@@ -80,25 +81,25 @@ export function ShiftPatternsTab({ companyId }: ShiftPatternsTabProps) {
 
       {/* Table */}
       {patterns.length > 0 ? (
-        <div className="overflow-hidden rounded-lg border border-[#F0F0F3]">
+        <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[#F0F0F3] bg-[#F5F5FA]">
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">코드</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">패턴명</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">유형</th>
-                <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#8181A5]">교대 수</th>
-                <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#8181A5]">주기(일)</th>
-                <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#8181A5]">조 수</th>
-                <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#8181A5]">상태</th>
+              <tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>코드</th>
+                <th className={TABLE_STYLES.headerCell}>패턴명</th>
+                <th className={TABLE_STYLES.headerCell}>유형</th>
+                <th className={TABLE_STYLES.headerCell}>교대 수</th>
+                <th className={TABLE_STYLES.headerCell}>주기(일)</th>
+                <th className={TABLE_STYLES.headerCell}>조 수</th>
+                <th className={TABLE_STYLES.headerCell}>상태</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F0F0F3]">
               {patterns.map((pattern) => (
-                <tr key={pattern.id} className="cursor-pointer transition-colors hover:bg-[#F5F5FA]">
+                <tr key={pattern.id} className={TABLE_STYLES.rowClickable}>
                   <td className="px-4 py-3 text-sm font-mono text-[#5E81F4]">{pattern.code}</td>
-                  <td className="px-4 py-3 text-sm font-medium text-[#1C1D21]">{pattern.name}</td>
-                  <td className="px-4 py-3 text-sm text-[#8181A5]">
+                  <td className={TABLE_STYLES.cell}>{pattern.name}</td>
+                  <td className={TABLE_STYLES.cellMuted}>
                     {pattern.patternType === 'FIXED' ? '고정' : pattern.patternType === 'ROTATING' ? '순환' : pattern.patternType}
                   </td>
                   <td className="px-4 py-3 text-center text-sm text-[#1C1D21]">
@@ -129,7 +130,7 @@ export function ShiftPatternsTab({ companyId }: ShiftPatternsTabProps) {
           </table>
         </div>
       ) : (
-        <div className="rounded-lg border border-dashed border-[#F0F0F3] py-12 text-center">
+        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
           <Clock className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" />
           <p className="text-sm font-medium text-[#1C1D21]">등록된 교대 패턴이 없습니다</p>
           <p className="mt-1 text-xs text-[#8181A5]">

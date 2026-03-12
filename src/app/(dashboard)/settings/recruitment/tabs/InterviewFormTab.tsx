@@ -45,7 +45,7 @@ export function InterviewFormTab({ companyId }: Props) {
         <div key={cat.category}>
           <h4 className="mb-2 text-sm font-semibold text-[#8181A5]">{cat.category}</h4>
           <div className="space-y-1">{cat.items.map((item) => (
-            <div key={item} className="flex items-center gap-3 rounded-lg border border-[#F0F0F3] px-4 py-3 hover:bg-[#F5F5FA]">
+            <div key={item} className="flex items-center gap-3 rounded-xl border border-[#F0F0F3] px-4 py-3 hover:bg-[#F5F5FA]">
               <span className="text-sm text-[#1C1D21]">{item}</span>
             </div>
           ))}</div>

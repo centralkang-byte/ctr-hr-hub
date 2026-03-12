@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Users, Settings, ClipboardList, BarChart3 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -184,18 +185,18 @@ export default function PeerReviewClient() {
             <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-[#FAFAFA] text-xs text-[#666] font-medium uppercase tracking-wider">
-                    <th className="px-4 py-3 text-left">직원</th>
-                    <th className="px-4 py-3 text-left">부서</th>
-                    <th className="px-4 py-3 text-center">지명 수</th>
-                    <th className="px-4 py-3 text-center">완료</th>
-                    <th className="px-4 py-3 text-center">평균 점수</th>
-                    <th className="px-4 py-3 text-center">상세</th>
+                  <tr className={TABLE_STYLES.header}>
+                    <th className={TABLE_STYLES.headerCell}>직원</th>
+                    <th className={TABLE_STYLES.headerCell}>부서</th>
+                    <th className={TABLE_STYLES.headerCell}>지명 수</th>
+                    <th className={TABLE_STYLES.headerCell}>완료</th>
+                    <th className={TABLE_STYLES.headerCell}>평균 점수</th>
+                    <th className={TABLE_STYLES.headerCell}>상세</th>
                   </tr>
                 </thead>
                 <tbody>
                   {teamResults.employees.map((e) => (
-                    <tr key={e.employee.id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                    <tr key={e.employee.id} className={TABLE_STYLES.header}>
                       <td className="px-4 py-3 text-sm text-[#1A1A1A] font-medium">{e.employee.name}</td>
                       <td className="px-4 py-3 text-sm text-[#555]">{e.employee.department}</td>
                       <td className="px-4 py-3 text-sm text-center text-[#555]">{e.nominationCount}</td>

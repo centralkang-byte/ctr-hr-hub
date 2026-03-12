@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Loader2, FolderTree, ChevronRight } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface Dept {
   id: string
@@ -41,29 +42,29 @@ export function DepartmentsTab({ companyId }: Props) {
       </div>
 
       {depts.length > 0 ? (
-        <div className="overflow-hidden rounded-lg border border-[#F0F0F3]">
+        <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[#F0F0F3] bg-[#F5F5FA]">
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">코드</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">부서명</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">영문명</th>
-                <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#8181A5]">레벨</th>
-                <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#8181A5]">하위 부서</th>
-                <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#8181A5]">소속 인원</th>
+              <tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>코드</th>
+                <th className={TABLE_STYLES.headerCell}>부서명</th>
+                <th className={TABLE_STYLES.headerCell}>영문명</th>
+                <th className={TABLE_STYLES.headerCell}>레벨</th>
+                <th className={TABLE_STYLES.headerCell}>하위 부서</th>
+                <th className={TABLE_STYLES.headerCell}>소속 인원</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F0F0F3]">
               {depts.map((d) => (
                 <tr key={d.id} className="hover:bg-[#F5F5FA] transition-colors">
                   <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{d.code}</td>
-                  <td className="px-4 py-3 text-sm text-[#1C1D21]">
+                  <td className={TABLE_STYLES.cell}>
                     <span style={{ paddingLeft: `${(d.level - 1) * 16}px` }} className="flex items-center gap-1">
                       {d.level > 1 && <ChevronRight className="h-3 w-3 text-[#8181A5]" />}
                       {d.name}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#8181A5]">{d.nameEn ?? '—'}</td>
+                  <td className={TABLE_STYLES.cellMuted}>{d.nameEn ?? '—'}</td>
                   <td className="px-4 py-3 text-center text-sm text-[#8181A5]">L{d.level}</td>
                   <td className="px-4 py-3 text-center text-sm text-[#8181A5]">{d._count?.children ?? 0}</td>
                   <td className="px-4 py-3 text-center text-sm text-[#8181A5]">{d._count?.employees ?? 0}</td>
@@ -73,7 +74,7 @@ export function DepartmentsTab({ companyId }: Props) {
           </table>
         </div>
       ) : (
-        <div className="rounded-lg border border-dashed border-[#F0F0F3] py-12 text-center">
+        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
           <FolderTree className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" />
           <p className="text-sm font-medium text-[#1C1D21]">등록된 부서가 없습니다</p>
         </div>

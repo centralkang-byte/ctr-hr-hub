@@ -57,7 +57,7 @@ function TimelineSkeleton() {
           </div>
           <div className="flex-1 pb-6">
             <div className="h-3 w-24 rounded bg-[#E8E8E8] mb-2" />
-            <div className="rounded-lg border border-[#E8E8E8] p-4">
+            <div className="rounded-xl border border-[#E8E8E8] p-4">
               <div className="h-4 w-32 rounded bg-[#E8E8E8] mb-1" />
               <div className="h-3 w-48 rounded bg-[#E8E8E8]" />
             </div>

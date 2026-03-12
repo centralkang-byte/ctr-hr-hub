@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, ChevronRight, AlertTriangle, CheckCircle2, Clock, Users, ShieldAlert } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -180,7 +181,7 @@ export default function CycleDetailClient({ user, cycleId }: { user: SessionUser
 
                     {/* Advance button */}
                     {nextState && (
-                        <div className="mt-6 flex items-center justify-between rounded-lg border border-[#F0F0F3] bg-[#F5F5FA] p-4">
+                        <div className="mt-6 flex items-center justify-between rounded-xl border border-[#F0F0F3] bg-[#F5F5FA] p-4">
                             <div>
                                 <p className="text-sm font-medium text-[#1C1D21]">현재: {PIPELINE_STATES[currentIdx]?.label}</p>
                                 <p className="text-xs text-[#8181A5]">다음: {PIPELINE_STATES[currentIdx + 1]?.label}</p>
@@ -245,13 +246,13 @@ export default function CycleDetailClient({ user, cycleId }: { user: SessionUser
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="bg-[#F5F5FA] text-xs text-[#8181A5] font-medium">
-                                        <th className="px-4 py-3 text-left">이름</th>
-                                        <th className="px-4 py-3 text-left">부서</th>
-                                        <th className="px-4 py-3 text-center">목표</th>
-                                        <th className="px-4 py-3 text-center">체크인</th>
-                                        <th className="px-4 py-3 text-center">자기평가</th>
-                                        <th className="px-4 py-3 text-center">동료평가</th>
-                                        <th className="px-4 py-3 text-center">상태</th>
+                                        <th className={TABLE_STYLES.headerCell}>이름</th>
+                                        <th className={TABLE_STYLES.headerCell}>부서</th>
+                                        <th className={TABLE_STYLES.headerCell}>목표</th>
+                                        <th className={TABLE_STYLES.headerCell}>체크인</th>
+                                        <th className={TABLE_STYLES.headerCell}>자기평가</th>
+                                        <th className={TABLE_STYLES.headerCell}>동료평가</th>
+                                        <th className={TABLE_STYLES.headerCell}>상태</th>
                                     </tr>
                                 </thead>
                                 <tbody>

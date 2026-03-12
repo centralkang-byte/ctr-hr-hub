@@ -27,6 +27,7 @@ import {
 } from '@/components/ui/select'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -235,14 +236,14 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="bg-[#FAFAFA] text-xs text-[#666] font-medium uppercase tracking-wider">
-                        <th className="px-4 py-3 text-left">그룹</th>
-                        <th className="px-4 py-3 text-right">남성 (명)</th>
-                        <th className="px-4 py-3 text-right">여성 (명)</th>
-                        <th className="px-4 py-3 text-right">남성 평균</th>
-                        <th className="px-4 py-3 text-right">여성 평균</th>
-                        <th className="px-4 py-3 text-center">격차</th>
-                        <th className="px-4 py-3 text-center">격차 시각화</th>
+                      <tr className={TABLE_STYLES.header}>
+                        <th className={TABLE_STYLES.headerCell}>그룹</th>
+                        <th className={TABLE_STYLES.headerCellRight}>남성 (명)</th>
+                        <th className={TABLE_STYLES.headerCellRight}>여성 (명)</th>
+                        <th className={TABLE_STYLES.headerCellRight}>남성 평균</th>
+                        <th className={TABLE_STYLES.headerCellRight}>여성 평균</th>
+                        <th className={TABLE_STYLES.headerCell}>격차</th>
+                        <th className={TABLE_STYLES.headerCell}>격차 시각화</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -251,7 +252,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
                         const maleWidth = (row.maleAvgSalary / maxSalary) * 100
                         const femaleWidth = (row.femaleAvgSalary / maxSalary) * 100
                         return (
-                          <tr key={row.group} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                          <tr key={row.group} className={TABLE_STYLES.header}>
                             <td className="px-4 py-3 font-medium">{row.group}</td>
                             <td className="px-4 py-3 text-right">{row.maleCount}</td>
                             <td className="px-4 py-3 text-right">{row.femaleCount}</td>
@@ -304,11 +305,11 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="bg-[#FAFAFA] text-xs text-[#666] font-medium uppercase tracking-wider">
-                        <th className="px-4 py-3 text-left">그룹</th>
-                        <th className="px-4 py-3 text-right">남성 Compa-Ratio</th>
-                        <th className="px-4 py-3 text-right">여성 Compa-Ratio</th>
-                        <th className="px-4 py-3 text-center">차이</th>
+                      <tr className={TABLE_STYLES.header}>
+                        <th className={TABLE_STYLES.headerCell}>그룹</th>
+                        <th className={TABLE_STYLES.headerCellRight}>남성 Compa-Ratio</th>
+                        <th className={TABLE_STYLES.headerCellRight}>여성 Compa-Ratio</th>
+                        <th className={TABLE_STYLES.headerCell}>차이</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -320,7 +321,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
                               ? ((row.maleAvgCompaRatio - row.femaleAvgCompaRatio) * 100).toFixed(1)
                               : '-'
                           return (
-                            <tr key={row.group} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                            <tr key={row.group} className={TABLE_STYLES.header}>
                               <td className="px-4 py-3 font-medium">{row.group}</td>
                               <td className="px-4 py-3 text-right">
                                 {row.maleAvgCompaRatio != null ? `${(row.maleAvgCompaRatio * 100).toFixed(1)}%` : '-'}

@@ -10,6 +10,7 @@ import { Loader2, Plus, Briefcase, X } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface LeaveTypeDef {
   id: string
@@ -77,18 +78,18 @@ export function LeaveTypesTab({ companyId }: LeaveTypesTabProps) {
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-lg border border-[#F0F0F3]">
+      <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-[#F0F0F3] bg-[#F5F5FA]">
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">코드</th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">유형명</th>
-              <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#8181A5]">유급</th>
-              <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#8181A5]">반차</th>
-              <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#8181A5]">증빙</th>
-              <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#8181A5]">최대 연속일</th>
-              <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#8181A5]">사전 신청</th>
-              <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#8181A5]">범위</th>
+            <tr className={TABLE_STYLES.header}>
+              <th className={TABLE_STYLES.headerCell}>코드</th>
+              <th className={TABLE_STYLES.headerCell}>유형명</th>
+              <th className={TABLE_STYLES.headerCell}>유급</th>
+              <th className={TABLE_STYLES.headerCell}>반차</th>
+              <th className={TABLE_STYLES.headerCell}>증빙</th>
+              <th className={TABLE_STYLES.headerCell}>최대 연속일</th>
+              <th className={TABLE_STYLES.headerCell}>사전 신청</th>
+              <th className={TABLE_STYLES.headerCell}>범위</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#F0F0F3]">
@@ -96,7 +97,7 @@ export function LeaveTypesTab({ companyId }: LeaveTypesTabProps) {
               <tr
                 key={type.id}
                 onClick={() => setSelectedType(type)}
-                className="cursor-pointer transition-colors hover:bg-[#F5F5FA]"
+                className={TABLE_STYLES.rowClickable}
               >
                 <td className="px-4 py-3 text-sm font-mono text-[#5E81F4]">{type.code}</td>
                 <td className="px-4 py-3">
@@ -121,7 +122,7 @@ export function LeaveTypesTab({ companyId }: LeaveTypesTabProps) {
                 <td className="px-4 py-3 text-center">
                   <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
                     !type.companyId
-                      ? 'bg-blue-50 text-blue-600'
+                      ? 'bg-primary/5 text-primary'
                       : 'bg-orange-50 text-orange-600'
                   }`}>
                     {!type.companyId ? '글로벌' : '법인'}
@@ -134,7 +135,7 @@ export function LeaveTypesTab({ companyId }: LeaveTypesTabProps) {
       </div>
 
       {typeDefs.length === 0 && (
-        <div className="rounded-lg border border-dashed border-[#F0F0F3] py-12 text-center">
+        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
           <Briefcase className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" />
           <p className="text-sm font-medium text-[#1C1D21]">등록된 휴가 유형이 없습니다</p>
           <p className="mt-1 text-xs text-[#8181A5]">
@@ -210,7 +211,7 @@ function LeaveTypeDetailPanel({
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between rounded-lg border border-[#F0F0F3] px-4 py-3">
+    <div className="flex items-center justify-between rounded-xl border border-[#F0F0F3] px-4 py-3">
       <span className="text-sm text-[#8181A5]">{label}</span>
       <span className="text-sm font-medium text-[#1C1D21]">{value}</span>
     </div>

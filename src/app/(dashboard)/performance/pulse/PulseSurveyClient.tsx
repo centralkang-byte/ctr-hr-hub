@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { BarChart3, Plus, Eye, Trash2, Play, Square, Calendar } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -298,19 +299,19 @@ export default function PulseSurveyClient() {
           <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#FAFAFA] text-xs text-[#666] font-medium uppercase tracking-wider">
-                  <th className="px-4 py-3 text-left">제목</th>
-                  <th className="px-4 py-3 text-left">대상</th>
-                  <th className="px-4 py-3 text-left">기간</th>
-                  <th className="px-4 py-3 text-center">질문</th>
-                  <th className="px-4 py-3 text-center">응답</th>
-                  <th className="px-4 py-3 text-center">상태</th>
-                  <th className="px-4 py-3 text-center">액션</th>
+                <tr className={TABLE_STYLES.header}>
+                  <th className={TABLE_STYLES.headerCell}>제목</th>
+                  <th className={TABLE_STYLES.headerCell}>대상</th>
+                  <th className={TABLE_STYLES.headerCell}>기간</th>
+                  <th className={TABLE_STYLES.headerCell}>질문</th>
+                  <th className={TABLE_STYLES.headerCell}>응답</th>
+                  <th className={TABLE_STYLES.headerCell}>상태</th>
+                  <th className={TABLE_STYLES.headerCell}>액션</th>
                 </tr>
               </thead>
               <tbody>
                 {surveys.map((s) => (
-                  <tr key={s.id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                  <tr key={s.id} className={TABLE_STYLES.header}>
                     <td className="px-4 py-3 text-sm text-[#1A1A1A] font-medium">{s.title}</td>
                     <td className="px-4 py-3 text-sm text-[#555]">{SCOPE_MAP[s.targetScope] ?? s.targetScope}</td>
                     <td className="px-4 py-3 text-xs text-[#666]">

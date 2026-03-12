@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────
 
@@ -784,7 +785,7 @@ export default function PayrollReviewClient({ user: _user, runId }: Props) {
                 <ChevronDown className="h-3.5 w-3.5" />
               </button>
               {showDownloadMenu && (
-                <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-[#E8E8E8] py-1 w-44 z-10">
+                <div className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg border border-[#E8E8E8] py-1 w-44 z-10">
                   {[
                     { label: '전월 대비 비교', href: `/api/v1/payroll/${runId}/export/comparison` },
                     { label: '급여대장', href: `/api/v1/payroll/${runId}/export/ledger` },
@@ -889,16 +890,16 @@ export default function PayrollReviewClient({ user: _user, runId }: Props) {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-[#E8E8E8]">
-                  <th className="px-4 py-3 text-left text-[13px] text-[#999] font-semibold">직원</th>
-                  <th className="px-4 py-3 text-left text-[13px] text-[#999] font-semibold">규칙</th>
-                  <th className="px-4 py-3 text-left text-[13px] text-[#999] font-semibold">등록 사유</th>
-                  <th className="px-4 py-3 text-left text-[13px] text-[#999] font-semibold">등록월</th>
+                  <th className={TABLE_STYLES.headerCell}>직원</th>
+                  <th className={TABLE_STYLES.headerCell}>규칙</th>
+                  <th className={TABLE_STYLES.headerCell}>등록 사유</th>
+                  <th className={TABLE_STYLES.headerCell}>등록월</th>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
               <tbody>
                 {whitelistEntries.map((entry) => (
-                  <tr key={entry.id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                  <tr key={entry.id} className={TABLE_STYLES.header}>
                     <td className="px-4 py-3.5 text-sm font-medium text-[#1A1A1A]">{entry.employee.name}</td>
                     <td className="px-4 py-3.5 text-xs font-mono text-[#555] bg-[#F5F5F5] rounded">{entry.ruleCode}</td>
                     <td className="px-4 py-3.5 text-sm text-[#555]">{entry.whitelistReason ?? '—'}</td>

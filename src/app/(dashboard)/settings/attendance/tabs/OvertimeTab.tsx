@@ -12,6 +12,7 @@ import { apiClient } from '@/lib/api'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface OvertimeTabProps {
   companyId: string | null
@@ -132,21 +133,21 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
       {/* 수당 배율 테이블 */}
       <div>
         <h4 className="mb-3 text-sm font-semibold text-[#1C1D21]">수당 계산 배율</h4>
-        <div className="overflow-hidden rounded-lg border border-[#F0F0F3]">
+        <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[#F0F0F3] bg-[#F5F5FA]">
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">근무 유형</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#8181A5]">설명</th>
-                <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#8181A5]">배율</th>
-                <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#8181A5]">단위</th>
+              <tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>근무 유형</th>
+                <th className={TABLE_STYLES.headerCell}>설명</th>
+                <th className={TABLE_STYLES.headerCell}>배율</th>
+                <th className={TABLE_STYLES.headerCell}>단위</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F0F0F3]">
               {rates.map((rate, idx) => (
-                <tr key={idx} className="hover:bg-[#F5F5FA]">
-                  <td className="px-4 py-3 text-sm font-medium text-[#1C1D21]">{rate.label}</td>
-                  <td className="px-4 py-3 text-sm text-[#8181A5]">{rate.description}</td>
+                <tr key={idx} className={TABLE_STYLES.row}>
+                  <td className={TABLE_STYLES.cell}>{rate.label}</td>
+                  <td className={TABLE_STYLES.cellMuted}>{rate.description}</td>
                   <td className="px-4 py-3 text-center">
                     <Input
                       type="number"
@@ -172,46 +173,46 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
       {/* 법인별 참고 배율 */}
       <div>
         <h4 className="mb-3 text-sm font-semibold text-[#1C1D21]">법인별 참고 배율</h4>
-        <div className="overflow-hidden rounded-lg border border-[#F0F0F3]">
+        <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[#F0F0F3] bg-[#F5F5FA]">
-                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-[#8181A5]">법인</th>
-                <th className="px-4 py-2 text-center text-xs font-medium uppercase text-[#8181A5]">연장</th>
-                <th className="px-4 py-2 text-center text-xs font-medium uppercase text-[#8181A5]">야간 가산</th>
-                <th className="px-4 py-2 text-center text-xs font-medium uppercase text-[#8181A5]">휴일</th>
+              <tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>법인</th>
+                <th className={TABLE_STYLES.headerCell}>연장</th>
+                <th className={TABLE_STYLES.headerCell}>야간 가산</th>
+                <th className={TABLE_STYLES.headerCell}>휴일</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F0F0F3]">
-              <tr className="bg-blue-50/50">
-                <td className="px-4 py-2 font-medium text-[#1C1D21]">🇰🇷 CTR-KR</td>
-                <td className="px-4 py-2 text-center text-[#1C1D21]">1.5배</td>
-                <td className="px-4 py-2 text-center text-[#1C1D21]">+0.5배</td>
-                <td className="px-4 py-2 text-center text-[#1C1D21]">1.5배</td>
+              <tr className="bg-primary/5">
+                <td className={TABLE_STYLES.cell}>🇰🇷 CTR-KR</td>
+                <td className={TABLE_STYLES.cell}>1.5배</td>
+                <td className={TABLE_STYLES.cell}>+0.5배</td>
+                <td className={TABLE_STYLES.cell}>1.5배</td>
               </tr>
               <tr>
-                <td className="px-4 py-2 font-medium text-[#1C1D21]">🇺🇸 CTR-US</td>
-                <td className="px-4 py-2 text-center text-[#1C1D21]">1.5배</td>
+                <td className={TABLE_STYLES.cell}>🇺🇸 CTR-US</td>
+                <td className={TABLE_STYLES.cell}>1.5배</td>
                 <td className="px-4 py-2 text-center text-[#8181A5]">—</td>
-                <td className="px-4 py-2 text-center text-[#1C1D21]">1.5배</td>
+                <td className={TABLE_STYLES.cell}>1.5배</td>
               </tr>
               <tr>
-                <td className="px-4 py-2 font-medium text-[#1C1D21]">🇷🇺 CTR-RU</td>
+                <td className={TABLE_STYLES.cell}>🇷🇺 CTR-RU</td>
                 <td className="px-4 py-2 text-center text-orange-600 font-medium">2.0배</td>
-                <td className="px-4 py-2 text-center text-[#1C1D21]">+0.5배</td>
-                <td className="px-4 py-2 text-center text-[#1C1D21]">2.0배</td>
+                <td className={TABLE_STYLES.cell}>+0.5배</td>
+                <td className={TABLE_STYLES.cell}>2.0배</td>
               </tr>
               <tr>
-                <td className="px-4 py-2 font-medium text-[#1C1D21]">🇻🇳 CTR-VN</td>
-                <td className="px-4 py-2 text-center text-[#1C1D21]">1.5배</td>
+                <td className={TABLE_STYLES.cell}>🇻🇳 CTR-VN</td>
+                <td className={TABLE_STYLES.cell}>1.5배</td>
                 <td className="px-4 py-2 text-center text-orange-600 font-medium">+0.3배</td>
-                <td className="px-4 py-2 text-center text-[#1C1D21]">2.0배</td>
+                <td className={TABLE_STYLES.cell}>2.0배</td>
               </tr>
               <tr>
-                <td className="px-4 py-2 font-medium text-[#1C1D21]">🇲🇽 CTR-MX</td>
+                <td className={TABLE_STYLES.cell}>🇲🇽 CTR-MX</td>
                 <td className="px-4 py-2 text-center text-orange-600 font-medium">2.0배</td>
                 <td className="px-4 py-2 text-center text-orange-600 font-medium">+0.25배</td>
-                <td className="px-4 py-2 text-center text-[#1C1D21]">2.0배</td>
+                <td className={TABLE_STYLES.cell}>2.0배</td>
               </tr>
             </tbody>
           </table>

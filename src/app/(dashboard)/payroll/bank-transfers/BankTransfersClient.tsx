@@ -39,6 +39,7 @@ import {
 } from '@/components/ui/select'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -549,14 +550,14 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
               <div className="overflow-x-auto rounded-lg border">
                 <table className="min-w-full text-sm">
                   <thead>
-                    <tr className="bg-[#FAFAFA]">
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[#666]">사번</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[#666]">이름</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[#666]">계좌번호</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[#666]">예금주</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-[#666]">금액</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-[#666]">상태</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[#666]">비고</th>
+                    <tr className={TABLE_STYLES.header}>
+                      <th className={TABLE_STYLES.headerCell}>사번</th>
+                      <th className={TABLE_STYLES.headerCell}>이름</th>
+                      <th className={TABLE_STYLES.headerCell}>계좌번호</th>
+                      <th className={TABLE_STYLES.headerCell}>예금주</th>
+                      <th className={TABLE_STYLES.headerCellRight}>금액</th>
+                      <th className={TABLE_STYLES.headerCell}>상태</th>
+                      <th className={TABLE_STYLES.headerCell}>비고</th>
                     </tr>
                   </thead>
                   <tbody>

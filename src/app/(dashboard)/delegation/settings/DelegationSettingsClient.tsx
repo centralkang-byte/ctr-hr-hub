@@ -383,7 +383,7 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
                   {historyDelegated.map((d) => (
                     <div
                       key={d.id}
-                      className="flex items-center justify-between rounded-lg border border-[#F0F0F3] bg-[#FAFAFA] p-3"
+                      className="flex items-center justify-between rounded-xl border border-[#F0F0F3] bg-[#FAFAFA] p-3"
                     >
                       <div className="flex items-center gap-3">
                         <User className="h-4 w-4 text-[#8181A5]" />

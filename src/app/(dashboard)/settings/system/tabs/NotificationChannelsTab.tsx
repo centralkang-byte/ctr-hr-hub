@@ -52,7 +52,7 @@ export function NotificationChannelsTab({ companyId }: Props) {
       <div className="space-y-3">{settings.channels.map((ch, i) => {
         const Icon = ICON_MAP[ch.iconKey] ?? Bell
         return (
-          <div key={ch.key} className="flex items-center gap-4 rounded-lg border border-[#F0F0F3] p-4 hover:bg-[#F5F5FA] transition-colors">
+          <div key={ch.key} className="flex items-center gap-4 rounded-xl border border-[#F0F0F3] p-4 hover:bg-[#F5F5FA] transition-colors">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#5E81F4]/10"><Icon className="h-5 w-5 text-[#5E81F4]" /></div>
             <div className="flex-1"><span className="text-sm font-medium text-[#1C1D21]">{ch.label}</span></div>
             <button onClick={() => toggle(i)} className={`relative h-6 w-11 rounded-full transition-colors ${ch.enabled ? 'bg-[#5E81F4]' : 'bg-[#F0F0F3]'}`}>

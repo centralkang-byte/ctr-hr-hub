@@ -43,7 +43,7 @@ export function SettingFieldWithOverride({
         {companySelected && (
           <div className="shrink-0">
             {status === 'global' && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-600">
+              <span className="inline-flex items-center gap-1 rounded-full bg-primary/5 px-2.5 py-1 text-xs font-medium text-primary">
                 <Globe className="h-3 w-3" />
                 글로벌 기본값
               </span>

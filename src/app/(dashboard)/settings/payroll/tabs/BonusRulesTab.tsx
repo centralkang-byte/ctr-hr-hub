@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/api'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface Props { companyId: string | null }
 
@@ -107,22 +108,22 @@ export function BonusRulesTab({ companyId }: Props) {
       </div>
 
       <SettingFieldWithOverride label="성과급 기준" description="성과급 산정 기준" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
-        <select className="rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm" value={settings.bonusType} onChange={(e) => setSettings((p) => ({ ...p, bonusType: e.target.value as BonusSettings['bonusType'] }))}>
+        <select className="rounded-xl border border-[#F0F0F3] px-3 py-2 text-sm" value={settings.bonusType} onChange={(e) => setSettings((p) => ({ ...p, bonusType: e.target.value as BonusSettings['bonusType'] }))}>
           <option value="MONTHLY_SALARY">월 기본급 기준</option>
           <option value="ANNUAL_SALARY">연봉 기준</option>
           <option value="FIXED_AMOUNT">정액</option>
         </select>
       </SettingFieldWithOverride>
 
-      <div className="overflow-hidden rounded-lg border border-[#F0F0F3]">
-        <table className="w-full"><thead><tr className="border-b border-[#F0F0F3] bg-[#F5F5FA]">
-          <th className="px-4 py-3 text-left text-xs font-medium uppercase text-[#8181A5]">등급</th>
-          <th className="px-4 py-3 text-left text-xs font-medium uppercase text-[#8181A5]">라벨</th>
-          <th className="px-4 py-3 text-right text-xs font-medium uppercase text-[#8181A5]">배율 (%)</th>
+      <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
+        <table className="w-full"><thead><tr className={TABLE_STYLES.header}>
+          <th className={TABLE_STYLES.headerCell}>등급</th>
+          <th className={TABLE_STYLES.headerCell}>라벨</th>
+          <th className={TABLE_STYLES.headerCellRight}>배율 (%)</th>
         </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{settings.gradeMultipliers.map((g, i) => (
-          <tr key={g.grade} className="hover:bg-[#F5F5FA]">
+          <tr key={g.grade} className={TABLE_STYLES.row}>
             <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{g.grade}</td>
-            <td className="px-4 py-3 text-sm text-[#1C1D21]">{g.label}</td>
+            <td className={TABLE_STYLES.cell}>{g.label}</td>
             <td className="px-4 py-3 text-right"><Input type="number" value={g.multiplier} onChange={(e) => { const next = structuredClone(settings); next.gradeMultipliers[i].multiplier = Number(e.target.value); setSettings(next) }} className="ml-auto w-24 text-right" /></td>
           </tr>
         ))}</tbody></table>

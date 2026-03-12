@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface Company {
   id: string
@@ -350,16 +351,16 @@ export default function PayrollImportClient({
             <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-[#FAFAFA] border-b border-[#F5F5F5]">
-                    <th className="px-4 py-3 text-left text-xs text-[#666] font-medium">매핑명</th>
-                    <th className="px-4 py-3 text-left text-xs text-[#666] font-medium">파일 형식</th>
-                    <th className="px-4 py-3 text-left text-xs text-[#666] font-medium">통화</th>
-                    <th className="px-4 py-3 text-left text-xs text-[#666] font-medium">기본</th>
+                  <tr className={TABLE_STYLES.header}>
+                    <th className={TABLE_STYLES.headerCell}>매핑명</th>
+                    <th className={TABLE_STYLES.headerCell}>파일 형식</th>
+                    <th className={TABLE_STYLES.headerCell}>통화</th>
+                    <th className={TABLE_STYLES.headerCell}>기본</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#F5F5F5]">
                   {mappings.map(m => (
-                    <tr key={m.id} className="hover:bg-[#FAFAFA]">
+                    <tr key={m.id} className={TABLE_STYLES.row}>
                       <td className="px-4 py-3 font-medium text-[#1A1A1A]">{m.name}</td>
                       <td className="px-4 py-3 text-[#555]">{m.fileType.toUpperCase()}</td>
                       <td className="px-4 py-3 font-mono text-[#555]">{m.currency}</td>

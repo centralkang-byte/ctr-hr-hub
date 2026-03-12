@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Target, TrendingUp, Award } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -130,12 +131,12 @@ export default function ResultsClient({ user }: { user: SessionUser }) {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#FAFAFA] text-xs text-[#666] font-medium uppercase tracking-wider">
-                  <th className="px-4 py-3 text-left">구분</th>
-                  <th className="px-4 py-3 text-center">성과 점수</th>
-                  <th className="px-4 py-3 text-center">역량 점수</th>
-                  <th className="px-4 py-3 text-center">EMS 블록</th>
-                  <th className="px-4 py-3 text-center">상태</th>
+                <tr className={TABLE_STYLES.header}>
+                  <th className={TABLE_STYLES.headerCell}>구분</th>
+                  <th className={TABLE_STYLES.headerCell}>성과 점수</th>
+                  <th className={TABLE_STYLES.headerCell}>역량 점수</th>
+                  <th className={TABLE_STYLES.headerCell}>EMS 블록</th>
+                  <th className={TABLE_STYLES.headerCell}>상태</th>
                 </tr>
               </thead>
               <tbody>

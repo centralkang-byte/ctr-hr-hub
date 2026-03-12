@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { BarChart3, Download, Lock } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -150,20 +151,20 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
       <div className="rounded-xl border border-[#E8E8E8] bg-white overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="bg-[#FAFAFA] text-xs text-[#666] font-medium uppercase tracking-wider">
-              <th className="px-4 py-3 text-left">직원</th>
-              <th className="px-4 py-3 text-left">부서</th>
-              <th className="px-4 py-3 text-left">직급</th>
-              <th className="px-4 py-3 text-center">자기 성과</th>
-              <th className="px-4 py-3 text-center">매니저 성과</th>
-              <th className="px-4 py-3 text-center">최종 성과</th>
-              <th className="px-4 py-3 text-center">최종 역량</th>
-              <th className="px-4 py-3 text-center">EMS</th>
+            <tr className={TABLE_STYLES.header}>
+              <th className={TABLE_STYLES.headerCell}>직원</th>
+              <th className={TABLE_STYLES.headerCell}>부서</th>
+              <th className={TABLE_STYLES.headerCell}>직급</th>
+              <th className={TABLE_STYLES.headerCell}>자기 성과</th>
+              <th className={TABLE_STYLES.headerCell}>매니저 성과</th>
+              <th className={TABLE_STYLES.headerCell}>최종 성과</th>
+              <th className={TABLE_STYLES.headerCell}>최종 역량</th>
+              <th className={TABLE_STYLES.headerCell}>EMS</th>
             </tr>
           </thead>
           <tbody>
             {results.map((r) => (
-              <tr key={r.employee.id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+              <tr key={r.employee.id} className={TABLE_STYLES.header}>
                 <td className="px-4 py-3">
                   <p className="text-sm font-medium text-[#1A1A1A]">{r.employee.name}</p>
                   <p className="text-xs text-[#999]">{r.employee.employeeCode}</p>

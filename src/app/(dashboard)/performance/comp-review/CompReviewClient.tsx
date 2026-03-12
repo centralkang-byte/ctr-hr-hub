@@ -5,6 +5,7 @@ import { DollarSign, Users, TrendingUp, AlertTriangle, Download, ShieldAlert, Ar
 import { apiClient } from '@/lib/api'
 import { getGradeLabel } from '@/lib/performance/data-masking'
 import type { SessionUser } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -42,8 +43,8 @@ const MeritRowComponent = memo(function MeritRowComponent({
 
     return (
         <tr className={`border-b border-[#F0F0F3] ${row.isException || isOutOfRange ? 'bg-[#FEF3C7]/30' : 'hover:bg-[#F5F5FA]'}`}>
-            <td className="px-4 py-3 text-sm font-medium text-[#1C1D21]">{row.name}</td>
-            <td className="px-4 py-3 text-sm text-[#8181A5]">{row.department}</td>
+            <td className={TABLE_STYLES.cell}>{row.name}</td>
+            <td className={TABLE_STYLES.cellMuted}>{row.department}</td>
             <td className="px-4 py-3 text-sm text-center font-medium text-[#1C1D21]">{getGradeLabel(row.gradeEnum)}</td>
             <td className="px-4 py-3 text-sm text-right text-[#8181A5]">{fmtKRW(row.currentSalary)}</td>
             <td className="px-4 py-3 text-sm text-center text-[#8181A5]">{row.comparatio.toFixed(2)}</td>
@@ -289,14 +290,14 @@ export default function CompReviewClient({ user }: { user: SessionUser }) {
                                         <table className="w-full text-sm">
                                             <thead>
                                                 <tr className="bg-[#F5F5FA] text-xs text-[#8181A5] font-medium">
-                                                    <th className="px-4 py-3 text-left">이름</th>
-                                                    <th className="px-4 py-3 text-left">부서</th>
-                                                    <th className="px-4 py-3 text-center">등급</th>
-                                                    <th className="px-4 py-3 text-right">현재연봉</th>
-                                                    <th className="px-4 py-3 text-center">Comp.</th>
-                                                    <th className="px-4 py-3 text-center">추천%</th>
-                                                    <th className="px-4 py-3 text-center">적용%</th>
-                                                    <th className="px-4 py-3 text-right">새연봉</th>
+                                                    <th className={TABLE_STYLES.headerCell}>이름</th>
+                                                    <th className={TABLE_STYLES.headerCell}>부서</th>
+                                                    <th className={TABLE_STYLES.headerCell}>등급</th>
+                                                    <th className={TABLE_STYLES.headerCellRight}>현재연봉</th>
+                                                    <th className={TABLE_STYLES.headerCell}>Comp.</th>
+                                                    <th className={TABLE_STYLES.headerCell}>추천%</th>
+                                                    <th className={TABLE_STYLES.headerCell}>적용%</th>
+                                                    <th className={TABLE_STYLES.headerCellRight}>새연봉</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -336,12 +337,12 @@ export default function CompReviewClient({ user }: { user: SessionUser }) {
                                     <table className="w-full text-sm">
                                         <thead>
                                             <tr className="bg-[#FEF3C7] text-xs text-[#92400E] font-medium">
-                                                <th className="px-4 py-3 text-left">이름</th>
-                                                <th className="px-4 py-3 text-left">부서</th>
-                                                <th className="px-4 py-3 text-center">등급</th>
-                                                <th className="px-4 py-3 text-center">추천%</th>
-                                                <th className="px-4 py-3 text-center">적용%</th>
-                                                <th className="px-4 py-3 text-left">사유</th>
+                                                <th className={TABLE_STYLES.headerCell}>이름</th>
+                                                <th className={TABLE_STYLES.headerCell}>부서</th>
+                                                <th className={TABLE_STYLES.headerCell}>등급</th>
+                                                <th className={TABLE_STYLES.headerCell}>추천%</th>
+                                                <th className={TABLE_STYLES.headerCell}>적용%</th>
+                                                <th className={TABLE_STYLES.headerCell}>사유</th>
                                             </tr>
                                         </thead>
                                         <tbody>

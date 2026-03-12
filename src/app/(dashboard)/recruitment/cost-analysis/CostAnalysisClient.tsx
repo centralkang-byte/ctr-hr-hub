@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -279,11 +280,11 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-[#E8E8E8]">
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">소스</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-[#999]">총 비용</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-[#999]">채용 수</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-[#999]">인당 단가</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-[#999]">비중</th>
+                        <th className={TABLE_STYLES.headerCell}>소스</th>
+                        <th className={TABLE_STYLES.headerCellRight}>총 비용</th>
+                        <th className={TABLE_STYLES.headerCellRight}>채용 수</th>
+                        <th className={TABLE_STYLES.headerCellRight}>인당 단가</th>
+                        <th className={TABLE_STYLES.headerCellRight}>비중</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -292,7 +293,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                           ? ((s.totalCost / analysis.totalCost) * 100).toFixed(1)
                           : '0'
                         return (
-                          <tr key={s.source} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA] transition-colors duration-150">
+                          <tr key={s.source} className={TABLE_STYLES.header}>
                             <td className="px-4 py-3 font-medium text-[#1A1A1A]">{SOURCE_LABELS[s.source] ?? s.source}</td>
                             <td className="px-4 py-3 text-right text-[#1A1A1A]">{formatCurrency(s.totalCost)}</td>
                             <td className="px-4 py-3 text-right text-[#1A1A1A]">{s.hires}명</td>
@@ -357,16 +358,16 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-[#E8E8E8]">
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">공고명</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-[#999]">총 비용</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-[#999]">모집인원</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-[#999]">채용인원</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-[#999]">인당 단가</th>
+                        <th className={TABLE_STYLES.headerCell}>공고명</th>
+                        <th className={TABLE_STYLES.headerCellRight}>총 비용</th>
+                        <th className={TABLE_STYLES.headerCellRight}>모집인원</th>
+                        <th className={TABLE_STYLES.headerCellRight}>채용인원</th>
+                        <th className={TABLE_STYLES.headerCellRight}>인당 단가</th>
                       </tr>
                     </thead>
                     <tbody>
                       {analysis.byPosting.map((p) => (
-                        <tr key={p.postingId} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA] transition-colors duration-150">
+                        <tr key={p.postingId} className={TABLE_STYLES.header}>
                           <td className="px-4 py-3 font-medium text-[#1A1A1A] max-w-[200px] truncate">{p.title}</td>
                           <td className="px-4 py-3 text-right text-[#1A1A1A]">{formatCurrency(p.totalCost)}</td>
                           <td className="px-4 py-3 text-right text-[#1A1A1A]">{p.headcount}명</td>
@@ -412,18 +413,18 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-[#E8E8E8]">
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">비용 유형</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">소스</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">공고</th>
-                      <th className="px-4 py-3 text-right text-xs font-semibold text-[#999]">금액</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">거래처</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">청구일</th>
-                      <th className="px-4 py-3 text-center text-xs font-semibold text-[#999]">액션</th>
+                      <th className={TABLE_STYLES.headerCell}>비용 유형</th>
+                      <th className={TABLE_STYLES.headerCell}>소스</th>
+                      <th className={TABLE_STYLES.headerCell}>공고</th>
+                      <th className={TABLE_STYLES.headerCellRight}>금액</th>
+                      <th className={TABLE_STYLES.headerCell}>거래처</th>
+                      <th className={TABLE_STYLES.headerCell}>청구일</th>
+                      <th className={TABLE_STYLES.headerCell}>액션</th>
                     </tr>
                   </thead>
                   <tbody>
                     {costs.map((c) => (
-                      <tr key={c.id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA] transition-colors duration-150">
+                      <tr key={c.id} className={TABLE_STYLES.header}>
                         <td className="px-4 py-3">
                           <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${COST_TYPE_BADGE_STYLES[c.costType] ?? COST_TYPE_BADGE_STYLES.OTHER}`}>
                             {COST_TYPE_LABELS[c.costType] ?? c.costType}

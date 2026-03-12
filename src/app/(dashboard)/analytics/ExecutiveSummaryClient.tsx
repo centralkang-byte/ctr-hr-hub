@@ -13,6 +13,7 @@ import { AiInsightBanner } from '@/components/analytics/AiInsightBanner'
 import { AnalyticsFilterBar } from '@/components/analytics/AnalyticsFilterBar'
 import { CHART_COLORS } from '@/components/analytics/chart-colors'
 import type { ExecutiveSummaryResponse } from '@/lib/analytics/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 export default function ExecutiveSummaryClient() {
   const [data, setData] = useState<ExecutiveSummaryResponse | null>(null)
@@ -138,7 +139,7 @@ export default function ExecutiveSummaryClient() {
                   className={`flex items-center gap-3 p-3 rounded-lg border-l-4 hover:bg-gray-50 transition-colors ${
                     alert.severity === 'HIGH' ? 'border-l-red-500 bg-red-50/30' :
                     alert.severity === 'MEDIUM' ? 'border-l-amber-500 bg-amber-50/30' :
-                    'border-l-blue-500 bg-blue-50/30'
+                    'border-l-primary bg-primary/5'
                   }`}>
                   <AlertTriangle className={`h-4 w-4 ${alert.severity === 'HIGH' ? 'text-red-500' : 'text-amber-500'}`} />
                   <div>

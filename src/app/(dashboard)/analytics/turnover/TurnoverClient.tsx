@@ -12,6 +12,7 @@ import { EmptyChart } from '@/components/analytics/EmptyChart'
 import { AnalyticsFilterBar } from '@/components/analytics/AnalyticsFilterBar'
 import { CHART_COLORS } from '@/components/analytics/chart-colors'
 import type { TurnoverResponse } from '@/lib/analytics/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 export default function TurnoverClient() {
   const [data, setData] = useState<TurnoverResponse | null>(null)
@@ -142,7 +143,7 @@ export default function TurnoverClient() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 text-left">
+                <tr className={TABLE_STYLES.header}>
                   <th className="px-3 py-2.5 font-medium text-gray-600 rounded-tl-lg">이름</th>
                   <th className="px-3 py-2.5 font-medium text-gray-600">부서</th>
                   <th className="px-3 py-2.5 font-medium text-gray-600">직급</th>

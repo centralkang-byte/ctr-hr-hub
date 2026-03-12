@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { apiClient } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
 import type { SessionUser } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -368,17 +369,17 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
           <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-[#FAFAFA] border-b border-[#F5F5F5]">
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">과정명</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">분류</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">이수일</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">유효기간</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">점수</th>
+                <tr className={TABLE_STYLES.header}>
+                  <th className={TABLE_STYLES.headerCell}>과정명</th>
+                  <th className={TABLE_STYLES.headerCell}>분류</th>
+                  <th className={TABLE_STYLES.headerCell}>이수일</th>
+                  <th className={TABLE_STYLES.headerCell}>유효기간</th>
+                  <th className={TABLE_STYLES.headerCell}>점수</th>
                 </tr>
               </thead>
               <tbody>
                 {history.map((item) => (
-                  <tr key={item.enrollmentId} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                  <tr key={item.enrollmentId} className={TABLE_STYLES.header}>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-[#1A1A1A]">{item.course.title}</span>

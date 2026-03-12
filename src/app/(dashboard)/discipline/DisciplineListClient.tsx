@@ -11,6 +11,7 @@ import { Search, Plus, ChevronLeft, ChevronRight, Gavel, Filter } from 'lucide-r
 import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Badge Styles ────────────────────────────────────────
 
@@ -182,13 +183,13 @@ export default function DisciplineListClient({ user }: Props) {
         <table className="w-full">
           <thead>
             <tr className="border-b border-[#E8E8E8]">
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('employeeName')}</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('employeeNo')}</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('disciplineType')}</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('disciplineCategory')}</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('incidentDate')}</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{tCommon('status')}</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">{t('appeal')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('employeeName')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('employeeNo')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('disciplineType')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('disciplineCategory')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('incidentDate')}</th>
+              <th className={TABLE_STYLES.headerCell}>{tCommon('status')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('appeal')}</th>
             </tr>
           </thead>
           <tbody>

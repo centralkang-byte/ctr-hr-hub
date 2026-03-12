@@ -26,6 +26,7 @@ import {
   Tooltip,
 } from 'recharts'
 import { apiClient } from '@/lib/api'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── 타입 ────────────────────────────────────────────────
 
@@ -376,17 +377,17 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#FAFAFA]">
-                  <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">신호</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">가중치</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">점수</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">상태</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-[#666] uppercase tracking-wider">원시 데이터</th>
+                <tr className={TABLE_STYLES.header}>
+                  <th className={TABLE_STYLES.headerCell}>신호</th>
+                  <th className={TABLE_STYLES.headerCell}>가중치</th>
+                  <th className={TABLE_STYLES.headerCell}>점수</th>
+                  <th className={TABLE_STYLES.headerCell}>상태</th>
+                  <th className={TABLE_STYLES.headerCell}>원시 데이터</th>
                 </tr>
               </thead>
               <tbody>
                 {(data.turnover.signals as unknown as Signal[]).map((signal) => (
-                  <tr key={signal.signal} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                  <tr key={signal.signal} className={TABLE_STYLES.header}>
                     <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">
                       {SIGNAL_LABELS[signal.signal] ?? signal.signal}
                     </td>

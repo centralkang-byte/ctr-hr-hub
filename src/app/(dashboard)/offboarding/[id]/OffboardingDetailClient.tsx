@@ -129,7 +129,7 @@ interface OffboardingDetailClientProps {
 
 const ASSIGNEE_COLORS: Record<string, string> = {
   EMPLOYEE: 'bg-gray-100 text-gray-700',
-  MANAGER: 'bg-blue-100 text-blue-700',
+  MANAGER: 'bg-primary/10 text-primary',
   HR: 'bg-green-100 text-green-700',
   IT: 'bg-purple-100 text-purple-700',
   FINANCE: 'bg-orange-100 text-orange-700',
@@ -623,7 +623,7 @@ export function OffboardingDetailClient({
                   </div>
 
                   {interview.satisfactionDetail && (
-                    <div className="rounded-lg border border-[#E8E8E8] p-3 space-y-2">
+                    <div className="rounded-xl border border-[#E8E8E8] p-3 space-y-2">
                       <Label className="text-xs text-muted-foreground">{t('satisfactionDetail')}</Label>
                       {(
                         [
@@ -862,7 +862,7 @@ export function OffboardingDetailClient({
                 </div>
 
                 {/* Category satisfaction scores */}
-                <div className="space-y-3 rounded-lg border border-[#E8E8E8] p-4">
+                <div className="space-y-3 rounded-xl border border-[#E8E8E8] p-4">
                   <Label className="text-sm font-semibold">{t('satisfactionDetail')}</Label>
                   {([
                     ['compensation', t('satisfactionCompensation')],

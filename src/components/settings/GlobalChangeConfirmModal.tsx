@@ -73,7 +73,7 @@ export function GlobalChangeConfirmModal({
             </p>
             <div className="flex flex-wrap gap-1.5">
               {affected.map((c) => (
-                <span key={c.id} className="rounded-md bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
+                <span key={c.id} className="rounded-md bg-primary/5 px-2.5 py-1 text-xs font-medium text-primary">
                   {c.code}
                 </span>
               ))}

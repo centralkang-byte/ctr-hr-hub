@@ -37,6 +37,7 @@ import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 import type { SessionUser } from '@/types'
 import {
+import { TABLE_STYLES } from '@/lib/styles'
   CalendarDays,
   TrendingUp,
   AlertTriangle,

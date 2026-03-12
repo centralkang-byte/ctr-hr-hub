@@ -12,6 +12,7 @@ import { apiClient } from '@/lib/api'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface AccrualRule {
   minTenureMonths?: number
@@ -134,7 +135,7 @@ export function LeaveAccrualTab({ companyId }: LeaveAccrualTabProps) {
               const rule = typeDef.accrualRules?.[0]
               const isExpanded = expandedId === typeDef.id
               return (
-                <div key={typeDef.id} className="rounded-lg border border-[#F0F0F3]">
+                <div key={typeDef.id} className="rounded-xl border border-[#F0F0F3]">
                   <button
                     type="button"
                     onClick={() => setExpandedId(isExpanded ? null : typeDef.id)}
@@ -163,7 +164,7 @@ export function LeaveAccrualTab({ companyId }: LeaveAccrualTabProps) {
             })}
           </div>
         ) : (
-          <div className="rounded-lg border border-dashed border-[#F0F0F3] py-8 text-center">
+          <div className="rounded-xl border border-dashed border-[#F0F0F3] py-8 text-center">
             <Info className="mx-auto mb-2 h-6 w-6 text-[#8181A5]" />
             <p className="text-sm text-[#8181A5]">
               부여 규칙이 설정된 휴가 유형이 없습니다
@@ -243,14 +244,14 @@ function AccrualRuleDetail({ rule }: { rule: LeaveAccrualRuleRow }) {
 
       {/* Tier table */}
       {tiers.length > 0 && (
-        <div className="overflow-hidden rounded-lg border border-[#F0F0F3]">
+        <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[#F0F0F3] bg-[#F5F5FA]">
-                <th className="px-3 py-2 text-left text-xs font-medium text-[#8181A5]">근속 기간</th>
-                <th className="px-3 py-2 text-right text-xs font-medium text-[#8181A5]">부여일수</th>
-                <th className="px-3 py-2 text-right text-xs font-medium text-[#8181A5]">가산</th>
-                <th className="px-3 py-2 text-right text-xs font-medium text-[#8181A5]">상한</th>
+              <tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>근속 기간</th>
+                <th className={TABLE_STYLES.headerCellRight}>부여일수</th>
+                <th className={TABLE_STYLES.headerCellRight}>가산</th>
+                <th className={TABLE_STYLES.headerCellRight}>상한</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F0F0F3]">

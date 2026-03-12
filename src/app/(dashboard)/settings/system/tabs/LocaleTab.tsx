@@ -45,13 +45,13 @@ export function LocaleTab({ companyId }: Props) {
       </div>
 
       <SettingFieldWithOverride label="기본 언어" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
-        <select className="rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm" value={settings.defaultLocale} onChange={(e) => setSettings((p) => ({ ...p, defaultLocale: e.target.value }))}>
+        <select className="rounded-xl border border-[#F0F0F3] px-3 py-2 text-sm" value={settings.defaultLocale} onChange={(e) => setSettings((p) => ({ ...p, defaultLocale: e.target.value }))}>
           {settings.supportedLocales.map((l) => <option key={l} value={l}>{LOCALE_LABELS[l] ?? l}</option>)}
         </select>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="기본 타임존" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
-        <select className="rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm" value={settings.defaultTimezone} onChange={(e) => setSettings((p) => ({ ...p, defaultTimezone: e.target.value }))}>
+        <select className="rounded-xl border border-[#F0F0F3] px-3 py-2 text-sm" value={settings.defaultTimezone} onChange={(e) => setSettings((p) => ({ ...p, defaultTimezone: e.target.value }))}>
           <option value="Asia/Seoul">Asia/Seoul (KST, UTC+9)</option>
           <option value="America/New_York">America/New_York (EST, UTC-5)</option>
           <option value="Asia/Shanghai">Asia/Shanghai (CST, UTC+8)</option>

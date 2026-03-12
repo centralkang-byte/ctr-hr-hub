@@ -5,6 +5,7 @@ import { Bell, CheckCircle2, Clock, Send, ShieldAlert, ArrowLeft } from 'lucide-
 import { apiClient } from '@/lib/api'
 import { getGradeLabel } from '@/lib/performance/data-masking'
 import type { SessionUser } from '@/types'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -182,13 +183,13 @@ export default function NotificationsClient({ user }: { user: SessionUser }) {
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="bg-[#F5F5FA] text-xs text-[#8181A5] font-medium">
-                                    <th className="px-4 py-3 text-left">이름</th>
-                                    <th className="px-4 py-3 text-center">등급</th>
-                                    <th className="px-4 py-3 text-center">통보일</th>
-                                    <th className="px-4 py-3 text-center">확인일</th>
-                                    <th className="px-4 py-3 text-center">D-day</th>
-                                    <th className="px-4 py-3 text-center">상태</th>
-                                    <th className="px-4 py-3 text-center">액션</th>
+                                    <th className={TABLE_STYLES.headerCell}>이름</th>
+                                    <th className={TABLE_STYLES.headerCell}>등급</th>
+                                    <th className={TABLE_STYLES.headerCell}>통보일</th>
+                                    <th className={TABLE_STYLES.headerCell}>확인일</th>
+                                    <th className={TABLE_STYLES.headerCell}>D-day</th>
+                                    <th className={TABLE_STYLES.headerCell}>상태</th>
+                                    <th className={TABLE_STYLES.headerCell}>액션</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -196,7 +197,7 @@ export default function NotificationsClient({ user }: { user: SessionUser }) {
                                     const status = getStatus(item)
                                     const dDay = getDDay(item.notifiedAt)
                                     return (
-                                        <tr key={item.reviewId} className="border-b border-[#F0F0F3] hover:bg-[#F5F5FA]">
+                                        <tr key={item.reviewId} className={TABLE_STYLES.header}>
                                             <td className="px-4 py-3">
                                                 <p className="font-medium text-[#1C1D21]">{item.employeeName}</p>
                                                 <p className="text-xs text-[#8181A5]">{item.department}</p>

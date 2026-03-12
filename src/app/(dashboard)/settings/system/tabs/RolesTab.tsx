@@ -31,7 +31,7 @@ export function RolesTab({ companyId }: Props) {
         <p className="text-xs text-[#8181A5]">역할/권한은 시스템에서 관리됩니다. 변경이 필요하면 시스템 관리자에게 문의하세요.</p>
       </div>
       <div className="space-y-3">{ROLES.map((r) => (
-        <div key={r.key} className="flex items-start gap-4 rounded-lg border border-[#F0F0F3] p-4 hover:bg-[#F5F5FA] transition-colors">
+        <div key={r.key} className="flex items-start gap-4 rounded-xl border border-[#F0F0F3] p-4 hover:bg-[#F5F5FA] transition-colors">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#5E81F4]/10"><Shield className="h-5 w-5 text-[#5E81F4]" /></div>
           <div className="flex-1">
             <div className="flex items-baseline gap-2">

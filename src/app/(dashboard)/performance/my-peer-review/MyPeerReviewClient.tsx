@@ -256,7 +256,7 @@ export default function MyPeerReviewClient({ user }: { user: SessionUser }) {
                             <div className="space-y-5">
                                 <h3 className="text-base font-semibold text-[#1C1D21]">CTR 핵심가치 평가</h3>
                                 {CTR_VALUES.map((v) => (
-                                    <div key={v.scoreKey} className="rounded-lg border border-[#F0F0F3] p-4 space-y-2">
+                                    <div key={v.scoreKey} className="rounded-xl border border-[#F0F0F3] p-4 space-y-2">
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm font-medium text-[#1C1D21]">{v.label} ({v.labelEn})</span>
                                             <Stars value={form[v.scoreKey]} onChange={(val) => setForm((p) => ({ ...p, [v.scoreKey]: val }))} disabled={false} />

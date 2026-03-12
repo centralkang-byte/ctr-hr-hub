@@ -218,7 +218,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
         {/* Quick Stats */}
         <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {/* Card 1: 현재 사이클 상태 */}
-          <div className="rounded-lg border border-[#E8E8E8] bg-white p-5">
+          <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#E8F5E9]">
                 <Calendar className="h-5 w-5 text-[#00C853]" />
@@ -235,7 +235,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
           </div>
 
           {/* Card 2: 목표 수 */}
-          <div className="rounded-lg border border-[#E8E8E8] bg-white p-5">
+          <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#E8F5E9]">
                 <Target className="h-5 w-5 text-[#00C853]" />
@@ -252,7 +252,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
           </div>
 
           {/* Card 3: 평균 달성률 */}
-          <div className="rounded-lg border border-[#E8E8E8] bg-white p-5">
+          <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#F3E5F5]">
                 <TrendingUp className="h-5 w-5 text-[#7B1FA2]" />
@@ -267,7 +267,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
           </div>
 
           {/* Card 4: 다음 마감일 */}
-          <div className="rounded-lg border border-[#E8E8E8] bg-white p-5">
+          <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#FFF3E0]">
                 <ClipboardList className="h-5 w-5 text-[#E65100]" />
@@ -301,7 +301,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                   </Link>
                 </div>
                 {goals.length === 0 ? (
-                  <div className="rounded-lg border border-[#E8E8E8] bg-white p-8 text-center text-[#999]">
+                  <div className="rounded-xl border border-[#E8E8E8] bg-white p-8 text-center text-[#999]">
                     {t('noGoals')}
                   </div>
                 ) : (
@@ -311,7 +311,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                       return (
                         <div
                           key={goal.id}
-                          className="rounded-lg border border-[#E8E8E8] bg-white p-4"
+                          className="rounded-xl border border-[#E8E8E8] bg-white p-4"
                         >
                           <div className="mb-2 flex items-center justify-between">
                             <div className="flex items-center gap-2">
@@ -371,7 +371,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                   </Link>
                 </div>
                 {teamData.length === 0 ? (
-                  <div className="rounded-lg border border-[#E8E8E8] bg-white p-8 text-center text-[#999]">
+                  <div className="rounded-xl border border-[#E8E8E8] bg-white p-8 text-center text-[#999]">
                     {t('noTeamMembers')}
                   </div>
                 ) : (
@@ -379,7 +379,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                     {teamData.map((member) => (
                       <div
                         key={member.employee.id}
-                        className="rounded-lg border border-[#E8E8E8] bg-white p-5"
+                        className="rounded-xl border border-[#E8E8E8] bg-white p-5"
                       >
                         <div className="mb-3 flex items-center justify-between">
                           <div>
@@ -425,7 +425,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                         return (
                           <div
                             key={goal.id}
-                            className="rounded-lg border border-[#E8E8E8] bg-white p-4"
+                            className="rounded-xl border border-[#E8E8E8] bg-white p-4"
                           >
                             <div className="mb-2 flex items-center justify-between">
                               <span className="font-medium text-[#1A1A1A]">
@@ -473,7 +473,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                     {t('activeCycles')}
                   </h3>
                   {cycles.length === 0 ? (
-                    <div className="rounded-lg border border-[#E8E8E8] bg-white p-6 text-center text-[#999]">
+                    <div className="rounded-xl border border-[#E8E8E8] bg-white p-6 text-center text-[#999]">
                       {t('noCycles')}
                     </div>
                   ) : (
@@ -481,7 +481,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                       {cycles.map((cycle) => (
                         <div
                           key={cycle.id}
-                          className="rounded-lg border border-[#E8E8E8] bg-white p-4"
+                          className="rounded-xl border border-[#E8E8E8] bg-white p-4"
                         >
                           <div className="mb-2 flex items-center justify-between">
                             <span className="font-medium text-[#1A1A1A]">
@@ -505,7 +505,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                 </div>
 
                 {/* Submission rate */}
-                <div className="rounded-lg border border-[#E8E8E8] bg-white p-5">
+                <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
                   <h3 className="mb-3 text-sm font-semibold text-[#666]">
                     {t('overallSubmissionRate')}
                   </h3>
@@ -545,7 +545,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                         return (
                           <div
                             key={goal.id}
-                            className="rounded-lg border border-[#E8E8E8] bg-white p-4"
+                            className="rounded-xl border border-[#E8E8E8] bg-white p-4"
                           >
                             <div className="mb-2 flex items-center justify-between">
                               <span className="font-medium text-[#1A1A1A]">
