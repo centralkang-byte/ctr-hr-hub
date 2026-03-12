@@ -1,6 +1,6 @@
 # SHARED.md — Project State (Single Source of Truth)
 
-> **Last Updated:** 2026-03-12 (Q-3d — Hardcoded Korean → tCommon() Replacement)
+> **Last Updated:** 2026-03-12 (Q-4 P1 — i18n Complete + Navigation Polish)
 > **Project Path:** `/Users/sangwoo/VibeCoding/HR_Hub/ctr-hr-hub`
 
 ---
@@ -960,3 +960,73 @@ Coverage: 100%
 
 > **Note:** PARTIAL은 import만 추가된 상태 (import-but-not-used). 실제 `<EmptyState` JSX 삽입은
 > 각 페이지 데이터 플로우를 파악해야 하므로 Q-4 (페이지별 UX 완성) 단계에서 수행.
+
+---
+
+## Q-4 P1: i18n Complete + Navigation Polish — ✅ COMPLETE (2026-03-12)
+
+**Commit:** `ab85ad4` (pushed to `main`)
+
+### Phase 0: Audit Results (Pre-fix)
+| 항목 | 건수 |
+|------|------|
+| EmptyState import-only (need JSX) | 121 |
+| Hardcoded KR placeholders | 75 |
+| alert() calls | 49 |
+| window.confirm() | 30 |
+| Toast KR titles | 47 |
+| `<h1>` Korean titles | 42 |
+| Forms without useSubmitGuard | 27 |
+| Existing isSubmitting (collision) | 0 |
+
+### Phase 1: i18n Key Expansion
+Keys added across **7 locales** (`ko`, `en`, `zh`, `vi`, `ru`, `es`, `pt`):
+- `common`: `searchByName`, `enterNote`, `enterContent`, `enterTitle`, `enterReason`, `enterDescription`, `enterComment`, `enterMessage`, `searchEmployee`, `cancelled`, `completed`, `registered`, `approvalsInbox`, `emptyTitle`, `emptyDesc`
+- `performance`: `enterGoal`, `enterFeedback`, `enterEvaluation`, `enterComment`, `managerEvalTitle`, `selfEvalTitle`, `pulseSurveyTitle`, `teamGoalsTitle`, `compReviewTitle`, `oneOnOneTitle`, `cycleDetailTitle`, all page titles
+- `analytics`: all dashboard page titles (`teamHealthTitle`, `genderPayGapTitle`, `turnoverTitle`, etc.)
+- `recruitment`: `costAnalysisTitle`, `requisitionTitle`, `requisitionFormTitle`
+- `payroll`: all page titles (`reviewTitle`, `adjustmentsTitle`, `importTitle`, etc.)
+- `skills`: `skillMatrixTitle`, `teamSkillsTitle`
+- `mySpace`: all page titles
+- `settings`, `attendance`: page titles
+
+### Phase 3: Script Auto-Replacements
+| 패턴 | 교체 수 | 수정 파일 |
+|------|---------|---------|
+| Placeholder KR | **14건** | 14파일 |
+| Toast KR titles | **13건** | 13파일 |
+| `<h1>` titles | **14건** | 14파일 |
+| Simple alert() | 0 (complex patterns only) | — |
+| **Total** | **41건** | **31파일** |
+
+### Phase 4: Manual Agent Processing
+| 항목 | 처리 수 | 방법 |
+|------|---------|------|
+| useSubmitGuard 주입 | **10개 form 파일** | useSubmitGuard import + hook + guardedSubmit |
+| EmptyState JSX 삽입 | **3개 파일** | GoalsClient, RecruitmentListClient, MyGoalsClient |
+
+### Phase 4: Detect-Only Log Files (scripts/q4/)
+| 파일 | 건수 | 내용 |
+|------|------|------|
+| `emptystate-manual.txt` | 121 | EmptyState 미삽입 파일 목록 |
+| `confirm-manual.txt` | 21 | window.confirm() 파일 목록 |
+| `submitguard-manual.txt` | 32 | useSubmitGuard 미적용 폼 파일 |
+| `button-manual.txt` | 3 | 복합 KR 버튼 파일 |
+| `alert-complex.txt` | 20 | 복합 alert() (변수 포함) |
+
+### Post-fix Counts (2026-03-12 기준)
+| 항목 | 잔여 |
+|------|------|
+| Hardcoded KR placeholders | 59 (도메인별 특수 placeholder) |
+| Toast KR titles | 32 |
+| EmptyState JSX | **25개** 파일에 `<EmptyState` 삽입됨 |
+| useSubmitGuard | **17개** 파일에 적용됨 |
+
+### TypeScript: 0 errors ✅
+
+### 다음 단계 (Q-4 P2 이후)
+- 나머지 59개 placeholder → 도메인 t() 키 활용
+- EmptyState 추가 삽입 (각 파일 dataVar 수동 확인 필요)
+- confirm() → toast 다이얼로그 변환 (21파일)
+- Tab 레이블 배열 → 컴포넌트 내부 이동 + t() 적용
+- useSubmitGuard 추가 적용 (22개 form 남음)
