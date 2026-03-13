@@ -11,7 +11,8 @@ import { PieChart, Pie, Cell, BarChart, Bar, LineChart, Line, XAxis, YAxis, Cart
 import { apiClient } from '@/lib/api'
 import { useSession } from 'next-auth/react'
 import { ROLE } from '@/lib/constants'
-import { BUTTON_VARIANTS,  MODAL_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS, MODAL_STYLES } from '@/lib/styles'
+import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 
 // ─── Types ───────────────────────────────────────────────
@@ -228,15 +229,9 @@ export default function RecognitionClient() {
                 return (
                   <div key={item.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="w-8 h-8 rounded-full bg-[#EEF2FF] flex items-center justify-center text-sm font-semibold text-[#4F46E5]">
-                        {item.sender.name.charAt(0)}
-                      </div>
-                      <span className="font-medium text-[#1A1A1A]">{item.sender.name}</span>
+                      <EmployeeCell size="sm" employee={item.sender as any} />
                       <span className="text-[#999]">→</span>
-                      <div className="w-8 h-8 rounded-full bg-[#EEF2FF] flex items-center justify-center text-sm font-semibold text-[#4F46E5]">
-                        {item.receiver.name.charAt(0)}
-                      </div>
-                      <span className="font-medium text-[#1A1A1A]">{item.receiver.name}</span>
+                      <EmployeeCell size="sm" employee={item.receiver as any} />
                     </div>
                     {config && (
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mb-3 ${config.bgDefault} ${config.textDefault} border ${config.borderDefault}`}>

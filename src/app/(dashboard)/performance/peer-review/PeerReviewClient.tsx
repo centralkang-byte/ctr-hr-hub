@@ -10,6 +10,7 @@ import { toast } from '@/hooks/use-toast'
 import { CARD_STYLES, BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -150,13 +151,16 @@ export default function PeerReviewClient() {
           ) : (
             myReviews.map((r) => (
               <div key={r.nominationId} className={`${CARD_STYLES.kpi} flex items-center justify-between`}>
-                <div>
-                  <h3 className="text-sm font-semibold text-[#1A1A1A]">{r.employee.name}</h3>
-                  <p className="text-xs text-[#666] mt-1">
-                    {r.employee.employeeNo} · {r.employee.department?.name ?? '-'}
-                    {r.employee.jobGrade && ` · ${r.employee.jobGrade.name}`}
-                  </p>
-                </div>
+                <EmployeeCell
+                  size="sm"
+                  employee={{
+                    id: r.employee.id,
+                    name: r.employee.name,
+                    employeeNo: r.employee.employeeNo,
+                    department: r.employee.department?.name,
+                    jobGrade: r.employee.jobGrade?.name,
+                  }}
+                />
                 <div className="flex items-center gap-3">
                   {r.evalStatus ? (
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${STATUS_BADGE[r.evalStatus]?.cls ?? ''}`}>
@@ -217,7 +221,16 @@ export default function PeerReviewClient() {
                 <tbody>
                   {teamResults.employees.map((e) => (
                     <tr key={e.employee.id} className={TABLE_STYLES.row}>
-                      <td className="px-4 py-3 text-sm text-[#1A1A1A] font-medium">{e.employee.name}</td>
+                      <td className="px-4 py-3">
+                        <EmployeeCell
+                          size="sm"
+                          employee={{
+                            id: e.employee.id,
+                            name: e.employee.name,
+                            department: e.employee.department,
+                          }}
+                        />
+                      </td>
                       <td className="px-4 py-3 text-sm text-[#555]">{e.employee.department}</td>
                       <td className="px-4 py-3 text-sm text-center text-[#555]">{e.nominationCount}</td>
                       <td className="px-4 py-3 text-sm text-center text-[#555]">{e.completedCount}</td>

@@ -17,6 +17,7 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { CARD_STYLES, TABLE_STYLES } from '@/lib/styles'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
+import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 interface DirectoryEmployee {
   id: string
@@ -42,35 +43,6 @@ interface DirectoryClientProps {
   jobGrades: { id: string; name: string; code: string; companyId: string }[]
 }
 
-function InitialAvatar({ name, size = 'md' }: { name: string; size?: 'sm' | 'md' | 'lg' }) {
-  const initials = name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
-
-  const sizeClass = {
-    sm: 'w-8 h-8 text-xs',
-    md: 'w-12 h-12 text-sm',
-    lg: 'w-16 h-16 text-xl',
-  }[size]
-
-  const colors = [
-    'bg-primary text-white',
-    'bg-[#4338CA] text-white',
-    'bg-[#059669] text-white',
-    'bg-[#B45309] text-white',
-    'bg-[#DC2626] text-white',
-  ]
-  const color = colors[name.charCodeAt(0) % colors.length]
-
-  return (
-    <div className={`${sizeClass} ${color} rounded-full flex items-center justify-center font-bold shrink-0`}>
-      {initials}
-    </div>
-  )
-}
 
 export function DirectoryClient({ user, companies, departments, jobGrades }: DirectoryClientProps) {
   const tCommon = useTranslations('common')
@@ -254,13 +226,22 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
                   onClick={() => setSelectedEmployee(emp)}
                 >
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <InitialAvatar name={emp.name} size="sm" />
-                      <div>
-                        <p className="text-sm font-medium text-[#1A1A1A]">{emp.name}</p>
-                        {emp.nameEn && <p className="text-xs text-[#999]">{emp.nameEn}</p>}
-                      </div>
-                    </div>
+                    <EmployeeCell
+                      size="sm"
+                      employee={{
+                        id: emp.id,
+                        name: emp.name,
+                        nameEn: emp.nameEn,
+                        email: emp.email,
+                        phone: emp.phone,
+                        photoUrl: emp.photoUrl,
+                        department: emp.department?.name,
+                        departmentId: emp.department?.id,
+                        jobGrade: emp.jobGrade?.name,
+                        companyName: emp.company?.name,
+                      }}
+                      onClick={() => setSelectedEmployee(emp)}
+                    />
                   </td>
                   <td className="px-4 py-3 text-sm text-[#555]">{emp.department?.name ?? '-'}</td>
                   <td className="px-4 py-3 text-sm text-[#555]">{emp.jobGrade?.name ?? '-'}</td>
@@ -308,13 +289,21 @@ function EmployeeCard({ emp, onClick }: { emp: DirectoryEmployee; onClick: () =>
       onClick={onClick}
       className={`${CARD_STYLES.kpi} text-left hover:border-[#4F46E5] hover:shadow-sm transition-all flex flex-col items-center gap-2`}
     >
-      <InitialAvatar name={emp.name} size="lg" />
-      <div className="text-center">
-        <p className="text-sm font-semibold text-[#1A1A1A]">{emp.name}</p>
-        {emp.nameEn && <p className="text-xs text-[#999]">{emp.nameEn}</p>}
-        <p className="text-xs text-[#666] mt-0.5">{emp.department?.name ?? '-'}</p>
-        <p className="text-xs text-[#999]">{emp.company?.code ?? '-'} · {emp.jobGrade?.name ?? '-'}</p>
-      </div>
+      <EmployeeCell
+        size="md"
+        employee={{
+          id: emp.id,
+          name: emp.name,
+          nameEn: emp.nameEn,
+          email: emp.email,
+          phone: emp.phone,
+          photoUrl: emp.photoUrl,
+          department: emp.department?.name,
+          departmentId: emp.department?.id,
+          jobGrade: emp.jobGrade?.name,
+          companyName: emp.company?.name,
+        }}
+      />
       {emp.skills.length > 0 && (
         <div className="flex gap-1 flex-wrap justify-center">
           {emp.skills.slice(0, 3).map((s) => (
@@ -333,16 +322,21 @@ function EmployeeDetailPanel({ emp, onViewProfile }: { emp: DirectoryEmployee; o
   return (
     <div className="space-y-5">
       <SheetHeader>
-        <div className="flex items-start gap-3">
-          <InitialAvatar name={emp.name} size="lg" />
-          <div>
-            <SheetTitle className="text-lg">{emp.name}</SheetTitle>
-            {emp.nameEn && <p className="text-sm text-[#999]">{emp.nameEn}</p>}
-            <p className="text-sm text-[#666] mt-0.5">
-              {emp.department?.name} · {emp.jobGrade?.name} · {emp.company?.code}
-            </p>
-          </div>
-        </div>
+        <EmployeeCell
+          size="lg"
+          employee={{
+            id: emp.id,
+            name: emp.name,
+            nameEn: emp.nameEn,
+            email: emp.email,
+            phone: emp.phone,
+            photoUrl: emp.photoUrl,
+            department: emp.department?.name,
+            departmentId: emp.department?.id,
+            jobGrade: emp.jobGrade?.name,
+            companyName: emp.company?.name,
+          }}
+        />
       </SheetHeader>
 
       {emp.bio && (

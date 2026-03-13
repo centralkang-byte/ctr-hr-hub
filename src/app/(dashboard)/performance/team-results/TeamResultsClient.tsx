@@ -10,6 +10,7 @@ import { Users, Target, TrendingUp } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
+import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -126,8 +127,16 @@ export default function TeamResultsClient({
             {results.map((r) => (
               <tr key={r.employee.id} className={TABLE_STYLES.header}>
                 <td className="px-4 py-3">
-                  <p className="text-sm font-medium text-[#1A1A1A]">{r.employee.name}</p>
-                  <p className="text-xs text-[#999]">{r.employee.employeeCode}</p>
+                  <EmployeeCell
+                    size="sm"
+                    employee={{
+                      id: r.employee.id,
+                      name: r.employee.name,
+                      employeeNo: r.employee.employeeCode,
+                      department: r.employee.department?.name,
+                      jobGrade: r.employee.jobGrade?.name,
+                    }}
+                  />
                 </td>
                 <td className="px-4 py-3 text-sm text-[#555]">{r.employee.department?.name ?? '-'}</td>
                 <td className="px-4 py-3 text-sm text-center">

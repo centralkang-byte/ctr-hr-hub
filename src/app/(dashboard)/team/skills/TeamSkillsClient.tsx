@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 // ── 타입 ──────────────────────────────────────────────────
 
@@ -196,18 +197,20 @@ export default function TeamSkillsClient({user }: {
           <div className="p-5">
             {/* 현재 팀원 정보 */}
             <div className="flex items-center gap-4 mb-6 pb-5 border-b border-[#F5F5F5]">
-              <div className="w-12 h-12 bg-[#EEF2FF] rounded-full flex items-center justify-center text-lg font-bold text-[#4F46E5]">
-                {currentMember.name.charAt(0)}
-              </div>
-              <div>
-                <p className="font-semibold text-[#1A1A1A]">{currentMember.name}</p>
-                <p className="text-sm text-[#666]">
-                  {currentMember.grade} · {currentMember.department?.name ?? '-'}
-                </p>
-              </div>
-              <div className="ml-auto text-sm text-[#666]">
-                평가 완료: {Object.keys(evalItems).length}/{currentMember.assessments.length}
-              </div>
+              <EmployeeCell
+                size="md"
+                employee={{
+                  id: currentMember.id,
+                  name: currentMember.name,
+                  jobGrade: currentMember.grade,
+                  department: currentMember.department?.name,
+                }}
+                trailing={
+                  <div className="ml-auto text-sm text-[#666]">
+                    평가 완료: {Object.keys(evalItems).length}/{currentMember.assessments.length}
+                  </div>
+                }
+              />
             </div>
 
             {/* 역량 평가 폼 */}

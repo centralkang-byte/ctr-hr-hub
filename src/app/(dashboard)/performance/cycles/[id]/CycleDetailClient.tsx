@@ -12,6 +12,7 @@ import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -271,8 +272,16 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                                         const hasOverdue = p.overdueFlags && p.overdueFlags.length > 0
                                         return (
                                             <tr key={p.employee.id} className={`border-b border-[#F0F0F3] ${hasOverdue ? 'bg-[#FEF3C7]/30' : 'hover:bg-[#F5F5FA]'}`}>
-                                                <td className="px-4 py-3 font-medium text-[#1C1D21]">{p.employee.name}</td>
-                                                <td className="px-4 py-3 text-[#8181A5]">{p.employee.department?.name ?? '-'}</td>
+                                                <td className="px-4 py-3">
+                                                  <EmployeeCell
+                                                    size="sm"
+                                                    employee={{
+                                                      id: p.employee.id,
+                                                      name: p.employee.name,
+                                                      department: p.employee.department?.name,
+                                                    }}
+                                                  />
+                                                </td>
                                                 <td className="px-4 py-3 text-center">{p.goalsStatus === 'DONE' ? <CheckCircle2 className="mx-auto h-4 w-4 text-[#22C55E]" /> : <Clock className="mx-auto h-4 w-4 text-[#F59E0B]" />}</td>
                                                 <td className="px-4 py-3 text-center">{p.checkinStatus === 'DONE' ? <CheckCircle2 className="mx-auto h-4 w-4 text-[#22C55E]" /> : <Clock className="mx-auto h-4 w-4 text-[#F59E0B]" />}</td>
                                                 <td className="px-4 py-3 text-center">{p.selfEvalStatus === 'SUBMITTED' ? <CheckCircle2 className="mx-auto h-4 w-4 text-[#22C55E]" /> : <Clock className="mx-auto h-4 w-4 text-[#F59E0B]" />}</td>

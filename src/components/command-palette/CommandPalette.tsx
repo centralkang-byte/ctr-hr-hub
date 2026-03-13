@@ -15,6 +15,7 @@ import {
   Hash,
 } from 'lucide-react'
 import { useRecentPages } from '@/hooks/useRecentPages'
+import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 // ─── OS Detection (client-only) ─────────────────────────────────────────────
 
@@ -84,18 +85,6 @@ function fuzzyMatch(text: string, query: string): boolean {
   return qi === q.length
 }
 
-// ─── Avatar color palette ────────────────────────────────────────────────────
-
-const AVATAR_COLORS = [
-  '#4F46E5', '#F4845F', '#2DCE89', '#F5A623',
-  '#9B59B6', '#1ABC9C', '#E74C3C', '#3498DB',
-]
-
-function avatarColor(name: string): string {
-  let hash = 0
-  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length]
-}
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
@@ -298,36 +287,26 @@ export function CommandPalette() {
               ) : (
                 employeeResults.map((emp, idx) => {
                   const flatIdx = idx
-                  const initial = emp.name.charAt(0).toUpperCase()
-                  const bgColor = avatarColor(emp.name)
-                  const dept = emp.department?.name ?? ''
-                  const code = emp.employeeNo ?? ''
-                  const subtitle = [dept, code].filter(Boolean).join(' · ')
                   return (
                     <button
                       key={`emp-${emp.id}`}
                       type="button"
-                      className={`flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${flatList[activeIndex]?.id === `emp-${emp.id}`
+                      className={`flex w-full cursor-pointer items-center rounded-lg px-3 py-2 text-left transition-colors ${flatList[activeIndex]?.id === `emp-${emp.id}`
                           ? 'bg-[#F5F5FA]'
                           : 'hover:bg-[#F5F5FA]'
                         }`}
                       onMouseDown={(e) => { e.preventDefault(); navigate(`/employees/${emp.id}`) }}
                       onMouseEnter={() => setActiveIndex(flatIdx)}
                     >
-                      {/* Avatar */}
-                      <span
-                        className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
-                        style={{ backgroundColor: bgColor }}
-                      >
-                        {initial}
-                      </span>
-                      {/* Info */}
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-[#1C1D21]">{emp.name}</p>
-                        {subtitle && (
-                          <p className="truncate text-xs text-[#8181A5]">{subtitle}</p>
-                        )}
-                      </div>
+                      <EmployeeCell
+                        size="sm"
+                        employee={{
+                          id: emp.id,
+                          name: emp.name,
+                          employeeNo: emp.employeeNo,
+                          department: emp.department?.name,
+                        }}
+                      />
                     </button>
                   )
                 })

@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -387,20 +388,23 @@ export default function PerformanceClient({
                         key={member.employee.id}
                         className="rounded-xl border border-[#E8E8E8] bg-white p-5"
                       >
-                        <div className="mb-3 flex items-center justify-between">
-                          <div>
-                            <p className="font-medium text-[#1A1A1A]">
-                              {member.employee.name}
-                            </p>
-                            <p className="text-xs text-[#999]">
-                              {member.employee.department?.name ?? '-'} /{' '}
-                              {member.employee.jobGrade?.name ?? '-'}
-                            </p>
-                          </div>
-                          <span className="text-sm font-semibold text-[#4F46E5]">
-                            {t('goalCountWithUnit', { count: member.goals.length })}
-                          </span>
-                        </div>
+                        <EmployeeCell
+                          size="sm"
+                          employee={{
+                            id: member.employee.id,
+                            name: member.employee.name,
+                            employeeNo: member.employee.employeeNo,
+                            email: member.employee.email,
+                            department: member.employee.department?.name,
+                            departmentId: member.employee.department?.id,
+                            jobGrade: member.employee.jobGrade?.name,
+                          }}
+                          trailing={
+                            <span className="text-sm font-semibold text-[#4F46E5]">
+                              {t('goalCountWithUnit', { count: member.goals.length })}
+                            </span>
+                          }
+                        />
                         <div className="flex items-center gap-3">
                           <div className="h-2 flex-1 rounded-full bg-[#E8E8E8]">
                             <div

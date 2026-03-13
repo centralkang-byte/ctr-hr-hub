@@ -12,7 +12,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { apiClient } from '@/lib/api'
 import { useSession } from 'next-auth/react'
 import { ROLE } from '@/lib/constants'
-import { CARD_STYLES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { CARD_STYLES, BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
+import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 
 // ─── Types ───────────────────────────────────────────────
@@ -198,21 +199,19 @@ export default function OneOnOneClient() {
                   <div key={m.id} className={CARD_STYLES.padded}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-[#EEF2FF] flex items-center justify-center text-[#4F46E5] font-semibold">
-                          {(isManager ? m.employee.name : m.manager.name).charAt(0)}
-                        </div>
-                        <div>
-                          <p className="font-medium text-[#1A1A1A]">
-                            {isManager ? m.employee.name : m.manager.name}
-                          </p>
-                          <p className="text-xs text-[#666]">
-                            {new Date(m.scheduledAt).toLocaleDateString('ko-KR')} {new Date(m.scheduledAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
-                            {' · '}
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#EEF2FF] text-[#4338CA]">
-                              {MEETING_TYPE_LABELS[m.meetingType] ?? m.meetingType}
-                            </span>
-                          </p>
-                        </div>
+                        <EmployeeCell
+                          size="sm"
+                          employee={isManager ? (m.employee as any) : { id: m.id, name: m.manager?.name ?? '', } }
+                          trailing={
+                            <p className="text-xs text-[#666]">
+                              {new Date(m.scheduledAt).toLocaleDateString('ko-KR')} {new Date(m.scheduledAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
+                              {' · '}
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#EEF2FF] text-[#4338CA]">
+                                {MEETING_TYPE_LABELS[m.meetingType] ?? m.meetingType}
+                              </span>
+                            </p>
+                          }
+                        />
                       </div>
                       {isManager && (
                         <button
