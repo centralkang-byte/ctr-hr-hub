@@ -47,7 +47,7 @@ interface TeamAttendanceData {
 // ─── Status variant map ─────────────────────────────────────
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
-  NORMAL: 'bg-[#E8F5E9] text-[#2E7D32]',
+  NORMAL: 'bg-[#EEF2FF] text-[#2E7D32]',
   LATE: 'bg-[#FFEBEE] text-[#E53935]',
   EARLY_OUT: 'bg-[#FFF3E0] text-[#E65100]',
   ABSENT: 'bg-[#FFEBEE] text-[#F44336]',

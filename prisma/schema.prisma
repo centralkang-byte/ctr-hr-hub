@@ -758,6 +758,7 @@ model Company {
   payrollMode        CompanyPayrollMode @default(IMPORT) @map("payroll_mode")
   payrollFrequencies Json               @default("[\"MONTHLY\"]") @map("payroll_frequencies")
   isActive           Boolean            @default(true) @map("is_active")
+  locationCity       String?            @map("location_city")
   createdAt          DateTime           @default(now()) @map("created_at")
   deletedAt          DateTime?          @map("deleted_at")
 

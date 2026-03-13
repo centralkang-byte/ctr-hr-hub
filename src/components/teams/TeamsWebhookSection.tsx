@@ -121,7 +121,7 @@ export function TeamsWebhookSection() {
       {/* Section header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Webhook className="w-4 h-4 text-[#00C853]" />
+          <Webhook className="w-4 h-4 text-[#4F46E5]" />
           <h3 className="text-base font-semibold text-[#1A1A1A]">
             Microsoft Teams Webhook 채널
           </h3>
@@ -195,7 +195,7 @@ export function TeamsWebhookSection() {
                 return (
                   <span
                     key={et}
-                    className="text-xs px-2 py-0.5 bg-[#E8F5E9] text-[#00A844] rounded-full border border-[#E8F5E9]"
+                    className="text-xs px-2 py-0.5 bg-[#EEF2FF] text-[#4338CA] rounded-full border border-[#EEF2FF]"
                   >
                     {ev?.label ?? et}
                   </span>
@@ -208,20 +208,20 @@ export function TeamsWebhookSection() {
 
       {/* Add new webhook form */}
       {adding && (
-        <div className="bg-white rounded-xl border border-[#00C853]/30 p-4 space-y-3">
+        <div className="bg-white rounded-xl border border-[#4F46E5]/30 p-4 space-y-3">
           <input
             type="text"
             placeholder={tCommon('placeholderChannelName')}
             value={newChannel}
             onChange={(e) => setNewChannel(e.target.value)}
-            className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 focus:outline-none"
+            className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 focus:outline-none"
           />
           <input
             type="url"
             placeholder="Webhook URL (https://outlook.office.com/...)"
             value={newUrl}
             onChange={(e) => setNewUrl(e.target.value)}
-            className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm font-mono focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 focus:outline-none"
+            className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm font-mono focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 focus:outline-none"
           />
           <div>
             <p className="text-xs font-medium text-[#666] mb-2">전송할 이벤트</p>
@@ -232,8 +232,8 @@ export function TeamsWebhookSection() {
                   onClick={() => toggleEventType(ev.key)}
                   className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
                     newEvents.includes(ev.key)
-                      ? 'bg-[#00C853] text-white border-[#00C853]'
-                      : 'bg-white text-[#666] border-[#D4D4D4] hover:border-[#00C853]'
+                      ? 'bg-[#4F46E5] text-white border-[#4F46E5]'
+                      : 'bg-white text-[#666] border-[#D4D4D4] hover:border-[#4F46E5]'
                   }`}
                 >
                   {ev.label}

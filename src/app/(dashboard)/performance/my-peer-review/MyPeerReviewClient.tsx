@@ -164,7 +164,7 @@ export default function MyPeerReviewClient({user }: {
                     <Users className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
                     <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">아직 동료평가 기간이 아닙니다.</h2>
                     <p className="text-sm text-[#8181A5]">동료평가는 EVAL_OPEN 단계에서 진행됩니다.</p>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#4F46E5] hover:underline">
                         <ArrowLeft className="h-4 w-4" /> 돌아가기
                     </a>
                 </div>
@@ -200,7 +200,7 @@ export default function MyPeerReviewClient({user }: {
                             <span className="font-medium text-[#1C1D21]">{completed}/{total} 완료</span>
                         </div>
                         <div className="h-2 rounded-full bg-[#F0F0F3]">
-                            <div className="h-2 rounded-full bg-[#5E81F4] transition-all" style={{ width: `${total > 0 ? (completed / total) * 100 : 0}%` }} />
+                            <div className="h-2 rounded-full bg-[#4F46E5] transition-all" style={{ width: `${total > 0 ? (completed / total) * 100 : 0}%` }} />
                         </div>
                     </div>
                 )}
@@ -233,7 +233,7 @@ export default function MyPeerReviewClient({user }: {
                             const isCompleted = item.status === 'SUBMITTED'
 
                             return (
-                                <div key={item.nominationId} className="flex items-center justify-between rounded-xl border border-[#F0F0F3] bg-white p-5 transition-colors hover:border-[#5E81F4]/30">
+                                <div key={item.nominationId} className="flex items-center justify-between rounded-xl border border-[#F0F0F3] bg-white p-5 transition-colors hover:border-[#4F46E5]/30">
                                     <div>
                                         <h3 className="text-sm font-semibold text-[#1C1D21]">{item.employeeName}</h3>
                                         <p className="mt-0.5 text-xs text-[#8181A5]">{item.department}</p>
@@ -246,7 +246,7 @@ export default function MyPeerReviewClient({user }: {
                                         )}
                                         {!isCompleted && (
                                             <button onClick={() => openReview(item)}
-                                                className="rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] transition-colors">
+                                                className="rounded-lg bg-[#4F46E5] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] transition-colors">
                                                 {item.status === 'DRAFT' ? '이어서 작성' : '평가 시작'}
                                             </button>
                                         )}
@@ -288,7 +288,7 @@ export default function MyPeerReviewClient({user }: {
                                         <textarea rows={2} value={form[v.commentKey]}
                                             onChange={(e) => setForm((p) => ({ ...p, [v.commentKey]: e.target.value }))}
                                             placeholder={`${v.label}에 대한 의견 (선택)`}
-                                            className="w-full resize-none rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
+                                            className="w-full resize-none rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none" />
                                     </div>
                                 ))}
                             </div>
@@ -299,7 +299,7 @@ export default function MyPeerReviewClient({user }: {
                                 <textarea rows={4} value={form.overallComment}
                                     onChange={(e) => setForm((p) => ({ ...p, overallComment: e.target.value }))}
                                     placeholder="동료에 대한 종합적인 의견을 작성해주세요..."
-                                    className="w-full resize-none rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
+                                    className="w-full resize-none rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none" />
                                 <p className="mt-1 text-xs text-[#8181A5]">{form.overallComment.length}자 / 최소 20자</p>
                             </div>
 
@@ -310,7 +310,7 @@ export default function MyPeerReviewClient({user }: {
                                     <Save className="h-4 w-4" /> 임시저장
                                 </button>
                                 <button onClick={() => handleSubmit('SUBMITTED')} disabled={saving}
-                                    className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40">
+                                    className="inline-flex items-center gap-2 rounded-lg bg-[#4F46E5] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40">
                                     <Send className="h-4 w-4" /> {saving ? tCommon('loading') : tCommon('submit')}
                                 </button>
                             </div>

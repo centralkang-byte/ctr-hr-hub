@@ -105,7 +105,7 @@ export default function NotificationsClient({user }: {
                     <Bell className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
                     <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">결과 통보 단계가 아닙니다.</h2>
                     <p className="text-sm text-[#8181A5]">결과 통보는 FINALIZED 이후에 가능합니다.</p>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline"><ArrowLeft className="h-4 w-4" /> 돌아가기</a>
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#4F46E5] hover:underline"><ArrowLeft className="h-4 w-4" /> 돌아가기</a>
                 </div>
             </div>
         )
@@ -154,7 +154,7 @@ export default function NotificationsClient({user }: {
                     <div className="flex items-center gap-3">
                         {isHrAdmin && pending > 0 && (
                             <button onClick={handleBulkNotify} disabled={bulkNotifying}
-                                className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40">
+                                className="inline-flex items-center gap-2 rounded-lg bg-[#4F46E5] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40">
                                 <Send className="h-4 w-4" /> {bulkNotifying ? '통보 중...' : '전체 일괄 통보'}
                             </button>
                         )}
@@ -170,7 +170,7 @@ export default function NotificationsClient({user }: {
                 <div className="mb-4 flex gap-2">
                     {([['all', '전체'], ['pending', '미통보'], ['waiting', '대기 중'], ['done', '확인 완료']] as const).map(([key, label]) => (
                         <button key={key} onClick={() => setFilter(key)}
-                            className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${filter === key ? 'bg-[#5E81F4] text-white' : 'bg-white border border-[#F0F0F3] text-[#8181A5] hover:bg-[#F5F5FA]'}`}>
+                            className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${filter === key ? 'bg-[#4F46E5] text-white' : 'bg-white border border-[#F0F0F3] text-[#8181A5] hover:bg-[#F5F5FA]'}`}>
                             {label}
                         </button>
                     ))}
@@ -231,7 +231,7 @@ export default function NotificationsClient({user }: {
                                             <td className="px-4 py-3 text-center">
                                                 {!item.notifiedAt && (
                                                     <button onClick={() => handleNotify(item.reviewId)} disabled={notifying === item.reviewId}
-                                                        className="rounded-lg bg-[#5E81F4] px-3 py-1 text-xs font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40">
+                                                        className="rounded-lg bg-[#4F46E5] px-3 py-1 text-xs font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40">
                                                         {notifying === item.reviewId ? '...' : '통보'}
                                                     </button>
                                                 )}

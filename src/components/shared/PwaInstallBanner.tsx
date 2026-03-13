@@ -55,8 +55,8 @@ export function PwaInstallBanner() {
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 md:hidden">
       <div className="bg-white rounded-xl shadow-lg border border-[#E8E8E8] p-4 flex items-center gap-3">
-        <div className="flex-shrink-0 w-10 h-10 bg-[#E8F5E9] rounded-lg flex items-center justify-center">
-          <Download size={20} className="text-[#00C853]" />
+        <div className="flex-shrink-0 w-10 h-10 bg-[#EEF2FF] rounded-lg flex items-center justify-center">
+          <Download size={20} className="text-[#4F46E5]" />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-[#1A1A1A]">CTR HR Hub 설치</p>
@@ -64,7 +64,7 @@ export function PwaInstallBanner() {
         </div>
         <button
           onClick={handleInstall}
-          className="flex-shrink-0 px-3 py-1.5 bg-[#00C853] text-white text-sm font-medium rounded-lg hover:bg-[#00A844] transition-colors"
+          className="flex-shrink-0 px-3 py-1.5 bg-[#4F46E5] text-white text-sm font-medium rounded-lg hover:bg-[#4338CA] transition-colors"
         >
           설치
         </button>

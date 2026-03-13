@@ -51,7 +51,7 @@ interface GlobalData {
   hasExchangeRates: boolean
 }
 
-const CHART_COLORS = ['#00C853', '#059669', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
+const CHART_COLORS = ['#4F46E5', '#059669', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
 const FLAG: Record<string, string> = { 'CTR-KR': '🇰🇷', 'CTR-CN': '🇨🇳', 'CTR-US': '🇺🇸', 'CTR-VN': '🇻🇳', 'CTR-MX': '🇲🇽', 'CTR-RU': '🇷🇺' }
 
 const fmt = (n: number) => n.toLocaleString('ko-KR', { maximumFractionDigits: 0 })
@@ -118,8 +118,8 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-[#E8F5E9] rounded-lg flex items-center justify-center">
-            <Globe className="w-5 h-5 text-[#00C853]" />
+          <div className="w-9 h-9 bg-[#EEF2FF] rounded-lg flex items-center justify-center">
+            <Globe className="w-5 h-5 text-[#4F46E5]" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-[#1A1A1A]">글로벌 급여 현황</h1>

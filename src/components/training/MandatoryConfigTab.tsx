@@ -215,7 +215,7 @@ export default function MandatoryConfigTab() {
       <section>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-[#00C853]" />
+            <BarChart3 className="h-5 w-5 text-[#4F46E5]" />
             <h2 className="text-base font-semibold text-[#1A1A1A]">법정 의무교육 이수현황</h2>
           </div>
           <div className="flex items-center gap-2">
@@ -270,13 +270,13 @@ export default function MandatoryConfigTab() {
                 </div>
                 <div className="w-full h-2 bg-[#F5F5F5] rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-[#00C853] rounded-full transition-all"
+                    className="h-full bg-[#4F46E5] rounded-full transition-all"
                     style={{ width: `${s.completionRate}%` }}
                   />
                 </div>
                 <div className="flex justify-between items-center mt-1">
                   <span className="text-xs text-[#999]">이수율</span>
-                  <span className="text-xs font-semibold text-[#00C853]">{s.completionRate}%</span>
+                  <span className="text-xs font-semibold text-[#4F46E5]">{s.completionRate}%</span>
                 </div>
               </div>
             ))}
@@ -426,7 +426,7 @@ export default function MandatoryConfigTab() {
               <input
                 type="checkbox"
                 id="isActiveConfig"
-                className="w-4 h-4 rounded border-[#D4D4D4] text-[#00C853]"
+                className="w-4 h-4 rounded border-[#D4D4D4] text-[#4F46E5]"
                 checked={form.isActive}
                 onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))}
               />

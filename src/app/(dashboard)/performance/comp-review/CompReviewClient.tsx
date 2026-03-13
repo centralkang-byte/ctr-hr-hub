@@ -61,7 +61,7 @@ const MeritRowComponent = memo(function MeritRowComponent({
                     <input type="number" step={0.5} min={0} max={30} value={localPct}
                         onChange={(e) => setLocalPct(Number(e.target.value))}
                         onBlur={() => onUpdate(row.employeeId, localPct, localReason)}
-                        className={`w-16 rounded-lg border px-2 py-1 text-sm text-center focus:outline-none ${isOutOfRange ? 'border-[#EF4444] bg-[#FFEBEE]' : 'border-[#F0F0F3] focus:border-[#5E81F4]'}`} />
+                        className={`w-16 rounded-lg border px-2 py-1 text-sm text-center focus:outline-none ${isOutOfRange ? 'border-[#EF4444] bg-[#FFEBEE]' : 'border-[#F0F0F3] focus:border-[#4F46E5]'}`} />
                     <span className="text-xs text-[#8181A5]">%</span>
                     {isOutOfRange && <AlertTriangle className="h-3.5 w-3.5 text-[#EF4444]" />}
                 </div>
@@ -69,7 +69,7 @@ const MeritRowComponent = memo(function MeritRowComponent({
                     <input type="text" placeholder={tCommon('placeholderExceptionReasonRequired')} value={localReason}
                         onChange={(e) => setLocalReason(e.target.value)}
                         onBlur={() => onUpdate(row.employeeId, localPct, localReason)}
-                        className="mt-1 w-full rounded-lg border border-[#FDE68A] px-2 py-1 text-xs focus:border-[#5E81F4] focus:outline-none" />
+                        className="mt-1 w-full rounded-lg border border-[#FDE68A] px-2 py-1 text-xs focus:border-[#4F46E5] focus:outline-none" />
                 )}
             </td>
             <td className="px-4 py-3 text-sm text-right font-medium text-[#1C1D21]">
@@ -188,7 +188,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                     <ShieldAlert className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
                     <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">접근 권한이 없습니다.</h2>
                     <p className="text-sm text-[#8181A5]">HR 관리자 또는 임원만 접근 가능합니다.</p>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline"><ArrowLeft className="h-4 w-4" /> 돌아가기</a>
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#4F46E5] hover:underline"><ArrowLeft className="h-4 w-4" /> 돌아가기</a>
                 </div>
             </div>
         )
@@ -202,7 +202,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                 <div className="text-center">
                     <DollarSign className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
                     <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">보상 기획 단계가 아닙니다.</h2>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline"><ArrowLeft className="h-4 w-4" /> 돌아가기</a>
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#4F46E5] hover:underline"><ArrowLeft className="h-4 w-4" /> 돌아가기</a>
                 </div>
             </div>
         )
@@ -231,7 +231,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                 <div className="mb-6 flex border-b border-[#F0F0F3]">
                     {([['dashboard', '대시보드'], ['table', '조정 테이블'], ['exceptions', `예외 목록 (${exceptionRows.length})`]] as const).map(([key, label]) => (
                         <button key={key} onClick={() => setTab(key as TabKey)}
-                            className={`px-5 py-3 text-sm font-medium border-b-2 ${tab === key ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#8181A5]'}`}>
+                            className={`px-5 py-3 text-sm font-medium border-b-2 ${tab === key ? 'border-[#4F46E5] text-[#4F46E5]' : 'border-transparent text-[#8181A5]'}`}>
                             {label}
                         </button>
                     ))}
@@ -328,11 +328,11 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                                             <Download className="h-4 w-4" /> Excel 내보내기
                                         </button>
                                         <button onClick={handleSave} disabled={saving}
-                                            className="rounded-lg border border-[#5E81F4] px-4 py-2 text-sm font-medium text-[#5E81F4] hover:bg-[#5E81F4]/5 disabled:opacity-40">
+                                            className="rounded-lg border border-[#4F46E5] px-4 py-2 text-sm font-medium text-[#4F46E5] hover:bg-[#4F46E5]/5 disabled:opacity-40">
                                             {saving ? '저장 중...' : '변경사항 저장'}
                                         </button>
                                         <button onClick={handleApprove} disabled={approving}
-                                            className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-5 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40">
+                                            className="inline-flex items-center gap-2 rounded-lg bg-[#4F46E5] px-5 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40">
                                             <CheckCircle2 className="h-4 w-4" /> {approving ? '승인 중...' : '최종 승인 요청'}
                                         </button>
                                     </div>

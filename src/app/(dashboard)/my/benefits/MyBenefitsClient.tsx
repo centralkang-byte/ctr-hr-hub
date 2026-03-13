@@ -59,7 +59,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string; icon: React.
   pending: { label: '승인대기', color: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]', icon: <Clock className="w-3 h-3" /> },
   approved: { label: '승인', color: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]', icon: <CheckCircle2 className="w-3 h-3" /> },
   rejected: { label: '반려', color: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]', icon: <XCircle className="w-3 h-3" /> },
-  paid: { label: '지급완료', color: 'bg-[#E8F5E9] text-[#00A844] border-[#E8F5E9]', icon: <CheckCircle2 className="w-3 h-3" /> },
+  paid: { label: '지급완료', color: 'bg-[#EEF2FF] text-[#4338CA] border-[#EEF2FF]', icon: <CheckCircle2 className="w-3 h-3" /> },
   cancelled: { label: '취소', color: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]', icon: null },
 }
 
@@ -151,7 +151,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
             <select
               value={selectedPlanId}
               onChange={(e) => setSelectedPlanId(e.target.value)}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
             >
               <option value="">항목을 선택하세요</option>
               {plans.map((p) => (
@@ -179,7 +179,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
                 onChange={(e) => setClaimAmount(e.target.value)}
                 readOnly={selectedPlan?.benefitType === 'fixed_amount'}
                 placeholder="0"
-                className="flex-1 px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 read-only:bg-[#FAFAFA]"
+                className="flex-1 px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 read-only:bg-[#FAFAFA]"
               />
             </div>
             {selectedPlan?.maxAmount && (
@@ -195,7 +195,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
               type="date"
               value={eventDate}
               onChange={(e) => setEventDate(e.target.value)}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
             />
           </div>
 
@@ -206,7 +206,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
               value={eventDetail}
               onChange={(e) => setEventDetail(e.target.value)}
               placeholder="예: 본인 결혼"
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
             />
           </div>
 
@@ -304,7 +304,7 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-6 h-6 animate-spin text-[#00C853]" />
+        <Loader2 className="w-6 h-6 animate-spin text-[#4F46E5]" />
       </div>
     )
   }
@@ -352,7 +352,7 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
                   {total > 0 && (
                     <div className="w-full bg-[#F5F5F5] rounded-full h-2 overflow-hidden">
                       <div className="h-full flex">
-                        <div className="bg-[#00C853] transition-all" style={{ width: `${usedPct}%` }} />
+                        <div className="bg-[#4F46E5] transition-all" style={{ width: `${usedPct}%` }} />
                         <div className="bg-[#FCD34D] transition-all" style={{ width: `${pendingPct}%` }} />
                       </div>
                     </div>

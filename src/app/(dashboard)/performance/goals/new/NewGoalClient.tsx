@@ -102,7 +102,7 @@ export default function NewGoalClient({
         <div className="mb-6">
           <button
             onClick={() => router.push('/performance/goals')}
-            className="mb-4 inline-flex items-center gap-1 text-sm text-[#999] hover:text-[#00C853] transition-colors"
+            className="mb-4 inline-flex items-center gap-1 text-sm text-[#999] hover:text-[#4F46E5] transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             {t('backToGoalList')}
@@ -124,7 +124,7 @@ export default function NewGoalClient({
             </label>
             <select
               {...register('cycleId')}
-              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
+              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
             >
               <option value="">{t('selectCycle')}</option>
               {!cycles?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
@@ -148,7 +148,7 @@ export default function NewGoalClient({
               type="text"
               {...register('title')}
               placeholder={t('titlePlaceholder')}
-              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
+              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
             />
             {errors.title && (
               <p className="mt-1 text-xs text-[#EF4444]">{errors.title.message}</p>
@@ -164,7 +164,7 @@ export default function NewGoalClient({
               rows={4}
               {...register('description')}
               placeholder={t('descriptionPlaceholder')}
-              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
+              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
             />
             {errors.description && (
               <p className="mt-1 text-xs text-[#EF4444]">
@@ -183,7 +183,7 @@ export default function NewGoalClient({
               min={0}
               max={100}
               {...register('weight')}
-              className="w-32 rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
+              className="w-32 rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
             />
             {errors.weight && (
               <p className="mt-1 text-xs text-[#EF4444]">{errors.weight.message}</p>
@@ -199,7 +199,7 @@ export default function NewGoalClient({
               type="text"
               {...register('targetMetric')}
               placeholder={t('kpiMetricPlaceholder')}
-              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
+              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
             />
             {errors.targetMetric && (
               <p className="mt-1 text-xs text-[#EF4444]">
@@ -217,7 +217,7 @@ export default function NewGoalClient({
               type="text"
               {...register('targetValue')}
               placeholder={t('targetValuePlaceholder')}
-              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
+              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
             />
             {errors.targetValue && (
               <p className="mt-1 text-xs text-[#EF4444]">
@@ -231,7 +231,7 @@ export default function NewGoalClient({
             <button
               type="submit"
               disabled={submitting}
-              className="rounded-lg bg-[#00C853] px-6 py-2 text-sm font-medium text-white hover:bg-[#00A844] disabled:opacity-50 transition-colors"
+              className="rounded-lg bg-[#4F46E5] px-6 py-2 text-sm font-medium text-white hover:bg-[#4338CA] disabled:opacity-50 transition-colors"
             >
               {submitting ? t('registering') : t('registerGoal')}
             </button>

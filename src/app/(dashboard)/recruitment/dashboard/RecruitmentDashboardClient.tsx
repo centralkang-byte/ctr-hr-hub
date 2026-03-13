@@ -99,8 +99,8 @@ const STAGE_COLORS: Record<string, string> = {
   INTERVIEW_1: '#2196F3',
   INTERVIEW_2: '#2196F3',
   FINAL: '#FF9800',
-  OFFER: '#00C853',
-  HIRED: '#00C853',
+  OFFER: '#4F46E5',
+  HIRED: '#4F46E5',
   REJECTED: '#F44336',
 }
 
@@ -285,7 +285,7 @@ export function RecruitmentDashboardClient(_props: {
     {
       label: t('totalApplicantsKpi'),
       icon: Users,
-      color: '#00C853',
+      color: '#4F46E5',
       format: (k) => String(k.totalApplicants),
     },
     {
@@ -297,7 +297,7 @@ export function RecruitmentDashboardClient(_props: {
     {
       label: t('hireRate'),
       icon: Target,
-      color: '#00C853',
+      color: '#4F46E5',
       format: (k) => t('hireRatePercent', { rate: k.hireRate }),
     },
   ]
@@ -409,7 +409,7 @@ export function RecruitmentDashboardClient(_props: {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-            <Briefcase size={18} style={{ color: '#00C853' }} />
+            <Briefcase size={18} style={{ color: '#4F46E5' }} />
             <h2 style={{ fontSize: 16, fontWeight: 700, color: '#1A1A1A', letterSpacing: '-0.02em' }}>
               공석 현황 (Position Vacancies)
             </h2>
@@ -419,7 +419,7 @@ export function RecruitmentDashboardClient(_props: {
           <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
             {[
               { label: '전체 공석', value: vacancySummary.totalVacancies, bg: '#F5F5F5', color: '#1A1A1A' },
-              { label: '채용 진행 중', value: vacancySummary.withActivePosting, bg: '#E8F5E9', color: '#00A844' },
+              { label: '채용 진행 중', value: vacancySummary.withActivePosting, bg: '#EEF2FF', color: '#4338CA' },
               { label: '공고 없음', value: vacancySummary.withoutPosting, bg: '#FEF3C7', color: '#B45309' },
               { label: '30일 내 충원', value: vacancySummary.recentlyFilled, bg: '#E0E7FF', color: '#4338CA' },
             ].map((item) => (
@@ -462,7 +462,7 @@ export function RecruitmentDashboardClient(_props: {
                   <tr key={row.companyId} style={{ borderBottom: '1px solid #F5F5F5' }}>
                     <td style={{ padding: '10px 12px', fontSize: 13, color: '#1A1A1A', fontWeight: 500 }}>{row.companyName}</td>
                     <td style={{ padding: '10px 12px', fontSize: 13, color: '#1A1A1A', textAlign: 'right' }}>{row.total}</td>
-                    <td style={{ padding: '10px 12px', fontSize: 13, color: '#00A844', textAlign: 'right' }}>{row.withActivePosting}</td>
+                    <td style={{ padding: '10px 12px', fontSize: 13, color: '#4338CA', textAlign: 'right' }}>{row.withActivePosting}</td>
                     <td style={{ padding: '10px 12px', fontSize: 13, color: '#B45309', textAlign: 'right' }}>{row.withoutPosting}</td>
                   </tr>
                 ))}

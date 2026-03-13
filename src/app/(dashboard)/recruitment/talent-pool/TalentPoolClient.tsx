@@ -53,7 +53,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   active: { label: '활성', color: 'bg-[#D1FAE5] text-[#047857]' },
   contacted: { label: '접촉 중', color: 'bg-[#FEF3C7] text-[#B45309]' },
   expired: { label: '만료', color: 'bg-[#FAFAFA] text-[#999]' },
-  hired: { label: '채용 완료', color: 'bg-[#E8F5E9] text-[#00A844]' },
+  hired: { label: '채용 완료', color: 'bg-[#EEF2FF] text-[#4338CA]' },
 }
 
 const STAGE_LABELS: Record<string, string> = {
@@ -150,13 +150,13 @@ export default function TalentPoolClient({user }: {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={tCommon('searchPlaceholder')}
-            className="w-full pl-9 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853]"
+            className="w-full pl-9 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#555] focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853]"
+          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#555] focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
         >
           <option value="">전체 상태</option>
           <option value="active">활성</option>

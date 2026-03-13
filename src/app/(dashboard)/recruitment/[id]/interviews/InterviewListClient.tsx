@@ -102,7 +102,7 @@ const STATUS_KEYS: Record<string, string> = {
 
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   SCHEDULED: { bg: '#E3F2FD', text: '#2196F3' },
-  COMPLETED: { bg: '#E8F5E9', text: '#00C853' },
+  COMPLETED: { bg: '#EEF2FF', text: '#4F46E5' },
   CANCELLED: { bg: '#F5F5F5', text: '#999999' },
   NO_SHOW: { bg: '#FFEBEE', text: '#F44336' },
 }
@@ -116,8 +116,8 @@ const RECOMMENDATION_KEYS: Record<string, string> = {
 }
 
 const RECOMMENDATION_COLORS: Record<string, { bg: string; text: string }> = {
-  STRONG_YES: { bg: '#E8F5E9', text: '#00C853' },
-  YES: { bg: '#E8F5E9', text: '#00C853' },
+  STRONG_YES: { bg: '#EEF2FF', text: '#4F46E5' },
+  YES: { bg: '#EEF2FF', text: '#4F46E5' },
   NEUTRAL: { bg: '#FFF3E0', text: '#FF9800' },
   NO: { bg: '#FFEBEE', text: '#F44336' },
   STRONG_NO: { bg: '#FFEBEE', text: '#F44336' },
@@ -171,9 +171,9 @@ function ScoreSelect({
               width: 36,
               height: 36,
               borderRadius: 8,
-              border: n === value ? '2px solid #00C853' : '1px solid #E8E8E8',
-              background: n === value ? '#E8F5E9' : '#FFFFFF',
-              color: n === value ? '#00C853' : '#666',
+              border: n === value ? '2px solid #4F46E5' : '1px solid #E8E8E8',
+              background: n === value ? '#EEF2FF' : '#FFFFFF',
+              color: n === value ? '#4F46E5' : '#666',
               fontWeight: n === value ? 700 : 400,
               fontSize: 14,
               cursor: 'pointer',
@@ -394,7 +394,7 @@ function EvaluationModal({
             disabled={submitting}
             style={{
               borderRadius: 8,
-              backgroundColor: '#00C853',
+              backgroundColor: '#4F46E5',
               color: '#FFFFFF',
             }}
           >
@@ -589,8 +589,8 @@ export function InterviewListClient({
                 padding: '4px 10px',
                 borderRadius: 4,
                 border: 'none',
-                backgroundColor: evalCount > 0 ? '#E8F5E9' : '#E3F2FD',
-                color: evalCount > 0 ? '#00C853' : '#2196F3',
+                backgroundColor: evalCount > 0 ? '#EEF2FF' : '#E3F2FD',
+                color: evalCount > 0 ? '#4F46E5' : '#2196F3',
                 fontSize: 12,
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -630,7 +630,7 @@ export function InterviewListClient({
               }
               style={{
                 borderRadius: 8,
-                backgroundColor: '#00C853',
+                backgroundColor: '#4F46E5',
                 color: '#FFFFFF',
               }}
             >

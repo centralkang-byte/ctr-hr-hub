@@ -1,5 +1,5 @@
 export const CHART_THEME = {
-  colors: ['#5E81F4', '#8B5CF6', '#F59E0B', '#10B981', '#EF4444', '#6B7280'],
+  colors: ['#4F46E5', '#8B5CF6', '#F59E0B', '#10B981', '#EF4444', '#6B7280'],
   axis: {
     stroke: '#E5E7EB',
     tick: { fontSize: 12, fill: '#6B7280' },

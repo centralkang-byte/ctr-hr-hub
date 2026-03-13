@@ -45,8 +45,8 @@ export function LeavePromotionTab({ companyId }: LeavePromotionTabProps) {
       </div>
 
       {/* Info banner */}
-      <div className="flex items-start gap-3 rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4">
-        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
+      <div className="flex items-start gap-3 rounded-lg border border-[#4F46E5]/20 bg-[#4F46E5]/5 p-4">
+        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#4F46E5]" />
         <p className="text-xs text-[#8181A5]">
           연차촉진 규칙은 현재 시스템에 하드코딩되어 있습니다. 이 설정 화면은 H-2c에서 실제 시스템과 연결됩니다.
         </p>
@@ -134,7 +134,7 @@ export function LeavePromotionTab({ companyId }: LeavePromotionTabProps) {
               type="checkbox"
               checked={true}
               disabled
-              className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]"
+              className="h-4 w-4 rounded border-[#F0F0F3] text-[#4F46E5]"
             />
             <span className="text-[#1C1D21]">본인 (필수)</span>
           </label>
@@ -143,7 +143,7 @@ export function LeavePromotionTab({ companyId }: LeavePromotionTabProps) {
               type="checkbox"
               checked={settings.includeManager}
               onChange={(e) => setSettings((p) => ({ ...p, includeManager: e.target.checked }))}
-              className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]"
+              className="h-4 w-4 rounded border-[#F0F0F3] text-[#4F46E5]"
             />
             <span className="text-[#1C1D21]">직속 상사</span>
           </label>
@@ -152,7 +152,7 @@ export function LeavePromotionTab({ companyId }: LeavePromotionTabProps) {
               type="checkbox"
               checked={settings.includeHR}
               onChange={(e) => setSettings((p) => ({ ...p, includeHR: e.target.checked }))}
-              className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]"
+              className="h-4 w-4 rounded border-[#F0F0F3] text-[#4F46E5]"
             />
             <span className="text-[#1C1D21]">HR 담당자</span>
           </label>
@@ -173,7 +173,7 @@ export function LeavePromotionTab({ companyId }: LeavePromotionTabProps) {
               name="expiryPolicy"
               checked={settings.expiryPolicy === 'year_end'}
               onChange={() => setSettings((p) => ({ ...p, expiryPolicy: 'year_end' }))}
-              className="h-4 w-4 text-[#5E81F4]"
+              className="h-4 w-4 text-[#4F46E5]"
             />
             <span className="text-[#1C1D21]">연말 소멸</span>
             <span className="text-xs text-[#8181A5]">— 12/31에 잔여 연차 전액 소멸</span>
@@ -184,7 +184,7 @@ export function LeavePromotionTab({ companyId }: LeavePromotionTabProps) {
               name="expiryPolicy"
               checked={settings.expiryPolicy === 'carry_then_expire'}
               onChange={() => setSettings((p) => ({ ...p, expiryPolicy: 'carry_then_expire' }))}
-              className="h-4 w-4 text-[#5E81F4]"
+              className="h-4 w-4 text-[#4F46E5]"
             />
             <span className="text-[#1C1D21]">이월 후 소멸</span>
             <span className="text-xs text-[#8181A5]">— 이월 규칙에 따라 이월 후 잔여분 소멸</span>

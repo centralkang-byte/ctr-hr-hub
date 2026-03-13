@@ -140,7 +140,7 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
             {/* 1. 목표 달성률 */}
             <section>
               <div className="flex items-center gap-2 mb-2">
-                <Target className="w-4 h-4 text-[#00C853]" />
+                <Target className="w-4 h-4 text-[#4F46E5]" />
                 <span className="text-sm font-semibold text-[#333]">목표 달성률</span>
               </div>
               {data.goals.length === 0 ? (
@@ -155,7 +155,7 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
                         <div className="flex items-center gap-2 mt-1">
                           <div className="flex-1 bg-[#E8E8E8] rounded-full h-1.5">
                             <div
-                              className="bg-[#00C853] h-1.5 rounded-full"
+                              className="bg-[#4F46E5] h-1.5 rounded-full"
                               style={{ width: `${Math.min(rate ?? 0, 100)}%` }}
                             />
                           </div>

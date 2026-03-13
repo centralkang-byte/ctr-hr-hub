@@ -19,7 +19,7 @@ import type { SessionUser } from '@/types'
 // ─── Badge Styles ────────────────────────────────────────
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
-  DISCIPLINE_ACTIVE: 'bg-[#E8F5E9] text-[#2E7D32]',
+  DISCIPLINE_ACTIVE: 'bg-[#EEF2FF] text-[#2E7D32]',
   DISCIPLINE_EXPIRED: 'bg-[#F5F5F5] text-[#999]',
   DISCIPLINE_OVERTURNED: 'bg-[#FFF3E0] text-[#E65100]',
 }
@@ -29,7 +29,7 @@ const APPEAL_BADGE_STYLES: Record<string, string> = {
   FILED: 'bg-[#E3F2FD] text-[#1565C0]',
   UNDER_REVIEW: 'bg-[#FFF3E0] text-[#E65100]',
   UPHELD: 'bg-[#FFEBEE] text-[#C62828]',
-  OVERTURNED: 'bg-[#E8F5E9] text-[#2E7D32]',
+  OVERTURNED: 'bg-[#EEF2FF] text-[#2E7D32]',
 }
 
 // ─── Types ───────────────────────────────────────────────
@@ -121,7 +121,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
     return (
       <div className="min-h-screen bg-[#FAFAFA] p-6 flex items-center justify-center">
         <div className="flex items-center gap-2 text-sm text-[#999]">
-          <div className="w-5 h-5 border-2 border-[#E8E8E8] border-t-[#00C853] rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-[#E8E8E8] border-t-[#4F46E5] rounded-full animate-spin" />
           {tPage('loadingData')}
         </div>
       </div>
@@ -327,7 +327,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
                   onChange={(e) => setAppealText(e.target.value)}
                   rows={4}
                   placeholder={t('appealPlaceholder')}
-                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 resize-none"
+                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 resize-none"
                 />
                 <button
                   onClick={handleAppeal}

@@ -72,7 +72,7 @@ export default function PiiAccessDashboard() {
           label={`${t('gdpr.totalAccess')} (30d)`}
           value={data.total_30d ?? 0}
           icon={Eye}
-          color="bg-[#E8F5E9] text-[#00C853]"
+          color="bg-[#EEF2FF] text-[#4F46E5]"
         />
         <StatCard
           label={tc('today')}
@@ -102,7 +102,7 @@ export default function PiiAccessDashboard() {
                   </div>
                   <div className="w-full h-1.5 bg-[#F5F5F5] rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-[#00C853] rounded-full"
+                      className="h-full bg-[#4F46E5] rounded-full"
                       style={{ width: `${(item.count / maxByType) * 100}%` }}
                     />
                   </div>

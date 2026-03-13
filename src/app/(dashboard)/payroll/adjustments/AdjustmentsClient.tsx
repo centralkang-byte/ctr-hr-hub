@@ -267,7 +267,7 @@ export default function AdjustmentsClient({user }: Props) {
                                     <button
                                         key={run.id}
                                         onClick={() => setSelectedRun(run)}
-                                        className={`w-full text-left px-4 py-3 transition-colors hover:bg-[#F5F5F5] ${selectedRun?.id === run.id ? 'bg-[#F0FDF4] border-l-2 border-[#00C853]' : ''
+                                        className={`w-full text-left px-4 py-3 transition-colors hover:bg-[#F5F5F5] ${selectedRun?.id === run.id ? 'bg-[#F0FDF4] border-l-2 border-[#4F46E5]' : ''
                                             }`}
                                     >
                                         <p className="text-sm font-semibold text-[#1A1A1A]">{run.yearMonth}</p>
@@ -325,7 +325,7 @@ export default function AdjustmentsClient({user }: Props) {
                                             value={search}
                                             onChange={(e) => setSearch(e.target.value)}
                                             placeholder={tCommon('searchPlaceholder')}
-                                            className="pl-8 pr-3 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 w-48"
+                                            className="pl-8 pr-3 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 w-48"
                                         />
                                     </div>
                                     {/* Type filter */}
@@ -334,7 +334,7 @@ export default function AdjustmentsClient({user }: Props) {
                                         <select
                                             value={filterType}
                                             onChange={(e) => setFilterType(e.target.value)}
-                                            className="pl-8 pr-6 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white appearance-none focus:border-[#00C853]"
+                                            className="pl-8 pr-6 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white appearance-none focus:border-[#4F46E5]"
                                         >
                                             <option value="ALL">전체 유형</option>
                                             {Object.entries(ADJUSTMENT_TYPE_LABELS).map(([k, v]) => (
@@ -459,7 +459,7 @@ export default function AdjustmentsClient({user }: Props) {
                                         value={form.employeeId}
                                         onChange={(e) => setForm((f) => ({ ...f, employeeId: e.target.value }))}
                                         required
-                                        className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 appearance-none"
+                                        className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 appearance-none"
                                     >
                                         <option value="">직원 선택...</option>
                                         {employees.map((e) => (
@@ -478,7 +478,7 @@ export default function AdjustmentsClient({user }: Props) {
                                         <select
                                             value={form.type}
                                             onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as Adjustment['type'] }))}
-                                            className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white focus:border-[#00C853] appearance-none"
+                                            className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white focus:border-[#4F46E5] appearance-none"
                                         >
                                             {Object.entries(ADJUSTMENT_TYPE_LABELS).map(([k, v]) => (
                                                 <option key={k} value={k}>{v.label}</option>
@@ -493,7 +493,7 @@ export default function AdjustmentsClient({user }: Props) {
                                         <select
                                             value={form.category}
                                             onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-                                            className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white focus:border-[#00C853] appearance-none"
+                                            className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white focus:border-[#4F46E5] appearance-none"
                                         >
                                             {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                                         </select>
@@ -514,7 +514,7 @@ export default function AdjustmentsClient({user }: Props) {
                                     onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
                                     required
                                     placeholder="예: 500000 또는 -200000"
-                                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+                                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
                                 />
                             </div>
 
@@ -527,7 +527,7 @@ export default function AdjustmentsClient({user }: Props) {
                                     required
                                     rows={2}
                                     placeholder={tCommon('placeholderAdjustmentReason')}
-                                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm resize-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+                                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm resize-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
                                 />
                             </div>
 
@@ -542,7 +542,7 @@ export default function AdjustmentsClient({user }: Props) {
                                     value={form.evidenceUrl}
                                     onChange={(e) => setForm((f) => ({ ...f, evidenceUrl: e.target.value }))}
                                     placeholder="https://..."
-                                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+                                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
                                 />
                             </div>
 

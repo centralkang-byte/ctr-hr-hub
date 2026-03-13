@@ -109,7 +109,7 @@ interface DepartmentOption {
 
 // ─── Constants ──────────────────────────────────────────────
 
-const CHART_COLORS = ['#5E81F4', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899']
+const CHART_COLORS = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899']
 const BAR_DEPT_COLORS: Record<string, string> = {}
 
 function getDeptColor(index: number): string {
@@ -266,7 +266,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
                 ))}
               </SelectContent>
             </Select>
-            <Button onClick={openBulkDialog} className="bg-[#5E81F4] hover:bg-[#4A6DE0] text-white">
+            <Button onClick={openBulkDialog} className="bg-[#4F46E5] hover:bg-[#4A6DE0] text-white">
               일괄 부여
             </Button>
           </div>
@@ -276,10 +276,10 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
       {/* ═══ KPI Cards ═══ */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {/* Usage Rate */}
-        <Card className="border-l-4 border-l-[#5E81F4] bg-white">
+        <Card className="border-l-4 border-l-[#4F46E5] bg-white">
           <CardContent className="pt-5 pb-4 px-5">
             <div className="flex items-center gap-2 mb-2">
-              <TrendingUp className="h-4 w-4 text-[#5E81F4]" />
+              <TrendingUp className="h-4 w-4 text-[#4F46E5]" />
               <p className="text-xs text-[#8181A5] font-medium">전사 연차 사용률</p>
             </div>
             <p className="text-3xl font-bold text-[#1C1D21] tracking-tight">{kpi.usageRate}%</p>
@@ -344,7 +344,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
         <Card className="bg-white">
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4 text-[#5E81F4]" />
+              <BarChart3 className="h-4 w-4 text-[#4F46E5]" />
               <CardTitle className="text-sm font-bold text-[#1C1D21]">부서별 사용률</CardTitle>
             </div>
           </CardHeader>
@@ -446,7 +446,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
                   dataKey="actual"
                   stroke={CHART_THEME.colors[0]}
                   strokeWidth={2.5}
-                  dot={{ r: 4, fill: '#5E81F4' }}
+                  dot={{ r: 4, fill: '#4F46E5' }}
                   name="실제 사용"
                   connectNulls={false}
                 />
@@ -564,7 +564,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
             <Button
               onClick={handleBulkGrant}
               disabled={bulkLoading || !bulkForm.policyId || !bulkForm.departmentId || !bulkForm.days}
-              className="bg-[#5E81F4] hover:bg-[#4A6DE0] text-white"
+              className="bg-[#4F46E5] hover:bg-[#4A6DE0] text-white"
             >
               {bulkLoading ? '처리 중...' : '일괄 부여'}
             </Button>

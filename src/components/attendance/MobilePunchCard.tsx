@@ -99,7 +99,7 @@ export function MobilePunchCard({ isClockedIn = false, onPunch }: MobilePunchCar
           transition-all duration-200 active:scale-95
           disabled:opacity-70 disabled:cursor-not-allowed
           ${isClockingIn
-            ? 'bg-[#5E81F4] hover:bg-[#4B6EE4]'
+            ? 'bg-[#4F46E5] hover:bg-[#4B6EE4]'
             : 'bg-[#FF808B] hover:bg-[#F06070]'
           }
         `}
@@ -121,7 +121,7 @@ export function MobilePunchCard({ isClockedIn = false, onPunch }: MobilePunchCar
       {/* Status messages */}
       {status === 'success' && lastResult && (
         <div className="text-center space-y-1">
-          <p className="text-sm font-semibold text-[#5E81F4]">
+          <p className="text-sm font-semibold text-[#4F46E5]">
             {lastResult.type === 'IN' ? '출근 완료!' : '퇴근 완료!'}
           </p>
           <p className="text-xs text-[#8181A5]">

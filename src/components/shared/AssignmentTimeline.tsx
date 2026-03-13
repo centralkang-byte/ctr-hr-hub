@@ -117,10 +117,10 @@ export function AssignmentTimeline({
                 onClick={() => onEventClick?.(event)}
                 className={cn(
                   'w-full rounded-lg border p-4 text-left transition-all',
-                  onEventClick && 'cursor-pointer hover:border-[#00C853] hover:shadow-sm',
+                  onEventClick && 'cursor-pointer hover:border-[#4F46E5] hover:shadow-sm',
                   !onEventClick && 'cursor-default',
                   event.highlighted
-                    ? 'border-[#00C853] bg-[#E8F5E9] ring-1 ring-[#00C853]/20'
+                    ? 'border-[#4F46E5] bg-[#EEF2FF] ring-1 ring-[#4F46E5]/20'
                     : 'border-[#E8E8E8] bg-white',
                 )}
               >

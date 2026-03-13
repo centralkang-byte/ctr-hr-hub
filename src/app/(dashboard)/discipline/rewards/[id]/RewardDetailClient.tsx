@@ -19,13 +19,13 @@ import type { SessionUser } from '@/types'
 // ─── Badge Styles ────────────────────────────────────────
 
 const REWARD_TYPE_BADGE_STYLES: Record<string, string> = {
-  COMMENDATION: 'bg-[#E8F5E9] text-[#2E7D32]',
+  COMMENDATION: 'bg-[#EEF2FF] text-[#2E7D32]',
   BONUS_AWARD: 'bg-[#E3F2FD] text-[#1565C0]',
   CTR_VALUE_AWARD: 'bg-[#F3E5F5] text-[#7B1FA2]',
   LONG_SERVICE: 'bg-[#FFF3E0] text-[#E65100]',
-  INNOVATION: 'bg-[#E8F5E9] text-[#00C853]',
+  INNOVATION: 'bg-[#EEF2FF] text-[#4F46E5]',
   SAFETY_AWARD: 'bg-[#E3F2FD] text-[#2196F3]',
-  PROMOTION_RECOMMENDATION: 'bg-[#E8F5E9] text-[#2E7D32]',
+  PROMOTION_RECOMMENDATION: 'bg-[#EEF2FF] text-[#2E7D32]',
   OTHER: 'bg-[#F5F5F5] text-[#999]',
 }
 
@@ -95,7 +95,7 @@ export default function RewardDetailClient({ user, id }: Props) {
     return (
       <div className="min-h-screen bg-[#FAFAFA] p-6 flex items-center justify-center">
         <div className="flex items-center gap-2 text-sm text-[#999]">
-          <div className="w-5 h-5 border-2 border-[#E8E8E8] border-t-[#00C853] rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-[#E8E8E8] border-t-[#4F46E5] rounded-full animate-spin" />
           {tRewards('loadingData')}
         </div>
       </div>
@@ -123,8 +123,8 @@ export default function RewardDetailClient({ user, id }: Props) {
           <ChevronLeft className="w-4 h-4 text-[#666]" />
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#E8F5E9] rounded-lg flex items-center justify-center">
-            <Award className="w-5 h-5 text-[#00C853]" />
+          <div className="w-10 h-10 bg-[#EEF2FF] rounded-lg flex items-center justify-center">
+            <Award className="w-5 h-5 text-[#4F46E5]" />
           </div>
           <div>
             <h1 className="text-xl font-bold text-[#1A1A1A] tracking-[-0.02em]">

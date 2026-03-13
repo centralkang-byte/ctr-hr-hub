@@ -179,7 +179,7 @@ export default function TeamSkillsClient({user }: {
               onClick={() => setCurrentMemberIndex(idx)}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg whitespace-nowrap text-sm transition-all ${
                 idx === currentMemberIndex
-                  ? 'bg-[#E8F5E9] text-[#00C853] font-medium'
+                  ? 'bg-[#EEF2FF] text-[#4F46E5] font-medium'
                   : 'text-[#555] hover:bg-[#FAFAFA]'
               }`}
             >
@@ -196,7 +196,7 @@ export default function TeamSkillsClient({user }: {
           <div className="p-5">
             {/* 현재 팀원 정보 */}
             <div className="flex items-center gap-4 mb-6 pb-5 border-b border-[#F5F5F5]">
-              <div className="w-12 h-12 bg-[#E8F5E9] rounded-full flex items-center justify-center text-lg font-bold text-[#00C853]">
+              <div className="w-12 h-12 bg-[#EEF2FF] rounded-full flex items-center justify-center text-lg font-bold text-[#4F46E5]">
                 {currentMember.name.charAt(0)}
               </div>
               <div>
@@ -260,8 +260,8 @@ export default function TeamSkillsClient({user }: {
                                     title={`${l}: ${LEVEL_LABELS[l]}`}
                                     className={`relative w-10 h-10 rounded-lg border text-sm font-medium transition-all ${
                                       selected
-                                        ? 'border-[#00C853] bg-[#E8F5E9] text-[#00C853]'
-                                        : 'border-[#E8E8E8] text-[#666] hover:border-[#00C853]'
+                                        ? 'border-[#4F46E5] bg-[#EEF2FF] text-[#4F46E5]'
+                                        : 'border-[#E8E8E8] text-[#666] hover:border-[#4F46E5]'
                                     }`}
                                   >
                                     {l}
@@ -294,7 +294,7 @@ export default function TeamSkillsClient({user }: {
                                   },
                                 }))
                               }
-                              className="mt-2 w-full px-3 py-1.5 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+                              className="mt-2 w-full px-3 py-1.5 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
                             />
                           )}
                         </div>

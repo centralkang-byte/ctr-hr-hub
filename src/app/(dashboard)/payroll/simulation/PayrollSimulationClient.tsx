@@ -281,7 +281,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-primary/5 rounded-lg flex items-center justify-center">
-            <Calculator className="w-5 h-5 text-[#5E81F4]" />
+            <Calculator className="w-5 h-5 text-[#4F46E5]" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-[#1C1D21]">{t('simulation')}</h1>
@@ -304,7 +304,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
           <div className="flex border border-[#F0F0F3] rounded-lg overflow-hidden">
             {(['SINGLE', 'BULK'] as SimMode[]).map(m => (
               <button key={m} onClick={() => { setMode(m); setResult(null) }}
-                className={`flex-1 px-3 py-2 text-sm font-medium transition-colors ${mode === m ? 'bg-[#5E81F4] text-white' : 'bg-white text-[#8181A5] hover:text-[#1C1D21]'}`}>
+                className={`flex-1 px-3 py-2 text-sm font-medium transition-colors ${mode === m ? 'bg-[#4F46E5] text-white' : 'bg-white text-[#8181A5] hover:text-[#1C1D21]'}`}>
                 {m === 'SINGLE' ? t('singleSim') : t('bulkSim')}
               </button>
             ))}
@@ -499,7 +499,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
           {error && <div className="text-sm text-[#DC2626] bg-[#FEE2E2] px-4 py-3 rounded-lg">{error}</div>}
 
           <button onClick={handleCalculate} disabled={!isValid || isLoading}
-            className="w-full px-4 py-3 bg-[#5E81F4] text-white rounded-lg text-sm font-medium hover:bg-[#4B6FE0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+            className="w-full px-4 py-3 bg-[#4F46E5] text-white rounded-lg text-sm font-medium hover:bg-[#4B6FE0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
             {isLoading ? <><Loader2 className="w-4 h-4 animate-spin" />{tCommon('loading')}</> : t('calculate')}
           </button>
         </div>

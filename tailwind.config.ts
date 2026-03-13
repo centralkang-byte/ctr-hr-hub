@@ -57,12 +57,12 @@ const config: Config = {
 					'4': 'hsl(var(--chart-4))',
 					'5': 'hsl(var(--chart-5))'
 				},
-				// CTR Brand Colors (FLEX Design System)
-				'ctr-primary': '#00C853',
-				'ctr-primary-dark': '#00A844',
-				'ctr-primary-light': '#E8F5E9',
-				'ctr-secondary': '#0068B7',
-				'ctr-accent': '#EF4444',
+				// CTR Brand Colors (Slate Indigo Design System)
+				'ctr-primary': '#4F46E5',
+				'ctr-primary-dark': '#4338CA',
+				'ctr-primary-light': '#EEF2FF',
+				'ctr-secondary': '#64748B',
+				'ctr-accent': '#F59E0B',
 				'ctr-success': '#10B981',
 				'ctr-warning': '#F59E0B',
 				'ctr-info': '#6366F1',

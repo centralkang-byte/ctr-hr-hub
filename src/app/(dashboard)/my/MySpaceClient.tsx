@@ -58,7 +58,7 @@ function getYearsOfService(hireDate: Date): string {
 // ─── Quick Links ────────────────────────────────────────────
 
 const QUICK_LINKS = [
-  { label: '내 프로필', href: '/my/profile', icon: User, color: 'bg-[#E8F5E9] text-[#00A844]' },
+  { label: '내 프로필', href: '/my/profile', icon: User, color: 'bg-[#EEF2FF] text-[#4338CA]' },
   { label: '휴가 신청', href: '/my/leave', icon: CalendarDays, color: 'bg-[#E0E7FF] text-[#4338CA]' },
   { label: '내 성과', href: '/performance', icon: Target, color: 'bg-[#FEF3C7] text-[#B45309]' },
   { label: '교육 신청', href: '/my/training', icon: BookOpen, color: 'bg-[#FEE2E2] text-[#B91C1C]' },
@@ -83,7 +83,7 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
       {/* Profile Summary */}
       <div className={`${CARD_STYLES.kpi} flex items-center justify-between`}>
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-[#00C853] flex items-center justify-center text-white text-xl font-bold">
+          <div className="w-14 h-14 rounded-full bg-[#4F46E5] flex items-center justify-center text-white text-xl font-bold">
             {employee.name.slice(0, 1)}
           </div>
           <div>
@@ -94,7 +94,7 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
         </div>
         <Link
           href="/my/profile"
-          className="flex items-center gap-1 text-sm text-[#00C853] hover:underline"
+          className="flex items-center gap-1 text-sm text-[#4F46E5] hover:underline"
         >
           프로필 편집 <ChevronRight className="w-4 h-4" />
         </Link>
@@ -135,7 +135,7 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
             <Link
               key={link.href}
               href={link.href}
-              className={`${CARD_STYLES.kpi} flex items-center gap-3 hover:border-[#00C853] hover:shadow-sm transition-all`}
+              className={`${CARD_STYLES.kpi} flex items-center gap-3 hover:border-[#4F46E5] hover:shadow-sm transition-all`}
             >
               <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${link.color}`}>
                 <link.icon className="w-5 h-5" />
@@ -152,10 +152,10 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
         <div className={CARD_STYLES.padded}>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-[#00C853]" />
+              <Clock className="w-4 h-4 text-[#4F46E5]" />
               <h2 className="text-base font-semibold text-[#1A1A1A]">휴가 잔여 현황</h2>
             </div>
-            <Link href="/my/leave" className="text-sm text-[#00C853] hover:underline">자세히</Link>
+            <Link href="/my/leave" className="text-sm text-[#4F46E5] hover:underline">자세히</Link>
           </div>
           <div className="space-y-2">
             {leaveBalances.slice(0, 5).map((lb) => {
@@ -167,7 +167,7 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
                 <div key={lb.id} className="flex items-center gap-3">
                   <p className="text-sm text-[#333] w-28 shrink-0">{lb.policy.name}</p>
                   <div className="flex-1 h-2 bg-[#F5F5F5] rounded-full overflow-hidden">
-                    <div className="h-full bg-[#00C853] rounded-full" style={{ width: `${pct}%` }} />
+                    <div className="h-full bg-[#4F46E5] rounded-full" style={{ width: `${pct}%` }} />
                   </div>
                   <p className="text-sm text-[#555] w-16 text-right shrink-0">
                     {remaining.toFixed(1)} / {granted.toFixed(1)}일
@@ -182,7 +182,7 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
       {/* Notifications placeholder */}
       <div className={CARD_STYLES.padded}>
         <div className="flex items-center gap-2 mb-3">
-          <Bell className="w-4 h-4 text-[#00C853]" />
+          <Bell className="w-4 h-4 text-[#4F46E5]" />
           <h2 className="text-base font-semibold text-[#1A1A1A]">최근 알림</h2>
         </div>
         <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />

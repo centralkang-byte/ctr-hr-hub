@@ -33,7 +33,7 @@ export function ChartCard({ title, children, loading, error, onRetry, className 
         <div className="flex flex-col items-center justify-center h-48 gap-2">
           <p className="text-sm text-gray-500">데이터를 불러올 수 없습니다</p>
           {onRetry && (
-            <button onClick={onRetry} className="flex items-center gap-1 text-xs text-[#5E81F4] hover:text-[#4A6BD4] transition-colors">
+            <button onClick={onRetry} className="flex items-center gap-1 text-xs text-[#4F46E5] hover:text-[#4338CA] transition-colors">
               <RefreshCw className="h-3 w-3" /> 다시 시도
             </button>
           )}

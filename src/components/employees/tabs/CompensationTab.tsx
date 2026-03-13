@@ -88,7 +88,7 @@ function SalaryBandBar({
   return (
     <div className="mt-2">
       <div className="relative h-3 rounded-full bg-[#E8E8E8]">
-        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#D1FAE5] via-[#00C853] to-[#D1FAE5]" />
+        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#D1FAE5] via-[#4F46E5] to-[#D1FAE5]" />
         {/* mid marker */}
         <div
           className="absolute top-0 h-full w-0.5 bg-white/80"

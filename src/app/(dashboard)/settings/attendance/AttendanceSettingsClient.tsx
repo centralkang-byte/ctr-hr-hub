@@ -88,8 +88,8 @@ function Toggle({
         role="switch"
         aria-checked={checked}
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-[#00C853]/30 ${
-          checked ? 'bg-[#00C853]' : 'bg-[#E8E8E8]'
+        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/30 ${
+          checked ? 'bg-[#4F46E5]' : 'bg-[#E8E8E8]'
         }`}
       >
         <span
@@ -132,7 +132,7 @@ function NumberInput({
           min={min}
           max={max}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="w-24 border-[#D4D4D4] text-sm focus:ring-2 focus:ring-[#00C853]/10"
+          className="w-24 border-[#D4D4D4] text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
         />
         {unit && <span className="text-sm text-[#666]">{unit}</span>}
       </div>
@@ -304,7 +304,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
                   type="time"
                   value={settings.flexWork.coreTimeStart}
                   onChange={(e) => patchFlexWork({ coreTimeStart: e.target.value })}
-                  className="mt-1 border-[#D4D4D4] text-sm focus:ring-2 focus:ring-[#00C853]/10"
+                  className="mt-1 border-[#D4D4D4] text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
                 />
               </div>
               <div>
@@ -313,7 +313,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
                   type="time"
                   value={settings.flexWork.coreTimeEnd}
                   onChange={(e) => patchFlexWork({ coreTimeEnd: e.target.value })}
-                  className="mt-1 border-[#D4D4D4] text-sm focus:ring-2 focus:ring-[#00C853]/10"
+                  className="mt-1 border-[#D4D4D4] text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
                 />
               </div>
               <NumberInput
@@ -547,7 +547,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
 
       {loading ? (
         <div className="flex items-center justify-center py-24">
-          <Loader2 className="h-8 w-8 animate-spin text-[#00C853]" />
+          <Loader2 className="h-8 w-8 animate-spin text-[#4F46E5]" />
         </div>
       ) : (
         <div className="mt-6 space-y-6">
@@ -559,7 +559,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
                 onClick={() => setTab(t.id)}
                 className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium border-b-2 transition-colors ${
                   tab === t.id
-                    ? 'border-[#00C853] text-[#00C853]'
+                    ? 'border-[#4F46E5] text-[#4F46E5]'
                     : 'border-transparent text-[#666] hover:text-[#333]'
                 }`}
               >
@@ -593,7 +593,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
           <div className="flex items-center justify-between border-t border-[#E8E8E8] pt-4">
             <div className="flex items-center gap-2">
               {settings.isCustom && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#E8F5E9] text-[#00A844] border border-[#E8F5E9]">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EEF2FF] text-[#4338CA] border border-[#EEF2FF]">
                   법인 커스텀 설정
                 </span>
               )}

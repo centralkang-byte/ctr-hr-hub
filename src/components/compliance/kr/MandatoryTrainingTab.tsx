@@ -130,7 +130,7 @@ export default function MandatoryTrainingTab() {
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(Number(e.target.value))}
-              className="appearance-none pl-3 pr-8 py-2 text-sm font-medium border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00C853]/10 bg-white"
+              className="appearance-none pl-3 pr-8 py-2 text-sm font-medium border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10 bg-white"
             >
               {YEAR_OPTIONS.map((y) => (
                 <option key={y} value={y}>
@@ -171,7 +171,7 @@ export default function MandatoryTrainingTab() {
           <p className="text-sm text-[#666]">{selectedYear}년 교육 데이터가 없습니다.</p>
           <button
             onClick={() => setShowForm(true)}
-            className="mt-4 text-sm text-[#00C853] hover:text-[#00A844] font-medium"
+            className="mt-4 text-sm text-[#4F46E5] hover:text-[#4338CA] font-medium"
           >
             + 교육 추가하기
           </button>
@@ -185,7 +185,7 @@ export default function MandatoryTrainingTab() {
               training.completionRate >= 80
                 ? 'bg-[#059669]'
                 : training.completionRate >= 50
-                ? 'bg-[#00C853]'
+                ? 'bg-[#4F46E5]'
                 : overdue
                 ? 'bg-[#EF4444]'
                 : 'bg-[#F59E0B]'
@@ -198,7 +198,7 @@ export default function MandatoryTrainingTab() {
                 {/* Top row */}
                 <div className="flex items-start justify-between mb-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#E8F5E9] text-[#00A844] border border-[#E8F5E9]">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EEF2FF] text-[#4338CA] border border-[#EEF2FF]">
                       {training.trainingType}
                     </span>
                     {overdue && (

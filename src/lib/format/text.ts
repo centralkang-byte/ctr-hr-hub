@@ -21,7 +21,7 @@ export function getInitials(name: string | null | undefined): string {
 export function getAvatarColor(name: string | null | undefined): string {
   if (!name) return '#6B7280'
   const colors = [
-    '#5E81F4', '#8B5CF6', '#F59E0B', '#10B981',
+    '#4F46E5', '#8B5CF6', '#F59E0B', '#10B981',
     '#EF4444', '#EC4899', '#06B6D4', '#84CC16',
   ]
   let hash = 0

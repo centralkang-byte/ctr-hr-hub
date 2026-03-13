@@ -182,7 +182,7 @@ function RadarModal({
         <div className="p-5">
           {loading ? (
             <div className="flex items-center justify-center h-64">
-              <div className="animate-spin w-6 h-6 border-2 border-[#00C853] border-t-transparent rounded-full" />
+              <div className="animate-spin w-6 h-6 border-2 border-[#4F46E5] border-t-transparent rounded-full" />
             </div>
           ) : !data?.radarData.length ? (
             <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
@@ -193,7 +193,7 @@ function RadarModal({
                 {[
                   { label: '미달 역량', value: data.summary.criticalGaps, color: 'text-[#B91C1C]' },
                   { label: '강점 역량', value: data.summary.strengths, color: 'text-[#047857]' },
-                  { label: '달성률', value: `${data.summary.overallProgress}%`, color: 'text-[#00C853]' },
+                  { label: '달성률', value: `${data.summary.overallProgress}%`, color: 'text-[#4F46E5]' },
                 ].map((k) => (
                   <div key={k.label} className="bg-[#FAFAFA] rounded-lg p-3 text-center">
                     <p className="text-xs text-[#666]">{k.label}</p>
@@ -327,7 +327,7 @@ export default function SkillMatrixClient({user,
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: '전체 직원', value: gapReport.totalEmployees, icon: Users, color: 'text-[#1A1A1A]' },
-            { label: '평가 완료율', value: `${gapReport.completionRate}%`, icon: BarChart2, color: 'text-[#00C853]' },
+            { label: '평가 완료율', value: `${gapReport.completionRate}%`, icon: BarChart2, color: 'text-[#4F46E5]' },
             { label: '주요 갭 역량', value: gapReport.topGaps.length, icon: TrendingDown, color: 'text-[#B91C1C]' },
             { label: '강점 역량', value: gapReport.topStrengths.length, icon: TrendingUp, color: 'text-[#047857]' },
           ].map((k) => (
@@ -355,7 +355,7 @@ export default function SkillMatrixClient({user,
               onClick={() => setActiveTab(t.key)}
               className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === t.key
-                  ? 'border-[#00C853] text-[#00C853]'
+                  ? 'border-[#4F46E5] text-[#4F46E5]'
                   : 'border-transparent text-[#666] hover:text-[#333]'
               }`}
             >
@@ -367,7 +367,7 @@ export default function SkillMatrixClient({user,
         <div className="p-5">
           {loading ? (
             <div className="flex items-center justify-center h-48">
-              <div className="animate-spin w-6 h-6 border-2 border-[#00C853] border-t-transparent rounded-full" />
+              <div className="animate-spin w-6 h-6 border-2 border-[#4F46E5] border-t-transparent rounded-full" />
             </div>
           ) : (
             <>
@@ -424,7 +424,7 @@ export default function SkillMatrixClient({user,
                               <td className="px-3 py-2 border border-[#E8E8E8] whitespace-nowrap">
                                 <button
                                   onClick={() => setRadarTarget(emp.employeeId)}
-                                  className="text-left hover:text-[#00C853] transition-colors"
+                                  className="text-left hover:text-[#4F46E5] transition-colors"
                                 >
                                   <p className="font-medium text-[#1A1A1A]">{emp.employeeName}</p>
                                   <p className="text-[#999]">{emp.grade} · {emp.department}</p>

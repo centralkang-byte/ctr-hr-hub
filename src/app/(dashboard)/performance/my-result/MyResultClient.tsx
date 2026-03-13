@@ -52,7 +52,7 @@ const GRADE_STYLE: Record<string, { bg: string; text: string; label: string }> =
     EXCEEDS_PLUS: { bg: 'bg-[#EEF2FF]', text: 'text-[#4338CA]', label: '탁월 (E+)' },
     EXCEEDS: { bg: 'bg-[#DBEAFE]', text: 'text-[#1D4ED8]', label: '우수 (E)' },
     MEETS_PLUS: { bg: 'bg-[#D1FAE5]', text: 'text-[#047857]', label: '기대 이상 (M+)' },
-    MEETS: { bg: 'bg-[#E8F5E9]', text: 'text-[#2E7D32]', label: '기대 충족 (M)' },
+    MEETS: { bg: 'bg-[#EEF2FF]', text: 'text-[#2E7D32]', label: '기대 충족 (M)' },
     BELOW: { bg: 'bg-[#FEF3C7]', text: 'text-[#92400E]', label: '개선 필요 (B)' },
     BELOW_MINUS: { bg: 'bg-[#FFEBEE]', text: 'text-[#C62828]', label: '미흡 (B-)' },
 }
@@ -133,7 +133,7 @@ export default function MyResultClient({user }: {
                     <Award className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
                     <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">아직 결과가 공개되지 않았습니다.</h2>
                     <p className="text-sm text-[#8181A5]">결과는 평가가 완료된 후 공개됩니다.</p>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#4F46E5] hover:underline">
                         <ArrowLeft className="h-4 w-4" /> 돌아가기
                     </a>
                 </div>
@@ -214,8 +214,8 @@ export default function MyResultClient({user }: {
                                     <p className="mt-1 text-xl font-bold text-[#1C1D21]">{result.competencyScore?.toFixed(1) ?? '-'}<span className="text-sm text-[#8181A5]">/5.0</span></p>
                                 </div>
                                 <div>
-                                    <div className="flex items-center justify-center gap-1 text-xs text-[#5E81F4]"><Award className="h-3.5 w-3.5" /> 종합 점수</div>
-                                    <p className="mt-1 text-xl font-bold text-[#5E81F4]">{result.totalScore?.toFixed(2) ?? '-'}<span className="text-sm text-[#8181A5]">/5.0</span></p>
+                                    <div className="flex items-center justify-center gap-1 text-xs text-[#4F46E5]"><Award className="h-3.5 w-3.5" /> 종합 점수</div>
+                                    <p className="mt-1 text-xl font-bold text-[#4F46E5]">{result.totalScore?.toFixed(2) ?? '-'}<span className="text-sm text-[#8181A5]">/5.0</span></p>
                                 </div>
                             </div>
                             <p className="mt-3 text-xs text-[#8181A5]">(MBO {result.mboWeight}% + BEI {result.beiWeight}%)</p>
@@ -272,9 +272,9 @@ export default function MyResultClient({user }: {
                                             </div>
                                         ))}
                                     </div>
-                                    <div className="mb-4 rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-3 text-center">
+                                    <div className="mb-4 rounded-lg border border-[#4F46E5]/20 bg-[#4F46E5]/5 p-3 text-center">
                                         <span className="text-sm text-[#8181A5]">종합 평균: </span>
-                                        <span className="text-lg font-bold text-[#5E81F4]">{peerResult.summary.overallAverage.toFixed(1)} / 5.0</span>
+                                        <span className="text-lg font-bold text-[#4F46E5]">{peerResult.summary.overallAverage.toFixed(1)} / 5.0</span>
                                     </div>
 
                                     {/* Anonymous comments */}
@@ -317,7 +317,7 @@ export default function MyResultClient({user }: {
                                         </div>
                                     )}
                                     <button onClick={handleAcknowledge} disabled={acknowledging}
-                                        className="w-full rounded-lg bg-[#5E81F4] py-3 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40 transition-colors">
+                                        className="w-full rounded-lg bg-[#4F46E5] py-3 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40 transition-colors">
                                         {acknowledging ? '처리 중...' : '결과를 확인합니다'}
                                     </button>
                                     <div className="mt-3 flex items-start gap-1.5 text-xs text-[#8181A5]">

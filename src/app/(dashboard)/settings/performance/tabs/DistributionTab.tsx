@@ -32,7 +32,7 @@ export function DistributionTab({ companyId }: Props) {
     }),
   })
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" /></div>
 
   return (
     <div className="space-y-4">
@@ -61,7 +61,7 @@ export function DistributionTab({ companyId }: Props) {
 
       <SettingFieldWithOverride label="강제 배분" description="가이드라인을 필수로 적용할지 선택" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={settings.forced} onChange={(e) => setSettings((p) => ({ ...p, forced: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]" />
+          <input type="checkbox" checked={settings.forced} onChange={(e) => setSettings((p) => ({ ...p, forced: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#4F46E5]" />
           <span className="text-[#1C1D21]">강제 배분 적용</span>
         </label>
       </SettingFieldWithOverride>

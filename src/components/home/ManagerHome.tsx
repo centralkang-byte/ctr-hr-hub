@@ -71,14 +71,14 @@ export function ManagerHome({ user }: ManagerHomeProps) {
           <Card className="border-[#F0F0F3] shadow-none">
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1C1D21]">
-                <Users className="h-4 w-4 text-[#5E81F4]" />
+                <Users className="h-4 w-4 text-[#4F46E5]" />
                 팀 현황
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 pb-4">
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div>
-                  <p className="text-xl font-bold text-[#00C853]">8</p>
+                  <p className="text-xl font-bold text-[#4F46E5]">8</p>
                   <p className="text-xs text-[#8181A5]">출근</p>
                 </div>
                 <div>
@@ -95,7 +95,7 @@ export function ManagerHome({ user }: ManagerHomeProps) {
               </p>
               <Link
                 href="/attendance/team"
-                className="block text-center text-xs font-medium text-[#5E81F4] hover:underline"
+                className="block text-center text-xs font-medium text-[#4F46E5] hover:underline"
               >
                 팀 근태 상세 →
               </Link>
@@ -144,7 +144,7 @@ export function ManagerHome({ user }: ManagerHomeProps) {
                   <p className="text-sm font-medium text-[#1C1D21]">박지수</p>
                   <p className="text-xs text-[#8181A5]">주간 1:1</p>
                 </div>
-                <Badge className="bg-[#5E81F4] text-[10px] text-white">오늘 14:00</Badge>
+                <Badge className="bg-[#4F46E5] text-[10px] text-white">오늘 14:00</Badge>
               </div>
               <div className="flex items-center justify-between">
                 <div>
@@ -155,7 +155,7 @@ export function ManagerHome({ user }: ManagerHomeProps) {
               </div>
               <Link
                 href="/performance/one-on-one"
-                className="block pt-1 text-center text-xs font-medium text-[#5E81F4] hover:underline"
+                className="block pt-1 text-center text-xs font-medium text-[#4F46E5] hover:underline"
               >
                 전체 보기 →
               </Link>
@@ -166,20 +166,20 @@ export function ManagerHome({ user }: ManagerHomeProps) {
           <Card className="border-[#F0F0F3] shadow-none">
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1C1D21]">
-                <UserCheck className="h-4 w-4 text-[#00C853]" />
+                <UserCheck className="h-4 w-4 text-[#4F46E5]" />
                 팀원 현황
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 pb-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-[#8181A5]">전체 팀원</span>
-                <span className="text-lg font-bold text-[#5E81F4]">
+                <span className="text-lg font-bold text-[#4F46E5]">
                   {summary?.teamCount ?? '-'}명
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-[#8181A5]">신규 입사</span>
-                <span className="text-sm font-medium text-[#00C853]">2명</span>
+                <span className="text-sm font-medium text-[#4F46E5]">2명</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-[#8181A5]">수습 중</span>
@@ -187,7 +187,7 @@ export function ManagerHome({ user }: ManagerHomeProps) {
               </div>
               <Link
                 href="/manager-hub"
-                className="block pt-1 text-center text-xs font-medium text-[#5E81F4] hover:underline"
+                className="block pt-1 text-center text-xs font-medium text-[#4F46E5] hover:underline"
               >
                 팀 전체 현황 →
               </Link>

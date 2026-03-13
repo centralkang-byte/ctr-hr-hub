@@ -244,7 +244,7 @@ export default function CoursesTab() {
             <div>
               <label className="text-sm font-medium text-[#333] mb-1 block">과정명 *</label>
               <input
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
                 value={form.title}
                 onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
               />
@@ -252,7 +252,7 @@ export default function CoursesTab() {
             <div>
               <label className="text-sm font-medium text-[#333] mb-1 block">설명</label>
               <textarea
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
                 rows={3}
                 value={form.description}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
@@ -304,7 +304,7 @@ export default function CoursesTab() {
               <input
                 type="checkbox"
                 id="isMandatory"
-                className="w-4 h-4 rounded border-[#D4D4D4] text-[#00C853]"
+                className="w-4 h-4 rounded border-[#D4D4D4] text-[#4F46E5]"
                 checked={form.isMandatory}
                 onChange={(e) => setForm((f) => ({ ...f, isMandatory: e.target.checked }))}
               />

@@ -26,7 +26,7 @@ const TEST_ACCOUNTS: TestAccount[] = [
   {
     name: '김인사',
     role: 'HR 담당자',
-    roleBadgeClass: 'bg-[#E8F5E9] text-[#00A844]',
+    roleBadgeClass: 'bg-[#EEF2FF] text-[#4338CA]',
     email: 'hr@ctr.co.kr',
   },
   {
@@ -112,7 +112,7 @@ export default function LoginPageContent() {
               <Button
                 onClick={handleM365Login}
                 disabled={loadingId !== null}
-                className="w-full bg-ctr-primary hover:bg-ctr-primary/90"
+                className="w-full bg-white text-[#333] border border-[#D4D4D4] hover:bg-[#F5F5FA] shadow-sm"
                 size="lg"
               >
                 {loadingId === 'm365' ? (
@@ -186,9 +186,11 @@ export default function LoginPageContent() {
               )}
 
               {/* Footer */}
-              <p className="text-center text-[10px] text-muted-foreground">
-                {ko.auth.notRegistered}
-              </p>
+              <div className="mt-4 rounded-lg bg-[#F5F5FA] px-4 py-3 text-center">
+                <p className="text-xs text-[#555]">
+                  계정이 없거나 로그인이 불가한 경우 <span className="font-semibold text-[#333]">HR 담당자</span>에게 문의해주세요.
+                </p>
+              </div>
             </CardContent>
           </Card>
         </div>

@@ -97,7 +97,7 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
               {tc('name')} <span className="text-[#EF4444]">*</span>
             </label>
             <select
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853]"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
               value={form.employee_id}
               onChange={(e) => handleChange('employee_id', e.target.value)}
             >
@@ -116,7 +116,7 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
               {t('gdpr.purpose')} <span className="text-[#EF4444]">*</span>
             </label>
             <select
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853]"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
               value={form.purpose}
               onChange={(e) => handleChange('purpose', e.target.value)}
             >
@@ -135,7 +135,7 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
               {t('gdpr.legalBasis')} <span className="text-[#EF4444]">*</span>
             </label>
             <textarea
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853] resize-none"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] resize-none"
               rows={3}
               placeholder="e.g., Art. 6(1)(b) – Contractual necessity"
               value={form.legal_basis}
@@ -150,7 +150,7 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
             </label>
             <input
               type="date"
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 focus:border-[#00C853]"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
               value={form.expires_at}
               onChange={(e) => handleChange('expires_at', e.target.value)}
             />

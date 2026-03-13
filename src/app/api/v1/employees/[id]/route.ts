@@ -51,7 +51,19 @@ export const GET = withPermission(
       throw notFound('직원을 찾을 수 없습니다.')
     }
 
-    return apiSuccess(employee)
+    // Flatten assignments[0] into top-level fields for frontend compatibility
+    // EmployeeDetail expects { department, jobGrade, jobCategory, status, employmentType } at root level
+    const a = employee.assignments?.[0]
+    const mappedEmployee = {
+      ...employee,
+      department: a?.department ?? null,
+      jobGrade: a?.jobGrade ?? null,
+      jobCategory: a?.jobCategory ?? null,
+      employmentType: a?.employmentType ?? null,
+      status: a?.status ?? 'ACTIVE',
+    }
+
+    return apiSuccess(mappedEmployee)
   },
   perm(MODULE.EMPLOYEES, ACTION.VIEW),
 )

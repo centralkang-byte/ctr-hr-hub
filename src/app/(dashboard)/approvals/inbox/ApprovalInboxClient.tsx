@@ -61,7 +61,7 @@ const MODULE_ICON: Record<string, React.ElementType> = {
 }
 
 const MODULE_COLOR: Record<string, string> = {
-  LEAVE:       'text-[#5E81F4]',
+  LEAVE:       'text-[#4F46E5]',
   PERFORMANCE: 'text-[#A855F7]',
   PAYROLL:     'text-[#F59E0B]',
 }
@@ -90,6 +90,7 @@ interface RejectionModalProps {
 }
 
 function RejectionModal({ item, onClose, onConfirm }: RejectionModalProps) {
+  const tCommon = useTranslations('common')
   const [reason,     setReason]     = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error,      setError]      = useState('')
@@ -126,7 +127,7 @@ function RejectionModal({ item, onClose, onConfirm }: RejectionModalProps) {
 
         {/* Reason textarea */}
         <textarea
-          className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm text-[#1C1D21] placeholder:text-[#C0C0D0] focus:border-[#5E81F4] focus:outline-none"
+          className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm text-[#1C1D21] placeholder:text-[#C0C0D0] focus:border-[#4F46E5] focus:outline-none"
           rows={4}
           placeholder={tCommon('placeholderRejectReasonRequired')}
           value={reason}
@@ -244,19 +245,19 @@ function ApprovalRow({ item, isSelected, onToggle, onApprove, onReject, processi
         {item.status === 'PENDING' ? (
           <button
             type="button"
-            className="mt-0.5 shrink-0 text-[#8181A5] hover:text-[#5E81F4]"
+            className="mt-0.5 shrink-0 text-[#8181A5] hover:text-[#4F46E5]"
             onClick={() => onToggle(item.id)}
             aria-label="선택"
           >
             {isSelected
-              ? <CheckSquare className="h-4 w-4 text-[#5E81F4]" />
+              ? <CheckSquare className="h-4 w-4 text-[#4F46E5]" />
               : <Square className="h-4 w-4" />
             }
           </button>
         ) : (
           <div className="mt-0.5 h-4 w-4 shrink-0">
             {item.status === 'APPROVED'
-              ? <CheckCircle2 className="h-4 w-4 text-[#00C853]" />
+              ? <CheckCircle2 className="h-4 w-4 text-[#4F46E5]" />
               : <XCircle className="h-4 w-4 text-[#EF4444]" />
             }
           </div>
@@ -297,7 +298,7 @@ function ApprovalRow({ item, isSelected, onToggle, onApprove, onReject, processi
             <Button
               size="sm"
               variant="ghost"
-              className="h-7 gap-1 px-2 text-[11px] text-[#00C853] hover:bg-[#E8F5E9]"
+              className="h-7 gap-1 px-2 text-[11px] text-[#4F46E5] hover:bg-[#EEF2FF]"
               disabled={isBusy}
               onClick={() => onApprove(item)}
             >
@@ -336,6 +337,7 @@ interface ApprovalInboxClientProps {
 }
 
 export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
+  const tCommon = useTranslations('common')
   const [items,       setItems]       = useState<ApprovalItem[]>([])
   const [loading,     setLoading]     = useState(true)
   const [tab,         setTab]         = useState<ModuleFilter>('ALL')
@@ -472,8 +474,8 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
             onClick={() => { setTab(t.key); setSelectedIds(new Set()) }}
             className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
               tab === t.key
-                ? 'bg-[#5E81F4] text-white'
-                : 'bg-[#F5F5FA] text-[#8181A5] hover:bg-[#E8EBFF] hover:text-[#5E81F4]'
+                ? 'bg-[#4F46E5] text-white'
+                : 'bg-[#F5F5FA] text-[#8181A5] hover:bg-[#EEF2FF] hover:text-[#4F46E5]'
             }`}
           >
             {t.label}
@@ -498,7 +500,7 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
       ) : filtered.length === 0 ? (
         <Card className="border-[#F0F0F3] shadow-none">
           <CardContent className="flex flex-col items-center py-16 text-center">
-            <CheckCircle2 className="mb-3 h-12 w-12 text-[#00C853] opacity-60" />
+            <CheckCircle2 className="mb-3 h-12 w-12 text-[#4F46E5] opacity-60" />
             <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
             <p className="mt-1 text-xs text-[#8181A5]">모든 요청이 처리되었습니다.</p>
           </CardContent>
@@ -560,7 +562,7 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
       {selectedIds.size > 0 && (
         <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2">
           <div className="flex items-center gap-3 rounded-2xl bg-[#1C1D21] px-5 py-3 text-white shadow-2xl">
-            <CheckSquare className="h-4 w-4 text-[#5E81F4]" />
+            <CheckSquare className="h-4 w-4 text-[#4F46E5]" />
             <span className="text-sm font-medium">{selectedIds.size}건 선택됨</span>
             <Button
               size="sm"

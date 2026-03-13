@@ -10,6 +10,7 @@ import { badRequest, handlePrismaError, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, CTR_VALUES } from '@/lib/constants'
+import { EMPLOYEE_MINIMAL_SELECT, toMinimalEmployee } from '@/lib/employee-utils'
 import type { SessionUser } from '@/types'
 
 // ─── Schemas ──────────────────────────────────────────────
@@ -49,26 +50,8 @@ export const GET = withPermission(
       orderBy: { createdAt: 'desc' },
       take: limit + 1,
       include: {
-        sender: {
-          select: {
-            id: true, name: true,
-            assignments: {
-              where: { isPrimary: true, endDate: null },
-              take: 1,
-              include: { department: { select: { name: true } } },
-            },
-          },
-        },
-        receiver: {
-          select: {
-            id: true, name: true,
-            assignments: {
-              where: { isPrimary: true, endDate: null },
-              take: 1,
-              include: { department: { select: { name: true } } },
-            },
-          },
-        },
+        sender: { select: { ...EMPLOYEE_MINIMAL_SELECT } },
+        receiver: { select: { ...EMPLOYEE_MINIMAL_SELECT } },
         likes: { select: { employeeId: true } },
       },
     })
@@ -78,8 +61,8 @@ export const GET = withPermission(
 
     const feed = items.map((r) => ({
       id: r.id,
-      sender: r.sender,
-      receiver: r.receiver,
+      sender: toMinimalEmployee(r.sender as any),
+      receiver: toMinimalEmployee(r.receiver as any),
       coreValue: r.coreValue,
       message: r.message,
       createdAt: r.createdAt,

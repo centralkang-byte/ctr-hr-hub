@@ -35,7 +35,7 @@ type PlanRow = {
 
 const CRITICALITY_BADGE: Record<string, { label: string; className: string }> = {
   LOW: { label: '낮음', className: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' },
-  MEDIUM: { label: '보통', className: 'bg-[#E8F5E9] text-[#00A844] border-[#E8F5E9]' },
+  MEDIUM: { label: '보통', className: 'bg-[#EEF2FF] text-[#4338CA] border-[#EEF2FF]' },
   HIGH: { label: '높음', className: 'bg-[#FFF7ED] text-[#C2410C] border-[#FED7AA]' },
   CRITICAL: { label: '핵심', className: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]' },
 }
@@ -63,8 +63,9 @@ export default function PlansTab() {
     notes: '',
   })
 
-  const fetchPlans = useCallback(async (page = 1) => {
   const { confirm, dialogProps } = useConfirmDialog()
+
+  const fetchPlans = useCallback(async (page = 1) => {
     setLoading(true)
     try {
       const res = await apiClient.getList<PlanRow>('/api/v1/succession/plans', {
@@ -211,7 +212,7 @@ export default function PlansTab() {
             <div>
               <label className="text-sm font-medium text-[#333] mb-1 block">직책명 *</label>
               <input
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
                 value={form.positionTitle}
                 onChange={(e) => setForm((f) => ({ ...f, positionTitle: e.target.value }))}
               />

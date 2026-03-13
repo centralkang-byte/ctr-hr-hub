@@ -75,7 +75,7 @@ export default function CompensationClient() {
         <div className="flex items-center gap-3">
           <label className="text-sm text-[#555]">{t('evaluationCycle')}:</label>
           <select
-            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
             value={selectedCycleId}
             onChange={(e) => setSelectedCycleId(e.target.value)}
           >
@@ -101,7 +101,7 @@ export default function CompensationClient() {
             <CheckCircle2 className="mr-1.5 h-4 w-4" />
             {t('confirm')}
             {pendingAdjustments.length > 0 && (
-              <span className="ml-1.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-xs bg-[#E8F5E9] text-[#00A844]">
+              <span className="ml-1.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-xs bg-[#EEF2FF] text-[#4338CA]">
                 {pendingAdjustments.length}
               </span>
             )}

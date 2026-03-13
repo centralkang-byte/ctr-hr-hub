@@ -174,7 +174,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                     <select
                         value={month}
                         onChange={(e) => setMonth(Number(e.target.value))}
-                        className="px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+                        className="px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
                     >
                         {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
                             <option key={m} value={m}>{m}월</option>
@@ -183,7 +183,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                     <select
                         value={year}
                         onChange={(e) => setYear(Number(e.target.value))}
-                        className="px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+                        className="px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
                     >
                         {[2024, 2025, 2026].map((y) => (
                             <option key={y} value={y}>{y}년</option>
@@ -217,8 +217,8 @@ export default function CloseAttendanceClient({ user }: Props) {
                             {/* Card Header */}
                             <div className="flex items-center justify-between p-5 border-b border-[#F5F5F5]">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-lg bg-[#E8F5E9] flex items-center justify-center">
-                                        <Calendar size={18} className="text-[#00C853]" />
+                                    <div className="w-10 h-10 rounded-lg bg-[#EEF2FF] flex items-center justify-center">
+                                        <Calendar size={18} className="text-[#4F46E5]" />
                                     </div>
                                     <div>
                                         <div className="flex items-center gap-2">
@@ -269,7 +269,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                                 className="h-full rounded-full transition-[width] duration-600"
                                                 style={{
                                                     width: `${confirmedPct}%`,
-                                                    background: confirmedPct === 100 ? '#059669' : 'linear-gradient(90deg, #00C853, #00BFA5)',
+                                                    background: confirmedPct === 100 ? '#059669' : 'linear-gradient(90deg, #4F46E5, #00BFA5)',
                                                 }}
                                             />
                                         </div>
@@ -407,7 +407,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                         onChange={(e) =>
                                             setConfirmModal((prev) => prev ? { ...prev, excludeUnconfirmed: e.target.checked } : null)
                                         }
-                                        className="w-4 h-4 rounded border-[#D4D4D4] text-[#00C853]"
+                                        className="w-4 h-4 rounded border-[#D4D4D4] text-[#4F46E5]"
                                     />
                                     <span className="text-sm text-[#333]">
                                         미확정 직원 {confirmModal.status.unconfirmedCount}명 제외하고 마감

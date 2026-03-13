@@ -184,7 +184,7 @@ export default function AiReportClient() {
           <Link
             key={keyIdx++}
             href={linkHref}
-            className="text-[#5E81F4] hover:text-[#4A6BD6] underline underline-offset-2 font-medium"
+            className="text-[#4F46E5] hover:text-[#4338CA] underline underline-offset-2 font-medium"
           >
             {linkText}
           </Link>
@@ -230,7 +230,7 @@ export default function AiReportClient() {
               <select
                 value={selectedPeriod}
                 onChange={(e) => setSelectedPeriod(e.target.value)}
-                className="pl-9 pr-8 py-2.5 text-sm border border-gray-200 rounded-xl bg-white appearance-none cursor-pointer hover:border-[#5E81F4] focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/20 outline-none transition-all min-w-[140px]"
+                className="pl-9 pr-8 py-2.5 text-sm border border-gray-200 rounded-xl bg-white appearance-none cursor-pointer hover:border-[#4F46E5] focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/20 outline-none transition-all min-w-[140px]"
               >
                 {periodOptions.map((p) => (
                   <option key={p} value={p}>{p}</option>
@@ -247,7 +247,7 @@ export default function AiReportClient() {
               <select
                 value={selectedCompany}
                 onChange={(e) => setSelectedCompany(e.target.value)}
-                className="pl-9 pr-8 py-2.5 text-sm border border-gray-200 rounded-xl bg-white appearance-none cursor-pointer hover:border-[#5E81F4] focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/20 outline-none transition-all min-w-[140px]"
+                className="pl-9 pr-8 py-2.5 text-sm border border-gray-200 rounded-xl bg-white appearance-none cursor-pointer hover:border-[#4F46E5] focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/20 outline-none transition-all min-w-[140px]"
               >
                 <option value="">전사</option>
                 {companies.map((c) => (
@@ -261,7 +261,7 @@ export default function AiReportClient() {
           <button
             onClick={handleGenerate}
             disabled={generating}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#5E81F4] to-[#6B73E8] text-white text-sm font-medium hover:shadow-lg hover:shadow-[#5E81F4]/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#4F46E5] to-[#6B73E8] text-white text-sm font-medium hover:shadow-lg hover:shadow-[#4F46E5]/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
           >
             {generating ? (
               <>
@@ -288,14 +288,14 @@ export default function AiReportClient() {
       {/* Generating animation */}
       {generating && (
         <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#5E81F4]/10 mb-4">
-            <Sparkles className="h-8 w-8 text-[#5E81F4] animate-pulse" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#4F46E5]/10 mb-4">
+            <Sparkles className="h-8 w-8 text-[#4F46E5] animate-pulse" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">AI가 리포트를 생성하고 있습니다...</h3>
           <p className="text-sm text-gray-500">약 5-15초 소요됩니다. 잠시만 기다려주세요.</p>
           <div className="mt-6 w-48 mx-auto">
             <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-[#5E81F4] to-[#6B73E8] rounded-full animate-[progressBar_2s_ease-in-out_infinite]" style={{ width: '60%' }} />
+              <div className="h-full bg-gradient-to-r from-[#4F46E5] to-[#6B73E8] rounded-full animate-[progressBar_2s_ease-in-out_infinite]" style={{ width: '60%' }} />
             </div>
           </div>
         </div>
@@ -305,11 +305,11 @@ export default function AiReportClient() {
       {currentReport && !generating && (
         <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
           {/* Report Header */}
-          <div className="relative bg-gradient-to-br from-[#5E81F4]/5 to-[#6B73E8]/5 px-6 py-4 border-b border-gray-100">
+          <div className="relative bg-gradient-to-br from-[#4F46E5]/5 to-[#6B73E8]/5 px-6 py-4 border-b border-gray-100">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-[#5E81F4]/10">
-                  <FileText className="h-5 w-5 text-[#5E81F4]" />
+                <div className="p-2 rounded-xl bg-[#4F46E5]/10">
+                  <FileText className="h-5 w-5 text-[#4F46E5]" />
                 </div>
                 <div>
                   <h3 className="text-base font-semibold text-gray-900">
@@ -324,7 +324,7 @@ export default function AiReportClient() {
                       })}
                     </span>
                     {(currentReport.metadata as { model?: string })?.model && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-[#5E81F4]/10 text-[#5E81F4]">
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-[#4F46E5]/10 text-[#4F46E5]">
                         {(currentReport.metadata as { model?: string }).model === 'template' ? '템플릿' : '🤖 AI'}
                       </span>
                     )}
@@ -355,8 +355,8 @@ export default function AiReportClient() {
       {/* Empty state */}
       {!currentReport && !generating && reports.length === 0 && (
         <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#5E81F4]/10 to-[#6B73E8]/10 mb-4">
-            <Sparkles className="h-8 w-8 text-[#5E81F4]" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#4F46E5]/10 to-[#6B73E8]/10 mb-4">
+            <Sparkles className="h-8 w-8 text-[#4F46E5]" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">아직 생성된 리포트가 없습니다</h3>
           <p className="text-sm text-gray-500 mb-6">

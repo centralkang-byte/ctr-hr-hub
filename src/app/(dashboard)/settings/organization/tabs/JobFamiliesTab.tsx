@@ -25,8 +25,8 @@ export function JobFamiliesTab({ companyId }: Props) {
         <p className="text-sm text-[#8181A5]">{families.length}개 직종, 총 {families.reduce((s, f) => s + f.profiles, 0)}개 Job Profile</p>
       </div>
 
-      <div className="flex items-start gap-3 rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4">
-        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
+      <div className="flex items-start gap-3 rounded-lg border border-[#4F46E5]/20 bg-[#4F46E5]/5 p-4">
+        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#4F46E5]" />
         <p className="text-xs text-[#8181A5]">직종/직무 분류는 현재 시스템에서 관리됩니다. API 연결 후 편집이 가능합니다.</p>
       </div>
 
@@ -43,7 +43,7 @@ export function JobFamiliesTab({ companyId }: Props) {
           <tbody className="divide-y divide-[#F0F0F3]">
             {families.map((f) => (
               <tr key={f.code} className="hover:bg-[#F5F5FA] transition-colors">
-                <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{f.code}</td>
+                <td className="px-4 py-3 text-sm font-medium text-[#4F46E5]">{f.code}</td>
                 <td className={TABLE_STYLES.cell}>{f.name}</td>
                 <td className={TABLE_STYLES.cellMuted}>{f.nameEn}</td>
                 <td className="px-4 py-3 text-center text-sm text-[#8181A5]">{f.profiles}개</td>

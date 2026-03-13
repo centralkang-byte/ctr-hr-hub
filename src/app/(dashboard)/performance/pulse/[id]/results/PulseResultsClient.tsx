@@ -39,7 +39,7 @@ interface AiAnalysis {
   department_comparison?: string
 }
 
-const CHART_COLORS = ['#00C853', '#059669', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
+const CHART_COLORS = ['#4F46E5', '#059669', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
 
 // ─── Component ───────────────────────────────────────────
 
@@ -85,7 +85,7 @@ export default function PulseResultsClient() {
           <button onClick={() => router.push('/performance/pulse')} className="p-1 hover:bg-[#F5F5F5] rounded-lg">
             <ArrowLeft className="w-5 h-5 text-[#666]" />
           </button>
-          <BarChart3 className="w-6 h-6 text-[#00C853]" />
+          <BarChart3 className="w-6 h-6 text-[#4F46E5]" />
           <div>
             <h1 className="text-2xl font-bold text-[#1A1A1A]">{results.title} — 결과</h1>
             <p className="text-sm text-[#666]">총 {results.totalRespondents}명 응답</p>

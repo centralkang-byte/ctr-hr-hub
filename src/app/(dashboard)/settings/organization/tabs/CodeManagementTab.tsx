@@ -22,7 +22,7 @@ export function CodeManagementTab({ companyId }: Props) {
       .finally(() => setLoading(false))
   }, [companyId])
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" /></div>
 
   const grouped = options.reduce<Record<string, EnumOption[]>>((acc, o) => { (acc[o.enumGroup] ??= []).push(o); return acc }, {})
 
@@ -45,7 +45,7 @@ export function CodeManagementTab({ companyId }: Props) {
               </tr></thead>
               <tbody className="divide-y divide-[#F0F0F3]">{items.sort((a,b) => a.sortOrder - b.sortOrder).map((o) => (
                 <tr key={o.id} className={TABLE_STYLES.row}>
-                  <td className="px-4 py-2 text-sm font-medium text-[#5E81F4]">{o.optionKey}</td>
+                  <td className="px-4 py-2 text-sm font-medium text-[#4F46E5]">{o.optionKey}</td>
                   <td className="px-4 py-2 text-sm text-[#1C1D21]">{o.label}</td>
                   <td className="px-4 py-2 text-center">{o.color ? <span className="inline-block h-4 w-4 rounded-full" style={{ backgroundColor: o.color }} /> : '—'}</td>
                   <td className="px-4 py-2 text-center text-sm text-[#8181A5]">{o.sortOrder}</td>

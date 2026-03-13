@@ -17,6 +17,7 @@ import { EmptyChart } from '@/components/analytics/EmptyChart'
 import { AnalyticsFilterBar } from '@/components/analytics/AnalyticsFilterBar'
 import { CHART_COLORS } from '@/components/analytics/chart-colors'
 import type { PerformanceResponse } from '@/lib/analytics/types'
+import { CHART_THEME } from '@/lib/styles/chart'
 
 export default function PerformanceClient() {
   const tCommon = useTranslations('common')
@@ -68,7 +69,7 @@ export default function PerformanceClient() {
         {charts.gradeDistribution.length === 0 ? <EmptyChart /> : (
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={charts.gradeDistribution}>
-              <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
+              <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
               <XAxis dataKey="grade" fontSize={11} />
               <YAxis fontSize={11} unit="%" />
               <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
@@ -85,7 +86,7 @@ export default function PerformanceClient() {
           {charts.departmentGradeDist.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={charts.departmentGradeDist}>
-                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
+                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                 <XAxis dataKey="department" fontSize={10} angle={-15} textAnchor="end" height={50} />
                 <YAxis fontSize={11} unit="%" domain={[0, 100]} />
                 <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
@@ -111,7 +112,7 @@ export default function PerformanceClient() {
                       <span className="text-gray-500">{stage.completed}/{stage.total} ({pct}%)</span>
                     </div>
                     <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full rounded-full bg-gradient-to-r from-[#5E81F4] to-[#8B5CF6] transition-all duration-500" style={{ width: `${pct}%` }} />
+                      <div className="h-full rounded-full bg-gradient-to-r from-[#4F46E5] to-[#8B5CF6] transition-all duration-500" style={{ width: `${pct}%` }} />
                     </div>
                   </div>
                 )

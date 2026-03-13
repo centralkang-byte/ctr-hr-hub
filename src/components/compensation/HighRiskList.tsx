@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/api'
 import AttritionRadarChart from './AttritionRadarChart'
+import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 interface Factor {
   factor: string
@@ -104,15 +105,12 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                 onClick={() => setExpandedId(isExpanded ? null : emp.employeeId)}
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-[#E8E8E8] flex items-center justify-center text-sm font-medium text-[#555]">
-                    {emp.employeeName.slice(0, 1)}
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-[#1A1A1A]">{emp.employeeName}</p>
-                    <p className="text-xs text-[#666]">
-                      {emp.departmentName} · {emp.jobGradeName}
-                    </p>
-                  </div>
+                  <EmployeeCell
+                    name={emp.employeeName}
+                    department={emp.departmentName}
+                    jobGrade={emp.jobGradeName}
+                    size="sm"
+                  />
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="text-right">
@@ -223,7 +221,7 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                                     key={i}
                                     className="flex items-start gap-2 text-sm text-[#555]"
                                   >
-                                    <span className="inline-block w-5 h-5 rounded bg-[#E8F5E9] text-[#00A844] text-xs font-medium text-center leading-5 flex-shrink-0">
+                                    <span className="inline-block w-5 h-5 rounded bg-[#EEF2FF] text-[#4338CA] text-xs font-medium text-center leading-5 flex-shrink-0">
                                       {i + 1}
                                     </span>
                                     {action}
@@ -242,7 +240,7 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                                   key={i}
                                   className="flex items-start gap-2 text-sm text-[#555]"
                                 >
-                                  <span className="inline-block w-5 h-5 rounded bg-[#E8F5E9] text-[#00A844] text-xs font-medium text-center leading-5 flex-shrink-0">
+                                  <span className="inline-block w-5 h-5 rounded bg-[#EEF2FF] text-[#4338CA] text-xs font-medium text-center leading-5 flex-shrink-0">
                                     {i + 1}
                                   </span>
                                   {action}

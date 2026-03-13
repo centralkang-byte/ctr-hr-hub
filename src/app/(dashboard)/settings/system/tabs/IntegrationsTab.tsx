@@ -21,8 +21,8 @@ export function IntegrationsTab({ companyId }: Props) {
         <h3 className="text-base font-semibold text-[#1C1D21]">연동</h3>
         <p className="text-sm text-[#8181A5]">외부 시스템 연동 설정</p>
       </div>
-      <div className="flex items-start gap-3 rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4">
-        <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
+      <div className="flex items-start gap-3 rounded-lg border border-[#4F46E5]/20 bg-[#4F46E5]/5 p-4">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#4F46E5]" />
         <p className="text-xs text-[#8181A5]">ℹ️ 연동 기능은 향후 업데이트에서 지원 예정입니다.</p>
       </div>
       <div className="space-y-3">{INTEGRATIONS.map((int) => (

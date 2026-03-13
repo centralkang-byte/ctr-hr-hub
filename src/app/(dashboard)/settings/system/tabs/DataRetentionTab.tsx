@@ -33,7 +33,7 @@ export function DataRetentionTab({ companyId }: Props) {
     }),
   })
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" /></div>
 
   return (
     <div className="space-y-4">
@@ -56,21 +56,21 @@ export function DataRetentionTab({ companyId }: Props) {
 
       <SettingFieldWithOverride label="PII 마스킹" description="개인식별정보 자동 마스킹" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={settings.piiMasking} onChange={(e) => setSettings((p) => ({ ...p, piiMasking: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]" />
+          <input type="checkbox" checked={settings.piiMasking} onChange={(e) => setSettings((p) => ({ ...p, piiMasking: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#4F46E5]" />
           <span className="text-[#1C1D21]">PII 마스킹 활성화</span>
         </label>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="자동 삭제" description="보존 기간 경과 후 자동 삭제" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={settings.autoDeleteEnabled} onChange={(e) => setSettings((p) => ({ ...p, autoDeleteEnabled: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]" />
+          <input type="checkbox" checked={settings.autoDeleteEnabled} onChange={(e) => setSettings((p) => ({ ...p, autoDeleteEnabled: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#4F46E5]" />
           <span className="text-[#1C1D21]">자동 삭제 활성화</span>
         </label>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="GDPR 준수" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={settings.gdprCompliant} onChange={(e) => setSettings((p) => ({ ...p, gdprCompliant: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]" />
+          <input type="checkbox" checked={settings.gdprCompliant} onChange={(e) => setSettings((p) => ({ ...p, gdprCompliant: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#4F46E5]" />
           <span className="text-[#1C1D21]">GDPR 정책 준수 모드</span>
         </label>
       </SettingFieldWithOverride>

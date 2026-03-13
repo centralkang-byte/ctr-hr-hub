@@ -10,6 +10,7 @@ import { badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
+import { EMPLOYEE_MINIMAL_SELECT, toMinimalEmployee } from '@/lib/employee-utils'
 import type { SessionUser } from '@/types'
 
 // ─── Schemas ──────────────────────────────────────────────
@@ -51,26 +52,8 @@ export const GET = withPermission(
       prisma.peerReviewNomination.findMany({
         where,
         include: {
-          employee: {
-            select: {
-              id: true, name: true, employeeNo: true,
-              assignments: {
-                where: { isPrimary: true, endDate: null },
-                take: 1,
-                include: { department: { select: { name: true } } },
-              },
-            },
-          },
-          nominee: {
-            select: {
-              id: true, name: true, employeeNo: true,
-              assignments: {
-                where: { isPrimary: true, endDate: null },
-                take: 1,
-                include: { department: { select: { name: true } } },
-              },
-            },
-          },
+          employee: { select: { ...EMPLOYEE_MINIMAL_SELECT } },
+          nominee: { select: { ...EMPLOYEE_MINIMAL_SELECT } },
           approver: { select: { id: true, name: true } },
         },
         orderBy: { createdAt: 'desc' },
@@ -80,7 +63,14 @@ export const GET = withPermission(
       prisma.peerReviewNomination.count({ where }),
     ])
 
-    return apiPaginated(items, buildPagination(page, size, total))
+    return apiPaginated(
+      items.map((item) => ({
+        ...item,
+        employee: toMinimalEmployee(item.employee as any),
+        nominee: toMinimalEmployee(item.nominee as any),
+      })),
+      buildPagination(page, size, total)
+    )
   },
   perm(MODULE.PERFORMANCE, ACTION.VIEW),
 )

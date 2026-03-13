@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { Search, AlertTriangle } from 'lucide-react'
 
 type WorkHoursStatus = 'COMPLIANT' | 'WARNING' | 'VIOLATION'
@@ -27,7 +28,7 @@ const STATUS_MAP: Record<WorkHoursStatus, { label: string; className: string }> 
   COMPLIANT: {
     label: '준수',
     className:
-      'bg-[#E8F5E9] text-[#2E7D32]',
+      'bg-[#EEF2FF] text-[#2E7D32]',
   },
   WARNING: {
     label: '주의',
@@ -53,6 +54,7 @@ const MOCK_EMPLOYEES: WorkHoursEmployee[] = [
 ]
 
 export default function WorkHoursEmployeeList({ weekOffset }: Props) {
+  const tCommon = useTranslations('common')
   const [employees, setEmployees] = useState<WorkHoursEmployee[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -110,7 +112,7 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
               placeholder={tCommon('placeholderSearchNameIdDept')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-8 pr-3 py-1.5 text-sm border border-[#E0E0E0] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 w-48"
+              className="pl-8 pr-3 py-1.5 text-sm border border-[#E0E0E0] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 w-48"
             />
           </div>
 
@@ -118,7 +120,7 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as WorkHoursStatus | 'ALL')}
-            className="text-sm border border-[#E0E0E0] rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+            className="text-sm border border-[#E0E0E0] rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
           >
             <option value="ALL">전체 상태</option>
             <option value="COMPLIANT">준수</option>

@@ -115,7 +115,7 @@ export default function KedoDocumentsTab() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+              className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
             >
               <option value="">전체 상태</option>
               {Object.entries(STATUS_LABELS).map(([val, label]) => (
@@ -126,7 +126,7 @@ export default function KedoDocumentsTab() {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+              className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
             >
               <option value="">전체 유형</option>
               {Object.entries(DOC_TYPE_LABELS).map(([val, label]) => (
@@ -234,7 +234,7 @@ export default function KedoDocumentsTab() {
                       {(doc.status === 'DRAFT' || doc.status === 'PENDING_SIGNATURE') && (
                         <button
                           onClick={() => setSignDoc(doc)}
-                          className="text-sm text-[#00C853] hover:text-[#00A844] font-medium"
+                          className="text-sm text-[#4F46E5] hover:text-[#4338CA] font-medium"
                         >
                           서명
                         </button>
@@ -267,7 +267,7 @@ export default function KedoDocumentsTab() {
                   onClick={() => fetchDocuments(page)}
                   className={`w-8 h-8 text-xs rounded-lg ${
                     page === pagination.page
-                      ? 'bg-[#00C853] text-white'
+                      ? 'bg-[#4F46E5] text-white'
                       : 'text-[#555] hover:bg-[#F5F5F5]'
                   }`}
                 >

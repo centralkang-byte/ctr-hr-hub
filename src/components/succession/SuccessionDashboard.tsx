@@ -25,7 +25,7 @@ const READINESS_LABELS: Record<string, string> = {
 
 const READINESS_COLORS: Record<string, string> = {
   READY_NOW: '#10B981',
-  READY_1_2_YEARS: '#00C853',
+  READY_1_2_YEARS: '#4F46E5',
   READY_3_PLUS_YEARS: '#F59E0B',
 }
 
@@ -71,8 +71,8 @@ export default function SuccessionDashboard() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[#E8F5E9] flex items-center justify-center">
-              <Crown className="h-5 w-5 text-[#00C853]" />
+            <div className="w-10 h-10 rounded-lg bg-[#EEF2FF] flex items-center justify-center">
+              <Crown className="h-5 w-5 text-[#4F46E5]" />
             </div>
             <div>
               <p className="text-xs text-[#666]">전체 핵심직책</p>

@@ -37,7 +37,7 @@ interface MetricCardProps {
   accent?: string
 }
 
-function MetricCard({ icon, label, value, sub, accent = '#5E81F4' }: MetricCardProps) {
+function MetricCard({ icon, label, value, sub, accent = '#4F46E5' }: MetricCardProps) {
   return (
     <div className="rounded-xl border border-[#F0F0F3] bg-[#F5F5FA] p-4">
       <div className="mb-2 flex items-center gap-2">
@@ -63,7 +63,7 @@ export function ImpactAnalysisPanel({ diff, selectedNode }: ImpactAnalysisPanelP
       {/* Panel Header */}
       <div className="border-b border-[#F0F0F3] px-5 py-4">
         <div className="flex items-center gap-2">
-          <TrendingUp size={16} className="text-[#5E81F4]" />
+          <TrendingUp size={16} className="text-[#4F46E5]" />
           <h2 className="text-sm font-bold text-[#1C1D21]">영향 분석</h2>
         </div>
         <p className="mt-0.5 text-xs text-[#8181A5]">개편 전·후 예측 변화량</p>
@@ -81,7 +81,7 @@ export function ImpactAnalysisPanel({ diff, selectedNode }: ImpactAnalysisPanelP
               label="총 인원"
               value={`${currentHeadcount.toLocaleString()}명`}
               sub="전체 법인 합산"
-              accent="#5E81F4"
+              accent="#4F46E5"
             />
             <MetricCard
               icon={<DollarSign size={15} />}
@@ -107,7 +107,7 @@ export function ImpactAnalysisPanel({ diff, selectedNode }: ImpactAnalysisPanelP
               개편 변경 내역
             </p>
             {hasMoves && (
-              <span className="rounded-full bg-[#00C853]/10 px-2 py-0.5 text-[11px] font-semibold text-[#00A844]">
+              <span className="rounded-full bg-[#4F46E5]/10 px-2 py-0.5 text-[11px] font-semibold text-[#4338CA]">
                 {diff.moves.length}건
               </span>
             )}
@@ -185,7 +185,7 @@ export function ImpactAnalysisPanel({ diff, selectedNode }: ImpactAnalysisPanelP
             <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#8181A5]">
               선택된 부서
             </p>
-            <div className="rounded-xl border border-[#5E81F4]/30 bg-[#5E81F4]/5 p-4">
+            <div className="rounded-xl border border-[#4F46E5]/30 bg-[#4F46E5]/5 p-4">
               <p className="text-sm font-bold text-[#1C1D21]">{selectedNode.name}</p>
               <p className="mt-0.5 text-xs text-[#8181A5]">{selectedNode.manager}</p>
               <div className="mt-3 grid grid-cols-2 gap-2">

@@ -93,7 +93,7 @@ export default function ResultsClient({
         <select
           value={selectedCycleId}
           onChange={(e) => setSelectedCycleId(e.target.value)}
-          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
         >
           {!cycles?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
               {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -118,7 +118,7 @@ export default function ResultsClient({
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Award className="w-3.5 h-3.5" /> EMS 블록</p>
-          <p className="text-3xl font-bold text-[#00C853]">
+          <p className="text-3xl font-bold text-[#4F46E5]">
             {final?.emsBlock ?? '-'}
           </p>
           {final?.calibrated && (
@@ -152,7 +152,7 @@ export default function ResultsClient({
                     <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">자기평가</td>
                     <td className="px-4 py-3 text-sm text-center text-[#555]">{result.selfEvaluation.performanceScore?.toFixed(1) ?? '-'}</td>
                     <td className="px-4 py-3 text-sm text-center text-[#555]">{result.selfEvaluation.competencyScore?.toFixed(1) ?? '-'}</td>
-                    <td className="px-4 py-3 text-sm text-center font-medium text-[#00C853]">{result.selfEvaluation.emsBlock ?? '-'}</td>
+                    <td className="px-4 py-3 text-sm text-center font-medium text-[#4F46E5]">{result.selfEvaluation.emsBlock ?? '-'}</td>
                     <td className="px-4 py-3 text-center">
                       <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#D1FAE5] text-[#047857]">{result.selfEvaluation.status}</span>
                     </td>
@@ -163,7 +163,7 @@ export default function ResultsClient({
                     <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">매니저 평가</td>
                     <td className="px-4 py-3 text-sm text-center text-[#555]">{result.managerEvaluation.performanceScore?.toFixed(1) ?? '-'}</td>
                     <td className="px-4 py-3 text-sm text-center text-[#555]">{result.managerEvaluation.competencyScore?.toFixed(1) ?? '-'}</td>
-                    <td className="px-4 py-3 text-sm text-center font-medium text-[#00C853]">{result.managerEvaluation.emsBlock ?? '-'}</td>
+                    <td className="px-4 py-3 text-sm text-center font-medium text-[#4F46E5]">{result.managerEvaluation.emsBlock ?? '-'}</td>
                     <td className="px-4 py-3 text-center">
                       <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#D1FAE5] text-[#047857]">{result.managerEvaluation.status}</span>
                     </td>

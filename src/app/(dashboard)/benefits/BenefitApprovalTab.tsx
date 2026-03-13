@@ -29,7 +29,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   pending: { label: '승인대기', color: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]' },
   approved: { label: '승인', color: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
   rejected: { label: '반려', color: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]' },
-  paid: { label: '지급완료', color: 'bg-[#E8F5E9] text-[#00A844] border-[#E8F5E9]' },
+  paid: { label: '지급완료', color: 'bg-[#EEF2FF] text-[#4338CA] border-[#EEF2FF]' },
   cancelled: { label: '취소', color: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' },
 }
 
@@ -101,7 +101,7 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
           <span className="text-sm font-medium text-[#333]">
             {view === 'pending' ? '승인 대기' : '전체 내역'} ({total})
           </span>
-          {loading && <Loader2 className="w-4 h-4 animate-spin text-[#00C853]" />}
+          {loading && <Loader2 className="w-4 h-4 animate-spin text-[#4F46E5]" />}
         </div>
         <div className="flex-1 overflow-y-auto divide-y divide-[#F5F5F5]">
           {error && (
@@ -123,7 +123,7 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
               <button
                 key={claim.id}
                 onClick={() => { setSelected(claim); setShowRejectForm(false); setRejectedReason('') }}
-                className={`w-full text-left px-4 py-3 hover:bg-[#FAFAFA] transition-colors ${isSelected ? 'bg-[#E8F5E9]' : ''}`}
+                className={`w-full text-left px-4 py-3 hover:bg-[#FAFAFA] transition-colors ${isSelected ? 'bg-[#EEF2FF]' : ''}`}
               >
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-sm font-medium text-[#1A1A1A] truncate">{claim.employee.name}</span>
@@ -201,7 +201,7 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
                   <div className="space-y-1">
                     {selected.proofPaths.map((path, i) => (
                       <div key={i} className="flex items-center gap-2 text-sm text-[#555]">
-                        <FileText className="w-4 h-4 text-[#00C853]" />
+                        <FileText className="w-4 h-4 text-[#4F46E5]" />
                         {path.split('/').pop()}
                       </div>
                     ))}
@@ -227,7 +227,7 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
                       onChange={(e) => setRejectedReason(e.target.value)}
                       placeholder={tCommon('placeholderRejectReason')}
                       rows={2}
-                      className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 resize-none"
+                      className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 resize-none"
                     />
                   </div>
                 )}

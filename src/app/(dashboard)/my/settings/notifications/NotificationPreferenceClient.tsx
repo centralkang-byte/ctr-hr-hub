@@ -132,7 +132,7 @@ export function NotificationPreferenceClient() {
     <div className="p-6 max-w-3xl">
       {/* Header */}
       <div className="flex items-center gap-2 mb-6">
-        <Bell className="w-5 h-5 text-[#00C853]" />
+        <Bell className="w-5 h-5 text-[#4F46E5]" />
         <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('notificationSettingsTitle')}</h1>
       </div>
 
@@ -176,8 +176,8 @@ export function NotificationPreferenceClient() {
                         onClick={() => toggleChannel(ev.key, ch)}
                         className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                           pref[ch]
-                            ? 'bg-[#00C853] border-[#00C853]'
-                            : 'bg-white border-[#D4D4D4] hover:border-[#00C853]'
+                            ? 'bg-[#4F46E5] border-[#4F46E5]'
+                            : 'bg-white border-[#D4D4D4] hover:border-[#4F46E5]'
                         }`}
                         aria-label={`${ev.label} ${ch} 알림 ${pref[ch] ? '끄기' : '켜기'}`}
                       >
@@ -204,14 +204,14 @@ export function NotificationPreferenceClient() {
             type="time"
             value={quietStart}
             onChange={(e) => setQuietStart(e.target.value)}
-            className="px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 focus:outline-none"
+            className="px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 focus:outline-none"
           />
           <span className="text-sm text-[#666]">~</span>
           <input
             type="time"
             value={quietEnd}
             onChange={(e) => setQuietEnd(e.target.value)}
-            className="px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 focus:outline-none"
+            className="px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 focus:outline-none"
           />
         </div>
         <p className="text-xs text-[#999] mt-2">

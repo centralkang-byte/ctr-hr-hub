@@ -16,8 +16,8 @@ export default async function SettingsHubPage() {
       <div className="p-6">
         {/* Header */}
         <div className="mb-6 flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#5E81F4]/10">
-            <Settings className="h-5 w-5 text-[#5E81F4]" />
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#4F46E5]/10">
+            <Settings className="h-5 w-5 text-[#4F46E5]" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-[#1C1D21]">설정</h1>

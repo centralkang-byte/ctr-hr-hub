@@ -52,8 +52,8 @@ const STAGE_BORDER_COLORS: Record<string, string> = {
   INTERVIEW_1: '#2196F3',
   INTERVIEW_2: '#2196F3',
   FINAL: '#FF9800',
-  OFFER: '#00C853',
-  HIRED: '#00C853',
+  OFFER: '#4F46E5',
+  HIRED: '#4F46E5',
   REJECTED: '#F44336',
 }
 
@@ -63,8 +63,8 @@ const STAGE_HEADER_BG: Record<string, string> = {
   INTERVIEW_1: 'bg-[#E3F2FD]',
   INTERVIEW_2: 'bg-[#E3F2FD]',
   FINAL: 'bg-[#FFF3E0]',
-  OFFER: 'bg-[#E8F5E9]',
-  HIRED: 'bg-[#E8F5E9]',
+  OFFER: 'bg-[#EEF2FF]',
+  HIRED: 'bg-[#EEF2FF]',
   REJECTED: 'bg-[#FFEBEE]',
 }
 
@@ -322,7 +322,7 @@ export default function PipelineClient({ user, postingId }: Props) {
       )
     }
     let bgClass = 'bg-[#FFEBEE] text-[#C62828]'
-    if (score >= 80) bgClass = 'bg-[#E8F5E9] text-[#1B5E20]'
+    if (score >= 80) bgClass = 'bg-[#EEF2FF] text-[#1B5E20]'
     else if (score >= 50) bgClass = 'bg-[#FFF3E0] text-[#E65100]'
     return (
       <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${bgClass}`}>
@@ -337,7 +337,7 @@ export default function PipelineClient({ user, postingId }: Props) {
     return (
       <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
         <div className="flex items-center gap-2 text-sm text-[#999]">
-          <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#00C853] rounded-full animate-spin" />
+          <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#4F46E5] rounded-full animate-spin" />
           {t('loadingData')}
         </div>
       </div>
@@ -540,7 +540,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                     }))
                   }
                   placeholder={t('offeredSalaryPlaceholder')}
-                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] transition-colors duration-150"
                 />
               </div>
               {/* 제안일 */}
@@ -557,7 +557,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                       form: { ...prev.form, offeredDate: e.target.value },
                     }))
                   }
-                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] transition-colors duration-150"
                 />
               </div>
               {/* 입사 예정일 */}
@@ -574,7 +574,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                       form: { ...prev.form, expectedStartDate: e.target.value },
                     }))
                   }
-                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] transition-colors duration-150"
                 />
               </div>
             </div>

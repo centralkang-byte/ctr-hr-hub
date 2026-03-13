@@ -45,7 +45,7 @@ type ViewMode = 'pending-approval' | 'mine' | 'team'
 type RequestTypeFilter = 'all' | 'leave' | 'overtime' | 'attendance_correction' | 'shift_change'
 
 const REQUEST_TYPE_LABELS: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
-  leave: { label: '휴가', icon: <CalendarDays className="w-3.5 h-3.5" />, color: 'bg-[#E8F5E9] text-[#047857]' },
+  leave: { label: '휴가', icon: <CalendarDays className="w-3.5 h-3.5" />, color: 'bg-[#EEF2FF] text-[#047857]' },
   overtime: { label: '초과근무', icon: <Clock className="w-3.5 h-3.5" />, color: 'bg-[#FEF3C7] text-[#B45309]' },
   attendance_correction: { label: '근태수정', icon: <ClipboardList className="w-3.5 h-3.5" />, color: 'bg-[#E0E7FF] text-[#4338CA]' },
   shift_change: { label: '교대변경', icon: <ArrowRightLeft className="w-3.5 h-3.5" />, color: 'bg-[#FFF7ED] text-[#C2410C]' },
@@ -178,7 +178,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
       {/* 헤더 */}
       <div className="flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
-          <Inbox className="w-6 h-6 text-[#5E81F4]" />
+          <Inbox className="w-6 h-6 text-[#4F46E5]" />
           <div>
             <h1 className="text-2xl font-bold text-[#1C1D21]">근태 승인함</h1>
             <p className="text-sm text-[#8181A5] mt-0.5">휴가, 초과근무, 근태수정, 교대변경 요청을 한 곳에서 처리합니다</p>
@@ -205,13 +205,13 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
             onClick={() => changeView(t.key)}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
               view === t.key
-                ? 'border-[#5E81F4] text-[#5E81F4]'
+                ? 'border-[#4F46E5] text-[#4F46E5]'
                 : 'border-transparent text-[#8181A5] hover:text-[#1C1D21]'
             }`}
           >
             {t.label}
             {t.badge !== undefined && t.badge > 0 && (
-              <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-semibold bg-[#5E81F4] text-white rounded-full">{t.badge}</span>
+              <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-semibold bg-[#4F46E5] text-white rounded-full">{t.badge}</span>
             )}
           </button>
         ))}
@@ -233,7 +233,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
               onClick={() => setTypeFilter(f.key)}
               className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                 typeFilter === f.key
-                  ? 'bg-[#5E81F4] text-white'
+                  ? 'bg-[#4F46E5] text-white'
                   : 'bg-[#F5F5FA] text-[#8181A5] hover:bg-[#EBEBF5]'
               }`}
             >
@@ -253,24 +253,24 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
             <div className="flex items-center gap-3 px-5 py-2.5 border-b border-[#F0F0F3] bg-[#FAFBFF]">
               <button
                 onClick={toggleSelectAll}
-                className="flex items-center gap-2 text-xs text-[#8181A5] hover:text-[#5E81F4] transition-colors"
+                className="flex items-center gap-2 text-xs text-[#8181A5] hover:text-[#4F46E5] transition-colors"
               >
                 {allChecked ? (
-                  <CheckSquare className="w-4 h-4 text-[#5E81F4]" />
+                  <CheckSquare className="w-4 h-4 text-[#4F46E5]" />
                 ) : (
                   <Square className="w-4 h-4" />
                 )}
                 전체 선택
               </button>
               {someChecked && (
-                <span className="text-xs text-[#5E81F4] font-medium ml-1">{selectedIds.size}건 선택됨</span>
+                <span className="text-xs text-[#4F46E5] font-medium ml-1">{selectedIds.size}건 선택됨</span>
               )}
             </div>
           )}
 
           {loading ? (
             <div className="flex items-center justify-center py-16">
-              <Loader2 className="w-6 h-6 animate-spin text-[#5E81F4]" />
+              <Loader2 className="w-6 h-6 animate-spin text-[#4F46E5]" />
             </div>
           ) : error ? (
             <div className="flex items-center gap-2 text-[#FF808B] p-6">
@@ -309,9 +309,9 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
                         onClick={(e) => toggleSelect(r.id, e)}
                       >
                         {isChecked ? (
-                          <CheckSquare className="w-4 h-4 text-[#5E81F4]" />
+                          <CheckSquare className="w-4 h-4 text-[#4F46E5]" />
                         ) : (
-                          <Square className="w-4 h-4 text-[#C0C0D0] hover:text-[#5E81F4]" />
+                          <Square className="w-4 h-4 text-[#C0C0D0] hover:text-[#4F46E5]" />
                         )}
                       </div>
                     )}
@@ -407,7 +407,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
                         <div className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold ${
                           step.status === 'approved' ? 'bg-[#059669] text-white' :
                           step.status === 'rejected' ? 'bg-[#FF808B] text-white' :
-                          isCurrent ? 'bg-[#5E81F4] text-white' :
+                          isCurrent ? 'bg-[#4F46E5] text-white' :
                           'bg-[#F0F0F3] text-[#8181A5]'
                         }`}>
                           {step.status === 'approved' ? <CheckCircle2 className="w-4 h-4" /> :
@@ -449,7 +449,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
                     onChange={(e) => setComment(e.target.value)}
                     rows={3}
                     placeholder={tCommon('placeholderApprovalReason')}
-                    className="w-full px-3 py-2 border border-[#F0F0F3] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] resize-none placeholder:text-[#C0C0D0]"
+                    className="w-full px-3 py-2 border border-[#F0F0F3] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] resize-none placeholder:text-[#C0C0D0]"
                   />
                   <div className="flex gap-2">
                     <button
@@ -463,7 +463,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
                     <button
                       onClick={() => handleAction('approve')}
                       disabled={approving}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[#5E81F4] hover:bg-[#4A6FE3] text-white rounded-lg text-sm font-medium disabled:opacity-60 transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[#4F46E5] hover:bg-[#4A6FE3] text-white rounded-lg text-sm font-medium disabled:opacity-60 transition-colors"
                     >
                       {approving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
                       승인
@@ -494,7 +494,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
           <button
             onClick={() => handleBulkAction('APPROVE')}
             disabled={bulkProcessing}
-            className="flex items-center gap-1.5 px-4 py-2 bg-[#5E81F4] hover:bg-[#4A6FE3] text-white rounded-lg text-sm font-semibold disabled:opacity-60 transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 bg-[#4F46E5] hover:bg-[#4A6FE3] text-white rounded-lg text-sm font-semibold disabled:opacity-60 transition-colors"
           >
             {bulkProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
             일괄 승인

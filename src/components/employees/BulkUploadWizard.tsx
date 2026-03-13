@@ -170,7 +170,7 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
                 {['사번', DEPT_COL, GRADE_COL, '발효일'].map((col) => (
                   <span
                     key={col}
-                    className="rounded-full bg-[#E8F5E9] text-[#047857] text-xs px-2.5 py-0.5 font-medium"
+                    className="rounded-full bg-[#EEF2FF] text-[#047857] text-xs px-2.5 py-0.5 font-medium"
                   >
                     {col}
                   </span>
@@ -218,7 +218,7 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
               onDrop={handleDrop}
               onDragOver={(e) => e.preventDefault()}
               onClick={() => fileInputRef.current?.click()}
-              className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#D4D4D4] bg-[#FAFAFA] py-12 cursor-pointer hover:border-[#00C853] hover:bg-[#E8F5E9]/30 transition-colors"
+              className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#D4D4D4] bg-[#FAFAFA] py-12 cursor-pointer hover:border-[#4F46E5] hover:bg-[#EEF2FF]/30 transition-colors"
             >
               <Upload className="h-10 w-10 text-[#999] mb-3" />
               <p className="text-sm font-medium text-[#555]">

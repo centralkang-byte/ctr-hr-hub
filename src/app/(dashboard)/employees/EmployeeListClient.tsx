@@ -90,6 +90,7 @@ function EmployeeQuickPanel({
   employeeId: string
   onViewFull: () => void
 }) {
+  const t = useTranslations('employee')
   const [employee, setEmployee] = useState<EmployeeDetail | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -149,7 +150,7 @@ function EmployeeQuickPanel({
           <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
             <span className="text-xs font-mono text-[#8181A5]">{employee.employeeNo}</span>
             {employee.jobGrade && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-[#F0F0F3] text-[#5E81F4]">
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-[#F0F0F3] text-[#4F46E5]">
                 {employee.jobGrade.name}
               </span>
             )}
@@ -190,7 +191,12 @@ function EmployeeQuickPanel({
         <div className="pt-1">
           <p className="text-[11px] text-[#8181A5] mb-1.5">재직 상태</p>
           <Badge variant={STATUS_VARIANTS[employee.status] ?? 'outline'}>
-            {employee.status}
+            {{
+              ACTIVE: t('statusActive'),
+              ON_LEAVE: t('statusOnLeave'),
+              RESIGNED: t('statusResigned'),
+              TERMINATED: t('statusTerminated'),
+            }[employee.status] ?? employee.status}
           </Badge>
         </div>
       </div>
@@ -199,7 +205,7 @@ function EmployeeQuickPanel({
       <div className="px-5 py-4 border-t border-[#F0F0F3]">
         <Button
           onClick={onViewFull}
-          className="w-full bg-[#5E81F4] hover:bg-[#4B6EE0] text-white text-sm font-medium rounded-lg"
+          className="w-full bg-[#4F46E5] hover:bg-[#4B6EE0] text-white text-sm font-medium rounded-lg"
         >
           <ExternalLink className="w-4 h-4 mr-2" />
           전체 프로필 보기
@@ -380,7 +386,7 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
       sortable: true,
       render: (row) => (
         <div>
-          <p className={`font-medium ${row.id === selectedId ? 'text-[#5E81F4]' : ''}`}>
+          <p className={`font-medium ${row.id === selectedId ? 'text-[#4F46E5]' : ''}`}>
             {row.name}
           </p>
           {row.nameEn && <p className="text-xs text-muted-foreground">{row.nameEn}</p>}

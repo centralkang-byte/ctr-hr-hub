@@ -190,7 +190,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
   return (
     <div className="space-y-6 p-6">
       {/* ─── Welcome Banner ─── */}
-      <div className="rounded-xl bg-[#5E81F4] p-6 text-white">
+      <div className="rounded-xl bg-[#4F46E5] p-6 text-white">
         <h1 className="text-2xl font-bold">
           {t('welcomeMessage', { name: user.name })}
         </h1>
@@ -206,7 +206,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
           <h3 className="text-base font-bold text-[#1C1D21] tracking-[-0.02em] mb-4">{t('onboardingBuddy')}</h3>
           {data.buddy ? (
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#DCFCE7] text-[#5E81F4]">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#DCFCE7] text-[#4F46E5]">
                 <User className="h-6 w-6" />
               </div>
               <div>
@@ -229,11 +229,11 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
               <span className="text-[#8181A5]">
                 {t('completedCount', { completed: progress.completed, total: progress.total })}
               </span>
-              <span className="font-semibold text-[#5E81F4]">{progress.pct}%</span>
+              <span className="font-semibold text-[#4F46E5]">{progress.pct}%</span>
             </div>
             <div className="h-3 w-full rounded-full bg-[#F5F5FA]">
               <div
-                className="h-3 rounded-full bg-gradient-to-r from-[#5E81F4] to-[#4A6DE0] transition-all duration-500"
+                className="h-3 rounded-full bg-gradient-to-r from-[#4F46E5] to-[#4A6DE0] transition-all duration-500"
                 style={{ width: `${progress.pct}%` }}
               />
             </div>
@@ -282,7 +282,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
                         checked={isDone || isSkipped}
                         disabled={isDone || isSkipped || isCompleting}
                         onChange={() => handleComplete(row.id)}
-                        className="h-5 w-5 rounded border-[#F0F0F3] text-[#5E81F4] accent-[#5E81F4] cursor-pointer disabled:cursor-default"
+                        className="h-5 w-5 rounded border-[#F0F0F3] text-[#4F46E5] accent-[#4F46E5] cursor-pointer disabled:cursor-default"
                       />
 
                       {/* Task info */}

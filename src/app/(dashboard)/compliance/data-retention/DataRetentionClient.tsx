@@ -145,7 +145,7 @@ export default function DataRetentionClient() {
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           p.anonymize
-                            ? 'bg-[#E8F5E9] text-[#00A844] border border-[#E8F5E9]'
+                            ? 'bg-[#EEF2FF] text-[#4338CA] border border-[#EEF2FF]'
                             : 'bg-[#FAFAFA] text-[#555] border border-[#E8E8E8]'
                         }`}
                       >
@@ -159,7 +159,7 @@ export default function DataRetentionClient() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => { setSelected(p); setShowForm(true) }}
-                          className="p-1.5 text-[#666] hover:text-[#00C853] hover:bg-[#E8F5E9] rounded"
+                          className="p-1.5 text-[#666] hover:text-[#4F46E5] hover:bg-[#EEF2FF] rounded"
                           title={tc('edit')}
                         >
                           <Pencil className="w-4 h-4" />

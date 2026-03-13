@@ -55,7 +55,7 @@ export function HolidaysTab({ companyId }: HolidaysTabProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" />
+        <Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" />
       </div>
     )
   }
@@ -76,7 +76,7 @@ export function HolidaysTab({ companyId }: HolidaysTabProps) {
           <h3 className="text-base font-semibold text-[#1C1D21]">법정 공휴일</h3>
           <p className="text-sm text-[#8181A5]">
             {selectedYear}년 공휴일 {holidays.length}일
-            {!companyId && <span className="text-[#5E81F4]"> · 법인을 선택하면 해당 법인 공휴일이 표시됩니다</span>}
+            {!companyId && <span className="text-[#4F46E5]"> · 법인을 선택하면 해당 법인 공휴일이 표시됩니다</span>}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -112,8 +112,8 @@ export function HolidaysTab({ companyId }: HolidaysTabProps) {
                         key={holiday.id}
                         className="flex items-center gap-3 rounded-xl border border-[#F0F0F3] px-4 py-3 transition-colors hover:bg-[#F5F5FA]"
                       >
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#5E81F4]/10">
-                          <Calendar className="h-4 w-4 text-[#5E81F4]" />
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#4F46E5]/10">
+                          <Calendar className="h-4 w-4 text-[#4F46E5]" />
                         </div>
                         <div className="flex-1">
                           <div className="text-sm font-medium text-[#1C1D21]">{holiday.name}</div>

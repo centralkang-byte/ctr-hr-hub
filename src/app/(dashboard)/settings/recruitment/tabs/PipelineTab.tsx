@@ -11,7 +11,7 @@ interface Props { companyId: string | null }
 const DEFAULTS: PipelineStageSetting = {
   stages: [
     { id: '1', name: '서류접수', nameEn: 'Application', color: '#8181A5' },
-    { id: '2', name: '서류심사', nameEn: 'Screening', color: '#5E81F4' },
+    { id: '2', name: '서류심사', nameEn: 'Screening', color: '#4F46E5' },
     { id: '3', name: 'AI 스크리닝', nameEn: 'AI Screening', color: '#7C5CFC' },
     { id: '4', name: '1차 면접', nameEn: '1st Interview', color: '#00C48C' },
     { id: '5', name: '2차 면접', nameEn: '2nd Interview', color: '#00C48C' },
@@ -33,7 +33,7 @@ export function PipelineTab({ companyId }: Props) {
     }),
   })
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" /></div>
 
   const move = (i: number, dir: -1 | 1) => {
     const next = structuredClone(settings)

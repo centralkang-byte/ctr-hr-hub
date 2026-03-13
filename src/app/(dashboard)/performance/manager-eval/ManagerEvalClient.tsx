@@ -44,7 +44,7 @@ const SCORE_LABELS = ['', '매우 부족', '부족', '보통', '우수', '탁월
 const STATUS_BADGE: Record<string, string> = {
   DRAFT: 'bg-[#F5F5F5] text-[#666]',
   SUBMITTED: 'bg-[#D1FAE5] text-[#047857]',
-  CONFIRMED: 'bg-[#E8F5E9] text-[#00A844]',
+  CONFIRMED: 'bg-[#EEF2FF] text-[#4338CA]',
 }
 
 // ─── Component ────────────────────────────────────────────
@@ -269,7 +269,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
             setCompetencyGrade('')
             setBeiChecks({})
           }}
-          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
         >
           {cycles.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
@@ -293,7 +293,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                 key={tm.employee.id}
                 onClick={() => loadEmployeeForm(tm.employee.id)}
                 className={`w-full px-5 py-3 flex items-center justify-between text-left hover:bg-[#FAFAFA] transition-colors ${
-                  selectedEmployee === tm.employee.id ? 'bg-[#E8F5E9]' : ''
+                  selectedEmployee === tm.employee.id ? 'bg-[#EEF2FF]' : ''
                 }`}
               >
                 <div>
@@ -356,7 +356,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                                 }))}
                                 className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
                                   goalScores[goal.id]?.score === score
-                                    ? 'bg-[#00C853] text-white'
+                                    ? 'bg-[#4F46E5] text-white'
                                     : 'bg-[#F5F5F5] text-[#666] hover:bg-[#E8E8E8]'
                                 }`}
                               >
@@ -383,7 +383,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                         onClick={() => setPerformanceGrade(g.code)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
                           performanceGrade === g.code
-                            ? 'bg-[#00C853] text-white border-[#00C853]'
+                            ? 'bg-[#4F46E5] text-white border-[#4F46E5]'
                             : 'bg-white text-[#333] border-[#D4D4D4] hover:bg-[#FAFAFA]'
                         }`}
                       >
@@ -419,7 +419,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                                     [ind.id]: e.target.checked,
                                   }))
                                 }
-                                className="mt-0.5 w-4 h-4 rounded border-[#D4D4D4] text-[#00C853]"
+                                className="mt-0.5 w-4 h-4 rounded border-[#D4D4D4] text-[#4F46E5]"
                               />
                               <span className="text-sm text-[#333]">{ind.indicatorText}</span>
                             </label>
@@ -454,8 +454,8 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
 
               {/* 종합 등급 표시 — overallGradeEnabled=true일 때 */}
               {evalSettings?.overallGradeEnabled && performanceGrade && (
-                <div className="rounded-xl border border-[#E8F5E9] bg-[#F0FDF4] p-4">
-                  <p className="text-sm font-semibold text-[#00A844]">종합 등급 (자동 산출)</p>
+                <div className="rounded-xl border border-[#EEF2FF] bg-[#F0FDF4] p-4">
+                  <p className="text-sm font-semibold text-[#4338CA]">종합 등급 (자동 산출)</p>
                   <p className="text-xs text-[#047857] mt-1">
                     업적 {evalSettings.mboWeight}% ({performanceGrade})
                     {evalSettings.methodology === 'MBO_BEI' && competencyGrade
@@ -486,7 +486,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                   value={overallComment}
                   onChange={(e) => setOverallComment(e.target.value)}
                   placeholder="팀원에 대한 종합 평가 의견을 작성하세요..."
-                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999] resize-none"
+                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999] resize-none"
                 />
               </div>
 

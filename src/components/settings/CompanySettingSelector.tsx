@@ -50,10 +50,10 @@ export function CompanySettingSelector({ value, onChange, className = '' }: Comp
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center gap-2 rounded-lg border border-[#F0F0F3] bg-white px-4 py-2.5 text-sm transition-colors hover:border-[#5E81F4]/40 focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/20"
+        className="flex items-center gap-2 rounded-lg border border-[#F0F0F3] bg-white px-4 py-2.5 text-sm transition-colors hover:border-[#4F46E5]/40 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/20"
       >
         {value ? (
-          <Building2 className="h-4 w-4 text-[#5E81F4]" />
+          <Building2 className="h-4 w-4 text-[#4F46E5]" />
         ) : (
           <Globe className="h-4 w-4 text-[#8181A5]" />
         )}
@@ -70,7 +70,7 @@ export function CompanySettingSelector({ value, onChange, className = '' }: Comp
             type="button"
             onClick={() => { onChange(null); setOpen(false) }}
             className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm hover:bg-[#F5F5FA] ${
-              !value ? 'bg-[#5E81F4]/5 text-[#5E81F4]' : 'text-[#1C1D21]'
+              !value ? 'bg-[#4F46E5]/5 text-[#4F46E5]' : 'text-[#1C1D21]'
             }`}
           >
             <Globe className="h-4 w-4" />
@@ -87,7 +87,7 @@ export function CompanySettingSelector({ value, onChange, className = '' }: Comp
               type="button"
               onClick={() => { onChange(company.id); setOpen(false) }}
               className={`flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm hover:bg-[#F5F5FA] ${
-                company.id === value ? 'bg-[#5E81F4]/5 text-[#5E81F4]' : 'text-[#1C1D21]'
+                company.id === value ? 'bg-[#4F46E5]/5 text-[#4F46E5]' : 'text-[#1C1D21]'
               }`}
             >
               <Building2 className="h-4 w-4 text-[#8181A5]" />

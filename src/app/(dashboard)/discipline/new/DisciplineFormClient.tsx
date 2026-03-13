@@ -199,7 +199,7 @@ export default function DisciplineFormClient({ user }: Props) {
               <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{t('targetEmployee')} *</label>
               <select
                 {...register('employeeId')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 bg-white"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 bg-white"
               >
                 <option value="">{t('selectEmployee')}</option>
                 {!employees?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
@@ -219,7 +219,7 @@ export default function DisciplineFormClient({ user }: Props) {
               <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{tPage('disciplineType')} *</label>
               <select
                 {...register('actionType')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 bg-white"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 bg-white"
               >
                 <option value="">{t('selectType')}</option>
                 {TYPE_KEYS.map((key) => (
@@ -236,7 +236,7 @@ export default function DisciplineFormClient({ user }: Props) {
               <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{tCommon('category')} *</label>
               <select
                 {...register('category')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 bg-white"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 bg-white"
               >
                 <option value="">{t('selectCategory')}</option>
                 {CATEGORY_KEYS.map((key) => (
@@ -254,7 +254,7 @@ export default function DisciplineFormClient({ user }: Props) {
               <input
                 type="date"
                 {...register('incidentDate')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
               />
               {errors.incidentDate && (
                 <p className="text-xs text-[#F44336] mt-1">{errors.incidentDate.message}</p>
@@ -269,7 +269,7 @@ export default function DisciplineFormClient({ user }: Props) {
                 min={1}
                 {...register('validMonths')}
                 placeholder={t('validMonthsPlaceholder')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
               />
             </div>
           </div>
@@ -281,7 +281,7 @@ export default function DisciplineFormClient({ user }: Props) {
               {...register('description')}
               rows={4}
               placeholder={t('descriptionPlaceholder')}
-              className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 resize-none"
+              className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 resize-none"
             />
             {errors.description && (
               <p className="text-xs text-[#F44336] mt-1">{errors.description.message}</p>
@@ -295,7 +295,7 @@ export default function DisciplineFormClient({ user }: Props) {
               {...register('evidenceKeys')}
               rows={2}
               placeholder={t('evidencePlaceholder')}
-              className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 resize-none"
+              className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 resize-none"
             />
           </div>
         </div>
@@ -312,7 +312,7 @@ export default function DisciplineFormClient({ user }: Props) {
                 <input
                   type="date"
                   {...register('suspensionStart')}
-                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
                 />
               </div>
               <div>
@@ -320,7 +320,7 @@ export default function DisciplineFormClient({ user }: Props) {
                 <input
                   type="date"
                   {...register('suspensionEnd')}
-                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
                 />
               </div>
             </div>
@@ -342,7 +342,7 @@ export default function DisciplineFormClient({ user }: Props) {
                   max={100}
                   {...register('salaryReductionRate')}
                   placeholder={t('reductionRatePlaceholder')}
-                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
                 />
               </div>
               <div>
@@ -352,7 +352,7 @@ export default function DisciplineFormClient({ user }: Props) {
                   min={1}
                   {...register('salaryReductionMonths')}
                   placeholder={t('reductionPeriodPlaceholder')}
-                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
                 />
               </div>
             </div>
@@ -369,7 +369,7 @@ export default function DisciplineFormClient({ user }: Props) {
               <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{t('demotionGrade')}</label>
               <select
                 {...register('demotionGradeId')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 bg-white"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 bg-white"
               >
                 <option value="">{t('selectGrade')}</option>
                 {grades.map((g) => (
@@ -404,7 +404,7 @@ export default function DisciplineFormClient({ user }: Props) {
                   <input
                     type="date"
                     {...register('committeeDate')}
-                    className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+                    className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
                   />
                 </div>
                 <div>
@@ -412,7 +412,7 @@ export default function DisciplineFormClient({ user }: Props) {
                   <input
                     type="date"
                     {...register('decisionDate')}
-                    className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+                    className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
                   />
                 </div>
               </div>
@@ -422,7 +422,7 @@ export default function DisciplineFormClient({ user }: Props) {
                   type="text"
                   {...register('committeeMembers')}
                   placeholder={t('committeeMembersPlaceholder')}
-                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
                 />
               </div>
               <div>
@@ -431,7 +431,7 @@ export default function DisciplineFormClient({ user }: Props) {
                   {...register('decision')}
                   rows={2}
                   placeholder={t('decisionContentPlaceholder')}
-                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 resize-none"
+                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 resize-none"
                 />
               </div>
             </div>

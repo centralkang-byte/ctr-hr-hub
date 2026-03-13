@@ -100,7 +100,7 @@ export default function MyCheckinsClient({user }: {
                     <ClipboardCheck className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
                     <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">체크인 기간이 아닙니다.</h2>
                     <p className="text-sm text-[#8181A5]">체크인은 CHECK_IN 단계에서 진행됩니다.</p>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#4F46E5] hover:underline">
                         <ArrowLeft className="h-4 w-4" /> 돌아가기
                     </a>
                 </div>
@@ -127,7 +127,7 @@ export default function MyCheckinsClient({user }: {
                         <p className="mt-1 text-sm text-[#8181A5]">중간 점검을 통해 목표 진행 상황을 기록합니다</p>
                     </div>
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
-                        className="rounded-lg border border-[#F0F0F3] bg-white px-3 py-2 text-sm text-[#1C1D21] focus:border-[#5E81F4] focus:outline-none">
+                        className="rounded-lg border border-[#F0F0F3] bg-white px-3 py-2 text-sm text-[#1C1D21] focus:border-[#4F46E5] focus:outline-none">
                         {!cycles?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
               {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
@@ -209,11 +209,11 @@ export default function MyCheckinsClient({user }: {
                                                     <h3 className="text-sm font-semibold text-[#1C1D21]">{goal.title}</h3>
                                                     <span className="text-xs text-[#8181A5]">가중치: {goal.weight}%</span>
                                                 </div>
-                                                <span className="text-sm font-medium text-[#5E81F4]">{Number(goal.achievementScore ?? 0)}%</span>
+                                                <span className="text-sm font-medium text-[#4F46E5]">{Number(goal.achievementScore ?? 0)}%</span>
                                             </div>
                                             {/* Progress bar */}
                                             <div className="mb-3 h-2 rounded-full bg-[#F0F0F3]">
-                                                <div className="h-2 rounded-full bg-[#5E81F4] transition-all" style={{ width: `${Math.min(Number(goal.achievementScore ?? 0), 100)}%` }} />
+                                                <div className="h-2 rounded-full bg-[#4F46E5] transition-all" style={{ width: `${Math.min(Number(goal.achievementScore ?? 0), 100)}%` }} />
                                             </div>
                                             {/* Inline edit (only during CHECK_IN) */}
                                             {isCheckInPeriod && (
@@ -223,18 +223,18 @@ export default function MyCheckinsClient({user }: {
                                                         <input type="number" min={0} max={100}
                                                             value={progressInputs[goal.id] ?? 0}
                                                             onChange={(e) => setProgressInputs((p) => ({ ...p, [goal.id]: Number(e.target.value) }))}
-                                                            className="w-24 rounded-lg border border-[#F0F0F3] px-3 py-1.5 text-sm focus:border-[#5E81F4] focus:outline-none" />
+                                                            className="w-24 rounded-lg border border-[#F0F0F3] px-3 py-1.5 text-sm focus:border-[#4F46E5] focus:outline-none" />
                                                     </div>
                                                     <div className="flex-[2]">
                                                         <label className="mb-1 block text-xs text-[#8181A5]">메모 (선택)</label>
                                                         <input type="text" value={memos[goal.id] ?? ''}
                                                             onChange={(e) => setMemos((p) => ({ ...p, [goal.id]: e.target.value }))}
                                                             placeholder={tCommon('enterNote')}
-                                                            className="w-full rounded-lg border border-[#F0F0F3] px-3 py-1.5 text-sm focus:border-[#5E81F4] focus:outline-none" />
+                                                            className="w-full rounded-lg border border-[#F0F0F3] px-3 py-1.5 text-sm focus:border-[#4F46E5] focus:outline-none" />
                                                     </div>
                                                     <button onClick={() => handleSaveProgress(goal.id)}
                                                         disabled={saving === goal.id}
-                                                        className="rounded-lg bg-[#5E81F4] px-4 py-1.5 text-sm font-medium text-white disabled:opacity-40 hover:bg-[#4A6FE0] transition-colors">
+                                                        className="rounded-lg bg-[#4F46E5] px-4 py-1.5 text-sm font-medium text-white disabled:opacity-40 hover:bg-[#4A6FE0] transition-colors">
                                                         {saving === goal.id ? tCommon('loading') : tCommon('save')}
                                                     </button>
                                                 </div>

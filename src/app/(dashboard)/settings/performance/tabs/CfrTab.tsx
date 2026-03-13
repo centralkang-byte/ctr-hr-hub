@@ -33,7 +33,7 @@ export function CfrTab({ companyId }: Props) {
     }),
   })
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" /></div>
 
   return (
     <div className="space-y-4">
@@ -57,7 +57,7 @@ export function CfrTab({ companyId }: Props) {
 
       <SettingFieldWithOverride label="피드백 익명 여부" description="동료 피드백 익명 허용" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={settings.anonymous} onChange={(e) => setSettings((p) => ({ ...p, anonymous: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]" />
+          <input type="checkbox" checked={settings.anonymous} onChange={(e) => setSettings((p) => ({ ...p, anonymous: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#4F46E5]" />
           <span className="text-[#1C1D21]">익명 피드백 허용</span>
         </label>
       </SettingFieldWithOverride>
@@ -71,7 +71,7 @@ export function CfrTab({ companyId }: Props) {
 
       <SettingFieldWithOverride label="피드백 카테고리" description="사용 가능한 피드백 분류" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex flex-wrap gap-2">{settings.feedbackCategories.map((cat, i) => (
-          <span key={i} className="rounded-full bg-[#5E81F4]/10 px-3 py-1 text-sm font-medium text-[#5E81F4]">{cat}</span>
+          <span key={i} className="rounded-full bg-[#4F46E5]/10 px-3 py-1 text-sm font-medium text-[#4F46E5]">{cat}</span>
         ))}</div>
       </SettingFieldWithOverride>
 

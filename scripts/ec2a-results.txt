@@ -1,0 +1,53 @@
+EC-2a Results
+=============
+Date: 2026-03-13
+
+Total routes scanned: 522
+Routes with include patterns matching employee-related: 22
+False positives (non-employee include patterns): 8
+Binary export routes (skipped): 2
+Custom business logic routes (skipped): 4
+
+Total routes converted: 5
+  - cfr/one-on-ones/route.ts
+  - cfr/recognitions/route.ts
+  - peer-review/nominations/route.ts
+  - peer-review/results/route.ts
+  - peer-review/results/team/route.ts
+
+Total routes skipped: 14 (see ec2a-custom-routes.txt)
+
+Response shape changes that may affect frontend:
+-------------------------------------------------
+1. cfr/one-on-ones GET: employee field now MinimalEmployee (was hand-picked select)
+   - Previously had: { id, name, employeeNo, assignments[].department.name }
+   - Now has: full MinimalEmployee (adds department, jobTitle, jobGrade, email, etc.)
+   - Frontend impact: ADDITIVE — existing fields still present, more fields available
+
+2. cfr/recognitions GET: sender/receiver now MinimalEmployee
+   - Previously had: { id, name, assignments[].department.name }
+   - Now has: full MinimalEmployee
+   - Frontend impact: ADDITIVE
+
+3. peer-review/nominations GET: employee/nominee now MinimalEmployee
+   - Previously had: { id, name, employeeNo, assignments[].department.name }
+   - Now has: full MinimalEmployee
+   - Frontend impact: ADDITIVE
+
+4. peer-review/results GET: evaluator now MinimalEmployee
+   - Previously had: { id, name, assignments[].department.name }
+   - Now has: full MinimalEmployee
+   - Frontend impact: ADDITIVE
+
+5. peer-review/results/team GET: employee now { id, name, employeeNo, department }
+   (still a mapped object, not full MinimalEmployee — preserved existing aggregation shape)
+   - Frontend impact: NONE — shape unchanged
+
+Routes where employee data shape changed:
+-----------------------------------------
+All changes are ADDITIVE — more fields available, no fields removed.
+Existing frontend consumers should not break.
+
+Custom routes NOT converted (see ec2a-custom-routes.txt for reasons):
+skills/assessments, skills/radar, performance/evaluations/ai-draft,
+payroll/anomalies, payroll exports, and various auth-check includes.

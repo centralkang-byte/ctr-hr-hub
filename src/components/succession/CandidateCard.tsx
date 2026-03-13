@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import type { CandidateData } from './PlanDetailDialog'
 import EmployeeInsightPanel from '@/components/performance/EmployeeInsightPanel'
+import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -17,7 +18,7 @@ interface CandidateCardProps {
 
 const READINESS_BADGE: Record<string, { label: string; className: string }> = {
   READY_NOW: { label: '즉시 가능', className: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
-  READY_1_2_YEARS: { label: '1-2년 내', className: 'bg-[#E8F5E9] text-[#00A844] border-[#E8F5E9]' },
+  READY_1_2_YEARS: { label: '1-2년 내', className: 'bg-[#EEF2FF] text-[#4338CA] border-[#EEF2FF]' },
   READY_3_PLUS_YEARS: { label: '3년 이상', className: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]' },
 }
 
@@ -31,18 +32,16 @@ export default function CandidateCard({ candidate, onDelete }: CandidateCardProp
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-[#E8F5E9] flex items-center justify-center text-[#00A844] font-semibold text-sm">
-            {candidate.employee.name.charAt(0)}
-          </div>
-          <div>
-            <p className="text-sm font-medium text-[#1A1A1A]">
-              {candidate.employee.name}
-              {candidate.ranking != null && candidate.ranking > 0 && (
-                <Badge variant="outline" className="text-xs ml-1">#{candidate.ranking}</Badge>
-              )}
-            </p>
-            <p className="text-xs text-[#666]">{candidate.employee.employeeNo}</p>
-          </div>
+          <EmployeeCell
+            name={candidate.employee.name}
+            employeeNo={candidate.employee.employeeNo}
+            size="sm"
+            trailing={
+              candidate.ranking != null && candidate.ranking > 0 ? (
+                <Badge variant="outline" className="text-xs">#{candidate.ranking}</Badge>
+              ) : undefined
+            }
+          />
         </div>
         <div className="flex items-center gap-2">
           {readiness ? (

@@ -75,7 +75,7 @@ export function LeaveAccrualTab({ companyId }: LeaveAccrualTabProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" />
+        <Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" />
       </div>
     )
   }
@@ -107,7 +107,7 @@ export function LeaveAccrualTab({ companyId }: LeaveAccrualTabProps) {
               type="checkbox"
               checked={settings.allowNegativeBalance}
               onChange={(e) => setSettings((p) => ({ ...p, allowNegativeBalance: e.target.checked }))}
-              className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]"
+              className="h-4 w-4 rounded border-[#F0F0F3] text-[#4F46E5]"
             />
             <span className="text-[#1C1D21]">마이너스 연차 허용</span>
           </label>
@@ -146,7 +146,7 @@ export function LeaveAccrualTab({ companyId }: LeaveAccrualTabProps) {
                     ) : (
                       <ChevronRight className="h-4 w-4 text-[#8181A5]" />
                     )}
-                    <span className="font-mono text-xs text-[#5E81F4]">{typeDef.code}</span>
+                    <span className="font-mono text-xs text-[#4F46E5]">{typeDef.code}</span>
                     <span className="text-sm font-medium text-[#1C1D21]">{typeDef.name}</span>
                     {rule && (
                       <span className="ml-auto text-xs text-[#8181A5]">
@@ -187,7 +187,7 @@ export function LeaveAccrualTab({ companyId }: LeaveAccrualTabProps) {
           <input
             type="checkbox"
             defaultChecked={true}
-            className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]"
+            className="h-4 w-4 rounded border-[#F0F0F3] text-[#4F46E5]"
           />
           <span className="text-[#1C1D21]">비례 부여 활성화</span>
         </label>

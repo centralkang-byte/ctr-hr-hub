@@ -176,7 +176,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
     if (loading || !run || !approval) {
         return (
             <div className="p-6 flex items-center justify-center min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin text-[#5E81F4]" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#4F46E5]" />
             </div>
         )
     }
@@ -287,7 +287,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                         onChange={(e) => setComment(e.target.value)}
                         placeholder={tCommon('placeholderApprovalComment')}
                         rows={3}
-                        className="w-full px-3 py-2.5 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 resize-none"
+                        className="w-full px-3 py-2.5 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 resize-none"
                     />
                     <div className="flex items-center gap-3">
                         <button
@@ -313,7 +313,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             <div className="text-center">
                 <button
                     onClick={() => router.push(`/payroll/${runId}/review`)}
-                    className="text-sm text-[#5E81F4] hover:underline"
+                    className="text-sm text-[#4F46E5] hover:underline"
                 >
                     상세 검토 내용 보기 →
                 </button>

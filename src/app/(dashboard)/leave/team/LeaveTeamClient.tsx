@@ -55,7 +55,7 @@ interface TeamLeaveData {
 
 const STATUS_BADGE: Record<string, string> = {
   PENDING: 'bg-[#FFF3E0] text-[#FF9800]',
-  APPROVED: 'bg-[#E8F5E9] text-[#2E7D32]',
+  APPROVED: 'bg-[#EEF2FF] text-[#2E7D32]',
   REJECTED: 'bg-[#FFEBEE] text-[#F44336]',
   CANCELLED: 'bg-[#F5F5F5] text-[#666]',
 }
@@ -362,7 +362,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                         {isPending && (
                           <div className="flex items-center gap-2">
                             <button
-                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-[#00C853] text-[#00C853] hover:bg-[#E8F5E9] flex items-center"
+                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-[#4F46E5] text-[#4F46E5] hover:bg-[#EEF2FF] flex items-center"
                               onClick={() => handleApprove(req.id)}
                             >
                               <Check className="mr-1 h-4 w-4" />

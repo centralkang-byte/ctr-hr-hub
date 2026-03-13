@@ -33,7 +33,7 @@ export function KpiSummaryCard({
 
   return (
     <div
-      className={`${CARD_STYLES.kpi} ${onClick ? 'cursor-pointer hover:border-[#00C853] transition-colors' : ''}`}
+      className={`${CARD_STYLES.kpi} ${onClick ? 'cursor-pointer hover:border-[#4F46E5] transition-colors' : ''}`}
       onClick={onClick}
     >
       <p className="text-xs text-[#666] mb-1">{label}</p>

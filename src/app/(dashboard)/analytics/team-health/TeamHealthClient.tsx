@@ -160,7 +160,7 @@ export default function TeamHealthClient() {
                 <p className="text-xs text-gray-500 mt-1">{rec.actionText}</p>
               </div>
               {rec.actionLink && (
-                <a href={rec.actionLink} className="text-xs text-[#5E81F4] hover:underline whitespace-nowrap">
+                <a href={rec.actionLink} className="text-xs text-[#4F46E5] hover:underline whitespace-nowrap">
                   프로필 보기 →
                 </a>
               )}

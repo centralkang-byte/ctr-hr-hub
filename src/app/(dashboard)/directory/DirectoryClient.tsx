@@ -306,7 +306,7 @@ function EmployeeCard({ emp, onClick }: { emp: DirectoryEmployee; onClick: () =>
   return (
     <button
       onClick={onClick}
-      className={`${CARD_STYLES.kpi} text-left hover:border-[#00C853] hover:shadow-sm transition-all flex flex-col items-center gap-2`}
+      className={`${CARD_STYLES.kpi} text-left hover:border-[#4F46E5] hover:shadow-sm transition-all flex flex-col items-center gap-2`}
     >
       <InitialAvatar name={emp.name} size="lg" />
       <div className="text-center">

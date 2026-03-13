@@ -107,7 +107,7 @@ export default function DataRetentionTabContent() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${p.anonymize ? 'bg-[#E8F5E9] text-[#00A844]' : 'bg-[#FAFAFA] text-[#666]'}`}>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${p.anonymize ? 'bg-[#EEF2FF] text-[#4338CA]' : 'bg-[#FAFAFA] text-[#666]'}`}>
                         {p.anonymize ? tc('yes') : tc('no')}
                       </span>
                     </td>
@@ -118,7 +118,7 @@ export default function DataRetentionTabContent() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => { setSelected(p); setShowForm(true) }}
-                          className="text-[#666] hover:text-[#00C853]"
+                          className="text-[#666] hover:text-[#4F46E5]"
                           title={tc('edit')}
                         >
                           <Pencil className="w-4 h-4" />

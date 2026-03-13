@@ -49,7 +49,7 @@ export function GlobalOverrideBadge({ isOverride, companyId, endpoint, onChanged
           type="button"
           onClick={handleStartCustomizing}
           disabled={loading}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-[#00C853] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#00A844] disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-[#4F46E5] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#4338CA] disabled:opacity-50"
         >
           <Pencil className="h-3.5 w-3.5" />
           커스터마이징 시작

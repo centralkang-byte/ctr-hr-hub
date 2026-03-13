@@ -17,6 +17,7 @@ import { EmptyChart } from '@/components/analytics/EmptyChart'
 import { AnalyticsFilterBar } from '@/components/analytics/AnalyticsFilterBar'
 import { CHART_COLORS } from '@/components/analytics/chart-colors'
 import type { PayrollResponse } from '@/lib/analytics/types'
+import { CHART_THEME } from '@/lib/styles/chart'
 
 export default function PayrollClient() {
   const tCommon = useTranslations('common')
@@ -61,7 +62,7 @@ export default function PayrollClient() {
         {charts.monthlyTrend.length === 0 ? <EmptyChart /> : (
           <ResponsiveContainer width="100%" height={320}>
             <ComposedChart data={charts.monthlyTrend}>
-              <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
+              <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
               <XAxis dataKey="month" fontSize={11} tickFormatter={(v) => v.split('-')[1] + '월'} />
               <YAxis fontSize={11} />
               <Tooltip labelFormatter={(v) => `${String(v).split('-')[1]}월`} contentStyle={{ borderRadius: 8, fontSize: 12 }} />
@@ -78,7 +79,7 @@ export default function PayrollClient() {
           {charts.companyComparison.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={charts.companyComparison} layout="vertical">
-                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
+                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                 <XAxis type="number" fontSize={11} />
                 <YAxis type="category" dataKey="company" width={100} fontSize={11} />
                 <Tooltip formatter={(value) => [`₩${Number(value).toLocaleString()}`, 'KRW 환산']} contentStyle={{ borderRadius: 8, fontSize: 12 }} />
@@ -92,7 +93,7 @@ export default function PayrollClient() {
           {charts.compositionRatio.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={charts.compositionRatio}>
-                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
+                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                 <XAxis dataKey="month" fontSize={11} tickFormatter={(v) => v.split('-')[1] + '월'} />
                 <YAxis fontSize={11} unit="%" domain={[0, 100]} />
                 <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />

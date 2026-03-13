@@ -52,7 +52,7 @@ export function LeaveTypesTab({ companyId }: LeaveTypesTabProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" />
+        <Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" />
       </div>
     )
   }
@@ -99,7 +99,7 @@ export function LeaveTypesTab({ companyId }: LeaveTypesTabProps) {
                 onClick={() => setSelectedType(type)}
                 className={TABLE_STYLES.rowClickable}
               >
-                <td className="px-4 py-3 text-sm font-mono text-[#5E81F4]">{type.code}</td>
+                <td className="px-4 py-3 text-sm font-mono text-[#4F46E5]">{type.code}</td>
                 <td className="px-4 py-3">
                   <div className="text-sm font-medium text-[#1C1D21]">{type.name}</div>
                   {type.nameEn && <div className="text-xs text-[#8181A5]">{type.nameEn}</div>}

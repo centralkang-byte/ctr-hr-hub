@@ -86,7 +86,7 @@ interface CorrectionForm {
 // ─── Status variant map ─────────────────────────────────────
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
-  NORMAL: 'bg-[#E8F5E9] text-[#2E7D32]',
+  NORMAL: 'bg-[#EEF2FF] text-[#2E7D32]',
   LATE: 'bg-[#FFEBEE] text-[#E53935]',
   EARLY_OUT: 'bg-[#FFF3E0] text-[#E65100]',
   ABSENT: 'bg-[#FFEBEE] text-[#F44336]',
@@ -274,7 +274,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
           <p className="text-xs text-[#999] font-medium mb-2">{t('clockIn')}</p>
           <p className={TYPOGRAPHY.stat}><AnimatedNumber value={kpi?.presentCount ?? 0} /></p>
-          <span className="text-xs font-semibold text-[#00C853]">{presentPct}%</span>
+          <span className="text-xs font-semibold text-[#4F46E5]">{presentPct}%</span>
         </div>
 
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">

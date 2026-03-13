@@ -33,7 +33,7 @@ export function DepartmentsTab({ companyId }: Props) {
       .finally(() => setLoading(false))
   }, [companyId])
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" /></div>
 
   return (
     <div className="space-y-4">
@@ -58,7 +58,7 @@ export function DepartmentsTab({ companyId }: Props) {
             <tbody className="divide-y divide-[#F0F0F3]">
               {depts.map((d) => (
                 <tr key={d.id} className="hover:bg-[#F5F5FA] transition-colors">
-                  <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{d.code}</td>
+                  <td className="px-4 py-3 text-sm font-medium text-[#4F46E5]">{d.code}</td>
                   <td className={TABLE_STYLES.cell}>
                     <span style={{ paddingLeft: `${(d.level - 1) * 16}px` }} className="flex items-center gap-1">
                       {d.level > 1 && <ChevronRight className="h-3 w-3 text-[#8181A5]" />}

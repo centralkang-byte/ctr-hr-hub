@@ -97,8 +97,8 @@ function LevelSelector({
             onClick={() => onChange(l)}
             className={`flex flex-col items-center px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
               selected
-                ? 'border-[#00C853] bg-[#E8F5E9] text-[#00C853]'
-                : 'border-[#E8E8E8] text-[#666] hover:border-[#00C853] hover:bg-[#E8F5E9]'
+                ? 'border-[#4F46E5] bg-[#EEF2FF] text-[#4F46E5]'
+                : 'border-[#E8E8E8] text-[#666] hover:border-[#4F46E5] hover:bg-[#EEF2FF]'
             }`}
           >
             <span className="text-base font-bold">{l}</span>
@@ -241,7 +241,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
           <p className="text-xs text-[#666] mb-1">평가 완료</p>
           <p className="text-3xl font-bold text-[#1A1A1A]">{completedCount}<span className="text-lg font-normal text-[#999]">/{totalCount}</span></p>
           <div className="mt-2 bg-[#F5F5F5] rounded-full h-2">
-            <div className="bg-[#00C853] h-2 rounded-full" style={{ width: `${completionRate}%` }} />
+            <div className="bg-[#4F46E5] h-2 rounded-full" style={{ width: `${completionRate}%` }} />
           </div>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
@@ -302,7 +302,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
       {/* 역량 평가 폼 */}
       {loading ? (
         <div className="flex items-center justify-center h-32">
-          <div className="animate-spin w-6 h-6 border-2 border-[#00C853] border-t-transparent rounded-full" />
+          <div className="animate-spin w-6 h-6 border-2 border-[#4F46E5] border-t-transparent rounded-full" />
         </div>
       ) : (
         <div className="space-y-4">
@@ -322,7 +322,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
                   className="w-full flex items-center justify-between p-5 text-left"
                 >
                   <div className="flex items-center gap-3">
-                    <BookOpen className="w-5 h-5 text-[#00C853]" />
+                    <BookOpen className="w-5 h-5 text-[#4F46E5]" />
                     <span className="font-semibold text-[#1A1A1A]">{category.name}</span>
                     <span className="text-xs text-[#666]">
                       {items.filter((c) => assessments[c.id]).length}/{items.length} 완료
@@ -384,7 +384,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
                                 }))
                               }
                               rows={2}
-                              className="mt-2 w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm resize-none focus:ring-2 focus:ring-[#00C853]/10"
+                              className="mt-2 w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm resize-none focus:ring-2 focus:ring-[#4F46E5]/10"
                             />
                           )}
 

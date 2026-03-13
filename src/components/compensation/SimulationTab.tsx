@@ -203,7 +203,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
           <div className="flex items-center gap-1">
             <input
               type="number"
-              className="w-16 px-2 py-1 border border-[#D4D4D4] rounded text-sm text-right focus:ring-2 focus:ring-[#00C853]/10"
+              className="w-16 px-2 py-1 border border-[#D4D4D4] rounded text-sm text-right focus:ring-2 focus:ring-[#4F46E5]/10"
               value={row.adjustedPct}
               onChange={(e) => handlePctChange(row.id, Number(e.target.value))}
               min={0}
@@ -222,7 +222,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
       key: 'newSalary',
       header: '신규 연봉',
       render: (row) => (
-        <span className="text-sm font-semibold text-[#00A844]">
+        <span className="text-sm font-semibold text-[#4338CA]">
           {formatCurrency(row.newSalary, row.currency)}
         </span>
       ),
@@ -266,7 +266,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">평균 인상률</p>
-          <p className="text-3xl font-bold text-[#00C853]">{budget.avgIncreasePct}%</p>
+          <p className="text-3xl font-bold text-[#4F46E5]">{budget.avgIncreasePct}%</p>
         </div>
       </div>
 

@@ -74,7 +74,7 @@ export default function ComplianceClient() {
   const kpiCards = [
     { label: t('gdpr.consents'), value: stats?.activeConsents ?? 0, icon: Shield, color: 'text-[#059669]' },
     { label: t('gdpr.requests'), value: stats?.pendingRequests ?? 0, icon: FileSearch, color: 'text-[#D97706]' },
-    { label: t('gdpr.retention'), value: stats?.retentionPolicies ?? 0, icon: Database, color: 'text-[#00C853]' },
+    { label: t('gdpr.retention'), value: stats?.retentionPolicies ?? 0, icon: Database, color: 'text-[#4F46E5]' },
     { label: t('gdpr.dpia'), value: stats?.dpiaRecords ?? 0, icon: FileSearch, color: 'text-[#4F46E5]' },
   ]
 
@@ -91,7 +91,7 @@ export default function ComplianceClient() {
       description: 'PII access monitoring and audit trail',
       href: '/compliance/pii-audit',
       icon: Eye,
-      color: 'bg-[#E8F5E9] text-[#00C853]',
+      color: 'bg-[#EEF2FF] text-[#4F46E5]',
     },
     {
       title: t('gdpr.retention'),
@@ -137,7 +137,7 @@ export default function ComplianceClient() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <ShieldCheck className="h-7 w-7 text-[#00C853]" />
+        <ShieldCheck className="h-7 w-7 text-[#4F46E5]" />
         <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('title')}</h1>
       </div>
 
@@ -175,7 +175,7 @@ export default function ComplianceClient() {
               </div>
               <h3 className="text-sm font-semibold text-[#1A1A1A] mb-1">{card.title}</h3>
               <p className="text-xs text-[#666] mb-3">{card.description}</p>
-              <div className="flex items-center text-xs font-medium text-[#00C853] group-hover:text-[#00A844]">
+              <div className="flex items-center text-xs font-medium text-[#4F46E5] group-hover:text-[#4338CA]">
                 <ArrowRight className="h-3.5 w-3.5" />
               </div>
             </Link>
@@ -198,7 +198,7 @@ export default function ComplianceClient() {
                 <h3 className="text-sm font-semibold text-[#1A1A1A]">{card.title}</h3>
               </div>
               <p className="text-xs text-[#666] mb-3">{card.description}</p>
-              <div className="flex items-center text-xs font-medium text-[#00C853] group-hover:text-[#00A844]">
+              <div className="flex items-center text-xs font-medium text-[#4F46E5] group-hover:text-[#4338CA]">
                 <ArrowRight className="h-3.5 w-3.5" />
               </div>
             </Link>

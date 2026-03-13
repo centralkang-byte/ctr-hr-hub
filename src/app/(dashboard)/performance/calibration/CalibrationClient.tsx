@@ -70,11 +70,11 @@ const BLOCK_LABELS: Record<number, { label: string; color: string }> = {
   2: { label: '2A', color: 'bg-[#FEF3C7] text-[#B45309]' },
   3: { label: '3A', color: 'bg-[#D1FAE5] text-[#047857]' },
   4: { label: '1B', color: 'bg-[#FEF3C7] text-[#B45309]' },
-  5: { label: '2B', color: 'bg-[#E8F5E9] text-[#00A844]' },
+  5: { label: '2B', color: 'bg-[#EEF2FF] text-[#4338CA]' },
   6: { label: '3B', color: 'bg-[#D1FAE5] text-[#047857]' },
   7: { label: '1C', color: 'bg-[#E0E7FF] text-[#4338CA]' },
   8: { label: '2C', color: 'bg-[#D1FAE5] text-[#047857]' },
-  9: { label: '3C', color: 'bg-[#E8F5E9] text-[#00A844]' },
+  9: { label: '3C', color: 'bg-[#EEF2FF] text-[#4338CA]' },
 }
 
 const STATUS_MAP: Record<string, { label: string; style: string }> = {
@@ -297,7 +297,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                   {items.slice(0, 3).map((ev) => (
                     <div
                       key={ev.employeeId}
-                      className="flex items-center gap-1 text-xs bg-white border border-[#E8E8E8] rounded-md px-1.5 py-0.5 cursor-pointer hover:border-[#00C853] hover:bg-[#E8F5E9] transition-colors"
+                      className="flex items-center gap-1 text-xs bg-white border border-[#E8E8E8] rounded-md px-1.5 py-0.5 cursor-pointer hover:border-[#4F46E5] hover:bg-[#EEF2FF] transition-colors"
                       onClick={() => handleEmployeeChipClick(ev)}
                     >
                       <span
@@ -350,7 +350,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
           <select
             value={selectedCycleId}
             onChange={(e) => { setSelectedCycleId(e.target.value); setSelectedSession(null) }}
-            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
           >
             {cycles.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
@@ -373,7 +373,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
               value={newSessionName}
               onChange={(e) => setNewSessionName(e.target.value)}
               placeholder="세션 이름"
-              className="flex-1 px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"
+              className="flex-1 px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]"
             />
             <button
               onClick={handleCreateSession}
@@ -408,7 +408,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                   key={s.id}
                   onClick={() => loadSession(s.id)}
                   className={`w-full px-5 py-3 text-left hover:bg-[#FAFAFA] transition-colors ${
-                    selectedSession?.id === s.id ? 'bg-[#E8F5E9]' : ''
+                    selectedSession?.id === s.id ? 'bg-[#EEF2FF]' : ''
                   }`}
                 >
                   <div className="flex items-center justify-between">
@@ -481,7 +481,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                         min={1} max={5} step={0.1}
                         value={adjPerfScore}
                         onChange={(e) => setAdjPerfScore(Number(e.target.value))}
-                        className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+                        className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
                       />
                     </div>
                     <div>
@@ -491,7 +491,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                         min={1} max={5} step={0.1}
                         value={adjCompScore}
                         onChange={(e) => setAdjCompScore(Number(e.target.value))}
-                        className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+                        className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
                       />
                     </div>
                   </div>
@@ -502,7 +502,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                       value={adjReason}
                       onChange={(e) => setAdjReason(e.target.value)}
                       placeholder={tCommon('placeholderAdjustmentReason')}
-                      className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999] resize-none"
+                      className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999] resize-none"
                     />
                   </div>
                   <button
@@ -536,7 +536,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                           <tr key={adj.id} className={TABLE_STYLES.header}>
                             <td className="px-4 py-3 text-sm text-[#1A1A1A]">{adj.employee.name}</td>
                             <td className="px-4 py-3 text-sm text-center text-[#666]">{adj.originalBlock}</td>
-                            <td className="px-4 py-3 text-sm text-center font-medium text-[#00C853]">{adj.adjustedBlock}</td>
+                            <td className="px-4 py-3 text-sm text-center font-medium text-[#4F46E5]">{adj.adjustedBlock}</td>
                             <td className="px-4 py-3 text-sm text-[#555]">{adj.reason}</td>
                           </tr>
                         ))}

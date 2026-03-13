@@ -31,7 +31,7 @@ export function NotificationChannelsTab({ companyId }: Props) {
     }),
   })
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" /></div>
 
   const toggle = (i: number) => {
     const next = structuredClone(settings)
@@ -54,9 +54,9 @@ export function NotificationChannelsTab({ companyId }: Props) {
         const Icon = ICON_MAP[ch.iconKey] ?? Bell
         return (
           <div key={ch.key} className="flex items-center gap-4 rounded-xl border border-[#F0F0F3] p-4 hover:bg-[#F5F5FA] transition-colors">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#5E81F4]/10"><Icon className="h-5 w-5 text-[#5E81F4]" /></div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#4F46E5]/10"><Icon className="h-5 w-5 text-[#4F46E5]" /></div>
             <div className="flex-1"><span className="text-sm font-medium text-[#1C1D21]">{ch.label}</span></div>
-            <button onClick={() => toggle(i)} className={`relative h-6 w-11 rounded-full transition-colors ${ch.enabled ? 'bg-[#5E81F4]' : 'bg-[#F0F0F3]'}`}>
+            <button onClick={() => toggle(i)} className={`relative h-6 w-11 rounded-full transition-colors ${ch.enabled ? 'bg-[#4F46E5]' : 'bg-[#F0F0F3]'}`}>
               <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${ch.enabled ? 'left-[22px]' : 'left-0.5'}`} />
             </button>
           </div>

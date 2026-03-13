@@ -58,9 +58,13 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
     init()
   }, [])
 
-  const fetchResults = useCallback(async () => {
   const { confirm, dialogProps } = useConfirmDialog()
-    if (!selectedCycleId) return
+
+  const fetchResults = useCallback(async () => {
+    if (!selectedCycleId) {
+      setLoading(false)
+      return
+    }
     setLoading(true)
     try {
       const params: Record<string, string | number> = { cycleId: selectedCycleId, page, limit: 20 }
@@ -117,7 +121,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
           <select
             value={selectedDeptId}
             onChange={(e) => { setSelectedDeptId(e.target.value); setPage(1) }}
-            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
           >
             <option value="">전체 부서</option>
             {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
@@ -125,7 +129,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
           <select
             value={selectedCycleId}
             onChange={(e) => { setSelectedCycleId(e.target.value); setPage(1) }}
-            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
           >
             {cycles.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
@@ -143,7 +147,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
             <div key={block} className="flex flex-col items-center">
               <span className="text-sm font-bold text-[#1A1A1A]">{count}</span>
               <div
-                className="w-12 bg-[#00C853] rounded-t-lg mt-1"
+                className="w-12 bg-[#4F46E5] rounded-t-lg mt-1"
                 style={{ height: `${Math.max(count * 20, 8)}px` }}
               />
               <span className="text-xs text-[#666] mt-1">{block}</span>
@@ -181,7 +185,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
                 <td className="px-4 py-3 text-sm text-center font-medium text-[#1A1A1A]">{r.finalResult.performanceScore?.toFixed(1) ?? '-'}</td>
                 <td className="px-4 py-3 text-sm text-center font-medium text-[#1A1A1A]">{r.finalResult.competencyScore?.toFixed(1) ?? '-'}</td>
                 <td className="px-4 py-3 text-center">
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${r.finalResult.calibrated ? 'bg-[#E0E7FF] text-[#4338CA]' : 'bg-[#E8F5E9] text-[#00A844]'}`}>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${r.finalResult.calibrated ? 'bg-[#E0E7FF] text-[#4338CA]' : 'bg-[#EEF2FF] text-[#4338CA]'}`}>
                     {r.finalResult.emsBlock ?? '-'}
                   </span>
                 </td>

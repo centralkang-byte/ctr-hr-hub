@@ -59,7 +59,7 @@ function WorkSchedulesTab({ companyId }: { companyId: string | null }) {
     }).catch(() => setLoading(false))
   }, [companyId])
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" /></div>
 
   return (
     <div className="space-y-4">
@@ -116,7 +116,7 @@ function WorkSchedulesTab({ companyId }: { companyId: string | null }) {
             type="checkbox"
             checked={settings.flexEnabled}
             onChange={(e) => setSettings((p) => ({ ...p, flexEnabled: e.target.checked }))}
-            className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]"
+            className="h-4 w-4 rounded border-[#F0F0F3] text-[#4F46E5]"
           />
           <span className="text-[#1C1D21]">유연근무제 활성화</span>
         </label>
@@ -160,7 +160,7 @@ function WeeklyHoursTab({ companyId }: { companyId: string | null }) {
     }).catch(() => setLoading(false))
   }, [companyId])
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" /></div>
 
   return (
     <div className="space-y-4">

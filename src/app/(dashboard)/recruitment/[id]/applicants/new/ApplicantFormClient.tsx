@@ -218,8 +218,8 @@ export default function ApplicantFormClient({
           <ChevronLeft className="w-4 h-4 text-[#666]" />
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#E8F5E9] rounded-lg flex items-center justify-center">
-            <UserPlus className="w-5 h-5 text-[#00C853]" />
+          <div className="w-10 h-10 bg-[#EEF2FF] rounded-lg flex items-center justify-center">
+            <UserPlus className="w-5 h-5 text-[#4F46E5]" />
           </div>
           <div>
             <h1
@@ -255,7 +255,7 @@ export default function ApplicantFormClient({
                 value={form.name}
                 onChange={handleChange}
                 placeholder={t('namePlaceholder')}
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors duration-150"
               />
             </div>
 
@@ -271,7 +271,7 @@ export default function ApplicantFormClient({
                 onChange={handleChange}
                 onBlur={handleEmailBlur}
                 placeholder="example@email.com"
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors duration-150"
               />
               {emailWarning && (
                 <p className="flex items-center gap-1.5 text-[#B45309] bg-[#F4BE5E]/10 px-2 py-1.5 rounded-md mt-1.5 text-sm font-medium">
@@ -293,7 +293,7 @@ export default function ApplicantFormClient({
                 onChange={handleChange}
                 onBlur={handlePhoneBlur}
                 placeholder="010-0000-0000"
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors duration-150"
               />
               {phoneWarning && (
                 <p className="flex items-center gap-1.5 text-[#B45309] bg-[#F4BE5E]/10 px-2 py-1.5 rounded-md mt-1.5 text-sm font-medium">
@@ -312,7 +312,7 @@ export default function ApplicantFormClient({
                 name="source"
                 value={form.source}
                 onChange={handleChange}
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors duration-150"
               >
                 {SOURCE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -333,7 +333,7 @@ export default function ApplicantFormClient({
                 value={form.portfolioUrl}
                 onChange={handleChange}
                 placeholder="https://..."
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors duration-150"
               />
             </div>
 
@@ -348,7 +348,7 @@ export default function ApplicantFormClient({
                 value={form.resumeKey}
                 onChange={handleChange}
                 placeholder={t('resumeKeyPlaceholder')}
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-[#FAFAFA] focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-[#FAFAFA] focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors duration-150"
               />
               <p className="text-xs text-[#999] mt-1">
                 {t('resumeKeyDescription')}
@@ -366,7 +366,7 @@ export default function ApplicantFormClient({
                 onChange={handleChange}
                 placeholder={t('memoPlaceholder')}
                 rows={3}
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg resize-none focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg resize-none focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors duration-150"
               />
             </div>
           </div>

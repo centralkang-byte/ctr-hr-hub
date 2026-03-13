@@ -94,7 +94,7 @@ const BANKS = [
 
 const STATUS_MAP: Record<string, { label: string; color: string; icon: typeof Clock }> = {
   DRAFT: { label: '초안', color: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]', icon: Clock },
-  GENERATING: { label: '생성중', color: 'bg-[#E8F5E9] text-[#00A844] border-[#E8F5E9]', icon: Loader2 },
+  GENERATING: { label: '생성중', color: 'bg-[#EEF2FF] text-[#4338CA] border-[#EEF2FF]', icon: Loader2 },
   GENERATED: { label: '생성완료', color: 'bg-[#E0E7FF] text-[#4338CA] border-[#C7D2FE]', icon: FileSpreadsheet },
   SUBMITTED: { label: '제출됨', color: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]', icon: Upload },
   PARTIALLY_COMPLETED: { label: '부분완료', color: 'bg-[#FFF7ED] text-[#C2410C] border-[#FED7AA]', icon: AlertTriangle },
@@ -244,7 +244,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#00C853]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#4F46E5]" />
       </div>
     )
   }
@@ -255,7 +255,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#1A1A1A] flex items-center gap-2">
-            <Building2 className="h-6 w-6 text-[#00C853]" />
+            <Building2 className="h-6 w-6 text-[#4F46E5]" />
             급여 이체 관리
           </h1>
           <p className="text-sm text-[#666] mt-1">은행별 급여 이체 파일 생성 및 결과 관리</p>
@@ -292,7 +292,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
         <Card>
           <CardContent className="pt-5">
             <p className="text-xs text-[#666] mb-1">총 이체액</p>
-            <p className="text-2xl font-bold text-[#00C853]">{formatAmount(totalAmount)}</p>
+            <p className="text-2xl font-bold text-[#4F46E5]">{formatAmount(totalAmount)}</p>
           </CardContent>
         </Card>
       </div>
@@ -326,7 +326,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
             const st = STATUS_MAP[batch.status] ?? STATUS_MAP.DRAFT
             const isProcessing = actionLoading === batch.id
             return (
-              <Card key={batch.id} className="hover:border-[#E8F5E9] transition-colors">
+              <Card key={batch.id} className="hover:border-[#EEF2FF] transition-colors">
                 <CardContent className="p-5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -518,14 +518,14 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
         <DialogContent className="max-w-4xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-[#00C853]" />
+              <Building2 className="h-5 w-5 text-[#4F46E5]" />
               {selectedBatch?.bankName} 이체 상세
             </DialogTitle>
           </DialogHeader>
 
           {detailLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-6 w-6 animate-spin text-[#00C853]" />
+              <Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" />
             </div>
           ) : (
             <div className="space-y-4">
@@ -544,9 +544,9 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                     <p className="text-xs text-[#EF4444]">실패</p>
                     <p className="text-lg font-bold text-[#DC2626]">{selectedBatch.failCount}</p>
                   </div>
-                  <div className="bg-[#E8F5E9] rounded-lg p-3 text-center">
-                    <p className="text-xs text-[#00C853]">총액</p>
-                    <p className="text-lg font-bold text-[#00A844]">{formatAmount(selectedBatch.totalAmount)}</p>
+                  <div className="bg-[#EEF2FF] rounded-lg p-3 text-center">
+                    <p className="text-xs text-[#4F46E5]">총액</p>
+                    <p className="text-lg font-bold text-[#4338CA]">{formatAmount(selectedBatch.totalAmount)}</p>
                   </div>
                 </div>
               )}

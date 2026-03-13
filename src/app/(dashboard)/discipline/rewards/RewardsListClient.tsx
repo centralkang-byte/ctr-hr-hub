@@ -20,13 +20,13 @@ import { BUTTON_SIZES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 // ─── Badge Styles ────────────────────────────────────────
 
 const REWARD_TYPE_BADGE_STYLES: Record<string, string> = {
-  COMMENDATION: 'bg-[#E8F5E9] text-[#2E7D32]',
+  COMMENDATION: 'bg-[#EEF2FF] text-[#2E7D32]',
   BONUS_AWARD: 'bg-[#E3F2FD] text-[#1565C0]',
   CTR_VALUE_AWARD: 'bg-[#F3E5F5] text-[#7B1FA2]',
   LONG_SERVICE: 'bg-[#FFF3E0] text-[#E65100]',
-  INNOVATION: 'bg-[#E8F5E9] text-[#00C853]',
+  INNOVATION: 'bg-[#EEF2FF] text-[#4F46E5]',
   SAFETY_AWARD: 'bg-[#E3F2FD] text-[#2196F3]',
-  PROMOTION_RECOMMENDATION: 'bg-[#E8F5E9] text-[#2E7D32]',
+  PROMOTION_RECOMMENDATION: 'bg-[#EEF2FF] text-[#2E7D32]',
   OTHER: 'bg-[#F5F5F5] text-[#999]',
 }
 
@@ -116,8 +116,8 @@ export default function RewardsListClient({ user }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#E8F5E9] rounded-lg flex items-center justify-center">
-            <Award className="w-5 h-5 text-[#00C853]" />
+          <div className="w-10 h-10 bg-[#EEF2FF] rounded-lg flex items-center justify-center">
+            <Award className="w-5 h-5 text-[#4F46E5]" />
           </div>
           <div>
             <h1 className="text-xl font-bold text-[#1A1A1A] tracking-[-0.02em]">
@@ -153,7 +153,7 @@ export default function RewardsListClient({ user }: Props) {
               placeholder={t('searchPlaceholder')}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 transition-colors"
+              className="w-full pl-10 pr-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -161,7 +161,7 @@ export default function RewardsListClient({ user }: Props) {
             <select
               value={typeFilter}
               onChange={(e) => { setTypeFilter(e.target.value); setPage(1) }}
-              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 bg-white"
+              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 bg-white"
             >
               <option value="">{t('typeAll')}</option>
               {REWARD_TYPE_KEYS.map((key) => (
@@ -190,7 +190,7 @@ export default function RewardsListClient({ user }: Props) {
               <tr>
                 <td colSpan={6} className="px-4 py-12 text-center text-sm text-[#999]">
                   <div className="flex items-center justify-center gap-2">
-                    <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#00C853] rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#4F46E5] rounded-full animate-spin" />
                     {t('loadingData')}
                   </div>
                 </td>

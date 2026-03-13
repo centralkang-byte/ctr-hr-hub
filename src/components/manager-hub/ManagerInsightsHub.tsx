@@ -106,7 +106,7 @@ export function ManagerInsightsHub({ user }: ManagerInsightsHubProps) {
       value: summary?.headcount ?? 0,
       icon: Users,
       color: 'text-ctr-primary',
-      bgColor: 'bg-[#E8F5E9]',
+      bgColor: 'bg-[#EEF2FF]',
     },
     {
       label: '이직 위험',
@@ -193,8 +193,8 @@ export function ManagerInsightsHub({ user }: ManagerInsightsHubProps) {
                 <Radar
                   name="팀"
                   dataKey="value"
-                  stroke="#00C853"
-                  fill="#00C853"
+                  stroke="#4F46E5"
+                  fill="#4F46E5"
                   fillOpacity={0.2}
                   strokeWidth={2}
                 />
@@ -300,7 +300,7 @@ export function ManagerInsightsHub({ user }: ManagerInsightsHubProps) {
                   <Tooltip />
                   <Bar
                     dataKey="count"
-                    fill="#00C853"
+                    fill="#4F46E5"
                     radius={[4, 4, 0, 0]}
                     name="인원"
                   />

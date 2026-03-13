@@ -103,7 +103,7 @@ export default function HistoryTab() {
       key: 'changeType',
       header: '유형',
       render: (row) => (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#E8F5E9] text-[#00A844] border border-[#E8F5E9]">
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EEF2FF] text-[#4338CA] border border-[#EEF2FF]">
           {CHANGE_TYPE_LABELS[row.changeType] ?? row.changeType}
         </span>
       ),

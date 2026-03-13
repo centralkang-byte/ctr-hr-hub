@@ -131,7 +131,7 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
                 onChange={handleChange}
                 required
                 placeholder={tCommon('placeholderEmployeeUuid')}
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]"
               />
             </div>
           )}
@@ -157,7 +157,7 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
                 value={form.category}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
               >
                 <option value="OFFICER">장교</option>
                 <option value="SOLDIER">병사</option>
@@ -174,7 +174,7 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
                 value={form.fitnessCategory}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
               >
                 <option value="FIT_A">적합 A</option>
                 <option value="FIT_B">적합 B</option>
@@ -195,7 +195,7 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
                 value={form.rank}
                 onChange={handleChange}
                 placeholder="예: 상사"
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]"
               />
             </div>
             <div>
@@ -206,7 +206,7 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
                 value={form.specialtyCode}
                 onChange={handleChange}
                 placeholder="예: 106A"
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]"
               />
             </div>
           </div>
@@ -220,7 +220,7 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
               value={form.militaryOffice}
               onChange={handleChange}
               placeholder="담당 군사기관명"
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]"
             />
           </div>
 
@@ -233,7 +233,7 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
                 name="registrationDate"
                 value={form.registrationDate}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
               />
             </div>
             <div>
@@ -243,7 +243,7 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
                 name="deregistrationDate"
                 value={form.deregistrationDate}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
               />
             </div>
           </div>
@@ -257,7 +257,7 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
               onChange={handleChange}
               rows={3}
               placeholder={tCommon('placeholderMemo')}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999] resize-none"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999] resize-none"
             />
           </div>
 

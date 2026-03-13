@@ -39,7 +39,7 @@ interface Props {
 }
 
 const CONTRACT_TYPE_COLORS: Record<string, string> = {
-  PERMANENT: 'bg-[#E8F5E9] text-[#00A844]',
+  PERMANENT: 'bg-[#EEF2FF] text-[#4338CA]',
   FIXED_TERM: 'bg-[#FEF9C3] text-[#854D0E]',
   DISPATCH: 'bg-[#F5F5F5] text-[#1A1A1A]',
   INTERN: 'bg-[#F3E8FF] text-[#6B21A8]',

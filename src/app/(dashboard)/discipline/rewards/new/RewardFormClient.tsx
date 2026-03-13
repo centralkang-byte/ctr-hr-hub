@@ -128,8 +128,8 @@ export default function RewardFormClient({ user }: Props) {
           <ChevronLeft className="w-4 h-4 text-[#666]" />
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#E8F5E9] rounded-lg flex items-center justify-center">
-            <Award className="w-5 h-5 text-[#00C853]" />
+          <div className="w-10 h-10 bg-[#EEF2FF] rounded-lg flex items-center justify-center">
+            <Award className="w-5 h-5 text-[#4F46E5]" />
           </div>
           <h1 className="text-xl font-bold text-[#1A1A1A] tracking-[-0.02em]">
             {t('title')}
@@ -151,7 +151,7 @@ export default function RewardFormClient({ user }: Props) {
               <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{t('targetEmployee')} *</label>
               <select
                 {...register('employeeId')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 bg-white"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 bg-white"
               >
                 <option value="">{t('selectEmployee')}</option>
                 {!employees?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
@@ -171,7 +171,7 @@ export default function RewardFormClient({ user }: Props) {
               <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{tRewards('rewardType')} *</label>
               <select
                 {...register('rewardType')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 bg-white"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 bg-white"
               >
                 <option value="">{t('selectType')}</option>
                 {REWARD_TYPE_KEYS.map((key) => (
@@ -190,7 +190,7 @@ export default function RewardFormClient({ user }: Props) {
                 type="text"
                 {...register('title')}
                 placeholder={t('rewardNamePlaceholder')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
               />
               {errors.title && (
                 <p className="text-xs text-[#F44336] mt-1">{errors.title.message}</p>
@@ -205,7 +205,7 @@ export default function RewardFormClient({ user }: Props) {
                 min={0}
                 {...register('amount')}
                 placeholder="0"
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
               />
             </div>
 
@@ -215,7 +215,7 @@ export default function RewardFormClient({ user }: Props) {
               <input
                 type="date"
                 {...register('awardedDate')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
               />
               {errors.awardedDate && (
                 <p className="text-xs text-[#F44336] mt-1">{errors.awardedDate.message}</p>
@@ -230,7 +230,7 @@ export default function RewardFormClient({ user }: Props) {
               {...register('description')}
               rows={3}
               placeholder={t('descriptionPlaceholder')}
-              className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10 resize-none"
+              className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 resize-none"
             />
           </div>
         </div>
@@ -251,7 +251,7 @@ export default function RewardFormClient({ user }: Props) {
                     type="radio"
                     value={key}
                     {...register('ctrValue')}
-                    className="w-4 h-4 text-[#00C853] focus:ring-[#00C853]"
+                    className="w-4 h-4 text-[#4F46E5] focus:ring-[#4F46E5]"
                   />
                   <span className="text-sm text-[#1A1A1A]">{t(`ctrValueOptions.${key}`)}</span>
                 </label>
@@ -273,7 +273,7 @@ export default function RewardFormClient({ user }: Props) {
                 min={0}
                 {...register('serviceYears')}
                 placeholder={t('serviceYearsPlaceholder')}
-                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#00C853] focus:ring-2 focus:ring-[#00C853]/10"
+                className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
               />
             </div>
           </div>

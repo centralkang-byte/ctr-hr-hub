@@ -74,7 +74,7 @@ export default function PayrollCalendar({ entries, yearMonth }: Props) {
         <div className="space-y-3">
             {/* Header */}
             <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-[#5E81F4]" />
+                <Calendar className="h-4 w-4 text-[#4F46E5]" />
                 <span className="text-sm font-semibold text-[#1A1A1A]">{yr}년 {mn}월 급여 캘린더</span>
                 {hasAlerts && (
                     <span className="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-[#FEF3C7] text-[#B45309]">

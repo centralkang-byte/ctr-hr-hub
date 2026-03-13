@@ -3,7 +3,7 @@
 // TODO: i18n — 상태 레이블을 i18n 키로 이동 시 여기서 t() 호출
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; border: string }> = {
   DRAFT: { label: '초안', bg: 'bg-[#FAFAFA]', text: 'text-[#555]', border: 'border-[#E8E8E8]' },
-  ATTENDANCE_CLOSED: { label: '근태 마감', bg: 'bg-[#E8F5E9]', text: 'text-[#047857]', border: 'border-[#A7F3D0]' },
+  ATTENDANCE_CLOSED: { label: '근태 마감', bg: 'bg-[#EEF2FF]', text: 'text-[#047857]', border: 'border-[#A7F3D0]' },
   CALCULATING: { label: '계산 중', bg: 'bg-[#FEF3C7]', text: 'text-[#B45309]', border: 'border-[#FCD34D]' },
   ADJUSTMENT: { label: '수동 조정', bg: 'bg-[#DBEAFE]', text: 'text-[#1D4ED8]', border: 'border-[#BFDBFE]' },
   REVIEW: { label: '이상 검토', bg: 'bg-[#EDE9FE]', text: 'text-[#7C3AED]', border: 'border-[#DDD6FE]' },

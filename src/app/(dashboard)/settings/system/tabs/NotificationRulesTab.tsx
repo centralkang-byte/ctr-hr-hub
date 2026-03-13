@@ -22,7 +22,7 @@ export function NotificationRulesTab({ companyId }: Props) {
       .finally(() => setLoading(false))
   }, [companyId])
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" /></div>
 
   return (
     <div className="space-y-4">
@@ -39,7 +39,7 @@ export function NotificationRulesTab({ companyId }: Props) {
             <th className={TABLE_STYLES.headerCell}>상태</th>
           </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{triggers.map((t) => (
             <tr key={t.id} className={TABLE_STYLES.row}>
-              <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{t.eventType}</td>
+              <td className="px-4 py-3 text-sm font-medium text-[#4F46E5]">{t.eventType}</td>
               <td className={TABLE_STYLES.cell}>{t.name}</td>
               <td className="px-4 py-3"><div className="flex gap-1">{(t.channels ?? []).map((ch) => (
                 <span key={ch} className="rounded bg-[#F5F5FA] px-2 py-0.5 text-xs text-[#8181A5]">{ch}</span>

@@ -1,0 +1,62 @@
+Custom/Skipped Routes — NOT converted in EC-2a
+===============================================
+Date: 2026-03-13
+
+Routes needing custom employee projections (not converted):
+---------------------------------------------------------------------------
+
+1. src/app/api/v1/skills/assessments/route.ts
+   Reason: Uses `include: { assignments: { include: { jobGrade: true } } }`
+   to look up jobGrade.code for competency requirement mapping.
+   jobGrade is used for business logic (gradeCode → requirements filter),
+   NOT for display. Changing to EMPLOYEE_MINIMAL_SELECT would break the
+   competency gap calculation. Future: extract jobGrade lookup separately.
+
+2. src/app/api/v1/skills/radar/route.ts
+   Reason: Uses `include: { jobGrade: { select: { code: true, name: true } } }`
+   on assignment for radar chart grouping by job level.
+   This is a data aggregation key, not an employee display field.
+
+3. src/app/api/v1/performance/evaluations/[id]/ai-draft/route.ts
+   Reason: Uses `include: { department: true, jobGrade: true }` to pass
+   department.name and jobGrade.name into AI context for evaluation draft.
+   These are passed as AI prompt context fields, not display fields.
+   Future: could call toMinimalEmployee() and read department/jobGrade from it.
+
+4. src/app/api/v1/payroll/anomalies/route.ts
+   Reason: Uses `include: { jobGrade: true, company: true }` on assignment
+   for payroll anomaly detection rules (salary band lookup, variance analysis,
+   cross-entity comparisons). This is financial computation, not employee display.
+
+5. src/app/api/v1/payroll/[runId]/export/comparison/route.ts
+   Reason: Binary (Excel export) — returns Buffer, not JSON.
+
+6. src/app/api/v1/payroll/[runId]/export/journal/route.ts
+   Reason: Binary (Excel export) — returns Buffer, not JSON.
+
+7. src/app/api/v1/payroll/whitelist/route.ts
+   Reason: Uses `include: { department: { select: { name: true } } }`
+   in assignment for payroll whitelist display. Low priority, no EmployeeCell usage.
+
+8. src/app/api/v1/payroll/[runId]/adjustments/[adjustmentId]/route.ts
+   Reason: Uses `include: { payrollRun: { ... } }` — NOT an employee include.
+   Pattern match was false positive (matched "company" inside payrollRun).
+
+9. src/app/api/v1/payroll/[runId]/anomalies/[anomalyId]/resolve/route.ts
+   Reason: Same as above — payrollRun include, not employee.
+
+10. src/app/api/v1/benefits/enrollments/[id]/route.ts
+    Reason: Uses `include: { policy: { select: { companyId: true } } }` —
+    NOT an employee include. Pattern match false positive.
+
+11. src/app/api/v1/peer-review/my-reviews/[nominationId]/route.ts
+    Reason: Uses `include: { cycle: { select: { ... } } }` — not employee.
+
+12. src/app/api/v1/peer-review/nominations/[id]/route.ts
+    Reason: Uses `include: { cycle: { select: { ... } } }` — not employee.
+
+13. src/app/api/v1/succession/candidates/[id]/route.ts
+    Reason: Uses `include: { plan: { select: { companyId: true } } }` — not employee.
+
+14. src/app/api/v1/training/enrollments/[id]/route.ts
+    Reason: Uses `include: { course: { select: { companyId: true } } }` — not employee.

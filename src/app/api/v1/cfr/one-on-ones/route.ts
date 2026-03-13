@@ -10,6 +10,7 @@ import { badRequest, handlePrismaError, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
+import { EMPLOYEE_MINIMAL_SELECT, toMinimalEmployee } from '@/lib/employee-utils'
 import type { SessionUser } from '@/types'
 import type { OneOnOneStatus, OneOnOneType } from '@/generated/prisma/client'
 
@@ -75,23 +76,17 @@ export const GET = withPermission(
         skip: (page - 1) * limit,
         take: limit,
         include: {
-          employee: {
-            select: {
-              id: true, name: true, employeeNo: true,
-              assignments: {
-                where: { isPrimary: true, endDate: null },
-                take: 1,
-                include: { department: { select: { name: true } } },
-              },
-            },
-          },
+          employee: { select: { ...EMPLOYEE_MINIMAL_SELECT } },
           manager: { select: { id: true, name: true } },
         },
       }),
       prisma.oneOnOne.count({ where }),
     ])
 
-    return apiPaginated(meetings, buildPagination(page, limit, total))
+    return apiPaginated(
+      meetings.map((m) => ({ ...m, employee: toMinimalEmployee(m.employee as any) })),
+      buildPagination(page, limit, total)
+    )
   },
   perm(MODULE.PERFORMANCE, ACTION.VIEW),
 )

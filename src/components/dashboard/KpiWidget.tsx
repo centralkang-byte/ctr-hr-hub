@@ -35,7 +35,7 @@ interface KpiWidgetProps {
   height?: number
 }
 
-const CHART_COLORS = ['#00C853', '#059669', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
+const CHART_COLORS = ['#4F46E5', '#059669', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
 
 export function KpiWidget({
   title,
@@ -84,7 +84,7 @@ export function KpiWidget({
   return (
     <div
       className={`${CARD_STYLES.kpi} ${
-        drilldownPath ? 'cursor-pointer hover:border-[#00C853] transition-colors' : ''
+        drilldownPath ? 'cursor-pointer hover:border-[#4F46E5] transition-colors' : ''
       }`}
       onClick={() => drilldownPath && router.push(drilldownPath)}
     >
@@ -97,7 +97,7 @@ export function KpiWidget({
             <XAxis dataKey={nameKey} tick={{ fontSize: 11, fill: '#666' }} />
             <YAxis tick={{ fontSize: 11, fill: '#666' }} />
             <Tooltip contentStyle={{ fontSize: 12, borderColor: '#E8E8E8' }} />
-            <Bar dataKey={dataKey} fill="#00C853" radius={[4, 4, 0, 0]} />
+            <Bar dataKey={dataKey} fill="#4F46E5" radius={[4, 4, 0, 0]} />
           </BarChart>
         ) : chartType === 'bar-horizontal' ? (
           <BarChart
@@ -114,7 +114,7 @@ export function KpiWidget({
               width={60}
             />
             <Tooltip contentStyle={{ fontSize: 12, borderColor: '#E8E8E8' }} />
-            <Bar dataKey={dataKey} fill="#00C853" radius={[0, 4, 4, 0]} />
+            <Bar dataKey={dataKey} fill="#4F46E5" radius={[0, 4, 4, 0]} />
           </BarChart>
         ) : chartType === 'line' ? (
           <LineChart data={arrayData} margin={{ top: 4, right: 8, bottom: 4, left: 0 }}>
@@ -122,7 +122,7 @@ export function KpiWidget({
             <XAxis dataKey={nameKey} tick={{ fontSize: 11, fill: '#666' }} />
             <YAxis tick={{ fontSize: 11, fill: '#666' }} />
             <Tooltip contentStyle={{ fontSize: 12, borderColor: '#E8E8E8' }} />
-            <Line type="monotone" dataKey={dataKey} stroke="#00C853" strokeWidth={2} dot={false} />
+            <Line type="monotone" dataKey={dataKey} stroke="#4F46E5" strokeWidth={2} dot={false} />
           </LineChart>
         ) : chartType === 'donut' ? (
           <PieChart>

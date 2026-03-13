@@ -18,7 +18,7 @@ import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 const STATUS_STYLES: Record<string, string> = {
   DRAFT: 'bg-[#F5F5F5] text-[#666]',
   PENDING_APPROVAL: 'bg-[#FFF8E1] text-[#F57F17]',
-  APPROVED: 'bg-[#E8F5E9] text-[#2E7D32]',
+  APPROVED: 'bg-[#EEF2FF] text-[#2E7D32]',
   REJECTED: 'bg-[#FFEBEE] text-[#C62828]',
 }
 
@@ -163,7 +163,7 @@ export default function GoalsClient({
           <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('mboGoalManagement')}</h1>
           <button
             onClick={() => router.push('/performance/goals/new')}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#00C853] px-4 py-2 text-sm font-medium text-white hover:bg-[#00A844] transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#4F46E5] px-4 py-2 text-sm font-medium text-white hover:bg-[#4338CA] transition-colors"
           >
             <Plus className="h-4 w-4" />
             {t('addGoal')}
@@ -178,7 +178,7 @@ export default function GoalsClient({
           <select
             value={selectedCycleId}
             onChange={(e) => setSelectedCycleId(e.target.value)}
-            className="w-full max-w-xs rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
+            className="w-full max-w-xs rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
           >
             {cycles.map((c) => (
               <option key={c.id} value={c.id}>
@@ -196,7 +196,7 @@ export default function GoalsClient({
             <p className="text-[#999]">{t('noGoalsRegistered')}</p>
             <button
               onClick={() => router.push('/performance/goals/new')}
-              className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-[#00C853] hover:underline"
+              className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-[#4F46E5] hover:underline"
             >
               <Plus className="h-4 w-4" />
               {t('addFirstGoal')}
@@ -236,7 +236,7 @@ export default function GoalsClient({
                         </p>
                       )}
                     </div>
-                    <span className="shrink-0 text-lg font-bold text-[#00C853]">
+                    <span className="shrink-0 text-lg font-bold text-[#4F46E5]">
                       {Number(goal.weight)}%
                     </span>
                   </div>
@@ -249,7 +249,7 @@ export default function GoalsClient({
                     </div>
                     <div className="h-2 rounded-full bg-[#E8E8E8]">
                       <div
-                        className="h-2 rounded-full bg-[#00C853] transition-all"
+                        className="h-2 rounded-full bg-[#4F46E5] transition-all"
                         style={{ width: `${Math.min(pct, 100)}%` }}
                       />
                     </div>
@@ -286,7 +286,7 @@ export default function GoalsClient({
                             note: '',
                           })
                         }
-                        className="inline-flex items-center gap-1 rounded-md border border-[#00C853] px-3 py-1.5 text-xs font-medium text-[#00C853] hover:bg-[#E8F5E9] transition-colors"
+                        className="inline-flex items-center gap-1 rounded-md border border-[#4F46E5] px-3 py-1.5 text-xs font-medium text-[#4F46E5] hover:bg-[#EEF2FF] transition-colors"
                       >
                         <TrendingUp className="h-3 w-3" />
                         {t('recordProgress')}
@@ -315,7 +315,7 @@ export default function GoalsClient({
                               progressPct: Number(e.target.value),
                             })
                           }
-                          className="w-32 rounded-md border border-[#E8E8E8] px-3 py-1.5 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
+                          className="w-32 rounded-md border border-[#E8E8E8] px-3 py-1.5 text-sm focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
                         />
                       </div>
                       <div className="mb-3">
@@ -332,14 +332,14 @@ export default function GoalsClient({
                             })
                           }
                           placeholder={t('memoPlaceholder')}
-                          className="w-full rounded-md border border-[#E8E8E8] px-3 py-1.5 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
+                          className="w-full rounded-md border border-[#E8E8E8] px-3 py-1.5 text-sm focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
                         />
                       </div>
                       <div className="flex gap-2">
                         <button
                           onClick={handleProgressSubmit}
                           disabled={submitting}
-                          className="rounded-md bg-[#00C853] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#00A844] disabled:opacity-50 transition-colors"
+                          className="rounded-md bg-[#4F46E5] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#4338CA] disabled:opacity-50 transition-colors"
                         >
                           {submitting ? t('saving') : tc('save')}
                         </button>

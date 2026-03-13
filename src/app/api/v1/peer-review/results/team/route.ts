@@ -9,6 +9,7 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { EMPLOYEE_MINIMAL_SELECT, toMinimalEmployee } from '@/lib/employee-utils'
 import type { SessionUser } from '@/types'
 
 const querySchema = z.object({
@@ -34,18 +35,7 @@ export const GET = withPermission(
     const nominations = await prisma.peerReviewNomination.findMany({
       where: { cycleId },
       include: {
-        employee: {
-          select: {
-            id: true,
-            name: true,
-            employeeNo: true,
-            assignments: {
-              where: { isPrimary: true, endDate: null },
-              take: 1,
-              include: { department: { select: { name: true } } },
-            },
-          },
-        },
+        employee: { select: { ...EMPLOYEE_MINIMAL_SELECT } },
       },
     })
 
@@ -73,12 +63,13 @@ export const GET = withPermission(
     for (const n of nominations) {
       const empId = n.employeeId
       if (!employeeMap.has(empId)) {
+        const minEmp = toMinimalEmployee(n.employee as any)
         employeeMap.set(empId, {
           employee: {
-            id: n.employee.id,
-            name: n.employee.name,
-            employeeNo: n.employee.employeeNo,
-            department: n.employee.assignments?.[0]?.department?.name ?? '-',
+            id: minEmp?.id ?? n.employee.id,
+            name: minEmp?.name ?? n.employee.name,
+            employeeNo: minEmp?.employeeNo ?? n.employee.employeeNo,
+            department: minEmp?.department ?? '-',
           },
           nominationCount: 0,
           completedCount: 0,

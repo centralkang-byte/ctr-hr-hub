@@ -68,7 +68,7 @@ export default function PeerEvalFormClient() {
   if (submitted) {
     return (
       <div className="p-6 flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <CheckCircle2 className="w-16 h-16 text-[#00C853]" />
+        <CheckCircle2 className="w-16 h-16 text-[#4F46E5]" />
         <h2 className="text-xl font-bold text-[#1A1A1A]">동료 평가가 제출되었습니다</h2>
         <p className="text-sm text-[#666]">소중한 피드백 감사합니다.</p>
         <button onClick={() => router.push('/performance/peer-review')}
@@ -86,7 +86,7 @@ export default function PeerEvalFormClient() {
         <button onClick={() => router.push('/performance/peer-review')} className="p-1 hover:bg-[#F5F5F5] rounded-lg">
           <ArrowLeft className="w-5 h-5 text-[#666]" />
         </button>
-        <Users className="w-6 h-6 text-[#00C853]" />
+        <Users className="w-6 h-6 text-[#4F46E5]" />
         <h1 className="text-2xl font-bold text-[#1A1A1A]">동료 평가 작성</h1>
       </div>
 
@@ -105,7 +105,7 @@ export default function PeerEvalFormClient() {
                 <button key={v} onClick={() => setScore(q.key, v)}
                   className={`flex-1 py-2.5 rounded-lg border text-sm font-medium transition-colors ${
                     scores[q.key] === v
-                      ? 'bg-[#00C853] text-white border-[#00C853]'
+                      ? 'bg-[#4F46E5] text-white border-[#4F46E5]'
                       : 'bg-white text-[#555] border-[#D4D4D4] hover:bg-[#FAFAFA]'
                   }`}>
                   <div>{v}</div>
@@ -119,9 +119,9 @@ export default function PeerEvalFormClient() {
 
       {/* Overall Score Display */}
       {allScored && (
-        <div className="bg-[#E8F5E9] rounded-xl border border-[#00C853]/20 p-4 text-center">
+        <div className="bg-[#EEF2FF] rounded-xl border border-[#4F46E5]/20 p-4 text-center">
           <p className="text-xs text-[#666]">종합 점수</p>
-          <p className="text-3xl font-bold text-[#00C853]">{avgScore} <span className="text-sm text-[#666]">/ 5.0</span></p>
+          <p className="text-3xl font-bold text-[#4F46E5]">{avgScore} <span className="text-sm text-[#666]">/ 5.0</span></p>
         </div>
       )}
 
@@ -134,7 +134,7 @@ export default function PeerEvalFormClient() {
           onChange={(e) => setComment(e.target.value)}
           placeholder="건설적인 피드백을 작성해 주세요..."
           rows={5}
-          className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"
+          className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]"
         />
         <p className="text-xs text-[#999] mt-1 text-right">{comment.length}자</p>
       </div>

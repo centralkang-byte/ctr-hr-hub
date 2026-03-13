@@ -181,7 +181,7 @@ export default function DpiaClient() {
                     <td className="px-4 py-3 text-sm">
                       <button
                         onClick={() => { setSelected(d); setShowForm(true) }}
-                        className="inline-flex items-center gap-1.5 text-[#00C853] hover:text-[#00A844] text-sm font-medium"
+                        className="inline-flex items-center gap-1.5 text-[#4F46E5] hover:text-[#4338CA] text-sm font-medium"
                       >
                         {d.status === 'draft' || d.status === 'in_review' ? (
                           <>

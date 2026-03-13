@@ -156,7 +156,7 @@ export function AnalyticsFilterBar({ companies = [], showDepartment = true }: An
     }
   }
 
-  const selectClass = 'text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-[#5E81F4]/20 focus:border-[#5E81F4] outline-none appearance-none cursor-pointer min-w-[120px]'
+  const selectClass = 'text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-[#4F46E5]/20 focus:border-[#4F46E5] outline-none appearance-none cursor-pointer min-w-[120px]'
 
   return (
     <div className="mb-6 space-y-3">
@@ -235,19 +235,19 @@ export function AnalyticsFilterBar({ companies = [], showDepartment = true }: An
             type="date"
             value={customStart}
             onChange={(e) => setCustomStart(e.target.value)}
-            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-[#5E81F4]/20 focus:border-[#5E81F4] outline-none"
+            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-[#4F46E5]/20 focus:border-[#4F46E5] outline-none"
           />
           <span className="text-xs font-medium text-gray-500">종료일</span>
           <input
             type="date"
             value={customEnd}
             onChange={(e) => setCustomEnd(e.target.value)}
-            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-[#5E81F4]/20 focus:border-[#5E81F4] outline-none"
+            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-[#4F46E5]/20 focus:border-[#4F46E5] outline-none"
           />
           <button
             onClick={handleApplyCustom}
             disabled={!customStart || !customEnd}
-            className="px-4 py-1.5 text-sm font-medium rounded-lg bg-[#5E81F4] text-white hover:bg-[#4A6BD6] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-1.5 text-sm font-medium rounded-lg bg-[#4F46E5] text-white hover:bg-[#4338CA] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             적용
           </button>

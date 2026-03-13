@@ -29,7 +29,7 @@ import type { SessionUser } from '@/types'
 const STATUS_STYLES: Record<string, string> = {
   DRAFT: 'bg-[#F5F5F5] text-[#666]',
   PENDING_APPROVAL: 'bg-[#FFF8E1] text-[#F57F17]',
-  APPROVED: 'bg-[#E8F5E9] text-[#2E7D32]',
+  APPROVED: 'bg-[#EEF2FF] text-[#2E7D32]',
   REJECTED: 'bg-[#FFEBEE] text-[#C62828]',
 }
 
@@ -213,7 +213,7 @@ export default function TeamGoalsClient({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Users className="h-7 w-7 text-[#00C853]" />
+          <Users className="h-7 w-7 text-[#4F46E5]" />
           <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('teamGoalManagement')}</h1>
         </div>
 
@@ -221,7 +221,7 @@ export default function TeamGoalsClient({
         <select
           value={selectedCycleId}
           onChange={(e) => setSelectedCycleId(e.target.value)}
-          className="rounded-lg border border-[#E8E8E8] px-4 py-2 text-sm focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
+          className="rounded-lg border border-[#E8E8E8] px-4 py-2 text-sm focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
         >
           {!cycles?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
               {cycles?.map((c) => (
@@ -235,7 +235,7 @@ export default function TeamGoalsClient({
       {/* Loading */}
       {loading && (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-[#00C853]" />
+          <Loader2 className="h-8 w-8 animate-spin text-[#4F46E5]" />
           <span className="ml-3 text-[#999]">{t('loadingText')}</span>
         </div>
       )}
@@ -357,7 +357,7 @@ export default function TeamGoalsClient({
                               {/* Goal info */}
                               <div className="min-w-0 flex-1">
                                 <div className="flex items-center gap-2">
-                                  <Target className="h-4 w-4 shrink-0 text-[#00C853]" />
+                                  <Target className="h-4 w-4 shrink-0 text-[#4F46E5]" />
                                   <h4 className="font-medium text-[#1A1A1A]">
                                     {goal.title}
                                   </h4>
@@ -385,7 +385,7 @@ export default function TeamGoalsClient({
                                 {/* Progress bar */}
                                 <div className="mt-2 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-[#F5F5F5]">
                                   <div
-                                    className="h-full rounded-full bg-[#00C853] transition-all"
+                                    className="h-full rounded-full bg-[#4F46E5] transition-all"
                                     style={{
                                       width: `${Math.min(latestProgress, 100)}%`,
                                     }}
@@ -438,7 +438,7 @@ export default function TeamGoalsClient({
                                   onChange={(e) => setRevisionComment(e.target.value)}
                                   placeholder={t('revisionPlaceholder')}
                                   rows={3}
-                                  className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm placeholder-[#999] focus:border-[#00C853] focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
+                                  className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm placeholder-[#999] focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
                                 />
                                 <div className="mt-2 flex justify-end gap-2">
                                   <button

@@ -144,16 +144,16 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
                 <select
                   value={signatureLevel}
                   onChange={(e) => setSignatureLevel(e.target.value)}
-                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
                 >
                   <option value="PEP">PEP — 간이 전자서명</option>
                   <option value="UNEP">УНЭП — 강화 비인증 전자서명</option>
                   <option value="UKEP">УКЭП — 강화 인증 전자서명</option>
                 </select>
               </div>
-              <div className="p-3 bg-[#E8F5E9] rounded-lg flex gap-2">
-                <AlertTriangle className="w-4 h-4 text-[#00C853] mt-0.5 shrink-0" />
-                <p className="text-xs text-[#00A844]">
+              <div className="p-3 bg-[#EEF2FF] rounded-lg flex gap-2">
+                <AlertTriangle className="w-4 h-4 text-[#4F46E5] mt-0.5 shrink-0" />
+                <p className="text-xs text-[#4338CA]">
                   {SIGNATURE_DESCRIPTIONS[signatureLevel]}
                 </p>
               </div>
@@ -171,7 +171,7 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
                 onChange={(e) => setRejectionReason(e.target.value)}
                 rows={3}
                 placeholder={tCommon('placeholderRejectReasonDetail')}
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999] resize-none"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999] resize-none"
               />
             </div>
           )}

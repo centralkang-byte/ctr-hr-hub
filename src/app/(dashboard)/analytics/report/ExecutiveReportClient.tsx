@@ -64,7 +64,7 @@ export default function ExecutiveReportClient() {
           {/* Report header */}
           <div className="flex items-center justify-between border-b border-[#F5F5F5] px-6 py-4">
             <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-[#00C853]" />
+              <FileText className="h-5 w-5 text-[#4F46E5]" />
               <h2 className="text-lg font-semibold text-[#1A1A1A]">HR Analytics Report</h2>
             </div>
             <div className="flex items-center gap-3">

@@ -58,7 +58,7 @@ type ClockState = 'NOT_CLOCKED_IN' | 'WORKING' | 'COMPLETED'
 // ─── Constants ──────────────────────────────────────────────
 
 const STATUS_COLORS: Record<string, string> = {
-  NORMAL: 'bg-[#E8F5E9] text-[#2E7D32]',
+  NORMAL: 'bg-[#EEF2FF] text-[#2E7D32]',
   LATE: 'bg-[#FFEBEE] text-[#E53935]',
   EARLY_OUT: 'bg-[#FFF3E0] text-[#E65100]',
   ABSENT: 'bg-[#FFEBEE] text-[#F44336]',
@@ -69,7 +69,7 @@ const STATUS_COLORS: Record<string, string> = {
 const WORK_TYPE_COLORS: Record<string, string> = {
   NORMAL: 'bg-[#F5F5F5] text-[#666]',
   REMOTE: 'bg-[#E3F2FD] text-[#2196F3]',
-  FIELD: 'bg-[#E8F5E9] text-[#2E7D32]',
+  FIELD: 'bg-[#EEF2FF] text-[#2E7D32]',
   BUSINESS_TRIP: 'bg-[#F3E5F5] text-[#9C27B0]',
 }
 
@@ -248,7 +248,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
       {/* ─── Section 1: Today Card ─── */}
       <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
         <h3 className="flex items-center gap-2 text-base font-bold text-[#1A1A1A] tracking-[-0.02em] mb-4">
-          <Clock className="h-5 w-5 text-[#00C853]" />
+          <Clock className="h-5 w-5 text-[#4F46E5]" />
           {t('todaySummary')}
         </h3>
 
@@ -264,7 +264,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
               </div>
               <Button
                 size="lg"
-                className="h-16 w-48 bg-[#00C853] hover:bg-[#00A844] text-lg font-semibold text-white"
+                className="h-16 w-48 bg-[#4F46E5] hover:bg-[#4338CA] text-lg font-semibold text-white"
                 onClick={handleClockIn}
                 disabled={clockLoading}
               >
@@ -276,10 +276,10 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
 
           {clockState === 'WORKING' && (
             <div className="flex flex-col items-center gap-4 py-6">
-              <span className="inline-flex items-center px-3 py-1 rounded-[4px] text-sm font-semibold bg-[#E8F5E9] text-[#2E7D32]">
+              <span className="inline-flex items-center px-3 py-1 rounded-[4px] text-sm font-semibold bg-[#EEF2FF] text-[#2E7D32]">
                 {t('currentlyWorking')}
               </span>
-              <p className="font-mono text-4xl font-bold text-[#00C853] tabular-nums">
+              <p className="font-mono text-4xl font-bold text-[#4F46E5] tabular-nums">
                 {formatElapsedTime(elapsed)}
               </p>
               <p className="text-sm text-[#999]">
@@ -299,7 +299,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
 
           {clockState === 'COMPLETED' && (
             <div className="flex flex-col items-center gap-4 py-6">
-              <div className="flex items-center gap-2 text-[#00C853]">
+              <div className="flex items-center gap-2 text-[#4F46E5]">
                 <CheckCircle2 className="h-6 w-6" />
                 <span className="text-lg font-semibold">{t('workCompleted')}</span>
               </div>
@@ -348,7 +348,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
                       {/* Work bar */}
                       {hours > 0 && (
                         <div
-                          className="h-full rounded bg-[#00C853] transition-all duration-300"
+                          className="h-full rounded bg-[#4F46E5] transition-all duration-300"
                           style={{ width: `${barWidthPct}%` }}
                         />
                       )}

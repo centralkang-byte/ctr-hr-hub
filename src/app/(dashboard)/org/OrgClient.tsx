@@ -244,7 +244,7 @@ function ListView({ depts, onSelect, selectedId }: ListViewProps) {
               key={dept.id}
               onClick={() => onSelect(dept)}
               className={`border-b border-[#F5F5F5] cursor-pointer hover:bg-[#FAFAFA] transition-colors ${
-                selectedId === dept.id ? 'bg-[#E8F5E9]' : ''
+                selectedId === dept.id ? 'bg-[#EEF2FF]' : ''
               }`}
             >
               <td className="px-4 py-3 font-mono text-xs text-[#666]">{dept.code}</td>
@@ -300,7 +300,7 @@ function GridView({ depts, onSelect, selectedId }: GridViewProps) {
             onClick={() => onSelect(dept)}
             className={`text-left rounded-xl border p-4 transition-all hover:border-ctr-primary hover:shadow-sm ${
               selectedId === dept.id
-                ? 'border-ctr-primary bg-[#E8F5E9] shadow-sm'
+                ? 'border-ctr-primary bg-[#EEF2FF] shadow-sm'
                 : 'border-[#E8E8E8] bg-white'
             } ${!dept.isActive ? 'opacity-60' : ''}`}
           >
@@ -314,7 +314,7 @@ function GridView({ depts, onSelect, selectedId }: GridViewProps) {
             {dept.nameEn && (
               <p className="text-xs text-[#999] line-clamp-1 mb-2">{dept.nameEn}</p>
             )}
-            <p className="text-xs text-[#00C853] font-medium">
+            <p className="text-xs text-[#4F46E5] font-medium">
               {tOrg('headcountUnit', { count: dept.employeeCount })}
             </p>
             {dept.children.length > 0 && (
@@ -637,7 +637,7 @@ export function OrgClient({ user, companies }: OrgClientProps) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('searchDepts')}
-            className="w-full pl-8 pr-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#00C853]/10 placeholder:text-[#999]"
+            className="w-full pl-8 pr-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]"
           />
         </div>
 
@@ -665,7 +665,7 @@ export function OrgClient({ user, companies }: OrgClientProps) {
             <select
               value={selectedCompanyId}
               onChange={(e) => setSelectedCompanyId(e.target.value)}
-              className="text-sm border border-[#D4D4D4] rounded-lg px-3 py-1.5 text-[#1A1A1A] bg-white focus:outline-none focus:ring-2 focus:ring-[#00C853]/10"
+              className="text-sm border border-[#D4D4D4] rounded-lg px-3 py-1.5 text-[#1A1A1A] bg-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
             >
               <option value={SENTINEL_ALL}>{t('allCompanies')}</option>
               {companies.map((c) => (

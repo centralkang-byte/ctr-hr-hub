@@ -22,7 +22,7 @@ const colorMap = {
   success: 'border-[#A7F3D0]',
   warning: 'border-[#FCD34D]',
   danger: 'border-[#FECACA]',
-  info: 'border-[#E8F5E9]',
+  info: 'border-[#EEF2FF]',
 }
 
 const iconBgMap = {
@@ -30,7 +30,7 @@ const iconBgMap = {
   success: 'bg-[#D1FAE5] text-[#059669]',
   warning: 'bg-[#FEF3C7] text-[#D97706]',
   danger: 'bg-[#FEE2E2] text-[#DC2626]',
-  info: 'bg-[#E8F5E9] text-[#00C853]',
+  info: 'bg-[#EEF2FF] text-[#4F46E5]',
 }
 
 export function AnalyticsKpiCard({

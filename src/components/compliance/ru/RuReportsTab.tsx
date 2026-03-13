@@ -89,7 +89,7 @@ export default function RuReportsTab() {
             <select
               value={year}
               onChange={(e) => setYear(Number(e.target.value))}
-              className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+              className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
             >
               {yearOptions.map((y) => (
                 <option key={y} value={y}>{y}년</option>
@@ -103,7 +103,7 @@ export default function RuReportsTab() {
             <select
               value={quarter}
               onChange={(e) => setQuarter(Number(e.target.value))}
-              className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+              className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
             >
               <option value={1}>1분기</option>
               <option value={2}>2분기</option>
@@ -125,8 +125,8 @@ export default function RuReportsTab() {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-[#E8F5E9] rounded-lg">
-              <FileBarChart2 className="w-5 h-5 text-[#00C853]" />
+            <div className="p-2 bg-[#EEF2FF] rounded-lg">
+              <FileBarChart2 className="w-5 h-5 text-[#4F46E5]" />
             </div>
             <div>
               <h3 className="text-base font-semibold text-[#1A1A1A]">П-4 분기 보고서</h3>

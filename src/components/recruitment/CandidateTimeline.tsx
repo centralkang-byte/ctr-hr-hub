@@ -55,7 +55,7 @@ const EVENT_COLORS: Record<string, string> = {
   INTERVIEW_1: 'bg-[#DBEAFE] border-[#BFDBFE] text-[#1D4ED8]',
   INTERVIEW_2: 'bg-[#DBEAFE] border-[#BFDBFE] text-[#1D4ED8]',
   FINAL: 'bg-[#FEF3C7] border-[#FCD34D] text-[#B45309]',
-  OFFER: 'bg-[#E8F5E9] border-[#A7F3D0] text-[#047857]',
+  OFFER: 'bg-[#EEF2FF] border-[#A7F3D0] text-[#047857]',
   HIRED: 'bg-[#D1FAE5] border-[#6EE7B7] text-[#065F46]',
   REJECTED: 'bg-[#FEE2E2] border-[#FECACA] text-[#B91C1C]',
   pool_entry: 'bg-[#E0E7FF] border-[#C7D2FE] text-[#4338CA]',
@@ -146,8 +146,8 @@ export default function CandidateTimeline({ applicantId }: Props) {
                     </time>
                   </div>
                   {event.isCurrent && (
-                    <div className="mt-2 flex items-center gap-1 text-xs text-[#00A844] font-medium">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#00C853] animate-pulse" />
+                    <div className="mt-2 flex items-center gap-1 text-xs text-[#4338CA] font-medium">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#4F46E5] animate-pulse" />
                       현재 단계
                     </div>
                   )}

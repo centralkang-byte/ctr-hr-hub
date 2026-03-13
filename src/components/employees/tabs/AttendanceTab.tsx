@@ -144,7 +144,7 @@ export function AttendanceTab({ employeeId }: Props) {
     return (
       <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
         <div className="flex items-center justify-center py-12">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#00C853] border-t-transparent" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#4F46E5] border-t-transparent" />
         </div>
       </div>
     )

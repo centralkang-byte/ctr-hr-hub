@@ -139,7 +139,7 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
                   <ul className="space-y-1">
                     {draft.draftContent.strengths.map((s, i) => (
                       <li key={i} className="text-xs text-[#333] flex items-start gap-1">
-                        <span className="text-[#00C853]">•</span> {s}
+                        <span className="text-[#4F46E5]">•</span> {s}
                       </li>
                     ))}
                   </ul>

@@ -9,6 +9,7 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { EMPLOYEE_MINIMAL_SELECT, toMinimalEmployee } from '@/lib/employee-utils'
 import type { SessionUser } from '@/types'
 
 const querySchema = z.object({
@@ -47,21 +48,20 @@ export const GET = withPermission(
         competencyDetail: true,
         comment: true,
         submittedAt: true,
-        evaluator: {
-          select: {
-            id: true, name: true,
-            assignments: {
-              where: { isPrimary: true, endDate: null },
-              take: 1,
-              include: { department: { select: { name: true } } },
-            },
-          },
-        },
+        evaluator: { select: { ...EMPLOYEE_MINIMAL_SELECT } },
       },
     })
 
     if (evaluations.length === 0) {
-      return apiSuccess({ employeeId, cycleId, evaluations: [], summary: null })
+      return apiSuccess({
+      employeeId,
+      cycleId,
+      evaluations: evaluations.map((e) => ({
+        ...e,
+        evaluator: toMinimalEmployee(e.evaluator as any),
+      })),
+      summary: null,
+    })
     }
 
     // Calculate average
@@ -89,7 +89,10 @@ export const GET = withPermission(
     return apiSuccess({
       employeeId,
       cycleId,
-      evaluations,
+      evaluations: evaluations.map((e) => ({
+        ...e,
+        evaluator: toMinimalEmployee(e.evaluator as any),
+      })),
       summary: {
         reviewerCount: evaluations.length,
         averageScore: Math.round(avgScore * 100) / 100,

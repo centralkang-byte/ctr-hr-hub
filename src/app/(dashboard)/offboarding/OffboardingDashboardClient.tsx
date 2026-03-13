@@ -115,7 +115,7 @@ const RESIGN_TYPE_VARIANTS: Record<string, BadgeVariant> = {
 
 const ASSIGNEE_COLORS: Record<string, string> = {
   EMPLOYEE: 'bg-[#F5F5FA] text-[#1C1D21]',
-  MANAGER: 'bg-[#E8F5E9] text-[#00A844]',
+  MANAGER: 'bg-[#EEF2FF] text-[#4338CA]',
   HR: 'bg-green-100 text-green-700',
   IT: 'bg-[#F3E8FF] text-[#7E22CE]',
   FINANCE: 'bg-[#FFEDD5] text-[#C2410C]',

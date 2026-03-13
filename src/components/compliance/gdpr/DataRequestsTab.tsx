@@ -22,7 +22,7 @@ interface DataRequest {
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
     pending: 'bg-[#FEF3C7] text-[#B45309] border border-[#FCD34D]',
-    in_progress: 'bg-[#E8F5E9] text-[#00A844] border border-[#E8F5E9]',
+    in_progress: 'bg-[#EEF2FF] text-[#4338CA] border border-[#EEF2FF]',
     completed: 'bg-[#D1FAE5] text-[#047857] border border-[#A7F3D0]',
     rejected: 'bg-[#FEE2E2] text-[#B91C1C] border border-[#FECACA]',
   }
@@ -131,7 +131,7 @@ export default function DataRequestsTab() {
                     <td className="px-4 py-3 text-sm">
                       <button
                         onClick={() => { setSelected(r); setShowForm(true) }}
-                        className="inline-flex items-center gap-1 text-[#00C853] hover:text-[#00A844] text-sm font-medium"
+                        className="inline-flex items-center gap-1 text-[#4F46E5] hover:text-[#4338CA] text-sm font-medium"
                       >
                         <Eye className="w-4 h-4" />
                         {r.status === 'pending' || r.status === 'in_progress' ? tc('edit') : tc('view')}

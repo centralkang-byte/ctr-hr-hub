@@ -41,7 +41,7 @@ export function MethodologyTab({ companyId }: Props) {
     }),
   })
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" /></div>
 
   return (
     <div className="space-y-4">
@@ -64,7 +64,7 @@ export function MethodologyTab({ companyId }: Props) {
 
       <SettingFieldWithOverride label="가중치 합계 검증" description="목표 가중치의 합이 반드시 100%여야 하는지" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={settings.weightSumRequired} onChange={(e) => setSettings((p) => ({ ...p, weightSumRequired: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]" />
+          <input type="checkbox" checked={settings.weightSumRequired} onChange={(e) => setSettings((p) => ({ ...p, weightSumRequired: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#4F46E5]" />
           <span className="text-[#1C1D21]">가중치 합계 {settings.weightSum}% 필수</span>
         </label>
       </SettingFieldWithOverride>
@@ -72,7 +72,7 @@ export function MethodologyTab({ companyId }: Props) {
       <SettingFieldWithOverride label="목표 카테고리" description="사용 가능한 목표 분류 항목" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex flex-wrap gap-2">
           {settings.categories.map((cat, i) => (
-            <span key={i} className="rounded-full bg-[#5E81F4]/10 px-3 py-1 text-sm font-medium text-[#5E81F4]">{cat}</span>
+            <span key={i} className="rounded-full bg-[#4F46E5]/10 px-3 py-1 text-sm font-medium text-[#4F46E5]">{cat}</span>
           ))}
         </div>
       </SettingFieldWithOverride>

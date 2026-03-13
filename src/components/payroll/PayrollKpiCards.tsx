@@ -21,8 +21,8 @@ export default function PayrollKpiCards({
       label: '대상 인원',
       value: `${headcount}명`,
       icon: Users,
-      color: 'text-[#00C853]',
-      bg: 'bg-[#E8F5E9]',
+      color: 'text-[#4F46E5]',
+      bg: 'bg-[#EEF2FF]',
     },
     {
       label: '총 지급액',

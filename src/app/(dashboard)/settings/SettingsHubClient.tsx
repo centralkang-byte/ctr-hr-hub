@@ -15,6 +15,7 @@ import { SETTINGS_CATEGORIES } from '@/components/settings/settings-config'
 import { SettingsCategoryCard } from '@/components/settings/SettingsCategoryCard'
 
 export function SettingsHubClient() {
+  const tCommon = useTranslations('common')
   const [search, setSearch] = useState('')
 
   const filteredCategories = useMemo(() => {
@@ -40,7 +41,7 @@ export function SettingsHubClient() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={tCommon('placeholderSettingsSearch')}
-          className="w-full rounded-xl border border-[#F0F0F3] bg-white py-3 pl-10 pr-4 text-sm text-[#1C1D21] placeholder:text-[#8181A5] shadow-sm transition-colors focus:border-[#5E81F4]/40 focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+          className="w-full rounded-xl border border-[#F0F0F3] bg-white py-3 pl-10 pr-4 text-sm text-[#1C1D21] placeholder:text-[#8181A5] shadow-sm transition-colors focus:border-[#4F46E5]/40 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
         />
       </div>
 

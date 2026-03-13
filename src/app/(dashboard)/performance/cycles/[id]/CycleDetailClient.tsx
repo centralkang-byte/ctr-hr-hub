@@ -105,7 +105,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                 <div className="text-center">
                     <ShieldAlert className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
                     <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">접근 권한이 없습니다.</h2>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">← 돌아가기</a>
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#4F46E5] hover:underline">← 돌아가기</a>
                 </div>
             </div>
         )
@@ -131,7 +131,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
                     <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
-                    <a href="/performance/cycles" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">← 돌아가기</a>
+                    <a href="/performance/cycles" className="mt-4 inline-flex items-center gap-1 text-sm text-[#4F46E5] hover:underline">← 돌아가기</a>
                 </div>
             </div>
         )
@@ -173,12 +173,12 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                             return (
                                 <div key={state.key} className="flex items-center">
                                     <div className="flex flex-col items-center">
-                                        <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-colors ${isCurrent ? 'bg-[#5E81F4] text-white ring-4 ring-[#5E81F4]/20' :
+                                        <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-colors ${isCurrent ? 'bg-[#4F46E5] text-white ring-4 ring-[#4F46E5]/20' :
                                                 isPast ? 'bg-[#22C55E] text-white' : 'bg-[#F0F0F3] text-[#8181A5]'
                                             }`}>
                                             {isPast ? '✓' : idx + 1}
                                         </div>
-                                        <span className={`mt-1.5 text-[10px] whitespace-nowrap ${isCurrent ? 'font-bold text-[#5E81F4]' : isPast ? 'text-[#22C55E]' : 'text-[#8181A5]'}`}>
+                                        <span className={`mt-1.5 text-[10px] whitespace-nowrap ${isCurrent ? 'font-bold text-[#4F46E5]' : isPast ? 'text-[#22C55E]' : 'text-[#8181A5]'}`}>
                                             {state.label}
                                         </span>
                                     </div>
@@ -198,7 +198,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                                 <p className="text-xs text-[#8181A5]">다음: {PIPELINE_STATES[currentIdx + 1]?.label}</p>
                             </div>
                             <button onClick={handleAdvance} disabled={advancing}
-                                className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-5 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40 transition-colors">
+                                className="inline-flex items-center gap-2 rounded-lg bg-[#4F46E5] px-5 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40 transition-colors">
                                 {advancing ? '전환 중...' : <><span>다음 단계로 진행</span><ChevronRight className="h-4 w-4" /></>}
                             </button>
                         </div>
@@ -224,11 +224,11 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                 {/* Tabs */}
                 <div className="mb-4 flex border-b border-[#F0F0F3]">
                     <button onClick={() => setTab('pipeline')}
-                        className={`px-5 py-3 text-sm font-medium border-b-2 ${tab === 'pipeline' ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#8181A5]'}`}>
+                        className={`px-5 py-3 text-sm font-medium border-b-2 ${tab === 'pipeline' ? 'border-[#4F46E5] text-[#4F46E5]' : 'border-transparent text-[#8181A5]'}`}>
                         사이클 정보
                     </button>
                     <button onClick={() => setTab('participants')}
-                        className={`px-5 py-3 text-sm font-medium border-b-2 ${tab === 'participants' ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#8181A5]'}`}>
+                        className={`px-5 py-3 text-sm font-medium border-b-2 ${tab === 'participants' ? 'border-[#4F46E5] text-[#4F46E5]' : 'border-transparent text-[#8181A5]'}`}>
                         참여자 ({participants.length}명)
                     </button>
                 </div>
@@ -248,7 +248,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                         <div className="border-b border-[#F0F0F3] px-5 py-3 flex items-center gap-3">
                             <Users className="h-4 w-4 text-[#8181A5]" />
                             <select value={deptFilter} onChange={(e) => setDeptFilter(e.target.value)}
-                                className="rounded-lg border border-[#F0F0F3] px-2 py-1 text-xs text-[#1C1D21] focus:border-[#5E81F4] focus:outline-none">
+                                className="rounded-lg border border-[#F0F0F3] px-2 py-1 text-xs text-[#1C1D21] focus:border-[#4F46E5] focus:outline-none">
                                 <option value="">전체 부서</option>
                                 {departments.map((d) => <option key={d} value={d}>{d}</option>)}
                             </select>

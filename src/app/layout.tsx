@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#00C853',
+  themeColor: '#4F46E5',
 }
 
 export default async function RootLayout({
@@ -55,6 +55,7 @@ export default async function RootLayout({
         />
       </head>
       <body
+        suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased tracking-ctr`}
       >
         <NextIntlClientProvider locale={locale} messages={messages}>

@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { Mail, Phone, Calendar, Building2 } from 'lucide-react'
+import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -44,7 +45,7 @@ function getInitials(name: string): string {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  ACTIVE: 'bg-[#E8F5E9] text-[#2E7D32]',
+  ACTIVE: 'bg-[#EEF2FF] text-[#2E7D32]',
   ON_LEAVE: 'bg-[#FFF3E0] text-[#E65100]',
   RESIGNED: 'bg-[#F5F5F5] text-[#666]',
   TERMINATED: 'bg-[#FFEBEE] text-[#C62828]',
@@ -132,29 +133,14 @@ export function ProfileSidebar({
         {manager && (
           <div className="py-4">
             <p className="text-xs text-[#999] mb-2">직속 상사</p>
-            <button
-              type="button"
-              className="flex w-full items-center gap-3 rounded-lg p-2 text-left hover:bg-[#FAFAFA] transition-colors"
+            <EmployeeCell
+              name={manager.name}
+              photoUrl={manager.photoUrl}
+              department={manager.department}
+              jobGrade={manager.jobGrade}
+              size="sm"
               onClick={() => onManagerClick?.(manager.id)}
-            >
-              {manager.photoUrl ? (
-                <img
-                  src={manager.photoUrl}
-                  alt={manager.name}
-                  className="h-8 w-8 rounded-full object-cover"
-                />
-              ) : (
-                <div className="h-8 w-8 rounded-full bg-ctr-primary-light flex items-center justify-center text-xs font-semibold text-ctr-primary">
-                  {getInitials(manager.name)}
-                </div>
-              )}
-              <div>
-                <p className="text-sm font-medium text-[#1A1A1A]">{manager.name}</p>
-                <p className="text-xs text-[#999]">
-                  {manager.department ?? ''}{manager.jobGrade ? ` · ${manager.jobGrade}` : ''}
-                </p>
-              </div>
-            </button>
+            />
           </div>
         )}
       </div>

@@ -10,7 +10,7 @@ import type { PayrollAnomalyResult, AnomalySeverity } from '@/lib/payroll/types'
 const SEVERITY_CONFIG: Record<AnomalySeverity, { icon: typeof AlertTriangle; color: string; bg: string }> = {
   ERROR: { icon: AlertCircle, color: 'text-[#DC2626]', bg: 'bg-[#FEE2E2]' },
   WARNING: { icon: AlertTriangle, color: 'text-[#D97706]', bg: 'bg-[#FEF3C7]' },
-  INFO: { icon: Info, color: 'text-[#00C853]', bg: 'bg-[#E8F5E9]' },
+  INFO: { icon: Info, color: 'text-[#4F46E5]', bg: 'bg-[#EEF2FF]' },
 }
 
 const RISK_COLORS: Record<string, string> = {

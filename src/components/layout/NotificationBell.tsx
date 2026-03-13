@@ -170,7 +170,7 @@ export function NotificationBell() {
                   {/* Unread dot */}
                   <div className="mt-1.5 shrink-0">
                     {!item.isRead ? (
-                      <div className="h-2 w-2 rounded-full bg-[#00C853]" />
+                      <div className="h-2 w-2 rounded-full bg-[#4F46E5]" />
                     ) : (
                       <div className="h-2 w-2" />
                     )}
@@ -198,7 +198,7 @@ export function NotificationBell() {
         <div className="p-2">
           <Link
             href="/notifications"
-            className="block rounded-md px-3 py-2 text-center text-sm font-medium text-[#00C853] hover:bg-[#E8F5E9] transition-colors"
+            className="block rounded-md px-3 py-2 text-center text-sm font-medium text-[#4F46E5] hover:bg-[#EEF2FF] transition-colors"
             onClick={() => setOpen(false)}
           >
             전체 보기

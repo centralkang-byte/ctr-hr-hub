@@ -17,7 +17,7 @@ interface PiiAccessLog {
 }
 
 const ACCESS_TYPE_BADGE: Record<string, string> = {
-  VIEW: 'bg-[#E8F5E9] text-[#00A844] border border-[#E8F5E9]',
+  VIEW: 'bg-[#EEF2FF] text-[#4338CA] border border-[#EEF2FF]',
   EXPORT: 'bg-[#FEF3C7] text-[#B45309] border border-[#FCD34D]',
   EDIT: 'bg-[#FFF7ED] text-[#C2410C] border border-[#FED7AA]',
   DELETE: 'bg-[#FEE2E2] text-[#B91C1C] border border-[#FECACA]',
@@ -91,7 +91,7 @@ export default function PiiAccessLogTable() {
             <label className="block text-xs text-[#666] mb-1">{t('gdpr.actor')}</label>
             <input
               type="text"
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
               placeholder={tc('searchPlaceholder')}
               value={actor}
               onChange={(e) => setActor(e.target.value)}
@@ -101,7 +101,7 @@ export default function PiiAccessLogTable() {
             <label className="block text-xs text-[#666] mb-1">{t('gdpr.target')}</label>
             <input
               type="text"
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
               placeholder={tc('searchPlaceholder')}
               value={target}
               onChange={(e) => setTarget(e.target.value)}
@@ -111,7 +111,7 @@ export default function PiiAccessLogTable() {
             <label className="block text-xs text-[#666] mb-1">{tc('startDate')}</label>
             <input
               type="date"
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
             />
@@ -120,7 +120,7 @@ export default function PiiAccessLogTable() {
             <label className="block text-xs text-[#666] mb-1">{tc('endDate')}</label>
             <input
               type="date"
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
             />

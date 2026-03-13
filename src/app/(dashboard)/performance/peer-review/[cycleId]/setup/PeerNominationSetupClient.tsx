@@ -50,7 +50,7 @@ const STATUS_MAP: Record<string, { label: string; cls: string }> = {
   PROPOSED: { label: '검토 대기', cls: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]' },
   NOMINATION_APPROVED: { label: '승인', cls: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
   NOMINATION_REJECTED: { label: '거부', cls: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]' },
-  NOMINATION_COMPLETED: { label: '평가 완료', cls: 'bg-[#E8F5E9] text-[#00A844] border-[#E8F5E9]' },
+  NOMINATION_COMPLETED: { label: '평가 완료', cls: 'bg-[#EEF2FF] text-[#4338CA] border-[#EEF2FF]' },
 }
 
 // ─── Component ───────────────────────────────────────────
@@ -139,7 +139,7 @@ export default function PeerNominationSetupClient() {
         <button onClick={() => router.push('/performance/peer-review')} className="p-1 hover:bg-[#F5F5F5] rounded-lg">
           <ArrowLeft className="w-5 h-5 text-[#666]" />
         </button>
-        <Users className="w-6 h-6 text-[#00C853]" />
+        <Users className="w-6 h-6 text-[#4F46E5]" />
         <h1 className="text-2xl font-bold text-[#1A1A1A]">동료 평가 추천/지정</h1>
       </div>
 
@@ -159,7 +159,7 @@ export default function PeerNominationSetupClient() {
               <div className="mt-2 space-y-1">
                 {employees.map((emp) => (
                   <button key={emp.id} onClick={() => fetchRecommendations(emp.id)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-[#FAFAFA] ${selectedEmployeeId === emp.id ? 'bg-[#E8F5E9] border border-[#00C853]' : ''}`}>
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-[#FAFAFA] ${selectedEmployeeId === emp.id ? 'bg-[#EEF2FF] border border-[#4F46E5]' : ''}`}>
                     <span className="font-medium text-[#1A1A1A]">{emp.name}</span>
                     <span className="text-[#666] ml-2">{emp.employeeNo}</span>
                     {emp.department && <span className="text-[#999] ml-2">· {emp.department.name}</span>}

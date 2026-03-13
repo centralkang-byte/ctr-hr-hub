@@ -93,7 +93,7 @@ function TaskRow({ task, isActive, onComplete, processing }: TaskRowProps) {
 
   let rowBg = 'bg-white border-[#F0F0F3]'
   if (isDone)    rowBg = 'bg-[#F0FDF4] border-[#D1FAE5]'
-  if (isActive)  rowBg = 'bg-[#F0F4FF] border-[#C7D2FE] border-l-4 border-l-[#5E81F4]'
+  if (isActive)  rowBg = 'bg-[#EEF2FF] border-[#C7D2FE] border-l-4 border-l-[#4F46E5]'
   if (task.isOverdue && !isDone) rowBg = 'bg-[#FEF2F2] border-[#FECACA]'
 
   return (
@@ -102,9 +102,9 @@ function TaskRow({ task, isActive, onComplete, processing }: TaskRowProps) {
         {/* Status icon */}
         <div className="mt-0.5 shrink-0">
           {isDone
-            ? <CheckCircle2 className="h-5 w-5 text-[#00C853]" />
+            ? <CheckCircle2 className="h-5 w-5 text-[#4F46E5]" />
             : isActive
-              ? <CircleDot className="h-5 w-5 text-[#5E81F4]" />
+              ? <CircleDot className="h-5 w-5 text-[#4F46E5]" />
               : <Circle className="h-5 w-5 text-[#D0D5DD]" />
           }
         </div>
@@ -132,7 +132,7 @@ function TaskRow({ task, isActive, onComplete, processing }: TaskRowProps) {
           <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-[#8181A5]">
             <span>담당: {ASSIGNEE_LABEL[task.assigneeType] ?? task.assigneeType}</span>
             {isDone && task.completedAt ? (
-              <span className="text-[#00C853]">
+              <span className="text-[#4F46E5]">
                 완료: {new Date(task.completedAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}
               </span>
             ) : (
@@ -147,7 +147,7 @@ function TaskRow({ task, isActive, onComplete, processing }: TaskRowProps) {
             <Button
               size="sm"
               variant="outline"
-              className="mt-2 h-7 gap-1 border-[#5E81F4] px-2 text-[11px] text-[#5E81F4] hover:bg-[#F0F4FF]"
+              className="mt-2 h-7 gap-1 border-[#4F46E5] px-2 text-[11px] text-[#4F46E5] hover:bg-[#EEF2FF]"
               disabled={isBusy}
               onClick={() => onComplete(task.id)}
             >
@@ -170,7 +170,7 @@ function DDayBadge({ dDay }: { dDay: number }) {
   const isOver = dDay < 0
   const isImminent = dDay >= 0 && dDay <= 7
 
-  let bgColor = 'bg-[#F0F4FF] text-[#5E81F4]'
+  let bgColor = 'bg-[#EEF2FF] text-[#4F46E5]'
   if (isOver)     bgColor = 'bg-[#FEF2F2] text-[#EF4444]'
   if (isImminent) bgColor = 'bg-[#FEF3C7] text-[#B45309]'
 
@@ -299,11 +299,11 @@ export function MyOffboardingClient() {
           </div>
           <div className="h-2 w-full overflow-hidden rounded-full bg-[#F0F0F3]">
             <div
-              className="h-2 rounded-full bg-[#5E81F4] transition-all duration-500"
+              className="h-2 rounded-full bg-[#4F46E5] transition-all duration-500"
               style={{ width: `${data.progress}%` }}
             />
           </div>
-          <div className="text-right text-xs font-semibold text-[#5E81F4]">
+          <div className="text-right text-xs font-semibold text-[#4F46E5]">
             {data.progress}%
           </div>
         </div>
@@ -326,14 +326,14 @@ export function MyOffboardingClient() {
       <Card className="border-[#F0F0F3] shadow-none">
         <CardHeader className="pb-2 pt-4">
           <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1C1D21]">
-            <Info className="h-4 w-4 text-[#5E81F4]" />
+            <Info className="h-4 w-4 text-[#4F46E5]" />
             참고 정보
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 pb-4">
           {data.reference.annualLeaveRemaining !== null && (
             <div className="flex items-start gap-2 text-xs text-[#8181A5]">
-              <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#5E81F4]" />
+              <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#4F46E5]" />
               잔여 연차: <span className="font-semibold text-[#1C1D21]">
                 {data.reference.annualLeaveRemaining}일
               </span>
@@ -341,15 +341,15 @@ export function MyOffboardingClient() {
             </div>
           )}
           <div className="flex items-start gap-2 text-xs text-[#8181A5]">
-            <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#5E81F4]" />
+            <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#4F46E5]" />
             4대보험 상실 신고는 퇴직일 기준 14일 이내 처리됩니다.
           </div>
           <div className="flex items-start gap-2 text-xs text-[#8181A5]">
-            <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#5E81F4]" />
+            <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#4F46E5]" />
             건강보험 임의 계속 가입을 원하시면 HR팀에 문의하세요.
           </div>
           <div className="flex items-start gap-2 text-xs text-[#8181A5]">
-            <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#5E81F4]" />
+            <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#4F46E5]" />
             퇴직금은 최종 근무일 기준 14일 이내 지급됩니다.
           </div>
         </CardContent>

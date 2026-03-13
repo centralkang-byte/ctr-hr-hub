@@ -191,8 +191,8 @@ export default function PayrollImportClient({ user, companies }: {
     <div className="p-6">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-9 h-9 bg-[#E8F5E9] rounded-lg flex items-center justify-center">
-          <Upload className="w-5 h-5 text-[#00C853]" />
+        <div className="w-9 h-9 bg-[#EEF2FF] rounded-lg flex items-center justify-center">
+          <Upload className="w-5 h-5 text-[#4F46E5]" />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('importTitle')}</h1>
@@ -211,7 +211,7 @@ export default function PayrollImportClient({ user, companies }: {
               onClick={() => setSelectedCompany(co)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 selectedCompany?.id === co.id
-                  ? 'bg-[#00C853] text-white'
+                  ? 'bg-[#4F46E5] text-white'
                   : 'bg-white border border-[#D4D4D4] text-[#555] hover:bg-[#FAFAFA]'
               }`}
             >
@@ -230,7 +230,7 @@ export default function PayrollImportClient({ user, companies }: {
               onClick={() => setTab(key)}
               className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
                 tab === key
-                  ? 'border-[#00C853] text-[#00C853]'
+                  ? 'border-[#4F46E5] text-[#4F46E5]'
                   : 'border-transparent text-[#666] hover:text-[#333]'
               }`}
             >
@@ -252,7 +252,7 @@ export default function PayrollImportClient({ user, companies }: {
             ) : mappings.length === 0 ? (
               <div className="text-sm text-[#999]">
                 선택한 법인에 매핑 설정이 없습니다.{' '}
-                <button onClick={() => setTab('mapping')} className="text-[#00C853] underline">
+                <button onClick={() => setTab('mapping')} className="text-[#4F46E5] underline">
                   매핑 추가
                 </button>
               </div>
@@ -265,7 +265,7 @@ export default function PayrollImportClient({ user, companies }: {
                     onClick={() => setSelectedMapping(m)}
                     className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${
                       selectedMapping?.id === m.id
-                        ? 'border-[#00C853] bg-[#E8F5E9] text-[#00A844]'
+                        ? 'border-[#4F46E5] bg-[#EEF2FF] text-[#4338CA]'
                         : 'border-[#D4D4D4] text-[#555] hover:bg-[#FAFAFA]'
                     }`}
                   >
@@ -301,7 +301,7 @@ export default function PayrollImportClient({ user, companies }: {
 
           {/* File Drop */}
           <div
-            className="bg-white rounded-xl border-2 border-dashed border-[#D4D4D4] p-10 text-center cursor-pointer hover:border-[#00C853] hover:bg-[#E8F5E9]/20 transition-colors"
+            className="bg-white rounded-xl border-2 border-dashed border-[#D4D4D4] p-10 text-center cursor-pointer hover:border-[#4F46E5] hover:bg-[#EEF2FF]/20 transition-colors"
             onClick={() => fileRef.current?.click()}
           >
             <FileSpreadsheet className="w-12 h-12 text-[#CCC] mx-auto mb-3" />
@@ -346,7 +346,7 @@ export default function PayrollImportClient({ user, companies }: {
             </h3>
             <button
               onClick={startNewMapping}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#00C853] text-white rounded-lg text-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#4F46E5] text-white rounded-lg text-sm"
             >
               <Plus className="w-4 h-4" /> 새 매핑 추가
             </button>
@@ -385,7 +385,7 @@ export default function PayrollImportClient({ user, companies }: {
 
           {/* New Mapping Editor */}
           {editingMapping && (
-            <div className="bg-white rounded-xl border border-[#00C853] p-5 space-y-4">
+            <div className="bg-white rounded-xl border border-[#4F46E5] p-5 space-y-4">
               <h4 className="text-sm font-semibold text-[#1A1A1A]">새 매핑 설정</h4>
               <div className="grid grid-cols-3 gap-4">
                 <div>
@@ -450,7 +450,7 @@ export default function PayrollImportClient({ user, companies }: {
                     type="checkbox"
                     checked={editingMapping.isDefault ?? false}
                     onChange={e => setEditingMapping(prev => ({ ...prev, isDefault: e.target.checked }))}
-                    className="w-4 h-4 rounded border-[#D4D4D4] text-[#00C853]"
+                    className="w-4 h-4 rounded border-[#D4D4D4] text-[#4F46E5]"
                   />
                   기본 매핑으로 설정
                 </label>
@@ -464,7 +464,7 @@ export default function PayrollImportClient({ user, companies }: {
                   <button
                     onClick={saveMapping}
                     disabled={savingMapping || !editingMapping.name}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#00C853] text-white rounded-lg text-sm disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#4F46E5] text-white rounded-lg text-sm disabled:opacity-50"
                   >
                     <Save className="w-4 h-4" />
                     {savingMapping ? tCommon('loading') : tCommon('save')}

@@ -1,0 +1,33 @@
+EC-1 Audit Results
+==================
+Date: 2026-03-13
+
+New files created:
+- src/types/employee.ts (MinimalEmployee type, 1.8KB)
+- src/lib/employee-utils.ts (EMPLOYEE_MINIMAL_SELECT + toMinimalEmployee, 2.8KB)
+- src/lib/avatar-colors.ts (getAvatarColor + getInitials, 2.3KB)
+- src/components/common/EmployeeCell.tsx (sm/md/lg component, 10.6KB)
+
+Schema changes:
+- prisma/schema.prisma: Added locationCity to Company model
+
+Pilot screens converted: 3
+- src/components/compensation/HighRiskList.tsx (sm)
+- src/components/succession/CandidateCard.tsx (sm + trailing)
+- src/components/employees/ProfileSidebar.tsx (sm manager display)
+
+Total screens remaining for EC-2: ~25
+API routes with employee data: ~400
+
+Common patterns found:
+1. Manual avatar: rounded-full + initials via name.charAt(0) or name.slice(0,1)
+2. Inline name + department display (no shared component)
+3. Missing avatars in most tables/lists (just text name)
+4. Inconsistent avatar sizes (32px, 40px, 56px, 72px)
+5. Inconsistent color schemes for avatar backgrounds
+
+Special cases (need manual handling in EC-2):
+- EmployeeListClient profile header: More complex layout (not simple cell)
+- OrgChart nodes: Custom tree layout (may need variant)
+- DataTable columns: Column definition pattern differs from JSX patterns
+- HR Chatbot message bubbles: Custom context, may keep separate

@@ -33,7 +33,7 @@ export function AssignmentRulesTab({ companyId }: Props) {
     }),
   })
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" /></div>
 
   const toggleApproval = (i: number) => {
     const next = structuredClone(settings)
@@ -66,7 +66,7 @@ export function AssignmentRulesTab({ companyId }: Props) {
           <tbody className="divide-y divide-[#F0F0F3]">
             {settings.rules.map((t, i) => (
               <tr key={t.code} className="hover:bg-[#F5F5FA] transition-colors">
-                <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{t.code}</td>
+                <td className="px-4 py-3 text-sm font-medium text-[#4F46E5]">{t.code}</td>
                 <td className={TABLE_STYLES.cell}>{t.label}</td>
                 <td className={TABLE_STYLES.cellMuted}>{t.desc}</td>
                 <td className="px-4 py-3 text-center">

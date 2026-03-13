@@ -228,7 +228,7 @@ export default function MyEvaluationClient({user }: {
                     <Star className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
                     <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">아직 자기평가 기간이 아닙니다.</h2>
                     <p className="text-sm text-[#8181A5]">자기평가는 EVAL_OPEN 단계에서 진행됩니다.</p>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#4F46E5] hover:underline">
                         <ArrowLeft className="h-4 w-4" /> 돌아가기
                     </a>
                 </div>
@@ -260,7 +260,7 @@ export default function MyEvaluationClient({user }: {
                             </span>
                         )}
                         <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
-                            className="rounded-lg border border-[#F0F0F3] bg-white px-3 py-2 text-sm text-[#1C1D21] focus:border-[#5E81F4] focus:outline-none">
+                            className="rounded-lg border border-[#F0F0F3] bg-white px-3 py-2 text-sm text-[#1C1D21] focus:border-[#4F46E5] focus:outline-none">
                             {!cycles?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
               {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
@@ -287,9 +287,9 @@ export default function MyEvaluationClient({user }: {
                         <p className="mt-1 text-2xl font-bold text-[#1C1D21]">{beiAvg.toFixed(1)}</p>
                         <p className="text-xs text-[#8181A5]">/ 5.0</p>
                     </div>
-                    <div className="rounded-xl border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4 text-center">
-                        <p className="text-xs text-[#5E81F4]">종합 점수</p>
-                        <p className="mt-1 text-2xl font-bold text-[#5E81F4]">{totalScore.toFixed(2)}</p>
+                    <div className="rounded-xl border border-[#4F46E5]/20 bg-[#4F46E5]/5 p-4 text-center">
+                        <p className="text-xs text-[#4F46E5]">종합 점수</p>
+                        <p className="mt-1 text-2xl font-bold text-[#4F46E5]">{totalScore.toFixed(2)}</p>
                         <p className="text-xs text-[#8181A5]">/ 5.0</p>
                     </div>
                 </div>
@@ -314,11 +314,11 @@ export default function MyEvaluationClient({user }: {
                         {/* Tabs */}
                         <div className="mb-6 flex border-b border-[#F0F0F3]">
                             <button onClick={() => setActiveTab('mbo')}
-                                className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'mbo' ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#8181A5] hover:text-[#1C1D21]'}`}>
+                                className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'mbo' ? 'border-[#4F46E5] text-[#4F46E5]' : 'border-transparent text-[#8181A5] hover:text-[#1C1D21]'}`}>
                                 MBO 업적평가
                             </button>
                             <button onClick={() => setActiveTab('bei')}
-                                className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'bei' ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#8181A5] hover:text-[#1C1D21]'}`}>
+                                className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'bei' ? 'border-[#4F46E5] text-[#4F46E5]' : 'border-transparent text-[#8181A5] hover:text-[#1C1D21]'}`}>
                                 BEI 역량평가
                             </button>
                         </div>
@@ -344,7 +344,7 @@ export default function MyEvaluationClient({user }: {
                                                 value={evalData?.goalScores[goal.id]?.comment ?? ''}
                                                 onChange={(e) => updateGoalScore(goal.id, 'comment', e.target.value)}
                                                 placeholder="달성 내용을 기술하세요..."
-                                                className="w-full resize-none rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none disabled:bg-[#F5F5FA]" />
+                                                className="w-full resize-none rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none disabled:bg-[#F5F5FA]" />
                                         </div>
                                     ))}
                                 </div>
@@ -375,7 +375,7 @@ export default function MyEvaluationClient({user }: {
                                                 value={evalData?.beiScores[bei.key]?.comment ?? ''}
                                                 onChange={(e) => updateBeiScore(bei.key, 'comment', e.target.value)}
                                                 placeholder="근거를 기술하세요..."
-                                                className="w-full resize-none rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none disabled:bg-[#F5F5FA]" />
+                                                className="w-full resize-none rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none disabled:bg-[#F5F5FA]" />
                                         </div>
                                     ))}
                                 </div>
@@ -394,7 +394,7 @@ export default function MyEvaluationClient({user }: {
                                     <Save className="h-4 w-4" /> 임시저장
                                 </button>
                                 <button onClick={() => handleSave('SUBMITTED')} disabled={submitting}
-                                    className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40 transition-colors">
+                                    className="inline-flex items-center gap-2 rounded-lg bg-[#4F46E5] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40 transition-colors">
                                     <Send className="h-4 w-4" /> {submitting ? tCommon('loading') : tCommon('submit')}
                                 </button>
                             </div>

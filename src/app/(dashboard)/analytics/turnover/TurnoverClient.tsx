@@ -243,7 +243,7 @@ export default function TurnoverClient() {
                   <span className="text-sm text-gray-700">{r.reason}</span>
                   <div className="flex items-center gap-2">
                     <div className="w-20 h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-[#5E81F4] rounded-full" style={{ width: `${r.percentage}%` }} />
+                      <div className="h-full bg-[#4F46E5] rounded-full" style={{ width: `${r.percentage}%` }} />
                     </div>
                     <span className="text-xs text-gray-500">{r.percentage}%</span>
                   </div>

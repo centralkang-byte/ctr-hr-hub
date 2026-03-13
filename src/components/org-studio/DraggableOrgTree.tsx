@@ -274,7 +274,7 @@ function formatKRW(amount: number): string {
 
 const LEVEL_INDENT = ['', 'pl-6', 'pl-12']
 const LEVEL_ACCENT = [
-  'border-l-4 border-[#5E81F4]',
+  'border-l-4 border-[#4F46E5]',
   'border-l-4 border-[#6EE7B7]',
   'border-l-4 border-[#FCD34D]',
 ]
@@ -325,10 +325,10 @@ function OrgNodeCard({
           isDragging
             ? 'opacity-40 scale-95'
             : isDragOver
-              ? 'border-[#00C853] shadow-md ring-2 ring-[#00C853]/30 bg-[#E8F5E9]'
+              ? 'border-[#4F46E5] shadow-md ring-2 ring-[#4F46E5]/30 bg-[#EEF2FF]'
               : isSelected
-                ? 'border-[#5E81F4] shadow-sm ring-1 ring-[#5E81F4]/20'
-                : 'border-[#F0F0F3] hover:border-[#5E81F4]/30 hover:shadow-sm',
+                ? 'border-[#4F46E5] shadow-sm ring-1 ring-[#4F46E5]/20'
+                : 'border-[#F0F0F3] hover:border-[#4F46E5]/30 hover:shadow-sm',
         ].join(' ')}
         onClick={() => onSelect(node)}
         role="button"
@@ -530,11 +530,11 @@ export function DraggableOrgTree({
         </div>
         <div className="flex items-center gap-2">
           {moves.length > 0 && (
-            <span className="flex items-center gap-1 rounded-full bg-[#00C853]/10 px-2.5 py-1 text-xs font-medium text-[#00A844]">
+            <span className="flex items-center gap-1 rounded-full bg-[#4F46E5]/10 px-2.5 py-1 text-xs font-medium text-[#4338CA]">
               {moves.length}개 변경됨
             </span>
           )}
-          <span className="flex items-center gap-1 rounded-full bg-[#5E81F4]/10 px-2.5 py-1 text-xs font-medium text-[#5E81F4]">
+          <span className="flex items-center gap-1 rounded-full bg-[#4F46E5]/10 px-2.5 py-1 text-xs font-medium text-[#4F46E5]">
             <GripVertical size={11} />
             드래그 이동 활성
           </span>
@@ -545,7 +545,7 @@ export function DraggableOrgTree({
       <div className="flex items-center gap-4 rounded-lg border border-[#F0F0F3] bg-white px-4 py-2.5">
         <span className="text-xs font-medium text-[#8181A5]">범례</span>
         <div className="flex items-center gap-1.5">
-          <div className="h-3 w-1 rounded-full bg-[#5E81F4]" />
+          <div className="h-3 w-1 rounded-full bg-[#4F46E5]" />
           <span className="text-xs text-[#8181A5]">본부급</span>
         </div>
         <div className="flex items-center gap-1.5">
@@ -557,7 +557,7 @@ export function DraggableOrgTree({
           <span className="text-xs text-[#8181A5]">팀급</span>
         </div>
         <div className="ml-auto flex items-center gap-1.5">
-          <div className="h-3 w-3 rounded border-2 border-[#00C853]" />
+          <div className="h-3 w-3 rounded border-2 border-[#4F46E5]" />
           <span className="text-xs text-[#8181A5]">드롭 대상</span>
         </div>
       </div>

@@ -164,7 +164,7 @@ export function InterviewCalendarScheduler({
           gap: 4,
           ...(hasEvent
             ? {}
-            : { backgroundColor: '#00C853', color: '#fff' }),
+            : { backgroundColor: '#4F46E5', color: '#fff' }),
         }}
       >
         <Calendar size={14} />
@@ -202,13 +202,13 @@ export function InterviewCalendarScheduler({
                 <div
                   style={{
                     padding: 16,
-                    backgroundColor: '#E8F5E9',
+                    backgroundColor: '#EEF2FF',
                     borderRadius: 12,
                     border: '1px solid #C8E6C9',
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                    <Clock size={16} style={{ color: '#00C853' }} />
+                    <Clock size={16} style={{ color: '#4F46E5' }} />
                     <span style={{ fontSize: 14, fontWeight: 600, color: '#1B5E20' }}>
                       {scheduledAt
                         ? format(new Date(scheduledAt), 'yyyy-MM-dd HH:mm')
@@ -226,7 +226,7 @@ export function InterviewCalendarScheduler({
                         alignItems: 'center',
                         gap: 6,
                         fontSize: 13,
-                        color: '#00C853',
+                        color: '#4F46E5',
                         textDecoration: 'none',
                       }}
                     >
@@ -333,12 +333,12 @@ export function InterviewCalendarScheduler({
                                   padding: '6px 12px',
                                   borderRadius: 6,
                                   border: isSelected
-                                    ? '2px solid #00C853'
+                                    ? '2px solid #4F46E5'
                                     : '1px solid #E5E7EB',
                                   backgroundColor: isSelected
-                                    ? '#E8F5E9'
+                                    ? '#EEF2FF'
                                     : '#FFFFFF',
-                                  color: isSelected ? '#00C853' : '#374151',
+                                  color: isSelected ? '#4F46E5' : '#374151',
                                   fontSize: 13,
                                   fontWeight: isSelected ? 600 : 400,
                                   cursor: 'pointer',
@@ -384,7 +384,7 @@ export function InterviewCalendarScheduler({
                 disabled={!selectedSlot || submitting}
                 style={{
                   borderRadius: 8,
-                  backgroundColor: '#00C853',
+                  backgroundColor: '#4F46E5',
                   color: '#FFFFFF',
                 }}
               >

@@ -159,7 +159,7 @@ export default function SocialInsuranceReportTab() {
           <select
             value={year}
             onChange={(e) => setYear(Number(e.target.value))}
-            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
           >
             {years.map((y) => (
               <option key={y} value={y}>
@@ -173,7 +173,7 @@ export default function SocialInsuranceReportTab() {
           <select
             value={month}
             onChange={(e) => setMonth(Number(e.target.value))}
-            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#00C853]/10"
+            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
           >
             {months.map((m) => (
               <option key={m} value={m}>
@@ -273,7 +273,7 @@ export default function SocialInsuranceReportTab() {
                   <td className="px-4 py-3 text-right text-[#1A1A1A]">
                     {formatCNY(reportData.summary.grandTotalEmployee)}
                   </td>
-                  <td className="px-4 py-3 text-right text-[#00A844]">
+                  <td className="px-4 py-3 text-right text-[#4338CA]">
                     {formatCNY(reportData.summary.grandTotal)}
                   </td>
                 </tr>

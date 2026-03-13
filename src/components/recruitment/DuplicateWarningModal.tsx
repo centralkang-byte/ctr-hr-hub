@@ -66,8 +66,8 @@ export default function DuplicateWarningModal({ matches, onProceed, onCancel }: 
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-[#E8F5E9] flex items-center justify-center flex-shrink-0">
-                    <UserCheck size={15} className="text-[#00A844]" />
+                  <div className="w-8 h-8 rounded-full bg-[#EEF2FF] flex items-center justify-center flex-shrink-0">
+                    <UserCheck size={15} className="text-[#4338CA]" />
                   </div>
                   <div>
                     <p className="font-medium text-sm text-[#1A1A1A]">{match.name}</p>
@@ -87,7 +87,7 @@ export default function DuplicateWarningModal({ matches, onProceed, onCancel }: 
                     최근 지원: {new Date(match.lastApplicationAt).toLocaleDateString('ko-KR')}
                   </span>
                 )}
-                <span className="font-medium text-[#00A844]">
+                <span className="font-medium text-[#4338CA]">
                   유사도 {Math.round(match.matchScore * 100)}%
                 </span>
               </div>

@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { Building2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import {
   Select,
   SelectContent,
@@ -43,6 +44,7 @@ export function CompanySelector({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const tCommon = useTranslations('common')
 
   const [selectedCompanyId, setSelectedCompanyId] = useState(
     searchParams.get('company_id') ?? currentCompanyId,
