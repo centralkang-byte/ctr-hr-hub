@@ -1311,3 +1311,70 @@ Deferred to Q-5 (Global Deployment Preparation):
 - 3 E2E gaps (data masking, offboarding duplicate, crossboarding template)
 - RLS implementation (P0→P4 priority order)
 - Automated E2E testing (Playwright)
+
+---
+
+## EmployeeCell Component System (EC-1 ~ EC-3) — ✅ COMPLETE (2026-03-13)
+
+**Commits**: `b862110` (EC-2a) → `b94462d` (EC-2b) → `EC-3` (hotfix + docs)
+
+### Files Created
+| File | Purpose |
+|------|---------|
+| `src/types/employee.ts` | `MinimalEmployee` type |
+| `src/lib/employee-utils.ts` | `EMPLOYEE_MINIMAL_SELECT` + `toMinimalEmployee()` |
+| `src/lib/avatar-colors.ts` | Department-based deterministic colors (9 colors) |
+| `src/lib/employee-adapter.ts` | `adaptEmployeeForCell()` frontend adapter |
+| `src/components/common/EmployeeCell.tsx` | Core component (sm/md/lg) |
+| `scripts/ec3-unconverted.txt` | Categorized unconverted screen list |
+
+### EmployeeCell Features
+- **3 sizes**: sm (32px), md (40px), lg (64px)
+- **Department-colored avatars**: 9 deterministic colors via hash
+- **KR/CN English name**: `김인사 (Kim Insa)` parenthesized
+- **Subline**: dept(truncate) · title(preserved) · location(overflow)
+- **Ghost user defense**: null → gray avatar + "알 수 없는 사용자"
+- **Status badges**: ACTIVE, ON_LEAVE, RESIGNED, TERMINATED
+- **Trailing slot**: flexible right-side content (badges, buttons)
+- **Clickable**: onClick or linkHref for Next.js Link
+
+### Adoption Statistics
+| Phase | Files | Description |
+|-------|:-----:|-------------|
+| EC-1 Pilots | 3 | HighRiskList, CandidateCard, ProfileSidebar |
+| EC-2b Frontend | 9 | Directory, Performance, CommandPalette, Recognition, PeerReview, OneOnOne, TeamResults, TeamSkills, CycleDetail |
+| EC-3 Hotfix | 3 | MySpace (lg), AdminResults (sm), Performance/admin |
+| **Total** | **15** | |
+
+### Key Patterns
+```tsx
+// Basic usage
+<EmployeeCell employee={data} size="sm" />
+
+// With trailing content
+<EmployeeCell employee={data} size="sm" trailing={<Badge>...</Badge>} />
+
+// Frontend adapter (API response → MinimalEmployee)
+import { adaptEmployeeForCell } from '@/lib/employee-adapter'
+<EmployeeCell employee={adaptEmployeeForCell(apiData)} size="md" />
+
+// Server-side (Prisma result → MinimalEmployee)
+import { toMinimalEmployee, EMPLOYEE_MINIMAL_SELECT } from '@/lib/employee-utils'
+const select = { select: EMPLOYEE_MINIMAL_SELECT }
+const employee = toMinimalEmployee(prismaResult)
+```
+
+### TypeScript: 0 errors ✅ | Build: pass ✅
+
+### Unconverted Screens (documented in `scripts/ec3-unconverted.txt`)
+- **NOT_EMPLOYEE** (~25): Icon containers, badge/pill animations — correct as-is
+- **INFO_ITEM** (2): DisciplineDetail, RewardDetail — InfoItem pattern is semantically correct
+- **TEXT_ONLY** (~8): DisciplineList, RewardsList, PayrollReview — low priority
+- **SPECIAL** (3): MyProfileClient (full profile page), OnboardingMe — existing design better
+- **RECRUITMENT** (~8): Applicant screens — needs separate ApplicantCell component (future)
+- **ATTENDANCE** (2): ShiftRosterBoard — compact grid, lg EmployeeCell too large
+
+### Next: Peek Card + Quick Actions
+- Hover mini-profile preview (peek card)
+- "Send Teams DM" quick action button
+- `showQuickActions` + `enablePeek` props already reserved in EmployeeCell

@@ -1,0 +1,168 @@
+Unconverted Employee Display Patterns — EC-3 Report
+=====================================================
+Date: 2026-03-13
+Analyst: EC-3 automated categorization
+
+Total Files with rounded-full patterns: 49
+Files converted in EC-2b + EC-3: 12
+Remaining files (rounded-full but NOT employee avatar): 37
+
+=== ICON_CONTAINER (rounded-full used for KPI/stat icons, NOT employee) ===
+NOT_EMPLOYEE: src/app/(dashboard)/approvals/inbox/ApprovalInboxClient.tsx
+  — rounded-full used for badge/filter tab pills
+NOT_EMPLOYEE: src/app/(dashboard)/attendance/shift-calendar/ShiftCalendarClient.tsx
+  — rounded-full in schedule/status badges
+NOT_EMPLOYEE: src/app/(dashboard)/benefits/BenefitApprovalTab.tsx
+  — rounded-full in approval status badges
+NOT_EMPLOYEE: src/app/(dashboard)/compliance/data-retention/DataRetentionClient.tsx
+  — rounded-full in icon containers
+NOT_EMPLOYEE: src/app/(dashboard)/compliance/dpia/DpiaClient.tsx
+  — rounded-full in icon containers
+NOT_EMPLOYEE: src/app/(dashboard)/payroll/PayrollClient.tsx
+  — rounded-full in KPI icon containers (bg-blue, bg-emerald)
+NOT_EMPLOYEE: src/app/(dashboard)/payroll/[runId]/approve/PayrollApproveClient.tsx
+  — rounded-full in step indicator icons
+NOT_EMPLOYEE: src/app/(dashboard)/payroll/[runId]/publish/PayrollPublishDashboardClient.tsx
+  — rounded-full in step/status icons
+NOT_EMPLOYEE: src/app/(dashboard)/payroll/close-attendance/CloseAttendanceClient.tsx
+  — rounded-full in step icons
+NOT_EMPLOYEE: src/components/home/ExecutiveHome.tsx
+  — h-12 w-12 rounded-full for KPI category icons (bg-[#EEF2FF], bg-[#FEE2E2], etc.)
+NOT_EMPLOYEE: src/components/home/HrAdminHome.tsx
+  — rounded-full for stat icons
+NOT_EMPLOYEE: src/components/home/UnifiedTaskHub.tsx
+  — rounded-full for badge/filter pills
+NOT_EMPLOYEE: src/components/layout/Sidebar.tsx
+  — rounded-full for avatar placeholder, already handled separately
+NOT_EMPLOYEE: src/components/manager-hub/ManagerInsightsHub.tsx
+  — h-10 w-10 rounded-full for KPI icons (kpi.bgColor)
+NOT_EMPLOYEE: src/components/ui/EmptyState.tsx
+  — rounded-full for illustration icon container
+NOT_EMPLOYEE: src/components/ui/avatar.tsx
+  — this IS the avatar primitive (used by EmployeeCell internally)
+
+=== INFOITEM_PATTERN (employee info displayed as read-only label+value, no avatar) ===
+INFO_ITEM: src/app/(dashboard)/discipline/[id]/DisciplineDetailClient.tsx
+  — uses <InfoItem label={...} value={data.employee.name} /> — read-only detail page
+  — SKIP: InfoItem pattern is semantically correct for a detail view
+INFO_ITEM: src/app/(dashboard)/discipline/rewards/[id]/RewardDetailClient.tsx
+  — uses <InfoItem label={...} value={data.employee.name} /> — same pattern
+  — SKIP: same reasoning
+
+=== TEXT_ONLY (employee name shown in table/list without avatar context) ===
+TEXT_LIST: src/app/(dashboard)/discipline/DisciplineListClient.tsx
+  — row.employee.name + employeeNo in table column (no avatar)
+  — LOW_PRIORITY: would benefit from EmployeeCell sm, but text-only is functional
+TEXT_LIST: src/app/(dashboard)/discipline/rewards/RewardsListClient.tsx
+  — similar text-only list
+  — LOW_PRIORITY: same
+TEXT_LIST: src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx
+  — anomaly.employee.name in detail anomaly view
+  — LOW_PRIORITY: complex anomaly review UI, not a simple employee list
+
+=== SPECIAL_CASE (rich layout, self-profile, or context-specific display) ===
+SPECIAL: src/app/(dashboard)/my/profile/MyProfileClient.tsx
+  — full profile page header — ALREADY has dedicated design, EmployeeCell would downgrade
+  — SKIP: this IS the employee profile itself
+SPECIAL: src/app/(dashboard)/onboarding/me/OnboardingMeClient.tsx
+  — greeting card with user's own info — context-specific
+  — LOW_PRIORITY: similar to MyProfileClient
+SPECIAL: src/app/(dashboard)/delegation/settings/DelegationSettingsClient.tsx
+  — rounded-full for delegation role icons, not employee display
+  — NOT_EMPLOYEE
+
+=== RECRUITMENT (applicant/candidate display — different data shape) ===
+RECRUITMENT: src/app/(dashboard)/recruitment/RecruitmentListClient.tsx
+  — department/jobGrade display for job postings, not employee
+  — NOT_APPLICABLE
+RECRUITMENT: src/app/(dashboard)/recruitment/[id]/PostingDetailClient.tsx
+  — rounded-full in stats/badges
+  — NOT_APPLICABLE
+RECRUITMENT: src/app/(dashboard)/recruitment/[id]/applicants/ApplicantListClient.tsx
+  — applicant avatars — different type (Applicant, not Employee)
+  — FUTURE: could get AplicantCell component eventually
+RECRUITMENT: src/app/(dashboard)/recruitment/[id]/edit/PostingEditClient.tsx
+  — rounded-full in form UI elements
+  — NOT_APPLICABLE
+RECRUITMENT: src/app/(dashboard)/recruitment/[id]/pipeline/PipelineClient.tsx
+  — kanban pipeline — applicant cards with avatars
+  — FUTURE: candidate card component
+RECRUITMENT: src/app/(dashboard)/recruitment/board/BoardClient.tsx
+  — kanban board — same as pipeline
+  — FUTURE
+RECRUITMENT: src/components/recruitment/CandidateTimeline.tsx
+  — timeline dots (not employee avatar)
+  — NOT_EMPLOYEE
+RECRUITMENT: src/components/recruitment/DuplicateWarningModal.tsx
+  — applicant duplicate check modal
+  — FUTURE
+
+=== ATTENDANCE/SHIFT (shift/schedule specific display) ===
+ATTENDANCE: src/components/attendance/ScheduleAdjustmentModal.tsx
+  — employee list in shift modal — potential EmployeeCell sm target
+  — LOW_PRIORITY
+ATTENDANCE: src/components/attendance/ShiftRosterBoard.tsx
+  — shift board cells — compact display, EmployeeCell would be too large
+  — SKIP: specialized compact grid layout
+
+=== COMPLIANCE (GDPR/RU specific display) ===
+COMPLIANCE: src/components/compliance/gdpr/PiiAccessDashboard.tsx
+  — access log rows — text only
+  — LOW_PRIORITY
+COMPLIANCE: src/components/compliance/gdpr/RetentionPolicyForm.tsx
+  — form UI
+  — NOT_APPLICABLE
+COMPLIANCE: src/components/compliance/ru/KedoDocumentsTab.tsx
+  — document list — text
+  — LOW_PRIORITY
+COMPLIANCE: src/components/compliance/ru/MilitaryRegistrationTab.tsx
+  — registration list — text
+  — LOW_PRIORITY
+
+=== SETTINGS (system-wide admin settings) ===
+SETTINGS: src/app/(dashboard)/settings/recruitment/tabs/AiScreeningTab.tsx
+  — rounded-full for UI badges/tags
+  — NOT_EMPLOYEE
+SETTINGS: src/app/(dashboard)/settings/system/tabs/NotificationChannelsTab.tsx
+  — rounded-full for channel status indicators
+  — NOT_EMPLOYEE
+SETTINGS: src/app/(dashboard)/settings/system/tabs/RolesTab.tsx
+  — rounded-full for role badges
+  — NOT_EMPLOYEE
+
+=== SHARED/OTHER ===
+SHARED: src/components/shared/AssignmentTimeline.tsx
+  — timeline nodes (not employee avatar)
+  — NOT_EMPLOYEE
+SHARED: src/components/settings/GlobalChangeConfirmModal.tsx
+  — modal UI
+  — NOT_APPLICABLE
+SUCCESSION: src/components/succession/SuccessionDashboard.tsx
+  — succession candidate avatars — already has CandidateCard.tsx using EmployeeCell
+  — CHECK: verify CandidateCard is used everywhere
+TEAMS: src/components/teams/TeamsSettingsPage.tsx
+  — team member list — potential target
+  — LOW_PRIORITY
+
+=== SUMMARY ===
+Total NOT_EMPLOYEE (icon containers, badges, form UI): ~25 files
+Total INFO_ITEM (read-only detail views — correct as-is): 2 files
+Total TEXT_ONLY (could upgrade, low priority): ~8 files
+Total SPECIAL_CASE (self-profile, context-specific — skip): 3 files
+Total RECRUITMENT (different data shape — future work): ~8 files
+Total ATTENDANCE/SHIFT (compact grid — skip): 2 files
+
+=== RECOMMENDED NEXT CONVERSIONS ===
+Priority 1 (high value, straightforward):
+  - discipline/DisciplineListClient.tsx (TEXT_LIST)
+  - discipline/rewards/RewardsListClient.tsx (TEXT_LIST)
+  - components/teams/TeamsSettingsPage.tsx (LOW_PRIORITY)
+
+Priority 2 (attendance + compliance text lists):
+  - components/attendance/ScheduleAdjustmentModal.tsx
+  - compliance/gdpr/PiiAccessDashboard.tsx
+  - compliance/ru/KedoDocumentsTab.tsx
+
+Future (requires new component type or data shape change):
+  - Recruitment applicant screens → ApplicantCell component
+  - ShiftRosterBoard → compact variant of EmployeeCell (xs size)

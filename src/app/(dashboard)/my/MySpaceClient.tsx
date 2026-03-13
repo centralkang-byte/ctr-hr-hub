@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import type { SessionUser } from '@/types'
 import { CARD_STYLES } from '@/lib/styles'
+import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -82,22 +83,27 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
 
       {/* Profile Summary */}
       <div className={`${CARD_STYLES.kpi} flex items-center justify-between`}>
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-[#4F46E5] flex items-center justify-center text-white text-xl font-bold">
-            {employee.name.slice(0, 1)}
-          </div>
-          <div>
-            <p className="text-lg font-bold text-[#1A1A1A]">{employee.name}</p>
-            <p className="text-sm text-[#666]">{asgn?.department?.name ?? '-'} · {asgn?.jobGrade?.name ?? '-'}</p>
-            <p className="text-xs text-[#999] mt-0.5">{asgn?.company?.name ?? '-'} · 재직 {getYearsOfService(employee.hireDate)}</p>
-          </div>
-        </div>
-        <Link
-          href="/my/profile"
-          className="flex items-center gap-1 text-sm text-[#4F46E5] hover:underline"
-        >
-          프로필 편집 <ChevronRight className="w-4 h-4" />
-        </Link>
+        <EmployeeCell
+          size="lg"
+          employee={{
+            id: employee.id,
+            name: employee.name,
+            department: asgn?.department?.name,
+            jobGrade: asgn?.jobGrade?.name,
+            companyName: asgn?.company?.name,
+          }}
+          trailing={
+            <>
+              <p className="text-xs text-[#999] mt-0.5">재직 {getYearsOfService(employee.hireDate)}</p>
+              <Link
+                href="/my/profile"
+                className="flex items-center gap-1 text-sm text-[#4F46E5] hover:underline mt-1"
+              >
+                프로필 편집 <ChevronRight className="w-4 h-4" />
+              </Link>
+            </>
+          }
+        />
       </div>
 
       {/* KPI Row */}
