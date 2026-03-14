@@ -1374,7 +1374,41 @@ const employee = toMinimalEmployee(prismaResult)
 - **RECRUITMENT** (~8): Applicant screens — needs separate ApplicantCell component (future)
 - **ATTENDANCE** (2): ShiftRosterBoard — compact grid, lg EmployeeCell too large
 
-### Next: Peek Card + Quick Actions
-- Hover mini-profile preview (peek card)
-- "Send Teams DM" quick action button
-- `showQuickActions` + `enablePeek` props already reserved in EmployeeCell
+### Next
+- Expand EmployeeCell to remaining non-standard components if necessary.
+
+---
+
+## PC-1: Peek Card + Quick Actions — ✅ COMPLETE (2026-03-14)
+
+### Component: `PeekCard`
+- Built over shadcn/ui `HoverCard` for smooth interactions (Desktop: hover with delay).
+- Displays Contact Info (Phone, Email, Location) + Quick Actions (Teams DM, View Profile).
+- Integrated `next-intl` for localized strings.
+
+### Integration with `EmployeeCell`
+- Implemented `enablePeek` and `showQuickActions` properties.
+- Auto-enabled (`enablePeek: true`) for sizes `sm` and `md`.
+- Applied automatically to 15+ existing screens without modifying the consumer files.
+- Added necessary `z-[50]` layering to overlap table rows properly.
+
+---
+
+## Color: CraftUI Indigo Palette Migration — ✅ COMPLETE (2026-03-14)
+
+### Objective
+- Revert from deep indigo (#4F46E5) to the softer CraftUI indigo (#5E81F4) for the main theme.
+- Enhance visual balance by applying a Violet accent (#8B5CF6) and semantic colors for badges/tags instead of using Monochromatic Indigo everywhere.
+
+### Global Replacements (285 files)
+- **Primary Base**: `#4F46E5` → `#5E81F4` (CSS `--primary` & inline styles)
+- **Hover/Dark**: `#4338CA` → `#4B6DE0`
+- **Background Tint**: `#EEF2FF` → `#EDF1FE`
+- **Accent/Secondary**: `#6366F1` → `#8B5CF6` (Used for active sidebar text, info tags, chart strokes, and icons)
+- **Semantic Badges**: Restored standard Emerald/Amber/Rose/Sky colors for specific states/tags rather than indigo to ensure contrast.
+- Root layout `themeColor` updated.
+
+### Miscellaneous Fixes (TypeScript & i18n)
+- Added 8 missing exports for Materialized View row types in `src/lib/analytics/types.ts`.
+- Resolved implicit `any` type in `src/lib/compliance/cn.ts`.
+- Fixed `next-intl` INVALID_KEY errors by converting dotted keys (e.g. `benefit.apply` to `benefitApply`) inside 7 locale files.
