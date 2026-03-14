@@ -51,14 +51,14 @@ const EVENT_ICONS: Record<string, React.ReactNode> = {
 
 const EVENT_COLORS: Record<string, string> = {
   APPLIED: 'bg-[#F5F5F5] border-[#D4D4D4] text-[#555]',
-  SCREENING: 'bg-[#E0E7FF] border-[#C7D2FE] text-[#4338CA]',
+  SCREENING: 'bg-[#E0E7FF] border-[#C7D2FE] text-[#4B6DE0]',
   INTERVIEW_1: 'bg-[#DBEAFE] border-[#BFDBFE] text-[#1D4ED8]',
   INTERVIEW_2: 'bg-[#DBEAFE] border-[#BFDBFE] text-[#1D4ED8]',
   FINAL: 'bg-[#FEF3C7] border-[#FCD34D] text-[#B45309]',
-  OFFER: 'bg-[#EEF2FF] border-[#A7F3D0] text-[#047857]',
+  OFFER: 'bg-[#EDF1FE] border-[#A7F3D0] text-[#047857]',
   HIRED: 'bg-[#D1FAE5] border-[#6EE7B7] text-[#065F46]',
   REJECTED: 'bg-[#FEE2E2] border-[#FECACA] text-[#B91C1C]',
-  pool_entry: 'bg-[#E0E7FF] border-[#C7D2FE] text-[#4338CA]',
+  pool_entry: 'bg-[#E0E7FF] border-[#C7D2FE] text-[#4B6DE0]',
   default: 'bg-white border-[#E8E8E8] text-[#555]',
 }
 
@@ -132,7 +132,7 @@ export default function CandidateTimeline({ applicantId }: Props) {
                         <p className="text-xs text-[#888] mt-1">{event.description}</p>
                       )}
                       {event.score !== undefined && event.score !== null && (
-                        <p className="text-xs text-[#4338CA] mt-1 font-medium">
+                        <p className="text-xs text-[#4B6DE0] mt-1 font-medium">
                           AI 스크리닝 점수: {event.score}점
                         </p>
                       )}
@@ -146,8 +146,8 @@ export default function CandidateTimeline({ applicantId }: Props) {
                     </time>
                   </div>
                   {event.isCurrent && (
-                    <div className="mt-2 flex items-center gap-1 text-xs text-[#4338CA] font-medium">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#4F46E5] animate-pulse" />
+                    <div className="mt-2 flex items-center gap-1 text-xs text-[#4B6DE0] font-medium">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#5E81F4] animate-pulse" />
                       현재 단계
                     </div>
                   )}

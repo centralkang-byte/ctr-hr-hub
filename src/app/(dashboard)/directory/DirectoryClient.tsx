@@ -250,7 +250,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
                   <td className="px-4 py-3">
                     <div className="flex gap-1 flex-wrap">
                       {emp.skills.slice(0, 3).map((s) => (
-                        <span key={s} className="text-xs px-2 py-0.5 rounded-full bg-[#E0E7FF] text-[#4338CA]">{s}</span>
+                        <span key={s} className="text-xs px-2 py-0.5 rounded-full bg-[#E0E7FF] text-[#4B6DE0]">{s}</span>
                       ))}
                       {emp.skills.length > 3 && (
                         <span className="text-xs text-[#999]">+{emp.skills.length - 3}</span>
@@ -287,7 +287,7 @@ function EmployeeCard({ emp, onClick }: { emp: DirectoryEmployee; onClick: () =>
   return (
     <button
       onClick={onClick}
-      className={`${CARD_STYLES.kpi} text-left hover:border-[#4F46E5] hover:shadow-sm transition-all flex flex-col items-center gap-2`}
+      className={`${CARD_STYLES.kpi} text-left hover:border-[#5E81F4] hover:shadow-sm transition-all flex flex-col items-center gap-2`}
     >
       <EmployeeCell
         size="md"
@@ -307,7 +307,7 @@ function EmployeeCard({ emp, onClick }: { emp: DirectoryEmployee; onClick: () =>
       {emp.skills.length > 0 && (
         <div className="flex gap-1 flex-wrap justify-center">
           {emp.skills.slice(0, 3).map((s) => (
-            <span key={s} className="text-xs px-2 py-0.5 rounded-full bg-[#E0E7FF] text-[#4338CA]">{s}</span>
+            <span key={s} className="text-xs px-2 py-0.5 rounded-full bg-[#E0E7FF] text-[#4B6DE0]">{s}</span>
           ))}
         </div>
       )}
@@ -361,7 +361,7 @@ function EmployeeDetailPanel({ emp, onViewProfile }: { emp: DirectoryEmployee; o
           <p className="text-xs font-semibold text-[#666] uppercase tracking-wider mb-2">Skills</p>
           <div className="flex flex-wrap gap-1.5">
             {emp.skills.map((s) => (
-              <span key={s} className="text-xs px-2.5 py-1 rounded-full bg-[#E0E7FF] text-[#4338CA]">{s}</span>
+              <span key={s} className="text-xs px-2.5 py-1 rounded-full bg-[#E0E7FF] text-[#4B6DE0]">{s}</span>
             ))}
           </div>
         </div>

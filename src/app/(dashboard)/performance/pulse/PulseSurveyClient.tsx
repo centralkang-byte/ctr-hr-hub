@@ -124,12 +124,12 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
           <div>
             <label className="text-sm font-medium text-[#333] mb-1 block">제목</label>
             <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="서베이 제목"
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]" />
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]" />
           </div>
           <div>
             <label className="text-sm font-medium text-[#333] mb-1 block">설명 (선택)</label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]" />
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -168,7 +168,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
           <div className="border-t border-[#E8E8E8] pt-4">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-[#1A1A1A]">질문 구성</h3>
-              <button onClick={addQuestion} className="flex items-center gap-1 text-sm text-[#4F46E5] hover:text-[#4338CA] font-medium">
+              <button onClick={addQuestion} className="flex items-center gap-1 text-sm text-[#5E81F4] hover:text-[#4B6DE0] font-medium">
                 <Plus className="w-4 h-4" /> 질문 추가
               </button>
             </div>
@@ -271,7 +271,7 @@ export default function PulseSurveyClient() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <BarChart3 className="w-6 h-6 text-[#4F46E5]" />
+          <BarChart3 className="w-6 h-6 text-[#5E81F4]" />
           <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('pulseSurveyTitle')}</h1>
         </div>
         <button onClick={() => setShowCreate(true)}
@@ -284,7 +284,7 @@ export default function PulseSurveyClient() {
       <div className="flex border-b border-[#E8E8E8]">
         {TABS.map((t) => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 ${tab === t.key ? 'border-[#4F46E5] text-[#4F46E5]' : 'border-transparent text-[#666] hover:text-[#333]'}`}>
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 ${tab === t.key ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#666] hover:text-[#333]'}`}>
             {t.label}
           </button>
         ))}
@@ -298,7 +298,7 @@ export default function PulseSurveyClient() {
           <div className="flex gap-2">
             {[{ key: '', label: '전체' }, { key: 'PULSE_DRAFT', label: '초안' }, { key: 'PULSE_ACTIVE', label: '진행중' }, { key: 'PULSE_CLOSED', label: '종료' }].map((f) => (
               <button key={f.key} onClick={() => setStatusFilter(f.key)}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium border ${statusFilter === f.key ? 'bg-[#4F46E5] text-white border-[#4F46E5]' : 'bg-white text-[#555] border-[#D4D4D4] hover:bg-[#FAFAFA]'}`}>
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border ${statusFilter === f.key ? 'bg-[#5E81F4] text-white border-[#5E81F4]' : 'bg-white text-[#555] border-[#D4D4D4] hover:bg-[#FAFAFA]'}`}>
                 {f.label}
               </button>
             ))}
@@ -337,7 +337,7 @@ export default function PulseSurveyClient() {
                       <div className="flex items-center justify-center gap-1">
                         {s.status === 'PULSE_DRAFT' && (
                           <button onClick={() => handleStatusChange(s.id, 'PULSE_ACTIVE')} title="시작"
-                            className="p-1.5 text-[#4F46E5] hover:bg-[#EEF2FF] rounded-lg">
+                            className="p-1.5 text-[#5E81F4] hover:bg-[#EDF1FE] rounded-lg">
                             <Play className="w-4 h-4" />
                           </button>
                         )}
@@ -349,7 +349,7 @@ export default function PulseSurveyClient() {
                         )}
                         {(s.status === 'PULSE_ACTIVE' || s.status === 'PULSE_CLOSED') && (
                           <button onClick={() => router.push(`/performance/pulse/${s.id}/results`)} title="결과 보기"
-                            className="p-1.5 text-[#4338CA] hover:bg-[#E0E7FF] rounded-lg">
+                            className="p-1.5 text-[#4B6DE0] hover:bg-[#E0E7FF] rounded-lg">
                             <Eye className="w-4 h-4" />
                           </button>
                         )}

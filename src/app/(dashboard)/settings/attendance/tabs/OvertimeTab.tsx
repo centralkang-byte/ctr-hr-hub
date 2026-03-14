@@ -63,7 +63,7 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" />
+        <Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" />
       </div>
     )
   }
@@ -100,7 +100,7 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
             type="checkbox"
             checked={settings.requirePreApproval}
             onChange={(e) => setSettings((p) => ({ ...p, requirePreApproval: e.target.checked }))}
-            className="h-4 w-4 rounded border-[#F0F0F3] text-[#4F46E5]"
+            className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]"
           />
           <span className="text-[#1C1D21]">사전 승인 활성화</span>
         </label>

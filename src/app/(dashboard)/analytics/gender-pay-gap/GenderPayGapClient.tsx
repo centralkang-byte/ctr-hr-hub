@@ -131,7 +131,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-8 h-8 animate-spin text-[#4F46E5]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#5E81F4]" />
       </div>
     )
   }
@@ -180,7 +180,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
             <Card className="">
               <CardContent className="p-5">
                 <div className="flex items-center gap-2 mb-1">
-                  <Users className="w-4 h-4 text-[#4F46E5]" />
+                  <Users className="w-4 h-4 text-[#5E81F4]" />
                   <p className="text-xs text-[#666]">남성 인원</p>
                 </div>
                 <p className="text-3xl font-bold text-[#1A1A1A]">{data.summary.totalMale}명</p>
@@ -230,7 +230,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
           <Card className="">
             <CardHeader>
               <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-[#4F46E5]" />
+                <BarChart3 className="w-5 h-5 text-[#5E81F4]" />
                 {GROUP_BY_LABELS[groupBy]} 상세 분석
               </CardTitle>
             </CardHeader>
@@ -271,10 +271,10 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
                             <td className="px-4 py-3">
                               <div className="space-y-1">
                                 <div className="flex items-center gap-2">
-                                  <span className="text-xs text-[#4F46E5] w-4">M</span>
+                                  <span className="text-xs text-[#5E81F4] w-4">M</span>
                                   <div className="flex-1 h-3 bg-[#F5F5F5] rounded-full overflow-hidden">
                                     <div
-                                      className="h-full bg-[#4F46E5] rounded-full"
+                                      className="h-full bg-[#5E81F4] rounded-full"
                                       style={{ width: `${maleWidth}%` }}
                                     />
                                   </div>

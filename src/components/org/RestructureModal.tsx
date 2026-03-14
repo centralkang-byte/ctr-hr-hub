@@ -91,7 +91,7 @@ const CHANGE_TYPE_LABELS: Record<ChangeType, string> = {
 const CHANGE_TYPE_COLORS: Record<ChangeType, string> = {
   create: 'bg-[#D1FAE5] text-[#047857]',
   move: 'bg-[#DBEAFE] text-[#1D4ED8]',
-  merge: 'bg-[#E0E7FF] text-[#4338CA]',
+  merge: 'bg-[#E0E7FF] text-[#4B6DE0]',
   rename: 'bg-[#FEF3C7] text-[#B45309]',
   close: 'bg-[#FEE2E2] text-[#B91C1C]',
   transfer_employee: 'bg-[#F3E8FF] text-[#7C3AED]',
@@ -129,7 +129,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
         <select
           value={change.type}
           onChange={(e) => update({ type: e.target.value as ChangeType })}
-          className="text-sm border border-[#D4D4D4] rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+          className="text-sm border border-[#D4D4D4] rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
         >
           {(Object.keys(CHANGE_TYPE_LABELS) as ChangeType[]).map((t) => (
             <option key={t} value={t}>{CHANGE_TYPE_LABELS[t]}</option>
@@ -156,7 +156,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
               value={change.newDeptName ?? ''}
               onChange={(e) => update({ newDeptName: e.target.value })}
               placeholder={tCommon('placeholderNewDeptName')}
-              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]"
+              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
             />
           </div>
           <div>
@@ -165,7 +165,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
               value={change.newDeptCode ?? ''}
               onChange={(e) => update({ newDeptCode: e.target.value })}
               placeholder="예: DEPT-NEW"
-              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]"
+              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
             />
           </div>
           <div className="col-span-2">
@@ -173,7 +173,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
             <select
               value={change.newDeptParentId ?? ''}
               onChange={(e) => update({ newDeptParentId: e.target.value || null })}
-              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
             >
               <option value="">— 최상위 부서 —</option>
               {deptOptions}
@@ -189,7 +189,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
             <select
               value={change.deptId ?? ''}
               onChange={(e) => update({ deptId: e.target.value })}
-              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
             >
               <option value="">— 선택 —</option>
               {deptOptions}
@@ -202,7 +202,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
               <select
                 value={change.targetParentId ?? ''}
                 onChange={(e) => update({ targetParentId: e.target.value || null })}
-                className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+                className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
               >
                 <option value="">— 최상위 —</option>
                 {deptOptions}
@@ -219,7 +219,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
             <select
               value={change.sourceDeptId ?? ''}
               onChange={(e) => update({ sourceDeptId: e.target.value })}
-              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
             >
               <option value="">— 선택 —</option>
               {deptOptions}
@@ -232,7 +232,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
               <select
                 value={change.targetDeptId ?? ''}
                 onChange={(e) => update({ targetDeptId: e.target.value })}
-                className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+                className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
               >
                 <option value="">— 선택 —</option>
                 {deptOptions}
@@ -249,7 +249,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
             <select
               value={change.renameDeptId ?? ''}
               onChange={(e) => update({ renameDeptId: e.target.value })}
-              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
             >
               <option value="">— 선택 —</option>
               {deptOptions}
@@ -261,7 +261,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
               value={change.newName ?? ''}
               onChange={(e) => update({ newName: e.target.value })}
               placeholder={tCommon('placeholderChangeName')}
-              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]"
+              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
             />
           </div>
           <div className="col-span-2">
@@ -270,7 +270,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
               value={change.newNameEn ?? ''}
               onChange={(e) => update({ newNameEn: e.target.value })}
               placeholder="English name"
-              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]"
+              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
             />
           </div>
         </div>
@@ -282,7 +282,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
           <select
             value={change.closeDeptId ?? ''}
             onChange={(e) => update({ closeDeptId: e.target.value })}
-            className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+            className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
           >
             <option value="">— 선택 —</option>
             {deptOptions}
@@ -302,7 +302,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
             <select
               value={change.employeeId ?? ''}
               onChange={(e) => update({ employeeId: e.target.value })}
-              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
             >
               <option value="">— 직원 선택 —</option>
               {employees.map((emp) => {
@@ -320,7 +320,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
             <select
               value={change.fromDeptId ?? ''}
               onChange={(e) => update({ fromDeptId: e.target.value })}
-              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
             >
               <option value="">— 선택 —</option>
               {deptOptions}
@@ -333,7 +333,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
               <select
                 value={change.toDeptId ?? ''}
                 onChange={(e) => update({ toDeptId: e.target.value })}
-                className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+                className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
               >
                 <option value="">— 선택 —</option>
                 {deptOptions}
@@ -364,9 +364,9 @@ function StepIndicator({ step }: { step: Step }) {
           <span
             className={`text-xs font-medium px-2 py-0.5 rounded ${
               s.key === step
-                ? 'bg-[#4F46E5] text-white'
+                ? 'bg-[#5E81F4] text-white'
                 : steps.findIndex((x) => x.key === step) > i
-                ? 'text-[#4F46E5]'
+                ? 'text-[#5E81F4]'
                 : 'text-[#999]'
             }`}
           >
@@ -479,7 +479,7 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8E8E8] shrink-0">
           <div className="flex items-center gap-2">
-            <GitBranch size={18} className="text-[#4F46E5]" />
+            <GitBranch size={18} className="text-[#5E81F4]" />
             <h2 className="text-base font-bold text-[#1A1A1A]">조직 개편 계획</h2>
           </div>
           <button
@@ -505,7 +505,7 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
                     value={plan.title}
                     onChange={(e) => setPlan((p) => ({ ...p, title: e.target.value }))}
                     placeholder="예: 2026년 상반기 조직 개편"
-                    className="w-full px-3 py-2 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]"
+                    className="w-full px-3 py-2 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -524,7 +524,7 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
                       value={plan.description}
                       onChange={(e) => setPlan((p) => ({ ...p, description: e.target.value }))}
                       placeholder={tCommon('placeholderNewSystemName')}
-                      className="w-full px-3 py-2 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]"
+                      className="w-full px-3 py-2 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
                     />
                   </div>
                 </div>

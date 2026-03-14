@@ -111,7 +111,7 @@ export function GlobalChangeConfirmModal({
             type="button"
             onClick={onConfirm}
             disabled={loading}
-            className="rounded-lg bg-[#4F46E5] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#4A6FE0] disabled:opacity-50"
+            className="rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#4A6FE0] disabled:opacity-50"
           >
             {loading ? '적용 중...' : '적용'}
           </button>

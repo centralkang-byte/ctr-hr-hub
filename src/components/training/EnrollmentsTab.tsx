@@ -23,7 +23,7 @@ type EnrollmentRow = {
 }
 
 const STATUS_BADGE: Record<string, { label: string; className: string }> = {
-  ENROLLED: { label: '등록', className: 'bg-[#EEF2FF] text-[#4338CA] border-[#EEF2FF]' },
+  ENROLLED: { label: '등록', className: 'bg-[#EDF1FE] text-[#4B6DE0] border-[#EDF1FE]' },
   IN_PROGRESS: { label: '진행중', className: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]' },
   ENROLLMENT_COMPLETED: { label: '완료', className: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
   DROPPED: { label: '탈락', className: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]' },

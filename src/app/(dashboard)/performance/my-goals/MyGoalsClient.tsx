@@ -23,7 +23,7 @@ interface GoalItem {
 const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
     DRAFT: { label: '초안', cls: 'bg-[#F5F5FA] text-[#8181A5]' },
     PENDING_APPROVAL: { label: '승인 대기', cls: 'bg-[#FFF8E1] text-[#F57F17]' },
-    APPROVED: { label: '승인됨', cls: 'bg-[#EEF2FF] text-[#2E7D32]' },
+    APPROVED: { label: '승인됨', cls: 'bg-[#EDF1FE] text-[#2E7D32]' },
     REJECTED: { label: '반려', cls: 'bg-[#FFEBEE] text-[#C62828]' },
 }
 
@@ -48,35 +48,35 @@ function GoalModal({ initial, onSave, onClose, saving }: {
                     <div>
                         <label className="mb-1 block text-sm font-medium text-[#1C1D21]">제목 <span className="text-red-500">*</span></label>
                         <input value={form.title} onChange={(e) => set('title', e.target.value)} maxLength={100}
-                            className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none" placeholder="목표 제목" />
+                            className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" placeholder="목표 제목" />
                     </div>
                     <div>
                         <label className="mb-1 block text-sm font-medium text-[#1C1D21]">설명 <span className="text-red-500">*</span></label>
                         <textarea value={form.description} onChange={(e) => set('description', e.target.value)} rows={3} maxLength={500}
-                            className="w-full resize-none rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none" placeholder="목표 상세 설명" />
+                            className="w-full resize-none rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" placeholder="목표 상세 설명" />
                     </div>
                     <div>
                         <label className="mb-1 block text-sm font-medium text-[#1C1D21]">KPI 지표 (선택)</label>
                         <input value={form.kpiMetrics} onChange={(e) => set('kpiMetrics', e.target.value)}
-                            className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none" placeholder="매출액, 수주잔고" />
+                            className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" placeholder="매출액, 수주잔고" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="mb-1 block text-sm font-medium text-[#1C1D21]">가중치 (%) <span className="text-red-500">*</span></label>
                             <input type="number" min={5} max={100} step={5} value={form.weight} onChange={(e) => set('weight', Math.max(5, Math.min(100, Number(e.target.value))))}
-                                className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none" />
+                                className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
                         </div>
                         <div>
                             <label className="mb-1 block text-sm font-medium text-[#1C1D21]">마감일 <span className="text-red-500">*</span></label>
                             <input type="date" value={form.targetDate} onChange={(e) => set('targetDate', e.target.value)}
-                                className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none" />
+                                className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
                         </div>
                     </div>
                 </div>
                 <div className="mt-6 flex justify-end gap-3">
                     <button onClick={onClose} className="rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm font-medium text-[#1C1D21]">{tCommon('cancel')}</button>
                     <button onClick={() => onSave(form)} disabled={!form.title || !form.description || !form.targetDate || saving}
-                        className="rounded-lg bg-[#4F46E5] px-4 py-2 text-sm font-medium text-white disabled:opacity-40">
+                        className="rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white disabled:opacity-40">
                         {saving ? tCommon('loading') : tCommon('save')}
                     </button>
                 </div>
@@ -203,7 +203,7 @@ export default function MyGoalsClient({user }: {
                         <p className="mt-1 text-sm text-[#8181A5]">MBO 목표를 설정하고 관리합니다</p>
                     </div>
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
-                        className="rounded-lg border border-[#F0F0F3] bg-white px-3 py-2 text-sm text-[#1C1D21] focus:border-[#4F46E5] focus:outline-none">
+                        className="rounded-lg border border-[#F0F0F3] bg-white px-3 py-2 text-sm text-[#1C1D21] focus:border-[#5E81F4] focus:outline-none">
                         {cycles.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                 </div>
@@ -224,7 +224,7 @@ export default function MyGoalsClient({user }: {
                     <div className="flex gap-2">
                         {!isViewOnly && (
                             <button onClick={() => setModal({ mode: 'add' })}
-                                className="inline-flex items-center gap-2 rounded-lg bg-[#4F46E5] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] transition-colors">
+                                className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] transition-colors">
                                 <Plus className="h-4 w-4" /> 목표 추가
                             </button>
                         )}
@@ -255,7 +255,7 @@ export default function MyGoalsClient({user }: {
                         <p className="mb-2 text-[#8181A5]">아직 등록된 목표가 없습니다.</p>
                         {!isViewOnly && (
                             <button onClick={() => setModal({ mode: 'add' })}
-                                className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-[#4F46E5] hover:underline">
+                                className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-[#5E81F4] hover:underline">
                                 <Plus className="h-4 w-4" /> 첫 번째 목표 추가하기
                             </button>
                         )}
@@ -274,7 +274,7 @@ export default function MyGoalsClient({user }: {
                             const badge = STATUS_BADGE[goal.status] ?? { label: goal.status, cls: 'bg-[#F5F5FA] text-[#8181A5]' }
 
                             return (
-                                <div key={goal.id} className="rounded-xl border border-[#F0F0F3] bg-white p-5 transition-colors hover:border-[#4F46E5]/30">
+                                <div key={goal.id} className="rounded-xl border border-[#F0F0F3] bg-white p-5 transition-colors hover:border-[#5E81F4]/30">
                                     <div className="mb-3 flex items-start justify-between gap-3">
                                         <div className="flex-1">
                                             <div className="mb-1 flex items-center gap-2">
@@ -293,7 +293,7 @@ export default function MyGoalsClient({user }: {
                                                 </div>
                                             )}
                                         </div>
-                                        <span className="shrink-0 text-lg font-bold text-[#4F46E5]">{Number(goal.weight)}%</span>
+                                        <span className="shrink-0 text-lg font-bold text-[#5E81F4]">{Number(goal.weight)}%</span>
                                     </div>
 
                                     {/* Progress bar */}
@@ -303,7 +303,7 @@ export default function MyGoalsClient({user }: {
                                             <span>{pct}%</span>
                                         </div>
                                         <div className="h-2 rounded-full bg-[#F0F0F3]">
-                                            <div className="h-2 rounded-full bg-[#4F46E5] transition-all" style={{ width: `${Math.min(pct, 100)}%` }} />
+                                            <div className="h-2 rounded-full bg-[#5E81F4] transition-all" style={{ width: `${Math.min(pct, 100)}%` }} />
                                         </div>
                                     </div>
 
@@ -337,7 +337,7 @@ export default function MyGoalsClient({user }: {
                 {goals.length > 0 && !isViewOnly && (
                     <div className="mt-6 flex items-center justify-end rounded-xl border border-[#F0F0F3] bg-white p-4">
                         <button onClick={handleSubmitAll} disabled={!canSubmit || saving}
-                            className="rounded-lg bg-[#4F46E5] px-6 py-2 text-sm font-medium text-white disabled:opacity-40 hover:bg-[#4A6FE0] transition-colors">
+                            className="rounded-lg bg-[#5E81F4] px-6 py-2 text-sm font-medium text-white disabled:opacity-40 hover:bg-[#4A6FE0] transition-colors">
                             {saving ? '제출 중...' : '전체 제출'}
                         </button>
                     </div>

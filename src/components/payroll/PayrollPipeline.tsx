@@ -149,7 +149,7 @@ export default function PayrollPipeline({ pipelines }: Props) {
                         ${cfg.bg} ${cfg.text} ${cfg.border}
                         ${url ? 'hover:opacity-80 cursor-pointer hover:shadow-sm' : 'cursor-default'}
                         ${isAnomaly ? 'ring-1 ring-[#F59E0B]' : ''}
-                        ${isApproval ? 'ring-1 ring-[#4F46E5] animate-pulse' : ''}
+                        ${isApproval ? 'ring-1 ring-[#5E81F4] animate-pulse' : ''}
                       `}
                                         >
                                             <StepStateIcon state={state} />

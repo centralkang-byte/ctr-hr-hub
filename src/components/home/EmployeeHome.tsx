@@ -123,14 +123,14 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
                     <CalendarDays className="h-4 w-4" />
                     잔여 연차
                   </div>
-                  <span className="text-sm font-bold text-[#4F46E5]">
+                  <span className="text-sm font-bold text-[#5E81F4]">
                     {annualLeave ? `${annualLeave.remaining}일` : '-'}
                   </span>
                 </div>
                 {annualLeave && (
                   <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#F0F0F3]">
                     <div
-                      className="h-1.5 rounded-full bg-[#4F46E5] transition-all"
+                      className="h-1.5 rounded-full bg-[#5E81F4] transition-all"
                       style={{
                         width: `${annualLeave.total > 0 ? (annualLeave.remaining / annualLeave.total) * 100 : 0}%`,
                       }}
@@ -164,7 +164,7 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
               </div>
               <Link
                 href="/performance/recognition"
-                className="block pt-1 text-center text-xs font-medium text-[#4F46E5] hover:underline"
+                className="block pt-1 text-center text-xs font-medium text-[#5E81F4] hover:underline"
               >
                 전체 보기 →
               </Link>
@@ -175,7 +175,7 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
           <Card className="border-[#F0F0F3] shadow-none">
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1C1D21]">
-                <TrendingUp className="h-4 w-4 text-[#4F46E5]" />
+                <TrendingUp className="h-4 w-4 text-[#5E81F4]" />
                 MBO 달성률
               </CardTitle>
             </CardHeader>
@@ -187,7 +187,7 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
                 </div>
                 <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#F0F0F3]">
                   <div
-                    className="h-1.5 rounded-full bg-[#4F46E5]"
+                    className="h-1.5 rounded-full bg-[#5E81F4]"
                     style={{ width: '72%' }}
                   />
                 </div>

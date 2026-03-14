@@ -25,7 +25,7 @@ interface AssignmentTimelineProps {
 
 const EVENT_STYLES: Record<string, { color: string; bg: string; icon: string }> = {
   HIRE:             { color: '#059669', bg: '#D1FAE5', icon: '🟢' },
-  PROMOTION:        { color: '#4338CA', bg: '#E0E7FF', icon: '⭐' },
+  PROMOTION:        { color: '#4B6DE0', bg: '#E0E7FF', icon: '⭐' },
   DEMOTION:         { color: '#B45309', bg: '#FEF3C7', icon: '⬇️' },
   TRANSFER:         { color: '#0891B2', bg: '#CFFAFE', icon: '🔄' },
   COMPANY_TRANSFER: { color: '#7C3AED', bg: '#EDE9FE', icon: '🌐' },
@@ -117,10 +117,10 @@ export function AssignmentTimeline({
                 onClick={() => onEventClick?.(event)}
                 className={cn(
                   'w-full rounded-lg border p-4 text-left transition-all',
-                  onEventClick && 'cursor-pointer hover:border-[#4F46E5] hover:shadow-sm',
+                  onEventClick && 'cursor-pointer hover:border-[#5E81F4] hover:shadow-sm',
                   !onEventClick && 'cursor-default',
                   event.highlighted
-                    ? 'border-[#4F46E5] bg-[#EEF2FF] ring-1 ring-[#4F46E5]/20'
+                    ? 'border-[#5E81F4] bg-[#EDF1FE] ring-1 ring-[#5E81F4]/20'
                     : 'border-[#E8E8E8] bg-white',
                 )}
               >

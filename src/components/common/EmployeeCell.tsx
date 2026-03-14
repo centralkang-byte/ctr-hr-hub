@@ -354,7 +354,7 @@ export function EmployeeCell(props: EmployeeCellProps) {
             {d.email && (
               <a
                 href={`mailto:${d.email}`}
-                className="hover:text-[#4F46E5] transition-colors truncate"
+                className="hover:text-[#5E81F4] transition-colors truncate"
                 onClick={(e) => e.stopPropagation()}
               >
                 {d.email}
@@ -364,7 +364,7 @@ export function EmployeeCell(props: EmployeeCellProps) {
             {d.phone && (
               <a
                 href={`tel:${d.phone}`}
-                className="hover:text-[#4F46E5] transition-colors flex-shrink-0"
+                className="hover:text-[#5E81F4] transition-colors flex-shrink-0"
                 onClick={(e) => e.stopPropagation()}
               >
                 {d.phone}

@@ -73,8 +73,8 @@ export default function AttritionKpiCards({
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-[#EEF2FF] flex items-center justify-center">
-            <TrendingUp className="h-5 w-5 text-[#4F46E5]" />
+          <div className="w-10 h-10 rounded-lg bg-[#EDF1FE] flex items-center justify-center">
+            <TrendingUp className="h-5 w-5 text-[#5E81F4]" />
           </div>
           <div>
             <p className="text-xs text-[#666]">평균 이탈 점수</p>

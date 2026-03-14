@@ -89,13 +89,13 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">평균 인상률</p>
-          <p className="text-3xl font-bold text-[#4F46E5]">{budget.avgIncreasePct}%</p>
+          <p className="text-3xl font-bold text-[#5E81F4]">{budget.avgIncreasePct}%</p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">적용일</p>
           <input
             type="date"
-            className="w-full px-2 py-1 border border-[#D4D4D4] rounded text-sm mt-1 focus:ring-2 focus:ring-[#4F46E5]/10"
+            className="w-full px-2 py-1 border border-[#D4D4D4] rounded text-sm mt-1 focus:ring-2 focus:ring-[#5E81F4]/10"
             value={effectiveDate}
             onChange={(e) => setEffectiveDate(e.target.value)}
           />
@@ -122,7 +122,7 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
                 <td className="px-4 py-3 text-sm text-right">
                   {formatCurrency(a.currentSalary)}
                 </td>
-                <td className="px-4 py-3 text-sm text-right text-[#4F46E5] font-medium">
+                <td className="px-4 py-3 text-sm text-right text-[#5E81F4] font-medium">
                   +{a.changePct}%
                 </td>
                 <td className="px-4 py-3 text-sm text-right font-semibold">

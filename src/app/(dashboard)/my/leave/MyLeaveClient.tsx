@@ -110,7 +110,7 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <CalendarDays className="w-6 h-6 text-[#4F46E5]" />
+          <CalendarDays className="w-6 h-6 text-[#5E81F4]" />
           <div>
             <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('myLeave')}</h1>
             <p className="text-sm text-[#666] mt-0.5">{t('myLeaveDesc')}</p>
@@ -145,7 +145,7 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
           { label: t('totalEntitled'), value: totalEntitled, unit: tCommon('unit.day'), color: 'text-[#1A1A1A]' },
           { label: tCommon('used'), value: totalUsed, unit: tCommon('unit.day'), color: 'text-[#059669]' },
           { label: tCommon('pending'), value: totalPending, unit: tCommon('unit.day'), color: 'text-[#B45309]' },
-          { label: tCommon('remaining'), value: totalRemaining, unit: tCommon('unit.day'), color: 'text-[#4F46E5]' },
+          { label: tCommon('remaining'), value: totalRemaining, unit: tCommon('unit.day'), color: 'text-[#5E81F4]' },
         ].map((kpi) => (
           <div key={kpi.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <p className="text-xs text-[#666] mb-1">{kpi.label}</p>
@@ -161,7 +161,7 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
       <div className="bg-white rounded-xl border border-[#E8E8E8]">
         <div className="px-5 py-4 border-b border-[#F5F5F5] flex items-center justify-between">
           <h2 className="text-base font-semibold text-[#1A1A1A]">{t('leaveByType')}</h2>
-          {loadingBalances && <Loader2 className="w-4 h-4 animate-spin text-[#4F46E5]" />}
+          {loadingBalances && <Loader2 className="w-4 h-4 animate-spin text-[#5E81F4]" />}
         </div>
 
         {!loadingBalances && balances.length === 0 ? (
@@ -187,11 +187,11 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
                         : <span className="text-xs text-[#B45309] bg-[#FEF3C7] px-1.5 py-0.5 rounded-full">무급</span>
                       }
                       {b.carriedOver > 0 && (
-                        <span className="text-xs text-[#4338CA] bg-[#E0E7FF] px-1.5 py-0.5 rounded-full">이월 {b.carriedOver}일 포함</span>
+                        <span className="text-xs text-[#4B6DE0] bg-[#E0E7FF] px-1.5 py-0.5 rounded-full">이월 {b.carriedOver}일 포함</span>
                       )}
                     </div>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-lg font-bold text-[#4F46E5]">{b.remaining}</span>
+                      <span className="text-lg font-bold text-[#5E81F4]">{b.remaining}</span>
                       <span className="text-xs text-[#999]">/ {total}일</span>
                     </div>
                   </div>
@@ -240,7 +240,7 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
       <div className="bg-white rounded-xl border border-[#E8E8E8]">
         <div className="px-5 py-4 border-b border-[#F5F5F5] flex items-center justify-between">
           <h2 className="text-base font-semibold text-[#1A1A1A]">{t('leaveHistory')}</h2>
-          {loadingRequests && <Loader2 className="w-4 h-4 animate-spin text-[#4F46E5]" />}
+          {loadingRequests && <Loader2 className="w-4 h-4 animate-spin text-[#5E81F4]" />}
         </div>
 
         {!loadingRequests && requests.length === 0 ? (

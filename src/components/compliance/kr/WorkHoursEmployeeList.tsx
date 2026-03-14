@@ -28,7 +28,7 @@ const STATUS_MAP: Record<WorkHoursStatus, { label: string; className: string }> 
   COMPLIANT: {
     label: '준수',
     className:
-      'bg-[#EEF2FF] text-[#2E7D32]',
+      'bg-[#EDF1FE] text-[#2E7D32]',
   },
   WARNING: {
     label: '주의',
@@ -112,7 +112,7 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
               placeholder={tCommon('placeholderSearchNameIdDept')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-8 pr-3 py-1.5 text-sm border border-[#E0E0E0] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 w-48"
+              className="pl-8 pr-3 py-1.5 text-sm border border-[#E0E0E0] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 w-48"
             />
           </div>
 
@@ -120,7 +120,7 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as WorkHoursStatus | 'ALL')}
-            className="text-sm border border-[#E0E0E0] rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
+            className="text-sm border border-[#E0E0E0] rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10"
           >
             <option value="ALL">전체 상태</option>
             <option value="COMPLIANT">준수</option>

@@ -57,7 +57,7 @@ const REASON_LABELS: Record<string, string> = {
 
 const REASON_COLORS: Record<string, string> = {
     COMPENSATION: '#EF4444',
-    CAREER_GROWTH: '#4F46E5',
+    CAREER_GROWTH: '#5E81F4',
     WORK_LIFE_BALANCE: '#22C55E',
     MANAGEMENT: '#F59E0B',
     CULTURE: '#8B5CF6',
@@ -121,7 +121,7 @@ export function ExitInterviewStatsClient({ user }: { user: SessionUser }) {
                             데이터 부족
                         </h3>
                         <p className="text-[#8181A5] max-w-md mx-auto">
-                            통계를 생성하려면 최소 <span className="font-bold text-[#4F46E5]">5건</span>의 퇴직 면담이 필요합니다.
+                            통계를 생성하려면 최소 <span className="font-bold text-[#5E81F4]">5건</span>의 퇴직 면담이 필요합니다.
                             현재: <span className="font-bold text-[#1C1D21]">{stats?.totalInterviews ?? 0}건</span>
                         </p>
                     </CardContent>
@@ -134,8 +134,8 @@ export function ExitInterviewStatsClient({ user }: { user: SessionUser }) {
                         <Card className="border border-[#F0F0F3]">
                             <CardContent className="p-6">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <div className="p-2 rounded-lg bg-[#4F46E5]/10">
-                                        <Users className="w-5 h-5 text-[#4F46E5]" />
+                                    <div className="p-2 rounded-lg bg-[#5E81F4]/10">
+                                        <Users className="w-5 h-5 text-[#5E81F4]" />
                                     </div>
                                     <span className="text-sm text-[#8181A5]">총 면담 건수</span>
                                 </div>
@@ -191,7 +191,7 @@ export function ExitInterviewStatsClient({ user }: { user: SessionUser }) {
                     <Card className="border border-[#F0F0F3]">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-[#1C1D21]">
-                                <BarChart3 className="w-5 h-5 text-[#4F46E5]" />
+                                <BarChart3 className="w-5 h-5 text-[#5E81F4]" />
                                 퇴직 사유 분석
                             </CardTitle>
                         </CardHeader>
@@ -227,8 +227,8 @@ export function ExitInterviewStatsClient({ user }: { user: SessionUser }) {
                     </Card>
 
                     {/* Privacy Notice */}
-                    <div className="flex items-center gap-2 px-4 py-3 bg-[#4F46E5]/5 rounded-lg border border-[#4F46E5]/20">
-                        <ShieldAlert className="w-4 h-4 text-[#4F46E5] flex-shrink-0" />
+                    <div className="flex items-center gap-2 px-4 py-3 bg-[#5E81F4]/5 rounded-lg border border-[#5E81F4]/20">
+                        <ShieldAlert className="w-4 h-4 text-[#5E81F4] flex-shrink-0" />
                         <p className="text-xs text-[#8181A5]">
                             모든 통계는 익명화되어 표시됩니다. 개인 식별 정보는 포함되지 않으며, 5건 미만의 데이터는 통계로 생성되지 않습니다.
                         </p>

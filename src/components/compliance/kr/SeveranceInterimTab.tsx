@@ -49,7 +49,7 @@ const STATUS_MAP: Record<SipStatus, { label: string; className: string }> = {
   },
   SIP_PAID: {
     label: '지급 완료',
-    className: 'bg-[#EEF2FF] text-[#4338CA] border border-[#EEF2FF]',
+    className: 'bg-[#EDF1FE] text-[#4B6DE0] border border-[#EDF1FE]',
   },
 }
 

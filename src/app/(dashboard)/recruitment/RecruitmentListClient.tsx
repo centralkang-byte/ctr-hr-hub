@@ -25,7 +25,7 @@ const STATUS_KEYS: Record<string, string> = {
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
   DRAFT: 'bg-[#F5F5F5] text-[#999]',
-  OPEN: 'bg-[#EEF2FF] text-[#2E7D32]',
+  OPEN: 'bg-[#EDF1FE] text-[#2E7D32]',
   CLOSED: 'bg-[#FFF3E0] text-[#E65100]',
   CANCELLED: 'bg-[#FFEBEE] text-[#C62828]',
 }
@@ -138,7 +138,7 @@ export default function RecruitmentListClient({ user }: Props) {
               placeholder={t('searchByTitle')}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors"
+              className="w-full pl-10 pr-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -146,7 +146,7 @@ export default function RecruitmentListClient({ user }: Props) {
             <select
               value={statusFilter}
               onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
-              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 bg-white"
+              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 bg-white"
             >
               <option value="">{t('statusAll')}</option>
               <option value="DRAFT">{t('statusDRAFT')}</option>
@@ -178,7 +178,7 @@ export default function RecruitmentListClient({ user }: Props) {
               <tr>
                 <td colSpan={8} className="px-4 py-12 text-center text-sm text-[#999]">
                   <div className="flex items-center justify-center gap-2">
-                    <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#4F46E5] rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#5E81F4] rounded-full animate-spin" />
                     {t('loadingData')}
                   </div>
                 </td>

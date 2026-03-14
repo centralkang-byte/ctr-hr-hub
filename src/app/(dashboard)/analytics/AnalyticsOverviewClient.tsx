@@ -173,16 +173,16 @@ export default function AnalyticsOverviewClient() {
                 <Link
                   key={item.href}
                   href={item.href + (companyId ? `?company_id=${companyId}` : '')}
-                  className="group flex items-start gap-4 rounded-xl border border-[#E8E8E8] bg-white p-5 transition-all hover:border-[#EEF2FF] "
+                  className="group flex items-start gap-4 rounded-xl border border-[#E8E8E8] bg-white p-5 transition-all hover:border-[#EDF1FE] "
                 >
-                  <div className="rounded-lg bg-[#EEF2FF] p-2.5 text-[#4F46E5] transition-colors group-hover:bg-[#EEF2FF]">
+                  <div className="rounded-lg bg-[#EDF1FE] p-2.5 text-[#5E81F4] transition-colors group-hover:bg-[#EDF1FE]">
                     <item.icon className="h-5 w-5" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <h3 className="text-sm font-semibold text-[#1A1A1A]">{item.title}</h3>
                     <p className="mt-0.5 text-xs text-[#666]">{item.description}</p>
                   </div>
-                  <BarChart3 className="h-4 w-4 shrink-0 text-[#D4D4D4] transition-colors group-hover:text-[#4F46E5]" />
+                  <BarChart3 className="h-4 w-4 shrink-0 text-[#D4D4D4] transition-colors group-hover:text-[#5E81F4]" />
                 </Link>
               ))}
             </div>

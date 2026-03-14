@@ -20,9 +20,9 @@ const CATEGORY_LABELS: Record<string, string> = {
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
-  family: '#4F46E5',
+  family: '#5E81F4',
   health: '#059669',
-  education: '#4338CA',
+  education: '#4B6DE0',
   lifestyle: '#F59E0B',
   financial: '#EC4899',
 }
@@ -99,7 +99,7 @@ export function BenefitBudgetTab({ user }: { user: SessionUser }) {
 
       {loading ? (
         <div className="flex items-center justify-center h-48">
-          <Loader2 className="w-6 h-6 animate-spin text-[#4F46E5]" />
+          <Loader2 className="w-6 h-6 animate-spin text-[#5E81F4]" />
         </div>
       ) : budgets.length === 0 ? (
         <div className="bg-white rounded-xl border border-[#E8E8E8] p-8 text-center text-[#999] text-sm">
@@ -112,7 +112,7 @@ export function BenefitBudgetTab({ user }: { user: SessionUser }) {
               ? Math.min(100, Math.round((budget.usedAmount / budget.totalBudget) * 100))
               : 0
             const isWarning = pct >= 80
-            const color = CATEGORY_COLORS[budget.category] ?? '#4F46E5'
+            const color = CATEGORY_COLORS[budget.category] ?? '#5E81F4'
             // Detect currency from budget — KRW if total > 100000 (heuristic for KRW vs USD)
             const isKRW = budget.totalBudget > 100000
 

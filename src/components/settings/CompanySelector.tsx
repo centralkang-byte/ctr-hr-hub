@@ -36,7 +36,7 @@ export function CompanySelector({ selectedCompanyId, onCompanyChange, className 
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center gap-2 rounded-xl border border-[#E8E8E8] bg-white px-3 py-2 text-sm hover:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/20"
+        className="flex items-center gap-2 rounded-xl border border-[#E8E8E8] bg-white px-3 py-2 text-sm hover:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/20"
       >
         <Building2 className="h-4 w-4 text-[#666]" />
         <span className="font-medium text-[#1A1A1A]">
@@ -58,7 +58,7 @@ export function CompanySelector({ selectedCompanyId, onCompanyChange, className 
                   setOpen(false)
                 }}
                 className={`flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm hover:bg-[#FAFAFA] ${
-                  company.id === selectedCompanyId ? 'bg-[#EEF2FF] text-[#4338CA]' : 'text-[#333]'
+                  company.id === selectedCompanyId ? 'bg-[#EDF1FE] text-[#4B6DE0]' : 'text-[#333]'
                 }`}
               >
                 <span className="font-medium">{company.code}</span>

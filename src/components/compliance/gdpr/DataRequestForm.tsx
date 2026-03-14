@@ -136,7 +136,7 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
                 {tc('name')} <span className="text-[#EF4444]">*</span>
               </label>
               <select
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
                 value={form.employee_id}
                 onChange={(e) => handleChange('employee_id', e.target.value)}
               >
@@ -156,7 +156,7 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
               {t('gdpr.requestType')} <span className="text-[#EF4444]">*</span>
             </label>
             <select
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
               value={form.request_type}
               onChange={(e) => handleChange('request_type', e.target.value)}
             >
@@ -173,7 +173,7 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
               {tc('description')} <span className="text-[#EF4444]">*</span>
             </label>
             <textarea
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] resize-none"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] resize-none"
               rows={3}
               placeholder="Describe the data subject request..."
               value={form.description}
@@ -186,7 +186,7 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
             <label className="block text-sm font-medium text-[#333] mb-1">{t('gdpr.deadline')}</label>
             <input
               type="date"
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
               value={form.deadline}
               onChange={(e) => handleChange('deadline', e.target.value)}
             />
@@ -197,7 +197,7 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
             <div>
               <label className="block text-sm font-medium text-[#333] mb-1">{tc('status')}</label>
               <select
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
                 value={form.status}
                 onChange={(e) => handleChange('status', e.target.value)}
               >
@@ -213,7 +213,7 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
             <div>
               <label className="block text-sm font-medium text-[#333] mb-1">{t('gdpr.responseNote')}</label>
               <textarea
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] resize-none"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] resize-none"
                 rows={3}
                 placeholder="Response or resolution notes..."
                 value={form.response_note}

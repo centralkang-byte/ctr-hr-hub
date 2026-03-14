@@ -324,15 +324,15 @@ export function CommandPalette() {
                     key={item.id}
                     type="button"
                     className={`flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${flatList[activeIndex]?.id === item.id
-                        ? 'bg-[#F5F5FA] text-[#4F46E5]'
+                        ? 'bg-[#F5F5FA] text-[#5E81F4]'
                         : 'hover:bg-[#F5F5FA]'
                       }`}
                     onMouseDown={(e) => { e.preventDefault(); navigate(item.href) }}
                     onMouseEnter={() => setActiveIndex(flatIdx)}
                   >
-                    <LayoutDashboard className={`h-4 w-4 flex-shrink-0 ${flatList[activeIndex]?.id === item.id ? 'text-[#4F46E5]' : 'text-[#C5C7D4]'
+                    <LayoutDashboard className={`h-4 w-4 flex-shrink-0 ${flatList[activeIndex]?.id === item.id ? 'text-[#5E81F4]' : 'text-[#C5C7D4]'
                       }`} />
-                    <span className={`text-sm font-medium ${flatList[activeIndex]?.id === item.id ? 'text-[#4F46E5]' : 'text-[#3D3F4E]'
+                    <span className={`text-sm font-medium ${flatList[activeIndex]?.id === item.id ? 'text-[#5E81F4]' : 'text-[#3D3F4E]'
                       }`}>
                       {item.label}
                     </span>

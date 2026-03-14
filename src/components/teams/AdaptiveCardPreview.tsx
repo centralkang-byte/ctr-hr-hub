@@ -56,7 +56,7 @@ function renderElement(el: AdaptiveElement, idx: number): React.ReactNode {
               : 'text-sm'
       const colorClass =
         el.color === 'Accent'
-          ? 'text-[#4F46E5]'
+          ? 'text-[#5E81F4]'
           : el.color === 'Warning'
             ? 'text-[#D97706]'
             : ''

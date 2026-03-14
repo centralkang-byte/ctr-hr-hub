@@ -157,7 +157,7 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                             size="sm"
                             onClick={() => handleLoadAi(emp.employeeId)}
                             disabled={aiLoadingId === emp.employeeId}
-                            className="text-[#4F46E5] hover:text-[#4338CA] text-xs"
+                            className="text-[#5E81F4] hover:text-[#4B6DE0] text-xs"
                           >
                             {aiLoadingId === emp.employeeId ? (
                               <Loader2 className="h-3 w-3 animate-spin mr-1" />
@@ -221,7 +221,7 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                                     key={i}
                                     className="flex items-start gap-2 text-sm text-[#555]"
                                   >
-                                    <span className="inline-block w-5 h-5 rounded bg-[#EEF2FF] text-[#4338CA] text-xs font-medium text-center leading-5 flex-shrink-0">
+                                    <span className="inline-block w-5 h-5 rounded bg-[#EDF1FE] text-[#4B6DE0] text-xs font-medium text-center leading-5 flex-shrink-0">
                                       {i + 1}
                                     </span>
                                     {action}
@@ -240,7 +240,7 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                                   key={i}
                                   className="flex items-start gap-2 text-sm text-[#555]"
                                 >
-                                  <span className="inline-block w-5 h-5 rounded bg-[#EEF2FF] text-[#4338CA] text-xs font-medium text-center leading-5 flex-shrink-0">
+                                  <span className="inline-block w-5 h-5 rounded bg-[#EDF1FE] text-[#4B6DE0] text-xs font-medium text-center leading-5 flex-shrink-0">
                                     {i + 1}
                                   </span>
                                   {action}

@@ -84,7 +84,7 @@ function ViewProgressBar({ viewed, total }: { viewed: number; total: number }) {
             </div>
             <div className="h-3 w-full bg-[#F0F0F3] rounded-full overflow-hidden">
                 <div
-                    className="h-full rounded-full transition-all duration-700 bg-gradient-to-r from-[#4F46E5] to-[#A855F7]"
+                    className="h-full rounded-full transition-all duration-700 bg-gradient-to-r from-[#5E81F4] to-[#A855F7]"
                     style={{ width: `${pct}%` }}
                 />
             </div>
@@ -149,7 +149,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
     if (loading || !data) {
         return (
             <div className="p-6 flex items-center justify-center min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin text-[#4F46E5]" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#5E81F4]" />
             </div>
         )
     }
@@ -180,9 +180,9 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
             {/* KPI Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
-                    { label: '총 인원', value: `${run.headcount ?? 0}명`, icon: <Users className="h-4 w-4 text-[#4338CA]" /> },
+                    { label: '총 인원', value: `${run.headcount ?? 0}명`, icon: <Users className="h-4 w-4 text-[#4B6DE0]" /> },
                     { label: '총 실수령액', value: fmt(Number(run.totalNet ?? 0)), icon: <DollarSign className="h-4 w-4 text-[#059669]" /> },
-                    { label: '명세서 발행', value: `${payslipStats.total}건`, icon: <FileText className="h-4 w-4 text-[#4F46E5]" /> },
+                    { label: '명세서 발행', value: `${payslipStats.total}건`, icon: <FileText className="h-4 w-4 text-[#5E81F4]" /> },
                     { label: '열람완료', value: `${payslipStats.viewed}명 (${payslipStats.viewRate}%)`, icon: <Eye className="h-4 w-4 text-[#A855F7]" /> },
                 ].map((kpi) => (
                     <div key={kpi.label} className={CARD_STYLES.padded}>
@@ -238,7 +238,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                         {
                             label: '급여대장',
                             sub: 'Excel',
-                            icon: <FileSpreadsheet className="h-5 w-5 text-[#4338CA]" />,
+                            icon: <FileSpreadsheet className="h-5 w-5 text-[#4B6DE0]" />,
                             bg: 'bg-[#E0E7FF]',
                             disabled: false,
                             url: `/api/v1/payroll/${runId}/export/ledger`,

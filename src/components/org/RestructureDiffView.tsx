@@ -163,7 +163,7 @@ function buildDiffLines(
 
 function DiffRow({ line }: { line: DiffLine }) {
   const typeConfig = {
-    add: { bg: 'bg-[#F0FDF4]', border: 'border-l-[#4F46E5]', icon: <CheckCircle2 size={14} className="text-[#4F46E5]" />, badge: 'bg-[#D1FAE5] text-[#047857]', badgeText: '추가' },
+    add: { bg: 'bg-[#F0FDF4]', border: 'border-l-[#5E81F4]', icon: <CheckCircle2 size={14} className="text-[#5E81F4]" />, badge: 'bg-[#D1FAE5] text-[#047857]', badgeText: '추가' },
     remove: { bg: 'bg-[#FFF5F5]', border: 'border-l-[#EF4444]', icon: <AlertTriangle size={14} className="text-[#EF4444]" />, badge: 'bg-[#FEE2E2] text-[#B91C1C]', badgeText: '제거' },
     modify: { bg: 'bg-[#FFFBEB]', border: 'border-l-[#F59E0B]', icon: <Building2 size={14} className="text-[#F59E0B]" />, badge: 'bg-[#FEF3C7] text-[#B45309]', badgeText: '변경' },
     move: { bg: 'bg-[#EFF6FF]', border: 'border-l-[#3B82F6]', icon: <ArrowRight size={14} className="text-[#3B82F6]" />, badge: 'bg-[#DBEAFE] text-[#1D4ED8]', badgeText: '이동' },
@@ -218,7 +218,7 @@ export function RestructureDiffView({ plan, depts, employees }: RestructureDiffV
       {/* Summary cards */}
       <div className="grid grid-cols-4 gap-3">
         <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl p-3 text-center">
-          <p className="text-2xl font-bold text-[#4F46E5]">{addCount}</p>
+          <p className="text-2xl font-bold text-[#5E81F4]">{addCount}</p>
           <p className="text-xs text-[#555] mt-0.5">신설</p>
         </div>
         <div className="bg-[#FFF5F5] border border-[#FECACA] rounded-xl p-3 text-center">
@@ -291,13 +291,13 @@ export function RestructureDiffView({ plan, depts, employees }: RestructureDiffV
           </div>
           <ArrowRight size={20} className="text-[#999]" />
           <div className="text-center">
-            <p className="text-3xl font-bold text-[#4F46E5]">
+            <p className="text-3xl font-bold text-[#5E81F4]">
               {depts.length + addCount - removeCount}
             </p>
             <p className="text-xs text-[#999] mt-0.5">개편 후 예상</p>
           </div>
           <div className="ml-auto text-xs text-[#666]">
-            {addCount > 0 && <span className="text-[#4F46E5]">+{addCount} 신설 </span>}
+            {addCount > 0 && <span className="text-[#5E81F4]">+{addCount} 신설 </span>}
             {removeCount > 0 && <span className="text-[#EF4444]">-{removeCount} 폐지/통합</span>}
           </div>
         </div>

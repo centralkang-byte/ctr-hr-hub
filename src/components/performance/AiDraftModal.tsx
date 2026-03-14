@@ -63,7 +63,7 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-[#E8E8E8]">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-[#4338CA]" />
+            <Sparkles className="w-5 h-5 text-[#4B6DE0]" />
             <h2 className="text-lg font-semibold text-[#1A1A1A]">AI 평가 초안 생성</h2>
           </div>
           <button onClick={onClose} className="p-1.5 hover:bg-[#F5F5F5] rounded-lg">
@@ -73,8 +73,8 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
 
         {/* Disclaimer */}
         <div className="mx-5 mt-4 p-3 bg-[#E0E7FF] rounded-lg flex items-start gap-2">
-          <AlertTriangle className="w-4 h-4 text-[#4338CA] flex-shrink-0 mt-0.5" />
-          <p className="text-xs text-[#4338CA]">
+          <AlertTriangle className="w-4 h-4 text-[#4B6DE0] flex-shrink-0 mt-0.5" />
+          <p className="text-xs text-[#4B6DE0]">
             이 초안은 AI가 생성한 참고 자료이며, 매니저의 검토와 수정이 필요합니다.
             <strong> AI 추천 등급은 최종 결정이 아닙니다.</strong>
           </p>
@@ -90,7 +90,7 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
               <button
                 onClick={handleGenerate}
                 disabled={loading}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#4338CA] hover:bg-[#3730A3] text-white rounded-lg text-sm font-medium disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#4B6DE0] hover:bg-[#3730A3] text-white rounded-lg text-sm font-medium disabled:opacity-50"
               >
                 {loading ? (
                   <>
@@ -139,7 +139,7 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
                   <ul className="space-y-1">
                     {draft.draftContent.strengths.map((s, i) => (
                       <li key={i} className="text-xs text-[#333] flex items-start gap-1">
-                        <span className="text-[#4F46E5]">•</span> {s}
+                        <span className="text-[#5E81F4]">•</span> {s}
                       </li>
                     ))}
                   </ul>

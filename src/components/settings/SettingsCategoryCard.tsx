@@ -22,12 +22,12 @@ export function SettingsCategoryCard({ config }: SettingsCategoryCardProps) {
     <button
       type="button"
       onClick={() => router.push(`/settings/${config.key}`)}
-      className="group w-full rounded-xl border border-[#F0F0F3] bg-white p-6 text-left shadow-sm transition-all duration-200 hover:shadow-md hover:border-[#4F46E5]/30"
+      className="group w-full rounded-xl border border-[#F0F0F3] bg-white p-6 text-left shadow-sm transition-all duration-200 hover:shadow-md hover:border-[#5E81F4]/30"
     >
       {/* Icon + Header */}
       <div className="mb-4 flex items-start justify-between">
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#4F46E5]/10">
-          <Icon className="h-5 w-5 text-[#4F46E5]" />
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#5E81F4]/10">
+          <Icon className="h-5 w-5 text-[#5E81F4]" />
         </div>
         <ChevronRight className="h-4 w-4 text-[#8181A5] opacity-0 transition-opacity group-hover:opacity-100" />
       </div>
@@ -45,7 +45,7 @@ export function SettingsCategoryCard({ config }: SettingsCategoryCardProps) {
       <ul className="mt-2 space-y-1">
         {previewTabs.map((tab) => (
           <li key={tab.slug} className="flex items-center gap-1.5 text-sm text-[#1C1D21]/70">
-            <span className="text-[#4F46E5]">·</span>
+            <span className="text-[#5E81F4]">·</span>
             {tab.label}
           </li>
         ))}

@@ -220,7 +220,7 @@ export default function SelfEvalClient({
         <select
           value={selectedCycleId}
           onChange={(e) => setSelectedCycleId(e.target.value)}
-          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
+          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
         >
           {!cycles?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
               {cycles?.map((c) => (
@@ -261,7 +261,7 @@ export default function SelfEvalClient({
                         }))}
                         className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
                           goalScores[goal.id]?.score === score
-                            ? 'bg-[#4F46E5] text-white'
+                            ? 'bg-[#5E81F4] text-white'
                             : 'bg-[#F5F5F5] text-[#666] hover:bg-[#E8E8E8]'
                         } ${isSubmitted ? 'cursor-not-allowed opacity-60' : ''}`}
                       >
@@ -280,7 +280,7 @@ export default function SelfEvalClient({
                     ...prev,
                     [goal.id]: { ...prev[goal.id], comment: e.target.value },
                   }))}
-                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999] disabled:bg-[#FAFAFA]"
+                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999] disabled:bg-[#FAFAFA]"
                 />
               </div>
             ))}
@@ -313,7 +313,7 @@ export default function SelfEvalClient({
                         }))}
                         className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
                           compScores[comp.id]?.score === score
-                            ? 'bg-[#4F46E5] text-white'
+                            ? 'bg-[#5E81F4] text-white'
                             : 'bg-[#F5F5F5] text-[#666] hover:bg-[#E8E8E8]'
                         } ${isSubmitted ? 'cursor-not-allowed opacity-60' : ''}`}
                       >
@@ -337,7 +337,7 @@ export default function SelfEvalClient({
             <button
               onClick={handleAiSuggest}
               disabled={aiLoading}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#E0E7FF] text-[#4338CA] hover:bg-[#C7D2FE] transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#E0E7FF] text-[#4B6DE0] hover:bg-[#C7D2FE] transition-colors disabled:opacity-50"
             >
               <Sparkles className="w-3.5 h-3.5" />
               {aiLoading ? 'AI 생성 중...' : 'AI 코멘트 제안'}
@@ -350,7 +350,7 @@ export default function SelfEvalClient({
           value={overallComment}
           onChange={(e) => setOverallComment(e.target.value)}
           placeholder="이번 평가 주기에 대한 종합 의견을 작성하세요..."
-          className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999] disabled:bg-[#FAFAFA] resize-none"
+          className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999] disabled:bg-[#FAFAFA] resize-none"
         />
       </div>
 

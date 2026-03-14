@@ -40,7 +40,7 @@ export function BenefitsClient({ user }: { user: SessionUser }) {
             onClick={() => setActiveTab(tab.key)}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
               activeTab === tab.key
-                ? 'border-[#4F46E5] text-[#4F46E5]'
+                ? 'border-[#5E81F4] text-[#5E81F4]'
                 : 'border-transparent text-[#666] hover:text-[#333]'
             }`}
           >

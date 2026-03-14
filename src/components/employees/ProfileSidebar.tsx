@@ -45,7 +45,7 @@ function getInitials(name: string): string {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  ACTIVE: 'bg-[#EEF2FF] text-[#2E7D32]',
+  ACTIVE: 'bg-[#EDF1FE] text-[#2E7D32]',
   ON_LEAVE: 'bg-[#FFF3E0] text-[#E65100]',
   RESIGNED: 'bg-[#F5F5F5] text-[#666]',
   TERMINATED: 'bg-[#FFEBEE] text-[#C62828]',

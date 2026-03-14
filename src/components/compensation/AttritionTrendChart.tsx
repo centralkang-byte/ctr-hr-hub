@@ -52,7 +52,7 @@ export default function AttritionTrendChart({ data }: AttritionTrendChartProps) 
             type="monotone"
             dataKey="avgScore"
             name="평균 점수"
-            stroke="#6366F1"
+            stroke="#8B5CF6"
             strokeWidth={2}
             dot={{ r: 3 }}
           />

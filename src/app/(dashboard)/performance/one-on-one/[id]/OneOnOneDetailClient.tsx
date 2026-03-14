@@ -168,7 +168,7 @@ export default function OneOnOneDetailClient() {
         <button onClick={() => router.push('/performance/one-on-one')} className="p-1 hover:bg-[#F5F5F5] rounded-lg">
           <ArrowLeft className="w-5 h-5 text-[#666]" />
         </button>
-        <MessageSquare className="w-6 h-6 text-[#4F46E5]" />
+        <MessageSquare className="w-6 h-6 text-[#5E81F4]" />
         <div>
           <h1 className="text-2xl font-bold text-[#1A1A1A]">
             1:1 기록 — {meeting.employee.name}
@@ -191,7 +191,7 @@ export default function OneOnOneDetailClient() {
                   onClick={() => togglePrevAction(i)}
                   className={`w-5 h-5 rounded border flex items-center justify-center ${
                     a.completed
-                      ? 'bg-[#4F46E5] border-[#4F46E5] text-white'
+                      ? 'bg-[#5E81F4] border-[#5E81F4] text-white'
                       : 'border-[#D4D4D4]'
                   }`}
                 >
@@ -224,7 +224,7 @@ export default function OneOnOneDetailClient() {
           onChange={(e) => setNotes(e.target.value)}
           placeholder="미팅 내용을 기록하세요..."
           rows={8}
-          className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]"
+          className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
         />
       </div>
 
@@ -244,7 +244,7 @@ export default function OneOnOneDetailClient() {
               onClick={() => setSentimentTag(sentimentTag === opt.value ? null : opt.value)}
               className={`flex flex-col items-center px-3 py-2 rounded-lg border text-xs transition-colors ${
                 sentimentTag === opt.value
-                  ? 'border-[#4F46E5] bg-[#EEF2FF] text-[#4338CA]'
+                  ? 'border-[#5E81F4] bg-[#EDF1FE] text-[#4B6DE0]'
                   : 'border-[#E8E8E8] hover:border-[#D4D4D4] text-[#666]'
               }`}
             >
@@ -261,7 +261,7 @@ export default function OneOnOneDetailClient() {
           <h2 className="text-base font-semibold text-[#1A1A1A]">새 액션 아이템</h2>
           <button
             onClick={addActionItem}
-            className="flex items-center gap-1 text-sm text-[#4F46E5] hover:text-[#4338CA] font-medium"
+            className="flex items-center gap-1 text-sm text-[#5E81F4] hover:text-[#4B6DE0] font-medium"
           >
             <Plus className="w-4 h-4" /> 항목 추가
           </button>
@@ -274,7 +274,7 @@ export default function OneOnOneDetailClient() {
                 value={a.item}
                 onChange={(e) => updateActionItem(i, 'item', e.target.value)}
                 placeholder="액션 아이템 입력"
-                className="flex-1 px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]"
+                className="flex-1 px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
               />
               <select
                 value={a.assignee}
@@ -308,8 +308,8 @@ export default function OneOnOneDetailClient() {
       {meeting.aiSummary && (
         <div className="bg-[#E0E7FF] rounded-xl border border-[#C7D2FE] p-5">
           <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="w-4 h-4 text-[#4338CA]" />
-            <span className="text-sm font-medium text-[#4338CA]">AI 코칭 팁</span>
+            <Sparkles className="w-4 h-4 text-[#4B6DE0]" />
+            <span className="text-sm font-medium text-[#4B6DE0]">AI 코칭 팁</span>
           </div>
           <p className="text-sm text-[#333]">{meeting.aiSummary}</p>
         </div>
@@ -320,7 +320,7 @@ export default function OneOnOneDetailClient() {
         <button
           onClick={handleAiNotes}
           disabled={aiLoading}
-          className="flex items-center gap-2 px-4 py-2 border border-[#C7D2FE] text-[#4338CA] rounded-lg text-sm font-medium hover:bg-[#E0E7FF] disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 border border-[#C7D2FE] text-[#4B6DE0] rounded-lg text-sm font-medium hover:bg-[#E0E7FF] disabled:opacity-50"
         >
           <Sparkles className="w-4 h-4" />
           {aiLoading ? 'AI 생성 중...' : 'AI 요약 생성'}

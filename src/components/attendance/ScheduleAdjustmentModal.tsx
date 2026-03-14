@@ -120,7 +120,7 @@ function HoursProgressBar({ current, target }: { current: number; target: number
               ? 'bg-[#E11D48]'
               : isNear
                 ? 'bg-[#F4BE5E]'
-                : 'bg-[#4F46E5]'
+                : 'bg-[#5E81F4]'
           }`}
           style={{ width: `${pct}%` }}
         />
@@ -222,7 +222,7 @@ export function ScheduleAdjustmentModal({
                 </div>
                 <button
                   onClick={handleClose}
-                  className="mt-2 rounded-lg bg-[#4F46E5] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#4F70D4] transition-colors"
+                  className="mt-2 rounded-lg bg-[#5E81F4] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#4F70D4] transition-colors"
                 >
                   확인
                 </button>
@@ -266,19 +266,19 @@ export function ScheduleAdjustmentModal({
                         onClick={() => setSelectedType(opt.value)}
                         className={`w-full flex items-center justify-between rounded-xl border px-4 py-3 text-left transition-colors ${
                           selectedType === opt.value
-                            ? 'border-[#4F46E5] bg-[#4F46E5]/5'
+                            ? 'border-[#5E81F4] bg-[#5E81F4]/5'
                             : 'border-[#F0F0F3] hover:border-[#D0D0E0] hover:bg-[#F5F5FA]'
                         }`}
                       >
                         <div className="space-y-0.5">
-                          <p className={`text-sm font-semibold ${selectedType === opt.value ? 'text-[#4F46E5]' : 'text-[#1C1D21]'}`}>
+                          <p className={`text-sm font-semibold ${selectedType === opt.value ? 'text-[#5E81F4]' : 'text-[#1C1D21]'}`}>
                             {opt.label}
                           </p>
                           <p className="text-xs text-[#8181A5]">{opt.description}</p>
                         </div>
                         <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${
                           selectedType === opt.value
-                            ? 'bg-[#4F46E5]/10 text-[#4F46E5]'
+                            ? 'bg-[#5E81F4]/10 text-[#5E81F4]'
                             : 'bg-[#F0F0F3] text-[#8181A5]'
                         }`}>
                           -{opt.savingsHours}h
@@ -300,7 +300,7 @@ export function ScheduleAdjustmentModal({
                     <select
                       value={selectedDay}
                       onChange={(e) => setSelectedDay(e.target.value)}
-                      className="w-full appearance-none rounded-xl border border-[#F0F0F3] bg-white px-4 py-2.5 pr-10 text-sm text-[#1C1D21] focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+                      className="w-full appearance-none rounded-xl border border-[#F0F0F3] bg-white px-4 py-2.5 pr-10 text-sm text-[#1C1D21] focus:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
                     >
                       {DAY_OPTIONS.map((day) => (
                         <option key={day} value={day}>{day}</option>
@@ -318,7 +318,7 @@ export function ScheduleAdjustmentModal({
                     onChange={(e) => setNote(e.target.value)}
                     placeholder={tCommon('placeholderAdjustmentReasonBrief')}
                     rows={3}
-                    className="w-full resize-none rounded-xl border border-[#F0F0F3] px-4 py-2.5 text-sm text-[#1C1D21] placeholder:text-[#8181A5] focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+                    className="w-full resize-none rounded-xl border border-[#F0F0F3] px-4 py-2.5 text-sm text-[#1C1D21] placeholder:text-[#8181A5] focus:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
                   />
                 </div>
               </>
@@ -337,7 +337,7 @@ export function ScheduleAdjustmentModal({
               <button
                 onClick={handleSubmit}
                 disabled={!selectedType || loading}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-[#4F46E5] px-4 py-2 text-sm font-semibold text-white hover:bg-[#4F70D4] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-semibold text-white hover:bg-[#4F70D4] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {loading ? (
                   <>

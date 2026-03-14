@@ -140,7 +140,7 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
             {/* 1. 목표 달성률 */}
             <section>
               <div className="flex items-center gap-2 mb-2">
-                <Target className="w-4 h-4 text-[#4F46E5]" />
+                <Target className="w-4 h-4 text-[#5E81F4]" />
                 <span className="text-sm font-semibold text-[#333]">목표 달성률</span>
               </div>
               {data.goals.length === 0 ? (
@@ -155,7 +155,7 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
                         <div className="flex items-center gap-2 mt-1">
                           <div className="flex-1 bg-[#E8E8E8] rounded-full h-1.5">
                             <div
-                              className="bg-[#4F46E5] h-1.5 rounded-full"
+                              className="bg-[#5E81F4] h-1.5 rounded-full"
                               style={{ width: `${Math.min(rate ?? 0, 100)}%` }}
                             />
                           </div>
@@ -173,7 +173,7 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
             {/* 2. 최근 원온원 */}
             <section>
               <div className="flex items-center gap-2 mb-2">
-                <MessageSquare className="w-4 h-4 text-[#4338CA]" />
+                <MessageSquare className="w-4 h-4 text-[#4B6DE0]" />
                 <span className="text-sm font-semibold text-[#333]">
                   최근 원온원 ({data.oneOnOnes.length}건)
                 </span>

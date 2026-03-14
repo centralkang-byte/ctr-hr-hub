@@ -31,7 +31,7 @@ export function ProbationEvalTab({ companyId }: Props) {
     }),
   })
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
 
   return (
     <div className="space-y-4">
@@ -47,7 +47,7 @@ export function ProbationEvalTab({ companyId }: Props) {
 
       <SettingFieldWithOverride label="평가 시점" description="수습 기간 중 평가를 실시할 시점" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">{settings.evalTimings.map((d, i) => (
-          <span key={i} className="rounded-full bg-[#4F46E5]/10 px-3 py-1 text-sm font-medium text-[#4F46E5]">{d}일차</span>
+          <span key={i} className="rounded-full bg-[#5E81F4]/10 px-3 py-1 text-sm font-medium text-[#5E81F4]">{d}일차</span>
         ))}</div>
       </SettingFieldWithOverride>
 
@@ -60,7 +60,7 @@ export function ProbationEvalTab({ companyId }: Props) {
 
       <SettingFieldWithOverride label="자동 정규직 전환" description="합격 시 자동 정규직 전환 여부" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={settings.autoConfirm} onChange={(e) => setSettings((p) => ({ ...p, autoConfirm: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#4F46E5]" />
+          <input type="checkbox" checked={settings.autoConfirm} onChange={(e) => setSettings((p) => ({ ...p, autoConfirm: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]" />
           <span className="text-[#1C1D21]">합격 시 자동 전환</span>
         </label>
       </SettingFieldWithOverride>

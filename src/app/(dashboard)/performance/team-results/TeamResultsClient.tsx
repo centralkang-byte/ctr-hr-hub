@@ -84,7 +84,7 @@ export default function TeamResultsClient({
         <select
           value={selectedCycleId}
           onChange={(e) => setSelectedCycleId(e.target.value)}
-          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
+          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
         >
           {!cycles?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
               {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -103,7 +103,7 @@ export default function TeamResultsClient({
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5" /> 평가 완료율</p>
-          <p className="text-3xl font-bold text-[#4F46E5]">
+          <p className="text-3xl font-bold text-[#5E81F4]">
             {results.length > 0 ? Math.round(results.filter((r) => r.managerEval?.status === 'SUBMITTED').length / results.length * 100) : 0}%
           </p>
         </div>
@@ -161,7 +161,7 @@ export default function TeamResultsClient({
                 </td>
                 <td className="px-4 py-3 text-center">
                   {r.finalResult?.emsBlock ? (
-                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#EEF2FF] text-[#4338CA]">
+                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#EDF1FE] text-[#4B6DE0]">
                       {r.finalResult.emsBlock}
                       {r.finalResult.calibrated && ' ✓'}
                     </span>

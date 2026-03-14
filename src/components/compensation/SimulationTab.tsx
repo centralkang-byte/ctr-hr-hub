@@ -203,7 +203,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
           <div className="flex items-center gap-1">
             <input
               type="number"
-              className="w-16 px-2 py-1 border border-[#D4D4D4] rounded text-sm text-right focus:ring-2 focus:ring-[#4F46E5]/10"
+              className="w-16 px-2 py-1 border border-[#D4D4D4] rounded text-sm text-right focus:ring-2 focus:ring-[#5E81F4]/10"
               value={row.adjustedPct}
               onChange={(e) => handlePctChange(row.id, Number(e.target.value))}
               min={0}
@@ -222,7 +222,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
       key: 'newSalary',
       header: '신규 연봉',
       render: (row) => (
-        <span className="text-sm font-semibold text-[#4338CA]">
+        <span className="text-sm font-semibold text-[#4B6DE0]">
           {formatCurrency(row.newSalary, row.currency)}
         </span>
       ),
@@ -236,7 +236,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
           size="sm"
           onClick={() => handleAiRecommend(row.id)}
           disabled={aiLoadingId === row.id}
-          className="text-[#4F46E5] hover:text-[#4338CA]"
+          className="text-[#5E81F4] hover:text-[#4B6DE0]"
         >
           <Sparkles className={`h-4 w-4 ${aiLoadingId === row.id ? 'animate-pulse' : ''}`} />
         </Button>
@@ -266,7 +266,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">평균 인상률</p>
-          <p className="text-3xl font-bold text-[#4F46E5]">{budget.avgIncreasePct}%</p>
+          <p className="text-3xl font-bold text-[#5E81F4]">{budget.avgIncreasePct}%</p>
         </div>
       </div>
 
@@ -275,15 +275,15 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
         <div className="bg-[#E0E7FF] border border-[#C7D2FE] rounded-xl p-4">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="h-4 w-4 text-[#4F46E5]" />
+              <Sparkles className="h-4 w-4 text-[#5E81F4]" />
               <h4 className="text-sm font-semibold text-[#312E81]">
                 AI 추천 결과 — {rows.find((r) => r.id === aiResult.employeeId)?.name ?? ''}
               </h4>
-              <Badge className="bg-[#E0E7FF] text-[#4338CA] border-[#C7D2FE] text-xs">
+              <Badge className="bg-[#E0E7FF] text-[#4B6DE0] border-[#C7D2FE] text-xs">
                 {aiResult.data.recommendedPct}%
               </Badge>
             </div>
-            <button onClick={() => setAiResult(null)} className="text-[#818CF8] hover:text-[#4F46E5]">
+            <button onClick={() => setAiResult(null)} className="text-[#818CF8] hover:text-[#5E81F4]">
               <X className="h-4 w-4" />
             </button>
           </div>
@@ -291,10 +291,10 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {aiResult.data.riskFactors.length > 0 && (
               <div>
-                <p className="text-xs font-medium text-[#4338CA] mb-1">위험 요인</p>
+                <p className="text-xs font-medium text-[#4B6DE0] mb-1">위험 요인</p>
                 <ul className="space-y-1">
                   {aiResult.data.riskFactors.map((f, i) => (
-                    <li key={i} className="text-xs text-[#4F46E5] flex items-start gap-1">
+                    <li key={i} className="text-xs text-[#5E81F4] flex items-start gap-1">
                       <AlertTriangle className="h-3 w-3 mt-0.5 flex-shrink-0" />
                       {f}
                     </li>
@@ -304,10 +304,10 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
             )}
             {aiResult.data.alternativeActions.length > 0 && (
               <div>
-                <p className="text-xs font-medium text-[#4338CA] mb-1">대안</p>
+                <p className="text-xs font-medium text-[#4B6DE0] mb-1">대안</p>
                 <ul className="space-y-1">
                   {aiResult.data.alternativeActions.map((a, i) => (
-                    <li key={i} className="text-xs text-[#4F46E5]">
+                    <li key={i} className="text-xs text-[#5E81F4]">
                       {i + 1}. {a}
                     </li>
                   ))}

@@ -10,7 +10,7 @@ import type { PayrollAnomalyResult, AnomalySeverity } from '@/lib/payroll/types'
 const SEVERITY_CONFIG: Record<AnomalySeverity, { icon: typeof AlertTriangle; color: string; bg: string }> = {
   ERROR: { icon: AlertCircle, color: 'text-[#DC2626]', bg: 'bg-[#FEE2E2]' },
   WARNING: { icon: AlertTriangle, color: 'text-[#D97706]', bg: 'bg-[#FEF3C7]' },
-  INFO: { icon: Info, color: 'text-[#4F46E5]', bg: 'bg-[#EEF2FF]' },
+  INFO: { icon: Info, color: 'text-[#5E81F4]', bg: 'bg-[#EDF1FE]' },
 }
 
 const RISK_COLORS: Record<string, string> = {
@@ -46,7 +46,7 @@ export default function AnomalyPanel({ runId }: AnomalyPanelProps) {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-[#6366F1]" />
+            <Sparkles className="h-5 w-5 text-[#8B5CF6]" />
             <h3 className="text-sm font-semibold text-[#1A1A1A]">AI 이상감지</h3>
             <Badge variant="secondary" className="gap-1 text-xs">
               <Sparkles className="h-3 w-3" />
@@ -57,7 +57,7 @@ export default function AnomalyPanel({ runId }: AnomalyPanelProps) {
             onClick={runCheck}
             disabled={loading}
             size="sm"
-            className="bg-[#4F46E5] hover:bg-[#4338CA] text-white"
+            className="bg-[#5E81F4] hover:bg-[#4B6DE0] text-white"
           >
             {loading ? (
               <>
@@ -83,7 +83,7 @@ export default function AnomalyPanel({ runId }: AnomalyPanelProps) {
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-[#6366F1]" />
+          <Sparkles className="h-5 w-5 text-[#8B5CF6]" />
           <h3 className="text-sm font-semibold text-[#1A1A1A]">AI 이상감지 결과</h3>
           <span
             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${RISK_COLORS[result.risk_level]}`}
@@ -138,7 +138,7 @@ export default function AnomalyPanel({ runId }: AnomalyPanelProps) {
 
       {/* Recommendation */}
       <div className="bg-[#E0E7FF] rounded-lg p-3">
-        <p className="text-xs font-medium text-[#4F46E5] mb-1">AI 권고사항</p>
+        <p className="text-xs font-medium text-[#5E81F4] mb-1">AI 권고사항</p>
         <p className="text-sm text-[#3730A3]">{result.recommendation}</p>
       </div>
     </div>

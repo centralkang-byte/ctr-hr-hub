@@ -94,7 +94,7 @@ export function BonusRulesTab({ companyId }: Props) {
 
   const hasChanges = JSON.stringify(settings) !== JSON.stringify(original)
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
 
   return (
     <div className="space-y-4">
@@ -123,7 +123,7 @@ export function BonusRulesTab({ companyId }: Props) {
           <th className={TABLE_STYLES.headerCellRight}>배율 (%)</th>
         </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{settings.gradeMultipliers.map((g, i) => (
           <tr key={g.grade} className={TABLE_STYLES.row}>
-            <td className="px-4 py-3 text-sm font-medium text-[#4F46E5]">{g.grade}</td>
+            <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{g.grade}</td>
             <td className={TABLE_STYLES.cell}>{g.label}</td>
             <td className="px-4 py-3 text-right"><Input type="number" value={g.multiplier} onChange={(e) => { const next = structuredClone(settings); next.gradeMultipliers[i].multiplier = Number(e.target.value); setSettings(next) }} className="ml-auto w-24 text-right" /></td>
           </tr>

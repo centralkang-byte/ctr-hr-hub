@@ -63,7 +63,7 @@ const PRIORITY_CONFIG: Record<string, { color: string; bg: string; label: string
     [UnifiedTaskPriority.URGENT]: { color: '#EF4444', bg: '#FEF2F2', label: '긴급' },
     [UnifiedTaskPriority.HIGH]: { color: '#F59E0B', bg: '#FFFBEB', label: '높음' },
     [UnifiedTaskPriority.MEDIUM]: { color: '#10B981', bg: '#F0FDF4', label: '보통' },
-    [UnifiedTaskPriority.LOW]: { color: '#4F46E5', bg: '#EEF2FF', label: '낮음' },
+    [UnifiedTaskPriority.LOW]: { color: '#5E81F4', bg: '#EDF1FE', label: '낮음' },
 }
 
 const FILTER_TABS = [
@@ -100,7 +100,7 @@ function getDdayStyle(dueDate?: string): string {
     )
     if (diff < 0) return 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]'
     if (diff <= 3) return 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]'
-    return 'bg-[#EEF2FF] text-[#4F46E5] border-[#C7D2FE]'
+    return 'bg-[#EDF1FE] text-[#5E81F4] border-[#C7D2FE]'
 }
 
 // ─── Task Card ───────────────────────────────────────────
@@ -140,16 +140,16 @@ function UnifiedTaskCard({
                 <div className="mt-1.5 flex flex-col items-center gap-1">
                     <span
                         className="h-2.5 w-2.5 rounded-full"
-                        style={{ backgroundColor: prioInfo?.color ?? '#4F46E5' }}
+                        style={{ backgroundColor: prioInfo?.color ?? '#5E81F4' }}
                     />
                 </div>
 
                 {/* Type Icon */}
                 <div
                     className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-                    style={{ backgroundColor: `${typeInfo?.color ?? '#4F46E5'}15` }}
+                    style={{ backgroundColor: `${typeInfo?.color ?? '#5E81F4'}15` }}
                 >
-                    <Icon className="h-4.5 w-4.5" style={{ color: typeInfo?.color ?? '#4F46E5' }} />
+                    <Icon className="h-4.5 w-4.5" style={{ color: typeInfo?.color ?? '#5E81F4' }} />
                 </div>
 
                 {/* Content */}
@@ -159,9 +159,9 @@ function UnifiedTaskCard({
                             variant="outline"
                             className="h-5 shrink-0 rounded-md border px-1.5 text-[10px] font-medium"
                             style={{
-                                borderColor: `${typeInfo?.color ?? '#4F46E5'}40`,
-                                color: typeInfo?.color ?? '#4F46E5',
-                                backgroundColor: `${typeInfo?.color ?? '#4F46E5'}08`,
+                                borderColor: `${typeInfo?.color ?? '#5E81F4'}40`,
+                                color: typeInfo?.color ?? '#5E81F4',
+                                backgroundColor: `${typeInfo?.color ?? '#5E81F4'}08`,
                             }}
                         >
                             {typeInfo?.label ?? task.type}
@@ -174,7 +174,7 @@ function UnifiedTaskCard({
                         {!!(task.metadata as Record<string, unknown>)?.delegated && (
                             <Badge
                                 variant="outline"
-                                className="h-5 rounded-md border-[#C7D2FE] bg-[#EEF2FF] px-1.5 text-[10px] font-medium text-[#6366F1]"
+                                className="h-5 rounded-md border-[#C7D2FE] bg-[#EDF1FE] px-1.5 text-[10px] font-medium text-[#8B5CF6]"
                             >
                                 대결
                             </Badge>
@@ -212,7 +212,7 @@ function UnifiedTaskCard({
                                 <Button
                                     size="sm"
                                     variant="ghost"
-                                    className="h-7 gap-1 px-2 text-[11px] text-[#4338CA] hover:bg-[#EEF2FF]"
+                                    className="h-7 gap-1 px-2 text-[11px] text-[#4B6DE0] hover:bg-[#EDF1FE]"
                                     disabled={isBusy}
                                     onClick={(e) => { e.stopPropagation(); onAction(task.id, 'approve', task.sourceId) }}
                                 >
@@ -369,7 +369,7 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                 >
                     {t('tabInProgress')}
                     {statusTab === 'PENDING' && totalAllTypes > 0 && (
-                        <span className="ml-1.5 rounded-full bg-[#4F46E5] px-2 py-0.5 text-[10px] font-bold text-white">
+                        <span className="ml-1.5 rounded-full bg-[#5E81F4] px-2 py-0.5 text-[10px] font-bold text-white">
                             {totalAllTypes}
                         </span>
                     )}
@@ -399,8 +399,8 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                                 type="button"
                                 onClick={() => updateParams({ type: tab.key === 'all' ? null : tab.key, page: null })}
                                 className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-all duration-150 ${isActive
-                                    ? 'bg-[#4F46E5] text-white shadow-sm'
-                                    : 'bg-[#F5F5FA] text-[#8181A5] hover:bg-[#EEF2FF] hover:text-[#4F46E5]'
+                                    ? 'bg-[#5E81F4] text-white shadow-sm'
+                                    : 'bg-[#F5F5FA] text-[#8181A5] hover:bg-[#EDF1FE] hover:text-[#5E81F4]'
                                     }`}
                             >
                                 {tab.label}
@@ -494,16 +494,16 @@ function MyTasksInner({ user }: { user: SessionUser }) {
 
             {/* ── Completed Tab Notice ── */}
             {statusTab === 'COMPLETED' && !loading && (
-                <div className="flex items-start gap-3 rounded-xl border border-[#C7D2FE] bg-[#EEF2FF] p-4">
-                    <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#4F46E5]" />
-                    <div className="text-xs text-[#4F46E5]">
+                <div className="flex items-start gap-3 rounded-xl border border-[#C7D2FE] bg-[#EDF1FE] p-4">
+                    <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
+                    <div className="text-xs text-[#5E81F4]">
                         <p className="font-medium">{t('completedNotice')}</p>
                         <p className="mt-1 text-[#8181A5]">
                             {t('completedLinks')}
                             <span className="ml-1 space-x-2">
-                                <Link href="/leave" className="underline hover:text-[#4F46E5]">{t('linkLeave')}</Link>
-                                <Link href="/payroll/me" className="underline hover:text-[#4F46E5]">{t('linkPayslip')}</Link>
-                                <Link href="/performance" className="underline hover:text-[#4F46E5]">{t('linkPerformance')}</Link>
+                                <Link href="/leave" className="underline hover:text-[#5E81F4]">{t('linkLeave')}</Link>
+                                <Link href="/payroll/me" className="underline hover:text-[#5E81F4]">{t('linkPayslip')}</Link>
+                                <Link href="/performance" className="underline hover:text-[#5E81F4]">{t('linkPerformance')}</Link>
                             </span>
                         </p>
                     </div>

@@ -133,8 +133,8 @@ export default function MandatoryTrainingForm({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#EEF2FF]">
-              <BookOpen className="w-4 h-4 text-[#4F46E5]" />
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#EDF1FE]">
+              <BookOpen className="w-4 h-4 text-[#5E81F4]" />
             </div>
             <DialogTitle>법정의무교육 추가</DialogTitle>
           </div>
@@ -149,7 +149,7 @@ export default function MandatoryTrainingForm({
             <select
               value={form.trainingType}
               onChange={(e) => handleChange('trainingType', e.target.value)}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
             >
               <option value="">교육 유형 선택</option>
               {TRAINING_TYPES.map((t) => (
@@ -169,7 +169,7 @@ export default function MandatoryTrainingForm({
               value={form.courseId}
               onChange={(e) => handleChange('courseId', e.target.value)}
               disabled={!form.trainingType}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10 disabled:bg-[#FAFAFA] disabled:text-[#999]"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10 disabled:bg-[#FAFAFA] disabled:text-[#999]"
             >
               <option value="">
                 {form.trainingType ? '과정 선택' : '교육 유형을 먼저 선택하세요'}
@@ -191,7 +191,7 @@ export default function MandatoryTrainingForm({
               <select
                 value={form.year}
                 onChange={(e) => handleChange('year', Number(e.target.value))}
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
               >
                 {[defaultYear + 1, defaultYear, defaultYear - 1].map((y) => (
                   <option key={y} value={y}>
@@ -209,7 +209,7 @@ export default function MandatoryTrainingForm({
                 type="date"
                 value={form.dueDate}
                 onChange={(e) => handleChange('dueDate', e.target.value)}
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
               />
             </div>
           </div>
@@ -225,7 +225,7 @@ export default function MandatoryTrainingForm({
               max={40}
               value={form.requiredHours}
               onChange={(e) => handleChange('requiredHours', Number(e.target.value))}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
               placeholder="1"
             />
             <p className="text-xs text-[#999] mt-1">법정 최소 이수시간을 입력하세요.</p>
@@ -251,7 +251,7 @@ export default function MandatoryTrainingForm({
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-sm font-medium text-white bg-[#4F46E5] hover:bg-[#4338CA] rounded-lg disabled:opacity-50 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-white bg-[#5E81F4] hover:bg-[#4B6DE0] rounded-lg disabled:opacity-50 transition-colors"
             >
               {submitting ? '등록 중...' : '교육 추가'}
             </button>

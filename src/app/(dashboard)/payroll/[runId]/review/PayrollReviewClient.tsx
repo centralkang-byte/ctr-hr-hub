@@ -251,7 +251,7 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
                 onChange={(e) => setWhitelistNote(e.target.value)}
                 placeholder={tCommon('placeholderExceptionReason')}
                 rows={3}
-                className="w-full px-3 py-2.5 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 resize-none"
+                className="w-full px-3 py-2.5 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 resize-none"
               />
             </div>
             <div className="p-5 border-t border-[#E8E8E8] flex justify-end gap-2">
@@ -267,7 +267,7 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
                   setShowWhitelistModal(false)
                 }}
                 disabled={loading}
-                className="px-4 py-2 rounded-lg bg-[#4F46E5] text-white text-sm font-semibold hover:bg-[#4338CA] disabled:opacity-50"
+                className="px-4 py-2 rounded-lg bg-[#5E81F4] text-white text-sm font-semibold hover:bg-[#4B6DE0] disabled:opacity-50"
               >
                 <ShieldCheck className="h-4 w-4 inline mr-1" />
                 예외 등록
@@ -577,7 +577,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
   if (loading || !run) {
     return (
       <div className="p-6 flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin h-8 w-8 border-4 border-[#4F46E5] border-t-transparent rounded-full" />
+        <div className="animate-spin h-8 w-8 border-4 border-[#5E81F4] border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -594,7 +594,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
             <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-[-0.02em]">{run.name}</h1>
             <div className="flex items-center gap-2 mt-0.5">
               <span className="text-sm text-[#666]">{run.yearMonth}</span>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#E0E7FF] text-[#4338CA] border border-[#C7D2FE]">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#E0E7FF] text-[#4B6DE0] border border-[#C7D2FE]">
                 이상 검토 중
               </span>
             </div>
@@ -623,7 +623,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { label: '총 급여', value: fmt(Number(run.totalGross ?? 0)), icon: <DollarSign className="h-4 w-4 text-[#059669]" /> },
-          { label: '인원', value: `${run.headcount ?? 0}명`, icon: <Users className="h-4 w-4 text-[#4338CA]" /> },
+          { label: '인원', value: `${run.headcount ?? 0}명`, icon: <Users className="h-4 w-4 text-[#4B6DE0]" /> },
           { label: '이상 항목', value: `${anomalySummary?.open ?? 0}건`, icon: <AlertTriangle className="h-4 w-4 text-[#F59E0B]" />, highlight: (anomalySummary?.open ?? 0) > 0 },
           { label: '수동 조정', value: `${run.adjustmentCount ?? 0}건`, icon: <Clock className="h-4 w-4 text-[#999]" /> },
         ].map((kpi) => (
@@ -763,7 +763,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 placeholder={tCommon('searchPlaceholder')}
-                className="w-full pl-9 pr-3 py-2 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
+                className="w-full pl-9 pr-3 py-2 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10"
               />
             </div>
             <select
@@ -779,7 +779,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                 type="checkbox"
                 checked={anomalyOnly}
                 onChange={(e) => setAnomalyOnly(e.target.checked)}
-                className="w-4 h-4 rounded border-[#D4D4D4] text-[#4F46E5]"
+                className="w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4]"
               />
               이상항목만
             </label>
@@ -970,7 +970,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                   onChange={(e) => setSubmitNote(e.target.value)}
                   placeholder={tCommon('placeholderApprovalMemo')}
                   rows={3}
-                  className="w-full px-3 py-2.5 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 resize-none"
+                  className="w-full px-3 py-2.5 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 resize-none"
                 />
               </div>
             </div>

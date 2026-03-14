@@ -88,7 +88,7 @@ export default function PayrollMeClient({
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center gap-3">
-        <FileText className="h-6 w-6 text-[#4F46E5]" />
+        <FileText className="h-6 w-6 text-[#5E81F4]" />
         <div>
           <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('title')}</h1>
           {newCount > 0 && (
@@ -116,12 +116,12 @@ export default function PayrollMeClient({
                 key={item.id}
                 type="button"
                 onClick={() => router.push(`/payroll/me/${item.run.id}`)}
-                className={`bg-white rounded-xl border p-5 text-left hover:shadow-md transition-shadow relative overflow-hidden ${isNew ? 'border-[#4F46E5] ring-1 ring-[#4F46E5]/30' : 'border-[#E8E8E8]'
+                className={`bg-white rounded-xl border p-5 text-left hover:shadow-md transition-shadow relative overflow-hidden ${isNew ? 'border-[#5E81F4] ring-1 ring-[#5E81F4]/30' : 'border-[#E8E8E8]'
                   }`}
               >
                 {/* NEW badge */}
                 {isNew && (
-                  <span className="absolute top-3 right-3 inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#4F46E5] text-white uppercase">
+                  <span className="absolute top-3 right-3 inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#5E81F4] text-white uppercase">
                     <Sparkles className="h-2.5 w-2.5" /> NEW
                   </span>
                 )}
@@ -131,7 +131,7 @@ export default function PayrollMeClient({
                     {item.run.yearMonth}
                   </h3>
                   {!isNew && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#E0E7FF] text-[#4338CA] border border-[#C7D2FE]">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#E0E7FF] text-[#4B6DE0] border border-[#C7D2FE]">
                       {t('paid')}
                     </span>
                   )}
@@ -147,8 +147,8 @@ export default function PayrollMeClient({
                     <span className="text-[#DC2626]">-{formatCurrency(Number(item.deductions))}</span>
                   </div>
                   <div className="flex justify-between text-sm font-bold pt-1.5 border-t border-[#F5F5F5]">
-                    <span className="text-[#4338CA]">{t('netPay')}</span>
-                    <span className="text-[#4338CA]">{formatCurrency(Number(item.netPay))}</span>
+                    <span className="text-[#4B6DE0]">{t('netPay')}</span>
+                    <span className="text-[#4B6DE0]">{formatCurrency(Number(item.netPay))}</span>
                   </div>
                   {/* MoM comparison mini-widget */}
                   {prevItem && (

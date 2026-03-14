@@ -106,14 +106,14 @@ export default function PeerReviewResultsClient() {
           <button onClick={() => router.back()} className="p-1 hover:bg-[#F5F5F5] rounded-lg">
             <ArrowLeft className="w-5 h-5 text-[#666]" />
           </button>
-          <Users className="w-6 h-6 text-[#4F46E5]" />
+          <Users className="w-6 h-6 text-[#5E81F4]" />
           <div>
             <h1 className="text-2xl font-bold text-[#1A1A1A]">동료 평가 결과</h1>
             <p className="text-sm text-[#666]">{results.summary.reviewerCount}명의 동료 평가 종합</p>
           </div>
         </div>
         <button onClick={handleAiSummary} disabled={aiLoading}
-          className="flex items-center gap-2 px-4 py-2 border border-[#C7D2FE] text-[#4338CA] rounded-lg text-sm font-medium hover:bg-[#E0E7FF] disabled:opacity-50">
+          className="flex items-center gap-2 px-4 py-2 border border-[#C7D2FE] text-[#4B6DE0] rounded-lg text-sm font-medium hover:bg-[#E0E7FF] disabled:opacity-50">
           <Sparkles className="w-4 h-4" />
           {aiLoading ? 'AI 분석 중...' : 'AI 요약'}
         </button>
@@ -123,14 +123,14 @@ export default function PeerReviewResultsClient() {
       <div className="grid grid-cols-2 gap-6">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">종합 점수</p>
-          <p className="text-4xl font-bold text-[#4F46E5]">{results.summary.averageScore} <span className="text-lg text-[#666]">/ 5.0</span></p>
+          <p className="text-4xl font-bold text-[#5E81F4]">{results.summary.averageScore} <span className="text-lg text-[#666]">/ 5.0</span></p>
           <div className="mt-4 space-y-2">
             {Object.entries(results.summary.competencyAvg).map(([key, val]) => (
               <div key={key} className="flex items-center justify-between">
                 <span className="text-sm text-[#555]">{COMPETENCY_LABELS[key] ?? key}</span>
                 <div className="flex items-center gap-2">
                   <div className="w-32 h-2 bg-[#E8E8E8] rounded-full overflow-hidden">
-                    <div className="h-full bg-[#4F46E5] rounded-full" style={{ width: `${(val / 5) * 100}%` }} />
+                    <div className="h-full bg-[#5E81F4] rounded-full" style={{ width: `${(val / 5) * 100}%` }} />
                   </div>
                   <span className="text-sm font-medium text-[#1A1A1A] w-8 text-right">{val}</span>
                 </div>
@@ -160,8 +160,8 @@ export default function PeerReviewResultsClient() {
       {aiSummary && (
         <div className="bg-[#E0E7FF] rounded-xl border border-[#C7D2FE] p-5 space-y-3">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[#4338CA]" />
-            <span className="text-sm font-semibold text-[#4338CA]">AI 종합 분석</span>
+            <Sparkles className="w-4 h-4 text-[#4B6DE0]" />
+            <span className="text-sm font-semibold text-[#4B6DE0]">AI 종합 분석</span>
           </div>
           <p className="text-sm text-[#333]">{aiSummary.summary}</p>
           <div className="grid grid-cols-2 gap-4">
@@ -179,7 +179,7 @@ export default function PeerReviewResultsClient() {
             </div>
           </div>
           <div className="border-t border-[#C7D2FE] pt-2">
-            <h4 className="text-xs font-medium text-[#4338CA] mb-1">코칭 제안</h4>
+            <h4 className="text-xs font-medium text-[#4B6DE0] mb-1">코칭 제안</h4>
             <p className="text-xs text-[#333]">{aiSummary.coaching_suggestion}</p>
           </div>
         </div>

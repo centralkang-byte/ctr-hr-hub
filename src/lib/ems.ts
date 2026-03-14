@@ -48,9 +48,9 @@ export const DEFAULT_BLOCK_DEFINITIONS: BlockDefinition[] = [
   { row: 1, col: 'B', label: 'Dilemma', color: '#F59E0B' },
   { row: 2, col: 'B', label: 'Core Player', color: '#059669' },
   { row: 3, col: 'B', label: 'High Performer', color: '#059669' },
-  { row: 1, col: 'C', label: 'Enigma', color: '#4338CA' },
+  { row: 1, col: 'C', label: 'Enigma', color: '#4B6DE0' },
   { row: 2, col: 'C', label: 'Solid Contributor', color: '#059669' },
-  { row: 3, col: 'C', label: 'Star', color: '#4F46E5' },
+  { row: 3, col: 'C', label: 'Star', color: '#5E81F4' },
 ]
 
 /**

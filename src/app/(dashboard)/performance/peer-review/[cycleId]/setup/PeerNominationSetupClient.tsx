@@ -50,7 +50,7 @@ const STATUS_MAP: Record<string, { label: string; cls: string }> = {
   PROPOSED: { label: '검토 대기', cls: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]' },
   NOMINATION_APPROVED: { label: '승인', cls: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
   NOMINATION_REJECTED: { label: '거부', cls: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]' },
-  NOMINATION_COMPLETED: { label: '평가 완료', cls: 'bg-[#EEF2FF] text-[#4338CA] border-[#EEF2FF]' },
+  NOMINATION_COMPLETED: { label: '평가 완료', cls: 'bg-[#EDF1FE] text-[#4B6DE0] border-[#EDF1FE]' },
 }
 
 // ─── Component ───────────────────────────────────────────
@@ -139,7 +139,7 @@ export default function PeerNominationSetupClient() {
         <button onClick={() => router.push('/performance/peer-review')} className="p-1 hover:bg-[#F5F5F5] rounded-lg">
           <ArrowLeft className="w-5 h-5 text-[#666]" />
         </button>
-        <Users className="w-6 h-6 text-[#4F46E5]" />
+        <Users className="w-6 h-6 text-[#5E81F4]" />
         <h1 className="text-2xl font-bold text-[#1A1A1A]">동료 평가 추천/지정</h1>
       </div>
 
@@ -159,7 +159,7 @@ export default function PeerNominationSetupClient() {
               <div className="mt-2 space-y-1">
                 {employees.map((emp) => (
                   <button key={emp.id} onClick={() => fetchRecommendations(emp.id)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-[#FAFAFA] ${selectedEmployeeId === emp.id ? 'bg-[#EEF2FF] border border-[#4F46E5]' : ''}`}>
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-[#FAFAFA] ${selectedEmployeeId === emp.id ? 'bg-[#EDF1FE] border border-[#5E81F4]' : ''}`}>
                     <span className="font-medium text-[#1A1A1A]">{emp.name}</span>
                     <span className="text-[#666] ml-2">{emp.employeeNo}</span>
                     {emp.department && <span className="text-[#999] ml-2">· {emp.department.name}</span>}
@@ -173,8 +173,8 @@ export default function PeerNominationSetupClient() {
           {selectedEmployeeId && candidates.length > 0 && (
             <div className="bg-[#E0E7FF] rounded-xl border border-[#C7D2FE] p-5">
               <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="w-4 h-4 text-[#4338CA]" />
-                <h3 className="text-sm font-semibold text-[#4338CA]">AI 추천 평가자</h3>
+                <Sparkles className="w-4 h-4 text-[#4B6DE0]" />
+                <h3 className="text-sm font-semibold text-[#4B6DE0]">AI 추천 평가자</h3>
               </div>
               <div className="space-y-2">
                 {candidates.map((c) => (
@@ -184,7 +184,7 @@ export default function PeerNominationSetupClient() {
                       <p className="text-xs text-[#666]">{c.department} · 협업 점수: {c.totalScore}</p>
                     </div>
                     <button onClick={() => handleNominate(c.employeeId, 'AI_RECOMMENDED', c.totalScore)}
-                      className="flex items-center gap-1 px-3 py-1.5 bg-[#4338CA] text-white rounded-lg text-xs font-medium hover:bg-[#3730A3]">
+                      className="flex items-center gap-1 px-3 py-1.5 bg-[#4B6DE0] text-white rounded-lg text-xs font-medium hover:bg-[#3730A3]">
                       <Plus className="w-3 h-3" /> 추천
                     </button>
                   </div>

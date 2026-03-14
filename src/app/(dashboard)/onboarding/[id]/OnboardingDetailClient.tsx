@@ -186,7 +186,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
     if (loading) {
         return (
             <div className="flex h-96 items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-[#4F46E5]" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#5E81F4]" />
             </div>
         )
     }
@@ -215,7 +215,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                     <ArrowLeft className="h-5 w-5" />
                 </button>
                 <PageHeader title={`${data.employee.name} 온보딩`} description={`${data.employee.department ?? ''} · ${data.employee.position ?? ''}`} />
-                <span className={`ml-auto rounded-full px-3 py-1 text-xs font-semibold ${data.status === 'COMPLETED' ? 'bg-[#DCFCE7] text-[#16A34A]' : data.status === 'IN_PROGRESS' ? 'bg-[#EEF2FF] text-[#4F46E5]' : 'bg-[#F5F5FA] text-[#8181A5]'}`}>
+                <span className={`ml-auto rounded-full px-3 py-1 text-xs font-semibold ${data.status === 'COMPLETED' ? 'bg-[#DCFCE7] text-[#16A34A]' : data.status === 'IN_PROGRESS' ? 'bg-[#EDF1FE] text-[#5E81F4]' : 'bg-[#F5F5FA] text-[#8181A5]'}`}>
                     {data.status === 'COMPLETED' ? t('statusCompleted') : data.status === 'IN_PROGRESS' ? t('statusInProgress') : data.status}
                 </span>
             </div>
@@ -230,7 +230,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                             <div className="relative h-28 w-28">
                                 <svg className="h-28 w-28 -rotate-90" viewBox="0 0 100 100">
                                     <circle cx="50" cy="50" r="42" fill="none" stroke="#F0F0F3" strokeWidth="8" />
-                                    <circle cx="50" cy="50" r="42" fill="none" stroke="#4F46E5" strokeWidth="8" strokeLinecap="round"
+                                    <circle cx="50" cy="50" r="42" fill="none" stroke="#5E81F4" strokeWidth="8" strokeLinecap="round"
                                         strokeDasharray={`${data.progress.percentage * 2.64} 264`} />
                                 </svg>
                                 <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -240,8 +240,8 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                             </div>
                         </div>
                         <div className="grid grid-cols-3 gap-2 text-center">
-                            <div className="rounded-lg bg-[#EEF2FF] px-2 py-1.5">
-                                <div className="text-sm font-bold text-[#4F46E5]">{data.progress.inProgress}</div>
+                            <div className="rounded-lg bg-[#EDF1FE] px-2 py-1.5">
+                                <div className="text-sm font-bold text-[#5E81F4]">{data.progress.inProgress}</div>
                                 <div className="text-[10px] text-[#8181A5]">진행 중</div>
                             </div>
                             <div className="rounded-lg bg-[#FEF2F2] px-2 py-1.5">
@@ -269,14 +269,14 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
 
                     {/* Sign-off Section */}
                     {data.status !== 'COMPLETED' && (
-                        <div className={`rounded-2xl border p-5 ${data.signOffEligibility.eligible ? 'border-[#4F46E5] bg-[#EEF2FF]' : 'border-[#F0F0F3] bg-white'}`}>
+                        <div className={`rounded-2xl border p-5 ${data.signOffEligibility.eligible ? 'border-[#5E81F4] bg-[#EDF1FE]' : 'border-[#F0F0F3] bg-white'}`}>
                             <h3 className="mb-2 text-sm font-semibold text-[#1C1D21]">🖊️ Sign-off</h3>
                             {data.signOffEligibility.eligible ? (
                                 <>
                                     <p className="mb-3 text-xs text-[#16A34A]">✅ 모든 필수 태스크 완료</p>
                                     {canSignOff && (
                                         <button onClick={() => setSignOffDialog(true)} disabled={actionLoading === 'sign-off'}
-                                            className="w-full rounded-lg bg-[#4F46E5] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#4A6DE0] disabled:opacity-50">
+                                            className="w-full rounded-lg bg-[#5E81F4] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#4A6DE0] disabled:opacity-50">
                                             {actionLoading === 'sign-off' ? tCommon('processing') : t('approveOnboarding')}
                                         </button>
                                     )}
@@ -341,7 +341,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                                             <div className="flex items-center gap-2">
                                                 <span className="text-xs text-[#8181A5]">{done}/{tasks.length}</span>
                                                 <div className="h-1.5 w-20 overflow-hidden rounded-full bg-[#F0F0F3]">
-                                                    <div className="h-full rounded-full bg-[#4F46E5] transition-all" style={{ width: `${tasks.length > 0 ? (done / tasks.length) * 100 : 0}%` }} />
+                                                    <div className="h-full rounded-full bg-[#5E81F4] transition-all" style={{ width: `${tasks.length > 0 ? (done / tasks.length) * 100 : 0}%` }} />
                                                 </div>
                                             </div>
                                         </div>
@@ -398,7 +398,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                                             </div>
                                             {c.comment && <p className="mt-3 text-sm text-[#8181A5]">{c.comment}</p>}
                                             {c.aiSummary && (
-                                                <div className="mt-2 rounded-lg bg-[#EEF2FF] p-3 text-xs text-[#4F46E5]">
+                                                <div className="mt-2 rounded-lg bg-[#EDF1FE] p-3 text-xs text-[#5E81F4]">
                                                     🤖 AI 요약: {c.aiSummary}
                                                 </div>
                                             )}
@@ -465,8 +465,8 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                         <DialogDescription>{data.employee.name}의 온보딩을 완료 처리합니다.</DialogDescription>
                     </DialogHeader>
                     <div className="space-y-3">
-                        <div className="rounded-lg bg-[#EEF2FF] p-3">
-                            <p className="text-sm text-[#4F46E5]">✅ {data.signOffEligibility.requiredDone}/{data.signOffEligibility.requiredTotal} 필수 태스크 완료</p>
+                        <div className="rounded-lg bg-[#EDF1FE] p-3">
+                            <p className="text-sm text-[#5E81F4]">✅ {data.signOffEligibility.requiredDone}/{data.signOffEligibility.requiredTotal} 필수 태스크 완료</p>
                             <p className="text-xs text-[#8181A5] mt-1">감정 체크인 {data.checkins.length}회 기록됨</p>
                         </div>
                         <Textarea placeholder={tCommon('enterComment')} value={signOffNote} onChange={(e) => setSignOffNote(e.target.value)} rows={3} />
@@ -476,7 +476,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                         {tCommon('cancel')}
                         </button>
                         <button onClick={handleSignOff} disabled={actionLoading === 'sign-off'}
-                            className="rounded-lg bg-[#4F46E5] px-4 py-2 text-sm font-semibold text-white hover:bg-[#4A6DE0] disabled:opacity-50">
+                            className="rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-semibold text-white hover:bg-[#4A6DE0] disabled:opacity-50">
                             {actionLoading === 'sign-off' ? tCommon('processing') : t('approve')}
                         </button>
                     </DialogFooter>
@@ -512,7 +512,7 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
         <div className={`flex items-start gap-3 px-5 py-3 ${task.status === 'BLOCKED' ? 'border-l-4 border-l-[#EF4444] bg-[#FEF2F2]' : ''}`}>
             <div className="mt-0.5 flex-shrink-0">
                 {task.status === 'DONE' ? <CheckCircle2 className="h-5 w-5 text-[#22C55E]" /> :
-                    task.status === 'IN_PROGRESS' ? <Play className="h-5 w-5 text-[#4F46E5]" /> :
+                    task.status === 'IN_PROGRESS' ? <Play className="h-5 w-5 text-[#5E81F4]" /> :
                         task.status === 'BLOCKED' ? <Lock className="h-5 w-5 text-[#EF4444]" /> :
                             task.status === 'SKIPPED' ? <SkipForward className="h-5 w-5 text-[#8181A5]" /> :
                                 <Circle className="h-5 w-5 text-[#D1D5DB]" />}
@@ -522,7 +522,7 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
                     <span className={`text-sm font-medium ${task.status === 'DONE' || task.status === 'SKIPPED' ? 'text-[#8181A5] line-through' : 'text-[#1C1D21]'}`}>
                         {task.task.title}
                     </span>
-                    {task.task.isRequired && <span className="rounded bg-[#EEF2FF] px-1.5 py-0.5 text-[10px] font-medium text-[#4F46E5]">필수</span>}
+                    {task.task.isRequired && <span className="rounded bg-[#EDF1FE] px-1.5 py-0.5 text-[10px] font-medium text-[#5E81F4]">필수</span>}
                     {!task.task.isRequired && <span className="rounded bg-[#F5F5FA] px-1.5 py-0.5 text-[10px] text-[#8181A5]">{tCommon('select')}</span>}
                 </div>
                 {task.task.description && <p className="mt-0.5 text-xs text-[#8181A5]">{task.task.description}</p>}
@@ -548,7 +548,7 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
                 <div className="flex flex-shrink-0 gap-1">
                     {task.status === 'PENDING' && (
                         <button onClick={() => onStatusChange(task.id, 'IN_PROGRESS')} disabled={isLoading}
-                            className="rounded-lg border border-[#4F46E5] px-2 py-1 text-xs text-[#4F46E5] hover:bg-[#EEF2FF] disabled:opacity-50">
+                            className="rounded-lg border border-[#5E81F4] px-2 py-1 text-xs text-[#5E81F4] hover:bg-[#EDF1FE] disabled:opacity-50">
                             시작
                         </button>
                     )}
@@ -594,7 +594,7 @@ function EmotionCell({ label, value, emoji }: { label: string; value: string; em
 
 function MetricBar({ label, value }: { label: string; value: number }) {
     const height = Math.max(10, (value / 5) * 80)
-    const color = value >= 4 ? '#22C55E' : value >= 3 ? '#4F46E5' : value >= 2 ? '#F59E0B' : '#EF4444'
+    const color = value >= 4 ? '#22C55E' : value >= 3 ? '#5E81F4' : value >= 2 ? '#F59E0B' : '#EF4444'
     return (
         <div className="flex flex-col items-center">
             <div className="w-3 rounded-t" style={{ height, backgroundColor: color }} />

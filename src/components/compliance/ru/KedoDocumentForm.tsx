@@ -101,7 +101,7 @@ export default function KedoDocumentForm({ document, onClose, onSuccess }: Props
                 onChange={handleChange}
                 required
                 placeholder={tCommon('placeholderEmployeeUuid')}
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
               />
             </div>
           )}
@@ -124,7 +124,7 @@ export default function KedoDocumentForm({ document, onClose, onSuccess }: Props
               onChange={handleChange}
               required
               disabled={editing}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 disabled:bg-[#FAFAFA]"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 disabled:bg-[#FAFAFA]"
             >
               <option value="EMPLOYMENT_CONTRACT">근로계약서</option>
               <option value="SUPPLEMENTARY_AGREEMENT">부속합의서</option>
@@ -148,7 +148,7 @@ export default function KedoDocumentForm({ document, onClose, onSuccess }: Props
               onChange={handleChange}
               required
               placeholder={tCommon('placeholderDocTitle')}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
             />
           </div>
 
@@ -160,7 +160,7 @@ export default function KedoDocumentForm({ document, onClose, onSuccess }: Props
                 name="signatureLevel"
                 value={form.signatureLevel}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
               >
                 <option value="PEP">PEP (간이)</option>
                 <option value="UNEP">УНЭП (강화 비인증)</option>
@@ -174,7 +174,7 @@ export default function KedoDocumentForm({ document, onClose, onSuccess }: Props
                 name="expiresAt"
                 value={form.expiresAt}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
               />
             </div>
           </div>
@@ -188,7 +188,7 @@ export default function KedoDocumentForm({ document, onClose, onSuccess }: Props
               onChange={handleChange}
               rows={4}
               placeholder={tCommon('placeholderDocContentOptional')}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999] resize-none"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999] resize-none"
             />
           </div>
 

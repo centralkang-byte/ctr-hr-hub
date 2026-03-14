@@ -77,7 +77,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
 
   const SENTIMENT_BADGE: Record<string, { label: string; className: string }> = {
     POSITIVE: { label: t('sentimentPositive'), className: 'bg-[#DCFCE7] text-[#16A34A]' },
-    MIXED: { label: t('sentimentMixed'), className: 'bg-[#EEF2FF] text-[#4F46E5]' },
+    MIXED: { label: t('sentimentMixed'), className: 'bg-[#EDF1FE] text-[#5E81F4]' },
     CONCERNING: { label: t('sentimentConcerning'), className: 'bg-[#FEF2F2] text-[#EF4444]' },
   }
 
@@ -184,7 +184,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
           return (
             <button
               type="button"
-              className="text-sm font-medium text-[#4F46E5] hover:underline"
+              className="text-sm font-medium text-[#5E81F4] hover:underline"
               onClick={(e) => {
                 e.stopPropagation()
                 selectEmployee(row.employee.id, row.employee.name)
@@ -270,7 +270,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
         <div className="flex items-center gap-3">
           <label className="text-sm font-medium text-[#1C1D21]">{t('selectEmployee')}</label>
           <select
-            className="rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
+            className="rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10"
             value={selectedEmployeeId ?? ''}
             onChange={(e) => {
               const emp = uniqueEmployees.find((u) => u.id === e.target.value)
@@ -382,7 +382,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
           {aiSummary && (
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <div className="flex items-center gap-2 mb-4">
-                <Sparkles className="h-4 w-4 text-[#4F46E5]" />
+                <Sparkles className="h-4 w-4 text-[#5E81F4]" />
                 <h3 className="text-base font-bold text-[#1C1D21] tracking-[-0.02em]">
                   {t('aiAnalysisSummary')}
                 </h3>
@@ -416,7 +416,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
                     <ul className="space-y-1 text-sm text-[#8181A5]">
                       {aiSummary.key_observations.map((obs, i) => (
                         <li key={i} className="flex items-start gap-2">
-                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#4F46E5]" />
+                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#5E81F4]" />
                           {obs}
                         </li>
                       ))}

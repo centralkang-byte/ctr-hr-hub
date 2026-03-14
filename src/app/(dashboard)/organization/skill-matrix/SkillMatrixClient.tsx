@@ -182,7 +182,7 @@ function RadarModal({
         <div className="p-5">
           {loading ? (
             <div className="flex items-center justify-center h-64">
-              <div className="animate-spin w-6 h-6 border-2 border-[#4F46E5] border-t-transparent rounded-full" />
+              <div className="animate-spin w-6 h-6 border-2 border-[#5E81F4] border-t-transparent rounded-full" />
             </div>
           ) : !data?.radarData.length ? (
             <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
@@ -193,7 +193,7 @@ function RadarModal({
                 {[
                   { label: '미달 역량', value: data.summary.criticalGaps, color: 'text-[#B91C1C]' },
                   { label: '강점 역량', value: data.summary.strengths, color: 'text-[#047857]' },
-                  { label: '달성률', value: `${data.summary.overallProgress}%`, color: 'text-[#4F46E5]' },
+                  { label: '달성률', value: `${data.summary.overallProgress}%`, color: 'text-[#5E81F4]' },
                 ].map((k) => (
                   <div key={k.label} className="bg-[#FAFAFA] rounded-lg p-3 text-center">
                     <p className="text-xs text-[#666]">{k.label}</p>
@@ -327,7 +327,7 @@ export default function SkillMatrixClient({user,
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: '전체 직원', value: gapReport.totalEmployees, icon: Users, color: 'text-[#1A1A1A]' },
-            { label: '평가 완료율', value: `${gapReport.completionRate}%`, icon: BarChart2, color: 'text-[#4F46E5]' },
+            { label: '평가 완료율', value: `${gapReport.completionRate}%`, icon: BarChart2, color: 'text-[#5E81F4]' },
             { label: '주요 갭 역량', value: gapReport.topGaps.length, icon: TrendingDown, color: 'text-[#B91C1C]' },
             { label: '강점 역량', value: gapReport.topStrengths.length, icon: TrendingUp, color: 'text-[#047857]' },
           ].map((k) => (
@@ -355,7 +355,7 @@ export default function SkillMatrixClient({user,
               onClick={() => setActiveTab(t.key)}
               className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === t.key
-                  ? 'border-[#4F46E5] text-[#4F46E5]'
+                  ? 'border-[#5E81F4] text-[#5E81F4]'
                   : 'border-transparent text-[#666] hover:text-[#333]'
               }`}
             >
@@ -367,7 +367,7 @@ export default function SkillMatrixClient({user,
         <div className="p-5">
           {loading ? (
             <div className="flex items-center justify-center h-48">
-              <div className="animate-spin w-6 h-6 border-2 border-[#4F46E5] border-t-transparent rounded-full" />
+              <div className="animate-spin w-6 h-6 border-2 border-[#5E81F4] border-t-transparent rounded-full" />
             </div>
           ) : (
             <>
@@ -424,7 +424,7 @@ export default function SkillMatrixClient({user,
                               <td className="px-3 py-2 border border-[#E8E8E8] whitespace-nowrap">
                                 <button
                                   onClick={() => setRadarTarget(emp.employeeId)}
-                                  className="text-left hover:text-[#4F46E5] transition-colors"
+                                  className="text-left hover:text-[#5E81F4] transition-colors"
                                 >
                                   <p className="font-medium text-[#1A1A1A]">{emp.employeeName}</p>
                                   <p className="text-[#999]">{emp.grade} · {emp.department}</p>
@@ -571,7 +571,7 @@ export default function SkillMatrixClient({user,
                   {/* 교육 추천 */}
                   <div className="lg:col-span-2">
                     <h3 className="text-sm font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
-                      <BookOpen className="w-4 h-4 text-[#4338CA]" />
+                      <BookOpen className="w-4 h-4 text-[#4B6DE0]" />
                       교육 추천 (갭 기반)
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -580,8 +580,8 @@ export default function SkillMatrixClient({user,
                           key={g.competencyId}
                           className="p-4 rounded-xl border border-[#E0E7FF] bg-[#F5F3FF]"
                         >
-                          <p className="text-sm font-semibold text-[#4338CA] mb-1">{g.competencyName}</p>
-                          <p className="text-xs text-[#6366F1] mb-2">평균 갭: {g.avgGap?.toFixed(1)} / 대상: {g.assessed}명</p>
+                          <p className="text-sm font-semibold text-[#4B6DE0] mb-1">{g.competencyName}</p>
+                          <p className="text-xs text-[#8B5CF6] mb-2">평균 갭: {g.avgGap?.toFixed(1)} / 대상: {g.assessed}명</p>
                           <p className="text-xs text-[#555]">
                             {g.category.name} 역량 강화를 위한 교육 과정을 검토하세요.
                           </p>

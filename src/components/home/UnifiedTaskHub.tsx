@@ -63,9 +63,9 @@ const TYPE_ICON: Record<string, React.ElementType> = {
 }
 
 const TYPE_ICON_COLOR: Record<string, string> = {
-  [UnifiedTaskType.LEAVE_APPROVAL]: 'text-[#4F46E5]',
+  [UnifiedTaskType.LEAVE_APPROVAL]: 'text-[#5E81F4]',
   [UnifiedTaskType.PERFORMANCE_REVIEW]: 'text-[#A855F7]',
-  [UnifiedTaskType.ONBOARDING_TASK]: 'text-[#4F46E5]',
+  [UnifiedTaskType.ONBOARDING_TASK]: 'text-[#5E81F4]',
   [UnifiedTaskType.OFFBOARDING_TASK]: 'text-[#F59E0B]',
   [UnifiedTaskType.PAYROLL_REVIEW]: 'text-[#EF4444]',
   [UnifiedTaskType.BENEFIT_REQUEST]: 'text-[#06B6D4]',
@@ -109,7 +109,7 @@ function getDdayColor(dueDate?: string): string {
   if (diff < 0) return 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]'
   if (diff === 0) return 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]'
   if (diff <= 3) return 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]'
-  return 'bg-[#EEF2FF] text-[#4F46E5] border-[#C7D2FE]'
+  return 'bg-[#EDF1FE] text-[#5E81F4] border-[#C7D2FE]'
 }
 
 function classifyTask(task: UnifiedTask): 'urgent' | 'week' | 'month' | 'done' {
@@ -198,7 +198,7 @@ function TaskCard({ task, user, onAction, processing }: TaskCardProps) {
               <Button
                 size="sm"
                 variant="ghost"
-                className="h-7 gap-1 px-2 text-[11px] text-[#4338CA] hover:bg-[#EEF2FF] hover:text-[#4338CA]"
+                className="h-7 gap-1 px-2 text-[11px] text-[#4B6DE0] hover:bg-[#EDF1FE] hover:text-[#4B6DE0]"
                 disabled={isBusy}
                 onClick={() => onAction(task.id, 'approve', task.sourceId)}
                 title="승인"
@@ -383,17 +383,17 @@ export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
       <CardHeader className="border-b border-[#F0F0F3] pb-3 pt-4">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1C1D21]">
-            <ListChecks className="h-4 w-4 text-[#4F46E5]" />
+            <ListChecks className="h-4 w-4 text-[#5E81F4]" />
             나의 할 일
             {pendingCount > 0 && (
-              <span className="rounded-full bg-[#4F46E5] px-2 py-0.5 text-[10px] font-bold text-white">
+              <span className="rounded-full bg-[#5E81F4] px-2 py-0.5 text-[10px] font-bold text-white">
                 {pendingCount}
               </span>
             )}
           </CardTitle>
           <Link
             href="/my/tasks"
-            className="text-xs font-medium text-[#4F46E5] hover:underline"
+            className="text-xs font-medium text-[#5E81F4] hover:underline"
           >
             전체 보기 →
           </Link>
@@ -412,8 +412,8 @@ export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
                 type="button"
                 onClick={() => setFilter(tab.key as FilterKey)}
                 className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${activeFilter === tab.key
-                    ? 'bg-[#4F46E5] text-white'
-                    : 'bg-[#F5F5FA] text-[#8181A5] hover:bg-[#EEF2FF] hover:text-[#4F46E5]'
+                    ? 'bg-[#5E81F4] text-white'
+                    : 'bg-[#F5F5FA] text-[#8181A5] hover:bg-[#EDF1FE] hover:text-[#5E81F4]'
                   }`}
               >
                 {tab.label}
@@ -440,7 +440,7 @@ export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
         ) : pendingCount === 0 && done.length === 0 ? (
           /* Empty state */
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <PartyPopper className="mb-3 h-10 w-10 text-[#4F46E5] opacity-70" />
+            <PartyPopper className="mb-3 h-10 w-10 text-[#5E81F4] opacity-70" />
             <p className="text-sm font-medium text-[#1C1D21]">모든 할 일을 완료했습니다! 🎉</p>
             <p className="mt-1 text-xs text-[#8181A5]">처리할 항목이 없습니다.</p>
           </div>
@@ -468,7 +468,7 @@ export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
               user={user}
               onAction={handleAction}
               processing={processing}
-              accentColor="bg-[#4F46E5]"
+              accentColor="bg-[#5E81F4]"
             />
             {/* Completed section — collapsible */}
             {done.length > 0 && (

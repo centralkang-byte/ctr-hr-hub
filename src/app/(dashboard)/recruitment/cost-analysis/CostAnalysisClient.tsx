@@ -93,7 +93,7 @@ const COST_TYPE_LABELS: Record<string, string> = {
 const COST_TYPE_BADGE_STYLES: Record<string, string> = {
   AD_FEE: 'bg-[#E3F2FD] text-[#1565C0]',
   AGENCY_FEE: 'bg-[#F3E5F5] text-[#7B1FA2]',
-  REFERRAL_BONUS: 'bg-[#EEF2FF] text-[#2E7D32]',
+  REFERRAL_BONUS: 'bg-[#EDF1FE] text-[#2E7D32]',
   ASSESSMENT_TOOL: 'bg-[#FFF3E0] text-[#E65100]',
   TRAVEL: 'bg-[#E0F7FA] text-[#00838F]',
   RELOCATION: 'bg-[#FFF3E0] text-[#E65100]',
@@ -190,7 +190,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-8 h-8 animate-spin text-[#4F46E5]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#5E81F4]" />
       </div>
     )
   }
@@ -207,7 +207,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
           <select
             value={String(year)}
             onChange={(e) => setYear(Number(e.target.value))}
-            className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors duration-150"
+            className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
           >
             {[2024, 2025, 2026].map((y) => (
               <option key={y} value={String(y)}>{y}년</option>
@@ -231,7 +231,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
             onClick={() => setTab(t)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors duration-150 ${
               tab === t
-                ? 'border-[#4F46E5] text-[#4F46E5]'
+                ? 'border-[#5E81F4] text-[#5E81F4]'
                 : 'border-transparent text-[#999] hover:text-[#1A1A1A]'
             }`}
           >
@@ -261,7 +261,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                 <DollarSign className="w-4 h-4 text-[#999]" />
                 <p className="text-xs text-[#999]">인당 채용 단가</p>
               </div>
-              <p className="text-3xl font-bold text-[#4F46E5]">{formatCurrency(analysis.costPerHire)}</p>
+              <p className="text-3xl font-bold text-[#5E81F4]">{formatCurrency(analysis.costPerHire)}</p>
             </div>
             <div className="bg-white border border-[#E8E8E8] rounded-xl p-5">
               <div className="flex items-center gap-2 mb-1">
@@ -276,7 +276,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
           <div className="bg-white border border-[#E8E8E8] rounded-xl">
             <div className="p-6 pb-0">
               <h2 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em] flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-[#4F46E5]" />
+                <BarChart3 className="w-5 h-5 text-[#5E81F4]" />
                 채용 소스별 효율
               </h2>
             </div>
@@ -305,14 +305,14 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                             <td className="px-4 py-3 font-medium text-[#1A1A1A]">{SOURCE_LABELS[s.source] ?? s.source}</td>
                             <td className="px-4 py-3 text-right text-[#1A1A1A]">{formatCurrency(s.totalCost)}</td>
                             <td className="px-4 py-3 text-right text-[#1A1A1A]">{s.hires}명</td>
-                            <td className="px-4 py-3 text-right font-semibold text-[#4F46E5]">
+                            <td className="px-4 py-3 text-right font-semibold text-[#5E81F4]">
                               {formatCurrency(s.costPerHire)}
                             </td>
                             <td className="px-4 py-3 text-right">
                               <div className="flex items-center justify-end gap-2">
                                 <div className="w-16 h-2 bg-[#F5F5F5] rounded-full overflow-hidden">
                                   <div
-                                    className="h-full bg-[#4F46E5] rounded-full"
+                                    className="h-full bg-[#5E81F4] rounded-full"
                                     style={{ width: `${pct}%` }}
                                   />
                                 </div>
@@ -380,7 +380,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                           <td className="px-4 py-3 text-right text-[#1A1A1A]">{formatCurrency(p.totalCost)}</td>
                           <td className="px-4 py-3 text-right text-[#1A1A1A]">{p.headcount}명</td>
                           <td className="px-4 py-3 text-right text-[#1A1A1A]">{p.hires}명</td>
-                          <td className="px-4 py-3 text-right font-semibold text-[#4F46E5]">
+                          <td className="px-4 py-3 text-right font-semibold text-[#5E81F4]">
                             {formatCurrency(p.costPerHire)}
                           </td>
                         </tr>
@@ -403,7 +403,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
             <select
               value={costFilter}
               onChange={(e) => setCostFilter(e.target.value)}
-              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors duration-150"
+              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
             >
               <option value="ALL">전체</option>
               {Object.entries(COST_TYPE_LABELS).map(([k, v]) => (
@@ -493,7 +493,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                 <select
                   value={form.applicantSource}
                   onChange={(e) => setForm({ ...form, applicantSource: e.target.value })}
-                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
                 >
                   {Object.entries(SOURCE_LABELS).map(([k, v]) => (
                     <option key={k} value={k}>{v}</option>
@@ -505,7 +505,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                 <select
                   value={form.costType}
                   onChange={(e) => setForm({ ...form, costType: e.target.value })}
-                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
                 >
                   {Object.entries(COST_TYPE_LABELS).map(([k, v]) => (
                     <option key={k} value={k}>{v}</option>
@@ -520,7 +520,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                     placeholder="0"
                     value={form.amount}
                     onChange={(e) => setForm({ ...form, amount: e.target.value })}
-                    className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors duration-150"
+                    className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
                   />
                 </div>
                 <div>
@@ -528,7 +528,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                   <select
                     value={form.currency}
                     onChange={(e) => setForm({ ...form, currency: e.target.value })}
-                    className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors duration-150"
+                    className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
                   >
                     {['KRW', 'USD', 'CNY', 'RUB', 'VND', 'MXN', 'PLN'].map((c) => (
                       <option key={c} value={c}>{c}</option>
@@ -542,7 +542,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                   placeholder="거래처명"
                   value={form.vendorName}
                   onChange={(e) => setForm({ ...form, vendorName: e.target.value })}
-                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
                 />
               </div>
               <div>
@@ -551,7 +551,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                   type="date"
                   value={form.invoiceDate}
                   onChange={(e) => setForm({ ...form, invoiceDate: e.target.value })}
-                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
                 />
               </div>
               <div>
@@ -560,7 +560,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                   placeholder={tCommon('placeholderCostDesc')}
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
                 />
               </div>
             </div>
@@ -609,7 +609,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-[#999]">금액</span>
-                <span className="text-sm font-bold text-[#4F46E5]">{formatCurrency(detailCost.amount)}</span>
+                <span className="text-sm font-bold text-[#5E81F4]">{formatCurrency(detailCost.amount)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-[#999]">통화</span>

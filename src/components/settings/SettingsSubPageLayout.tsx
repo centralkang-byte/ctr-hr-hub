@@ -42,7 +42,7 @@ export function SettingsSubPageLayout({ config, activeTab, children }: SettingsS
       <div className="p-6">
         {/* Breadcrumb */}
         <nav className="mb-4 flex items-center gap-1.5 text-sm">
-          <Link href="/settings" className="text-[#8181A5] transition-colors hover:text-[#4F46E5]">
+          <Link href="/settings" className="text-[#8181A5] transition-colors hover:text-[#5E81F4]">
             설정
           </Link>
           <ChevronRight className="h-3.5 w-3.5 text-[#8181A5]" />
@@ -58,8 +58,8 @@ export function SettingsSubPageLayout({ config, activeTab, children }: SettingsS
         {/* Header + Company Selector */}
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#4F46E5]/10">
-              <Icon className="h-5 w-5 text-[#4F46E5]" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#5E81F4]/10">
+              <Icon className="h-5 w-5 text-[#5E81F4]" />
             </div>
             <div>
               <h1 className="text-xl font-bold text-[#1C1D21]">{config.label}</h1>
@@ -82,7 +82,7 @@ export function SettingsSubPageLayout({ config, activeTab, children }: SettingsS
                   className={cn(
                     'flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm transition-colors',
                     activeTab === tab.slug
-                      ? 'bg-[#4F46E5]/8 font-medium text-[#4F46E5] border-l-2 border-[#4F46E5]'
+                      ? 'bg-[#5E81F4]/8 font-medium text-[#5E81F4] border-l-2 border-[#5E81F4]'
                       : 'text-[#1C1D21]/70 hover:bg-[#F5F5FA] hover:text-[#1C1D21]',
                   )}
                 >

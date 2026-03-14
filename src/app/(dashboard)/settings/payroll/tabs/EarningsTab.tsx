@@ -22,7 +22,7 @@ export function EarningsTab({ companyId }: Props) {
       .finally(() => setLoading(false))
   }, [companyId])
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
 
   return (
     <div className="space-y-4">
@@ -42,7 +42,7 @@ export function EarningsTab({ companyId }: Props) {
             </tr></thead>
             <tbody className="divide-y divide-[#F0F0F3]">{items.map((item) => (
               <tr key={item.id} className="hover:bg-[#F5F5FA] transition-colors">
-                <td className="px-4 py-3 text-sm font-medium text-[#4F46E5]">{item.code}</td>
+                <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{item.code}</td>
                 <td className={TABLE_STYLES.cell}>{item.name}</td>
                 <td className={TABLE_STYLES.cellMuted}>{item.category}</td>
                 <td className="px-4 py-3 text-center"><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${item.isTaxable ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}>{item.isTaxable ? '과세' : '비과세'}</span></td>

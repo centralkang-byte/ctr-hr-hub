@@ -113,7 +113,7 @@ export default function CompensationAnalyticsClient() {
                 <XAxis dataKey="grade_name" tick={{ fontSize: 12 }} />
                 <YAxis domain={[0.5, 1.5]} />
                 <Tooltip formatter={(v) => typeof v === 'number' ? v.toFixed(3) : v} />
-                <Bar dataKey="avg_compa_ratio" fill="#6366F1" radius={[4, 4, 0, 0]} name="Compa-Ratio" />
+                <Bar dataKey="avg_compa_ratio" fill="#8B5CF6" radius={[4, 4, 0, 0]} name="Compa-Ratio" />
               </BarChart>
             </ResponsiveContainer>
           ) : (

@@ -76,7 +76,7 @@ interface LeavePolicyLocal {
 
 const statusBadgeClass: Record<string, string> = {
   PENDING: 'bg-[#FFF3E0] text-[#FF9800]',
-  APPROVED: 'bg-[#EEF2FF] text-[#2E7D32]',
+  APPROVED: 'bg-[#EDF1FE] text-[#2E7D32]',
   REJECTED: 'bg-[#FFEBEE] text-[#F44336]',
   CANCELLED: 'bg-[#F5F5F5] text-[#666]',
 }
@@ -369,7 +369,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                 {b.policy.name}
               </p>
               <div className="flex items-end gap-1">
-                <p className={`text-3xl font-bold tracking-[-0.02em] ${remaining > 0 ? 'text-[#4F46E5]' : 'text-[#999]'}`}>
+                <p className={`text-3xl font-bold tracking-[-0.02em] ${remaining > 0 ? 'text-[#5E81F4]' : 'text-[#999]'}`}>
                   {remaining}
                 </p>
                 <p className="text-sm text-[#999] mb-1">/ {total}{t('fullDay')}</p>
@@ -377,7 +377,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
               {/* Progress bar */}
               <div className="mt-3 h-2 rounded-full bg-[#E8E8E8] overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#4F46E5] to-[#00BFA5]"
+                  className="h-full rounded-full bg-gradient-to-r from-[#5E81F4] to-[#00BFA5]"
                   style={{ width: `${Math.min(usagePct, 100)}%` }}
                 />
               </div>
@@ -479,7 +479,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                           ? 'text-[#EF4444]'
                           : projectedRemaining <= 3
                           ? 'text-[#F59E0B]'
-                          : 'text-[#4F46E5]'
+                          : 'text-[#5E81F4]'
                       }`}
                     >
                       신청: {requestedDaysNum}{t('fullDay')} | 잔여: {projectedRemaining}{t('fullDay')}

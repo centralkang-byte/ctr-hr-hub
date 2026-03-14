@@ -148,7 +148,7 @@ export function HrDocumentManager({ user }: HrDocumentManagerProps) {
                   type="text"
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
-                  className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+                  className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
                   placeholder={tCommon('placeholderDocTitle')}
                 />
               </div>
@@ -160,7 +160,7 @@ export function HrDocumentManager({ user }: HrDocumentManagerProps) {
                   <select
                     value={formDocType}
                     onChange={(e) => setFormDocType(e.target.value)}
-                    className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+                    className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
                   >
                     {Object.entries(DOC_TYPE_LABELS).map(([key, label]) => (
                       <option key={key} value={key}>
@@ -177,7 +177,7 @@ export function HrDocumentManager({ user }: HrDocumentManagerProps) {
                     type="text"
                     value={formVersion}
                     onChange={(e) => setFormVersion(e.target.value)}
-                    className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+                    className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
                   />
                 </div>
               </div>
@@ -189,7 +189,7 @@ export function HrDocumentManager({ user }: HrDocumentManagerProps) {
                   value={formContent}
                   onChange={(e) => setFormContent(e.target.value)}
                   rows={10}
-                  className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/10"
+                  className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
                   placeholder={tCommon('placeholderDocContent')}
                 />
               </div>

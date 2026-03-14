@@ -162,7 +162,7 @@ function translateDocType(type: string): string {
 function VisibilityBadge({ level }: { level: string }) {
   const colors: Record<string, string> = {
     public: 'bg-[#D1FAE5] text-[#047857]',
-    team: 'bg-[#E0E7FF] text-[#4338CA]',
+    team: 'bg-[#E0E7FF] text-[#4B6DE0]',
     manager: 'bg-[#FEF3C7] text-[#B45309]',
     private: 'bg-[#F5F5F5] text-[#555]',
   }
@@ -275,15 +275,15 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
       {/* Header Profile Card */}
       <div className={`${CARD_STYLES.padded} flex items-start gap-6 relative overflow-hidden`}>
         {/* Decorative background shape */}
-        <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#4F46E5]/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#5E81F4]/5 rounded-full blur-3xl pointer-events-none" />
         
         <div className="relative shrink-0">
-          <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#4F46E5] to-[#4338CA] flex items-center justify-center text-white text-3xl font-bold shadow-md">
+          <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#5E81F4] to-[#4B6DE0] flex items-center justify-center text-white text-3xl font-bold shadow-md">
             {employee.name.slice(0, 1)}
           </div>
           <button
             onClick={() => toast({ title: 'Coming soon', description: '아바타 업로드는 곧 지원됩니다.' })}
-            className="absolute -bottom-2 -right-2 w-8 h-8 bg-white border border-[#E8E8E8] rounded-full flex items-center justify-center shadow-sm hover:bg-[#FAFAFA] text-[#555] hover:text-[#4F46E5] transition-colors"
+            className="absolute -bottom-2 -right-2 w-8 h-8 bg-white border border-[#E8E8E8] rounded-full flex items-center justify-center shadow-sm hover:bg-[#FAFAFA] text-[#555] hover:text-[#5E81F4] transition-colors"
           >
             <Camera className="w-4 h-4" />
           </button>
@@ -295,10 +295,10 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                 {employee.name}
                 {employee.nameEn && <span className="text-sm font-normal text-[#666]">({employee.nameEn})</span>}
               </h1>
-              <p className="text-[#4F46E5] font-medium mt-1">{asgn?.jobGrade?.name ?? '-'} · {asgn?.department?.name ?? '-'}</p>
+              <p className="text-[#5E81F4] font-medium mt-1">{asgn?.jobGrade?.name ?? '-'} · {asgn?.department?.name ?? '-'}</p>
             </div>
             <div className="text-right">
-              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-[#EEF2FF] text-[#4338CA]">
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-[#EDF1FE] text-[#4B6DE0]">
                 재직중
               </span>
             </div>
@@ -321,11 +321,11 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
               onClick={() => setActiveTab(tab.id)}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all ${
                 isActive 
-                  ? 'bg-white text-[#4338CA] shadow-sm' 
+                  ? 'bg-white text-[#4B6DE0] shadow-sm' 
                   : 'text-[#666] hover:text-[#333] hover:bg-[#E8E8E8]/50'
               }`}
             >
-              <tab.icon className={`w-4 h-4 ${isActive ? 'text-[#4F46E5]' : ''}`} />
+              <tab.icon className={`w-4 h-4 ${isActive ? 'text-[#5E81F4]' : ''}`} />
               {tab.label}
             </button>
           )
@@ -355,7 +355,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                     <div className="flex justify-between items-center">
                       <p className="text-sm text-[#1A1A1A] font-medium">{value}</p>
                       {action && (
-                        <button onClick={action} className="text-xs text-[#4F46E5] hover:underline">수정 요청</button>
+                        <button onClick={action} className="text-xs text-[#5E81F4] hover:underline">수정 요청</button>
                       )}
                     </div>
                   </div>
@@ -368,7 +368,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-base font-semibold text-[#1A1A1A]">자기소개</h2>
                 {!editingBio && (
-                  <button onClick={() => { setEditingBio(true); setBioValue(ext.bio ?? '') }} className="flex items-center gap-1 text-sm text-[#4F46E5] hover:underline">
+                  <button onClick={() => { setEditingBio(true); setBioValue(ext.bio ?? '') }} className="flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">
                     <Edit3 className="w-3.5 h-3.5" /> 편집
                   </button>
                 )}
@@ -380,7 +380,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                     onChange={(e) => setBioValue(e.target.value)}
                     maxLength={500}
                     rows={4}
-                    className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/20 focus:border-[#4F46E5] resize-none"
+                    className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/20 focus:border-[#5E81F4] resize-none"
                     placeholder={tCommon('placeholderSelfIntro')}
                   />
                   <div className="flex justify-between items-center">
@@ -407,9 +407,9 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
               <h2 className="text-base font-semibold text-[#1A1A1A] mb-4">보유 스킬</h2>
               <div className="flex flex-wrap gap-2 mb-4">
                 {ext.skills.map((skill) => (
-                  <span key={skill} className="flex items-center gap-1.5 bg-[#EEF2FF] text-[#4338CA] px-3 py-1.5 rounded-full text-sm font-medium border border-[#4F46E5]/20 shadow-sm">
+                  <span key={skill} className="flex items-center gap-1.5 bg-[#EDF1FE] text-[#4B6DE0] px-3 py-1.5 rounded-full text-sm font-medium border border-[#5E81F4]/20 shadow-sm">
                     {skill}
-                    <button onClick={() => removeSkill(skill)} className="hover:text-[#DC2626] transition-colors rounded-full hover:bg-[#4F46E5]/10 p-0.5">
+                    <button onClick={() => removeSkill(skill)} className="hover:text-[#DC2626] transition-colors rounded-full hover:bg-[#5E81F4]/10 p-0.5">
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </span>
@@ -423,7 +423,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                   onKeyDown={(e) => { if (e.key === 'Enter') addSkill() }}
                   placeholder={tCommon('placeholderSkillAdd')}
                   maxLength={30}
-                  className="flex-1 px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/20"
+                  className="flex-1 px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/20"
                 />
                 <button onClick={addSkill} className={`${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg text-sm font-medium shadow-sm`}>
                   추가
@@ -440,7 +440,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                   <AlertCircle className="w-4 h-4 text-[#F59E0B]" />
                   비상연락처
                 </h2>
-                <button onClick={() => setShowEcForm(true)} className="text-xs text-[#4F46E5] hover:underline font-medium">추가하기</button>
+                <button onClick={() => setShowEcForm(true)} className="text-xs text-[#5E81F4] hover:underline font-medium">추가하기</button>
               </div>
               
               {emergencyContacts.length === 0 ? (
@@ -466,7 +466,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
             {/* 공개 설정 위젯 */}
             <div className={`${CARD_STYLES.kpi} shadow-sm border border-[#E8E8E8]`}>
               <div className="flex items-center gap-1.5 border-b border-[#F5F5F5] pb-3 mb-3">
-                <Globe className="w-4 h-4 text-[#6366F1]" />
+                <Globe className="w-4 h-4 text-[#8B5CF6]" />
                 <h2 className="text-sm font-semibold text-[#1A1A1A]">공개 범위 설정</h2>
               </div>
               <div className="space-y-3">
@@ -482,7 +482,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                       <select
                         value={(visibility as any)[field]}
                         onChange={(e) => saveVisibility(field as keyof ProfileVisibility, e.target.value)}
-                        className="text-[10px] border border-[#D4D4D4] rounded px-1 py-0.5 focus:ring-1 focus:ring-[#4F46E5]/20 bg-white"
+                        className="text-[10px] border border-[#D4D4D4] rounded px-1 py-0.5 focus:ring-1 focus:ring-[#5E81F4]/20 bg-white"
                       >
                         {VISIBILITY_OPTIONS.map((opt) => (
                           <option key={opt} value={opt}>{VISIBILITY_LABELS[opt]}</option>
@@ -504,16 +504,16 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
           {employee.employeeHistories.length === 0 ? (
             <EmptyState title="이력 없음" description="등록된 인사 발령 기록이 없습니다." />
           ) : (
-            <div className="space-y-8 relative before:absolute before:inset-0 before:ml-4 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-[#EEF2FF] before:via-[#4F46E5]/20 before:to-transparent">
+            <div className="space-y-8 relative before:absolute before:inset-0 before:ml-4 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-[#EDF1FE] before:via-[#5E81F4]/20 before:to-transparent">
               {employee.employeeHistories.map((hist) => (
                 <div key={hist.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full border-4 border-white bg-[#4F46E5] text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm relative z-10 mx-auto">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full border-4 border-white bg-[#5E81F4] text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm relative z-10 mx-auto">
                     {hist.changeType === 'HIRE' ? <User className="w-3 h-3" /> : <Briefcase className="w-3 h-3" />}
                   </div>
                   
-                  <div className="w-[calc(100%-3rem)] md:w-[calc(50%-2rem)] p-4 rounded-xl border border-[#E8E8E8] bg-white shadow-sm hover:border-[#4F46E5]/30 transition-colors">
+                  <div className="w-[calc(100%-3rem)] md:w-[calc(50%-2rem)] p-4 rounded-xl border border-[#E8E8E8] bg-white shadow-sm hover:border-[#5E81F4]/30 transition-colors">
                     <div className="flex items-center justify-between mb-2">
-                       <span className="text-xs font-semibold text-[#4338CA] bg-[#EEF2FF] px-2 py-0.5 rounded-md">
+                       <span className="text-xs font-semibold text-[#4B6DE0] bg-[#EDF1FE] px-2 py-0.5 rounded-md">
                          {translateChangeType(hist.changeType)}
                        </span>
                        <span className="text-xs text-[#999] font-medium">{formatDate(hist.effectiveDate)}</span>
@@ -630,7 +630,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {employee.employeeDocuments.map((doc) => (
                 <div key={doc.id} className="flex items-center p-4 border border-[#E8E8E8] rounded-xl hover:shadow-sm hover:border-[#D4D4D4] transition-all bg-white group cursor-pointer">
-                  <div className="w-10 h-10 rounded-lg bg-[#EEF2FF] flex items-center justify-center text-[#4F46E5] shrink-0 mr-4">
+                  <div className="w-10 h-10 rounded-lg bg-[#EDF1FE] flex items-center justify-center text-[#5E81F4] shrink-0 mr-4">
                     <FileText className="w-5 h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -670,12 +670,12 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                     value={ecForm[key as keyof typeof ecForm] as string}
                     onChange={(e) => setEcForm((prev) => ({ ...prev, [key]: e.target.value }))}
                     placeholder={placeholder}
-                    className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/20 focus:border-[#4F46E5]"
+                    className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/20 focus:border-[#5E81F4]"
                   />
                 </div>
               ))}
               <label className="flex items-center gap-2 text-sm text-[#333] pt-2 cursor-pointer">
-                <input type="checkbox" checked={ecForm.isPrimary} onChange={(e) => setEcForm((prev) => ({ ...prev, isPrimary: e.target.checked }))} className="w-4 h-4 rounded border-[#D4D4D4] text-[#4F46E5] cursor-pointer" />
+                <input type="checkbox" checked={ecForm.isPrimary} onChange={(e) => setEcForm((prev) => ({ ...prev, isPrimary: e.target.checked }))} className="w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4] cursor-pointer" />
                 주요 연락처로 설정
               </label>
             </div>
@@ -709,7 +709,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                   value={changeReqValue}
                   onChange={(e) => setChangeReqValue(e.target.value)}
                   placeholder={tCommon('placeholderChangeNewValue')}
-                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/20 focus:border-[#4F46E5]"
+                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/20 focus:border-[#5E81F4]"
                 />
               </div>
               <div>
@@ -720,7 +720,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                   maxLength={500}
                   rows={3}
                   placeholder={tCommon('placeholderChangeReason')}
-                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/20 focus:border-[#4F46E5] resize-none"
+                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/20 focus:border-[#5E81F4] resize-none"
                 />
               </div>
             </div>

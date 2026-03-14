@@ -84,7 +84,7 @@ export default function RequisitionApproveModal({ requisition, onClose, onSucces
               onChange={(e) => setComment(e.target.value)}
               rows={3}
               placeholder={tCommon('placeholderApprovalReasonAlt')}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] resize-none placeholder:text-[#999]"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] resize-none placeholder:text-[#999]"
             />
           </div>
 

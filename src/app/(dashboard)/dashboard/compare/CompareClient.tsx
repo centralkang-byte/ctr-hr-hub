@@ -31,7 +31,7 @@ const KPI_OPTIONS: { key: KpiKey; label: string; unit: string }[] = [
   { key: 'payroll_cost', label: '인건비', unit: '백만 KRW' },
 ]
 
-const CHART_COLORS = ['#4F46E5', '#059669', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
+const CHART_COLORS = ['#5E81F4', '#059669', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
 
 interface CompareResult {
   company: string

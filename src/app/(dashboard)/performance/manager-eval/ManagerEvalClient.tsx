@@ -44,7 +44,7 @@ const SCORE_LABELS = ['', '매우 부족', '부족', '보통', '우수', '탁월
 const STATUS_BADGE: Record<string, string> = {
   DRAFT: 'bg-[#F5F5F5] text-[#666]',
   SUBMITTED: 'bg-[#D1FAE5] text-[#047857]',
-  CONFIRMED: 'bg-[#EEF2FF] text-[#4338CA]',
+  CONFIRMED: 'bg-[#EDF1FE] text-[#4B6DE0]',
 }
 
 // ─── Component ────────────────────────────────────────────
@@ -269,7 +269,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
             setCompetencyGrade('')
             setBeiChecks({})
           }}
-          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
+          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
         >
           {cycles.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
@@ -293,7 +293,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                 key={tm.employee.id}
                 onClick={() => loadEmployeeForm(tm.employee.id)}
                 className={`w-full px-5 py-3 flex items-center justify-between text-left hover:bg-[#FAFAFA] transition-colors ${
-                  selectedEmployee === tm.employee.id ? 'bg-[#EEF2FF]' : ''
+                  selectedEmployee === tm.employee.id ? 'bg-[#EDF1FE]' : ''
                 }`}
               >
                 <div>
@@ -356,7 +356,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                                 }))}
                                 className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
                                   goalScores[goal.id]?.score === score
-                                    ? 'bg-[#4F46E5] text-white'
+                                    ? 'bg-[#5E81F4] text-white'
                                     : 'bg-[#F5F5F5] text-[#666] hover:bg-[#E8E8E8]'
                                 }`}
                               >
@@ -383,7 +383,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                         onClick={() => setPerformanceGrade(g.code)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
                           performanceGrade === g.code
-                            ? 'bg-[#4F46E5] text-white border-[#4F46E5]'
+                            ? 'bg-[#5E81F4] text-white border-[#5E81F4]'
                             : 'bg-white text-[#333] border-[#D4D4D4] hover:bg-[#FAFAFA]'
                         }`}
                       >
@@ -419,7 +419,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                                     [ind.id]: e.target.checked,
                                   }))
                                 }
-                                className="mt-0.5 w-4 h-4 rounded border-[#D4D4D4] text-[#4F46E5]"
+                                className="mt-0.5 w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4]"
                               />
                               <span className="text-sm text-[#333]">{ind.indicatorText}</span>
                             </label>
@@ -439,7 +439,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                             onClick={() => setCompetencyGrade(g.code)}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
                               competencyGrade === g.code
-                                ? 'bg-[#4338CA] text-white border-[#4338CA]'
+                                ? 'bg-[#4B6DE0] text-white border-[#4B6DE0]'
                                 : 'bg-white text-[#333] border-[#D4D4D4] hover:bg-[#FAFAFA]'
                             }`}
                           >
@@ -454,8 +454,8 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
 
               {/* 종합 등급 표시 — overallGradeEnabled=true일 때 */}
               {evalSettings?.overallGradeEnabled && performanceGrade && (
-                <div className="rounded-xl border border-[#EEF2FF] bg-[#F0FDF4] p-4">
-                  <p className="text-sm font-semibold text-[#4338CA]">종합 등급 (자동 산출)</p>
+                <div className="rounded-xl border border-[#EDF1FE] bg-[#F0FDF4] p-4">
+                  <p className="text-sm font-semibold text-[#4B6DE0]">종합 등급 (자동 산출)</p>
                   <p className="text-xs text-[#047857] mt-1">
                     업적 {evalSettings.mboWeight}% ({performanceGrade})
                     {evalSettings.methodology === 'MBO_BEI' && competencyGrade
@@ -475,7 +475,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                   <button
                     onClick={handleAiSuggest}
                     disabled={aiLoading}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#E0E7FF] text-[#4338CA] hover:bg-[#C7D2FE] transition-colors disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#E0E7FF] text-[#4B6DE0] hover:bg-[#C7D2FE] transition-colors disabled:opacity-50"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
                     {aiLoading ? 'AI 생성 중...' : 'AI 코멘트 제안'}
@@ -486,7 +486,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                   value={overallComment}
                   onChange={(e) => setOverallComment(e.target.value)}
                   placeholder="팀원에 대한 종합 평가 의견을 작성하세요..."
-                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999] resize-none"
+                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999] resize-none"
                 />
               </div>
 
@@ -496,7 +496,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                   onClick={() => setShowAiDraft(true)}
                   disabled={!currentEvaluationId}
                   title={!currentEvaluationId ? '먼저 임시 저장 후 AI 초안을 생성할 수 있습니다' : undefined}
-                  className="flex items-center gap-1.5 px-3 py-2 border border-[#C7D2FE] bg-[#E0E7FF] text-[#4338CA] rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#C7D2FE] transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-2 border border-[#C7D2FE] bg-[#E0E7FF] text-[#4B6DE0] rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#C7D2FE] transition-colors"
                 >
                   <Sparkles className="w-4 h-4" />
                   AI 초안 생성

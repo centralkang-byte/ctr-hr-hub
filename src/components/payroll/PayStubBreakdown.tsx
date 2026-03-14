@@ -75,7 +75,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
         </div>
         <div className="h-3 rounded-full bg-[#E8E8E8] overflow-hidden flex">
           <div
-            className="bg-[#4F46E5] transition-all"
+            className="bg-[#5E81F4] transition-all"
             style={{ width: `${netRatio}%` }}
           />
           <div
@@ -86,9 +86,9 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
       </div>
 
       {/* 실수령액 + 전월비교 */}
-      <div className="text-center py-4 bg-[#EEF2FF] rounded-xl">
-        <p className="text-xs text-[#4F46E5] mb-1">실수령액</p>
-        <p className="text-3xl font-bold text-[#4338CA]">
+      <div className="text-center py-4 bg-[#EDF1FE] rounded-xl">
+        <p className="text-xs text-[#5E81F4] mb-1">실수령액</p>
+        <p className="text-3xl font-bold text-[#4B6DE0]">
           {formatCurrency(netPay)}
           <ChangeIndicator current={netPay} previous={previousMonth?.netPay} />
         </p>

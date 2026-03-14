@@ -21,8 +21,8 @@ export default function PayrollKpiCards({
       label: '대상 인원',
       value: `${headcount}명`,
       icon: Users,
-      color: 'text-[#4F46E5]',
-      bg: 'bg-[#EEF2FF]',
+      color: 'text-[#5E81F4]',
+      bg: 'bg-[#EDF1FE]',
     },
     {
       label: '총 지급액',
@@ -42,7 +42,7 @@ export default function PayrollKpiCards({
       label: '총 실지급액',
       value: formatCurrency(totalNet),
       icon: Wallet,
-      color: 'text-[#4F46E5]',
+      color: 'text-[#5E81F4]',
       bg: 'bg-[#E0E7FF]',
     },
   ]

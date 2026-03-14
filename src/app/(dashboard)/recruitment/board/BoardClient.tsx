@@ -51,11 +51,11 @@ const STAGE_LABELS: Record<string, string> = {
 
 const STAGE_ACCENT: Record<string, string> = {
   APPLIED: '#8181A5',
-  SCREENING: '#4F46E5',
-  INTERVIEW_1: '#4F46E5',
-  INTERVIEW_2: '#4F46E5',
+  SCREENING: '#5E81F4',
+  INTERVIEW_1: '#5E81F4',
+  INTERVIEW_2: '#5E81F4',
   FINAL: '#F4BE5E',
-  OFFER: '#4F46E5',
+  OFFER: '#5E81F4',
   HIRED: '#059669',
 }
 
@@ -377,8 +377,8 @@ export default function BoardClient({ user }: Props) {
       {/* Page Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#EEF2FF] rounded-xl flex items-center justify-center">
-            <LayoutGrid className="w-5 h-5 text-[#4F46E5]" />
+          <div className="w-10 h-10 bg-[#EDF1FE] rounded-xl flex items-center justify-center">
+            <LayoutGrid className="w-5 h-5 text-[#5E81F4]" />
           </div>
           <div>
             <h1 className="text-xl font-bold text-[#1C1D21]" style={{ letterSpacing: '-0.02em' }}>
@@ -477,7 +477,7 @@ export default function BoardClient({ user }: Props) {
                       onDrop={(e) => handleDrop(e, posting.id, stage as StageType)}
                       className={`flex-1 min-w-[160px] flex flex-col rounded-lg border transition-all duration-150 ${
                         isOver && canReceive
-                          ? 'border-[#4F46E5] ring-2 ring-[#4F46E5]/20 bg-[#EEF2FF]'
+                          ? 'border-[#5E81F4] ring-2 ring-[#5E81F4]/20 bg-[#EDF1FE]'
                           : 'border-[#F0F0F3] bg-white'
                       }`}
                       style={{ minHeight: 80 }}
@@ -597,7 +597,7 @@ export default function BoardClient({ user }: Props) {
                     }))
                   }
                   placeholder="예: 60000000"
-                  className="w-full px-3 py-2 text-sm border border-[#F0F0F3] rounded-lg bg-white focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#8181A5] transition-colors"
+                  className="w-full px-3 py-2 text-sm border border-[#F0F0F3] rounded-lg bg-white focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#8181A5] transition-colors"
                 />
               </div>
               <div>
@@ -613,7 +613,7 @@ export default function BoardClient({ user }: Props) {
                       form: { ...prev.form, offeredDate: e.target.value },
                     }))
                   }
-                  className="w-full px-3 py-2 text-sm border border-[#F0F0F3] rounded-lg bg-white focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors"
+                  className="w-full px-3 py-2 text-sm border border-[#F0F0F3] rounded-lg bg-white focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors"
                 />
               </div>
               <div>
@@ -629,7 +629,7 @@ export default function BoardClient({ user }: Props) {
                       form: { ...prev.form, expectedStartDate: e.target.value },
                     }))
                   }
-                  className="w-full px-3 py-2 text-sm border border-[#F0F0F3] rounded-lg bg-white focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors"
+                  className="w-full px-3 py-2 text-sm border border-[#F0F0F3] rounded-lg bg-white focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors"
                 />
               </div>
             </div>
@@ -655,7 +655,7 @@ export default function BoardClient({ user }: Props) {
                   !offerModal.form.expectedStartDate ||
                   modalSubmitting
                 }
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#4F46E5] hover:bg-[#4B6FE0] text-white rounded-lg transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#5E81F4] hover:bg-[#4B6FE0] text-white rounded-lg transition-colors disabled:opacity-50"
               >
                 {modalSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 {modalSubmitting ? tCommon('loading') : t('confirmOffer')}

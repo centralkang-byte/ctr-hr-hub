@@ -125,7 +125,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
             <select
               value={form.companyId}
               onChange={(e) => setForm({ ...form, companyId: e.target.value, departmentId: '', positionId: '' })}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
             >
               <option value="">{tCommon('select')}</option>
               {!companies?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
@@ -141,7 +141,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
             <select
               value={form.departmentId}
               onChange={(e) => setForm({ ...form, departmentId: e.target.value })}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
             >
               <option value="">{tCommon('select')}</option>
               {departments.filter((d) => d.companyId === form.companyId).map((d) => (
@@ -160,7 +160,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
             placeholder="예: 시니어 백엔드 개발자"
-            className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] placeholder:text-[#999]"
+            className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] placeholder:text-[#999]"
           />
         </div>
 
@@ -173,7 +173,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
               min={1}
               value={form.headcount}
               onChange={(e) => setForm({ ...form, headcount: parseInt(e.target.value) || 1 })}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
             />
           </div>
           <div>
@@ -182,7 +182,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
               value={form.jobLevel}
               onChange={(e) => setForm({ ...form, jobLevel: e.target.value })}
               placeholder="예: 과장"
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] placeholder:text-[#999]"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] placeholder:text-[#999]"
             />
           </div>
           <div>
@@ -190,7 +190,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
             <select
               value={form.employmentType}
               onChange={(e) => setForm({ ...form, employmentType: e.target.value as 'permanent' | 'contract' | 'intern' })}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
             >
               <option value="permanent">정규직</option>
               <option value="contract">계약직</option>
@@ -212,7 +212,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
                     value={u}
                     checked={form.urgency === u}
                     onChange={() => setForm({ ...form, urgency: u })}
-                    className="text-[#4F46E5]"
+                    className="text-[#5E81F4]"
                   />
                   <span className="text-sm">
                     {u === 'urgent' ? '🔴 긴급' : u === 'normal' ? '🟡 보통' : '🟢 낮음'}
@@ -227,7 +227,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
               type="date"
               value={form.targetDate}
               onChange={(e) => setForm({ ...form, targetDate: e.target.value })}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
             />
           </div>
         </div>
@@ -240,7 +240,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
           <select
             value={form.positionId}
             onChange={(e) => setForm({ ...form, positionId: e.target.value })}
-            className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
+            className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
           >
             <option value="">신규 Position 생성</option>
             {positions.map((p) => (
@@ -261,13 +261,13 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
             value={form.justification}
             onChange={(e) => setForm({ ...form, justification: e.target.value })}
             placeholder="채용이 필요한 사유를 상세히 작성해주세요. (예: 신규 프로젝트 인력 확충, 퇴직자 대체 충원 등)"
-            className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] resize-none placeholder:text-[#999]"
+            className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] resize-none placeholder:text-[#999]"
           />
         </div>
 
         {/* 결재선 안내 */}
-        <div className="bg-[#EEF2FF] rounded-lg p-4">
-          <p className="text-sm text-[#4338CA] font-medium mb-1">결재선 (자동 적용)</p>
+        <div className="bg-[#EDF1FE] rounded-lg p-4">
+          <p className="text-sm text-[#4B6DE0] font-medium mb-1">결재선 (자동 적용)</p>
           <p className="text-xs text-[#555]">
             {form.urgency === 'urgent'
               ? '긴급: 팀장 → 부서장 → HR → 대표 (4단계)'

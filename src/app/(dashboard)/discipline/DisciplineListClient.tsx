@@ -20,7 +20,7 @@ import { BUTTON_SIZES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 // ─── Badge Styles ────────────────────────────────────────
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
-  DISCIPLINE_ACTIVE: 'bg-[#EEF2FF] text-[#2E7D32]',
+  DISCIPLINE_ACTIVE: 'bg-[#EDF1FE] text-[#2E7D32]',
   DISCIPLINE_EXPIRED: 'bg-[#F5F5F5] text-[#999]',
   DISCIPLINE_OVERTURNED: 'bg-[#FFF3E0] text-[#E65100]',
 }
@@ -30,7 +30,7 @@ const APPEAL_BADGE_STYLES: Record<string, string> = {
   FILED: 'bg-[#E3F2FD] text-[#1565C0]',
   UNDER_REVIEW: 'bg-[#FFF3E0] text-[#E65100]',
   UPHELD: 'bg-[#FFEBEE] text-[#C62828]',
-  OVERTURNED: 'bg-[#EEF2FF] text-[#2E7D32]',
+  OVERTURNED: 'bg-[#EDF1FE] text-[#2E7D32]',
 }
 
 // ─── Types ───────────────────────────────────────────────
@@ -153,7 +153,7 @@ export default function DisciplineListClient({ user }: Props) {
               placeholder={t('searchPlaceholder')}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors"
+              className="w-full pl-10 pr-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -161,7 +161,7 @@ export default function DisciplineListClient({ user }: Props) {
             <select
               value={statusFilter}
               onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
-              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 bg-white"
+              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 bg-white"
             >
               <option value="">{t('statusAll')}</option>
               <option value="DISCIPLINE_ACTIVE">{t('statusLabels.DISCIPLINE_ACTIVE')}</option>
@@ -171,7 +171,7 @@ export default function DisciplineListClient({ user }: Props) {
             <select
               value={categoryFilter}
               onChange={(e) => { setCategoryFilter(e.target.value); setPage(1) }}
-              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 bg-white"
+              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 bg-white"
             >
               <option value="">{t('categoryAll')}</option>
               {CATEGORY_KEYS.map((key) => (
@@ -201,7 +201,7 @@ export default function DisciplineListClient({ user }: Props) {
               <tr>
                 <td colSpan={7} className="px-4 py-12 text-center text-sm text-[#999]">
                   <div className="flex items-center justify-center gap-2">
-                    <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#4F46E5] rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#5E81F4] rounded-full animate-spin" />
                     {t('loadingData')}
                   </div>
                 </td>

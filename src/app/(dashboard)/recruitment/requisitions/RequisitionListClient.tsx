@@ -56,7 +56,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string; icon: React.
   approved: { label: '승인', color: 'bg-[#D1FAE5] text-[#047857]', icon: <CheckCircle2 size={12} /> },
   rejected: { label: '반려', color: 'bg-[#FEE2E2] text-[#B91C1C]', icon: <XCircle size={12} /> },
   cancelled: { label: '취소', color: 'bg-[#FAFAFA] text-[#999]', icon: <XCircle size={12} /> },
-  filled: { label: '충원완료', color: 'bg-[#EEF2FF] text-[#4338CA]', icon: <CheckCircle2 size={12} /> },
+  filled: { label: '충원완료', color: 'bg-[#EDF1FE] text-[#4B6DE0]', icon: <CheckCircle2 size={12} /> },
 }
 
 const STEP_ROLE_LABELS: Record<string, string> = {
@@ -132,7 +132,7 @@ export default function RequisitionListClient({user }: {
             onClick={() => setTab(t.key as any)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 ${
               tab === t.key
-                ? 'border-[#4F46E5] text-[#4F46E5]'
+                ? 'border-[#5E81F4] text-[#5E81F4]'
                 : 'border-transparent text-[#666] hover:text-[#333]'
             }`}
           >
@@ -149,7 +149,7 @@ export default function RequisitionListClient({user }: {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="직무명, 부서, 요청자 검색..."
-            className="w-full pl-9 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
+            className="w-full pl-9 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
           />
         </div>
         <button className="flex items-center gap-2 px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#555] hover:bg-[#FAFAFA]">
@@ -181,7 +181,7 @@ export default function RequisitionListClient({user }: {
             return (
               <div
                 key={item.id}
-                className={`${CARD_STYLES.kpi} hover:border-[#4F46E5]/40 transition-colors`}
+                className={`${CARD_STYLES.kpi} hover:border-[#5E81F4]/40 transition-colors`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">

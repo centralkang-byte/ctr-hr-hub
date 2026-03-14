@@ -31,7 +31,7 @@ const STATUS_KEYS: Record<string, string> = {
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
   DRAFT: 'bg-[#F5F5F5] text-[#999]',
-  OPEN: 'bg-[#EEF2FF] text-[#2E7D32]',
+  OPEN: 'bg-[#EDF1FE] text-[#2E7D32]',
   CLOSED: 'bg-[#FFF3E0] text-[#E65100]',
   CANCELLED: 'bg-[#FFEBEE] text-[#C62828]',
 }
@@ -138,7 +138,7 @@ export default function PostingDetailClient({
     return (
       <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
         <div className="flex items-center gap-2 text-sm text-[#999]">
-          <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#4F46E5] rounded-full animate-spin" />
+          <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#5E81F4] rounded-full animate-spin" />
           {t('loadingData')}
         </div>
       </div>

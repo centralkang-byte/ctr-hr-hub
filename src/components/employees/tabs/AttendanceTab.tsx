@@ -67,7 +67,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   LATE: { label: '지각', color: 'bg-[#FEF3C7] text-[#B45309]' },
   EARLY_OUT: { label: '조퇴', color: 'bg-[#FFF7ED] text-[#C2410C]' },
   ABSENT: { label: '결근', color: 'bg-[#FEE2E2] text-[#B91C1C]' },
-  HOLIDAY: { label: '휴가', color: 'bg-[#E0E7FF] text-[#4338CA]' },
+  HOLIDAY: { label: '휴가', color: 'bg-[#E0E7FF] text-[#4B6DE0]' },
 }
 
 // ─── Mini KPI ────────────────────────────────────────────
@@ -144,7 +144,7 @@ export function AttendanceTab({ employeeId }: Props) {
     return (
       <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
         <div className="flex items-center justify-center py-12">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#4F46E5] border-t-transparent" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#5E81F4] border-t-transparent" />
         </div>
       </div>
     )

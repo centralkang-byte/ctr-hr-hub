@@ -112,7 +112,7 @@ export default function PerformanceClient() {
                       <span className="text-gray-500">{stage.completed}/{stage.total} ({pct}%)</span>
                     </div>
                     <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full rounded-full bg-gradient-to-r from-[#4F46E5] to-[#8B5CF6] transition-all duration-500" style={{ width: `${pct}%` }} />
+                      <div className="h-full rounded-full bg-gradient-to-r from-[#5E81F4] to-[#8B5CF6] transition-all duration-500" style={{ width: `${pct}%` }} />
                     </div>
                   </div>
                 )

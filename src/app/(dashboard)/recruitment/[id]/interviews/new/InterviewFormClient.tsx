@@ -557,7 +557,7 @@ export function InterviewFormClient({
               disabled={!isValid || submitting}
               style={{
                 borderRadius: 8,
-                backgroundColor: isValid ? '#4F46E5' : '#E8E8E8',
+                backgroundColor: isValid ? '#5E81F4' : '#E8E8E8',
                 color: isValid ? '#FFFFFF' : '#999',
               }}
             >

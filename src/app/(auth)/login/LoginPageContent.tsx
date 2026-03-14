@@ -26,7 +26,7 @@ const TEST_ACCOUNTS: TestAccount[] = [
   {
     name: '김인사',
     role: 'HR 담당자',
-    roleBadgeClass: 'bg-[#EEF2FF] text-[#4338CA]',
+    roleBadgeClass: 'bg-[#EDF1FE] text-[#4B6DE0]',
     email: 'hr@ctr.co.kr',
   },
   {

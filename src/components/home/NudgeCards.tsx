@@ -77,9 +77,9 @@ function getNudgeStyle(triggerType: string): {
   if (triggerType.includes('onboarding')) {
     return {
       Icon: ClipboardCheck,
-      borderColor: 'border-[#4F46E5]',
+      borderColor: 'border-[#5E81F4]',
       bgColor:     'bg-[#F0FDF4]',
-      dotColor:    'bg-[#4F46E5]',
+      dotColor:    'bg-[#5E81F4]',
     }
   }
   if (triggerType.includes('offboarding')) {
@@ -92,9 +92,9 @@ function getNudgeStyle(triggerType: string): {
   }
   return {
     Icon: Bell,
-    borderColor: 'border-[#4F46E5]',
-    bgColor:     'bg-[#EEF2FF]',
-    dotColor:    'bg-[#4F46E5]',
+    borderColor: 'border-[#5E81F4]',
+    bgColor:     'bg-[#EDF1FE]',
+    dotColor:    'bg-[#5E81F4]',
   }
 }
 
@@ -196,7 +196,7 @@ export function NudgeCards({ user }: NudgeCardsProps) {
               {nudge.link && (
                 <Link
                   href={href}
-                  className="mt-2 inline-flex items-center text-[11px] font-medium text-[#4F46E5] hover:underline"
+                  className="mt-2 inline-flex items-center text-[11px] font-medium text-[#5E81F4] hover:underline"
                 >
                   조치하기 →
                 </Link>
@@ -210,7 +210,7 @@ export function NudgeCards({ user }: NudgeCardsProps) {
           <button
             type="button"
             onClick={() => setExpanded(true)}
-            className="flex min-w-[80px] flex-col items-center justify-center rounded-xl border border-dashed border-[#D0D5DD] px-3 py-4 text-xs text-[#8181A5] hover:border-[#4F46E5] hover:text-[#4F46E5]"
+            className="flex min-w-[80px] flex-col items-center justify-center rounded-xl border border-dashed border-[#D0D5DD] px-3 py-4 text-xs text-[#8181A5] hover:border-[#5E81F4] hover:text-[#5E81F4]"
           >
             <span className="text-base font-bold">+{overflow}</span>
             <span>더 보기</span>

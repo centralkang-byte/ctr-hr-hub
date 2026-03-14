@@ -171,7 +171,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
       {/* ── Header ─────────────────────────────────────────── */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#4F46E5] to-[#A855F7]">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#5E81F4] to-[#A855F7]">
             <Wallet className="h-5 w-5 text-white" />
           </div>
           <div>
@@ -200,7 +200,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
 
           <button
             onClick={() => setShowCreate(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#4F46E5] hover:bg-[#4F70E0] text-white text-sm font-semibold"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#5E81F4] hover:bg-[#4F70E0] text-white text-sm font-semibold"
           >
             <Plus className="h-4 w-4" />
             급여 실행 생성
@@ -211,7 +211,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
       {/* ── Loading ─────────────────────────────────────────── */}
       {loading && (
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="h-8 w-8 animate-spin text-[#4F46E5]" />
+          <Loader2 className="h-8 w-8 animate-spin text-[#5E81F4]" />
         </div>
       )}
 
@@ -231,7 +231,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
                   ? <TrendingUp className="h-3.5 w-3.5 text-[#059669]" />
                   : data.summary.momChangePercent < 0
                     ? <TrendingDown className="h-3.5 w-3.5 text-[#DC2626]" />
-                    : <DollarSign className="h-3.5 w-3.5 text-[#4F46E5]" />
+                    : <DollarSign className="h-3.5 w-3.5 text-[#5E81F4]" />
               }
               accent="bg-[#E0E7FF]"
               onClick={() => router.push('/payroll/global')}
@@ -267,7 +267,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
           {/* ── Pipeline Visualization ──────────────────────── */}
           <div className="bg-white rounded-2xl border border-[#E8E8E8] p-5">
             <div className="flex items-center gap-2 mb-4">
-              <LayoutGrid className="h-4 w-4 text-[#4F46E5]" />
+              <LayoutGrid className="h-4 w-4 text-[#5E81F4]" />
               <h2 className="font-semibold text-[#1A1A1A]">파이프라인 현황</h2>
               <span className="ml-1 text-xs text-[#999]">— 각 배지를 클릭하면 해당 단계로 이동합니다</span>
             </div>
@@ -293,12 +293,12 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
           {/* ── Quick Actions ───────────────────────────────── */}
           <div>
             <h2 className="font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
-              <Play className="h-4 w-4 text-[#4F46E5]" />
+              <Play className="h-4 w-4 text-[#5E81F4]" />
               빠른 실행
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <QuickAction
-                icon={<Calendar className="h-5 w-5 text-[#4338CA]" />}
+                icon={<Calendar className="h-5 w-5 text-[#4B6DE0]" />}
                 label="근태 마감"
                 sub="STEP 1 → 2"
                 onClick={() => router.push('/payroll/close-attendance')}
@@ -312,7 +312,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
                 accent="bg-[#FEF3C7]"
               />
               <QuickAction
-                icon={<CheckCircle2 className="h-5 w-5 text-[#4F46E5]" />}
+                icon={<CheckCircle2 className="h-5 w-5 text-[#5E81F4]" />}
                 label="승인 대기"
                 sub="STEP 4 — 승인함으로"
                 onClick={() => router.push('/approvals/inbox?module=PAYROLL')}

@@ -261,7 +261,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
                     <RiskBadge level={row.latestScore.riskLevel} />
                     <Link
                       href={`/analytics/predictive/${row.employeeId}`}
-                      className="text-[#4F46E5] hover:text-[#4338CA]"
+                      className="text-[#5E81F4] hover:text-[#4B6DE0]"
                     >
                       <ChevronRight className="w-4 h-4" />
                     </Link>
@@ -322,7 +322,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
                   <td className="px-4 py-3">
                     <Link
                       href={`/analytics/predictive/${row.employeeId}`}
-                      className="text-sm text-[#4F46E5] hover:text-[#4338CA] font-medium"
+                      className="text-sm text-[#5E81F4] hover:text-[#4B6DE0] font-medium"
                     >
                       분석
                     </Link>
@@ -744,7 +744,7 @@ export default function PredictiveAnalyticsClient() {
             onClick={() => setActiveTab(tab.key)}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
               activeTab === tab.key
-                ? 'border-[#4F46E5] text-[#4F46E5]'
+                ? 'border-[#5E81F4] text-[#5E81F4]'
                 : 'border-transparent text-[#666] hover:text-[#333]'
             }`}
           >

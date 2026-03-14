@@ -75,7 +75,7 @@ export default function ConvertToEmployeeButton({ applicationId, applicantName }
                   placeholder="예: CTR-2025-0042"
                   value={form.employeeNo}
                   onChange={(e) => setForm((f) => ({ ...f, employeeNo: e.target.value }))}
-                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
                 />
               </div>
               <div>
@@ -84,7 +84,7 @@ export default function ConvertToEmployeeButton({ applicationId, applicantName }
                   type="date"
                   value={form.startDate}
                   onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))}
-                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
                 />
               </div>
               <button

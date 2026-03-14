@@ -80,7 +80,7 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
                   {summary?.totalEmployees?.toLocaleString() ?? '-'}
                 </p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#EEF2FF]">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#EDF1FE]">
                 <Users className="h-6 w-6 text-ctr-primary" />
               </div>
             </div>

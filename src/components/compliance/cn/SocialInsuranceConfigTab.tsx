@@ -148,7 +148,7 @@ export default function SocialInsuranceConfigTab() {
                   <td className="px-4 py-3 text-center">
                     <button
                       onClick={() => handleEdit(config)}
-                      className="p-1.5 text-[#999] hover:text-[#4F46E5] hover:bg-[#EEF2FF] rounded-lg transition-colors"
+                      className="p-1.5 text-[#999] hover:text-[#5E81F4] hover:bg-[#EDF1FE] rounded-lg transition-colors"
                       title="수정"
                     >
                       <Pencil className="w-4 h-4" />

@@ -113,7 +113,7 @@ export default function AttendanceClient() {
                     const bgColor = count === 0 ? '#F3F4F6'
                       : intensity < 0.3 ? '#DBEAFE'
                       : intensity < 0.6 ? '#93C5FD'
-                      : intensity < 0.8 ? '#4F46E5'
+                      : intensity < 0.8 ? '#5E81F4'
                       : '#3B5FCA'
                     return (
                       <div key={`${day}-${hour}`}

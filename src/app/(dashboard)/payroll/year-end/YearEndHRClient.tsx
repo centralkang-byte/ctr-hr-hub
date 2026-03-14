@@ -78,7 +78,7 @@ const STATUS_LABELS: Record<string, string> = {
 const STATUS_COLORS: Record<string, string> = {
   not_started: 'bg-[#F5F5F5] text-[#666] border-[#E8E8E8]',
   in_progress: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]',
-  submitted: 'bg-[#E0E7FF] text-[#4338CA] border-[#C7D2FE]',
+  submitted: 'bg-[#E0E7FF] text-[#4B6DE0] border-[#C7D2FE]',
   hr_review: 'bg-[#FFF7ED] text-[#C2410C] border-[#FED7AA]',
   confirmed: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]',
 }
@@ -462,7 +462,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <FileText className="h-6 w-6 text-[#4F46E5]" />
+          <FileText className="h-6 w-6 text-[#5E81F4]" />
           <h1 className="text-2xl font-bold text-[#1A1A1A]">
             {year}년 연말정산 관리
           </h1>
@@ -472,7 +472,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
           <select
             value={year}
             onChange={(e) => setYear(parseInt(e.target.value, 10))}
-            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] outline-none"
+            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] outline-none"
           >
             {YEAR_OPTIONS.map((y) => (
               <option key={y} value={y}>
@@ -518,7 +518,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
         {[
           { key: 'not_started', label: '미시작', icon: Users, color: 'text-[#666]' },
           { key: 'in_progress', label: '진행중', icon: Clock, color: 'text-[#B45309]' },
-          { key: 'submitted', label: '제출완료', icon: Send, color: 'text-[#4338CA]' },
+          { key: 'submitted', label: '제출완료', icon: Send, color: 'text-[#4B6DE0]' },
           { key: 'hr_review', label: 'HR검토중', icon: Eye, color: 'text-[#C2410C]' },
           { key: 'confirmed', label: '확정', icon: CheckCircle2, color: 'text-[#059669]' },
         ].map(({ key, label, icon: Icon, color }) => (
@@ -536,10 +536,10 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
         {/* Progress bar card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">전체 완료율</p>
-          <p className="text-2xl font-bold text-[#4F46E5]">{completionPct}%</p>
+          <p className="text-2xl font-bold text-[#5E81F4]">{completionPct}%</p>
           <div className="mt-2 h-1.5 bg-[#F5F5F5] rounded-full overflow-hidden">
             <div
-              className="h-full bg-[#4F46E5] rounded-full transition-all duration-500"
+              className="h-full bg-[#5E81F4] rounded-full transition-all duration-500"
               style={{ width: `${completionPct}%` }}
             />
           </div>
@@ -555,7 +555,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
             onClick={() => setStatusFilter(tab.key)}
             className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
               statusFilter === tab.key
-                ? 'border-[#4F46E5] text-[#4F46E5]'
+                ? 'border-[#5E81F4] text-[#5E81F4]'
                 : 'border-transparent text-[#666] hover:text-[#333]'
             }`}
           >
@@ -564,7 +564,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
               <span
                 className={`text-xs px-1.5 py-0.5 rounded-full ${
                   statusFilter === tab.key
-                    ? 'bg-[#EEF2FF] text-[#4F46E5]'
+                    ? 'bg-[#EDF1FE] text-[#5E81F4]'
                     : 'bg-[#F5F5F5] text-[#666]'
                 }`}
               >
@@ -584,7 +584,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                 <th className={TABLE_STYLES.headerCell}>
                   <input
                     type="checkbox"
-                    className="w-4 h-4 rounded border-[#D4D4D4] text-[#4F46E5]"
+                    className="w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4]"
                     checked={
                       selectedIds.size > 0 &&
                       filteredSettlements.every((s) => selectedIds.has(s.id))
@@ -636,7 +636,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
-                          className="w-4 h-4 rounded border-[#D4D4D4] text-[#4F46E5]"
+                          className="w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4]"
                           checked={selectedIds.has(s.id)}
                           onChange={() => toggleSelect(s.id)}
                         />
@@ -692,7 +692,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                               type="button"
                               onClick={() => handleIssueReceipt(s.id)}
                               disabled={issuingReceipt}
-                              className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-[#4338CA] bg-[#E0E7FF] hover:bg-[#C7D2FE] rounded-lg disabled:opacity-50"
+                              className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-[#4B6DE0] bg-[#E0E7FF] hover:bg-[#C7D2FE] rounded-lg disabled:opacity-50"
                             >
                               <Download className="h-3.5 w-3.5" />
                               영수증

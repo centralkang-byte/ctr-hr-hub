@@ -227,7 +227,7 @@ export default function PostingEditClient({
 
   void user
 
-  const inputClass = 'w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors'
+  const inputClass = 'w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors'
   const labelClass = 'block text-sm font-medium text-[#1A1A1A] mb-1'
   const errorClass = 'text-xs text-[#F44336] mt-1'
 
@@ -235,7 +235,7 @@ export default function PostingEditClient({
     return (
       <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
         <div className="flex items-center gap-2 text-sm text-[#999]">
-          <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#4F46E5] rounded-full animate-spin" />
+          <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#5E81F4] rounded-full animate-spin" />
           {t('loadingData')}
         </div>
       </div>

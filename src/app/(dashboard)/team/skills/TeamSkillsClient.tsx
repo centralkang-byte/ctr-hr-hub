@@ -180,7 +180,7 @@ export default function TeamSkillsClient({user }: {
               onClick={() => setCurrentMemberIndex(idx)}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg whitespace-nowrap text-sm transition-all ${
                 idx === currentMemberIndex
-                  ? 'bg-[#EEF2FF] text-[#4F46E5] font-medium'
+                  ? 'bg-[#EDF1FE] text-[#5E81F4] font-medium'
                   : 'text-[#555] hover:bg-[#FAFAFA]'
               }`}
             >
@@ -263,8 +263,8 @@ export default function TeamSkillsClient({user }: {
                                     title={`${l}: ${LEVEL_LABELS[l]}`}
                                     className={`relative w-10 h-10 rounded-lg border text-sm font-medium transition-all ${
                                       selected
-                                        ? 'border-[#4F46E5] bg-[#EEF2FF] text-[#4F46E5]'
-                                        : 'border-[#E8E8E8] text-[#666] hover:border-[#4F46E5]'
+                                        ? 'border-[#5E81F4] bg-[#EDF1FE] text-[#5E81F4]'
+                                        : 'border-[#E8E8E8] text-[#666] hover:border-[#5E81F4]'
                                     }`}
                                   >
                                     {l}
@@ -297,7 +297,7 @@ export default function TeamSkillsClient({user }: {
                                   },
                                 }))
                               }
-                              className="mt-2 w-full px-3 py-1.5 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
+                              className="mt-2 w-full px-3 py-1.5 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
                             />
                           )}
                         </div>

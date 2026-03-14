@@ -40,7 +40,7 @@ export default function TrainingEnrollmentsClient() {
   const [statusFilter, setStatusFilter] = useState('')
 
   const STATUS_BADGE: Record<string, { label: string; className: string }> = {
-    ENROLLED: { label: t('enrolled'), className: 'bg-[#EEF2FF] text-[#4338CA] border-[#EEF2FF]' },
+    ENROLLED: { label: t('enrolled'), className: 'bg-[#EDF1FE] text-[#4B6DE0] border-[#EDF1FE]' },
     IN_PROGRESS: { label: t('inProgress'), className: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]' },
     ENROLLMENT_COMPLETED: { label: t('completed'), className: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
     DROPPED: { label: t('dropped'), className: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]' },

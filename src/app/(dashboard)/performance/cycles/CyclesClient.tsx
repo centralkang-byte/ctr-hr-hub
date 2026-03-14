@@ -67,7 +67,7 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
                     <ShieldAlert className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
                     <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">{t('noAccess')}</h2>
                     <p className="text-sm text-[#8181A5]">{t('hrOnlyCycles')}</p>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#4F46E5] hover:underline">← {tCommon('back')}</a>
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">← {tCommon('back')}</a>
                 </div>
             </div>
         )
@@ -83,7 +83,7 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
                         <p className="mt-1 text-sm text-[#8181A5]">{t('cyclesDesc')}</p>
                     </div>
                     <button onClick={() => setShowCreateForm(true)}
-                        className="inline-flex items-center gap-2 rounded-lg bg-[#4F46E5] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] transition-colors">
+                        className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] transition-colors">
                         <Plus className="h-4 w-4" /> {t('newCycle')}
                     </button>
                 </div>
@@ -108,7 +108,7 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
                         <Settings2 className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
                         <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
                         <button onClick={() => setShowCreateForm(true)}
-                            className="mt-3 text-sm font-medium text-[#4F46E5] hover:underline">+ 첫 사이클 만들기</button>
+                            className="mt-3 text-sm font-medium text-[#5E81F4] hover:underline">+ 첫 사이클 만들기</button>
                     </div>
                 ) : (
                     <div className="space-y-4">
@@ -116,7 +116,7 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
                             const badge = STATUS_BADGE[cycle.status] ?? { label: cycle.status, color: 'bg-[#F5F5FA] text-[#8181A5]' }
                             return (
                                 <button key={cycle.id} onClick={() => router.push(`/performance/cycles/${cycle.id}`)}
-                                    className="group w-full rounded-xl border border-[#F0F0F3] bg-white p-5 text-left transition-colors hover:border-[#4F46E5]/30">
+                                    className="group w-full rounded-xl border border-[#F0F0F3] bg-white p-5 text-left transition-colors hover:border-[#5E81F4]/30">
                                     <div className="flex items-start justify-between">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3">
@@ -132,7 +132,7 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
                                                 {cycle.checkInMode && <span>체크인: {cycle.checkInMode === 'MANDATORY' ? '필수' : '권장'}</span>}
                                             </div>
                                         </div>
-                                        <ChevronRight className="h-5 w-5 text-[#8181A5] group-hover:text-[#4F46E5] transition-colors" />
+                                        <ChevronRight className="h-5 w-5 text-[#8181A5] group-hover:text-[#5E81F4] transition-colors" />
                                     </div>
                                 </button>
                             )
@@ -180,18 +180,18 @@ function CreateCycleModal({ onClose, onCreated }: { onClose: () => void; onCreat
                     <div>
                         <label className="mb-1 block text-sm font-medium text-[#1C1D21]">사이클 이름 *</label>
                         <input value={form.name} onChange={(e) => set('name', e.target.value)} placeholder="2025년 상반기"
-                            className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none" />
+                            className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="mb-1 block text-sm font-medium text-[#1C1D21]">시작일 *</label>
                             <input type="date" value={form.startDate} onChange={(e) => set('startDate', e.target.value)}
-                                className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none" />
+                                className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
                         </div>
                         <div>
                             <label className="mb-1 block text-sm font-medium text-[#1C1D21]">종료일 *</label>
                             <input type="date" value={form.endDate} onChange={(e) => set('endDate', e.target.value)}
-                                className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none" />
+                                className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
                         </div>
                     </div>
                     <div>
@@ -200,7 +200,7 @@ function CreateCycleModal({ onClose, onCreated }: { onClose: () => void; onCreat
                             {['MANDATORY', 'RECOMMENDED'].map((mode) => (
                                 <label key={mode} className="flex items-center gap-2 text-sm">
                                     <input type="radio" name="checkInMode" value={mode} checked={form.checkInMode === mode} onChange={(e) => set('checkInMode', e.target.value)}
-                                        className="text-[#4F46E5]" />
+                                        className="text-[#5E81F4]" />
                                     {mode === 'MANDATORY' ? '필수' : '권장'}
                                 </label>
                             ))}
@@ -209,7 +209,7 @@ function CreateCycleModal({ onClose, onCreated }: { onClose: () => void; onCreat
                     <div>
                         <label className="mb-1 block text-sm font-medium text-[#1C1D21]">체크인 마감일</label>
                         <input type="date" value={form.checkInDeadline} onChange={(e) => set('checkInDeadline', e.target.value)}
-                            className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none" />
+                            className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
                     </div>
                     <div className="flex items-center gap-3">
                         <input type="checkbox" id="peerEnabled" checked={form.peerReviewEnabled} onChange={(e) => set('peerReviewEnabled', e.target.checked)}
@@ -221,12 +221,12 @@ function CreateCycleModal({ onClose, onCreated }: { onClose: () => void; onCreat
                             <div>
                                 <label className="mb-1 block text-sm font-medium text-[#1C1D21]">최소 인원</label>
                                 <input type="number" min={2} max={5} value={form.peerReviewMinCount} onChange={(e) => set('peerReviewMinCount', Number(e.target.value))}
-                                    className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none" />
+                                    className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
                             </div>
                             <div>
                                 <label className="mb-1 block text-sm font-medium text-[#1C1D21]">최대 인원</label>
                                 <input type="number" min={2} max={5} value={form.peerReviewMaxCount} onChange={(e) => set('peerReviewMaxCount', Number(e.target.value))}
-                                    className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none" />
+                                    className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
                             </div>
                         </div>
                     )}
@@ -237,7 +237,7 @@ function CreateCycleModal({ onClose, onCreated }: { onClose: () => void; onCreat
                                 <span className="text-xs text-[#8181A5]">MBO</span>
                                 <input type="number" min={0} max={100} step={5} value={form.mboWeight}
                                     onChange={(e) => { const v = Number(e.target.value); set('mboWeight', v); set('beiWeight', 100 - v) }}
-                                    className="w-20 rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none" />
+                                    className="w-20 rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
                                 <span className="text-xs text-[#8181A5]">%</span>
                             </div>
                             <span className="text-[#8181A5]">:</span>
@@ -256,7 +256,7 @@ function CreateCycleModal({ onClose, onCreated }: { onClose: () => void; onCreat
                 <div className="mt-6 flex justify-end gap-3">
                     <button onClick={onClose} className="rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm font-medium text-[#1C1D21]">{tCommon('cancel')}</button>
                     <button onClick={handleSubmit} disabled={saving}
-                        className="rounded-lg bg-[#4F46E5] px-4 py-2 text-sm font-medium text-white disabled:opacity-40">{saving ? tCommon('loading') : tCommon('create')}</button>
+                        className="rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white disabled:opacity-40">{saving ? tCommon('loading') : tCommon('create')}</button>
                 </div>
             </div>
         </div>

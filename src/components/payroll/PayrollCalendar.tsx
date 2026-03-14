@@ -74,7 +74,7 @@ export default function PayrollCalendar({ entries, yearMonth }: Props) {
         <div className="space-y-3">
             {/* Header */}
             <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-[#4F46E5]" />
+                <Calendar className="h-4 w-4 text-[#5E81F4]" />
                 <span className="text-sm font-semibold text-[#1A1A1A]">{yr}년 {mn}월 급여 캘린더</span>
                 {hasAlerts && (
                     <span className="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-[#FEF3C7] text-[#B45309]">
@@ -119,7 +119,7 @@ export default function PayrollCalendar({ entries, yearMonth }: Props) {
                                     </td>
                                     <td className="py-2 text-center">
                                         <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${isCompleted ? 'bg-[#D1FAE5] text-[#047857]' :
-                                                entry.status === 'PENDING_APPROVAL' ? 'bg-[#E0E7FF] text-[#4338CA]' :
+                                                entry.status === 'PENDING_APPROVAL' ? 'bg-[#E0E7FF] text-[#4B6DE0]' :
                                                     entry.status === 'REVIEW' ? 'bg-[#FEF3C7] text-[#B45309]' :
                                                         entry.status === 'NOT_STARTED' || entry.status === 'DRAFT' ? 'bg-[#F3F4F6] text-[#9CA3AF]' :
                                                             'bg-[#DBEAFE] text-[#1D4ED8]'

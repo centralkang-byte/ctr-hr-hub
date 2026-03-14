@@ -133,7 +133,7 @@ export default function SocialInsuranceConfigForm({
               onChange={handleChange}
               required
               disabled={isEdit}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] disabled:bg-[#FAFAFA] disabled:text-[#666]"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] disabled:bg-[#FAFAFA] disabled:text-[#666]"
             >
               <option value="">선택하세요</option>
               {INSURANCE_TYPES.map((t) => (
@@ -156,7 +156,7 @@ export default function SocialInsuranceConfigForm({
               onChange={handleChange}
               required
               placeholder="예: 上海, 北京"
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] placeholder:text-[#999]"
+              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] placeholder:text-[#999]"
             />
           </div>
 
@@ -176,7 +176,7 @@ export default function SocialInsuranceConfigForm({
                 max="100"
                 step="0.01"
                 placeholder="예: 16.00"
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] placeholder:text-[#999]"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] placeholder:text-[#999]"
               />
             </div>
             <div>
@@ -193,7 +193,7 @@ export default function SocialInsuranceConfigForm({
                 max="100"
                 step="0.01"
                 placeholder="예: 8.00"
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] placeholder:text-[#999]"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] placeholder:text-[#999]"
               />
             </div>
           </div>
@@ -213,7 +213,7 @@ export default function SocialInsuranceConfigForm({
                 min="0"
                 step="1"
                 placeholder="예: 3000"
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] placeholder:text-[#999]"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] placeholder:text-[#999]"
               />
             </div>
             <div>
@@ -229,7 +229,7 @@ export default function SocialInsuranceConfigForm({
                 min="0"
                 step="1"
                 placeholder="예: 30000"
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5] placeholder:text-[#999]"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] placeholder:text-[#999]"
               />
             </div>
           </div>
@@ -246,7 +246,7 @@ export default function SocialInsuranceConfigForm({
                 value={form.effectiveFrom}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
               />
             </div>
             <div>
@@ -258,7 +258,7 @@ export default function SocialInsuranceConfigForm({
                 name="effectiveTo"
                 value={form.effectiveTo}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
               />
             </div>
           </div>

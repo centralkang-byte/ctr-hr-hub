@@ -67,7 +67,7 @@ export default function DataRetentionClient() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-[#E0E7FF] rounded-xl flex items-center justify-center">
-            <Database className="w-5 h-5 text-[#4F46E5]" />
+            <Database className="w-5 h-5 text-[#5E81F4]" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-[#1A1A1A] mb-6">{t('gdpr.retention')}</h1>
@@ -145,7 +145,7 @@ export default function DataRetentionClient() {
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           p.anonymize
-                            ? 'bg-[#EEF2FF] text-[#4338CA] border border-[#EEF2FF]'
+                            ? 'bg-[#EDF1FE] text-[#4B6DE0] border border-[#EDF1FE]'
                             : 'bg-[#FAFAFA] text-[#555] border border-[#E8E8E8]'
                         }`}
                       >
@@ -159,7 +159,7 @@ export default function DataRetentionClient() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => { setSelected(p); setShowForm(true) }}
-                          className="p-1.5 text-[#666] hover:text-[#4F46E5] hover:bg-[#EEF2FF] rounded"
+                          className="p-1.5 text-[#666] hover:text-[#5E81F4] hover:bg-[#EDF1FE] rounded"
                           title={tc('edit')}
                         >
                           <Pencil className="w-4 h-4" />

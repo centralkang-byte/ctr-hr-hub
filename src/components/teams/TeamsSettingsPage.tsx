@@ -146,7 +146,7 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
             onClick={() => setActiveTab(i)}
             className={`px-4 py-2.5 text-sm font-medium transition-colors ${
               activeTab === i
-                ? 'border-b-2 border-[#4F46E5] text-[#4F46E5]'
+                ? 'border-b-2 border-[#5E81F4] text-[#5E81F4]'
                 : 'text-[#666] hover:text-[#333]'
             }`}
           >
@@ -251,7 +251,7 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
                             }
                             className={`h-8 w-8 rounded-full text-xs font-medium transition-colors ${
                               config.digestDay === i
-                                ? 'bg-[#4F46E5] text-white'
+                                ? 'bg-[#5E81F4] text-white'
                                 : 'bg-[#F5F5F5] text-[#555] hover:bg-[#E8E8E8]'
                             }`}
                           >

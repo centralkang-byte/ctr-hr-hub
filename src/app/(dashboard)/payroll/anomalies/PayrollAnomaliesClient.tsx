@@ -33,7 +33,7 @@ interface AnomalyData {
 const SEVERITY_COLORS: Record<string, string> = {
   high: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]',
   medium: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]',
-  low: 'bg-[#E0E7FF] text-[#4338CA] border-[#C7D2FE]',
+  low: 'bg-[#E0E7FF] text-[#4B6DE0] border-[#C7D2FE]',
 }
 
 const SEVERITY_LABEL: Record<string, string> = { high: '높음', medium: '보통', low: '낮음' }

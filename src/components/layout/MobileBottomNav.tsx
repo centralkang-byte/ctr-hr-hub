@@ -31,12 +31,12 @@ export function MobileBottomNav() {
           >
             <Icon
               size={22}
-              className={isActive ? 'text-[#4F46E5]' : 'text-[#8181A5]'}
+              className={isActive ? 'text-[#5E81F4]' : 'text-[#8181A5]'}
               strokeWidth={isActive ? 2 : 1.5}
             />
             <span
               className={`text-[10px] font-medium ${
-                isActive ? 'text-[#4F46E5]' : 'text-[#8181A5]'
+                isActive ? 'text-[#5E81F4]' : 'text-[#8181A5]'
               }`}
             >
               {label}

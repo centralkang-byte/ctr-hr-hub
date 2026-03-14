@@ -93,7 +93,7 @@ export function EffectiveDatePicker({
               variant="outline"
               size="sm"
               onClick={() => onChange(qs.getDate())}
-              className="h-7 px-2.5 text-xs border-[#D4D4D4] hover:border-[#4F46E5] hover:text-[#4F46E5]"
+              className="h-7 px-2.5 text-xs border-[#D4D4D4] hover:border-[#5E81F4] hover:text-[#5E81F4]"
             >
               {qs.label}
             </Button>

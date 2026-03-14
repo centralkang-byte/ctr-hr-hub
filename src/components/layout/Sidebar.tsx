@@ -39,7 +39,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 const BADGE_MAP: Record<string, { countKey: string; color: string }> = {
   'approvals-inbox': { countKey: 'approvals',     color: 'bg-red-500' },
   'notifications':   { countKey: 'notifications', color: 'bg-red-500' },
-  'leave-admin':     { countKey: 'pendingLeave',  color: 'bg-[#4F46E5]' },
+  'leave-admin':     { countKey: 'pendingLeave',  color: 'bg-[#5E81F4]' },
   'attendance-admin':{ countKey: 'todayAbsent',   color: 'bg-[#F59E0B]' },
 }
 
@@ -350,7 +350,7 @@ function ExpandedNavItem({
         className={cn(
           'flex flex-1 items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
           isActive
-            ? 'bg-[#F5F5FA] text-[#4F46E5] font-bold'
+            ? 'bg-[#F5F5FA] text-[#5E81F4] font-bold'
             : 'text-[#8181A5] hover:bg-[#F5F5FA] hover:text-[#1C1D21]',
         )}
       >
@@ -367,7 +367,7 @@ function ExpandedNavItem({
           <span
             className={cn(
               'ml-auto rounded-full px-1.5 py-0.5 text-[10px] font-medium shrink-0',
-              item.badge === 'new' ? 'bg-[#4F46E5] text-white' : 'bg-[#F5F5FA] text-[#8181A5]',
+              item.badge === 'new' ? 'bg-[#5E81F4] text-white' : 'bg-[#F5F5FA] text-[#8181A5]',
             )}
           >
             {item.badge.toUpperCase()}
@@ -434,7 +434,7 @@ function CollapsedNavItem({ item, pathname, getLabel }: CollapsedNavItemProps) {
           href={item.href}
           className={cn(
             'flex h-10 w-10 items-center justify-center rounded-lg transition-colors',
-            isActive ? 'bg-[#F5F5FA] text-[#4F46E5]' : 'text-[#8181A5] hover:bg-[#F5F5FA]',
+            isActive ? 'bg-[#F5F5FA] text-[#5E81F4]' : 'text-[#8181A5] hover:bg-[#F5F5FA]',
           )}
         >
           <item.icon className="h-[18px] w-[18px]" />

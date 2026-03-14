@@ -60,7 +60,7 @@ interface TeamMemberGoals {
 const CYCLE_STATUS_STYLES: Record<string, string> = {
   PLANNING: 'bg-[#F5F5F5] text-[#666]',
   GOAL_SETTING: 'bg-[#E3F2FD] text-[#1565C0]',
-  IN_PROGRESS: 'bg-[#EEF2FF] text-[#2E7D32]',
+  IN_PROGRESS: 'bg-[#EDF1FE] text-[#2E7D32]',
   EVALUATION: 'bg-[#FFF8E1] text-[#F57F17]',
   CALIBRATION: 'bg-[#F3E5F5] text-[#7B1FA2]',
   COMPLETED: 'bg-[#E8E8E8] text-[#666]',
@@ -227,8 +227,8 @@ export default function PerformanceClient({
           {/* Card 1: 현재 사이클 상태 */}
           <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#EEF2FF]">
-                <Calendar className="h-5 w-5 text-[#4F46E5]" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#EDF1FE]">
+                <Calendar className="h-5 w-5 text-[#5E81F4]" />
               </div>
               <div>
                 <p className="text-sm text-[#999]">{t('currentCycle')}</p>
@@ -244,8 +244,8 @@ export default function PerformanceClient({
           {/* Card 2: 목표 수 */}
           <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#EEF2FF]">
-                <Target className="h-5 w-5 text-[#4F46E5]" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#EDF1FE]">
+                <Target className="h-5 w-5 text-[#5E81F4]" />
               </div>
               <div>
                 <p className="text-sm text-[#999]">
@@ -291,7 +291,7 @@ export default function PerformanceClient({
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#4F46E5] border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#5E81F4] border-t-transparent" />
           </div>
         ) : (
           <>
@@ -302,7 +302,7 @@ export default function PerformanceClient({
                   <h2 className="text-lg font-semibold text-[#1A1A1A]">{t('myGoals')}</h2>
                   <Link
                     href="/performance/goals"
-                    className="flex items-center gap-1 text-sm font-medium text-[#4F46E5] hover:underline"
+                    className="flex items-center gap-1 text-sm font-medium text-[#5E81F4] hover:underline"
                   >
                     {t('viewAll')} <ChevronRight className="h-4 w-4" />
                   </Link>
@@ -328,7 +328,7 @@ export default function PerformanceClient({
                               <span
                                 className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
                                   goal.status === 'APPROVED'
-                                    ? 'bg-[#EEF2FF] text-[#2E7D32]'
+                                    ? 'bg-[#EDF1FE] text-[#2E7D32]'
                                     : goal.status === 'PENDING_APPROVAL'
                                       ? 'bg-[#FFF8E1] text-[#F57F17]'
                                       : goal.status === 'REJECTED'
@@ -346,7 +346,7 @@ export default function PerformanceClient({
                           <div className="flex items-center gap-3">
                             <div className="h-2 flex-1 rounded-full bg-[#E8E8E8]">
                               <div
-                                className="h-2 rounded-full bg-[#4F46E5] transition-all"
+                                className="h-2 rounded-full bg-[#5E81F4] transition-all"
                                 style={{ width: `${Math.min(progress, 100)}%` }}
                               />
                             </div>
@@ -372,7 +372,7 @@ export default function PerformanceClient({
                   </h2>
                   <Link
                     href="/performance/goals"
-                    className="flex items-center gap-1 text-sm font-medium text-[#4F46E5] hover:underline"
+                    className="flex items-center gap-1 text-sm font-medium text-[#5E81F4] hover:underline"
                   >
                     {t('manageTeamGoals')} <ChevronRight className="h-4 w-4" />
                   </Link>
@@ -400,7 +400,7 @@ export default function PerformanceClient({
                             jobGrade: member.employee.jobGrade?.name,
                           }}
                           trailing={
-                            <span className="text-sm font-semibold text-[#4F46E5]">
+                            <span className="text-sm font-semibold text-[#5E81F4]">
                               {t('goalCountWithUnit', { count: member.goals.length })}
                             </span>
                           }
@@ -408,7 +408,7 @@ export default function PerformanceClient({
                         <div className="flex items-center gap-3">
                           <div className="h-2 flex-1 rounded-full bg-[#E8E8E8]">
                             <div
-                              className="h-2 rounded-full bg-[#4F46E5] transition-all"
+                              className="h-2 rounded-full bg-[#5E81F4] transition-all"
                               style={{
                                 width: `${Math.min(member.avgProgress, 100)}%`,
                               }}
@@ -447,7 +447,7 @@ export default function PerformanceClient({
                             </div>
                             <div className="h-2 rounded-full bg-[#E8E8E8]">
                               <div
-                                className="h-2 rounded-full bg-[#4F46E5] transition-all"
+                                className="h-2 rounded-full bg-[#5E81F4] transition-all"
                                 style={{ width: `${Math.min(progress, 100)}%` }}
                               />
                             </div>
@@ -470,7 +470,7 @@ export default function PerformanceClient({
                   </h2>
                   <Link
                     href="/settings/performance-cycles"
-                    className="flex items-center gap-1 text-sm font-medium text-[#4F46E5] hover:underline"
+                    className="flex items-center gap-1 text-sm font-medium text-[#5E81F4] hover:underline"
                   >
                     <Settings className="h-4 w-4" />
                     {t('manageCycles')} <ChevronRight className="h-4 w-4" />
@@ -523,11 +523,11 @@ export default function PerformanceClient({
                   <div className="flex items-center gap-4">
                     <div className="h-3 flex-1 rounded-full bg-[#E8E8E8]">
                       <div
-                        className="h-3 rounded-full bg-[#4F46E5] transition-all"
+                        className="h-3 rounded-full bg-[#5E81F4] transition-all"
                         style={{ width: `${submissionRate}%` }}
                       />
                     </div>
-                    <span className="text-lg font-bold text-[#4F46E5]">
+                    <span className="text-lg font-bold text-[#5E81F4]">
                       {submissionRate}%
                     </span>
                   </div>
@@ -545,7 +545,7 @@ export default function PerformanceClient({
                       </h3>
                       <Link
                         href="/performance/goals"
-                        className="flex items-center gap-1 text-sm font-medium text-[#4F46E5] hover:underline"
+                        className="flex items-center gap-1 text-sm font-medium text-[#5E81F4] hover:underline"
                       >
                         {t('viewAll')} <ChevronRight className="h-4 w-4" />
                       </Link>
@@ -568,7 +568,7 @@ export default function PerformanceClient({
                             </div>
                             <div className="h-2 rounded-full bg-[#E8E8E8]">
                               <div
-                                className="h-2 rounded-full bg-[#4F46E5] transition-all"
+                                className="h-2 rounded-full bg-[#5E81F4] transition-all"
                                 style={{ width: `${Math.min(progress, 100)}%` }}
                               />
                             </div>

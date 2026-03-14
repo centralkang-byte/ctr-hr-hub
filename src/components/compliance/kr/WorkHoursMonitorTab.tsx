@@ -78,9 +78,9 @@ export default function WorkHoursMonitorTab() {
           label: '준수율',
           value: `${summary.complianceRate.toFixed(1)}%`,
           icon: CheckCircle2,
-          iconColor: 'text-[#4F46E5]',
-          bgColor: 'bg-[#EEF2FF]',
-          textColor: 'text-[#4F46E5]',
+          iconColor: 'text-[#5E81F4]',
+          bgColor: 'bg-[#EDF1FE]',
+          textColor: 'text-[#5E81F4]',
         },
         {
           label: '준수 인원',

@@ -22,7 +22,7 @@ export function CustomFieldsTab({ companyId }: Props) {
       .finally(() => setLoading(false))
   }, [companyId])
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
 
   const grouped = fields.reduce<Record<string, CustomField[]>>((acc, f) => { (acc[f.entityType] ??= []).push(f); return acc }, {})
 
@@ -46,7 +46,7 @@ export function CustomFieldsTab({ companyId }: Props) {
               </tr></thead>
               <tbody className="divide-y divide-[#F0F0F3]">{items.map((f) => (
                 <tr key={f.id} className={TABLE_STYLES.row}>
-                  <td className="px-4 py-2 text-sm font-medium text-[#4F46E5]">{f.fieldKey}</td>
+                  <td className="px-4 py-2 text-sm font-medium text-[#5E81F4]">{f.fieldKey}</td>
                   <td className="px-4 py-2 text-sm text-[#1C1D21]">{f.fieldLabel}</td>
                   <td className="px-4 py-2 text-sm text-[#8181A5]">{f.fieldType}</td>
                   <td className="px-4 py-2 text-center text-sm">{f.isRequired ? '✓' : '—'}</td>

@@ -36,9 +36,9 @@ interface EmployeeFilterPanelProps {
 
 function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <Badge variant="outline" className="flex items-center gap-1 pl-2.5 pr-1.5 py-0.5 text-xs bg-[#4F46E5]/10 border-[#4F46E5]/20 text-[#4F46E5]">
+    <Badge variant="outline" className="flex items-center gap-1 pl-2.5 pr-1.5 py-0.5 text-xs bg-[#5E81F4]/10 border-[#5E81F4]/20 text-[#5E81F4]">
       {label}
-      <button onClick={onRemove} className="ml-0.5 rounded-full hover:bg-[#4F46E5]/20 p-0.5">
+      <button onClick={onRemove} className="ml-0.5 rounded-full hover:bg-[#5E81F4]/20 p-0.5">
         <X className="h-3 w-3" />
       </button>
     </Badge>
@@ -110,7 +110,7 @@ export function EmployeeFilterPanel({
           <SlidersHorizontal className="h-4 w-4 text-[#666]" />
           고급 검색 필터
           {hasFilters && (
-            <span className="rounded-full bg-[#4F46E5] text-white text-xs px-1.5 py-0.5">
+            <span className="rounded-full bg-[#5E81F4] text-white text-xs px-1.5 py-0.5">
               {chips.length}
             </span>
           )}

@@ -85,7 +85,7 @@ const SHIFT_BLOCKS: ShiftBlockDef[] = [
     defaultStart: '08:00',
     defaultEnd: '17:00',
     colorClass:
-      'bg-[#4F46E5]/10 text-[#4F46E5] border border-[#4F46E5]/20 hover:bg-[#4F46E5]/15',
+      'bg-[#5E81F4]/10 text-[#5E81F4] border border-[#5E81F4]/20 hover:bg-[#5E81F4]/15',
     Icon: Sun,
   },
   {
@@ -432,7 +432,7 @@ export function ShiftRosterBoard({ user }: { user: SessionUser }) {
             </p>
             <ul className="space-y-1.5">
               <li className="flex items-center gap-2 text-xs text-[#1C1D21]">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#4F46E5]" />
+                <span className="h-2.5 w-2.5 rounded-full bg-[#5E81F4]" />
                 주간 (8h–17h)
               </li>
               <li className="flex items-center gap-2 text-xs text-[#1C1D21]">
@@ -451,7 +451,7 @@ export function ShiftRosterBoard({ user }: { user: SessionUser }) {
         <div className="relative flex-1 overflow-hidden rounded-xl border border-[#F0F0F3] bg-white">
           {loading && (
             <div className="absolute inset-0 z-30 flex items-center justify-center bg-white/70">
-              <Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" />
+              <Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" />
             </div>
           )}
 
@@ -496,7 +496,7 @@ export function ShiftRosterBoard({ user }: { user: SessionUser }) {
                         <th
                           key={dateStr}
                           className={`sticky top-0 z-10 min-w-[90px] border-b border-r border-[#F0F0F3] bg-white px-2 py-3 text-center ${
-                            isTdy ? 'bg-[#4F46E5]/5' : ''
+                            isTdy ? 'bg-[#5E81F4]/5' : ''
                           }`}
                         >
                           <div className="flex flex-col items-center gap-0.5">
@@ -510,7 +510,7 @@ export function ShiftRosterBoard({ user }: { user: SessionUser }) {
                             <span
                               className={`flex h-6 w-6 items-center justify-center rounded-full text-sm font-bold ${
                                 isTdy
-                                  ? 'bg-[#4F46E5] text-white'
+                                  ? 'bg-[#5E81F4] text-white'
                                   : isWknd
                                     ? 'text-[#FF808B]'
                                     : 'text-[#1C1D21]'
@@ -548,7 +548,7 @@ export function ShiftRosterBoard({ user }: { user: SessionUser }) {
                               className="h-8 w-8 rounded-full object-cover"
                             />
                           ) : (
-                            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#4F46E5]/10 text-sm font-bold text-[#4F46E5]">
+                            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#5E81F4]/10 text-sm font-bold text-[#5E81F4]">
                               {getInitials(emp.name)}
                             </div>
                           )}
@@ -578,9 +578,9 @@ export function ShiftRosterBoard({ user }: { user: SessionUser }) {
                             key={dateStr}
                             className={`border-r border-[#F0F0F3] p-1 text-center transition-colors ${
                               isDropTarget
-                                ? 'bg-[#4F46E5]/10 ring-1 ring-inset ring-[#4F46E5]/30'
+                                ? 'bg-[#5E81F4]/10 ring-1 ring-inset ring-[#5E81F4]/30'
                                 : isTdy
-                                  ? 'bg-[#4F46E5]/5'
+                                  ? 'bg-[#5E81F4]/5'
                                   : isWknd
                                     ? 'bg-[#F5F5FA]/60'
                                     : ''
@@ -623,7 +623,7 @@ export function ShiftRosterBoard({ user }: { user: SessionUser }) {
           <div
             className={`h-2 w-2 rounded-full ${
               draggedType === 'morning'
-                ? 'bg-[#4F46E5]'
+                ? 'bg-[#5E81F4]'
                 : draggedType === 'night'
                   ? 'bg-[#1C1D21]'
                   : 'bg-[#FF808B]'
@@ -689,7 +689,7 @@ function EmptyCell({ isDropTarget }: { isDropTarget: boolean }) {
     <div
       className={`flex h-12 w-full items-center justify-center rounded-xl border border-dashed transition-colors ${
         isDropTarget
-          ? 'border-[#4F46E5] bg-[#4F46E5]/5'
+          ? 'border-[#5E81F4] bg-[#5E81F4]/5'
           : 'border-[#F0F0F3] bg-transparent hover:border-[#C4C4D4] hover:bg-[#F5F5FA]'
       }`}
     >

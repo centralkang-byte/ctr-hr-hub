@@ -31,8 +31,8 @@ export default function GdprClient() {
     <div className="p-6 space-y-6">
       {/* Page Header */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-[#EEF2FF] rounded-xl flex items-center justify-center">
-          <Shield className="w-5 h-5 text-[#4F46E5]" />
+        <div className="w-10 h-10 bg-[#EDF1FE] rounded-xl flex items-center justify-center">
+          <Shield className="w-5 h-5 text-[#5E81F4]" />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('gdpr.title')}</h1>
@@ -48,7 +48,7 @@ export default function GdprClient() {
             onClick={() => setActiveTab(tab.key)}
             className={
               activeTab === tab.key
-                ? 'px-4 py-2.5 text-sm font-medium border-b-2 border-[#4F46E5] text-[#4F46E5]'
+                ? 'px-4 py-2.5 text-sm font-medium border-b-2 border-[#5E81F4] text-[#5E81F4]'
                 : 'px-4 py-2.5 text-sm font-medium text-[#666] hover:text-[#333] border-b-2 border-transparent'
             }
           >

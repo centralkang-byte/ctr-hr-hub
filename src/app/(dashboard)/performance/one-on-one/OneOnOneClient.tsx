@@ -145,14 +145,14 @@ export default function OneOnOneClient() {
       })
     : []
 
-  const chartColors = ['#4F46E5', '#8B5CF6', '#F59E0B', '#EF4444', '#06B6D4', '#EC4899']
+  const chartColors = ['#5E81F4', '#8B5CF6', '#F59E0B', '#EF4444', '#06B6D4', '#EC4899']
 
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <MessageSquare className="w-6 h-6 text-[#4F46E5]" />
+          <MessageSquare className="w-6 h-6 text-[#5E81F4]" />
           <h1 className="text-2xl font-bold text-[#1A1A1A]">
             {isManager ? '1:1 미팅' : '내 1:1 미팅'}
           </h1>
@@ -175,7 +175,7 @@ export default function OneOnOneClient() {
             onClick={() => setStatusFilter(s)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 ${
               statusFilter === s
-                ? 'border-[#4F46E5] text-[#4F46E5]'
+                ? 'border-[#5E81F4] text-[#5E81F4]'
                 : 'border-transparent text-[#666] hover:text-[#333]'
             }`}
           >
@@ -192,7 +192,7 @@ export default function OneOnOneClient() {
           {(statusFilter === 'ALL' || statusFilter === 'SCHEDULED') && scheduled.length > 0 && (
             <div>
               <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-[#4F46E5]" /> 예정된 1:1
+                <Calendar className="w-5 h-5 text-[#5E81F4]" /> 예정된 1:1
               </h2>
               <div className="space-y-3">
                 {scheduled.map((m) => (
@@ -206,7 +206,7 @@ export default function OneOnOneClient() {
                             <p className="text-xs text-[#666]">
                               {new Date(m.scheduledAt).toLocaleDateString('ko-KR')} {new Date(m.scheduledAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
                               {' · '}
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#EEF2FF] text-[#4338CA]">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#EDF1FE] text-[#4B6DE0]">
                                 {MEETING_TYPE_LABELS[m.meetingType] ?? m.meetingType}
                               </span>
                             </p>
@@ -216,7 +216,7 @@ export default function OneOnOneClient() {
                       {isManager && (
                         <button
                           onClick={() => router.push(`/performance/one-on-one/${m.id}`)}
-                          className="text-sm font-medium text-[#4F46E5] hover:text-[#4338CA]"
+                          className="text-sm font-medium text-[#5E81F4] hover:text-[#4B6DE0]"
                         >
                           기록하기
                         </button>
@@ -371,7 +371,7 @@ export default function OneOnOneClient() {
                 <select
                   value={newMeeting.employeeId}
                   onChange={(e) => setNewMeeting({ ...newMeeting, employeeId: e.target.value })}
-                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
+                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
                 >
                   <option value="">선택하세요</option>
                   {teamMembers.map((m) => (
@@ -385,7 +385,7 @@ export default function OneOnOneClient() {
                   type="datetime-local"
                   value={newMeeting.scheduledAt}
                   onChange={(e) => setNewMeeting({ ...newMeeting, scheduledAt: e.target.value })}
-                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
+                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
                 />
               </div>
               <div>
@@ -397,7 +397,7 @@ export default function OneOnOneClient() {
                       onClick={() => setNewMeeting({ ...newMeeting, meetingType: key })}
                       className={`px-3 py-2 rounded-lg text-sm border ${
                         newMeeting.meetingType === key
-                          ? 'bg-[#4F46E5] text-white border-[#4F46E5]'
+                          ? 'bg-[#5E81F4] text-white border-[#5E81F4]'
                           : 'bg-white text-[#555] border-[#D4D4D4] hover:bg-[#FAFAFA]'
                       }`}
                     >
@@ -413,7 +413,7 @@ export default function OneOnOneClient() {
                   onChange={(e) => setNewMeeting({ ...newMeeting, agenda: e.target.value })}
                   placeholder="논의할 내용을 입력하세요"
                   rows={3}
-                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]"
+                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
                 />
               </div>
             </div>

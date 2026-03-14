@@ -122,7 +122,7 @@ export default function DpiaTabContent() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => { setSelected(d); setShowForm(true) }}
-                          className="text-[#666] hover:text-[#4F46E5]"
+                          className="text-[#666] hover:text-[#5E81F4]"
                           title={d.status === 'draft' || d.status === 'in_review' ? tc('edit') : tc('view')}
                         >
                           {d.status === 'draft' || d.status === 'in_review' ? (

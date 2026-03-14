@@ -254,7 +254,7 @@ export default function BenefitPoliciesTab() {
             <div>
               <label className="text-sm font-medium text-[#333] mb-1 block">정책명 *</label>
               <input
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10"
+                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               />
@@ -309,7 +309,7 @@ export default function BenefitPoliciesTab() {
               <input
                 type="checkbox"
                 id="isTaxable"
-                className="w-4 h-4 rounded border-[#D4D4D4] text-[#4F46E5]"
+                className="w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4]"
                 checked={form.isTaxable}
                 onChange={(e) => setForm((f) => ({ ...f, isTaxable: e.target.checked }))}
               />

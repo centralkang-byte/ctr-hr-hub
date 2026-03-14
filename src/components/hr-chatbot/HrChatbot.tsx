@@ -322,7 +322,7 @@ export function HrChatbot() {
                           onClick={() => loadSession(s.id)}
                           className={cn(
                             'w-full rounded px-3 py-2 text-left text-xs text-[#333] hover:bg-[#F5F5F5]',
-                            s.id === currentSessionId && 'bg-[#EEF2FF] font-medium',
+                            s.id === currentSessionId && 'bg-[#EDF1FE] font-medium',
                           )}
                         >
                           {s.title ?? '대화'}
@@ -399,7 +399,7 @@ export function HrChatbot() {
                           {msg.sources.map((src, i) => (
                             <span
                               key={i}
-                              className="inline-flex items-center gap-1 rounded bg-[#EEF2FF] px-1.5 py-0.5 text-xs text-[#4338CA]"
+                              className="inline-flex items-center gap-1 rounded bg-[#EDF1FE] px-1.5 py-0.5 text-xs text-[#4B6DE0]"
                             >
                               {src.title} {src.reference}
                             </span>

@@ -45,7 +45,7 @@ export default function SeveranceCalculator({
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <div className="flex items-center gap-2 mb-4">
-        <Calculator className="h-5 w-5 text-[#4F46E5]" />
+        <Calculator className="h-5 w-5 text-[#5E81F4]" />
         <h3 className="text-sm font-semibold text-[#1A1A1A]">
           퇴직금 계산{employeeName ? ` — ${employeeName}` : ''}
         </h3>
@@ -126,7 +126,7 @@ export default function SeveranceCalculator({
 
           {/* 퇴직금 결과 */}
           {result.isEligible && (
-            <div className="bg-[#EEF2FF] rounded-xl p-4 space-y-2">
+            <div className="bg-[#EDF1FE] rounded-xl p-4 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-[#555]">퇴직금</span>
                 <span className="font-medium">{formatCurrency(result.severancePay)}</span>
@@ -139,9 +139,9 @@ export default function SeveranceCalculator({
                 <span className="text-[#555]">지방소득세</span>
                 <span className="text-[#DC2626]">-{formatCurrency(result.localIncomeTax)}</span>
               </div>
-              <div className="flex justify-between text-sm font-bold pt-2 border-t border-[#EEF2FF]">
-                <span className="text-[#4338CA]">실지급액</span>
-                <span className="text-[#4338CA]">{formatCurrency(result.netSeverancePay)}</span>
+              <div className="flex justify-between text-sm font-bold pt-2 border-t border-[#EDF1FE]">
+                <span className="text-[#4B6DE0]">실지급액</span>
+                <span className="text-[#4B6DE0]">{formatCurrency(result.netSeverancePay)}</span>
               </div>
             </div>
           )}

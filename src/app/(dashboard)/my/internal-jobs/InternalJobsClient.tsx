@@ -133,13 +133,13 @@ export default function InternalJobsClient({ user }: { user: SessionUser }) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="공고명 또는 부서 검색..."
-            className="w-full pl-9 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
+            className="w-full pl-9 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
           />
         </div>
         <select
           value={companyId}
           onChange={(e) => setCompanyId(e.target.value)}
-          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#555] focus:ring-2 focus:ring-[#4F46E5]/10 focus:border-[#4F46E5]"
+          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#555] focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
         >
           <option value="">전체 법인</option>
           {companies.map((c) => (
@@ -166,7 +166,7 @@ export default function InternalJobsClient({ user }: { user: SessionUser }) {
             return (
               <div
                 key={job.id}
-                className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden hover:border-[#4F46E5]/40 transition-colors"
+                className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden hover:border-[#5E81F4]/40 transition-colors"
               >
                 {/* 카드 상단 */}
                 <div className="p-5">
@@ -177,7 +177,7 @@ export default function InternalJobsClient({ user }: { user: SessionUser }) {
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${urgencyColor}`}>
                           {urgencyLabel}
                         </span>
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-[#EEF2FF] text-[#4338CA] font-medium">
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-[#EDF1FE] text-[#4B6DE0] font-medium">
                           내부 채용
                         </span>
                         <span className="text-xs px-2 py-0.5 rounded-full bg-[#F5F5F5] text-[#555]">

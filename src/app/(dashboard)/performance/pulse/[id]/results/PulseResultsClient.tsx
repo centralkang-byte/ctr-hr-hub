@@ -39,7 +39,7 @@ interface AiAnalysis {
   department_comparison?: string
 }
 
-const CHART_COLORS = ['#4F46E5', '#059669', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
+const CHART_COLORS = ['#5E81F4', '#059669', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
 
 // ─── Component ───────────────────────────────────────────
 
@@ -85,14 +85,14 @@ export default function PulseResultsClient() {
           <button onClick={() => router.push('/performance/pulse')} className="p-1 hover:bg-[#F5F5F5] rounded-lg">
             <ArrowLeft className="w-5 h-5 text-[#666]" />
           </button>
-          <BarChart3 className="w-6 h-6 text-[#4F46E5]" />
+          <BarChart3 className="w-6 h-6 text-[#5E81F4]" />
           <div>
             <h1 className="text-2xl font-bold text-[#1A1A1A]">{results.title} — 결과</h1>
             <p className="text-sm text-[#666]">총 {results.totalRespondents}명 응답</p>
           </div>
         </div>
         <button onClick={handleAiAnalysis} disabled={aiLoading}
-          className="flex items-center gap-2 px-4 py-2 border border-[#C7D2FE] text-[#4338CA] rounded-lg text-sm font-medium hover:bg-[#E0E7FF] disabled:opacity-50">
+          className="flex items-center gap-2 px-4 py-2 border border-[#C7D2FE] text-[#4B6DE0] rounded-lg text-sm font-medium hover:bg-[#E0E7FF] disabled:opacity-50">
           <Sparkles className="w-4 h-4" />
           {aiLoading ? 'AI 분석 중...' : 'AI 인사이트'}
         </button>
@@ -102,13 +102,13 @@ export default function PulseResultsClient() {
       {aiAnalysis && (
         <div className="bg-[#E0E7FF] rounded-xl border border-[#C7D2FE] p-5 space-y-3">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[#4338CA]" />
-            <span className="text-sm font-semibold text-[#4338CA]">AI 분석 결과</span>
+            <Sparkles className="w-4 h-4 text-[#4B6DE0]" />
+            <span className="text-sm font-semibold text-[#4B6DE0]">AI 분석 결과</span>
           </div>
           <p className="text-sm text-[#333]">{aiAnalysis.overall_sentiment}</p>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <h4 className="text-xs font-medium text-[#4338CA] mb-2">핵심 인사이트</h4>
+              <h4 className="text-xs font-medium text-[#4B6DE0] mb-2">핵심 인사이트</h4>
               <ul className="space-y-1">{aiAnalysis.key_insights.map((ins, i) => (
                 <li key={i} className="text-xs text-[#333]">• {ins}</li>
               ))}</ul>

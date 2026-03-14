@@ -229,7 +229,7 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
         </div>
         <div className={`${CARD_STYLES.kpi} text-center`}>
           <p className="text-xs text-[#666] mb-1">추천 과정</p>
-          <p className="text-3xl font-bold text-[#4338CA]">{recommended.length}</p>
+          <p className="text-3xl font-bold text-[#4B6DE0]">{recommended.length}</p>
         </div>
         <div className={`${CARD_STYLES.kpi} text-center`}>
           <p className="text-xs text-[#666] mb-1">이수 완료</p>
@@ -326,7 +326,7 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
       {recommended.length > 0 && (
         <section>
           <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-[#4338CA]" />
+            <Sparkles className="h-5 w-5 text-[#4B6DE0]" />
             스킬 갭 기반 추천 과정
           </h2>
           <div className="space-y-3">
@@ -336,7 +336,7 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                       <span className="font-semibold text-[#1A1A1A] text-sm">{course.title}</span>
-                      <Badge className="text-[10px] px-1.5 py-0 bg-[#E0E7FF] text-[#4338CA] border-[#C7D2FE]">추천</Badge>
+                      <Badge className="text-[10px] px-1.5 py-0 bg-[#E0E7FF] text-[#4B6DE0] border-[#C7D2FE]">추천</Badge>
                     </div>
                     <div className="flex items-center gap-3 text-xs text-[#666] flex-wrap">
                       <span>{CATEGORY_LABELS[course.category] ?? course.category}</span>

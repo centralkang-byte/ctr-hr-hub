@@ -154,7 +154,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
               type="button"
               className={`px-4 py-2.5 text-sm font-medium transition-colors ${
                 selectedTab === tab.value
-                  ? 'border-b-2 border-[#4F46E5] text-[#4F46E5]'
+                  ? 'border-b-2 border-[#5E81F4] text-[#5E81F4]'
                   : 'text-[#666] hover:text-[#333]'
               }`}
               onClick={() => setSelectedTab(tab.value)}
@@ -172,7 +172,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
               type="button"
               className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                 readFilter === f.value
-                  ? 'bg-[#4F46E5] text-white'
+                  ? 'bg-[#5E81F4] text-white'
                   : 'text-[#555] hover:bg-[#F5F5F5]'
               }`}
               onClick={() => setReadFilter(f.value)}
@@ -205,7 +205,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
                 {/* Unread dot */}
                 <div className="mt-1.5 shrink-0">
                   {!item.isRead ? (
-                    <div className="h-2.5 w-2.5 rounded-full bg-[#4F46E5]" />
+                    <div className="h-2.5 w-2.5 rounded-full bg-[#5E81F4]" />
                   ) : (
                     <div className="h-2.5 w-2.5" />
                   )}
@@ -237,7 +237,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
                     {!item.isRead && (
                       <button
                         type="button"
-                        className="text-xs text-[#4F46E5] hover:text-[#4338CA]"
+                        className="text-xs text-[#5E81F4] hover:text-[#4B6DE0]"
                         onClick={() => handleMarkRead(item.id)}
                       >
                         {t('markAsRead')}
@@ -246,7 +246,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
                     {item.link && (
                       <a
                         href={item.link}
-                        className="text-xs text-[#4F46E5] hover:text-[#4338CA]"
+                        className="text-xs text-[#5E81F4] hover:text-[#4B6DE0]"
                       >
                         {t('goToLink')}
                       </a>

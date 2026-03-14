@@ -15,7 +15,7 @@ interface KpiCardProps {
 }
 
 export function KpiCard({ label, value, unit, change, changeLabel, severity = 'neutral', icon: Icon, tooltip }: KpiCardProps) {
-  const borderColor = severity === 'positive' ? 'border-l-emerald-500' : severity === 'negative' ? 'border-l-red-500' : 'border-l-[#4F46E5]'
+  const borderColor = severity === 'positive' ? 'border-l-emerald-500' : severity === 'negative' ? 'border-l-red-500' : 'border-l-[#5E81F4]'
   const changeColor = severity === 'positive' ? 'text-emerald-600' : severity === 'negative' ? 'text-red-600' : 'text-gray-500'
   const ChangeIcon = change !== undefined && change > 0 ? TrendingUp : change !== undefined && change < 0 ? TrendingDown : Minus
 

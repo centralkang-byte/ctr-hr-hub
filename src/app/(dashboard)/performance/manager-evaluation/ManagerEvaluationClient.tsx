@@ -106,7 +106,7 @@ export default function ManagerEvaluationClient({user }: {
                     <Users className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
                     <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">아직 평가 기간이 아닙니다.</h2>
                     <p className="text-sm text-[#8181A5]">매니저 평가는 EVAL_OPEN 단계에서 진행됩니다.</p>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#4F46E5] hover:underline"><ArrowLeft className="h-4 w-4" /> 돌아가기</a>
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline"><ArrowLeft className="h-4 w-4" /> 돌아가기</a>
                 </div>
             </div>
         )
@@ -160,7 +160,7 @@ export default function ManagerEvaluationClient({user }: {
                             const hasOverdue = member.overdueFlags.length > 0
                             return (
                                 <div key={member.employeeId}
-                                    className={`rounded-xl border bg-white p-5 transition-colors ${hasOverdue ? 'border-[#FDE68A]' : 'border-[#F0F0F3] hover:border-[#4F46E5]/30'}`}>
+                                    className={`rounded-xl border bg-white p-5 transition-colors ${hasOverdue ? 'border-[#FDE68A]' : 'border-[#F0F0F3] hover:border-[#5E81F4]/30'}`}>
                                     <div className="flex items-start justify-between">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3">
@@ -196,7 +196,7 @@ export default function ManagerEvaluationClient({user }: {
                                                 동료지명
                                             </button>
                                             <button onClick={() => setActiveEval(member)}
-                                                className="rounded-lg bg-[#4F46E5] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#4A6FE0]">
+                                                className="rounded-lg bg-[#5E81F4] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#4A6FE0]">
                                                 {isCompleted ? '수정' : '평가하기'} →
                                             </button>
                                         </div>
@@ -293,7 +293,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                 <div className="flex border-b border-[#F0F0F3]">
                     {TABS.map((t) => (
                         <button key={t.key} onClick={() => setTab(t.key)}
-                            className={`px-5 py-3 text-sm font-medium border-b-2 ${tab === t.key ? 'border-[#4F46E5] text-[#4F46E5]' : 'border-transparent text-[#8181A5]'}`}>
+                            className={`px-5 py-3 text-sm font-medium border-b-2 ${tab === t.key ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#8181A5]'}`}>
                             {t.label}
                         </button>
                     ))}
@@ -317,7 +317,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                                     </div>
                                     <input type="text" placeholder={tCommon('enterComment')} value={goalScores[goal.id]?.comment ?? ''}
                                         onChange={(e) => setGoalScores((p) => ({ ...p, [goal.id]: { ...p[goal.id], comment: e.target.value } }))}
-                                        className="w-full rounded-lg border border-[#F0F0F3] px-3 py-1.5 text-sm focus:border-[#4F46E5] focus:outline-none" />
+                                        className="w-full rounded-lg border border-[#F0F0F3] px-3 py-1.5 text-sm focus:border-[#5E81F4] focus:outline-none" />
                                 </div>
                             ))}
                         </div>
@@ -334,7 +334,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                                     </div>
                                     <input type="text" placeholder={tCommon('enterComment')} value={beiScores[v.key]?.comment ?? ''}
                                         onChange={(e) => setBeiScores((p) => ({ ...p, [v.key]: { ...p[v.key], comment: e.target.value } }))}
-                                        className="w-full rounded-lg border border-[#F0F0F3] px-3 py-1.5 text-sm focus:border-[#4F46E5] focus:outline-none" />
+                                        className="w-full rounded-lg border border-[#F0F0F3] px-3 py-1.5 text-sm focus:border-[#5E81F4] focus:outline-none" />
                                 </div>
                             ))}
                         </div>
@@ -370,16 +370,16 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                                     <p className="text-xs text-[#8181A5]">BEI (40%)</p>
                                     <p className="text-xl font-bold text-[#1C1D21]">{beiAvg.toFixed(1)}</p>
                                 </div>
-                                <div className="rounded-lg border border-[#4F46E5]/20 bg-[#4F46E5]/5 p-3 text-center">
-                                    <p className="text-xs text-[#4F46E5]">종합 점수</p>
-                                    <p className="text-xl font-bold text-[#4F46E5]">{totalScore.toFixed(2)}</p>
+                                <div className="rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-3 text-center">
+                                    <p className="text-xs text-[#5E81F4]">종합 점수</p>
+                                    <p className="text-xl font-bold text-[#5E81F4]">{totalScore.toFixed(2)}</p>
                                 </div>
                             </div>
 
                             <div className="rounded-xl border border-[#F0F0F3] p-4">
                                 <label className="mb-2 block text-sm font-medium text-[#1C1D21]">매니저 최종 등급</label>
                                 <select value={finalGrade} onChange={(e) => setFinalGrade(e.target.value)}
-                                    className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#4F46E5] focus:outline-none">
+                                    className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none">
                                     {GRADES.map((g) => <option key={g} value={g}>{getGradeLabel(g)} ({g})</option>)}
                                 </select>
                             </div>
@@ -393,7 +393,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                             <Save className="h-4 w-4" /> 임시저장
                         </button>
                         <button onClick={() => handleSave('SUBMITTED')} disabled={saving}
-                            className="inline-flex items-center gap-2 rounded-lg bg-[#4F46E5] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40">
+                            className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40">
                             <Send className="h-4 w-4" /> {saving ? '확정 중...' : '평가 확정'}
                         </button>
                     </div>
@@ -460,10 +460,10 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
                     <div className="space-y-2">
                         {candidates.map((c) => (
                             <label key={c.employeeId}
-                                className={`flex cursor-pointer items-center justify-between rounded-lg border p-3 transition-colors ${selected.has(c.employeeId) ? 'border-[#4F46E5] bg-[#4F46E5]/5' : 'border-[#F0F0F3] hover:border-[#4F46E5]/30'}`}>
+                                className={`flex cursor-pointer items-center justify-between rounded-lg border p-3 transition-colors ${selected.has(c.employeeId) ? 'border-[#5E81F4] bg-[#5E81F4]/5' : 'border-[#F0F0F3] hover:border-[#5E81F4]/30'}`}>
                                 <div className="flex items-center gap-3">
                                     <input type="checkbox" checked={selected.has(c.employeeId)} onChange={() => toggleCandidate(c.employeeId)}
-                                        className="rounded border-[#F0F0F3] text-[#4F46E5]" />
+                                        className="rounded border-[#F0F0F3] text-[#5E81F4]" />
                                     <div>
                                         <p className="text-sm font-medium text-[#1C1D21]">{c.name}</p>
                                         <p className="text-xs text-[#8181A5]">{c.department} · {c.jobGrade}</p>
@@ -478,7 +478,7 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
                 <div className="mt-6 flex justify-end gap-3">
                     <button onClick={onClose} className="rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm font-medium text-[#1C1D21]">{tCommon('cancel')}</button>
                     <button onClick={handleNominate} disabled={saving || selected.size < 2}
-                        className="rounded-lg bg-[#4F46E5] px-4 py-2 text-sm font-medium text-white disabled:opacity-40">
+                        className="rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white disabled:opacity-40">
                         {saving ? '지명 중...' : '지명 확정'}
                     </button>
                 </div>

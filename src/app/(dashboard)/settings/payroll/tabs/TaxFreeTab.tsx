@@ -97,7 +97,7 @@ export function TaxFreeTab({ companyId }: Props) {
 
   const hasChanges = JSON.stringify(limits) !== JSON.stringify(original)
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#4F46E5]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
 
   return (
     <div className="space-y-4">
@@ -110,8 +110,8 @@ export function TaxFreeTab({ companyId }: Props) {
           <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">법인 오버라이드</span>
         )}
       </div>
-      <div className="flex items-start gap-3 rounded-lg border border-[#4F46E5]/20 bg-[#4F46E5]/5 p-4">
-        <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#4F46E5]" />
+      <div className="flex items-start gap-3 rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
         <p className="text-xs text-[#8181A5]">세법 개정 시 관리자가 직접 한도액을 수정할 수 있습니다. 변경 사항은 급여 계산에 즉시 반영됩니다.</p>
       </div>
       <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
@@ -122,7 +122,7 @@ export function TaxFreeTab({ companyId }: Props) {
           <th className={TABLE_STYLES.headerCell}>근거</th>
         </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{limits.map((l, i) => (
           <tr key={l.code} className={TABLE_STYLES.row}>
-            <td className="px-4 py-3 text-sm font-medium text-[#4F46E5]">{l.code}</td>
+            <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{l.code}</td>
             <td className={TABLE_STYLES.cell}>{l.label}</td>
             <td className="px-4 py-3 text-right">
               <Input

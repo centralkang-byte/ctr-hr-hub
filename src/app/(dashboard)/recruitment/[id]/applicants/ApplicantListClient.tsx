@@ -43,8 +43,8 @@ const STAGE_BADGE_STYLES: Record<string, string> = {
   INTERVIEW_1: 'bg-[#E3F2FD] text-[#1565C0]',
   INTERVIEW_2: 'bg-[#E3F2FD] text-[#1565C0]',
   FINAL: 'bg-[#FFF3E0] text-[#E65100]',
-  OFFER: 'bg-[#EEF2FF] text-[#2E7D32]',
-  HIRED: 'bg-[#EEF2FF] text-[#1B5E20] font-bold',
+  OFFER: 'bg-[#EDF1FE] text-[#2E7D32]',
+  HIRED: 'bg-[#EDF1FE] text-[#1B5E20] font-bold',
   REJECTED: 'bg-[#FFEBEE] text-[#C62828]',
 }
 
@@ -58,7 +58,7 @@ const SOURCE_KEYS: Record<string, string> = {
 
 const SOURCE_BADGE_STYLES: Record<string, string> = {
   DIRECT: 'bg-[#F5F5F5] text-[#666]',
-  REFERRAL: 'bg-[#EEF2FF] text-[#2E7D32]',
+  REFERRAL: 'bg-[#EDF1FE] text-[#2E7D32]',
   AGENCY: 'bg-[#E3F2FD] text-[#1565C0]',
   JOB_BOARD: 'bg-[#FFF3E0] text-[#E65100]',
   INTERNAL: 'bg-[#F3E5F5] text-[#7B1FA2]',
@@ -167,7 +167,7 @@ export default function ApplicantListClient({
       return <span className="text-sm text-[#999]">-</span>
     }
     let colorClass = 'text-[#F44336]'
-    if (score >= 80) colorClass = 'text-[#4F46E5]'
+    if (score >= 80) colorClass = 'text-[#5E81F4]'
     else if (score >= 50) colorClass = 'text-[#FF9800]'
     return <span className={`text-sm font-medium ${colorClass}`}>{t('scorePoints', { score })}</span>
   }
@@ -221,7 +221,7 @@ export default function ApplicantListClient({
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full pl-10 pr-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors duration-150"
+              className="w-full pl-10 pr-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
             />
           </div>
           {/* Stage Filter */}
@@ -233,7 +233,7 @@ export default function ApplicantListClient({
                 setStageFilter(e.target.value)
                 setPage(1)
               }}
-              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 transition-colors duration-150"
+              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
             >
               <option value="">{t('allStages')}</option>
               {STAGES_ALL.map((s) => (
@@ -257,7 +257,7 @@ export default function ApplicantListClient({
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <div className="flex items-center gap-2 text-sm text-[#999]">
-              <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#4F46E5] rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#5E81F4] rounded-full animate-spin" />
               {t('loadingData')}
             </div>
           </div>

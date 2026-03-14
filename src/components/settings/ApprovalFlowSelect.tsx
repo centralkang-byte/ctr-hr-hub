@@ -41,7 +41,7 @@ export function ApprovalFlowSelect({
         type="button"
         disabled={disabled}
         onClick={() => setOpen((p) => !p)}
-        className="flex w-full items-center justify-between gap-2 rounded-lg border border-[#D4D4D4] bg-white px-3 py-2 text-sm text-[#333] hover:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/20 disabled:cursor-not-allowed disabled:bg-[#FAFAFA] disabled:text-[#999]"
+        className="flex w-full items-center justify-between gap-2 rounded-lg border border-[#D4D4D4] bg-white px-3 py-2 text-sm text-[#333] hover:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/20 disabled:cursor-not-allowed disabled:bg-[#FAFAFA] disabled:text-[#999]"
       >
         <span>{selected ? selected.name : placeholder}</span>
         <ChevronDown className={`h-4 w-4 text-[#999] transition-transform ${open ? 'rotate-180' : ''}`} />
@@ -64,7 +64,7 @@ export function ApprovalFlowSelect({
                 type="button"
                 onClick={() => { onChange(flow.id); setOpen(false) }}
                 className={`flex w-full flex-col px-4 py-2.5 text-left hover:bg-[#FAFAFA] ${
-                  flow.id === value ? 'bg-[#EEF2FF]' : ''
+                  flow.id === value ? 'bg-[#EDF1FE]' : ''
                 }`}
               >
                 <span className="text-sm font-medium text-[#333]">{flow.name}</span>

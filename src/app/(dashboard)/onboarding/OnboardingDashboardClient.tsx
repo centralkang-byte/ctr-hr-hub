@@ -71,7 +71,7 @@ interface OnboardingDashboardClientProps {
 // ─── Constants ──────────────────────────────────────────────
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
-  IN_PROGRESS: 'bg-[#EEF2FF] text-[#4F46E5]',
+  IN_PROGRESS: 'bg-[#EDF1FE] text-[#5E81F4]',
   COMPLETED: 'bg-[#DCFCE7] text-[#16A34A]',
 }
 
@@ -198,7 +198,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
           <div className="flex items-center gap-2">
             <div className="flex-1 bg-[#F0F0F3] rounded-full h-2">
               <div
-                className="bg-[#4F46E5] h-2 rounded-full transition-all"
+                className="bg-[#5E81F4] h-2 rounded-full transition-all"
                 style={{ width: `${pct}%` }}
               />
             </div>
@@ -228,7 +228,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
               setPage(1)
             }}
             className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors ${planType === tab.value
-                ? 'border-b-2 border-[#4F46E5] text-[#4F46E5]'
+                ? 'border-b-2 border-[#5E81F4] text-[#5E81F4]'
                 : 'text-[#8181A5] hover:text-[#1C1D21]'
               }`}
           >
@@ -248,8 +248,8 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                 setPage(1)
               }}
               className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${filter === opt.value
-                  ? 'bg-[#4F46E5] text-white border-[#4F46E5]'
-                  : 'bg-white text-[#8181A5] border-[#F0F0F3] hover:border-[#4F46E5]'
+                  ? 'bg-[#5E81F4] text-white border-[#5E81F4]'
+                  : 'bg-white text-[#8181A5] border-[#F0F0F3] hover:border-[#5E81F4]'
                 }`}
             >
               {opt.label}
@@ -265,7 +265,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
               setCompanyIdFilter(e.target.value)
               setPage(1)
             }}
-            className="text-sm border border-[#F0F0F3] rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
+            className="text-sm border border-[#F0F0F3] rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10"
           >
             <option value="">전체 법인</option>
             {companies.map((c) => (
@@ -282,7 +282,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
             setLimit(Number(e.target.value))
             setPage(1)
           }}
-          className="text-sm border border-[#F0F0F3] rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
+          className="text-sm border border-[#F0F0F3] rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10"
         >
           {LIMIT_OPTIONS.map((n) => (
             <option key={n} value={String(n)}>

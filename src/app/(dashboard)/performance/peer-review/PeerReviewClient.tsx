@@ -50,7 +50,7 @@ interface TeamResult {
 const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
   DRAFT: { label: '미작성', cls: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' },
   SUBMITTED: { label: '제출 완료', cls: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
-  CONFIRMED: { label: '확정', cls: 'bg-[#EEF2FF] text-[#4338CA] border-[#EEF2FF]' },
+  CONFIRMED: { label: '확정', cls: 'bg-[#EDF1FE] text-[#4B6DE0] border-[#EDF1FE]' },
 }
 
 // ─── Component ───────────────────────────────────────────
@@ -112,7 +112,7 @@ export default function PeerReviewClient() {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <Users className="w-6 h-6 text-[#4F46E5]" />
+        <Users className="w-6 h-6 text-[#5E81F4]" />
         <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('peerReviewTitle')}</h1>
       </div>
 
@@ -121,7 +121,7 @@ export default function PeerReviewClient() {
         <div className="flex border-b border-[#E8E8E8]">
           {TABS.map((tab_) => (
             <button key={tab_.key} onClick={() => setTab(tab_.key)}
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 ${tab === tab_.key ? 'border-[#4F46E5] text-[#4F46E5]' : 'border-transparent text-[#666] hover:text-[#333]'}`}>
+              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 ${tab === tab_.key ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#666] hover:text-[#333]'}`}>
               <tab_.icon className="w-4 h-4" />
               {tab_.label}
             </button>
@@ -201,7 +201,7 @@ export default function PeerReviewClient() {
               </div>
               <div className={CARD_STYLES.padded}>
                 <p className="text-xs text-[#666] mb-1">{tCommon('completionRate')}</p>
-                <p className="text-3xl font-bold text-[#4F46E5]">{teamResults.completionRate}%</p>
+                <p className="text-3xl font-bold text-[#5E81F4]">{teamResults.completionRate}%</p>
               </div>
             </div>
 
@@ -239,7 +239,7 @@ export default function PeerReviewClient() {
                       </td>
                       <td className="px-4 py-3 text-center">
                         <button onClick={() => router.push(`/performance/peer-review/results/${selectedCycleId}?employeeId=${e.employee.id}`)}
-                          className="text-sm text-[#4F46E5] hover:text-[#4338CA] font-medium">{tCommon('view')}</button>
+                          className="text-sm text-[#5E81F4] hover:text-[#4B6DE0] font-medium">{tCommon('view')}</button>
                       </td>
                     </tr>
                   ))}

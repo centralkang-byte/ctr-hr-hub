@@ -30,8 +30,8 @@ export function JobGradesTab({ companyId }: Props) {
         <p className="text-sm text-[#8181A5]">{grades.length}개 직급 등록</p>
       </div>
 
-      <div className="flex items-start gap-3 rounded-lg border border-[#4F46E5]/20 bg-[#4F46E5]/5 p-4">
-        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#4F46E5]" />
+      <div className="flex items-start gap-3 rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4">
+        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
         <p className="text-xs text-[#8181A5]">직급 체계는 현재 시스템에서 관리됩니다. API 연결 후 편집이 가능합니다.</p>
       </div>
 
@@ -49,7 +49,7 @@ export function JobGradesTab({ companyId }: Props) {
           <tbody className="divide-y divide-[#F0F0F3]">
             {grades.map((g) => (
               <tr key={g.code} className="hover:bg-[#F5F5FA] transition-colors">
-                <td className="px-4 py-3 text-sm font-medium text-[#4F46E5]">{g.code}</td>
+                <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{g.code}</td>
                 <td className={TABLE_STYLES.cell}>{g.name}</td>
                 <td className={TABLE_STYLES.cellMuted}>{g.nameEn}</td>
                 <td className="px-4 py-3 text-center text-sm text-[#8181A5]">{g.minYears != null ? `${g.minYears}년` : '—'}</td>

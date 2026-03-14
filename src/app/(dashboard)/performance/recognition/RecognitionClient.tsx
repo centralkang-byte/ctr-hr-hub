@@ -47,13 +47,13 @@ interface Employee {
 
 const VALUE_CONFIG: Record<string, { label: string; emoji: string; bgDefault: string; borderDefault: string; textDefault: string; bgActive: string; textActive: string }> = {
   CHALLENGE: { label: '도전', emoji: '🔴', bgDefault: 'bg-[#FEF2F2]', borderDefault: 'border-[#FECACA]', textDefault: 'text-[#EF4444]', bgActive: 'bg-[#EF4444]', textActive: 'text-white' },
-  TRUST: { label: '신뢰', emoji: '🟢', bgDefault: 'bg-[#EEF2FF]', borderDefault: 'border-[#A5D6A7]', textDefault: 'text-[#4F46E5]', bgActive: 'bg-[#4F46E5]', textActive: 'text-white' },
+  TRUST: { label: '신뢰', emoji: '🟢', bgDefault: 'bg-[#EDF1FE]', borderDefault: 'border-[#A5D6A7]', textDefault: 'text-[#5E81F4]', bgActive: 'bg-[#5E81F4]', textActive: 'text-white' },
   RESPONSIBILITY: { label: '책임', emoji: '🟠', bgDefault: 'bg-[#FFFBEB]', borderDefault: 'border-[#FDE68A]', textDefault: 'text-[#F59E0B]', bgActive: 'bg-[#F59E0B]', textActive: 'text-white' },
   RESPECT: { label: '존중', emoji: '🔵', bgDefault: 'bg-[#EFF6FF]', borderDefault: 'border-[#BFDBFE]', textDefault: 'text-[#3B82F6]', bgActive: 'bg-[#3B82F6]', textActive: 'text-white' },
 }
 
 const VALUE_LABELS: Record<string, string> = { CHALLENGE: 'Challenge', TRUST: 'Trust', RESPONSIBILITY: 'Responsibility', RESPECT: 'Respect' }
-const CHART_COLORS = ['#EF4444', '#4F46E5', '#F59E0B', '#3B82F6']
+const CHART_COLORS = ['#EF4444', '#5E81F4', '#F59E0B', '#3B82F6']
 
 // ─── Component ───────────────────────────────────────────
 
@@ -165,7 +165,7 @@ export default function RecognitionClient() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Heart className="w-6 h-6 text-[#4F46E5]" />
+          <Heart className="w-6 h-6 text-[#5E81F4]" />
           <h1 className="text-2xl font-bold text-[#1A1A1A]">Recognition</h1>
         </div>
         <button
@@ -182,7 +182,7 @@ export default function RecognitionClient() {
           <button
             onClick={() => setActiveTab('feed')}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 ${
-              activeTab === 'feed' ? 'border-[#4F46E5] text-[#4F46E5]' : 'border-transparent text-[#666] hover:text-[#333]'
+              activeTab === 'feed' ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#666] hover:text-[#333]'
             }`}
           >
             피드
@@ -191,7 +191,7 @@ export default function RecognitionClient() {
             <button
               onClick={() => setActiveTab('stats')}
               className={`px-4 py-2.5 text-sm font-medium border-b-2 ${
-                activeTab === 'stats' ? 'border-[#4F46E5] text-[#4F46E5]' : 'border-transparent text-[#666] hover:text-[#333]'
+                activeTab === 'stats' ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#666] hover:text-[#333]'
               }`}
             >
               통계
@@ -248,7 +248,7 @@ export default function RecognitionClient() {
                         onClick={() => handleLike(item.id)}
                         className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium ${
                           item.likedByMe
-                            ? 'bg-[#EEF2FF] text-[#4F46E5]'
+                            ? 'bg-[#EDF1FE] text-[#5E81F4]'
                             : 'bg-[#FAFAFA] text-[#666] hover:bg-[#F5F5F5]'
                         }`}
                       >
@@ -334,7 +334,7 @@ export default function RecognitionClient() {
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#666' }} />
                   <YAxis tick={{ fontSize: 12, fill: '#666' }} allowDecimals={false} />
                   <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
-                  <Line type="monotone" dataKey="count" name="Recognition 수" stroke={CHART_THEME.colors[3]} strokeWidth={2} dot={{ fill: '#4F46E5' }} />
+                  <Line type="monotone" dataKey="count" name="Recognition 수" stroke={CHART_THEME.colors[3]} strokeWidth={2} dot={{ fill: '#5E81F4' }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -353,7 +353,7 @@ export default function RecognitionClient() {
                       <span className="w-6 h-6 rounded-full bg-[#FAFAFA] text-xs text-[#666] font-medium flex items-center justify-center">{i + 1}</span>
                       <span className="text-sm text-[#1A1A1A]">{r.name}</span>
                     </div>
-                    <span className="text-sm font-medium text-[#4F46E5]">{r.count}건</span>
+                    <span className="text-sm font-medium text-[#5E81F4]">{r.count}건</span>
                   </div>
                 ))}
               </div>
@@ -405,7 +405,7 @@ export default function RecognitionClient() {
                       value={searchQuery}
                       onChange={(e) => searchEmployees(e.target.value)}
                       placeholder={tCommon('searchEmployee')}
-                      className="w-full pl-9 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]"
+                      className="w-full pl-9 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
                     />
                     {searchResults.length > 0 && (
                       <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#E8E8E8] rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
@@ -455,7 +455,7 @@ export default function RecognitionClient() {
                   placeholder="칭찬 메시지를 작성하세요..."
                   rows={4}
                   maxLength={500}
-                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#4F46E5]/10 placeholder:text-[#999]"
+                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
                 />
                 <p className="text-xs text-[#999] mt-1">{message.length}/500</p>
               </div>

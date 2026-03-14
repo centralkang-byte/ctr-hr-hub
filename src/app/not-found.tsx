@@ -10,7 +10,7 @@ export default function NotFoundPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-ctr-gray-50 px-4">
       <div className="text-center">
-        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[#EEF2FF]">
+        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[#EDF1FE]">
           <FileQuestion className="h-10 w-10 text-ctr-primary" />
         </div>
         <h1 className="text-4xl font-bold text-ctr-gray-900">404</h1>

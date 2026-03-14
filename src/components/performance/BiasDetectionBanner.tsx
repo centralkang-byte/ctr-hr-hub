@@ -25,7 +25,7 @@ const BIAS_TYPE_LABEL: Record<string, string> = {
 }
 
 const SEVERITY_STYLE: Record<string, string> = {
-  info: 'bg-[#E0E7FF] text-[#4338CA]',
+  info: 'bg-[#E0E7FF] text-[#4B6DE0]',
   warning: 'bg-[#FEF3C7] text-[#B45309]',
   critical: 'bg-[#FEE2E2] text-[#B91C1C]',
 }

@@ -104,14 +104,14 @@ interface ChangeRequest {
 // ─── Constants ──────────────────────────────────────────────
 
 const SLOT_COLORS: Record<number, string> = {
-  0: 'bg-[#EEF2FF] text-[#4338CA] border-[#EEF2FF]',
+  0: 'bg-[#EDF1FE] text-[#4B6DE0] border-[#EDF1FE]',
   1: 'bg-[#FEF3C7] text-[#92400E] border-[#FCD34D]',
   2: 'bg-[#F3E8FF] text-[#6B21A8] border-[#E9D5FF]',
   3: 'bg-[#D1FAE5] text-[#065F46] border-[#A7F3D0]',
 }
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
-  SCHEDULED: { label: '예정', color: 'bg-[#EEF2FF] text-[#4338CA] border-[#EEF2FF]' },
+  SCHEDULED: { label: '예정', color: 'bg-[#EDF1FE] text-[#4B6DE0] border-[#EDF1FE]' },
   WORKED: { label: '완료', color: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
   ABSENT: { label: '결근', color: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]' },
   SWAPPED: { label: '교대변경', color: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]' },
@@ -269,7 +269,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#4F46E5]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#5E81F4]" />
       </div>
     )
   }
@@ -280,7 +280,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#1A1A1A] flex items-center gap-2 tracking-[-0.02em]">
-            <Calendar className="h-6 w-6 text-[#4F46E5]" />
+            <Calendar className="h-6 w-6 text-[#5E81F4]" />
             교대근무 캘린더
           </h1>
           <p className="text-sm text-[#999] mt-1">월간 교대 스케줄 배정 현황</p>
@@ -446,14 +446,14 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
                       setDetailOpen(true)
                     }}
                     className={`bg-white min-h-[100px] p-1.5 text-left hover:bg-[#FAFAFA] transition-colors ${
-                      isToday ? 'ring-2 ring-[#4F46E5] ring-inset' : ''
+                      isToday ? 'ring-2 ring-[#5E81F4] ring-inset' : ''
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span
                         className={`text-xs font-medium ${
                           isToday
-                            ? 'bg-[#4F46E5] text-white rounded-full w-5 h-5 flex items-center justify-center'
+                            ? 'bg-[#5E81F4] text-white rounded-full w-5 h-5 flex items-center justify-center'
                             : isWeekend
                               ? dayOfWeek === 0 ? 'text-[#F44336]' : 'text-[#2196F3]'
                               : 'text-[#666]'
@@ -625,7 +625,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-[#4F46E5]" />
+              <Calendar className="h-5 w-5 text-[#5E81F4]" />
               {selectedDate} 교대 스케줄
             </DialogTitle>
           </DialogHeader>
