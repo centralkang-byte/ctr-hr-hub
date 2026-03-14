@@ -224,7 +224,8 @@ export async function generateEmployeeRegistry(
     orderBy: [{ name: 'asc' }],
   })
 
-  const rows: EmployeeRegistryRow[] = (employees as any).map((emp) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const rows: EmployeeRegistryRow[] = (employees as any).map((emp: any) => {
     const assignment = emp.assignments?.[0]
     return {
       employeeNo: emp.employeeNo,

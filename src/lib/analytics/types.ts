@@ -164,3 +164,87 @@ export interface TeamHealthResponse {
     actionLink?: string
   }[]
 }
+
+// ─── Materialized View Row Types (used by queries.ts) ────
+
+export interface HeadcountRow {
+  company_id: string
+  department_id: string
+  headcount: number
+  new_hires_30d: number
+  resignations_30d: number
+}
+
+export interface AttendanceWeeklyRow {
+  employee_id: string
+  week_start: Date
+  total_hours: number
+  overtime_hours: number
+  late_count: number
+  absent_count: number
+  early_out_count: number
+}
+
+export interface PerformanceSummaryRow {
+  cycle_id: string
+  department_id: string
+  ems_block: string
+  employee_count: number
+  avg_performance_score: number
+  avg_competency_score: number
+}
+
+export interface RecruitmentFunnelRow {
+  posting_id: string
+  company_id: string
+  posting_title: string
+  stage: string
+  candidate_count: number
+  avg_screening_score: number | null
+}
+
+export interface BurnoutRiskRow {
+  employee_id: string
+  name: string
+  company_id: string
+  department: string
+  job_category_code: string
+  consecutive_high_weeks: number
+  unused_days: number
+  days_since_last_one_on_one: number
+  is_burnout_warning: boolean
+  is_burnout_critical: boolean
+}
+
+export interface TeamHealthRow {
+  department_id: string
+  department_name: string
+  company_id: string
+  team_size: number
+  avg_performance_score: number
+  avg_competency_score: number
+  avg_late_count_4w: number
+  avg_overtime_hours_4w: number
+  avg_unused_leave_days: number
+  one_on_one_coverage_pct: number
+}
+
+export interface ExitReasonMonthlyRow {
+  month: Date
+  resign_type: string
+  primary_reason: string
+  company_id: string
+  count: number
+}
+
+export interface CompaRatioRow {
+  company_id: string
+  job_category_code: string
+  grade_code: string
+  grade_name: string
+  employee_count: number
+  avg_compa_ratio: number
+  p25: number
+  median: number
+  p75: number
+}
