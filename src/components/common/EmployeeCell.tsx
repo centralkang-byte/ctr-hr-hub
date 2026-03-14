@@ -3,11 +3,15 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — EmployeeCell Component
 // Unified employee display for all screens: sm / md / lg
+// + Peek Card (hover mini-profile popover) — PC-1
 // ═══════════════════════════════════════════════════════════
 
 import React from 'react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card'
+import { User, MessageSquare, Mail, Phone } from 'lucide-react'
 import { getAvatarColor, getInitials } from '@/lib/avatar-colors'
 import type { MinimalEmployee } from '@/types/employee'
 
@@ -27,6 +31,8 @@ const SIZE_CONFIG = {
   md: { avatar: 'h-10 w-10', text: 'text-xs',  gap: 'gap-3',   nameText: 'text-sm',  initials: 'text-xs' },
   lg: { avatar: 'h-16 w-16', text: 'text-xs',  gap: 'gap-4',   nameText: 'text-base', initials: 'text-lg' },
 } as const
+
+const PEEK_AVATAR_CONFIG = { avatar: 'h-10 w-10', initials: 'text-xs' }
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -63,16 +69,36 @@ export interface EmployeeCellProps {
   /** Additional CSS classes */
   className?: string
 
-  // Reserved for future sessions — NOT implemented in EC-1
-  showQuickActions?: boolean
+  /** Enable Peek Card (hover mini-profile popover) — defaults to true for sm/md, false for lg */
   enablePeek?: boolean
+  /** Show quick action buttons in Peek Card */
+  showQuickActions?: boolean
 }
 
-// ─── Helpers ────────────────────────────────────────────────
+// ─── Shared Helpers ─────────────────────────────────────────
 
-function resolveData(props: EmployeeCellProps) {
+interface ResolvedData {
+  id?: string
+  name: string
+  nameEn: string | null
+  employeeNo: string | null
+  photoUrl: string | null
+  department: string | null
+  departmentId: string | null
+  jobTitle: string | null
+  jobGrade: string | null
+  email: string | null
+  phone: string | null
+  hireDate: string | null
+  status: string | null
+  locationCode: string | null
+  locationCity: string | null
+}
+
+function resolveData(props: EmployeeCellProps): ResolvedData {
   const e = props.employee
   return {
+    id:           e?.id,
     name:         props.name ?? e?.name ?? '',
     nameEn:       props.nameEn ?? e?.nameEn ?? null,
     employeeNo:   props.employeeNo ?? e?.employeeNo ?? null,
@@ -125,6 +151,133 @@ function formatDate(iso: string | null): string | null {
   }
 }
 
+// ── Shared sub-components ──
+
+function AvatarBlock({
+  d,
+  avatarClass,
+  initialsClass,
+}: {
+  d: ResolvedData
+  avatarClass: string
+  initialsClass: string
+}) {
+  return (
+    <Avatar className={`${avatarClass} flex-shrink-0`}>
+      <AvatarImage src={d.photoUrl || ''} alt={d.name} />
+      <AvatarFallback
+        className={`text-white font-medium ${initialsClass}`}
+        style={{ backgroundColor: getAvatarColor(d.departmentId) }}
+      >
+        {getInitials(d.name, d.nameEn)}
+      </AvatarFallback>
+    </Avatar>
+  )
+}
+
+function SublineBlock({ d }: { d: ResolvedData }) {
+  const title = d.jobTitle ?? d.jobGrade ?? null
+  if (!d.department && !title && !d.locationCode) return null
+
+  return (
+    <div className="flex items-center gap-1 min-w-0 text-xs text-[#8181A5] mt-0.5">
+      {d.department && (
+        <span className="truncate min-w-[40px] max-w-[140px]">{d.department}</span>
+      )}
+      {d.department && title && <span className="flex-shrink-0">·</span>}
+      {title && <span className="flex-shrink-0">{title}</span>}
+      {(d.department || title) && d.locationCode && d.locationCity && (
+        <span className="flex-shrink-0">·</span>
+      )}
+      {d.locationCode && d.locationCity && (
+        <span className="flex-shrink-0 inline-flex items-center gap-0.5">
+          <span className="px-1 py-px rounded text-[10px] font-medium bg-[#F5F5FA] text-[#8181A5]">
+            {d.locationCode}
+          </span>
+          <span className="truncate max-w-[80px]">{d.locationCity}</span>
+        </span>
+      )}
+    </div>
+  )
+}
+
+// ─── Peek Card Body (internal) ──────────────────────────────
+
+function PeekCardBody({ d }: { d: ResolvedData }) {
+  const t = useTranslations('common')
+
+  return (
+    <div>
+      {/* Header: avatar md + name + dept + location */}
+      <div className="flex items-center gap-3">
+        <AvatarBlock
+          d={d}
+          avatarClass={PEEK_AVATAR_CONFIG.avatar}
+          initialsClass={PEEK_AVATAR_CONFIG.initials}
+        />
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-[#1C1D21] truncate">
+            {formatDisplayName(d.name, d.nameEn, d.locationCode)}
+          </p>
+          <SublineBlock d={d} />
+        </div>
+      </div>
+
+      {/* Contact info */}
+      {(d.email || d.phone) && (
+        <div className="space-y-1 mt-3">
+          {d.email && (
+            <a
+              href={`mailto:${d.email}`}
+              className="flex items-center gap-2 text-xs text-[#8181A5] hover:text-[#5E81F4] transition-colors"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Mail size={12} />
+              {d.email}
+            </a>
+          )}
+          {d.phone && (
+            <a
+              href={`tel:${d.phone}`}
+              className="flex items-center gap-2 text-xs text-[#8181A5] hover:text-[#5E81F4] transition-colors"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Phone size={12} />
+              {d.phone}
+            </a>
+          )}
+        </div>
+      )}
+
+      {/* Quick Actions */}
+      <div className="flex items-center gap-2 pt-2 mt-3 border-t border-[#F0F0F3]">
+        {d.id && (
+          <Link
+            href={`/employees/${d.id}`}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#8181A5] hover:text-[#5E81F4] hover:bg-[#F5F5FA] rounded-md transition-colors"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <User size={14} />
+            {t('viewProfile')}
+          </Link>
+        )}
+        {d.email && (
+          <a
+            href={`https://teams.microsoft.com/l/chat/0/0?users=${encodeURIComponent(d.email)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#8181A5] hover:text-[#5E81F4] hover:bg-[#F5F5FA] rounded-md transition-colors"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <MessageSquare size={14} />
+            Teams DM
+          </a>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ─── Component ──────────────────────────────────────────────
 
 export function EmployeeCell(props: EmployeeCellProps) {
@@ -135,6 +288,7 @@ export function EmployeeCell(props: EmployeeCellProps) {
     onClick,
     linkHref,
     className = '',
+    enablePeek,
   } = props
 
   const cfg = SIZE_CONFIG[size]
@@ -159,6 +313,9 @@ export function EmployeeCell(props: EmployeeCellProps) {
   const title = d.jobTitle ?? d.jobGrade ?? null
   const statusInfo = d.status ? STATUS_STYLES[d.status] : null
 
+  // Peek Card enabled by default for sm/md, disabled for lg
+  const shouldShowPeek = enablePeek ?? (size !== 'lg')
+
   // ── Inner content ──
   const content = (
     <div
@@ -170,15 +327,7 @@ export function EmployeeCell(props: EmployeeCellProps) {
       tabIndex={onClick ? 0 : undefined}
     >
       {/* Avatar */}
-      <Avatar className={`${cfg.avatar} flex-shrink-0`}>
-        <AvatarImage src={d.photoUrl || ''} alt={d.name} />
-        <AvatarFallback
-          className={`text-white font-medium ${cfg.initials}`}
-          style={{ backgroundColor: getAvatarColor(d.departmentId) }}
-        >
-          {getInitials(d.name, d.nameEn)}
-        </AvatarFallback>
-      </Avatar>
+      <AvatarBlock d={d} avatarClass={cfg.avatar} initialsClass={cfg.initials} />
 
       {/* Info */}
       <div className="min-w-0 flex-1">
@@ -197,26 +346,7 @@ export function EmployeeCell(props: EmployeeCellProps) {
         </div>
 
         {/* Line 2: Subline — department · title · location */}
-        {(d.department || title || d.locationCode) && (
-          <div className="flex items-center gap-1 min-w-0 text-xs text-[#8181A5] mt-0.5">
-            {d.department && (
-              <span className="truncate min-w-[40px] max-w-[140px]">{d.department}</span>
-            )}
-            {d.department && title && <span className="flex-shrink-0">·</span>}
-            {title && <span className="flex-shrink-0">{title}</span>}
-            {(d.department || title) && d.locationCode && d.locationCity && (
-              <span className="flex-shrink-0">·</span>
-            )}
-            {d.locationCode && d.locationCity && (
-              <span className="flex-shrink-0 inline-flex items-center gap-0.5">
-                <span className="px-1 py-px rounded text-[10px] font-medium bg-[#F5F5FA] text-[#8181A5]">
-                  {d.locationCode}
-                </span>
-                <span className="truncate max-w-[80px]">{d.locationCity}</span>
-              </span>
-            )}
-          </div>
-        )}
+        <SublineBlock d={d} />
 
         {/* Line 3: Email + Phone (md/lg only) */}
         {(size === 'md' || size === 'lg') && (d.email || d.phone) && (
@@ -273,15 +403,34 @@ export function EmployeeCell(props: EmployeeCellProps) {
   )
 
   // ── Wrap in Link if linkHref provided ──
-  if (linkHref) {
-    return (
-      <Link href={linkHref} className="block no-underline">
-        {content}
-      </Link>
-    )
+  const wrappedContent = linkHref ? (
+    <Link href={linkHref} className="block no-underline">
+      {content}
+    </Link>
+  ) : (
+    content
+  )
+
+  // ── Wrap with HoverCard if peek is enabled ──
+  if (!shouldShowPeek || !d.id) {
+    return wrappedContent
   }
 
-  return content
+  return (
+    <HoverCard openDelay={500}>
+      <HoverCardTrigger asChild>
+        {wrappedContent}
+      </HoverCardTrigger>
+      <HoverCardContent
+        className="w-72 p-4"
+        side="bottom"
+        align="start"
+        sideOffset={8}
+      >
+        <PeekCardBody d={d} />
+      </HoverCardContent>
+    </HoverCard>
+  )
 }
 
 export default EmployeeCell

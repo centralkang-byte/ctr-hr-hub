@@ -178,7 +178,8 @@
     "registered": "Registered",
     "approvalsInbox": "Approvals Inbox",
     "emptyTitle": "No data",
-    "emptyDesc": "Nothing has been added yet"
+    "emptyDesc": "Nothing has been added yet",
+    "viewProfile": "查看资料"
   },
   "auth": {
     "login": "Login",

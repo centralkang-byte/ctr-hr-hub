@@ -238,7 +238,8 @@
     "placeholderAutoApproveDays": "자동승인 일수",
     "placeholderNewDeptName": "신설 부서명",
     "placeholderNewSystemName": "개편 배경 및 목적",
-    "placeholderSettingsSearch": "설정 항목 검색... (예: 휴가, 급여, 등급)"
+    "placeholderSettingsSearch": "설정 항목 검색... (예: 휴가, 급여, 등급)",
+    "viewProfile": "프로필 보기"
   },
   "auth": {
     "login": "로그인",

@@ -238,7 +238,8 @@
     "placeholderAutoApproveDays": "Auto-approve days",
     "placeholderNewDeptName": "New department name",
     "placeholderNewSystemName": "Reorganization background and purpose",
-    "placeholderSettingsSearch": "Search settings... (e.g., leave, payroll, grade)"
+    "placeholderSettingsSearch": "Search settings... (e.g., leave, payroll, grade)",
+    "viewProfile": "View profile"
   },
   "auth": {
     "login": "Login",

@@ -178,7 +178,8 @@
     "registered": "Registered",
     "approvalsInbox": "Approvals Inbox",
     "emptyTitle": "No data",
-    "emptyDesc": "Nothing has been added yet"
+    "emptyDesc": "Nothing has been added yet",
+    "viewProfile": "Посмотреть профиль"
   },
   "auth": {
     "login": "Login",
