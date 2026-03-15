@@ -46,6 +46,7 @@ import { seedCrossboarding } from './seeds/23-crossboarding'
 import { seedDelegation } from './seeds/24-delegation'
 import { seedLeaveEnhancement } from './seeds/25-leave-enhancement'
 import { seedProcessSettings } from './seeds/26-process-settings'
+import { seedQASkillsTrainingPulse } from './seeds/30-qa-skills-training-pulse'
 
 // Load DATABASE_URL from .env.local or .env
 const DATABASE_URL = process.env.DATABASE_URL
@@ -3636,6 +3637,9 @@ async function main() {
 
   // H-2c: Process settings defaults (payroll/attendance/performance/system)
   await seedProcessSettings(prisma)
+
+  // QF-Final: Skills + Training + Pulse Survey + Cross-module test states
+  await seedQASkillsTrainingPulse(prisma)
 }
 
 main()
