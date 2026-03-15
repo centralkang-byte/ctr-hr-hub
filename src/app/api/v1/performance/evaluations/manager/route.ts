@@ -14,6 +14,7 @@ import { calculateEmsBlock, DEFAULT_BLOCK_DEFINITIONS } from '@/lib/ems'
 import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
 import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
+import { withRLS, buildRLSContext } from '@/lib/api/withRLS'
 import type { SessionUser } from '@/types'
 import type { EvalType, EvalStatus, Prisma } from '@/generated/prisma/client'
 
@@ -65,47 +66,51 @@ export const GET = withPermission(
 
     const { cycleId, page, limit } = parsed.data
 
-    // Get team members (direct reports)
-    // TODO: implement proper manager hierarchy via position reportsTo
-    const teamMembers = await prisma.employee.findMany({
-      where: {
-        assignments: {
-          some: { companyId: user.companyId, status: 'ACTIVE', isPrimary: true, endDate: null },
-        },
-      },
-      select: {
-        id: true, name: true, employeeNo: true,
-        assignments: {
-          where: { isPrimary: true, endDate: null },
-          take: 1,
-          include: {
-            department: { select: { name: true } },
-            jobGrade: { select: { name: true } },
+    // RLS: DB-level isolation + app-level companyId filter as redundant safety net
+    const { teamMembers, evaluations, total } = await withRLS(buildRLSContext(user), async (tx) => {
+      // Get team members (direct reports — companyId filter kept as redundant layer)
+      // TODO: implement proper manager hierarchy via position reportsTo
+      const members = await tx.employee.findMany({
+        where: {
+          assignments: {
+            some: { companyId: user.companyId, status: 'ACTIVE', isPrimary: true, endDate: null },
           },
         },
-      },
-    })
-
-    const teamMemberIds = teamMembers.map((m) => m.id)
-
-    const where = {
-      cycleId,
-      employeeId: { in: teamMemberIds },
-      companyId: user.companyId,
-    }
-
-    const [evaluations, total] = await Promise.all([
-      prisma.performanceEvaluation.findMany({
-        where,
-        orderBy: { createdAt: 'desc' },
-        skip: (page - 1) * limit,
-        take: limit,
-        include: {
-          employee: { select: { id: true, name: true, employeeNo: true } },
+        select: {
+          id: true, name: true, employeeNo: true,
+          assignments: {
+            where: { isPrimary: true, endDate: null },
+            take: 1,
+            include: {
+              department: { select: { name: true } },
+              jobGrade: { select: { name: true } },
+            },
+          },
         },
-      }),
-      prisma.performanceEvaluation.count({ where }),
-    ])
+      })
+
+      const memberIds = members.map((m) => m.id)
+      const where = {
+        cycleId,
+        employeeId: { in: memberIds },
+        companyId: user.companyId,
+      }
+
+      const [evals, count] = await Promise.all([
+        tx.performanceEvaluation.findMany({
+          where,
+          orderBy: { createdAt: 'desc' },
+          skip: (page - 1) * limit,
+          take: limit,
+          include: {
+            employee: { select: { id: true, name: true, employeeNo: true } },
+          },
+        }),
+        tx.performanceEvaluation.count({ where }),
+      ])
+
+      return { teamMembers: members, evaluations: evals, total: count }
+    })
 
     // Map evaluations by employee for easy lookup
     const evalMap = new Map<string, { self: typeof evaluations[0] | null; manager: typeof evaluations[0] | null }>()

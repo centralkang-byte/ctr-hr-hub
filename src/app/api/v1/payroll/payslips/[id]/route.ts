@@ -9,32 +9,41 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { notFound, forbidden } from '@/lib/errors'
+import { withRLS, buildRLSContext } from '@/lib/api/withRLS'
 import type { PayrollItemDetail } from '@/lib/payroll/types'
 
 export const GET = withPermission(
   async (_req: NextRequest, context, user) => {
     const { id } = await context.params
 
-    const payslip = await prisma.payslip.findUnique({
-      where: { id },
-      include: {
-        employee: {
-          select: {
-            id: true, name: true, employeeNo: true,
-            assignments: {
-              where: { isPrimary: true, endDate: null },
-              take: 1,
-              include: {
-                department: { select: { name: true } },
-                jobGrade: { select: { name: true } },
+    // RLS: DB-level isolation + app-level companyId check kept as redundant guard
+    const { payslip, payrollItem } = await withRLS(buildRLSContext(user), async (tx) => {
+      const slip = await tx.payslip.findUnique({
+        where: { id },
+        include: {
+          employee: {
+            select: {
+              id: true, name: true, employeeNo: true,
+              assignments: {
+                where: { isPrimary: true, endDate: null },
+                take: 1,
+                include: {
+                  department: { select: { name: true } },
+                  jobGrade: { select: { name: true } },
+                },
               },
             },
           },
         },
-      },
+      })
+      if (!slip) return { payslip: null, payrollItem: null }
+
+      const item = await tx.payrollItem.findUnique({ where: { id: slip.payrollItemId } })
+      return { payslip: slip, payrollItem: item }
     })
-    if (!payslip) throw notFound('급여명세서를 찾을 수 없습니다.')
-    if (payslip.companyId !== user.companyId) throw forbidden()
+
+    if (!payslip) throw notFound('주여명세서를 찾을 수 없습니다.')
+    if (payslip.companyId !== user.companyId && user.role !== 'SUPER_ADMIN') throw forbidden()
 
     const isOwnPayslip = payslip.employeeId === user.employeeId
     const isHR = user.role === 'HR_ADMIN' || user.role === 'SUPER_ADMIN'
@@ -47,11 +56,6 @@ export const GET = withPermission(
         data: { isViewed: true, viewedAt: new Date() },
       })
     }
-
-    // PayrollItem (detail JSON) 함께 조회
-    const payrollItem = await prisma.payrollItem.findUnique({
-      where: { id: payslip.payrollItemId },
-    })
 
     return apiSuccess({
       ...payslip,

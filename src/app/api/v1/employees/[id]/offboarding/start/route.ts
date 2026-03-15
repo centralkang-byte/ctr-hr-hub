@@ -15,6 +15,7 @@ import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
 import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
+import { withRLS, buildRLSContext } from '@/lib/api/withRLS'
 import type { SessionUser } from '@/types'
 import type { OffboardingTargetType } from '@/generated/prisma/enums'
 
@@ -52,38 +53,45 @@ export const POST = withPermission(
     } = parsed.data
 
     // 2. Find employee (must be ACTIVE, company-scoped)
-    const employee = await prisma.employee.findFirst({
-      where: {
-        id: employeeId,
-        deletedAt: null,
-        assignments: {
-          some: {
-            status: 'ACTIVE',
-            isPrimary: true,
-            endDate: null,
-            ...(user.role !== ROLE.SUPER_ADMIN ? { companyId: user.companyId } : {}),
+    // RLS: DB-level isolation wraps the lookup + duplicate check
+    const { employee, existingOffboarding } = await withRLS(buildRLSContext(user), async (tx) => {
+      const emp = await tx.employee.findFirst({
+        where: {
+          id: employeeId,
+          deletedAt: null,
+          assignments: {
+            some: {
+              status: 'ACTIVE',
+              isPrimary: true,
+              endDate: null,
+              ...(user.role !== ROLE.SUPER_ADMIN ? { companyId: user.companyId } : {}),
+            },
           },
         },
-      },
-      include: {
-        assignments: {
-          where: { isPrimary: true, endDate: null },
-          take: 1,
-          include: { company: true },
+        include: {
+          assignments: {
+            where: { isPrimary: true, endDate: null },
+            take: 1,
+            include: { company: true },
+          },
         },
-      },
+      })
+
+      // 3. Duplicate prevention: OffboardingStatus has IN_PROGRESS | COMPLETED | CANCELLED.
+      //    Only IN_PROGRESS is an active (non-terminal) state — block to prevent duplicate processes.
+      const existing = emp
+        ? await tx.employeeOffboarding.findFirst({
+            where: { employeeId, status: 'IN_PROGRESS' },
+            select: { id: true, status: true },
+          })
+        : null
+
+      return { employee: emp, existingOffboarding: existing }
     })
 
     if (!employee) {
       throw notFound('활성 상태의 직원을 찾을 수 없습니다.')
     }
-
-    // 3. Duplicate prevention: OffboardingStatus has IN_PROGRESS | COMPLETED | CANCELLED.
-    //    Only IN_PROGRESS is an active (non-terminal) state — block to prevent duplicate processes.
-    const existingOffboarding = await prisma.employeeOffboarding.findFirst({
-      where: { employeeId, status: 'IN_PROGRESS' },
-      select: { id: true, status: true },
-    })
 
     if (existingOffboarding) {
       throw conflict(`이미 진행 중인 퇴직 프로세스가 있습니다. (ID: ${existingOffboarding.id})`)

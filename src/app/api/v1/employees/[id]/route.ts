@@ -10,6 +10,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { employeeUpdateSchema } from '@/lib/schemas/employee'
+import { withRLS, buildRLSContext } from '@/lib/api/withRLS'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/employees/[id] ───────────────────────────
@@ -22,30 +23,34 @@ export const GET = withPermission(
   ) => {
     const { id } = await context.params
 
+    // App-level filter kept as redundant safety net (belt AND suspenders)
     const assignmentFilter =
       user.role === 'SUPER_ADMIN'
         ? {}
         : { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
 
-    const employee = await prisma.employee.findFirst({
-      where: { id, deletedAt: null, ...assignmentFilter },
-      include: {
-        assignments: {
-          where: { isPrimary: true, endDate: null },
-          take: 1,
-          include: {
-            department: true,
-            jobGrade: true,
-            jobCategory: true,
-            company: true,
+    // RLS: DB-level tenant isolation via SET LOCAL session variables
+    const employee = await withRLS(buildRLSContext(user), (tx) =>
+      tx.employee.findFirst({
+        where: { id, deletedAt: null, ...assignmentFilter },
+        include: {
+          assignments: {
+            where: { isPrimary: true, endDate: null },
+            take: 1,
+            include: {
+              department: true,
+              jobGrade: true,
+              jobCategory: true,
+              company: true,
+            },
+          },
+          employeeHistories: {
+            orderBy: { createdAt: 'desc' },
+            take: 10,
           },
         },
-        employeeHistories: {
-          orderBy: { createdAt: 'desc' },
-          take: 10,
-        },
-      },
-    })
+      }),
+    )
 
     if (!employee) {
       throw notFound('직원을 찾을 수 없습니다.')

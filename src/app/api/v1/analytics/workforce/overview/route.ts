@@ -9,50 +9,59 @@ import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { parseAnalyticsParams, generateMonthRange, toYearMonth } from '@/lib/analytics/parse-params'
+import { withRLS, buildRLSContext } from '@/lib/api/withRLS'
 import type { WorkforceResponse } from '@/lib/analytics/types'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
-  async (req: NextRequest, _ctx, _user: SessionUser) => {
+  async (req: NextRequest, _ctx, user: SessionUser) => {
     const params = parseAnalyticsParams(new URL(req.url).searchParams)
-    const companyFilter = params.companyId ? { companyId: params.companyId } : {}
+    // SUPER_ADMIN can pass ?companyId=xxx; others are locked to their own company
+    const effectiveCompanyId = user.role === 'SUPER_ADMIN' && params.companyId
+      ? params.companyId
+      : user.companyId
+    const companyFilter = effectiveCompanyId ? { companyId: effectiveCompanyId } : {}
     const now = new Date()
 
-    const [activeAssignments, hireAssignments, exitAssignments, departments, jobGrades] = await Promise.all([
-      // Active employees with relations
-      prisma.employeeAssignment.findMany({
-        where: { ...companyFilter, status: 'ACTIVE', isPrimary: true, endDate: null },
-        select: {
-          employeeId: true,
-          companyId: true,
-          departmentId: true,
-          jobGradeId: true,
-          employee: { select: { hireDate: true, birthDate: true } },
-          company: { select: { name: true } },
-          department: { select: { name: true } },
-          jobGrade: { select: { name: true, rankOrder: true } },
-        },
-      }),
-      // New hires in period
-      prisma.employeeAssignment.findMany({
-        where: {
-          ...companyFilter, isPrimary: true, changeType: 'HIRE',
-          effectiveDate: { gte: params.startDate, lte: params.endDate },
-        },
-        select: { effectiveDate: true },
-      }),
-      // Exits in period
-      prisma.employeeAssignment.findMany({
-        where: {
-          ...companyFilter, isPrimary: true,
-          status: { in: ['RESIGNED', 'TERMINATED'] },
-          endDate: { gte: params.startDate, lte: params.endDate },
-        },
-        select: { endDate: true },
-      }),
-      prisma.department.findMany({ where: { deletedAt: null }, select: { id: true, name: true } }),
-      prisma.jobGrade.findMany({ where: { deletedAt: null }, select: { id: true, name: true, rankOrder: true }, orderBy: { rankOrder: 'asc' } }),
-    ])
+    // RLS: DB-level tenant isolation — withRLS sets session vars for all queries in this tx
+    const [activeAssignments, hireAssignments, exitAssignments, departments, jobGrades] =
+      await withRLS(buildRLSContext({ ...user, companyId: effectiveCompanyId }), (tx) =>
+        Promise.all([
+          // Active employees with relations
+          tx.employeeAssignment.findMany({
+            where: { ...companyFilter, status: 'ACTIVE', isPrimary: true, endDate: null },
+            select: {
+              employeeId: true,
+              companyId: true,
+              departmentId: true,
+              jobGradeId: true,
+              employee: { select: { hireDate: true, birthDate: true } },
+              company: { select: { name: true } },
+              department: { select: { name: true } },
+              jobGrade: { select: { name: true, rankOrder: true } },
+            },
+          }),
+          // New hires in period
+          tx.employeeAssignment.findMany({
+            where: {
+              ...companyFilter, isPrimary: true, changeType: 'HIRE',
+              effectiveDate: { gte: params.startDate, lte: params.endDate },
+            },
+            select: { effectiveDate: true },
+          }),
+          // Exits in period
+          tx.employeeAssignment.findMany({
+            where: {
+              ...companyFilter, isPrimary: true,
+              status: { in: ['RESIGNED', 'TERMINATED'] },
+              endDate: { gte: params.startDate, lte: params.endDate },
+            },
+            select: { endDate: true },
+          }),
+          tx.department.findMany({ where: { deletedAt: null }, select: { id: true, name: true } }),
+          tx.jobGrade.findMany({ where: { deletedAt: null }, select: { id: true, name: true, rankOrder: true }, orderBy: { rankOrder: 'asc' } }),
+        ]),
+      )
 
     const totalEmps = activeAssignments.length
 
