@@ -21,7 +21,7 @@ export default function CnComplianceClient() {
 
   const tabs: { key: TabKey; label: string }[] = [
     { key: 'config', label: t('cn.config') },
-    { key: 'report', label: '월간보고' },
+    { key: 'report', label: t('month_keab084eb') },
     { key: 'registry', label: t('cn.employeeRegistry') },
   ]
 

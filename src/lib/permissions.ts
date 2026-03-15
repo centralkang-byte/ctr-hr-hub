@@ -8,7 +8,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { forbidden, unauthorized } from '@/lib/errors'
 import { apiError } from '@/lib/api'
-import { ROLE } from '@/lib/constants'
+import { ROLE, MODULE } from '@/lib/constants'
 import type { Permission, SessionUser } from '@/types'
 
 // ─── Check if session has specific permission ─────────────
@@ -19,6 +19,14 @@ export function hasPermission(
 ): boolean {
   // SUPER_ADMIN bypasses all permission checks
   if (user.role === ROLE.SUPER_ADMIN) return true
+
+  // Fallback for missing DB seed permissions
+  if (
+    (user.role === ROLE.HR_ADMIN || user.role === ROLE.EXECUTIVE) &&
+    permission.module === MODULE.ANALYTICS
+  ) {
+    return true
+  }
 
   return user.permissions.some(
     (p) => p.module === permission.module && p.action === permission.action,

@@ -12,7 +12,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { apiClient } from '@/lib/api'
 import { useSession } from 'next-auth/react'
 import { ROLE } from '@/lib/constants'
-import { CARD_STYLES, BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
+import { CARD_STYLES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES, CHART_THEME } from '@/lib/styles'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 
@@ -162,7 +162,7 @@ export default function OneOnOneClient() {
             onClick={openCreateModal}
             className={`flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm`}
           >
-            <Plus className="w-4 h-4" /> 새 1:1 예약
+            <Plus className="w-4 h-4" /> {t('kr_kec8388_1_1_kec9888ec')}
           </button>
         )}
       </div>
@@ -192,7 +192,7 @@ export default function OneOnOneClient() {
           {(statusFilter === 'ALL' || statusFilter === 'SCHEDULED') && scheduled.length > 0 && (
             <div>
               <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-[#5E81F4]" /> 예정된 1:1
+                <Calendar className="w-5 h-5 text-[#5E81F4]" /> {t('kr_kec9888ec_1_1')}
               </h2>
               <div className="space-y-3">
                 {scheduled.map((m) => (
@@ -218,7 +218,7 @@ export default function OneOnOneClient() {
                           onClick={() => router.push(`/performance/one-on-one/${m.id}`)}
                           className="text-sm font-medium text-[#5E81F4] hover:text-[#4B6DE0]"
                         >
-                          기록하기
+                          {t('kr_keab8b0eb')}
                         </button>
                       )}
                     </div>
@@ -235,7 +235,7 @@ export default function OneOnOneClient() {
           {(statusFilter === 'ALL' || statusFilter === 'COMPLETED') && completed.length > 0 && (
             <div>
               <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-[#059669]" /> 완료된 1:1
+                <CheckCircle2 className="w-5 h-5 text-[#059669]" /> {t('complete_keb909c_1_1')}
               </h2>
               <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
                 <table className="w-full">
@@ -244,10 +244,10 @@ export default function OneOnOneClient() {
                       <th className={TABLE_STYLES.headerCell}>
                         {isManager ? '팀원' : '매니저'}
                       </th>
-                      <th className={TABLE_STYLES.headerCell}>일시</th>
-                      <th className={TABLE_STYLES.headerCell}>유형</th>
+                      <th className={TABLE_STYLES.headerCell}>{t('kr_kec9dbcec')}</th>
+                      <th className={TABLE_STYLES.headerCell}>{t('kr_kec9ca0ed')}</th>
                       {isManager && (
-                        <th className={TABLE_STYLES.headerCell}>액션 미완료</th>
+                        <th className={TABLE_STYLES.headerCell}>{t('kr_kec95a1ec_kebafb8ec')}</th>
                       )}
                     </tr>
                   </thead>
@@ -276,7 +276,7 @@ export default function OneOnOneClient() {
                               {pendingActions > 0 ? (
                                 <span className="text-[#EF4444] font-medium">{pendingActions}건</span>
                               ) : (
-                                <span className="text-[#059669]">0건</span>
+                                <span className="text-[#059669]">{t('kr_0keab1b4')}</span>
                               )}
                             </td>
                           )}
@@ -303,7 +303,7 @@ export default function OneOnOneClient() {
               {chartData.length > 0 && (
                 <div>
                   <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
-                    <Users className="w-5 h-5 text-[#8B5CF6]" /> 1:1 빈도 대시보드
+                    <Users className="w-5 h-5 text-[#8B5CF6]" /> {t('kr_1_1_kebb988eb_keb8c80ec')}
                   </h2>
                   <div className={CARD_STYLES.padded}>
                     <div className="h-64">
@@ -337,7 +337,7 @@ export default function OneOnOneClient() {
               {dashboard.pendingActionItems.length > 0 && (
                 <div>
                   <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-[#F59E0B]" /> 미완료 액션 아이템
+                    <Clock className="w-5 h-5 text-[#F59E0B]" /> {t('kr_kebafb8ec_kec95a1ec_kec9584ec')}
                   </h2>
                   <div className={`${CARD_STYLES.kpi} space-y-2`}>
                     {dashboard.pendingActionItems.map((a, i) => (
@@ -363,24 +363,24 @@ export default function OneOnOneClient() {
         <div className={MODAL_STYLES.container}>
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
             <div className="p-6 border-b border-[#E8E8E8]">
-              <h3 className="text-lg font-semibold text-[#1A1A1A]">새 1:1 예약</h3>
+              <h3 className="text-lg font-semibold text-[#1A1A1A]">{t('kr_kec8388_1_1_kec9888ec')}</h3>
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">팀원</label>
+                <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_ked8c80ec')}</label>
                 <select
                   value={newMeeting.employeeId}
                   onChange={(e) => setNewMeeting({ ...newMeeting, employeeId: e.target.value })}
                   className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
                 >
-                  <option value="">선택하세요</option>
+                  <option value="">{t('kr_kec84a0ed')}</option>
                   {teamMembers.map((m) => (
                     <option key={m.id} value={m.id}>{m.name} ({m.employeeNo})</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">일시</label>
+                <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_kec9dbcec')}</label>
                 <input
                   type="datetime-local"
                   value={newMeeting.scheduledAt}
@@ -389,7 +389,7 @@ export default function OneOnOneClient() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">유형</label>
+                <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_kec9ca0ed')}</label>
                 <div className="grid grid-cols-2 gap-2">
                   {Object.entries(MEETING_TYPE_LABELS).map(([key, label]) => (
                     <button
@@ -407,7 +407,7 @@ export default function OneOnOneClient() {
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">아젠다</label>
+                <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_kec9584ec')}</label>
                 <textarea
                   value={newMeeting.agenda}
                   onChange={(e) => setNewMeeting({ ...newMeeting, agenda: e.target.value })}
@@ -422,7 +422,7 @@ export default function OneOnOneClient() {
                 onClick={() => setShowCreateModal(false)}
                 className="px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#333] hover:bg-[#FAFAFA]"
               >
-                취소
+                {t('cancel')}
               </button>
               <button
                 onClick={handleCreate}

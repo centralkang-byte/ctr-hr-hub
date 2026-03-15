@@ -6,10 +6,13 @@ import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWith
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface Props { companyId: string | null }
 
-export function ProbationTab({ companyId }: Props) {
+export function ProbationTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const [settings, setSettings] = useState({
     defaultDuration: 3,
     evalTimings: [30, 60, 90],
@@ -21,14 +24,14 @@ export function ProbationTab({ companyId }: Props) {
   return (
     <div className="space-y-4">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">수습 기간</h3>
-        <p className="text-sm text-[#8181A5]">수습 기간, 평가 기준, 자동 전환 설정</p>
+        <h3 className="text-base font-semibold text-[#1C1D21]">{t('probation')}</h3>
+        <p className="text-sm text-[#8181A5]">{t('probation_evaluation_keab8b0ec_kec9e90eb_keca084ed_settings')}</p>
       </div>
 
       <SettingFieldWithOverride label="기본 수습 기간" description="신규 입사자의 기본 수습 기간" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input type="number" value={settings.defaultDuration} onChange={(e) => setSettings((p) => ({ ...p, defaultDuration: Number(e.target.value) }))} className="w-24" />
-          <span className="text-sm text-[#8181A5]">개월</span>
+          <span className="text-sm text-[#8181A5]">{t('kr_keab09cec')}</span>
         </div>
       </SettingFieldWithOverride>
 
@@ -43,7 +46,7 @@ export function ProbationTab({ companyId }: Props) {
       <SettingFieldWithOverride label="자동 정규직 전환" description="수습 기간 종료 후 자동 정규직 전환 여부" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={settings.autoConvert} onChange={(e) => setSettings((p) => ({ ...p, autoConvert: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]" />
-          <span className="text-[#1C1D21]">수습 완료 시 자동 전환</span>
+          <span className="text-[#1C1D21]">{t('kr_kec8898ec_complete_kec8b9c_kec')}</span>
         </label>
       </SettingFieldWithOverride>
 
@@ -51,20 +54,20 @@ export function ProbationTab({ companyId }: Props) {
         <div className="space-y-2">
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={settings.extendable} onChange={(e) => setSettings((p) => ({ ...p, extendable: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]" />
-            <span className="text-[#1C1D21]">수습 연장 허용</span>
+            <span className="text-[#1C1D21]">{t('kr_kec8898ec_kec97b0ec_ked9788ec')}</span>
           </label>
           {settings.extendable && (
             <div className="ml-6 flex items-center gap-2">
-              <span className="text-sm text-[#8181A5]">최대</span>
+              <span className="text-sm text-[#8181A5]">{t('kr_kecb59ceb')}</span>
               <Input type="number" value={settings.maxExtension} onChange={(e) => setSettings((p) => ({ ...p, maxExtension: Number(e.target.value) }))} className="w-20" />
-              <span className="text-sm text-[#8181A5]">개월</span>
+              <span className="text-sm text-[#8181A5]">{t('kr_keab09cec')}</span>
             </div>
           )}
         </div>
       </SettingFieldWithOverride>
 
       <div className="flex justify-end pt-4">
-        <Button className={BUTTON_VARIANTS.primary}><Save className="mr-2 h-4 w-4" />저장</Button>
+        <Button className={BUTTON_VARIANTS.primary}><Save className="mr-2 h-4 w-4" />{t('save')}</Button>
       </div>
     </div>
   )

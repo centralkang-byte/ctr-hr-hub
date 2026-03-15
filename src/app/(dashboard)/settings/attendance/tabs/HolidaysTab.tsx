@@ -10,6 +10,7 @@ import { Loader2, Plus, Calendar, Trash2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface Holiday {
   id: string
@@ -24,7 +25,9 @@ interface HolidaysTabProps {
   companyId: string | null
 }
 
-export function HolidaysTab({ companyId }: HolidaysTabProps) {
+export function HolidaysTab({
+  companyId }: HolidaysTabProps) {
+  const t = useTranslations('settings')
   const [holidays, setHolidays] = useState<Holiday[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
@@ -73,10 +76,10 @@ export function HolidaysTab({ companyId }: HolidaysTabProps) {
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">법정 공휴일</h3>
+          <h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_kebb295ec_holidays')}</h3>
           <p className="text-sm text-[#8181A5]">
             {selectedYear}년 공휴일 {holidays.length}일
-            {!companyId && <span className="text-[#5E81F4]"> · 법인을 선택하면 해당 법인 공휴일이 표시됩니다</span>}
+            {!companyId && <span className="text-[#5E81F4]"> {t('kr_kebb295ec_kec84a0ed_ked95b4eb_')}</span>}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -91,7 +94,7 @@ export function HolidaysTab({ companyId }: HolidaysTabProps) {
           </select>
           <Button className={BUTTON_VARIANTS.primary}>
             <Plus className="mr-2 h-4 w-4" />
-            공휴일 추가
+            {t('holidays_add')}
           </Button>
         </div>
       </div>
@@ -121,7 +124,7 @@ export function HolidaysTab({ companyId }: HolidaysTabProps) {
                         </div>
                         {holiday.isSubstitute && (
                           <span className="rounded-full bg-orange-50 px-2 py-0.5 text-xs font-medium text-orange-600">
-                            대체
+                            {t('kr_keb8c80ec')}
                           </span>
                         )}
                       </div>

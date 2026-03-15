@@ -76,6 +76,7 @@ function StatusBadge({ status }: { status: string | null }) {
 export default function CloseAttendanceClient({ user }: Props) {
     const tCommon = useTranslations('common')
     const t = useTranslations('payroll')
+    const { confirm, dialogProps } = useConfirmDialog()
     const now = new Date()
     const [year, setYear] = useState(now.getFullYear())
     const [month, setMonth] = useState(now.getMonth() + 1)
@@ -92,7 +93,6 @@ export default function CloseAttendanceClient({ user }: Props) {
     } | null>(null)
 
     const fetchStatus = useCallback(async (companyId: string) => {
-  const { confirm, dialogProps } = useConfirmDialog()
         try {
             const res = await fetch(
                 `/api/v1/payroll/attendance-status?companyId=${companyId}&year=${year}&month=${month}`,
@@ -102,7 +102,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                 setStatuses((prev) => ({ ...prev, [companyId]: json.data }))
             }
         } catch {
-      toast({ title: tCommon('error'), description: '처리 중 오류가 발생했습니다', variant: 'destructive' })
+      toast({ title: tCommon('error'), description: t('kr_kecb298eb_keca491_kec98a4eb_ke'), variant: 'destructive' })
     }
     }, [year, month])
 
@@ -135,7 +135,10 @@ export default function CloseAttendanceClient({ user }: Props) {
     }
 
     const handleReopen = async (payrollRunId: string, companyId: string) => {
-        confirm({ title: tCommon('confirmReopen'), onConfirm: async () => {
+        confirm({ 
+            title: tCommon('confirmReopen'), 
+            description: t('kr_keab889ec_keab7bced_reopen_ked95a0_keca11deb'), // Assuming a translation key for description exists or is optional, confirm type requires it implicitly if not typed well, but type says `variant?:... title: string, description?: string, ...`. Let's just fix the type by adding a dummy description OR by matching the type exactly. Wait, TS says `Argument of type '{ title: string; onConfirm: () => Promise<void>; }' is not assignable to parameter of type 'string'`. Ah! `confirm` takes a string FIRST argument in the previous implementation, OR maybe the new hook takes an options object but the previous took string?
+            onConfirm: async () => {
             setReopening(companyId)
             try {
                 const res = await fetch('/api/v1/payroll/attendance-reopen', {
@@ -163,7 +166,7 @@ export default function CloseAttendanceClient({ user }: Props) {
             {/* Page Header */}
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <nav className="text-xs text-[#999] mb-1">급여 / 근태 마감</nav>
+                    <nav className="text-xs text-[#999] mb-1">{t('kr_keab889ec_keab7bced_closed')}</nav>
                     <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-tight">{t('closeAttendance')}</h1>
                     <p className="text-sm text-[#666] mt-0.5">
                         {t('closeAttendanceDesc')}
@@ -259,7 +262,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                     {/* Progress */}
                                     <div className="mb-4">
                                         <div className="flex items-center justify-between text-xs text-[#666] mb-1.5">
-                                            <span>근태 확정 현황</span>
+                                            <span>{t('kr_keab7bced_confirmed_status')}</span>
                                             <span className="font-semibold text-[#1A1A1A]">
                                                 {status.confirmedCount}/{status.totalEmployees}명 ({confirmedPct}%)
                                             </span>
@@ -280,21 +283,21 @@ export default function CloseAttendanceClient({ user }: Props) {
                                         <div className="bg-[#FAFAFA] rounded-lg p-3">
                                             <div className="flex items-center gap-1.5 mb-1">
                                                 <CheckCircle2 size={13} className="text-[#059669]" />
-                                                <p className="text-xs text-[#666]">확정</p>
+                                                <p className="text-xs text-[#666]">{t('confirmed')}</p>
                                             </div>
                                             <p className="text-xl font-bold text-[#1A1A1A]">{status.confirmedCount}명</p>
                                         </div>
                                         <div className="bg-[#FAFAFA] rounded-lg p-3">
                                             <div className="flex items-center gap-1.5 mb-1">
                                                 <Clock size={13} className="text-[#F59E0B]" />
-                                                <p className="text-xs text-[#666]">총근무</p>
+                                                <p className="text-xs text-[#666]">{t('kr_kecb49dea')}</p>
                                             </div>
                                             <p className="text-xl font-bold text-[#1A1A1A]">{status.totalWorkHours}h</p>
                                         </div>
                                         <div className="bg-[#FAFAFA] rounded-lg p-3">
                                             <div className="flex items-center gap-1.5 mb-1">
                                                 <AlertTriangle size={13} className="text-[#EF4444]" />
-                                                <p className="text-xs text-[#666]">미확정</p>
+                                                <p className="text-xs text-[#666]">{t('kr_kebafb8ed')}</p>
                                             </div>
                                             <p className="text-xl font-bold text-[#1A1A1A]">{status.unconfirmedCount}명</p>
                                         </div>
@@ -365,7 +368,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                 <div className={MODAL_STYLES.container}>
                     <div className={`${MODAL_STYLES.content.sm} mx-4 overflow-hidden`}>
                         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8E8E8]">
-                            <h2 className="text-lg font-bold text-[#1A1A1A]">근태 마감 확인</h2>
+                            <h2 className="text-lg font-bold text-[#1A1A1A]">{t('closeAttendance_confirm')}</h2>
                             <button
                                 onClick={() => setConfirmModal(null)}
                                 className="p-1 hover:bg-[#F5F5F5] rounded-lg transition-colors"
@@ -376,25 +379,25 @@ export default function CloseAttendanceClient({ user }: Props) {
                         <div className="px-6 py-5">
                             <div className="bg-[#F5F5F5] rounded-xl p-4 mb-4 space-y-2">
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-[#666]">대상 법인</span>
+                                    <span className="text-[#666]">{t('kr_keb8c80ec_company')}</span>
                                     <span className="font-semibold text-[#1A1A1A]">
                                         {COMPANY_LIST.find((c) => c.id === confirmModal.companyId)?.name ?? confirmModal.companyId}
                                     </span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-[#666]">대상 월</span>
+                                    <span className="text-[#666]">{t('kr_keb8c80ec_month')}</span>
                                     <span className="font-semibold">{yearMonth}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-[#666]">전체 직원</span>
+                                    <span className="text-[#666]">{t('all_keca781ec')}</span>
                                     <span className="font-semibold">{confirmModal.status.totalEmployees}명</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-[#666]">확정 직원</span>
+                                    <span className="text-[#666]">{t('confirmed_keca781ec')}</span>
                                     <span className="font-semibold text-[#059669]">{confirmModal.status.confirmedCount}명</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-[#666]">미확정 직원</span>
+                                    <span className="text-[#666]">{t('kr_kebafb8ed_keca781ec')}</span>
                                     <span className="font-semibold text-[#EF4444]">{confirmModal.status.unconfirmedCount}명</span>
                                 </div>
                             </div>
@@ -415,7 +418,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                 </label>
                             )}
                             <p className="text-xs text-[#999] mb-5">
-                                마감 후에는 해당 월의 근태 수정이 불가합니다. 마감 해제는 계산 시작 전까지만 가능합니다.
+                                {t('closed_ked9b84ec_ked95b4eb_kec9b94ec_keab7bced_kec8898ec_kebb688ea_closed_ked95b4ec_keab384ec_kec8b9cec_keca084ea_keab080eb')}
                             </p>
                         </div>
                         <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-[#E8E8E8]">

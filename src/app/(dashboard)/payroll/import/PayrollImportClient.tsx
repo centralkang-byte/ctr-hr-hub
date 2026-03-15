@@ -54,7 +54,7 @@ const STANDARD_FIELDS = [
   { key: 'name', label: '성명', required: true },
   { key: 'basePay', label: '기본급', required: true },
   { key: 'grossPay', label: '총지급액', required: true },
-  { key: 'netPay', label: '실지급액', required: true },
+  { key: 'netPay', label: '실수령액', required: true },
   { key: 'totalDeductions', label: '공제합계', required: false },
   { key: 'overtime', label: '연장수당', required: false },
   { key: 'bonus', label: '성과급/상여', required: false },
@@ -179,7 +179,7 @@ export default function PayrollImportClient({ user, companies }: {
       confirmed: 'bg-[#D1FAE5] text-[#047857]',
       failed: 'bg-[#FEE2E2] text-[#B91C1C]',
     }
-    const label: Record<string, string> = { uploaded: '업로드됨', processing: '처리중', confirmed: '확정', failed: '실패' }
+    const label: Record<string, string> = { uploaded: '업로드됨', processing: '처리중', confirmed: t('confirmed'), failed: t('failed') }
     return (
       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${map[status] ?? 'bg-[#F5F5F5] text-[#666]'}`}>
         {label[status] ?? status}
@@ -196,14 +196,14 @@ export default function PayrollImportClient({ user, companies }: {
         </div>
         <div>
           <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('importTitle')}</h1>
-          <p className="text-sm text-[#666]">해외 법인 급여 파일을 업로드하여 글로벌 급여 현황에 통합합니다</p>
+          <p className="text-sm text-[#666]">{t('kr_ked95b4ec_company_keab889ec_ke')}</p>
         </div>
       </div>
 
       {/* Company Selector */}
       <div className="flex items-center gap-3 mb-6">
         <Building2 className="w-4 h-4 text-[#666]" />
-        <span className="text-sm text-[#666]">법인 선택:</span>
+        <span className="text-sm text-[#666]">{t('company_kec84a0ed')}</span>
         <div className="flex gap-2 flex-wrap">
           {companies.map(co => (
             <button
@@ -246,14 +246,14 @@ export default function PayrollImportClient({ user, companies }: {
         <div className="max-w-2xl space-y-6">
           {/* Mapping selector */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-sm font-semibold text-[#1A1A1A] mb-3">컬럼 매핑 선택</h3>
+            <h3 className="text-sm font-semibold text-[#1A1A1A] mb-3">{t('kr_kecbbaceb_keba7a4ed_kec84a0ed')}</h3>
             {loadingMappings ? (
               <div className="text-sm text-[#999]">{tCommon('loading')}</div>
             ) : mappings.length === 0 ? (
               <div className="text-sm text-[#999]">
                 선택한 법인에 매핑 설정이 없습니다.{' '}
                 <button onClick={() => setTab('mapping')} className="text-[#5E81F4] underline">
-                  매핑 추가
+                  {t('kr_keba7a4ed_add')}
                 </button>
               </div>
             ) : (
@@ -269,7 +269,7 @@ export default function PayrollImportClient({ user, companies }: {
                         : 'border-[#D4D4D4] text-[#555] hover:bg-[#FAFAFA]'
                     }`}
                   >
-                    {m.name} {m.isDefault && <span className="text-xs ml-1 text-[#999]">(기본)</span>}
+                    {m.name} {m.isDefault && <span className="text-xs ml-1 text-[#999]">{t('kr_keab8b0eb')}</span>}
                   </button>
                 ))}
               </div>
@@ -278,7 +278,7 @@ export default function PayrollImportClient({ user, companies }: {
 
           {/* Period */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-sm font-semibold text-[#1A1A1A] mb-3">급여 지급 월</h3>
+            <h3 className="text-sm font-semibold text-[#1A1A1A] mb-3">{t('kr_keab889ec_keca780ea_month')}</h3>
             <div className="flex gap-3">
               <select
                 value={uploadYear}
@@ -312,8 +312,8 @@ export default function PayrollImportClient({ user, companies }: {
               </div>
             ) : (
               <div>
-                <p className="text-sm font-semibold text-[#333]">파일을 클릭하여 선택</p>
-                <p className="text-xs text-[#999] mt-1">.xlsx, .csv 지원</p>
+                <p className="text-sm font-semibold text-[#333]">{t('kr_ked8c8cec_ked81b4eb_kec84a0ed')}</p>
+                <p className="text-xs text-[#999] mt-1">{t('kr_xlsx_csv_keca780ec')}</p>
               </div>
             )}
             <input ref={fileRef} type="file" accept=".xlsx,.csv" className="hidden" onChange={handleFileChange} />
@@ -331,7 +331,7 @@ export default function PayrollImportClient({ user, companies }: {
           {!selectedMapping && (
             <div className="flex items-center gap-2 text-sm text-[#B45309] bg-[#FEF3C7] p-3 rounded-lg">
               <AlertCircle className="w-4 h-4 shrink-0" />
-              컬럼 매핑을 먼저 설정해주세요.
+              {t('kr_kecbbaceb_keba7a4ed_keba8bcec_')}
             </div>
           )}
         </div>
@@ -348,7 +348,7 @@ export default function PayrollImportClient({ user, companies }: {
               onClick={startNewMapping}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-[#5E81F4] text-white rounded-lg text-sm"
             >
-              <Plus className="w-4 h-4" /> 새 매핑 추가
+              <Plus className="w-4 h-4" /> {t('kr_kec8388_keba7a4ed_add')}
             </button>
           </div>
 
@@ -358,9 +358,9 @@ export default function PayrollImportClient({ user, companies }: {
               <table className="w-full text-sm">
                 <thead>
                   <tr className={TABLE_STYLES.header}>
-                    <th className={TABLE_STYLES.headerCell}>매핑명</th>
-                    <th className={TABLE_STYLES.headerCell}>파일 형식</th>
-                    <th className={TABLE_STYLES.headerCell}>통화</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('kr_keba7a4ed')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('kr_ked8c8cec_ked9895ec')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('kr_ked86b5ed')}</th>
                     <th className={TABLE_STYLES.headerCell}>기본</th>
                   </tr>
                 </thead>
@@ -386,10 +386,10 @@ export default function PayrollImportClient({ user, companies }: {
           {/* New Mapping Editor */}
           {editingMapping && (
             <div className="bg-white rounded-xl border border-[#5E81F4] p-5 space-y-4">
-              <h4 className="text-sm font-semibold text-[#1A1A1A]">새 매핑 설정</h4>
+              <h4 className="text-sm font-semibold text-[#1A1A1A]">{t('kr_kec8388_keba7a4ed_settings')}</h4>
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="text-xs text-[#666] mb-1 block">매핑명</label>
+                  <label className="text-xs text-[#666] mb-1 block">{t('kr_keba7a4ed')}</label>
                   <input
                     value={editingMapping.name ?? ''}
                     onChange={e => setEditingMapping(prev => ({ ...prev, name: e.target.value }))}
@@ -398,7 +398,7 @@ export default function PayrollImportClient({ user, companies }: {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-[#666] mb-1 block">파일 형식</label>
+                  <label className="text-xs text-[#666] mb-1 block">{t('kr_ked8c8cec_ked9895ec')}</label>
                   <select
                     value={editingMapping.fileType ?? 'xlsx'}
                     onChange={e => setEditingMapping(prev => ({ ...prev, fileType: e.target.value }))}
@@ -409,7 +409,7 @@ export default function PayrollImportClient({ user, companies }: {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-[#666] mb-1 block">헤더 행 번호</label>
+                  <label className="text-xs text-[#666] mb-1 block">{t('kr_ked97a4eb_ked9689_kebb288ed')}</label>
                   <input
                     type="number"
                     min={1}
@@ -421,7 +421,7 @@ export default function PayrollImportClient({ user, companies }: {
               </div>
 
               <div>
-                <h5 className="text-xs text-[#666] font-medium mb-2">컬럼 매핑 (파일의 헤더명 → 시스템 필드)</h5>
+                <h5 className="text-xs text-[#666] font-medium mb-2">{t('kr_kecbbaceb_keba7a4ed_ked8c8cec_')}</h5>
                 <div className="grid grid-cols-2 gap-3">
                   {STANDARD_FIELDS.map(field => (
                     <div key={field.key} className="flex items-center gap-2">
@@ -452,14 +452,14 @@ export default function PayrollImportClient({ user, companies }: {
                     onChange={e => setEditingMapping(prev => ({ ...prev, isDefault: e.target.checked }))}
                     className="w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4]"
                   />
-                  기본 매핑으로 설정
+                  {t('kr_keab8b0eb_keba7a4ed_settings')}
                 </label>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setEditingMapping(null)}
                     className="px-3 py-1.5 border border-[#D4D4D4] rounded-lg text-sm text-[#555] hover:bg-[#FAFAFA]"
                   >
-                    취소
+                    {t('cancel')}
                   </button>
                   <button
                     onClick={saveMapping}
@@ -481,19 +481,19 @@ export default function PayrollImportClient({ user, companies }: {
         <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
           <div className="bg-[#FAFAFA] border-b border-[#F5F5F5]">
             <div className="grid grid-cols-7 px-4 py-3 text-xs text-[#666] font-medium uppercase tracking-wider">
-              <div>법인</div>
-              <div>급여월</div>
-              <div>파일명</div>
-              <div className="text-right">인원</div>
-              <div className="text-right">총지급(현지)</div>
-              <div>상태</div>
-              <div>업로드일</div>
+              <div>{t('company')}</div>
+              <div>{t('kr_keab889ec')}</div>
+              <div>{t('kr_ked8c8cec')}</div>
+              <div className="text-right">{t('kr_kec9db8ec')}</div>
+              <div className="text-right">{t('kr_kecb49dec_ked9884ec')}</div>
+              <div>{t('status')}</div>
+              <div>{t('kr_kec9785eb')}</div>
             </div>
           </div>
           {loadingLogs ? (
             <div className="py-12 text-center text-sm text-[#999]">{tCommon('loading')}</div>
           ) : logs.length === 0 ? (
-            <div className="py-12 text-center text-sm text-[#999]">업로드 이력이 없습니다.</div>
+            <div className="py-12 text-center text-sm text-[#999]">{t('kr_kec9785eb_kec9db4eb_kec9786ec')}</div>
           ) : (
             <div className="divide-y divide-[#F5F5F5]">
               {logs.map(log => (

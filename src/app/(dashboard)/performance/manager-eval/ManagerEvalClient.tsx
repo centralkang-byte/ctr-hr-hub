@@ -52,6 +52,7 @@ const STATUS_BADGE: Record<string, string> = {
 export default function ManagerEvalClient({ user }: { user: SessionUser }) {
   const t = useTranslations('performance')
   const tc = useTranslations('common')
+  const { confirm, dialogProps } = useConfirmDialog()
 
   const [cycles, setCycles] = useState<CycleOption[]>([])
   const [selectedCycleId, setSelectedCycleId] = useState('')
@@ -108,7 +109,6 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
   // ─── Load employee eval form ────────────────────────
 
   const loadEmployeeForm = useCallback(async (employeeId: string) => {
-  const { confirm, dialogProps } = useConfirmDialog()
     setFormLoading(true)
     setSelectedEmployee(employeeId)
     setCurrentEvaluationId(null)
@@ -168,7 +168,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
   const handleSave = async (status: 'DRAFT' | 'SUBMITTED') => {
     if (!selectedEmployee) return
     if (status === 'SUBMITTED') {
-        confirm({ title: '제출하면 수정할 수 없습니다. 제출하시겠습니까?', onConfirm: async () => {
+        confirm({ title: t('submit_ked9598eb_kec8898ec_kec8898_kec9786ec_keca09cec'), onConfirm: async () => {
           setSubmitting(true)
           try {
             const res = await apiClient.post<{ id: string }>('/api/v1/performance/evaluations/manager', {
@@ -190,9 +190,9 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
               setCurrentEvaluationId(res.data.id)
             }
             await fetchTeam()
-            toast({ title: '제출 완료되었습니다.' })
+            toast({ title: t('submit_kec9984eb') })
           } catch {
-            toast({ title: '저장에 실패했습니다.', variant: 'destructive' })
+            toast({ title: t('saveFailed'), variant: 'destructive' })
           } finally { setSubmitting(false) }
         }})
         return
@@ -218,9 +218,9 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
         setCurrentEvaluationId(res.data.id)
       }
       await fetchTeam()
-      toast({ title: '임시 저장되었습니다.' })
+      toast({ title: t('kr_kec9e84ec_savedsuccess') })
     } catch {
-      toast({ title: '저장에 실패했습니다.', variant: 'destructive' })
+      toast({ title: t('saveFailed'), variant: 'destructive' })
     } finally { setSubmitting(false) }
   }
 
@@ -244,7 +244,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
       })
       setOverallComment(res.data.suggested_comment)
     } catch {
-      toast({ title: 'AI 코멘트 생성에 실패했습니다.', variant: 'destructive' })
+      toast({ title: t('kr_ai_kecbd94eb_kec839dec_kec8ba4'), variant: 'destructive' })
     } finally { setAiLoading(false) }
   }
 
@@ -258,7 +258,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('managerEval')}</h1>
-          <p className="text-sm text-[#666] mt-1">팀원의 성과를 평가합니다</p>
+          <p className="text-sm text-[#666] mt-1">{t('kr_ked8c80ec_kec84b1ea_ked8f89ea')}</p>
         </div>
         <select
           value={selectedCycleId}
@@ -281,12 +281,12 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
           <div className="px-5 py-4 border-b border-[#E8E8E8]">
             <h2 className="text-base font-semibold text-[#1A1A1A] flex items-center gap-2">
               <Users className="w-4 h-4 text-[#666]" />
-              팀원 목록
+              {t('kr_ked8c80ec_kebaaa9eb')}
             </h2>
           </div>
           <div className="divide-y divide-[#F5F5F5]">
             {teamMembers.length === 0 && (
-              <div className="px-5 py-8 text-center text-sm text-[#999]">직속 팀원이 없습니다</div>
+              <div className="px-5 py-8 text-center text-sm text-[#999]">{t('kr_keca781ec_ked8c80ec_kec9786ec')}</div>
             )}
             {teamMembers.map((tm) => (
               <button
@@ -324,7 +324,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
         <div className="lg:col-span-2 space-y-4">
           {!selectedEmployee ? (
             <div className="rounded-xl border border-[#E8E8E8] bg-white flex items-center justify-center h-64">
-              <p className="text-sm text-[#999]">팀원을 선택하세요</p>
+              <p className="text-sm text-[#999]">{t('kr_ked8c80ec_kec84a0ed')}</p>
             </div>
           ) : formLoading ? (
             <div className="rounded-xl border border-[#E8E8E8] bg-white flex items-center justify-center h-64">
@@ -336,7 +336,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
               {goals.length > 0 && (
                 <div className="rounded-xl border border-[#E8E8E8] bg-white">
                   <div className="px-5 py-4 border-b border-[#E8E8E8]">
-                    <h3 className="text-base font-semibold text-[#1A1A1A]">목표 평가</h3>
+                    <h3 className="text-base font-semibold text-[#1A1A1A]">{t('goals_evaluation')}</h3>
                   </div>
                   <div className="divide-y divide-[#F5F5F5]">
                     {goals.map((goal) => (
@@ -375,7 +375,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
               {/* 업적 등급 선택 */}
               {evalSettings && evalSettings.mboGrades.length > 0 && (
                 <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
-                  <h3 className="text-base font-semibold text-[#1A1A1A] mb-3">업적 등급</h3>
+                  <h3 className="text-base font-semibold text-[#1A1A1A] mb-3">{t('kr_kec9785ec_keb93b1ea')}</h3>
                   <div className="flex items-center gap-2 flex-wrap">
                     {evalSettings.mboGrades.map((g) => (
                       <button
@@ -398,9 +398,9 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
               {evalSettings?.methodology === 'MBO_BEI' && beiIndicators.length > 0 && (
                 <div className="rounded-xl border border-[#E8E8E8] bg-white">
                   <div className="px-5 py-4 border-b border-[#E8E8E8]">
-                    <h3 className="text-base font-semibold text-[#1A1A1A]">역량 평가 (BEI)</h3>
+                    <h3 className="text-base font-semibold text-[#1A1A1A]">{t('kr_kec97adeb_evaluation_bei')}</h3>
                     <p className="text-xs text-[#666] mt-0.5">
-                      관찰된 행동에 체크하고 역량 등급을 선택하세요
+                      {t('kr_keab480ec_ked9689eb_kecb2b4ed_')}
                     </p>
                   </div>
                   <div className="divide-y divide-[#F5F5F5]">
@@ -431,7 +431,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                   {/* 역량 종합 등급 */}
                   {evalSettings && evalSettings.beiGrades.length > 0 && (
                     <div className="px-5 py-4 border-t border-[#E8E8E8]">
-                      <p className="text-sm font-medium text-[#333] mb-2">역량 종합 등급</p>
+                      <p className="text-sm font-medium text-[#333] mb-2">{t('kr_kec97adeb_keca285ed_keb93b1ea')}</p>
                       <div className="flex items-center gap-2 flex-wrap">
                         {evalSettings.beiGrades.map((g) => (
                           <button
@@ -455,7 +455,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
               {/* 종합 등급 표시 — overallGradeEnabled=true일 때 */}
               {evalSettings?.overallGradeEnabled && performanceGrade && (
                 <div className="rounded-xl border border-[#EDF1FE] bg-[#F0FDF4] p-4">
-                  <p className="text-sm font-semibold text-[#4B6DE0]">종합 등급 (자동 산출)</p>
+                  <p className="text-sm font-semibold text-[#4B6DE0]">{t('kr_keca285ed_keb93b1ea_kec9e90eb_')}</p>
                   <p className="text-xs text-[#047857] mt-1">
                     업적 {evalSettings.mboWeight}% ({performanceGrade})
                     {evalSettings.methodology === 'MBO_BEI' && competencyGrade
@@ -463,7 +463,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                       : ''}
                   </p>
                   <p className="text-xs text-[#555] mt-1">
-                    최종 등급은 캘리브레이션 세션에서 확정됩니다.
+                    {t('kr_kecb59cec_keb93b1ea_calibratio')}
                   </p>
                 </div>
               )}
@@ -471,14 +471,14 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
               {/* Overall Comment */}
               <div className="rounded-xl border border-[#E8E8E8] bg-white p-5 space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-base font-semibold text-[#1A1A1A]">종합 의견</h3>
+                  <h3 className="text-base font-semibold text-[#1A1A1A]">{t('kr_keca285ed_kec9d98ea')}</h3>
                   <button
                     onClick={handleAiSuggest}
                     disabled={aiLoading}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#E0E7FF] text-[#4B6DE0] hover:bg-[#C7D2FE] transition-colors disabled:opacity-50"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
-                    {aiLoading ? 'AI 생성 중...' : 'AI 코멘트 제안'}
+                    {aiLoading ? t('aiGenerating') : 'AI 코멘트 제안'}
                   </button>
                 </div>
                 <textarea
@@ -499,7 +499,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                   className="flex items-center gap-1.5 px-3 py-2 border border-[#C7D2FE] bg-[#E0E7FF] text-[#4B6DE0] rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#C7D2FE] transition-colors"
                 >
                   <Sparkles className="w-4 h-4" />
-                  AI 초안 생성
+                  {t('kr_ai_draft_kec839dec')}
                 </button>
                 <div className="flex items-center gap-3">
                   <button
@@ -508,7 +508,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                     className="flex items-center gap-2 px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm font-medium text-[#333] hover:bg-[#FAFAFA] disabled:opacity-50"
                   >
                     <Save className="w-4 h-4" />
-                    임시 저장
+                    {t('kr_kec9e84ec_save')}
                   </button>
                   <button
                     onClick={() => handleSave('SUBMITTED')}
@@ -516,7 +516,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                     className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}
                   >
                     <Send className="w-4 h-4" />
-                    제출
+                    {t('submit')}
                   </button>
                 </div>
               </div>

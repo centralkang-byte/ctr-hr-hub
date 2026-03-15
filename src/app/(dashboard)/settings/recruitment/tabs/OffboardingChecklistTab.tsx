@@ -5,11 +5,14 @@ import { Loader2, Plus, ClipboardCheck } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface Checklist { id: string; name: string; targetType: string; isActive: boolean; _count?: { offboardingTasks?: number } }
 interface Props { companyId: string | null }
 
-export function OffboardingChecklistTab({ companyId }: Props) {
+export function OffboardingChecklistTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const [checklists, setChecklists] = useState<Checklist[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -30,16 +33,16 @@ export function OffboardingChecklistTab({ companyId }: Props) {
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
-        <div><h3 className="text-base font-semibold text-[#1C1D21]">오프보딩 체크리스트</h3><p className="text-sm text-[#8181A5]">{checklists.length}개 체크리스트</p></div>
-        <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />체크리스트 추가</Button>
+        <div><h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_kec98a4ed_kecb2b4ed')}</h3><p className="text-sm text-[#8181A5]">{checklists.length}개 체크리스트</p></div>
+        <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />{t('kr_kecb2b4ed_add')}</Button>
       </div>
       {checklists.length > 0 ? (
         <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
           <table className="w-full"><thead><tr className={TABLE_STYLES.header}>
-            <th className={TABLE_STYLES.headerCell}>체크리스트명</th>
-            <th className={TABLE_STYLES.headerCell}>대상 유형</th>
-            <th className={TABLE_STYLES.headerCell}>태스크 수</th>
-            <th className={TABLE_STYLES.headerCell}>상태</th>
+            <th className={TABLE_STYLES.headerCell}>{t('kr_kecb2b4ed')}</th>
+            <th className={TABLE_STYLES.headerCell}>{t('kr_keb8c80ec_kec9ca0ed')}</th>
+            <th className={TABLE_STYLES.headerCell}>{t('kr_ked839cec_kec8898')}</th>
+            <th className={TABLE_STYLES.headerCell}>{t('status')}</th>
           </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{checklists.map((c) => (
             <tr key={c.id} className={TABLE_STYLES.row}>
               <td className={TABLE_STYLES.cell}>{c.name}</td>
@@ -51,7 +54,7 @@ export function OffboardingChecklistTab({ companyId }: Props) {
         </div>
       ) : (
         <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
-          <ClipboardCheck className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">등록된 체크리스트가 없습니다</p>
+          <ClipboardCheck className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">{t('register_keb909c_kecb2b4ed_kec9786ec')}</p>
         </div>
       )}
     </div>

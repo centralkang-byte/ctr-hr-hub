@@ -85,7 +85,7 @@ interface BankTransferItem {
 const BANKS = [
   { code: 'SHINHAN', name: '신한은행' },
   { code: 'KOOKMIN', name: 'KB국민은행' },
-  { code: 'WOORI', name: '우리은행' },
+  { code: 'WOORI', name: '우려됨' },
   { code: 'HANA', name: '하나은행' },
   { code: 'NH', name: 'NH농협은행' },
   { code: 'IBK', name: 'IBK기업은행' },
@@ -93,8 +93,8 @@ const BANKS = [
 ]
 
 const STATUS_MAP: Record<string, { label: string; color: string; icon: typeof Clock }> = {
-  DRAFT: { label: '초안', color: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]', icon: Clock },
-  GENERATING: { label: '생성중', color: 'bg-[#EDF1FE] text-[#4B6DE0] border-[#EDF1FE]', icon: Loader2 },
+  DRAFT: { label: '임시저장', color: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]', icon: Clock },
+  GENERATING: { label: '생성', color: 'bg-[#EDF1FE] text-[#4B6DE0] border-[#EDF1FE]', icon: Loader2 },
   GENERATED: { label: '생성완료', color: 'bg-[#E0E7FF] text-[#4B6DE0] border-[#C7D2FE]', icon: FileSpreadsheet },
   SUBMITTED: { label: '제출됨', color: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]', icon: Upload },
   PARTIALLY_COMPLETED: { label: '부분완료', color: 'bg-[#FFF7ED] text-[#C2410C] border-[#FED7AA]', icon: AlertTriangle },
@@ -103,7 +103,7 @@ const STATUS_MAP: Record<string, { label: string; color: string; icon: typeof Cl
 }
 
 const ITEM_STATUS_MAP: Record<string, { label: string; color: string }> = {
-  PENDING: { label: '대기', color: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' },
+  PENDING: { label: '🟡 대기', color: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' },
   SUCCESS: { label: '성공', color: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
   FAILED: { label: '실패', color: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]' },
   CANCELLED: { label: '취소', color: 'bg-[#FAFAFA] text-[#666] border-[#E8E8E8]' },
@@ -256,16 +256,16 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
         <div>
           <h1 className="text-2xl font-bold text-[#1A1A1A] flex items-center gap-2">
             <Building2 className="h-6 w-6 text-[#5E81F4]" />
-            급여 이체 관리
+            {'급여 이체 관리'}
           </h1>
-          <p className="text-sm text-[#666] mt-1">은행별 급여 이체 파일 생성 및 결과 관리</p>
+          <p className="text-sm text-[#666] mt-1">{'은행별 급여 이체 파일 생성 및 결과 관리'}</p>
         </div>
         <Button
           onClick={() => setCreateOpen(true)}
           className={BUTTON_VARIANTS.primary}
         >
           <Plus className="h-4 w-4 mr-2" />
-          이체 배치 생성
+          {'이체 배치 생성'}
         </Button>
       </div>
 
@@ -273,25 +273,25 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-5">
-            <p className="text-xs text-[#666] mb-1">전체 배치</p>
+            <p className="text-xs text-[#666] mb-1">{'전체 배치'}</p>
             <p className="text-3xl font-bold text-[#1A1A1A]">{totalBatches}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5">
-            <p className="text-xs text-[#666] mb-1">처리 대기</p>
+            <p className="text-xs text-[#666] mb-1">{'처리 대기'}</p>
             <p className="text-3xl font-bold text-[#D97706]">{pendingBatches}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5">
-            <p className="text-xs text-[#666] mb-1">완료</p>
+            <p className="text-xs text-[#666] mb-1">{'완료'}</p>
             <p className="text-3xl font-bold text-[#059669]">{completedBatches}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5">
-            <p className="text-xs text-[#666] mb-1">총 이체액</p>
+            <p className="text-xs text-[#666] mb-1">{'총 이체액'}</p>
             <p className="text-2xl font-bold text-[#5E81F4]">{formatAmount(totalAmount)}</p>
           </CardContent>
         </Card>
@@ -301,10 +301,10 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
       <div className="flex items-center gap-3">
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder={tCommon('filterAllStatuses')} />
+            <SelectValue placeholder={'상태 필터'} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">전체 상태</SelectItem>
+            <SelectItem value="all">{'전체 상태'}</SelectItem>
             {Object.entries(STATUS_MAP).map(([key, val]) => (
               <SelectItem key={key} value={key}>{val.label}</SelectItem>
             ))}
@@ -364,7 +364,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                           onClick={() => handleViewDetail(batch)}
                         >
                           <Eye className="h-3.5 w-3.5 mr-1" />
-                          상세
+                          {'상세'}
                         </Button>
 
                         {batch.status === 'DRAFT' && (
@@ -390,7 +390,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                               size="sm"
                             >
                               <Download className="h-3.5 w-3.5 mr-1" />
-                              다운로드
+                              {'다운로드'}
                             </Button>
                             <Button
                               size="sm"
@@ -446,11 +446,11 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>이체 배치 생성</DialogTitle>
+            <DialogTitle>{'이체 배치 생성'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">은행 선택</label>
+              <label className="text-sm font-medium text-[#333] mb-1 block">{'은행 선택'}</label>
               <Select
                 value={newBatch.bankCode}
                 onValueChange={v => {
@@ -474,7 +474,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">파일 형식</label>
+              <label className="text-sm font-medium text-[#333] mb-1 block">{'파일 형식'}</label>
               <Select
                 value={newBatch.format}
                 onValueChange={v => setNewBatch(prev => ({ ...prev, format: v as 'CSV' | 'XML' | 'EBCDIC' }))}
@@ -491,16 +491,16 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">비고</label>
+              <label className="text-sm font-medium text-[#333] mb-1 block">{'비고'}</label>
               <Input
                 value={newBatch.note}
                 onChange={e => setNewBatch(prev => ({ ...prev, note: e.target.value }))}
-                placeholder={tCommon('placeholderNoteOptional')}
+                placeholder={'비고 입력 (선택)'}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateOpen(false)}>취소</Button>
+            <Button variant="outline" onClick={() => setCreateOpen(false)}>{'취소'}</Button>
             <Button
               onClick={handleCreate}
               disabled={creating}
@@ -533,19 +533,19 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
               {selectedBatch && (
                 <div className="grid grid-cols-4 gap-3">
                   <div className="bg-[#FAFAFA] rounded-lg p-3 text-center">
-                    <p className="text-xs text-[#666]">총건수</p>
+                    <p className="text-xs text-[#666]">{'① 총급여'}</p>
                     <p className="text-lg font-bold">{selectedBatch.totalCount}</p>
                   </div>
                   <div className="bg-[#D1FAE5] rounded-lg p-3 text-center">
-                    <p className="text-xs text-[#059669]">성공</p>
+                    <p className="text-xs text-[#059669]">{'성공'}</p>
                     <p className="text-lg font-bold text-[#047857]">{selectedBatch.successCount}</p>
                   </div>
                   <div className="bg-[#FEE2E2] rounded-lg p-3 text-center">
-                    <p className="text-xs text-[#EF4444]">실패</p>
+                    <p className="text-xs text-[#EF4444]">{'실패'}</p>
                     <p className="text-lg font-bold text-[#DC2626]">{selectedBatch.failCount}</p>
                   </div>
                   <div className="bg-[#EDF1FE] rounded-lg p-3 text-center">
-                    <p className="text-xs text-[#5E81F4]">총액</p>
+                    <p className="text-xs text-[#5E81F4]">{'총지급액'}</p>
                     <p className="text-lg font-bold text-[#4B6DE0]">{formatAmount(selectedBatch.totalAmount)}</p>
                   </div>
                 </div>
@@ -556,20 +556,20 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                 <table className="min-w-full text-sm">
                   <thead>
                     <tr className={TABLE_STYLES.header}>
-                      <th className={TABLE_STYLES.headerCell}>사번</th>
-                      <th className={TABLE_STYLES.headerCell}>이름</th>
-                      <th className={TABLE_STYLES.headerCell}>계좌번호</th>
-                      <th className={TABLE_STYLES.headerCell}>예금주</th>
-                      <th className={TABLE_STYLES.headerCellRight}>금액</th>
-                      <th className={TABLE_STYLES.headerCell}>상태</th>
-                      <th className={TABLE_STYLES.headerCell}>비고</th>
+                      <th className={TABLE_STYLES.headerCell}>{'사번'}</th>
+                      <th className={TABLE_STYLES.headerCell}>{'이름'}</th>
+                      <th className={TABLE_STYLES.headerCell}>{'계약직'}</th>
+                      <th className={TABLE_STYLES.headerCell}>{'예금주'}</th>
+                      <th className={TABLE_STYLES.headerCellRight}>{'금액'}</th>
+                      <th className={TABLE_STYLES.headerCell}>{'상태'}</th>
+                      <th className={TABLE_STYLES.headerCell}>{'비고'}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {batchItems.length === 0 ? (
                       <tr>
                         <td colSpan={7} className="px-4 py-8 text-center text-[#666]">
-                          이체 항목이 없습니다.
+                          {'이체 항목이 없습니다.'}
                         </td>
                       </tr>
                     ) : (

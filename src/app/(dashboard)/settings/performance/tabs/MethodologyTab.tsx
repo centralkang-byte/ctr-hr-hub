@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface Props { companyId: string | null }
 
@@ -25,13 +26,15 @@ const DEFAULTS: MethodSettings = {
   allowSelfWeight: false,
 }
 
-export function MethodologyTab({ companyId }: Props) {
+export function MethodologyTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const { settings, setSettings, loading, saving, isOverridden, hasChanges, save, revert } = useProcessSetting<MethodSettings>({
     category: 'performance',
     key: 'methodology',
     companyId,
     defaults: DEFAULTS,
-    description: '평가 방법론 설정',
+    description: t('evaluation_kebb0a9eb_settings'),
     merge: (raw, defs) => ({
       maxGoals: (raw.maxGoals as number) ?? defs.maxGoals,
       weightSumRequired: typeof raw.weightSumRequired === 'boolean' ? raw.weightSumRequired : defs.weightSumRequired,
@@ -47,18 +50,18 @@ export function MethodologyTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">평가 방법론</h3>
-          <p className="text-sm text-[#8181A5]">MBO:BEI 비중, 목표 수 제한, 가중치 설정</p>
+          <h3 className="text-base font-semibold text-[#1C1D21]">{t('evaluation_kebb0a9eb')}</h3>
+          <p className="text-sm text-[#8181A5]">{t('kr_mbo_bei_kebb984ec_goals_kec889')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">법인 오버라이드</span>
+          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
         )}
       </div>
 
       <SettingFieldWithOverride label="최대 목표 수" description="직원 1인당 설정 가능한 최대 목표 개수" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input type="number" value={settings.maxGoals} min={1} max={20} onChange={(e) => setSettings((p) => ({ ...p, maxGoals: Number(e.target.value) }))} className="w-20" />
-          <span className="text-sm text-[#8181A5]">개</span>
+          <span className="text-sm text-[#8181A5]">{t('kr_keab09c')}</span>
         </div>
       </SettingFieldWithOverride>
 
@@ -79,7 +82,7 @@ export function MethodologyTab({ companyId }: Props) {
 
       <div className="flex justify-end gap-2 pt-4">
         <Button variant="outline" onClick={revert} disabled={!hasChanges}>
-          <RotateCcw className="mr-2 h-4 w-4" />되돌리기
+          <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장

@@ -165,12 +165,12 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                     <ArrowLeft className="h-5 w-5" />
                 </button>
                 <div>
-                    <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-[-0.02em]">발행 현황</h1>
+                    <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-[-0.02em]">{t('kr_kebb09ced_status')}</h1>
                     <div className="flex items-center gap-2 mt-0.5">
                         <span className="text-sm text-[#666]">{run.yearMonth}</span>
                         {isApproved && (
                             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#D1FAE5] text-[#047857] border border-[#A7F3D0]">
-                                <CheckCircle2 className="h-3 w-3" /> 발행 완료
+                                <CheckCircle2 className="h-3 w-3" /> {t('kr_kebb09ced_complete')}
                             </span>
                         )}
                     </div>
@@ -180,10 +180,10 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
             {/* KPI Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
-                    { label: '총 인원', value: `${run.headcount ?? 0}명`, icon: <Users className="h-4 w-4 text-[#4B6DE0]" /> },
-                    { label: '총 실수령액', value: fmt(Number(run.totalNet ?? 0)), icon: <DollarSign className="h-4 w-4 text-[#059669]" /> },
-                    { label: '명세서 발행', value: `${payslipStats.total}건`, icon: <FileText className="h-4 w-4 text-[#5E81F4]" /> },
-                    { label: '열람완료', value: `${payslipStats.viewed}명 (${payslipStats.viewRate}%)`, icon: <Eye className="h-4 w-4 text-[#A855F7]" /> },
+                    { label: t('kr_kecb49d_kec9db8ec'), value: `${run.headcount ?? 0}명`, icon: <Users className="h-4 w-4 text-[#4B6DE0]" /> },
+                    { label: t('netPay'), value: fmt(Number(run.totalNet ?? 0)), icon: <DollarSign className="h-4 w-4 text-[#059669]" /> },
+                    { label: t('persons_kec84b8ec_kebb09ced'), value: `${payslipStats.total}건`, icon: <FileText className="h-4 w-4 text-[#5E81F4]" /> },
+                    { label: t('kr_kec97b4eb'), value: `${payslipStats.viewed}명 (${payslipStats.viewRate}%)`, icon: <Eye className="h-4 w-4 text-[#A855F7]" /> },
                 ].map((kpi) => (
                     <div key={kpi.label} className={CARD_STYLES.padded}>
                         <div className="flex items-center justify-between mb-1">
@@ -198,7 +198,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
             {/* Payslip View Rate */}
             <div className={`${CARD_STYLES.kpi} space-y-4`}>
                 <div className="flex items-center justify-between">
-                    <h2 className="font-semibold text-[#1A1A1A]">급여명세서 열람 현황</h2>
+                    <h2 className="font-semibold text-[#1A1A1A]">{t('payStub_kec97b4eb_status')}</h2>
                     <button
                         onClick={handleNotifyUnread}
                         disabled={notifying || payslipStats.unviewed === 0}
@@ -217,7 +217,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
             {/* Downloads */}
             <div className={CARD_STYLES.padded}>
                 <div className="flex items-center justify-between mb-4">
-                    <h2 className="font-semibold text-[#1A1A1A]">파일 다운로드</h2>
+                    <h2 className="font-semibold text-[#1A1A1A]">{t('kr_ked8c8cec_keb8ba4ec')}</h2>
                     <button
                         onClick={() => setShowDownloads(!showDownloads)}
                         className="text-[#999] hover:text-[#333]"
@@ -228,7 +228,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {[
                         {
-                            label: '은행 이체파일',
+                            label: t('kr_kec9d80ed_kec9db4ec'),
                             sub: 'CSV',
                             icon: <CreditCard className="h-5 w-5 text-[#059669]" />,
                             bg: 'bg-[#D1FAE5]',
@@ -236,7 +236,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                             url: `/api/v1/payroll/${runId}/export/transfer`,
                         },
                         {
-                            label: '급여대장',
+                            label: t('kr_keab889ec'),
                             sub: 'Excel',
                             icon: <FileSpreadsheet className="h-5 w-5 text-[#4B6DE0]" />,
                             bg: 'bg-[#E0E7FF]',
@@ -244,7 +244,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                             url: `/api/v1/payroll/${runId}/export/ledger`,
                         },
                         {
-                            label: '전월 대비 비교',
+                            label: t('kr_keca084ec_keb8c80eb_kebb984ea'),
                             sub: 'Excel',
                             icon: <FileSpreadsheet className="h-5 w-5 text-[#F59E0B]" />,
                             bg: 'bg-[#FEF3C7]',
@@ -252,7 +252,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                             url: `/api/v1/payroll/${runId}/export/comparison`,
                         },
                         {
-                            label: '인건비 전표',
+                            label: t('kr_kec9db8ea_keca084ed'),
                             sub: 'Excel',
                             icon: <FileText className="h-5 w-5 text-[#A855F7]" />,
                             bg: 'bg-[#F3E8FF]',
@@ -281,7 +281,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                 {/* Transfer batch history */}
                 {transferBatches.length > 0 && showDownloads && (
                     <div className="mt-4 border-t border-[#E8E8E8] pt-4">
-                        <p className="text-xs font-semibold text-[#999] mb-2">이체 파일 생성 이력</p>
+                        <p className="text-xs font-semibold text-[#999] mb-2">{t('kr_kec9db4ec_ked8c8cec_kec839dec_')}</p>
                         <div className="space-y-1">
                             {transferBatches.map((b) => (
                                 <div key={b.id} className="flex items-center justify-between text-xs text-[#666]">
@@ -298,7 +298,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
             {/* Approval History */}
             {approvalHistory.length > 0 && (
                 <div className={CARD_STYLES.padded}>
-                    <h2 className="font-semibold text-[#1A1A1A] mb-4">승인 이력</h2>
+                    <h2 className="font-semibold text-[#1A1A1A] mb-4">{t('approve_kec9db4eb')}</h2>
                     <div className="space-y-3">
                         {approvalHistory.map((step) => (
                             <div key={step.stepNumber} className="flex items-start gap-3">

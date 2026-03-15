@@ -35,7 +35,7 @@ import {
 import { apiClient } from '@/lib/api'
 import { PageHeader } from '@/components/shared/PageHeader'
 import type { SessionUser } from '@/types'
-import { TABLE_STYLES } from '@/lib/styles'
+import { TABLE_STYLES, CHART_THEME } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -269,7 +269,7 @@ export function RecruitmentDashboardClient(_props: {
           fontSize: 14,
         }}
       >
-        {t('cannotLoadData')}
+        {'데이터를 불러올 수 없습니다.'}
       </div>
     )
   }
@@ -277,25 +277,25 @@ export function RecruitmentDashboardClient(_props: {
   // KPI cards config (inside component to access t())
   const KPI_CARDS: { label: string; icon: LucideIcon; color: string; format: (kpis: DashboardKpis) => string }[] = [
     {
-      label: t('activePostingsKpi'),
+      label: '진행중 공고',
       icon: UserPlus,
       color: '#2196F3',
       format: (k) => String(k.activePostings),
     },
     {
-      label: t('totalApplicantsKpi'),
+      label: '총 지원자',
       icon: Users,
       color: '#5E81F4',
       format: (k) => String(k.totalApplicants),
     },
     {
-      label: t('avgTimeToHire'),
+      label: '평균 채용기간',
       icon: Clock,
       color: '#FF9800',
       format: (k) => (k.avgTimeToHire != null ? t('avgTimeToHireDays', { days: k.avgTimeToHire }) : '-'),
     },
     {
-      label: t('hireRate'),
+      label: '합격률',
       icon: Target,
       color: '#5E81F4',
       format: (k) => t('hireRatePercent', { rate: k.hireRate }),
@@ -313,8 +313,8 @@ export function RecruitmentDashboardClient(_props: {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <PageHeader
-        title={t('dashboardTitle')}
-        description={t('dashboardDescription')}
+        title={'채용 대시보드'}
+        description={'채용 현황 및 통계'}
       />
 
       {/* KPI Cards */}
@@ -354,7 +354,7 @@ export function RecruitmentDashboardClient(_props: {
             letterSpacing: '-0.02em',
           }}
         >
-          {t('recruitmentFunnel')}
+          {'채용 퍼널'}
         </h2>
         <div style={{ width: '100%', height: 360 }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -411,7 +411,7 @@ export function RecruitmentDashboardClient(_props: {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
             <Briefcase size={18} style={{ color: '#5E81F4' }} />
             <h2 style={{ fontSize: 16, fontWeight: 700, color: '#1A1A1A', letterSpacing: '-0.02em' }}>
-              공석 현황 (Position Vacancies)
+              {'공석 현황 (Position Vacancies)'}
             </h2>
           </div>
 
@@ -439,7 +439,7 @@ export function RecruitmentDashboardClient(_props: {
             {vacancySummary.avgFillDays !== null && (
               <div style={{ backgroundColor: '#F0F9FF', borderRadius: 10, padding: '12px 16px', minWidth: 110 }}>
                 <div style={{ fontSize: 22, fontWeight: 700, color: '#0369A1' }}>{vacancySummary.avgFillDays}일</div>
-                <div style={{ fontSize: 11, color: '#666', marginTop: 2 }}>평균 채용 소요일</div>
+                <div style={{ fontSize: 11, color: '#666', marginTop: 2 }}>{'평균 채용 소요일'}</div>
               </div>
             )}
           </div>
@@ -490,7 +490,7 @@ export function RecruitmentDashboardClient(_props: {
             letterSpacing: '-0.02em',
           }}
         >
-          {t('recentPostings')}
+          {'최근 공고'}
         </h2>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
@@ -508,7 +508,7 @@ export function RecruitmentDashboardClient(_props: {
                   fontWeight: 600,
                 }}
               >
-                {t('postingTitleColumn')}
+                {'공고 제목'}
               </th>
               <th
                 style={{
@@ -519,7 +519,7 @@ export function RecruitmentDashboardClient(_props: {
                   fontWeight: 600,
                 }}
               >
-                {t('applicantCountColumn')}
+                {'지원자수'}
               </th>
               <th
                 style={{
@@ -530,7 +530,7 @@ export function RecruitmentDashboardClient(_props: {
                   fontWeight: 600,
                 }}
               >
-                {t('publishedDateColumn')}
+                {'게시일'}
               </th>
             </tr>
           </thead>
@@ -546,7 +546,7 @@ export function RecruitmentDashboardClient(_props: {
                     fontSize: 14,
                   }}
                 >
-                  {t('noRecentPostings')}
+                  {'최근 공고가 없습니다'}
                 </td>
               </tr>
             ) : (

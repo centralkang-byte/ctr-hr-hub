@@ -225,7 +225,7 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
                     <textarea
                       value={rejectedReason}
                       onChange={(e) => setRejectedReason(e.target.value)}
-                      placeholder={tCommon('placeholderRejectReason')}
+                      placeholder={'반려 사유를 입력해 주세요.'}
                       rows={2}
                       className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 resize-none"
                     />

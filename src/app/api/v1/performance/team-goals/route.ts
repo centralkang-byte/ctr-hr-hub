@@ -14,7 +14,7 @@ import type { SessionUser } from '@/types'
 // ─── Schema ──────────────────────────────────────────────
 
 const querySchema = z.object({
-  cycleId: z.string().cuid(),
+  cycleId: z.string().uuid(),
 })
 
 // ─── GET /api/v1/performance/team-goals ──────────────────

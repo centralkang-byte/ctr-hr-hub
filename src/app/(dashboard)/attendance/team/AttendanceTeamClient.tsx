@@ -11,6 +11,7 @@ import { toast } from '@/hooks/use-toast'
 
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { apiClient } from '@/lib/api'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable } from '@/components/shared/DataTable'

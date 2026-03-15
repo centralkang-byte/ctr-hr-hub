@@ -47,7 +47,7 @@ export default function MyCheckinsClient({user }: {
                     setSelectedCycleId(res.data[0].id)
                     setCycleStatus(res.data[0].status)
                 }
-            } catch { setError('사이클 목록을 불러오지 못했습니다.') }
+            } catch { setError(t('cycleListLoadFailed')) }
         }
         load()
     }, [])
@@ -65,7 +65,7 @@ export default function MyCheckinsClient({user }: {
             const pi: Record<string, number> = {}
             for (const g of goalsRes.data) pi[g.id] = Number(g.achievementScore ?? 0)
             setProgressInputs(pi)
-        } catch { setError('데이터를 불러오지 못했습니다.') }
+        } catch { setError(t('dataLoadFailed')) }
         finally { setLoading(false) }
     }, [selectedCycleId])
 
@@ -85,7 +85,7 @@ export default function MyCheckinsClient({user }: {
                 note: memos[goalId] || undefined,
             })
             await fetchData()
-        } catch { toast({ title: '진행률 저장에 실패했습니다.', variant: 'destructive' }) }
+        } catch { toast({ title: t('kr_keca784ed_keca080ec_kec8ba4ed'), variant: 'destructive' }) }
         finally { setSaving(null) }
     }
 
@@ -98,10 +98,10 @@ export default function MyCheckinsClient({user }: {
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
                     <ClipboardCheck className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">체크인 기간이 아닙니다.</h2>
-                    <p className="text-sm text-[#8181A5]">체크인은 CHECK_IN 단계에서 진행됩니다.</p>
+                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">{t('kr_kecb2b4ed_keab8b0ea_kec9584eb')}</h2>
+                    <p className="text-sm text-[#8181A5]">{t('kr_kecb2b4ed_check_in_keb8ba8ea_k')}</p>
                     <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">
-                        <ArrowLeft className="h-4 w-4" /> 돌아가기
+                        <ArrowLeft className="h-4 w-4" /> {t('kr_keb8f8cec')}
                     </a>
                 </div>
             </div>
@@ -109,9 +109,9 @@ export default function MyCheckinsClient({user }: {
     }
 
     const conditions = checkinStatus ? [
-        { label: '1:1 미팅 기록', done: checkinStatus.hasOneOnOne, detail: checkinStatus.hasOneOnOne ? '완료' : '미완료' },
-        { label: '매니저 기록', done: checkinStatus.hasManagerNote, detail: checkinStatus.hasManagerNote ? '완료' : '미완료' },
-        { label: '목표 진행률 업데이트', done: checkinStatus.goalsUpdated >= checkinStatus.goalsTotal && checkinStatus.goalsTotal > 0, detail: `${checkinStatus.goalsUpdated}/${checkinStatus.goalsTotal} 목표 업데이트됨` },
+        { label: t('oneOnOne_keab8b0eb'), done: checkinStatus.hasOneOnOne, detail: checkinStatus.hasOneOnOne ? '완료' : '미완료' },
+        { label: t('kr_keba7a4eb_keab8b0eb'), done: checkinStatus.hasManagerNote, detail: checkinStatus.hasManagerNote ? '완료' : '미완료' },
+        { label: t('goals_keca784ed_kec9785eb'), done: checkinStatus.goalsUpdated >= checkinStatus.goalsTotal && checkinStatus.goalsTotal > 0, detail: `${checkinStatus.goalsUpdated}/${checkinStatus.goalsTotal} 목표 업데이트됨` },
     ] : []
 
     const allComplete = conditions.every((c) => c.done)
@@ -123,8 +123,8 @@ export default function MyCheckinsClient({user }: {
                 {/* Header */}
                 <div className="mb-6 flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-[#1C1D21]">나의 체크인 (My Check-ins)</h1>
-                        <p className="mt-1 text-sm text-[#8181A5]">중간 점검을 통해 목표 진행 상황을 기록합니다</p>
+                        <h1 className="text-2xl font-bold text-[#1C1D21]">{t('kr_keb8298ec_kecb2b4ed_my_check_i')}</h1>
+                        <p className="mt-1 text-sm text-[#8181A5]">{t('kr_keca491ea_keca090ea_ked86b5ed_')}</p>
                     </div>
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
                         className="rounded-lg border border-[#F0F0F3] bg-white px-3 py-2 text-sm text-[#1C1D21] focus:border-[#5E81F4] focus:outline-none">
@@ -139,7 +139,7 @@ export default function MyCheckinsClient({user }: {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 {allComplete ? (
-                                    <><CheckCircle2 className="h-5 w-5 text-[#059669]" /><span className="font-medium text-[#047857]">체크인 완료</span></>
+                                    <><CheckCircle2 className="h-5 w-5 text-[#059669]" /><span className="font-medium text-[#047857]">{t('kr_kecb2b4ed_complete')}</span></>
                                 ) : (
                                     <><Clock className="h-5 w-5 text-[#D97706]" /><span className="font-medium text-[#92400E]">{isMandatory ? '필수' : '권장'} 체크인 진행 중</span></>
                                 )}
@@ -173,7 +173,7 @@ export default function MyCheckinsClient({user }: {
                         {conditions.length > 0 && (
                             <div className="mb-6 rounded-xl border border-[#F0F0F3] bg-white">
                                 <div className="border-b border-[#F0F0F3] px-5 py-4">
-                                    <h2 className="text-base font-semibold text-[#1C1D21]">체크인 조건</h2>
+                                    <h2 className="text-base font-semibold text-[#1C1D21]">{t('kr_kecb2b4ed_keca1b0ea')}</h2>
                                 </div>
                                 <div className="divide-y divide-[#F0F0F3]">
                                     {conditions.map((c, i) => (
@@ -196,10 +196,10 @@ export default function MyCheckinsClient({user }: {
                         {/* Goals progress update */}
                         <div className="rounded-xl border border-[#F0F0F3] bg-white">
                             <div className="border-b border-[#F0F0F3] px-5 py-4">
-                                <h2 className="text-base font-semibold text-[#1C1D21]">목표 진행률 업데이트</h2>
+                                <h2 className="text-base font-semibold text-[#1C1D21]">{t('goals_keca784ed_kec9785eb')}</h2>
                             </div>
                             {goals.length === 0 ? (
-                                <div className="p-8 text-center text-sm text-[#8181A5]">등록된 목표가 없습니다.</div>
+                                <div className="p-8 text-center text-sm text-[#8181A5]">{t('register_keb909c_kebaaa9ed_kec9786ec')}</div>
                             ) : (
                                 <div className="divide-y divide-[#F0F0F3]">
                                     {goals.map((goal) => (
@@ -219,14 +219,14 @@ export default function MyCheckinsClient({user }: {
                                             {isCheckInPeriod && (
                                                 <div className="flex items-end gap-3">
                                                     <div className="flex-1">
-                                                        <label className="mb-1 block text-xs text-[#8181A5]">새 진행률 (%)</label>
+                                                        <label className="mb-1 block text-xs text-[#8181A5]">{t('kr_kec8388_keca784ed')}</label>
                                                         <input type="number" min={0} max={100}
                                                             value={progressInputs[goal.id] ?? 0}
                                                             onChange={(e) => setProgressInputs((p) => ({ ...p, [goal.id]: Number(e.target.value) }))}
                                                             className="w-24 rounded-lg border border-[#F0F0F3] px-3 py-1.5 text-sm focus:border-[#5E81F4] focus:outline-none" />
                                                     </div>
                                                     <div className="flex-[2]">
-                                                        <label className="mb-1 block text-xs text-[#8181A5]">메모 (선택)</label>
+                                                        <label className="mb-1 block text-xs text-[#8181A5]">{t('kr_keba994eb_kec84a0ed')}</label>
                                                         <input type="text" value={memos[goal.id] ?? ''}
                                                             onChange={(e) => setMemos((p) => ({ ...p, [goal.id]: e.target.value }))}
                                                             placeholder={tCommon('enterNote')}

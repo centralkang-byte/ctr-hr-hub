@@ -123,18 +123,20 @@ function ClaimModal({ plans, onClose, onSubmit }: {
       onSubmit()
       onClose()
     } catch (err: unknown) {
-      const msg = (err as { message?: string })?.message ?? tCommon('errorDesc')
+      const msg = (err as { message?: string })?.message ?? 'errorDesc'
       setError(msg)
     } finally {
       setSubmitting(false)
     }
   }
 
+  const { guardedSubmit } = useSubmitGuard(handleSubmit)
+
   return (
     <div className={MODAL_STYLES.container}>
       <div className={`${MODAL_STYLES.content.md}`}>
         <div className="flex items-center justify-between p-5 border-b border-[#E8E8E8]">
-          <h2 className="text-lg font-semibold text-[#1A1A1A]">{tCommon('benefit.apply')}</h2>
+          <h2 className="text-lg font-semibold text-[#1A1A1A]">{'benefit.apply'}</h2>
           <button onClick={onClose} className="text-[#999] hover:text-[#555] text-xl leading-none">✕</button>
         </div>
 
@@ -245,7 +247,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
             onClick={onClose}
             className="px-4 py-2 bg-white border border-[#D4D4D4] hover:bg-[#FAFAFA] text-[#333] rounded-lg text-sm font-medium"
           >
-            {tCommon('cancel')}
+            {'취소'}
           </button>
           <button
             onClick={(e) => { e.preventDefault(); void handleSubmit(e as unknown as React.FormEvent) }}
@@ -253,7 +255,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
             className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50 flex items-center gap-2`}
           >
             {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-            {submitting ? tCommon('loading') : tCommon('apply')}
+            {submitting ? '로딩 중...' : 'apply'}
           </button>
         </div>
       </div>
@@ -279,7 +281,6 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
   void user
 
   const load = useCallback(async () => {
-  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmit)
     setLoading(true)
     setError(null)
     try {
@@ -314,14 +315,14 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
       <div className="flex items-center justify-between">
         <div>
           <nav className="text-xs text-[#999] mb-1">나의 공간</nav>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('myBenefits')}</h1>
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">{'나의 복리후생'}</h1>
         </div>
         <button
           onClick={() => setShowModal(true)}
           className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}
         >
           <Plus className="w-4 h-4" />
-          {t('applyBenefit')}
+          {'복리후생 신청'}
         </button>
       </div>
 
@@ -334,7 +335,7 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
 
       {summary.length > 0 && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-base font-semibold text-[#1A1A1A] mb-4">📊 {year}{tCommon('unit.year')} {t('usageSummary')}</h2>
+          <h2 className="text-base font-semibold text-[#1A1A1A] mb-4">📊 {year}{tCommon('unit.year')} {'사용 현황'}</h2>
           <div className="space-y-4">
             {summary.map((item) => {
               const total = item.maxAmount ?? 0
@@ -371,14 +372,14 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
 
       <div className="bg-white rounded-xl border border-[#E8E8E8]">
         <div className="p-5 border-b border-[#E8E8E8]">
-          <h2 className="text-base font-semibold text-[#1A1A1A]">{t('claimHistory')}</h2>
+          <h2 className="text-base font-semibold text-[#1A1A1A]">{'신청 내역'}</h2>
         </div>
         {claims.length === 0 ? (
           <EmptyState
             icon={Gift}
-            title={t('emptyBenefitClaim')}
-            description={t('emptyBenefitClaimDesc')}
-            action={{ label: t('applyBenefit'), onClick: () => setShowModal(true) }}
+            title={'신청 내역이 없습니다'}
+            description={'아직 복리후생 신청 내역이 없습니다.'}
+            action={{ label: '복리후생 신청', onClick: () => setShowModal(true) }}
           />
         ) : (
           <div className="divide-y divide-[#F5F5F5]">

@@ -21,7 +21,7 @@ interface GoalItem {
 }
 
 const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
-    DRAFT: { label: '초안', cls: 'bg-[#F5F5FA] text-[#8181A5]' },
+    DRAFT: { label: '임시저장', cls: 'bg-[#F5F5FA] text-[#8181A5]' },
     PENDING_APPROVAL: { label: '승인 대기', cls: 'bg-[#FFF8E1] text-[#F57F17]' },
     APPROVED: { label: '승인됨', cls: 'bg-[#EDF1FE] text-[#2E7D32]' },
     REJECTED: { label: '반려', cls: 'bg-[#FFEBEE] text-[#C62828]' },
@@ -46,38 +46,38 @@ function GoalModal({ initial, onSave, onClose, saving }: {
                 </div>
                 <div className="space-y-4">
                     <div>
-                        <label className="mb-1 block text-sm font-medium text-[#1C1D21]">제목 <span className="text-red-500">*</span></label>
+                        <label className="mb-1 block text-sm font-medium text-[#1C1D21]">{'제목'} <span className="text-red-500">*</span></label>
                         <input value={form.title} onChange={(e) => set('title', e.target.value)} maxLength={100}
                             className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" placeholder="목표 제목" />
                     </div>
                     <div>
-                        <label className="mb-1 block text-sm font-medium text-[#1C1D21]">설명 <span className="text-red-500">*</span></label>
+                        <label className="mb-1 block text-sm font-medium text-[#1C1D21]">{'설명'} <span className="text-red-500">*</span></label>
                         <textarea value={form.description} onChange={(e) => set('description', e.target.value)} rows={3} maxLength={500}
                             className="w-full resize-none rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" placeholder="목표 상세 설명" />
                     </div>
                     <div>
-                        <label className="mb-1 block text-sm font-medium text-[#1C1D21]">KPI 지표 (선택)</label>
+                        <label className="mb-1 block text-sm font-medium text-[#1C1D21]">{'KPI 지표 (선택)'}</label>
                         <input value={form.kpiMetrics} onChange={(e) => set('kpiMetrics', e.target.value)}
                             className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" placeholder="매출액, 수주잔고" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="mb-1 block text-sm font-medium text-[#1C1D21]">가중치 (%) <span className="text-red-500">*</span></label>
+                            <label className="mb-1 block text-sm font-medium text-[#1C1D21]">{'가중치 (%)'} <span className="text-red-500">*</span></label>
                             <input type="number" min={5} max={100} step={5} value={form.weight} onChange={(e) => set('weight', Math.max(5, Math.min(100, Number(e.target.value))))}
                                 className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
                         </div>
                         <div>
-                            <label className="mb-1 block text-sm font-medium text-[#1C1D21]">마감일 <span className="text-red-500">*</span></label>
+                            <label className="mb-1 block text-sm font-medium text-[#1C1D21]">{'마감일'} <span className="text-red-500">*</span></label>
                             <input type="date" value={form.targetDate} onChange={(e) => set('targetDate', e.target.value)}
                                 className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
                         </div>
                     </div>
                 </div>
                 <div className="mt-6 flex justify-end gap-3">
-                    <button onClick={onClose} className="rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm font-medium text-[#1C1D21]">{tCommon('cancel')}</button>
+                    <button onClick={onClose} className="rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm font-medium text-[#1C1D21]">{'취소'}</button>
                     <button onClick={() => onSave(form)} disabled={!form.title || !form.description || !form.targetDate || saving}
                         className="rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white disabled:opacity-40">
-                        {saving ? tCommon('loading') : tCommon('save')}
+                        {saving ? '로딩 중...' : '저장'}
                     </button>
                 </div>
             </div>
@@ -91,6 +91,8 @@ export default function MyGoalsClient({user }: {
   user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
+  const { confirm, dialogProps } = useConfirmDialog()
+
     const [cycles, setCycles] = useState<CycleOption[]>([])
     const [selectedCycleId, setSelectedCycleId] = useState('')
     const [cycleStatus, setCycleStatus] = useState('')
@@ -111,14 +113,13 @@ export default function MyGoalsClient({user }: {
                     setSelectedCycleId(res.data[0].id)
                     setCycleStatus(res.data[0].status)
                 }
-            } catch { setError('사이클 목록을 불러오지 못했습니다.') }
+            } catch { setError(t('cycleListLoadFailed')) }
         }
         load()
     }, [])
 
     // ─── Fetch goals
     const fetchGoals = useCallback(async () => {
-  const { confirm, dialogProps } = useConfirmDialog()
         if (!selectedCycleId) return
         setLoading(true); setError('')
         try {
@@ -147,20 +148,20 @@ export default function MyGoalsClient({user }: {
                 await apiClient.post('/api/v1/performance/goals', { ...form, cycleId: selectedCycleId })
             }
             setModal(null); await fetchGoals()
-        } catch { toast({ title: '저장에 실패했습니다.', variant: 'destructive' }) }
+        } catch { toast({ title: t('saveFailed'), variant: 'destructive' }) }
         finally { setSaving(false) }
     }
 
     async function handleDelete(goalId: string) {
-        confirm({ variant: 'destructive', title: '이 목표를 삭제하시겠습니까?', onConfirm: async () => {
+        confirm({ variant: 'destructive', title: t('kr_kec9db4_kebaaa9ed_kec82adec'), onConfirm: async () => {
             try { await apiClient.delete(`/api/v1/performance/goals/${goalId}`); await fetchGoals() }
-            catch { toast({ title: '삭제에 실패했습니다.', variant: 'destructive' }) }
+            catch { toast({ title: t('delete_kec9790_kec8ba4ed'), variant: 'destructive' }) }
         }})
     }
 
     async function handleSubmitAll() {
         if (!canSubmit) return
-        confirm({ title: '모든 초안 목표를 제출하시겠습니까? 제출 후에는 수정할 수 없습니다.', onConfirm: async () => {
+        confirm({ title: t('kr_kebaaa8eb_draft_kebaaa9ed_keca'), onConfirm: async () => {
             setSaving(true)
             try {
                 const firstDraft = goals.find((g) => g.status === 'DRAFT')
@@ -168,7 +169,7 @@ export default function MyGoalsClient({user }: {
                     await apiClient.put(`/api/v1/performance/goals/${firstDraft.id}/submit`)
                     await fetchGoals()
                 }
-            } catch { toast({ title: '제출에 실패했습니다.', variant: 'destructive' }) }
+            } catch { toast({ title: t('submit_kec9790_kec8ba4ed'), variant: 'destructive' }) }
             finally { setSaving(false) }
         }})
     }
@@ -186,8 +187,8 @@ export default function MyGoalsClient({user }: {
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
                     <Target className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">목표 설정 기간이 아닙니다.</h2>
-                    <p className="text-sm text-[#8181A5]">현재 사이클 상태에서는 목표를 조회할 수 없습니다.</p>
+                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">{t('goals_settings_keab8b0ea_kec9584eb')}</h2>
+                    <p className="text-sm text-[#8181A5]">{t('kr_ked9884ec_cycle_kec8381ed_keba')}</p>
                 </div>
             </div>
         )
@@ -199,8 +200,8 @@ export default function MyGoalsClient({user }: {
                 {/* Header */}
                 <div className="mb-6 flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-[#1C1D21]">나의 목표 (My Goals)</h1>
-                        <p className="mt-1 text-sm text-[#8181A5]">MBO 목표를 설정하고 관리합니다</p>
+                        <h1 className="text-2xl font-bold text-[#1C1D21]">{t('myGoals_my_goals')}</h1>
+                        <p className="mt-1 text-sm text-[#8181A5]">{t('kr_mbo_kebaaa9ed_kec84a4ec_keab48')}</p>
                     </div>
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
                         className="rounded-lg border border-[#F0F0F3] bg-white px-3 py-2 text-sm text-[#1C1D21] focus:border-[#5E81F4] focus:outline-none">
@@ -211,13 +212,13 @@ export default function MyGoalsClient({user }: {
                 {/* Weight summary bar */}
                 <div className="mb-6 flex items-center justify-between rounded-xl border border-[#F0F0F3] bg-white p-4">
                     <div className="flex items-center gap-3">
-                        <span className="text-sm text-[#8181A5]">가중치 합계:</span>
+                        <span className="text-sm text-[#8181A5]">{t('kr_keab080ec_ked95a9ea')}</span>
                         <span className={`text-lg font-bold ${totalWeight === 100 ? 'text-[#2E7D32]' : 'text-[#C62828]'}`}>
                             {totalWeight}/100%
                         </span>
                         {totalWeight !== 100 && (
                             <span className="flex items-center gap-1 text-xs text-[#F57F17]">
-                                <AlertTriangle className="h-3.5 w-3.5" /> 100%가 되어야 제출 가능합니다
+                                <AlertTriangle className="h-3.5 w-3.5" /> {t('kr_100_keab080_keb9098ec_submit_k')}
                             </span>
                         )}
                     </div>
@@ -225,7 +226,7 @@ export default function MyGoalsClient({user }: {
                         {!isViewOnly && (
                             <button onClick={() => setModal({ mode: 'add' })}
                                 className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] transition-colors">
-                                <Plus className="h-4 w-4" /> 목표 추가
+                                <Plus className="h-4 w-4" /> {t('goals_add')}
                             </button>
                         )}
                     </div>
@@ -252,11 +253,11 @@ export default function MyGoalsClient({user }: {
                 ) : goals.length === 0 ? (
                     <div className="rounded-xl border border-[#F0F0F3] bg-white p-16 text-center">
                         <Target className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                        <p className="mb-2 text-[#8181A5]">아직 등록된 목표가 없습니다.</p>
+                        <p className="mb-2 text-[#8181A5]">{t('kr_kec9584ec_keb93b1eb_kebaaa9ed_')}</p>
                         {!isViewOnly && (
                             <button onClick={() => setModal({ mode: 'add' })}
                                 className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-[#5E81F4] hover:underline">
-                                <Plus className="h-4 w-4" /> 첫 번째 목표 추가하기
+                                <Plus className="h-4 w-4" /> {t('kr_kecb2ab_kebb288ec_goals_kecb69')}
                             </button>
                         )}
                     </div>
@@ -299,7 +300,7 @@ export default function MyGoalsClient({user }: {
                                     {/* Progress bar */}
                                     <div className="mb-3">
                                         <div className="mb-1 flex items-center justify-between text-xs text-[#8181A5]">
-                                            <span>진행률</span>
+                                            <span>{t('kr_keca784ed')}</span>
                                             <span>{pct}%</span>
                                         </div>
                                         <div className="h-2 rounded-full bg-[#F0F0F3]">
@@ -316,12 +317,12 @@ export default function MyGoalsClient({user }: {
                                                     mode: 'edit', goalId: goal.id,
                                                     initial: { title: goal.title, description: goal.description ?? '', kpiMetrics: goal.kpiMetrics ?? '', weight: Number(goal.weight), targetDate: goal.targetDate?.slice(0, 10) ?? '' },
                                                 })} className="inline-flex items-center gap-1 rounded-md border border-[#F0F0F3] px-2.5 py-1 text-[#8181A5] hover:bg-[#F5F5FA] transition-colors">
-                                                    <Pencil className="h-3 w-3" /> 수정
+                                                    <Pencil className="h-3 w-3" /> {t('edit')}
                                                 </button>
                                                 {goal.status === 'DRAFT' && (
                                                     <button onClick={() => handleDelete(goal.id)}
                                                         className="inline-flex items-center gap-1 rounded-md border border-[#FECACA] px-2.5 py-1 text-[#C62828] hover:bg-[#FFEBEE] transition-colors">
-                                                        <Trash2 className="h-3 w-3" /> 삭제
+                                                        <Trash2 className="h-3 w-3" /> {t('delete')}
                                                     </button>
                                                 )}
                                             </div>

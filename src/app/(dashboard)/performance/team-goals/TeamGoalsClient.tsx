@@ -86,6 +86,7 @@ export default function TeamGoalsClient({
   const [members, setMembers] = useState<TeamMemberGoals[]>([])
   const [loading, setLoading] = useState(true)
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
+  const { confirm, dialogProps } = useConfirmDialog()
 
   // Revision comment state per goal
   const [revisionGoalId, setRevisionGoalId] = useState<string | null>(null)
@@ -133,7 +134,6 @@ export default function TeamGoalsClient({
   // ─── Fetch team goals ─────────────────────────────────
 
   const fetchTeamGoals = useCallback(async () => {
-  const { confirm, dialogProps } = useConfirmDialog()
     if (!selectedCycleId) return
     setLoading(true)
     try {
@@ -218,18 +218,21 @@ export default function TeamGoalsClient({
         </div>
 
         {/* Cycle selector */}
-        <select
-          value={selectedCycleId}
-          onChange={(e) => setSelectedCycleId(e.target.value)}
-          className="rounded-lg border border-[#E8E8E8] px-4 py-2 text-sm focus:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
-        >
-          {!cycles?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
-              {cycles?.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
+        {cycles.length > 0 ? (
+          <select
+            value={selectedCycleId}
+            onChange={(e) => setSelectedCycleId(e.target.value)}
+            className="rounded-lg border border-[#E8E8E8] px-4 py-2 text-sm focus:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+          >
+            {cycles.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <span className="text-sm text-[#999]">{t('noCycles')}</span>
+        )}
       </div>
 
       {/* Loading */}

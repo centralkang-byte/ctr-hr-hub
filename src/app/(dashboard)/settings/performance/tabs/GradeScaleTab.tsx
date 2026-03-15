@@ -3,11 +3,14 @@
 import { useEffect, useState } from 'react'
 import { Loader2, Info } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { useTranslations } from 'next-intl'
 
 interface Grade { key: string; labelKo: string; labelEn: string; guidePct: number; description: string }
 interface Props { companyId: string | null }
 
-export function GradeScaleTab({ companyId }: Props) {
+export function GradeScaleTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const [grades, setGrades] = useState<Grade[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -26,7 +29,7 @@ export function GradeScaleTab({ companyId }: Props) {
   return (
     <div className="space-y-4">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">등급 체계</h3>
+        <h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_keb93b1ea_kecb2b4ea')}</h3>
         <p className="text-sm text-[#8181A5]">{grades.length}단계 등급 체계</p>
       </div>
       {grades.length > 0 ? (
@@ -43,7 +46,7 @@ export function GradeScaleTab({ companyId }: Props) {
               </div>
               <div className="text-right">
                 <span className="text-lg font-bold text-[#5E81F4]">{g.guidePct}%</span>
-                <p className="text-xs text-[#8181A5]">배분 가이드</p>
+                <p className="text-xs text-[#8181A5]">{t('kr_kebb0b0eb_keab080ec')}</p>
               </div>
             </div>
           ))}
@@ -51,7 +54,7 @@ export function GradeScaleTab({ companyId }: Props) {
         </div>
       ) : (
         <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
-          <Info className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">등급 체계가 설정되지 않았습니다</p>
+          <Info className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">{t('kr_keb93b1ea_kecb2b4ea_kec84a4ec_')}</p>
         </div>
       )}
     </div>

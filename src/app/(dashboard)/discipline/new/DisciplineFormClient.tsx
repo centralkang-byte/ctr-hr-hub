@@ -3,7 +3,7 @@
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
-import { useSubmitGuard } from '@/hooks/useSubmitGuard'
+
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — 징계 등록 폼 (Client)
@@ -70,7 +70,7 @@ export default function DisciplineFormClient({ user }: Props) {
   const t = useTranslations('disciplineForm')
   const tPage = useTranslations('disciplinePage')
   const tCommon = useTranslations('common')
-  const { isSubmitting, guardedSubmit } = useSubmitGuard()
+
 
   const [employees, setEmployees] = useState<EmployeeOption[]>([])
   const [grades, setGrades] = useState<GradeOption[]>([])

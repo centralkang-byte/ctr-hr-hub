@@ -224,7 +224,7 @@ export default function AiReportClient() {
       <div className="bg-white rounded-2xl border border-gray-100 p-6">
         <div className="flex flex-wrap items-end gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1.5">기간</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('period')}</label>
             <div className="relative">
               <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <select
@@ -241,7 +241,7 @@ export default function AiReportClient() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1.5">법인</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('company')}</label>
             <div className="relative">
               <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <select
@@ -249,7 +249,7 @@ export default function AiReportClient() {
                 onChange={(e) => setSelectedCompany(e.target.value)}
                 className="pl-9 pr-8 py-2.5 text-sm border border-gray-200 rounded-xl bg-white appearance-none cursor-pointer hover:border-[#5E81F4] focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/20 outline-none transition-all min-w-[140px]"
               >
-                <option value="">전사</option>
+                <option value="">{t('kr_keca084ec')}</option>
                 {companies.map((c) => (
                   <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
@@ -266,12 +266,12 @@ export default function AiReportClient() {
             {generating ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                생성 중...
+                {t('kr_kec839dec_keca491')}
               </>
             ) : (
               <>
                 <Sparkles className="h-4 w-4" />
-                리포트 생성
+                {t('kr_keba6aced_kec839dec')}
               </>
             )}
           </button>
@@ -291,8 +291,8 @@ export default function AiReportClient() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#5E81F4]/10 mb-4">
             <Sparkles className="h-8 w-8 text-[#5E81F4] animate-pulse" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">AI가 리포트를 생성하고 있습니다...</h3>
-          <p className="text-sm text-gray-500">약 5-15초 소요됩니다. 잠시만 기다려주세요.</p>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('kr_aikeab080_keba6aced_kec839dec_')}</h3>
+          <p className="text-sm text-gray-500">{t('kr_kec95bd_5_15kecb488_kec868cec_')}</p>
           <div className="mt-6 w-48 mx-auto">
             <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
               <div className="h-full bg-gradient-to-r from-[#5E81F4] to-[#6B73E8] rounded-full animate-[progressBar_2s_ease-in-out_infinite]" style={{ width: '60%' }} />
@@ -358,9 +358,9 @@ export default function AiReportClient() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#5E81F4]/10 to-[#6B73E8]/10 mb-4">
             <Sparkles className="h-8 w-8 text-[#5E81F4]" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">아직 생성된 리포트가 없습니다</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('kr_kec9584ec_kec839dec_keba6aced_')}</h3>
           <p className="text-sm text-gray-500 mb-6">
-            상단의 &quot;리포트 생성&quot; 버튼을 클릭하여 첫 월간 HR 리포트를 생성해보세요.
+            {t('kr_kec8381eb_quot_keba6aced_kec83')}
           </p>
         </div>
       )}
@@ -369,7 +369,7 @@ export default function AiReportClient() {
       {reports.length > 1 && (
         <div className="bg-white rounded-2xl border border-gray-100">
           <div className="px-6 py-4 border-b border-gray-100">
-            <h3 className="text-sm font-semibold text-gray-700">이전 리포트</h3>
+            <h3 className="text-sm font-semibold text-gray-700">{t('prev_keba6aced')}</h3>
           </div>
           <div className="divide-y divide-gray-50">
             {reports.filter((r) => r.id !== currentReport?.id).map((report) => (

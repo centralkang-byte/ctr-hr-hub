@@ -5,6 +5,7 @@ import { Loader2, Info } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Input } from '@/components/ui/input'
 import { TABLE_STYLES } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface MatrixCell { id?: string; gradeKey: string; comparatioBand: string; minPct: number | null; maxPct: number | null; recommendedPct: number | null }
 interface Props { companyId: string | null }
@@ -12,7 +13,9 @@ interface Props { companyId: string | null }
 const GRADE_LABELS: Record<string,string> = { E: '탁월', M_PLUS: '우수', M: '보통', B: '미흡' }
 const BAND_LABELS: Record<string,string> = { LOW: '하위', MID: '중위', HIGH: '상위' }
 
-export function MeritMatrixTab({ companyId }: Props) {
+export function MeritMatrixTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const [matrix, setMatrix] = useState<MatrixCell[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -35,14 +38,14 @@ export function MeritMatrixTab({ companyId }: Props) {
   return (
     <div className="space-y-4">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">인상률 매트릭스</h3>
-        <p className="text-sm text-[#8181A5]">등급 × 밴드위치 기반 연봉 인상률 (%)</p>
+        <h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_kec9db8ec_keba7a4ed')}</h3>
+        <p className="text-sm text-[#8181A5]">{t('kr_keb93b1ea_kebb0b4eb_keab8b0eb_')}</p>
       </div>
       {matrix.length > 0 ? (
         <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
           <table className="w-full">
             <thead><tr className={TABLE_STYLES.header}>
-              <th className={TABLE_STYLES.headerCell}>등급</th>
+              <th className={TABLE_STYLES.headerCell}>{t('kr_keb93b1ea')}</th>
               {bands.map((b) => <th key={b} className="px-4 py-3 text-center text-xs font-medium uppercase text-[#8181A5]">{BAND_LABELS[b]} ({b})</th>)}
             </tr></thead>
             <tbody className="divide-y divide-[#F0F0F3]">{grades.map((g) => (
@@ -66,7 +69,7 @@ export function MeritMatrixTab({ companyId }: Props) {
         </div>
       ) : (
         <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
-          <Info className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">인상률 매트릭스가 설정되지 않았습니다</p>
+          <Info className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">{t('kr_kec9db8ec_keba7a4ed_kec84a4ec_')}</p>
         </div>
       )}
     </div>

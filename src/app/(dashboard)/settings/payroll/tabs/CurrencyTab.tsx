@@ -4,11 +4,14 @@ import { useEffect, useState } from 'react'
 import { Loader2, ArrowLeftRight } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { TABLE_STYLES } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface ExchangeRate { fromCurrency: string; toCurrency: string; rate: number; source: string }
 interface Props { companyId: string | null }
 
-export function CurrencyTab({ companyId }: Props) {
+export function CurrencyTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const [rates, setRates] = useState<ExchangeRate[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -30,7 +33,7 @@ export function CurrencyTab({ companyId }: Props) {
   return (
     <div className="space-y-4">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">통화/환율</h3>
+        <h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_ked86b5ed_ked9998ec')}</h3>
         <p className="text-sm text-[#8181A5]">{year}년 {month}월 적용 환율 ({rates.length}건)</p>
       </div>
       {rates.length > 0 ? (
@@ -39,8 +42,8 @@ export function CurrencyTab({ companyId }: Props) {
             <th className={TABLE_STYLES.headerCell}>FROM</th>
             <th className={TABLE_STYLES.headerCell}></th>
             <th className={TABLE_STYLES.headerCell}>TO</th>
-            <th className={TABLE_STYLES.headerCellRight}>환율</th>
-            <th className={TABLE_STYLES.headerCell}>출처</th>
+            <th className={TABLE_STYLES.headerCellRight}>{t('kr_ked9998ec')}</th>
+            <th className={TABLE_STYLES.headerCell}>{t('kr_kecb69cec')}</th>
           </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{rates.map((r, i) => (
             <tr key={i} className={TABLE_STYLES.row}>
               <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{r.fromCurrency}</td>

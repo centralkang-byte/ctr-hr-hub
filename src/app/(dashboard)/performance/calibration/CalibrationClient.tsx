@@ -78,8 +78,8 @@ const BLOCK_LABELS: Record<number, { label: string; color: string }> = {
 }
 
 const STATUS_MAP: Record<string, { label: string; style: string }> = {
-  CALIBRATION_DRAFT: { label: '초안', style: 'bg-[#F5F5F5] text-[#666]' },
-  CALIBRATION_IN_PROGRESS: { label: '진행중', style: 'bg-[#FEF3C7] text-[#B45309]' },
+  CALIBRATION_DRAFT: { label: '임시저장', style: 'bg-[#F5F5F5] text-[#666]' },
+  CALIBRATION_IN_PROGRESS: { label: '진행 중', style: 'bg-[#FEF3C7] text-[#B45309]' },
   CALIBRATION_COMPLETED: { label: '완료', style: 'bg-[#D1FAE5] text-[#047857]' },
 }
 
@@ -188,7 +188,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
       setShowCreateForm(false)
       await fetchSessions()
     } catch {
-      toast({ title: '세션 생성에 실패했습니다.', variant: 'destructive' })
+      toast({ title: t('kr_kec84b8ec_kec839dec_kec8ba4ed'), variant: 'destructive' })
     }
   }
 
@@ -209,7 +209,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
       setAdjReason('')
       await loadSession(selectedSession.id)
     } catch {
-      toast({ title: '조정 저장에 실패했습니다.', variant: 'destructive' })
+      toast({ title: t('kr_keca1b0ec_keca080ec_kec8ba4ed'), variant: 'destructive' })
     }
   }, [adjEmployee, selectedSession, adjReason, adjPerfScore, adjCompScore, loadSession])
 
@@ -242,7 +242,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
 
       toast({ title: `AI 분석 완료:\n${res.data.overall_assessment}\n\n권고사항:\n${res.data.recommendations.join('\n')}` })
     } catch {
-      toast({ title: 'AI 분석에 실패했습니다.', variant: 'destructive' })
+      toast({ title: t('kr_ai_kebb684ec_kec8ba4ed'), variant: 'destructive' })
     } finally { setAiLoading(false) }
   }
 
@@ -326,8 +326,8 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
           })}
         </div>
         <div className="flex justify-between text-xs text-[#999] mt-1">
-          <span>← 성과 낮음</span>
-          <span>성과 높음 →</span>
+          <span>{t('kr_kec84b1ea_low')}</span>
+          <span>{t('kr_kec84b1ea_high')}</span>
         </div>
       </div>
     )
@@ -344,7 +344,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('calibration')}</h1>
-          <p className="text-sm text-[#666] mt-1">성과 캘리브레이션을 관리합니다</p>
+          <p className="text-sm text-[#666] mt-1">{t('kr_kec84b1ea_kecba98eb_keab480eb')}</p>
         </div>
         <div className="flex items-center gap-3">
           <select
@@ -359,7 +359,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
             className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}
           >
             <Plus className="w-4 h-4" />
-            새 세션
+            {t('kr_kec8388_kec84b8ec')}
           </button>
         </div>
       </div>
@@ -379,13 +379,13 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
               onClick={handleCreateSession}
               className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}
             >
-              생성
+              {t('kr_kec839dec')}
             </button>
             <button
               onClick={() => setShowCreateForm(false)}
               className="px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#666] hover:bg-[#FAFAFA]"
             >
-              취소
+              {t('cancel')}
             </button>
           </div>
         </div>
@@ -395,11 +395,11 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
         {/* Sessions list */}
         <div className="rounded-xl border border-[#E8E8E8] bg-white">
           <div className="px-5 py-4 border-b border-[#E8E8E8]">
-            <h2 className="text-base font-semibold text-[#1A1A1A]">캘리브레이션 세션</h2>
+            <h2 className="text-base font-semibold text-[#1A1A1A]">{t('calibration_kec84b8ec')}</h2>
           </div>
           <div className="divide-y divide-[#F5F5F5]">
             {sessions.length === 0 && (
-              <div className="px-5 py-8 text-center text-sm text-[#999]">세션이 없습니다</div>
+              <div className="px-5 py-8 text-center text-sm text-[#999]">{t('kr_kec84b8ec_kec9786ec')}</div>
             )}
             {sessions.map((s) => {
               const st = STATUS_MAP[s.status]
@@ -434,7 +434,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
             </div>
           ) : !selectedSession ? (
             <div className="rounded-xl border border-[#E8E8E8] bg-white flex items-center justify-center h-64">
-              <p className="text-sm text-[#999]">세션을 선택하세요</p>
+              <p className="text-sm text-[#999]">{t('kr_kec84b8ec_kec84a0ed')}</p>
             </div>
           ) : (
             <>
@@ -459,7 +459,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                   className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[#E0E7FF] text-[#4B6DE0] hover:bg-[#C7D2FE] disabled:opacity-50"
                 >
                   <Sparkles className="w-4 h-4" />
-                  {aiLoading ? 'AI 분석 중...' : 'AI 캘리브레이션 분석'}
+                  {aiLoading ? t('aiAnalyzing') : 'AI 캘리브레이션 분석'}
                 </button>
               </div>
 
@@ -471,11 +471,11 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                       <AlertTriangle className="w-4 h-4 inline mr-1 text-[#B45309]" />
                       점수 조정: {adjEmployee.employee.name}
                     </h3>
-                    <button onClick={() => setAdjEmployee(null)} className="text-sm text-[#999] hover:text-[#666]">닫기</button>
+                    <button onClick={() => setAdjEmployee(null)} className="text-sm text-[#999] hover:text-[#666]">{t('close')}</button>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium text-[#333] mb-1 block">성과 점수</label>
+                      <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_kec84b1ea_score')}</label>
                       <input
                         type="number"
                         min={1} max={5} step={0.1}
@@ -485,7 +485,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-[#333] mb-1 block">역량 점수</label>
+                      <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_kec97adeb_score')}</label>
                       <input
                         type="number"
                         min={1} max={5} step={0.1}
@@ -496,7 +496,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                     </div>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-[#333] mb-1 block">조정 사유</label>
+                    <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_keca1b0ec_kec82acec')}</label>
                     <textarea
                       rows={2}
                       value={adjReason}
@@ -510,7 +510,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                     disabled={!adjReason.trim()}
                     className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}
                   >
-                    조정 저장
+                    {t('kr_keca1b0ec_save')}
                   </button>
                 </div>
               )}
@@ -519,16 +519,16 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
               {selectedSession.adjustments.length > 0 && (
                 <div className="rounded-xl border border-[#E8E8E8] bg-white">
                   <div className="px-5 py-4 border-b border-[#E8E8E8]">
-                    <h3 className="text-base font-semibold text-[#1A1A1A]">조정 이력</h3>
+                    <h3 className="text-base font-semibold text-[#1A1A1A]">{t('kr_keca1b0ec_kec9db4eb')}</h3>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
                         <tr className={TABLE_STYLES.header}>
-                          <th className={TABLE_STYLES.headerCell}>직원</th>
-                          <th className={TABLE_STYLES.headerCell}>원래 블록</th>
-                          <th className={TABLE_STYLES.headerCell}>조정 블록</th>
-                          <th className={TABLE_STYLES.headerCell}>사유</th>
+                          <th className={TABLE_STYLES.headerCell}>{t('kr_keca781ec')}</th>
+                          <th className={TABLE_STYLES.headerCell}>{t('krw_keb9e98_kebb894eb')}</th>
+                          <th className={TABLE_STYLES.headerCell}>{t('kr_keca1b0ec_kebb894eb')}</th>
+                          <th className={TABLE_STYLES.headerCell}>{t('kr_kec82acec')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -551,20 +551,20 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                 <div className="flex justify-end">
                   <button
                     onClick={async () => {
-                      confirm({ title: '캘리브레이션을 완료하시겠습니까?', onConfirm: async () => {
+                      confirm({ title: t('calibration_kec9d84_kec9984eb'), onConfirm: async () => {
                         try {
                           await apiClient.put(`/api/v1/performance/calibration/sessions/${selectedSession.id}`, {
                             status: 'CALIBRATION_COMPLETED',
                           })
                           await loadSession(selectedSession.id)
                           await fetchSessions()
-                        } catch { toast({ title: '완료 처리에 실패했습니다.', variant: 'destructive' }) }
+                        } catch { toast({ title: t('complete_kecb298eb_kec8ba4ed'), variant: 'destructive' }) }
                       }})
                     }}
                     className="flex items-center gap-2 px-4 py-2 bg-[#059669] hover:bg-[#047857] text-white rounded-lg text-sm font-medium"
                   >
                     <CheckCircle2 className="w-4 h-4" />
-                    캘리브레이션 완료
+                    {t('calibration_complete')}
                   </button>
                 </div>
               )}

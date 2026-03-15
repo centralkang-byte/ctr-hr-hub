@@ -1,6 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
 
 import React, { useEffect, useState, useCallback } from 'react'
 import {
@@ -21,24 +22,37 @@ export default function WorkforceClient() {
   const t = useTranslations('analytics')
   const [data, setData] = useState<WorkforceResponse | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const [companies, setCompanies] = useState<{ id: string; name: string }[]>([])
 
   const fetchData = useCallback(async () => {
     setLoading(true)
+    setError(false)
     try {
       const [res, compRes] = await Promise.all([
         fetch(`/api/v1/analytics/workforce/overview${window.location.search}`),
         fetch('/api/v1/companies'),
       ])
       if (res.ok) { const j = await res.json(); setData(j.data) }
+      else { setError(true) }
       if (compRes.ok) { const c = await compRes.json(); setCompanies(c.data || []) }
-    } catch { /* */ } finally { setLoading(false) }
+    } catch { setError(true) } finally { setLoading(false) }
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])
 
-  if (loading || !data) {
+  if (loading) {
     return <div className="space-y-6 animate-pulse">{[...Array(5)].map((_, i) => <div key={i} className="h-48 bg-gray-100 rounded-xl" />)}</div>
+  }
+
+  if (error || !data) {
+    return (
+      <EmptyState
+        title="데이터를 불러올 수 없습니다"
+        description="인사이트 데이터를 불러오는 중 오류가 발생했습니다. 새로고침하거나 잠시 후 다시 시도해주세요."
+        action={{ label: t('retry'), onClick: () => fetchData() }}
+      />
+    )
   }
 
   const { kpis, charts } = data

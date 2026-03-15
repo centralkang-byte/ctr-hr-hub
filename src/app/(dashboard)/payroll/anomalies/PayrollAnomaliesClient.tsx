@@ -121,8 +121,8 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
             <AlertTriangle className="w-5 h-5 text-[#DC2626]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#1A1A1A]">급여 이상 탐지</h1>
-            <p className="text-sm text-[#666]">밴드 이탈 · 내부 분산 · 법인간 격차 · 급격한 변화를 자동으로 탐지합니다</p>
+            <h1 className="text-2xl font-bold text-[#1A1A1A]">{'급여 이상 탐지'}</h1>
+            <p className="text-sm text-[#666]">{'밴드 이탈 · 내부 분산 · 법인간 격차 · 급격한 변화를 자동으로 탐지합니다'}</p>
           </div>
         </div>
         <button onClick={fetchData} className="p-2 hover:bg-[#F5F5F5] rounded-lg" disabled={loading}>
@@ -145,7 +145,7 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
 
       {loading && (
         <div className="flex items-center justify-center py-20 text-[#999] text-sm gap-2">
-          <RefreshCw className="w-4 h-4 animate-spin" /> 분석 중...
+          <RefreshCw className="w-4 h-4 animate-spin" /> {'분석 중...'}
         </div>
       )}
 
@@ -154,23 +154,23 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
           {/* Summary KPI */}
           <div className="grid grid-cols-4 gap-4 mb-6">
             <div className={CARD_STYLES.padded}>
-              <p className="text-xs text-[#666] mb-1">총 이상 건수</p>
+              <p className="text-xs text-[#666] mb-1">{'총 이상 건수'}</p>
               <p className={`text-3xl font-bold ${data.totalAnomalies > 0 ? 'text-[#DC2626]' : 'text-[#059669]'}`}>
                 {data.totalAnomalies}
               </p>
             </div>
             <div className={CARD_STYLES.padded}>
-              <p className="text-xs text-[#666] mb-1">High 이상</p>
+              <p className="text-xs text-[#666] mb-1">{'High 이상'}</p>
               <p className="text-3xl font-bold text-[#DC2626]">
                 {data.anomalies.filter(a => a.severity === 'high').reduce((s, a) => s + a.affectedCount, 0)}
               </p>
             </div>
             <div className={CARD_STYLES.padded}>
-              <p className="text-xs text-[#666] mb-1">분석 규칙</p>
+              <p className="text-xs text-[#666] mb-1">{'분석 규칙'}</p>
               <p className="text-3xl font-bold text-[#1A1A1A]">4</p>
             </div>
             <div className={CARD_STYLES.padded}>
-              <p className="text-xs text-[#666] mb-1">스캔 인원</p>
+              <p className="text-xs text-[#666] mb-1">{'스캔 인원'}</p>
               <p className="text-3xl font-bold text-[#1A1A1A]">{data.scannedCount}</p>
             </div>
           </div>
@@ -179,7 +179,7 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
             <div className="flex items-center gap-3 p-6 bg-[#D1FAE5] rounded-xl text-[#047857]">
               <CheckCircle2 className="w-6 h-6 shrink-0" />
               <div>
-                <p className="font-semibold">이상 없음</p>
+                <p className="font-semibold">{'이상 없음'}</p>
                 <p className="text-sm mt-0.5">{year}년 {month}월 급여 데이터에서 이상 징후가 발견되지 않았습니다.</p>
               </div>
             </div>
@@ -233,7 +233,7 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
                   <CheckCircle2 className="w-5 h-5 text-[#059669] shrink-0" />
                   <div>
                     <h3 className="font-medium text-[#555]">{rule}</h3>
-                    <p className="text-sm text-[#999]">이상 없음</p>
+                    <p className="text-sm text-[#999]">{'이상 없음'}</p>
                   </div>
                 </div>
               ))}

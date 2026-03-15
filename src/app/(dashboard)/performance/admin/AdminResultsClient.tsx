@@ -89,18 +89,18 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
   const handleFinalize = async () => {
     const cycle = cycles.find((c) => c.id === selectedCycleId)
     if (cycle?.status !== 'CALIBRATION') {
-      toast({ title: '캘리브레이션 단계에서만 확정할 수 있습니다.' })
+      toast({ title: t('calibration_keb8ba8ea_ked9995ec_kec8898_kec9e88ec') })
       return
     }
-    confirm({ title: '성과 주기를 확정하시겠습니까? 확정 후에는 수정할 수 없습니다.', onConfirm: async () => {
+    confirm({ title: t('kr_kec84b1ea_keca3bcea_ked9995ec_'), onConfirm: async () => {
       try {
         await apiClient.post(`/api/v1/performance/cycles/${selectedCycleId}/finalize`)
-        toast({ title: '성과 주기가 확정되었습니다.' })
+        toast({ title: t('kr_kec84b1ea_keca3bcea_ked9995ec') })
         // Refresh
         const res = await apiClient.getList<CycleOption>('/api/v1/performance/cycles', { page: 1, limit: 100 })
         setCycles(res.data)
       } catch {
-        toast({ title: '확정에 실패했습니다.', variant: 'destructive' })
+        toast({ title: t('confirmed_kec9790_kec8ba4ed'), variant: 'destructive' })
       }
     }})
   }
@@ -116,7 +116,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('adminResults')}</h1>
-          <p className="text-sm text-[#666] mt-1">전사 성과 결과 관리</p>
+          <p className="text-sm text-[#666] mt-1">{t('kr_keca084ec_kec84b1ea_keab2b0ea_')}</p>
         </div>
         <div className="flex items-center gap-3">
           <select
@@ -124,7 +124,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
             onChange={(e) => { setSelectedDeptId(e.target.value); setPage(1) }}
             className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
           >
-            <option value="">전체 부서</option>
+            <option value="">{t('all_department')}</option>
             {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
           </select>
           <select
@@ -141,7 +141,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
       <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
         <h2 className="text-base font-semibold text-[#1A1A1A] flex items-center gap-2 mb-3">
           <BarChart3 className="w-4 h-4 text-[#666]" />
-          블록 분포
+          {t('kr_kebb894eb_kebb684ed')}
         </h2>
         <div className="flex items-end gap-2">
           {Object.entries(blockDist).sort().map(([block, count]) => (
@@ -162,13 +162,13 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
         <table className="w-full">
           <thead>
             <tr className={TABLE_STYLES.header}>
-              <th className={TABLE_STYLES.headerCell}>직원</th>
-              <th className={TABLE_STYLES.headerCell}>부서</th>
-              <th className={TABLE_STYLES.headerCell}>직급</th>
-              <th className={TABLE_STYLES.headerCell}>자기 성과</th>
-              <th className={TABLE_STYLES.headerCell}>매니저 성과</th>
-              <th className={TABLE_STYLES.headerCell}>최종 성과</th>
-              <th className={TABLE_STYLES.headerCell}>최종 역량</th>
+              <th className={TABLE_STYLES.headerCell}>{t('kr_keca781ec')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('department')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('grade')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('kr_kec9e90ea_kec84b1ea')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('kr_keba7a4eb_kec84b1ea')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('kr_kecb59cec_kec84b1ea')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('kr_kecb59cec_kec97adeb')}</th>
               <th className={TABLE_STYLES.headerCell}>EMS</th>
             </tr>
           </thead>
@@ -212,7 +212,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
             disabled={page <= 1}
             className="px-3 py-1.5 border border-[#D4D4D4] rounded-lg text-sm text-[#666] disabled:opacity-50 hover:bg-[#FAFAFA]"
           >
-            이전
+            {t('prev')}
           </button>
           <span className="text-sm text-[#666]">{page} / {totalPages}</span>
           <button
@@ -220,13 +220,13 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
             disabled={page >= totalPages}
             className="px-3 py-1.5 border border-[#D4D4D4] rounded-lg text-sm text-[#666] disabled:opacity-50 hover:bg-[#FAFAFA]"
           >
-            다음
+            {t('next')}
           </button>
         </div>
         <div className="flex items-center gap-3">
           <button className="flex items-center gap-2 px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#333] hover:bg-[#FAFAFA]">
             <Download className="w-4 h-4" />
-            엑셀 다운로드
+            {t('kr_kec9791ec_keb8ba4ec')}
           </button>
           {cycles.find((c) => c.id === selectedCycleId)?.status === 'CALIBRATION' && (
             <button
@@ -234,7 +234,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
               className="flex items-center gap-2 px-4 py-2 bg-[#059669] hover:bg-[#047857] text-white rounded-lg text-sm font-medium"
             >
               <Lock className="w-4 h-4" />
-              성과 확정
+              {t('kr_kec84b1ea_confirmed')}
             </button>
           )}
         </div>

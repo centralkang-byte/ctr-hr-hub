@@ -63,8 +63,10 @@ export default function CoursesTab() {
     externalUrl: '',
   })
 
-  const fetchCourses = useCallback(async (page = 1) => {
   const { confirm, dialogProps } = useConfirmDialog()
+
+
+  const fetchCourses = useCallback(async (page = 1) => {
     setLoading(true)
     try {
       const res = await apiClient.getList<CourseRow>('/api/v1/training/courses', {

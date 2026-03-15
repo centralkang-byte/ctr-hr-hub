@@ -133,7 +133,7 @@ export function NotificationPreferenceClient() {
       {/* Header */}
       <div className="flex items-center gap-2 mb-6">
         <Bell className="w-5 h-5 text-[#5E81F4]" />
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('notificationSettingsTitle')}</h1>
+        <h1 className="text-2xl font-bold text-[#1A1A1A]">{'알림 설정'}</h1>
       </div>
 
       {/* Channel toggles */}

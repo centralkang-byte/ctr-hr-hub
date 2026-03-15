@@ -56,29 +56,30 @@ function getYearsOfService(hireDate: Date): string {
   return `${Math.floor(totalMonths / 12)}년 ${totalMonths % 12}개월`
 }
 
-// ─── Quick Links ────────────────────────────────────────────
-
-const QUICK_LINKS = [
-  { label: '내 프로필', href: '/my/profile', icon: User, color: 'bg-[#EDF1FE] text-[#4B6DE0]' },
-  { label: '휴가 신청', href: '/my/leave', icon: CalendarDays, color: 'bg-[#E0E7FF] text-[#4B6DE0]' },
-  { label: '내 성과', href: '/performance', icon: Target, color: 'bg-[#FEF3C7] text-[#B45309]' },
-  { label: '교육 신청', href: '/my/training', icon: BookOpen, color: 'bg-[#FEE2E2] text-[#B91C1C]' },
-  { label: '사내 공고', href: '/my/internal-jobs', icon: Briefcase, color: 'bg-[#F0FDF4] text-[#16A34A]' },
-  { label: '연말 정산', href: '/my/year-end', icon: FileText, color: 'bg-[#F5F3FF] text-[#7C3AED]' },
-]
+// ─── Quick Links defined inside component to access t() ───
 
 // ─── Main Component ─────────────────────────────────────────
 
 export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }: MySpaceClientProps) {
+  const t = useTranslations('mySpace')
   const asgn = employee.assignments[0]
   const annualLeave = leaveBalances.find((l) => l.policy.leaveType === 'ANNUAL')
+
+  const QUICK_LINKS = [
+    { label: t('quickLink.myProfile'), href: '/my/profile', icon: User, color: 'bg-[#EDF1FE] text-[#4B6DE0]' },
+    { label: t('quickLink.leaveRequest'), href: '/my/leave', icon: CalendarDays, color: 'bg-[#E0E7FF] text-[#4B6DE0]' },
+    { label: t('quickLink.myPerformance'), href: '/performance', icon: Target, color: 'bg-[#FEF3C7] text-[#B45309]' },
+    { label: t('quickLink.trainingApply'), href: '/my/training', icon: BookOpen, color: 'bg-[#FEE2E2] text-[#B91C1C]' },
+    { label: t('quickLink.internalJob'), href: '/my/internal-jobs', icon: Briefcase, color: 'bg-[#F0FDF4] text-[#16A34A]' },
+    { label: t('quickLink.yearEnd'), href: '/my/year-end', icon: FileText, color: 'bg-[#F5F3FF] text-[#7C3AED]' },
+  ]
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">나의 공간</h1>
-        <p className="text-sm text-[#666] mt-1">안녕하세요, {employee.name}님!</p>
+        <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('pageTitle')}</h1>
+        <p className="text-sm text-[#666] mt-1">{t('greeting', { name: employee.name })}</p>
       </div>
 
       {/* Profile Summary */}
@@ -94,12 +95,12 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
           }}
           trailing={
             <>
-              <p className="text-xs text-[#999] mt-0.5">재직 {getYearsOfService(employee.hireDate)}</p>
+              <p className="text-xs text-[#999] mt-0.5">{t('yearsOfService', { period: getYearsOfService(employee.hireDate) })}</p>
               <Link
                 href="/my/profile"
                 className="flex items-center gap-1 text-sm text-[#5E81F4] hover:underline mt-1"
               >
-                프로필 편집 <ChevronRight className="w-4 h-4" />
+                {t('editProfile')} <ChevronRight className="w-4 h-4" />
               </Link>
             </>
           }
@@ -109,33 +110,33 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
       {/* KPI Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className={CARD_STYLES.padded}>
-          <p className="text-xs text-[#666] mb-1">연차 잔여</p>
+          <p className="text-xs text-[#666] mb-1">{t('kpi.leaveRemaining')}</p>
           <p className="text-2xl font-bold text-[#1A1A1A]">
             {annualLeave ? (Number(annualLeave.grantedDays) - Number(annualLeave.usedDays)).toFixed(1) : '-'}
           </p>
-          <p className="text-xs text-[#999] mt-1">일</p>
+          <p className="text-xs text-[#999] mt-1">{t('unitDay')}</p>
         </div>
         <div className={CARD_STYLES.padded}>
-          <p className="text-xs text-[#666] mb-1">사용 연차</p>
+          <p className="text-xs text-[#666] mb-1">{t('kpi.leaveUsed')}</p>
           <p className="text-2xl font-bold text-[#1A1A1A]">
             {annualLeave ? Number(annualLeave.usedDays).toFixed(1) : '-'}
           </p>
-          <p className="text-xs text-[#999] mt-1">일</p>
+          <p className="text-xs text-[#999] mt-1">{t('unitDay')}</p>
         </div>
         <div className={CARD_STYLES.padded}>
-          <p className="text-xs text-[#666] mb-1">대기 중 변경 요청</p>
+          <p className="text-xs text-[#666] mb-1">{t('kpi.pendingRequests')}</p>
           <p className="text-2xl font-bold text-[#1A1A1A]">{pendingChangeRequests}</p>
-          <p className="text-xs text-[#999] mt-1">건</p>
+          <p className="text-xs text-[#999] mt-1">{t('unitCase')}</p>
         </div>
         <div className={CARD_STYLES.padded}>
-          <p className="text-xs text-[#666] mb-1">재직 기간</p>
+          <p className="text-xs text-[#666] mb-1">{t('kpi.tenure')}</p>
           <p className="text-lg font-bold text-[#1A1A1A]">{getYearsOfService(employee.hireDate)}</p>
         </div>
       </div>
 
       {/* Quick Links */}
       <div>
-        <h2 className="text-base font-semibold text-[#1A1A1A] mb-3">바로가기</h2>
+        <h2 className="text-base font-semibold text-[#1A1A1A] mb-3">{t('quickLinksTitle')}</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {QUICK_LINKS.map((link) => (
             <Link
@@ -159,9 +160,9 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-[#5E81F4]" />
-              <h2 className="text-base font-semibold text-[#1A1A1A]">휴가 잔여 현황</h2>
+              <h2 className="text-base font-semibold text-[#1A1A1A]">{t('leaveBalanceTitle')}</h2>
             </div>
-            <Link href="/my/leave" className="text-sm text-[#5E81F4] hover:underline">자세히</Link>
+            <Link href="/my/leave" className="text-sm text-[#5E81F4] hover:underline">{t('viewDetail')}</Link>
           </div>
           <div className="space-y-2">
             {leaveBalances.slice(0, 5).map((lb) => {
@@ -176,7 +177,7 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
                     <div className="h-full bg-[#5E81F4] rounded-full" style={{ width: `${pct}%` }} />
                   </div>
                   <p className="text-sm text-[#555] w-16 text-right shrink-0">
-                    {remaining.toFixed(1)} / {granted.toFixed(1)}일
+                    {remaining.toFixed(1)} / {granted.toFixed(1)}{t('unitDay')}
                   </p>
                 </div>
               )
@@ -189,9 +190,9 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
       <div className={CARD_STYLES.padded}>
         <div className="flex items-center gap-2 mb-3">
           <Bell className="w-4 h-4 text-[#5E81F4]" />
-          <h2 className="text-base font-semibold text-[#1A1A1A]">최근 알림</h2>
+          <h2 className="text-base font-semibold text-[#1A1A1A]">{t('recentNotifications')}</h2>
         </div>
-        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+        <EmptyState title={t('emptyTitle')} description={t('emptyDesc')} />
       </div>
     </div>
   )

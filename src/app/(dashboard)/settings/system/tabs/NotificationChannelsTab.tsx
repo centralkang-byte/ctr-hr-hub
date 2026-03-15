@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import type { NotificationChannelsSetting, NotificationChannelEntry } from '@/types/process-settings'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface Props { companyId: string | null }
 
@@ -19,7 +20,9 @@ const DEFAULTS: NotificationChannelsSetting = {
   ],
 }
 
-export function NotificationChannelsTab({ companyId }: Props) {
+export function NotificationChannelsTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const { settings, setSettings, loading, saving, isOverridden, hasChanges, save, revert } = useProcessSetting<NotificationChannelsSetting>({
     category: 'system',
     key: 'notification-channels',
@@ -43,11 +46,11 @@ export function NotificationChannelsTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">알림 채널</h3>
-          <p className="text-sm text-[#8181A5]">이메일/Teams/앱 푸시 채널 설정</p>
+          <h3 className="text-base font-semibold text-[#1C1D21]">{'알림 채널'}</h3>
+          <p className="text-sm text-[#8181A5]">{'이메일/Teams/앱 푸시 채널 설정'}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">법인 오버라이드</span>
+          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
         )}
       </div>
       <div className="space-y-3">{settings.channels.map((ch, i) => {
@@ -65,7 +68,7 @@ export function NotificationChannelsTab({ companyId }: Props) {
 
       <div className="flex justify-end gap-2 pt-4">
         <Button variant="outline" onClick={revert} disabled={!hasChanges}>
-          <RotateCcw className="mr-2 h-4 w-4" />되돌리기
+          <RotateCcw className="mr-2 h-4 w-4" />{'되돌리기'}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장

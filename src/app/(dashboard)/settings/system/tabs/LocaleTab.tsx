@@ -6,24 +6,27 @@ import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import type { LocaleSetting } from '@/types/process-settings'
 import { BUTTON_VARIANTS,  FORM_STYLES } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface Props { companyId: string | null }
 
 const DEFAULTS: LocaleSetting = {
   defaultLocale: 'ko',
   defaultTimezone: 'Asia/Seoul',
-  supportedLocales: ['ko', 'en', 'zh', 'ru', 'vi', 'es'],
+  supportedLocales: ['ko', 'en', 'zh', 'vi', 'es'],
 }
 
 const LOCALE_LABELS: Record<string, string> = { ko: '한국어', en: 'English', zh: '中文', ru: 'Русский', vi: 'Tiếng Việt', es: 'Español' }
 
-export function LocaleTab({ companyId }: Props) {
+export function LocaleTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const { settings, setSettings, loading, saving, isOverridden, hasChanges, save, revert } = useProcessSetting<LocaleSetting>({
     category: 'system',
     key: 'locale',
     companyId,
     defaults: DEFAULTS,
-    description: '법인별 기본 언어 및 타임존 설정',
+    description: t('company_kebb384_keab8b0eb_kec96b8ec_kebb08f_ked8380ec_settings'),
     merge: (raw, defs) => ({
       defaultLocale: (raw.defaultLocale as string) ?? defs.defaultLocale,
       defaultTimezone: (raw.defaultTimezone as string) ?? defs.defaultTimezone,
@@ -37,11 +40,11 @@ export function LocaleTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">언어/타임존</h3>
-          <p className="text-sm text-[#8181A5]">법인별 기본 언어 및 타임존 설정</p>
+          <h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_kec96b8ec_ked8380ec')}</h3>
+          <p className="text-sm text-[#8181A5]">{t('company_kebb384_keab8b0eb_kec96b8ec_kebb08f_ked8380ec_settings')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">법인 오버라이드</span>
+          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
         )}
       </div>
 
@@ -70,7 +73,7 @@ export function LocaleTab({ companyId }: Props) {
 
       <div className="flex justify-end gap-2 pt-4">
         <Button variant="outline" onClick={revert} disabled={!hasChanges}>
-          <RotateCcw className="mr-2 h-4 w-4" />되돌리기
+          <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장

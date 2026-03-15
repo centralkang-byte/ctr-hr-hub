@@ -4,8 +4,6 @@ import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
-import { useSubmitGuard } from '@/hooks/useSubmitGuard'
-
 import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Users, Send, CheckCircle2 } from 'lucide-react'
@@ -31,7 +29,6 @@ const SCORE_LABELS = ['매우 부족', '부족', '보통', '우수', '탁월']
 
 export default function PeerEvalFormClient() {
   const tCommon = useTranslations('common')
-  const { isSubmitting, guardedSubmit } = useSubmitGuard()
   const t = useTranslations('performance')
 
   const { nominationId } = useParams<{ nominationId: string }>()
@@ -69,11 +66,11 @@ export default function PeerEvalFormClient() {
     return (
       <div className="p-6 flex flex-col items-center justify-center min-h-[60vh] space-y-4">
         <CheckCircle2 className="w-16 h-16 text-[#5E81F4]" />
-        <h2 className="text-xl font-bold text-[#1A1A1A]">동료 평가가 제출되었습니다</h2>
-        <p className="text-sm text-[#666]">소중한 피드백 감사합니다.</p>
+        <h2 className="text-xl font-bold text-[#1A1A1A]">{t('peerReview_keab080_keca09cec')}</h2>
+        <p className="text-sm text-[#666]">{t('kr_kec868cec_ked94bceb_keab090ec')}</p>
         <button onClick={() => router.push('/performance/peer-review')}
           className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}>
-          돌아가기
+          {t('kr_keb8f8cec')}
         </button>
       </div>
     )
@@ -87,11 +84,11 @@ export default function PeerEvalFormClient() {
           <ArrowLeft className="w-5 h-5 text-[#666]" />
         </button>
         <Users className="w-6 h-6 text-[#5E81F4]" />
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">동료 평가 작성</h1>
+        <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('peerReview_kec9e91ec')}</h1>
       </div>
 
       <div className="bg-[#E0E7FF] rounded-xl border border-[#C7D2FE] p-4 text-sm text-[#4B6DE0]">
-        동료 평가는 익명으로 집계됩니다. 솔직하고 건설적인 피드백을 부탁드립니다.
+        {t('peerReview_keb8a94_kec9db5eb_keca791ea_kec8694ec_keab1b4ec_ked94bceb_kebb680ed')}
       </div>
 
       {/* Questions */}
@@ -120,15 +117,15 @@ export default function PeerEvalFormClient() {
       {/* Overall Score Display */}
       {allScored && (
         <div className="bg-[#EDF1FE] rounded-xl border border-[#5E81F4]/20 p-4 text-center">
-          <p className="text-xs text-[#666]">종합 점수</p>
+          <p className="text-xs text-[#666]">{t('kr_keca285ed_score')}</p>
           <p className="text-3xl font-bold text-[#5E81F4]">{avgScore} <span className="text-sm text-[#666]">/ 5.0</span></p>
         </div>
       )}
 
       {/* Comment */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h3 className="text-sm font-semibold text-[#1A1A1A] mb-2">종합 코멘트 <span className="text-[#EF4444]">*</span></h3>
-        <p className="text-xs text-[#666] mb-3">동료의 강점과 발전 가능성에 대한 구체적인 피드백을 남겨주세요. (최소 10자)</p>
+        <h3 className="text-sm font-semibold text-[#1A1A1A] mb-2">{t('kr_keca285ed_kecbd94eb')} <span className="text-[#EF4444]">*</span></h3>
+        <p className="text-xs text-[#666] mb-3">{t('kr_keb8f99eb_keab095ec_kebb09cec_')}</p>
         <textarea
           value={comment}
           onChange={(e) => setComment(e.target.value)}

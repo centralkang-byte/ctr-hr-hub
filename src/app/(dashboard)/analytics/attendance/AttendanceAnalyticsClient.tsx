@@ -23,6 +23,7 @@ import { ChartCard } from '@/components/analytics/ChartCard'
 import { EmptyChart } from '@/components/analytics/EmptyChart'
 import { AnalyticsKpiCard } from '@/components/analytics/AnalyticsKpiCard'
 import type { AttendanceData } from '@/lib/analytics/types'
+import { CHART_THEME } from '@/lib/styles/chart'
 
 export default function AttendanceAnalyticsClient() {
   const tCommon = useTranslations('common')
@@ -34,16 +35,18 @@ export default function AttendanceAnalyticsClient() {
 
   const [data, setData] = useState<AttendanceData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
   const fetchData = useCallback(async () => {
     setLoading(true)
+    setError(false)
     try {
       const res = await apiClient.get<AttendanceData>('/api/v1/analytics/attendance', {
         company_id: companyId,
       })
       setData(res.data)
     } catch {
-      // silently handle
+      setError(true)
     } finally {
       setLoading(false)
     }
@@ -56,6 +59,20 @@ export default function AttendanceAnalyticsClient() {
       <AnalyticsPageLayout title={t('title')}>
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-[#999]" />
+        </div>
+      </AnalyticsPageLayout>
+    )
+  }
+
+  if (error || !data) {
+    return (
+      <AnalyticsPageLayout title={t('title')}>
+        <div className="py-20">
+          <EmptyState
+            title="데이터를 불러올 수 없습니다"
+            description="인사이트 데이터를 불러오는 중 오류가 발생했습니다. 새로고침하거나 잠시 후 다시 시도해주세요."
+            action={{ label: t('retry'), onClick: () => fetchData() }}
+          />
         </div>
       </AnalyticsPageLayout>
     )

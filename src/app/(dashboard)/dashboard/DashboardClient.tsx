@@ -37,18 +37,11 @@ interface DashboardClientProps {
   defaultCompanyId: string | null
 }
 
-const TABS: { key: Tab; label: string }[] = [
-  { key: 'summary', label: '요약' },
-  { key: 'workforce', label: '인력' },
-  { key: 'recruit', label: '채용' },
-  { key: 'performance', label: '성과' },
-  { key: 'attendance', label: '근태' },
-  { key: 'payroll', label: '급여' },
-  { key: 'training', label: '교육' },
-]
+const TAB_KEYS: Tab[] = ['summary', 'workforce', 'recruit', 'performance', 'attendance', 'payroll', 'training']
 
 export function DashboardClient({ user, companies, defaultCompanyId }: DashboardClientProps) {
   const router = useRouter()
+  const t = useTranslations('home')
   const [activeTab, setActiveTab] = useState<Tab>('summary')
   const [companyId, setCompanyId] = useState<string | null>(defaultCompanyId)
   const [year, setYear] = useState(new Date().getFullYear())
@@ -75,8 +68,8 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">HR KPI 대시보드</h1>
-          <p className="text-sm text-[#666] mt-1">조직 건강도 핵심 지표</p>
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('kpiDashboardTitle')}</h1>
+          <p className="text-sm text-[#666] mt-1">{t('kpiDashboardSubtitle')}</p>
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -84,7 +77,7 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
             className="flex items-center gap-2 px-3 py-2 text-sm border border-[#D4D4D4] rounded-lg hover:bg-[#FAFAFA] text-[#555]"
           >
             <Globe className="w-4 h-4" />
-            글로벌 비교
+            {t('globalCompare')}
           </button>
           <select
             value={year}
@@ -93,7 +86,7 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
           >
             {[2025, 2026].map((y) => (
               <option key={y} value={y}>
-                {y}년
+                {y}{t('yearSuffix')}
               </option>
             ))}
           </select>
@@ -105,7 +98,7 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
               }
               className="px-3 py-2 text-sm border border-[#D4D4D4] rounded-lg"
             >
-              {isSuperAdmin && <option value="all">전체 법인</option>}
+              {isSuperAdmin && <option value="all">{t('allCompanies')}</option>}
               {companies.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.code} — {c.name}
@@ -123,15 +116,15 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
         ) : (
           <>
             <KpiSummaryCard
-              label="총 인원"
+              label={t('kpiHeadcount')}
               value={summary?.headcount?.count ?? null}
-              unit="명"
+              unit={t('unitPerson')}
               change={summary?.headcount?.change ?? null}
-              changeLabel="전월"
+              changeLabel={t('prevMonth')}
               onClick={() => router.push('/employees')}
             />
             <KpiSummaryCard
-              label="이직률"
+              label={t('kpiTurnoverRate')}
               value={summary?.turnoverRate?.rate ?? null}
               unit="%"
               status={
@@ -144,23 +137,23 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
               onClick={() => router.push('/analytics/turnover')}
             />
             <KpiSummaryCard
-              label="채용 진행"
+              label={t('kpiRecruitActive')}
               value={summary?.openPositions?.count ?? null}
-              unit="건"
+              unit={t('unitCase')}
               changeLabel={
                 summary?.openPositions?.avgDays
-                  ? `평균 ${summary.openPositions.avgDays}일`
+                  ? t('avgDays', { days: summary.openPositions.avgDays })
                   : undefined
               }
               onClick={() => router.push('/recruitment')}
             />
             <KpiSummaryCard
-              label="이직 위험"
+              label={t('kpiAttritionRisk')}
               value={summary?.attritionRisk?.count ?? null}
-              unit="명"
+              unit={t('unitPerson')}
               changeLabel={
                 summary?.attritionRisk
-                  ? `위험 ${summary.attritionRisk.high} / 심각 ${summary.attritionRisk.critical}`
+                  ? t('attritionBreakdown', { high: summary.attritionRisk.high, critical: summary.attritionRisk.critical })
                   : undefined
               }
               status={
@@ -173,18 +166,18 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
               onClick={() => router.push('/analytics/turnover')}
             />
             <KpiSummaryCard
-              label="연차 사용률"
+              label={t('kpiLeaveUsage')}
               value={summary?.leaveUsage?.rate ?? null}
               unit="%"
               onClick={() => router.push('/leave')}
             />
             <KpiSummaryCard
-              label="교육 이수율"
+              label={t('kpiTrainingCompletion')}
               value={summary?.trainingCompletion?.rate ?? null}
               unit="%"
               changeLabel={
                 summary?.trainingCompletion
-                  ? `${summary.trainingCompletion.completed}/${summary.trainingCompletion.total}명`
+                  ? t('trainingBreakdown', { completed: summary.trainingCompletion.completed, total: summary.trainingCompletion.total })
                   : undefined
               }
               status={
@@ -198,17 +191,17 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
 
       {/* 탭 네비게이션 */}
       <div className="flex border-b border-[#E8E8E8]">
-        {TABS.map((tab) => (
+        {TAB_KEYS.map((key) => (
           <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
+            key={key}
+            onClick={() => setActiveTab(key)}
             className={`px-4 py-2.5 text-sm font-medium transition-colors ${
-              activeTab === tab.key
+              activeTab === key
                 ? 'border-b-2 border-[#5E81F4] text-[#5E81F4]'
                 : 'text-[#666] hover:text-[#333]'
             }`}
           >
-            {tab.label}
+            {t(`tab.${key}`)}
           </button>
         ))}
       </div>
@@ -217,7 +210,7 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
       {activeTab === 'workforce' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <KpiWidget
-            title="직급별 인원 분포"
+            title={t('widget.gradeDistribution')}
             widgetId="workforce-grade"
             {...widgetProps}
             chartType="bar-horizontal"
@@ -226,7 +219,7 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
             drilldownPath="/employees"
           />
           <KpiWidget
-            title="법인별 인원 분포"
+            title={t('widget.companyDistribution')}
             widgetId="workforce-company"
             {...widgetProps}
             chartType="donut"
@@ -235,7 +228,7 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
             drilldownPath="/org"
           />
           <KpiWidget
-            title="입퇴사 추이 (12개월)"
+            title={t('widget.hireTrend')}
             widgetId="workforce-trend"
             {...widgetProps}
             chartType="line"
@@ -245,7 +238,7 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
             height={220}
           />
           <KpiWidget
-            title="근속 분포"
+            title={t('widget.tenureDistribution')}
             widgetId="workforce-tenure"
             {...widgetProps}
             chartType="bar"
@@ -259,7 +252,7 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
       {activeTab === 'recruit' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <KpiWidget
-            title="채용 파이프라인"
+            title={t('widget.recruitPipeline')}
             widgetId="recruit-pipeline"
             {...widgetProps}
             chartType="bar"
@@ -268,7 +261,7 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
             drilldownPath="/recruitment"
           />
           <KpiWidget
-            title="평균 충원 소요일 (법인별)"
+            title={t('widget.avgTimeToFill')}
             widgetId="recruit-ttr"
             {...widgetProps}
             chartType="bar"
@@ -277,7 +270,7 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
             drilldownPath="/recruitment"
           />
           <KpiWidget
-            title="Talent Pool 현황"
+            title={t('widget.talentPool')}
             widgetId="recruit-talent-pool"
             {...widgetProps}
             chartType="number"
@@ -289,7 +282,7 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
       {activeTab === 'performance' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <KpiWidget
-            title="평가 등급 분포"
+            title={t('widget.performanceGrade')}
             widgetId="perf-grade"
             {...widgetProps}
             chartType="bar"
@@ -298,7 +291,7 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
             drilldownPath="/performance"
           />
           <KpiWidget
-            title="스킬 갭 Top 5"
+            title={t('widget.skillGapTop5')}
             widgetId="perf-skill-gap"
             {...widgetProps}
             chartType="bar-horizontal"
@@ -312,7 +305,7 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
       {activeTab === 'attendance' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <KpiWidget
-            title="52시간 경고 현황"
+            title={t('widget.overtime52h')}
             widgetId="attend-52h"
             {...widgetProps}
             chartType="bar"
@@ -321,7 +314,7 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
             drilldownPath="/attendance/admin"
           />
           <KpiWidget
-            title="연차 사용 추이 (12개월)"
+            title={t('widget.leaveTrend')}
             widgetId="attend-leave-trend"
             {...widgetProps}
             chartType="line"
@@ -331,7 +324,7 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
             height={220}
           />
           <KpiWidget
-            title="번아웃 위험 분포"
+            title={t('widget.burnoutRisk')}
             widgetId="attend-burnout"
             {...widgetProps}
             chartType="bar"
@@ -345,7 +338,7 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
       {activeTab === 'payroll' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <KpiWidget
-            title="법인별 인건비 (백만 KRW)"
+            title={t('widget.payrollCost')}
             widgetId="payroll-cost"
             {...widgetProps}
             chartType="bar"
@@ -359,7 +352,7 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
       {activeTab === 'training' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <KpiWidget
-            title="법정교육 이수현황"
+            title={t('widget.mandatoryTraining')}
             widgetId="training-mandatory"
             {...widgetProps}
             chartType="bar"
@@ -368,7 +361,7 @@ export function DashboardClient({ user, companies, defaultCompanyId }: Dashboard
             drilldownPath="/training"
           />
           <KpiWidget
-            title="복리후생 활용률"
+            title={t('widget.benefitsUsage')}
             widgetId="training-benefit"
             {...widgetProps}
             chartType="bar"

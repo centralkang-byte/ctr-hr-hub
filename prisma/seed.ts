@@ -1806,11 +1806,11 @@ async function main() {
     data: { positionId: posMap['CTR-KR-DEV-001'] },
   })
 
-  // employee@ctr.co.kr → 영업사원A (CTR-KR-SALES-006, G6)
+  // employee@ctr.co.kr → 개발파트장A (CTR-KR-DEV-002, G4 - reports to CTR-KR-DEV-001)
   const empEmpId = deterministicUUID('employee', 'employee@ctr.co.kr')
   await prisma.employeeAssignment.updateMany({
     where: { employeeId: empEmpId, isPrimary: true, endDate: null },
-    data: { positionId: posMap['CTR-KR-SALES-006'] },
+    data: { positionId: posMap['CTR-KR-DEV-002'] },
   })
 
   console.log('  ✅ 3 CTR-KR employee position assignments')

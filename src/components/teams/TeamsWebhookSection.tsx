@@ -34,8 +34,9 @@ export function TeamsWebhookSection() {
   const [testingId, setTestingId] = useState<string | null>(null)
   const [testResult, setTestResult] = useState<Record<string, boolean>>({})
 
-  const loadWebhooks = useCallback(async () => {
   const { confirm, dialogProps } = useConfirmDialog()
+
+  const loadWebhooks = useCallback(async () => {
     try {
       const res = await fetch('/api/v1/settings/teams-webhooks')
       const data = await res.json()
@@ -117,6 +118,7 @@ export function TeamsWebhookSection() {
   }
 
   return (
+    <>
     <div className="space-y-4">
       {/* Section header */}
       <div className="flex items-center justify-between">
@@ -171,8 +173,7 @@ export function TeamsWebhookSection() {
                   <>
                     <TestTube className="w-3 h-3" />
                     테스트
-                    <ConfirmDialog {...dialogProps} />
-      </>
+                  </>
                 )}
               </button>
               <button
@@ -211,7 +212,7 @@ export function TeamsWebhookSection() {
         <div className="bg-white rounded-xl border border-[#5E81F4]/30 p-4 space-y-3">
           <input
             type="text"
-            placeholder={tCommon('placeholderChannelName')}
+            placeholder={'채널명 (예: HR-알림)'}
             value={newChannel}
             onChange={(e) => setNewChannel(e.target.value)}
             className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 focus:outline-none"
@@ -264,5 +265,7 @@ export function TeamsWebhookSection() {
         </div>
       )}
     </div>
+      <ConfirmDialog {...dialogProps} />
+    </>
   )
 }

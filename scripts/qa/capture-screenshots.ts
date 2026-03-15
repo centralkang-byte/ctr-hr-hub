@@ -303,7 +303,7 @@ async function captureAll() {
     for (const { path: urlPath } of roleUrls) {
       const page = await context.newPage()
       const consoleErrors: string[] = []
-      page.on('console', msg => {
+      page.on('console', (msg: any) => {
         if (msg.type() === 'error') consoleErrors.push(msg.text().slice(0, 200))
       })
 

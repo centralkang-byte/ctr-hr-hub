@@ -19,10 +19,10 @@ const SCORE_LABELS: Record<string, string> = {
 }
 const SUB_ICONS = [
   { key: 'overtime', label: '초과근무', icon: Clock },
-  { key: 'leaveUsage', label: '연차사용', icon: CalendarDays },
-  { key: 'performanceDist', label: '성과분포', icon: Target },
-  { key: 'turnoverRisk', label: '이직위험', icon: AlertTriangle },
-  { key: 'burnoutRisk', label: '번아웃', icon: Flame },
+  { key: 'leaveUsage', label: '연차 사용', icon: CalendarDays },
+  { key: 'performanceDist', label: '성과 분포', icon: Target },
+  { key: 'turnoverRisk', label: '이직 위험', icon: AlertTriangle },
+  { key: 'burnoutRisk', label: '번아웃 위험', icon: Flame },
 ]
 const STATUS_COLORS = { GREEN: '#10B981', YELLOW: '#F59E0B', RED: '#EF4444' }
 const STATUS_LABELS = { GREEN: '🟢', YELLOW: '🟡', RED: '🔴' }
@@ -34,19 +34,32 @@ export default function TeamHealthClient() {
 
   const [data, setData] = useState<TeamHealthResponse | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
   const fetchData = useCallback(async () => {
     setLoading(true)
+    setError(false)
     try {
       const res = await fetch('/api/v1/analytics/team-health/overview')
       if (res.ok) { const j = await res.json(); setData(j.data) }
-    } catch { /* */ } finally { setLoading(false) }
+      else { setError(true) }
+    } catch { setError(true) } finally { setLoading(false) }
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])
 
-  if (loading || !data) {
+  if (loading) {
     return <div className="space-y-6 animate-pulse">{[...Array(3)].map((_, i) => <div key={i} className="h-48 bg-gray-100 rounded-xl" />)}</div>
+  }
+
+  if (error || !data) {
+    return (
+      <EmptyState
+        title="데이터를 불러올 수 없습니다"
+        description="팀 건강 데이터를 불러오는 중 오류가 발생했습니다. 새로고침하거나 잠시 후 다시 시도해주세요."
+        action={{ label: t('retry'), onClick: () => fetchData() }}
+      />
+    )
   }
 
   if (data.isEmpty) {
@@ -57,10 +70,9 @@ export default function TeamHealthClient() {
             <Heart className="h-8 w-8 text-gray-400" />
           </div>
         </div>
-        <h3 className="text-lg font-semibold text-gray-700 mb-2">👥 조회할 팀원 데이터가 없습니다 (0명)</h3>
+        <h3 className="text-lg font-semibold text-gray-700 mb-2">{t('kr_keca1b0ed_ked8c80ec_keb8db0ec_')}</h3>
         <p className="text-sm text-gray-500 max-w-md mx-auto">
-          현재 직속 팀원이 배정되지 않았거나, 조직도 데이터가 아직 연결되지 않았습니다.
-          인사팀에 문의하시거나 조직도 업데이트를 확인해주세요.
+          {t('kr_ked9884ec_keca781ec_ked8c80ec_')}
         </p>
       </div>
     )
@@ -113,12 +125,12 @@ export default function TeamHealthClient() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100">
-                <th className="text-left py-2 px-3 font-medium text-gray-500">이름</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">초과근무</th>
+                <th className="text-left py-2 px-3 font-medium text-gray-500">{t('name')}</th>
+                <th className="text-right py-2 px-3 font-medium text-gray-500">{t('kr_kecb488ea')}</th>
                 <th className="text-right py-2 px-3 font-medium text-gray-500">연차사용률</th>
                 <th className="text-center py-2 px-3 font-medium text-gray-500">성과등급</th>
-                <th className="text-center py-2 px-3 font-medium text-gray-500">이직위험</th>
-                <th className="text-center py-2 px-3 font-medium text-gray-500">상태</th>
+                <th className="text-center py-2 px-3 font-medium text-gray-500">{t('kr_kec9db4ec')}</th>
+                <th className="text-center py-2 px-3 font-medium text-gray-500">{t('status')}</th>
               </tr>
             </thead>
             <tbody>
@@ -161,7 +173,7 @@ export default function TeamHealthClient() {
               </div>
               {rec.actionLink && (
                 <a href={rec.actionLink} className="text-xs text-[#5E81F4] hover:underline whitespace-nowrap">
-                  프로필 보기 →
+                  {t('kr_ked9484eb_view')}
                 </a>
               )}
             </div>

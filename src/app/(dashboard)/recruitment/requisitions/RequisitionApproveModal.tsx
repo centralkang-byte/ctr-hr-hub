@@ -52,7 +52,7 @@ export default function RequisitionApproveModal({ requisition, onClose, onSucces
       <div className={MODAL_STYLES.content.md}>
         {/* 헤더 */}
         <div className="flex items-center justify-between p-6 border-b border-[#E8E8E8]">
-          <h2 className="text-lg font-semibold text-[#1A1A1A]">채용 요청 결재</h2>
+          <h2 className="text-lg font-semibold text-[#1A1A1A]">{'채용 요청 결재'}</h2>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[#F5F5F5]">
             <X size={18} className="text-[#666]" />
           </button>
@@ -77,13 +77,13 @@ export default function RequisitionApproveModal({ requisition, onClose, onSucces
           {/* 코멘트 */}
           <div>
             <label className="block text-sm font-medium text-[#333] mb-1.5">
-              코멘트 <span className="text-[#999] font-normal">(반려 시 필수)</span>
+              {'코멘트'} <span className="text-[#999] font-normal">{'(반려 시 필수)'}</span>
             </label>
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               rows={3}
-              placeholder={tCommon('placeholderApprovalReasonAlt')}
+              placeholder={'승인 또는 반려 사유를 입력하세요...'}
               className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] resize-none placeholder:text-[#999]"
             />
           </div>
@@ -103,7 +103,7 @@ export default function RequisitionApproveModal({ requisition, onClose, onSucces
             disabled={loading}
             className="px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#555] hover:bg-[#FAFAFA] disabled:opacity-50"
           >
-            취소
+            {'취소'}
           </button>
           <button
             onClick={() => handleDecision('reject')}
@@ -111,7 +111,7 @@ export default function RequisitionApproveModal({ requisition, onClose, onSucces
             className="flex items-center gap-1.5 px-4 py-2 border border-[#FCA5A5] text-[#DC2626] rounded-lg text-sm hover:bg-[#FEE2E2] disabled:opacity-50"
           >
             <XCircle size={15} />
-            반려
+            {'반려'}
           </button>
           <button
             onClick={() => handleDecision('approve')}
@@ -119,7 +119,7 @@ export default function RequisitionApproveModal({ requisition, onClose, onSucces
             className="flex items-center gap-1.5 px-4 py-2 bg-[#059669] hover:bg-[#047857] text-white rounded-lg text-sm font-medium disabled:opacity-50"
           >
             <CheckCircle2 size={15} />
-            승인
+            {'승인'}
           </button>
         </div>
       </div>

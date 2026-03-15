@@ -183,7 +183,7 @@ export default function OneOnOneDetailClient() {
       {/* Previous Action Items */}
       {prevActions.length > 0 && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-base font-semibold text-[#1A1A1A] mb-3">이전 액션 아이템 추적</h2>
+          <h2 className="text-base font-semibold text-[#1A1A1A] mb-3">{t('prev_kec95a1ec_kec9584ec_kecb694ec')}</h2>
           <div className="space-y-2">
             {prevActions.map((a, i) => (
               <div key={i} className="flex items-center gap-3">
@@ -208,7 +208,7 @@ export default function OneOnOneDetailClient() {
                     ? 'bg-[#D1FAE5] text-[#047857]'
                     : 'bg-[#FEF3C7] text-[#B45309]'
                 }`}>
-                  {a.completed ? '완료' : '진행중'}
+                  {a.completed ? '완료' : t('inProgress')}
                 </span>
               </div>
             ))}
@@ -218,7 +218,7 @@ export default function OneOnOneDetailClient() {
 
       {/* Notes */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-base font-semibold text-[#1A1A1A] mb-3">논의 내용 요약</h2>
+        <h2 className="text-base font-semibold text-[#1A1A1A] mb-3">{t('kr_keb85bcec_keb82b4ec_summary')}</h2>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
@@ -230,13 +230,13 @@ export default function OneOnOneDetailClient() {
 
       {/* 미팅 분위기 */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-base font-semibold text-[#1A1A1A] mb-3">미팅 분위기</h2>
+        <h2 className="text-base font-semibold text-[#1A1A1A] mb-3">{t('kr_kebafb8ed_kebb684ec')}</h2>
         <div className="flex gap-2">
           {[
-            { value: 'positive', label: '긍정적', emoji: '😊' },
-            { value: 'neutral', label: '보통', emoji: '😐' },
-            { value: 'negative', label: '부정적', emoji: '😞' },
-            { value: 'concerned', label: '우려됨', emoji: '😟' },
+            { value: 'positive', label: t('kr_keab88dec'), emoji: '😊' },
+            { value: 'neutral', label: t('average'), emoji: '😐' },
+            { value: 'negative', label: t('kr_kebb680ec'), emoji: '😞' },
+            { value: 'concerned', label: t('kr_kec9ab0eb'), emoji: '😟' },
           ].map((opt) => (
             <button
               key={opt.value}
@@ -258,12 +258,12 @@ export default function OneOnOneDetailClient() {
       {/* New Action Items */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-base font-semibold text-[#1A1A1A]">새 액션 아이템</h2>
+          <h2 className="text-base font-semibold text-[#1A1A1A]">{t('kr_kec8388_kec95a1ec_kec9584ec')}</h2>
           <button
             onClick={addActionItem}
             className="flex items-center gap-1 text-sm text-[#5E81F4] hover:text-[#4B6DE0] font-medium"
           >
-            <Plus className="w-4 h-4" /> 항목 추가
+            <Plus className="w-4 h-4" /> {t('kr_ked95adeb_add')}
           </button>
         </div>
         <div className="space-y-3">
@@ -281,8 +281,8 @@ export default function OneOnOneDetailClient() {
                 onChange={(e) => updateActionItem(i, 'assignee', e.target.value)}
                 className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
               >
-                <option value="EMPLOYEE">팀원</option>
-                <option value="MANAGER">매니저</option>
+                <option value="EMPLOYEE">{t('kr_ked8c80ec')}</option>
+                <option value="MANAGER">{t('kr_keba7a4eb')}</option>
               </select>
               <input
                 type="date"
@@ -309,7 +309,7 @@ export default function OneOnOneDetailClient() {
         <div className="bg-[#E0E7FF] rounded-xl border border-[#C7D2FE] p-5">
           <div className="flex items-center gap-2 mb-2">
             <Sparkles className="w-4 h-4 text-[#4B6DE0]" />
-            <span className="text-sm font-medium text-[#4B6DE0]">AI 코칭 팁</span>
+            <span className="text-sm font-medium text-[#4B6DE0]">{t('kr_ai_kecbd94ec_ked8c81')}</span>
           </div>
           <p className="text-sm text-[#333]">{meeting.aiSummary}</p>
         </div>
@@ -323,7 +323,7 @@ export default function OneOnOneDetailClient() {
           className="flex items-center gap-2 px-4 py-2 border border-[#C7D2FE] text-[#4B6DE0] rounded-lg text-sm font-medium hover:bg-[#E0E7FF] disabled:opacity-50"
         >
           <Sparkles className="w-4 h-4" />
-          {aiLoading ? 'AI 생성 중...' : 'AI 요약 생성'}
+          {aiLoading ? t('aiGenerating') : 'AI 요약 생성'}
         </button>
 
         <div className="flex items-center gap-3">
@@ -331,21 +331,21 @@ export default function OneOnOneDetailClient() {
             onClick={() => router.push('/performance/one-on-one')}
             className="flex items-center gap-2 px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#333] hover:bg-[#FAFAFA]"
           >
-            <Calendar className="w-4 h-4" /> 다음 1:1 예약
+            <Calendar className="w-4 h-4" /> {t('next_1_1_kec9888ec')}
           </button>
           <button
             onClick={() => handleSave(false)}
             disabled={saving}
             className="flex items-center gap-2 px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#333] hover:bg-[#FAFAFA] disabled:opacity-50"
           >
-            <Save className="w-4 h-4" /> 임시저장
+            <Save className="w-4 h-4" /> {t('kr_kec9e84ec')}
           </button>
           <button
             onClick={() => handleSave(true)}
             disabled={saving}
             className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}
           >
-            <CheckCircle2 className="w-4 h-4" /> 완료
+            <CheckCircle2 className="w-4 h-4" /> {t('complete')}
           </button>
         </div>
       </div>

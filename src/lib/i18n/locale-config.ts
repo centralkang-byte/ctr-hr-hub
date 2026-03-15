@@ -14,7 +14,7 @@ export function getCompanyLocales(countryCode: string): CompanyLocales {
     case 'KR': return { main: 'ko', sub: 'en' }
     case 'US': return { main: 'en', sub: null }
     case 'CN': return { main: 'en', sub: 'zh' }
-    case 'RU': return { main: 'en', sub: 'ru' }
+    case 'RU': return { main: 'en', sub: null }   // en-only; ru removed Q-5
     case 'VN': return { main: 'en', sub: 'vi' }
     case 'MX': return { main: 'en', sub: 'es' }
     default:   return { main: 'en', sub: null }

@@ -170,7 +170,7 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
                 rows={3}
-                placeholder={tCommon('placeholderRejectReasonDetail')}
+                placeholder={'반려 사유를 상세히 입력하세요.'}
                 className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999] resize-none"
               />
             </div>

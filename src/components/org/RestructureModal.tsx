@@ -155,7 +155,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
             <input
               value={change.newDeptName ?? ''}
               onChange={(e) => update({ newDeptName: e.target.value })}
-              placeholder={tCommon('placeholderNewDeptName')}
+              placeholder={'신설 부서명'}
               className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
             />
           </div>
@@ -260,7 +260,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
             <input
               value={change.newName ?? ''}
               onChange={(e) => update({ newName: e.target.value })}
-              placeholder={tCommon('placeholderChangeName')}
+              placeholder={'변경될 이름'}
               className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
             />
           </div>
@@ -523,7 +523,7 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
                     <input
                       value={plan.description}
                       onChange={(e) => setPlan((p) => ({ ...p, description: e.target.value }))}
-                      placeholder={tCommon('placeholderNewSystemName')}
+                      placeholder={'개편 배경 및 목적'}
                       className="w-full px-3 py-2 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
                     />
                   </div>

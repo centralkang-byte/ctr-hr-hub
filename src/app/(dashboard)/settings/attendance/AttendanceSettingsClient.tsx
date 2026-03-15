@@ -240,7 +240,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
   const tabs: { id: TabId; label: string; icon: React.ReactNode }[] = [
     { id: 'work-type', label: '근무유형 설정', icon: <Clock className="h-4 w-4" /> },
     { id: '52h', label: '52시간 관리', icon: <AlertTriangle className="h-4 w-4" /> },
-    { id: 'shift', label: '교대근무', icon: <Calendar className="h-4 w-4" /> },
+    { id: 'shift', label: '교대 근무', icon: <Calendar className="h-4 w-4" /> },
   ]
 
   // ─── Tab: 근무유형 ────────────────────────────────────────
@@ -299,7 +299,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
           {settings.flexWork.flexEnabled && (
             <div className="ml-0 grid grid-cols-1 gap-4 sm:grid-cols-3 rounded-lg bg-[#FAFAFA] border border-[#F0F0F0] p-4">
               <div>
-                <Label className="text-sm font-medium text-[#333]">코어 타임 시작</Label>
+                <Label className="text-sm font-medium text-[#333]">{'코어 타임 시작'}</Label>
                 <Input
                   type="time"
                   value={settings.flexWork.coreTimeStart}
@@ -308,7 +308,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
                 />
               </div>
               <div>
-                <Label className="text-sm font-medium text-[#333]">코어 타임 종료</Label>
+                <Label className="text-sm font-medium text-[#333]">{'코어 타임 종료'}</Label>
                 <Input
                   type="time"
                   value={settings.flexWork.coreTimeEnd}
@@ -333,7 +333,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
       <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
         <SectionHeader title="타임존" description="근태 기록 기준 타임존입니다." />
         <div className="max-w-xs">
-          <Label className="text-sm font-medium text-[#333]">타임존</Label>
+          <Label className="text-sm font-medium text-[#333]">{'타입'}</Label>
           <select
             value={settings.timezone}
             onChange={(e) => patchSettings({ timezone: e.target.value })}
@@ -367,33 +367,33 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
           <div className="flex items-center gap-0">
             <div className="flex-1 text-center">
               <div className="text-2xl font-bold text-[#1A1A1A]">0</div>
-              <div className="text-xs text-[#999]">시작</div>
+              <div className="text-xs text-[#999]">{'시작일'}</div>
             </div>
             <div className="flex-1 h-2 rounded-l-full bg-[#D1FAE5]" />
             <div className="flex-1 text-center">
               <div className="text-2xl font-bold text-[#B45309]">{settings.alertThresholds.caution}</div>
-              <div className="text-xs text-[#B45309]">주의</div>
+              <div className="text-xs text-[#B45309]">{'주의:'}</div>
             </div>
             <div className="flex-1 h-2 bg-[#FEF3C7]" />
             <div className="flex-1 text-center">
               <div className="text-2xl font-bold text-[#C2410C]">{settings.alertThresholds.warning}</div>
-              <div className="text-xs text-[#C2410C]">경고</div>
+              <div className="text-xs text-[#C2410C]">{'경고'}</div>
             </div>
             <div className="flex-1 h-2 bg-[#FED7AA]" />
             <div className="flex-1 text-center">
               <div className="text-2xl font-bold text-[#B91C1C]">{settings.alertThresholds.blocked}</div>
-              <div className="text-xs text-[#B91C1C]">차단</div>
+              <div className="text-xs text-[#B91C1C]">{'차단'}</div>
             </div>
             <div className="flex-1 h-2 rounded-r-full bg-[#FEE2E2]" />
           </div>
-          <div className="mt-1 text-center text-xs text-[#999]">단위: 시간/주</div>
+          <div className="mt-1 text-center text-xs text-[#999]">{'단위: 시간/주'}</div>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="rounded-lg border border-[#FCD34D] bg-[#FFFBEB] p-4">
             <div className="flex items-center gap-1.5 mb-3">
               <div className="h-3 w-3 rounded-full bg-[#F59E0B]" />
-              <span className="text-sm font-semibold text-[#B45309]">주의 (Caution)</span>
+              <span className="text-sm font-semibold text-[#B45309]">{'주의 (Caution)'}</span>
             </div>
             <NumberInput
               label="임계값"
@@ -408,7 +408,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
           <div className="rounded-lg border border-[#FED7AA] bg-[#FFF7ED] p-4">
             <div className="flex items-center gap-1.5 mb-3">
               <div className="h-3 w-3 rounded-full bg-[#F97316]" />
-              <span className="text-sm font-semibold text-[#C2410C]">경고 (Warning)</span>
+              <span className="text-sm font-semibold text-[#C2410C]">{'경고 (Warning)'}</span>
             </div>
             <NumberInput
               label="임계값"
@@ -423,7 +423,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
           <div className="rounded-lg border border-[#FECACA] bg-[#FEF2F2] p-4">
             <div className="flex items-center gap-1.5 mb-3">
               <div className="h-3 w-3 rounded-full bg-[#EF4444]" />
-              <span className="text-sm font-semibold text-[#B91C1C]">차단 (Blocked)</span>
+              <span className="text-sm font-semibold text-[#B91C1C]">{'차단 (Blocked)'}</span>
             </div>
             <NumberInput
               label="임계값"
@@ -465,8 +465,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
             <div className="flex items-start gap-2 rounded-lg bg-[#FFF7ED] border border-[#FED7AA] px-3 py-2">
               <Info className="h-4 w-4 text-[#F97316] shrink-0 mt-0.5" />
               <p className="text-xs text-[#C2410C]">
-                차단이 활성화되면 클락인 API에서 52시간 초과 여부를 확인합니다.
-                HR 관리자만 차단을 해제할 수 있습니다.
+                {'차단이 활성화되면 클락인 API에서 52시간 초과 여부를 확인합니다. HR 관리자만 차단을 해제할 수 있습니다.'}
               </p>
             </div>
           )}
@@ -503,8 +502,8 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
               className="flex items-center justify-between rounded-lg border border-[#E8E8E8] bg-[#FAFAFA] px-4 py-3 hover:bg-[#F0F0F0] transition-colors"
             >
               <div>
-                <p className="text-sm font-medium text-[#1A1A1A]">교대 패턴 관리</p>
-                <p className="text-xs text-[#666]">2교대/3교대 패턴 정의 및 슬롯 설정</p>
+                <p className="text-sm font-medium text-[#1A1A1A]">{'교대 패턴 관리'}</p>
+                <p className="text-xs text-[#666]">{'2교대/3교대 패턴 정의 및 슬롯 설정'}</p>
               </div>
               <ChevronRight className="h-4 w-4 text-[#999]" />
             </Link>
@@ -513,8 +512,8 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
               className="flex items-center justify-between rounded-lg border border-[#E8E8E8] bg-[#FAFAFA] px-4 py-3 hover:bg-[#F0F0F0] transition-colors"
             >
               <div>
-                <p className="text-sm font-medium text-[#1A1A1A]">교대 로스터</p>
-                <p className="text-xs text-[#666]">월별 교대 일정 배정 및 조 편성</p>
+                <p className="text-sm font-medium text-[#1A1A1A]">{'교대 로스터'}</p>
+                <p className="text-xs text-[#666]">{'월별 교대 일정 배정 및 조 편성'}</p>
               </div>
               <ChevronRight className="h-4 w-4 text-[#999]" />
             </Link>
@@ -526,10 +525,9 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
       <div className="rounded-xl border border-[#E0E7FF] bg-[#EDF1FE] p-4 flex items-start gap-3">
         <Info className="h-5 w-5 text-[#4B6DE0] shrink-0 mt-0.5" />
         <div>
-          <p className="text-sm font-medium text-[#4B6DE0]">교대근무 야간 수당 안내</p>
+          <p className="text-sm font-medium text-[#4B6DE0]">{'교대근무 야간 수당 안내'}</p>
           <p className="text-xs text-[#8B5CF6] mt-0.5">
-            야간 교대(22:00~06:00) 근무는 야간 수당이 자동 계산됩니다.
-            급여 설정에서 수당 비율을 조정하세요.
+            {'야간 교대(22:00~06:00) 근무는 야간 수당이 자동 계산됩니다. 급여 설정에서 수당 비율을 조정하세요.'}
           </p>
         </div>
       </div>
@@ -594,12 +592,12 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
             <div className="flex items-center gap-2">
               {settings.isCustom && (
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EDF1FE] text-[#4B6DE0] border border-[#EDF1FE]">
-                  법인 커스텀 설정
+                  {'법인 커스텀 설정'}
                 </span>
               )}
               {!settings.isCustom && (
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#FAFAFA] text-[#555] border border-[#E8E8E8]">
-                  글로벌 기본값
+                  {'글로벌 기본값'}
                 </span>
               )}
             </div>
@@ -611,7 +609,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
                 className="border-[#D4D4D4] text-[#333] hover:bg-[#FAFAFA]"
               >
                 <RotateCcw className="h-4 w-4 mr-1.5" />
-                초기화
+                {'초기화'}
               </Button>
               <Button
                 size="sm"

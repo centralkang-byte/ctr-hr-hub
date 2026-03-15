@@ -10,6 +10,7 @@ import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Users, Sparkles } from 'lucide-react'
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts'
 import { apiClient } from '@/lib/api'
+import { CHART_THEME } from '@/lib/styles'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -108,21 +109,21 @@ export default function PeerReviewResultsClient() {
           </button>
           <Users className="w-6 h-6 text-[#5E81F4]" />
           <div>
-            <h1 className="text-2xl font-bold text-[#1A1A1A]">동료 평가 결과</h1>
+            <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('peerReview_keab2b0ea')}</h1>
             <p className="text-sm text-[#666]">{results.summary.reviewerCount}명의 동료 평가 종합</p>
           </div>
         </div>
         <button onClick={handleAiSummary} disabled={aiLoading}
           className="flex items-center gap-2 px-4 py-2 border border-[#C7D2FE] text-[#4B6DE0] rounded-lg text-sm font-medium hover:bg-[#E0E7FF] disabled:opacity-50">
           <Sparkles className="w-4 h-4" />
-          {aiLoading ? 'AI 분석 중...' : 'AI 요약'}
+          {aiLoading ? t('aiAnalyzing') : 'AI 요약'}
         </button>
       </div>
 
       {/* KPI + Radar */}
       <div className="grid grid-cols-2 gap-6">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <p className="text-xs text-[#666] mb-1">종합 점수</p>
+          <p className="text-xs text-[#666] mb-1">{t('kr_keca285ed_score')}</p>
           <p className="text-4xl font-bold text-[#5E81F4]">{results.summary.averageScore} <span className="text-lg text-[#666]">/ 5.0</span></p>
           <div className="mt-4 space-y-2">
             {Object.entries(results.summary.competencyAvg).map(([key, val]) => (
@@ -141,7 +142,7 @@ export default function PeerReviewResultsClient() {
 
         {radarData.length > 0 && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-base font-semibold text-[#1A1A1A] mb-2">역량 레이더</h3>
+            <h3 className="text-base font-semibold text-[#1A1A1A] mb-2">{t('kr_kec97adeb_keba088ec')}</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart data={radarData}>
@@ -161,25 +162,25 @@ export default function PeerReviewResultsClient() {
         <div className="bg-[#E0E7FF] rounded-xl border border-[#C7D2FE] p-5 space-y-3">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-[#4B6DE0]" />
-            <span className="text-sm font-semibold text-[#4B6DE0]">AI 종합 분석</span>
+            <span className="text-sm font-semibold text-[#4B6DE0]">{t('kr_ai_keca285ed_analytics')}</span>
           </div>
           <p className="text-sm text-[#333]">{aiSummary.summary}</p>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <h4 className="text-xs font-medium text-[#059669] mb-2">강점</h4>
+              <h4 className="text-xs font-medium text-[#059669] mb-2">{t('kr_keab095ec')}</h4>
               <ul className="space-y-1">{aiSummary.strengths.map((s, i) => (
                 <li key={i} className="text-xs text-[#333]">• {s}</li>
               ))}</ul>
             </div>
             <div>
-              <h4 className="text-xs font-medium text-[#B45309] mb-2">개발 영역</h4>
+              <h4 className="text-xs font-medium text-[#B45309] mb-2">{t('kr_keab09ceb_kec9881ec')}</h4>
               <ul className="space-y-1">{aiSummary.development_areas.map((d, i) => (
                 <li key={i} className="text-xs text-[#333]">• {d}</li>
               ))}</ul>
             </div>
           </div>
           <div className="border-t border-[#C7D2FE] pt-2">
-            <h4 className="text-xs font-medium text-[#4B6DE0] mb-1">코칭 제안</h4>
+            <h4 className="text-xs font-medium text-[#4B6DE0] mb-1">{t('kr_kecbd94ec_keca09cec')}</h4>
             <p className="text-xs text-[#333]">{aiSummary.coaching_suggestion}</p>
           </div>
         </div>
@@ -187,7 +188,7 @@ export default function PeerReviewResultsClient() {
 
       {/* Individual Comments */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h3 className="text-base font-semibold text-[#1A1A1A] mb-3">개별 코멘트</h3>
+        <h3 className="text-base font-semibold text-[#1A1A1A] mb-3">{t('kr_keab09ceb_kecbd94eb')}</h3>
         <div className="space-y-3">
           {results.evaluations.filter((e) => e.comment).map((e, i) => (
             <div key={e.id} className="bg-[#FAFAFA] rounded-lg px-4 py-3">

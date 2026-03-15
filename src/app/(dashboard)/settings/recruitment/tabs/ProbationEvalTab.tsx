@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface Props { companyId: string | null }
 
@@ -17,13 +18,15 @@ interface ProbationSettings {
 
 const DEFAULTS: ProbationSettings = { evalTimings: [30, 60, 90], passingScore: 70, autoConfirm: true }
 
-export function ProbationEvalTab({ companyId }: Props) {
+export function ProbationEvalTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const { settings, setSettings, loading, saving, isOverridden, hasChanges, save, revert } = useProcessSetting<ProbationSettings>({
     category: 'onboarding',
     key: 'probation-eval',
     companyId,
     defaults: DEFAULTS,
-    description: '수습 평가 설정',
+    description: t('probationEval_settings'),
     merge: (raw, defs) => ({
       evalTimings: Array.isArray(raw.evalTimings) ? (raw.evalTimings as number[]) : defs.evalTimings,
       passingScore: (raw.passingScore as number) ?? defs.passingScore,
@@ -37,11 +40,11 @@ export function ProbationEvalTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">수습 평가</h3>
-          <p className="text-sm text-[#8181A5]">수습 기간 중 평가 시점 및 기준 설정</p>
+          <h3 className="text-base font-semibold text-[#1C1D21]">{t('probationEval')}</h3>
+          <p className="text-sm text-[#8181A5]">{t('probation_keca491_evaluation_kec8b9cec_kebb08f_keab8b0ec_settings')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">법인 오버라이드</span>
+          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
         )}
       </div>
 
@@ -54,20 +57,20 @@ export function ProbationEvalTab({ companyId }: Props) {
       <SettingFieldWithOverride label="합격 기준 점수" description="수습 평가 합격 기준 점수 (100점 만점)" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input type="number" value={settings.passingScore} min={0} max={100} onChange={(e) => setSettings((p) => ({ ...p, passingScore: Number(e.target.value) }))} className="w-20" />
-          <span className="text-sm text-[#8181A5]">점 이상</span>
+          <span className="text-sm text-[#8181A5]">{t('kr_keca090_kec9db4ec')}</span>
         </div>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="자동 정규직 전환" description="합격 시 자동 정규직 전환 여부" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={settings.autoConfirm} onChange={(e) => setSettings((p) => ({ ...p, autoConfirm: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]" />
-          <span className="text-[#1C1D21]">합격 시 자동 전환</span>
+          <span className="text-[#1C1D21]">{t('passed_kec8b9c_kec9e90eb_keca084ed')}</span>
         </label>
       </SettingFieldWithOverride>
 
       <div className="flex justify-end gap-2 pt-4">
         <Button variant="outline" onClick={revert} disabled={!hasChanges}>
-          <RotateCcw className="mr-2 h-4 w-4" />되돌리기
+          <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장

@@ -22,7 +22,7 @@ import { AnalyticsPageLayout } from '@/components/analytics/AnalyticsPageLayout'
 import { ChartCard } from '@/components/analytics/ChartCard'
 import { EmptyChart } from '@/components/analytics/EmptyChart'
 import type { RecruitmentData } from '@/lib/analytics/types'
-import { TABLE_STYLES } from '@/lib/styles'
+import { TABLE_STYLES, CHART_THEME } from '@/lib/styles'
 
 const STAGE_ORDER = ['APPLIED', 'SCREENING', 'INTERVIEW', 'OFFER', 'HIRED']
 
@@ -101,7 +101,7 @@ export default function RecruitmentAnalyticsClient() {
     <AnalyticsPageLayout title={t('title')} description={t('description')}>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* 채용 퍼널 */}
-        <ChartCard title={t('funnel')} description={t('funnelDescription')} className="lg:col-span-2">
+        <ChartCard title={t('funnel')} className="lg:col-span-2">
           {sortedFunnel.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={sortedFunnel} layout="vertical" margin={{ left: 80 }}>

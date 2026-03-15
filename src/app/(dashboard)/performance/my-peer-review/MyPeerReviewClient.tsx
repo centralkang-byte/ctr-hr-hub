@@ -67,6 +67,8 @@ export default function MyPeerReviewClient({user }: {
   user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
+  const { confirm, dialogProps } = useConfirmDialog()
+
     const [cycles, setCycles] = useState<CycleOption[]>([])
     const [selectedCycleId, setSelectedCycleId] = useState('')
     const [cycleStatus, setCycleStatus] = useState('')
@@ -87,13 +89,12 @@ export default function MyPeerReviewClient({user }: {
                     setSelectedCycleId(evalCycles[0].id)
                     setCycleStatus(evalCycles[0].status)
                 }
-            } catch { setError('사이클 목록을 불러오지 못했습니다.') }
+            } catch { setError(t('cycleListLoadFailed')) }
         }
         load()
     }, [])
 
     const fetchAssignments = useCallback(async () => {
-  const { confirm, dialogProps } = useConfirmDialog()
         if (!selectedCycleId) return
         setLoading(true); setError('')
         try {
@@ -120,10 +121,10 @@ export default function MyPeerReviewClient({user }: {
         if (!activeReview) return
         if (status === 'SUBMITTED') {
             if (form.overallComment.trim().length < 20) {
-                toast({ title: '종합 의견은 최소 20자 이상 작성해주세요.', variant: 'destructive' })
+                toast({ title: t('kr_keca285ed_kec9d98ea_kecb59cec_'), variant: 'destructive' })
                 return
             }
-            confirm({ title: '제출하면 수정할 수 없습니다. 제출하시겠습니까?', onConfirm: async () => {
+            confirm({ title: t('submit_ked9598eb_kec8898ec_kec8898_kec9786ec_keca09cec'), onConfirm: async () => {
                 setSaving(true)
                 try {
                     await apiClient.post('/api/v1/performance/peer-review/submit', {
@@ -134,7 +135,7 @@ export default function MyPeerReviewClient({user }: {
                     })
                     setActiveReview(null)
                     await fetchAssignments()
-                } catch { toast({ title: '저장에 실패했습니다.', variant: 'destructive' }) }
+                } catch { toast({ title: t('saveFailed'), variant: 'destructive' }) }
                 finally { setSaving(false) }
             }})
             return
@@ -150,7 +151,7 @@ export default function MyPeerReviewClient({user }: {
             })
             setActiveReview(null)
             await fetchAssignments()
-        } catch { toast({ title: '저장에 실패했습니다.', variant: 'destructive' }) }
+        } catch { toast({ title: t('saveFailed'), variant: 'destructive' }) }
         finally { setSaving(false) }
     }
 
@@ -162,10 +163,10 @@ export default function MyPeerReviewClient({user }: {
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
                     <Users className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">아직 동료평가 기간이 아닙니다.</h2>
-                    <p className="text-sm text-[#8181A5]">동료평가는 EVAL_OPEN 단계에서 진행됩니다.</p>
+                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">{t('kr_kec9584ec_keb8f99eb_keab8b0ea_')}</h2>
+                    <p className="text-sm text-[#8181A5]">{t('kr_keb8f99eb_eval_open_keb8ba8ea_')}</p>
                     <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">
-                        <ArrowLeft className="h-4 w-4" /> 돌아가기
+                        <ArrowLeft className="h-4 w-4" /> {t('kr_keb8f8cec')}
                     </a>
                 </div>
             </div>
@@ -181,7 +182,7 @@ export default function MyPeerReviewClient({user }: {
                 {/* Header */}
                 <div className="mb-6 flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-[#1C1D21]">동료평가 (Peer Review)</h1>
+                        <h1 className="text-2xl font-bold text-[#1C1D21]">{t('kr_keb8f99eb_peer_review')}</h1>
                         <p className="mt-1 text-sm text-[#8181A5]">
                             내가 평가해야 할 동료: {total}명 | 완료: {completed}/{total}
                         </p>
@@ -196,7 +197,7 @@ export default function MyPeerReviewClient({user }: {
                 {total > 0 && (
                     <div className="mb-6 rounded-xl border border-[#F0F0F3] bg-white p-4">
                         <div className="mb-2 flex items-center justify-between text-sm">
-                            <span className="text-[#8181A5]">진행률</span>
+                            <span className="text-[#8181A5]">{t('kr_keca784ed')}</span>
                             <span className="font-medium text-[#1C1D21]">{completed}/{total} 완료</span>
                         </div>
                         <div className="h-2 rounded-full bg-[#F0F0F3]">
@@ -272,13 +273,13 @@ export default function MyPeerReviewClient({user }: {
                             <div className="flex items-start gap-2 rounded-lg border border-[#DBEAFE] bg-[#EFF6FF] p-3">
                                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-[#3B82F6]" />
                                 <p className="text-xs text-[#1E40AF]">
-                                    평가는 익명으로 처리됩니다. 매니저만 평가자를 확인할 수 있습니다.
+                                    {t('evaluation_keb8a94_kec9db5eb_kecb298eb_keba7a4eb_ked8f89ea_ked9995ec_kec8898_kec9e88ec')}
                                 </p>
                             </div>
 
                             {/* CTR Values */}
                             <div className="space-y-5">
-                                <h3 className="text-base font-semibold text-[#1C1D21]">CTR 핵심가치 평가</h3>
+                                <h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_ctr_ked95b5ec_evaluation')}</h3>
                                 {CTR_VALUES.map((v) => (
                                     <div key={v.scoreKey} className="rounded-xl border border-[#F0F0F3] p-4 space-y-2">
                                         <div className="flex items-center justify-between">
@@ -307,7 +308,7 @@ export default function MyPeerReviewClient({user }: {
                             <div className="flex justify-end gap-3 border-t border-[#F0F0F3] pt-4">
                                 <button onClick={() => handleSubmit('DRAFT')} disabled={saving}
                                     className="inline-flex items-center gap-2 rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm font-medium text-[#1C1D21] hover:bg-[#F5F5FA] disabled:opacity-40">
-                                    <Save className="h-4 w-4" /> 임시저장
+                                    <Save className="h-4 w-4" /> {t('kr_kec9e84ec')}
                                 </button>
                                 <button onClick={() => handleSubmit('SUBMITTED')} disabled={saving}
                                     className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40">

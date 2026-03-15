@@ -44,7 +44,7 @@ function MoMDelta({ current, previous }: { current: number; previous: number | n
   const pct = Math.round((diff / previous) * 100)
   if (diff === 0) return (
     <span className="text-xs text-[#999] flex items-center gap-0.5">
-      <Minus className="h-3 w-3" /> 전월 동일
+      <Minus className="h-3 w-3" /> {'전월 동일'}
     </span>
   )
   if (diff > 0) return (

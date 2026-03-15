@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Loader2, FolderTree, ChevronRight } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { TABLE_STYLES } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface Dept {
   id: string
@@ -17,7 +18,9 @@ interface Dept {
 
 interface Props { companyId: string | null }
 
-export function DepartmentsTab({ companyId }: Props) {
+export function DepartmentsTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const [depts, setDepts] = useState<Dept[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -38,7 +41,7 @@ export function DepartmentsTab({ companyId }: Props) {
   return (
     <div className="space-y-4">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">부서 구조</h3>
+        <h3 className="text-base font-semibold text-[#1C1D21]">{t('department_keab5acec')}</h3>
         <p className="text-sm text-[#8181A5]">등록된 부서 {depts.length}개</p>
       </div>
 
@@ -47,12 +50,12 @@ export function DepartmentsTab({ companyId }: Props) {
           <table className="w-full">
             <thead>
               <tr className={TABLE_STYLES.header}>
-                <th className={TABLE_STYLES.headerCell}>코드</th>
-                <th className={TABLE_STYLES.headerCell}>부서명</th>
-                <th className={TABLE_STYLES.headerCell}>영문명</th>
-                <th className={TABLE_STYLES.headerCell}>레벨</th>
-                <th className={TABLE_STYLES.headerCell}>하위 부서</th>
-                <th className={TABLE_STYLES.headerCell}>소속 인원</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_kecbd94eb')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('department_persons')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_kec9881eb')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_keba088eb')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_ked9598ec_department')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_kec868cec_kec9db8ec')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F0F0F3]">
@@ -77,7 +80,7 @@ export function DepartmentsTab({ companyId }: Props) {
       ) : (
         <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
           <FolderTree className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" />
-          <p className="text-sm font-medium text-[#1C1D21]">등록된 부서가 없습니다</p>
+          <p className="text-sm font-medium text-[#1C1D21]">{t('register_keb909c_kebb680ec_kec9786ec')}</p>
         </div>
       )}
     </div>

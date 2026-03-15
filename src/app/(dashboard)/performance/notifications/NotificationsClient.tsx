@@ -41,6 +41,7 @@ export default function NotificationsClient({user }: {
     const [filter, setFilter] = useState<FilterType>('all')
     const [notifying, setNotifying] = useState<string | null>(null)
     const [bulkNotifying, setBulkNotifying] = useState(false)
+    const { confirm, dialogProps } = useConfirmDialog()
 
     useEffect(() => {
         async function load() {
@@ -49,13 +50,12 @@ export default function NotificationsClient({user }: {
                 const valid = res.data.filter((c) => ['FINALIZED', 'CLOSED', 'COMP_REVIEW', 'COMP_COMPLETED'].includes(c.status))
                 setCycles(valid)
                 if (valid.length > 0) { setSelectedCycleId(valid[0].id); setCycleStatus(valid[0].status) }
-            } catch { setError('사이클을 불러오지 못했습니다.') }
+            } catch { setError(t('cycleLoadFailed')) }
         }
         load()
     }, [])
 
     const fetchItems = useCallback(async () => {
-  const { confirm, dialogProps } = useConfirmDialog()
         if (!selectedCycleId) return
         setLoading(true); setError('')
         try {
@@ -74,12 +74,12 @@ export default function NotificationsClient({user }: {
     }
 
     async function handleNotify(reviewId: string) {
-        confirm({ title: '이 직원에게 결과를 통보하시겠습니까?', onConfirm: async () => {
+        confirm({ title: t('kr_kec9db4_keca781ec_keab2b0ea_ke'), onConfirm: async () => {
             setNotifying(reviewId)
             try {
                 await apiClient.post(`/api/v1/performance/reviews/${reviewId}/notify`)
                 await fetchItems()
-            } catch { toast({ title: '통보에 실패했습니다.', variant: 'destructive' }) }
+            } catch { toast({ title: t('kr_ked86b5eb_kec8ba4ed'), variant: 'destructive' }) }
             finally { setNotifying(null) }
         }})
     }
@@ -91,7 +91,7 @@ export default function NotificationsClient({user }: {
             try {
                 await apiClient.post(`/api/v1/performance/cycles/${selectedCycleId}/bulk-notify`)
                 await fetchItems()
-            } catch { toast({ title: '일괄 통보에 실패했습니다.', variant: 'destructive' }) }
+            } catch { toast({ title: t('kr_kec9dbcea_ked86b5eb_kec8ba4ed'), variant: 'destructive' }) }
             finally { setBulkNotifying(false) }
         }})
     }
@@ -103,9 +103,9 @@ export default function NotificationsClient({user }: {
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
                     <Bell className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">결과 통보 단계가 아닙니다.</h2>
-                    <p className="text-sm text-[#8181A5]">결과 통보는 FINALIZED 이후에 가능합니다.</p>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline"><ArrowLeft className="h-4 w-4" /> 돌아가기</a>
+                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">{t('kr_keab2b0ea_ked86b5eb_keb8ba8ea_')}</h2>
+                    <p className="text-sm text-[#8181A5]">{t('kr_keab2b0ea_ked86b5eb_finalized_')}</p>
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline"><ArrowLeft className="h-4 w-4" /> {t('kr_keb8f8cec')}</a>
                 </div>
             </div>
         )
@@ -121,11 +121,11 @@ export default function NotificationsClient({user }: {
     function getStatus(item: NotifyItem): { label: string; cls: string } {
         if (item.acknowledgedAt) {
             return item.isAutoAcknowledged
-                ? { label: '✅ 자동확인', cls: 'text-[#8181A5]' }
-                : { label: '✅ 확인', cls: 'text-[#047857]' }
+                ? { label: t('kr_kec9e90eb'), cls: 'text-[#8181A5]' }
+                : { label: t('kr_confirm'), cls: 'text-[#047857]' }
         }
-        if (item.notifiedAt) return { label: '🟡 대기', cls: 'text-[#92400E]' }
-        return { label: '⬜ 미통보', cls: 'text-[#8181A5]' }
+        if (item.notifiedAt) return { label: t('kr_keb8c80ea'), cls: 'text-[#92400E]' }
+        return { label: t('kr_kebafb8ed'), cls: 'text-[#8181A5]' }
     }
 
     const filtered = items.filter((item) => {
@@ -146,7 +146,7 @@ export default function NotificationsClient({user }: {
                 {/* Header */}
                 <div className="mb-6 flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-[#1C1D21]">결과 통보 (Result Notification)</h1>
+                        <h1 className="text-2xl font-bold text-[#1C1D21]">{t('kr_keab2b0ea_ked86b5eb_result_not')}</h1>
                         <p className="mt-1 text-sm text-[#8181A5]">
                             전체: {total}명 | 통보 완료: {notified} | 미통보: {pending} | 확인 완료: {acknowledged}
                         </p>
@@ -196,13 +196,13 @@ export default function NotificationsClient({user }: {
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="bg-[#F5F5FA] text-xs text-[#8181A5] font-medium">
-                                    <th className={TABLE_STYLES.headerCell}>이름</th>
-                                    <th className={TABLE_STYLES.headerCell}>등급</th>
-                                    <th className={TABLE_STYLES.headerCell}>통보일</th>
-                                    <th className={TABLE_STYLES.headerCell}>확인일</th>
+                                    <th className={TABLE_STYLES.headerCell}>{t('name')}</th>
+                                    <th className={TABLE_STYLES.headerCell}>{t('kr_keb93b1ea')}</th>
+                                    <th className={TABLE_STYLES.headerCell}>{t('kr_ked86b5eb')}</th>
+                                    <th className={TABLE_STYLES.headerCell}>{t('confirm_kec9dbc')}</th>
                                     <th className={TABLE_STYLES.headerCell}>D-day</th>
-                                    <th className={TABLE_STYLES.headerCell}>상태</th>
-                                    <th className={TABLE_STYLES.headerCell}>액션</th>
+                                    <th className={TABLE_STYLES.headerCell}>{t('status')}</th>
+                                    <th className={TABLE_STYLES.headerCell}>{t('kr_kec95a1ec')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -243,7 +243,7 @@ export default function NotificationsClient({user }: {
                         </table>
                         {/* Footer note */}
                         <div className="border-t border-[#F0F0F3] px-5 py-3 text-xs text-[#8181A5]">
-                            💡 통보 후 168시간(7일) 이내 미확인 시 자동 확인 처리됩니다.
+                            {t('kr_ked86b5eb_ked9b84_168kec8b9cea')}
                         </div>
                     </div>
                 )}

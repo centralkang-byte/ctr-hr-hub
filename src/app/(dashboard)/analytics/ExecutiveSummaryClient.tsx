@@ -27,10 +27,12 @@ export default function ExecutiveSummaryClient() {
 
   const [data, setData] = useState<ExecutiveSummaryResponse | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const [companies, setCompanies] = useState<{ id: string; name: string }[]>([])
 
   const fetchData = useCallback(async () => {
     setLoading(true)
+    setError(false)
     try {
       const [res, compRes] = await Promise.all([
         fetch(`/api/v1/analytics/executive/summary${window.location.search}`),
@@ -38,18 +40,24 @@ export default function ExecutiveSummaryClient() {
       ])
       if (res.ok) {
         const json = await res.json()
-        setData(json.data)
+        setData(json.data ?? null)
+      } else {
+        console.error('Executive Summary API error:', res.status)
+        setError(true)
       }
       if (compRes.ok) {
         const cJson = await compRes.json()
         setCompanies(cJson.data || [])
       }
-    } catch { /* ignore */ } finally { setLoading(false) }
+    } catch (err) {
+      console.error('Executive Summary fetch error:', err)
+      setError(true)
+    } finally { setLoading(false) }
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])
 
-  if (loading || !data) {
+  if (loading) {
     return (
       <div className="space-y-6 animate-pulse">
         <div className="h-12 bg-gray-100 rounded-xl" />
@@ -60,6 +68,16 @@ export default function ExecutiveSummaryClient() {
           {[...Array(4)].map((_, i) => <div key={i} className="h-72 bg-gray-100 rounded-xl" />)}
         </div>
       </div>
+    )
+  }
+
+  if (error || !data) {
+    return (
+      <EmptyState
+        title="데이터를 불러올 수 없습니다"
+        description="인사이트 데이터를 불러오는 중 오류가 발생했습니다. 새로고침하거나 잠시 후 다시 시도해주세요."
+        action={{ label: t('retry'), onClick: () => fetchData() }}
+      />
     )
   }
 
@@ -139,7 +157,7 @@ export default function ExecutiveSummaryClient() {
         <ChartCard title="⚠️ 위험 신호">
           {riskAlerts.length === 0 ? (
             <div className="flex items-center justify-center h-48 text-sm text-gray-400">
-              현재 감지된 위험 신호가 없습니다 ✅
+              {t('kr_ked9884ec_keab090ec_risk_kec8b')}
             </div>
           ) : (
             <div className="space-y-3 max-h-[280px] overflow-y-auto">
@@ -169,11 +187,11 @@ export default function ExecutiveSummaryClient() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100">
-                  <th className="text-left py-2 px-3 font-medium text-gray-500">법인</th>
-                  <th className="text-right py-2 px-3 font-medium text-gray-500">인원</th>
-                  <th className="text-right py-2 px-3 font-medium text-gray-500">이직률</th>
-                  <th className="text-right py-2 px-3 font-medium text-gray-500">평균 근속</th>
-                  <th className="text-right py-2 px-3 font-medium text-gray-500">인건비</th>
+                  <th className="text-left py-2 px-3 font-medium text-gray-500">{t('company')}</th>
+                  <th className="text-right py-2 px-3 font-medium text-gray-500">{t('kr_kec9db8ec')}</th>
+                  <th className="text-right py-2 px-3 font-medium text-gray-500">{t('kr_kec9db4ec')}</th>
+                  <th className="text-right py-2 px-3 font-medium text-gray-500">{t('average_keab7bcec')}</th>
+                  <th className="text-right py-2 px-3 font-medium text-gray-500">{t('kr_kec9db8ea')}</th>
                 </tr>
               </thead>
               <tbody>

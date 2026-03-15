@@ -88,7 +88,7 @@ export default function ResultsClient({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('results')}</h1>
-          <p className="text-sm text-[#666] mt-1">나의 성과 결과를 확인합니다</p>
+          <p className="text-sm text-[#666] mt-1">{t('kr_keb8298ec_kec84b1ea_keab2b0ea_')}</p>
         </div>
         <select
           value={selectedCycleId}
@@ -103,27 +103,27 @@ export default function ResultsClient({
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Target className="w-3.5 h-3.5" /> 성과 점수</p>
+          <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Target className="w-3.5 h-3.5" /> {t('kr_kec84b1ea_score')}</p>
           <p className="text-3xl font-bold text-[#1A1A1A]">
             {final?.performanceScore?.toFixed(1) ?? '-'}
           </p>
           <p className="text-xs text-[#999] mt-1">/5.0</p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5" /> 역량 점수</p>
+          <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5" /> {t('kr_kec97adeb_score')}</p>
           <p className="text-3xl font-bold text-[#1A1A1A]">
             {final?.competencyScore?.toFixed(1) ?? '-'}
           </p>
           <p className="text-xs text-[#999] mt-1">/5.0</p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Award className="w-3.5 h-3.5" /> EMS 블록</p>
+          <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Award className="w-3.5 h-3.5" /> {t('kr_ems_kebb894eb')}</p>
           <p className="text-3xl font-bold text-[#5E81F4]">
             {final?.emsBlock ?? '-'}
           </p>
           {final?.calibrated && (
             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#E0E7FF] text-[#4B6DE0] mt-1">
-              캘리브레이션 반영
+              {t('calibration_kebb098ec')}
             </span>
           )}
         </div>
@@ -133,23 +133,23 @@ export default function ResultsClient({
       {(result?.selfEvaluation || result?.managerEvaluation) && (
         <div className="rounded-xl border border-[#E8E8E8] bg-white">
           <div className="px-5 py-4 border-b border-[#E8E8E8]">
-            <h2 className="text-lg font-semibold text-[#1A1A1A]">평가 비교</h2>
+            <h2 className="text-lg font-semibold text-[#1A1A1A]">{t('evaluation_kebb984ea')}</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className={TABLE_STYLES.header}>
-                  <th className={TABLE_STYLES.headerCell}>구분</th>
-                  <th className={TABLE_STYLES.headerCell}>성과 점수</th>
-                  <th className={TABLE_STYLES.headerCell}>역량 점수</th>
-                  <th className={TABLE_STYLES.headerCell}>EMS 블록</th>
-                  <th className={TABLE_STYLES.headerCell}>상태</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('kr_keab5aceb')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('kr_kec84b1ea_score')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('kr_kec97adeb_score')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('kr_ems_kebb894eb')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('status')}</th>
                 </tr>
               </thead>
               <tbody>
                 {result?.selfEvaluation && (
                   <tr className="border-b border-[#F5F5F5]">
-                    <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">자기평가</td>
+                    <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">{t('selfEval')}</td>
                     <td className="px-4 py-3 text-sm text-center text-[#555]">{result.selfEvaluation.performanceScore?.toFixed(1) ?? '-'}</td>
                     <td className="px-4 py-3 text-sm text-center text-[#555]">{result.selfEvaluation.competencyScore?.toFixed(1) ?? '-'}</td>
                     <td className="px-4 py-3 text-sm text-center font-medium text-[#5E81F4]">{result.selfEvaluation.emsBlock ?? '-'}</td>
@@ -160,7 +160,7 @@ export default function ResultsClient({
                 )}
                 {result?.managerEvaluation && (
                   <tr className="border-b border-[#F5F5F5]">
-                    <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">매니저 평가</td>
+                    <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">{t('managerEval')}</td>
                     <td className="px-4 py-3 text-sm text-center text-[#555]">{result.managerEvaluation.performanceScore?.toFixed(1) ?? '-'}</td>
                     <td className="px-4 py-3 text-sm text-center text-[#555]">{result.managerEvaluation.competencyScore?.toFixed(1) ?? '-'}</td>
                     <td className="px-4 py-3 text-sm text-center font-medium text-[#5E81F4]">{result.managerEvaluation.emsBlock ?? '-'}</td>
@@ -179,7 +179,7 @@ export default function ResultsClient({
       {result?.goals && result.goals.length > 0 && (
         <div className="rounded-xl border border-[#E8E8E8] bg-white">
           <div className="px-5 py-4 border-b border-[#E8E8E8]">
-            <h2 className="text-lg font-semibold text-[#1A1A1A]">목표 달성</h2>
+            <h2 className="text-lg font-semibold text-[#1A1A1A]">{t('goals_keb8bacec')}</h2>
           </div>
           <div className="divide-y divide-[#F5F5F5]">
             {result.goals.map((goal) => (

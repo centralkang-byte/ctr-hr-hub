@@ -41,6 +41,11 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Calendar } from '@/components/ui/calendar'
+import { cn } from '@/lib/utils'
+import { format } from 'date-fns'
+import { CalendarIcon } from 'lucide-react'
 
 // ─── Local interfaces ───────────────────────────────────────
 
@@ -119,6 +124,8 @@ export function LeaveClient({ user }: { user: SessionUser }) {
   const [loading, setLoading] = useState(true)
 
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [startDateOpen, setStartDateOpen] = useState(false)
+  const [endDateOpen, setEndDateOpen] = useState(false)
   const [saving, setSaving] = useState(false)
   const [cancellingId, setCancellingId] = useState<string | null>(null)
 
@@ -129,6 +136,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
     reset,
     control,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<z.input<typeof requestSchema>>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -142,8 +150,33 @@ export function LeaveClient({ user }: { user: SessionUser }) {
     },
   })
 
-  const watchedDays = watch('days')
+  const watchedDays     = watch('days')
   const watchedPolicyId = watch('policyId')
+  const watchedStart    = watch('startDate')
+  const watchedEnd      = watch('endDate')
+
+  // ─── Auto-calculate business days ───
+  const calculateBusinessDays = (start: string, end: string): number => {
+    const s = new Date(start)
+    const e = new Date(end)
+    if (isNaN(s.getTime()) || isNaN(e.getTime()) || e < s) return 1
+    let count = 0
+    const cur = new Date(s)
+    while (cur <= e) {
+      const day = cur.getDay()
+      if (day !== 0 && day !== 6) count++
+      cur.setDate(cur.getDate() + 1)
+    }
+    return Math.max(count, 1)
+  }
+
+  useEffect(() => {
+    if (watchedStart && watchedEnd) {
+      const calc = calculateBusinessDays(watchedStart, watchedEnd)
+      setValue('days', calc)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchedStart, watchedEnd])
 
   // ─── Balance preview calculation ───
   const selectedBalance = balances.find((b) => b.policy.id === watchedPolicyId) ?? null
@@ -244,12 +277,12 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       }
       await apiClient.post('/api/v1/leave/requests', payload)
       setDialogOpen(false)
-      toast({ title: tCommon('submitted'), description: '담당자 승인 후 확정됩니다.' })
+      toast({ title: tc('submitted'), description: '담당자 승인 후 확정됩니다.' })
       void fetchBalances()
       void fetchRequests()
     } catch (err) {
       const msg = err instanceof Error ? err.message : '휴가 신청 중 오류가 발생했습니다.'
-      toast({ title: tCommon('error'), description: msg, variant: 'destructive' })
+      toast({ title: tc('error'), description: msg, variant: 'destructive' })
     } finally {
       setSaving(false)
     }
@@ -436,7 +469,6 @@ export function LeaveClient({ user }: { user: SessionUser }) {
           </DialogHeader>
 
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
             {/* policyId */}
             <div className="space-y-2">
@@ -495,7 +527,35 @@ export function LeaveClient({ user }: { user: SessionUser }) {
             {/* startDate */}
             <div className="space-y-2">
               <Label htmlFor="leave-start">{t('startDate')}</Label>
-              <Input id="leave-start" type="date" {...register('startDate')} />
+              <Controller
+                control={control}
+                name="startDate"
+                render={({ field }) => (
+                  <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        id="leave-start"
+                        variant={"outline"}
+                        className={cn(
+                          "w-full justify-start text-left font-normal border-input bg-white",
+                          !field.value && "text-[#8181A5]"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {field.value ? field.value : <span>{tc('selectPlaceholder') ?? '날짜 선택'}</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 z-[100]" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value ? new Date(field.value) : undefined}
+                        onSelect={(date) => { field.onChange(date ? format(date, "yyyy-MM-dd") : ''); setStartDateOpen(false) }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                )}
+              />
               {errors.startDate && (
                 <p className="text-sm text-destructive">{errors.startDate.message}</p>
               )}
@@ -504,7 +564,35 @@ export function LeaveClient({ user }: { user: SessionUser }) {
             {/* endDate */}
             <div className="space-y-2">
               <Label htmlFor="leave-end">{t('endDate')}</Label>
-              <Input id="leave-end" type="date" {...register('endDate')} />
+              <Controller
+                control={control}
+                name="endDate"
+                render={({ field }) => (
+                  <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        id="leave-end"
+                        variant={"outline"}
+                        className={cn(
+                          "w-full justify-start text-left font-normal border-input bg-white",
+                          !field.value && "text-[#8181A5]"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {field.value ? field.value : <span>{tc('selectPlaceholder') ?? '날짜 선택'}</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 z-[100]" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value ? new Date(field.value) : undefined}
+                        onSelect={(date) => { field.onChange(date ? format(date, "yyyy-MM-dd") : ''); setEndDateOpen(false) }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                )}
+              />
               {errors.endDate && (
                 <p className="text-sm text-destructive">{errors.endDate.message}</p>
               )}

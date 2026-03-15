@@ -6,44 +6,47 @@ import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWith
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { TABLE_STYLES } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface Props { companyId: string | null }
 
-export function JobGradesTab({ companyId }: Props) {
+export function JobGradesTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const [grades] = useState([
-    { code: 'S1', name: '사원', nameEn: 'Staff', minYears: 0, promoYears: 3 },
-    { code: 'S2', name: '주임', nameEn: 'Senior Staff', minYears: 3, promoYears: 3 },
-    { code: 'S3', name: '대리', nameEn: 'Assistant Manager', minYears: 4, promoYears: 4 },
-    { code: 'M1', name: '과장', nameEn: 'Manager', minYears: 4, promoYears: 5 },
-    { code: 'M2', name: '차장', nameEn: 'Deputy GM', minYears: 5, promoYears: 5 },
-    { code: 'D1', name: '부장', nameEn: 'General Manager', minYears: 5, promoYears: null },
-    { code: 'D2', name: '이사', nameEn: 'Director', minYears: 5, promoYears: null },
-    { code: 'E1', name: '상무', nameEn: 'Senior Director', minYears: null, promoYears: null },
-    { code: 'E2', name: '전무', nameEn: 'EVP', minYears: null, promoYears: null },
-    { code: 'C1', name: '대표이사', nameEn: 'CEO', minYears: null, promoYears: null },
+    { code: 'S1', name: t('kr_kec82acec'), nameEn: 'Staff', minYears: 0, promoYears: 3 },
+    { code: 'S2', name: t('kr_keca3bcec'), nameEn: 'Senior Staff', minYears: 3, promoYears: 3 },
+    { code: 'S3', name: t('kr_keb8c80eb'), nameEn: 'Assistant Manager', minYears: 4, promoYears: 4 },
+    { code: 'M1', name: t('kr_keab3bcec'), nameEn: 'Manager', minYears: 4, promoYears: 5 },
+    { code: 'M2', name: t('kr_kecb0a8ec'), nameEn: 'Deputy GM', minYears: 5, promoYears: 5 },
+    { code: 'D1', name: t('kr_kebb680ec'), nameEn: 'General Manager', minYears: 5, promoYears: null },
+    { code: 'D2', name: t('kr_kec9db4ec'), nameEn: 'Director', minYears: 5, promoYears: null },
+    { code: 'E1', name: t('kr_kec8381eb'), nameEn: 'Senior Director', minYears: null, promoYears: null },
+    { code: 'E2', name: t('kr_keca084eb'), nameEn: 'EVP', minYears: null, promoYears: null },
+    { code: 'C1', name: t('kr_keb8c80ed'), nameEn: 'CEO', minYears: null, promoYears: null },
   ])
 
   return (
     <div className="space-y-4">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">직급 체계</h3>
+        <h3 className="text-base font-semibold text-[#1C1D21]">{t('grade_kecb2b4ea')}</h3>
         <p className="text-sm text-[#8181A5]">{grades.length}개 직급 등록</p>
       </div>
 
       <div className="flex items-start gap-3 rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4">
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
-        <p className="text-xs text-[#8181A5]">직급 체계는 현재 시스템에서 관리됩니다. API 연결 후 편집이 가능합니다.</p>
+        <p className="text-xs text-[#8181A5]">{t('grade_kecb2b4ea_ked9884ec_kec8b9cec_keab480eb_api_kec97b0ea_ked9b84_ked8eb8ec_keab080eb')}</p>
       </div>
 
       <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
         <table className="w-full">
           <thead>
             <tr className={TABLE_STYLES.header}>
-              <th className={TABLE_STYLES.headerCell}>코드</th>
-              <th className={TABLE_STYLES.headerCell}>직급명</th>
-              <th className={TABLE_STYLES.headerCell}>영문명</th>
-              <th className={TABLE_STYLES.headerCell}>최소 연차</th>
-              <th className={TABLE_STYLES.headerCell}>승진 소요</th>
+              <th className={TABLE_STYLES.headerCell}>{t('kr_kecbd94eb')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('grade_persons')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('kr_kec9881eb')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('kr_kecb59cec_kec97b0ec')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('kr_kec8ab9ec_kec868cec')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#F0F0F3]">

@@ -3,7 +3,7 @@
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
-import { useSubmitGuard } from '@/hooks/useSubmitGuard'
+
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — 채용공고 등록 폼 (Client)
@@ -42,7 +42,7 @@ interface Props {
 export default function PostingFormClient({
  user }: Props) {
   const tCommon = useTranslations('common')
-  const { isSubmitting, guardedSubmit } = useSubmitGuard()
+
   const t = useTranslations('recruitment')
   const router = useRouter()
 

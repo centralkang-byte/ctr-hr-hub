@@ -5,11 +5,14 @@ import { Loader2, Plus, MinusCircle } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface DeductionType { id: string; code: string; name: string; nameEn?: string; category: string; isStatutory: boolean; isActive: boolean }
 interface Props { companyId: string | null }
 
-export function DeductionsTab({ companyId }: Props) {
+export function DeductionsTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const [items, setItems] = useState<DeductionType[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -27,17 +30,17 @@ export function DeductionsTab({ companyId }: Props) {
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
-        <div><h3 className="text-base font-semibold text-[#1C1D21]">공제 항목</h3><p className="text-sm text-[#8181A5]">공제 항목 {items.length}개</p></div>
-        <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />항목 추가</Button>
+        <div><h3 className="text-base font-semibold text-[#1C1D21]">{t('deductions')}</h3><p className="text-sm text-[#8181A5]">공제 항목 {items.length}개</p></div>
+        <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />{t('kr_ked95adeb_add')}</Button>
       </div>
       {items.length > 0 ? (
         <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
           <table className="w-full"><thead><tr className={TABLE_STYLES.header}>
-            <th className={TABLE_STYLES.headerCell}>코드</th>
-            <th className={TABLE_STYLES.headerCell}>항목명</th>
-            <th className={TABLE_STYLES.headerCell}>카테고리</th>
-            <th className={TABLE_STYLES.headerCell}>법정</th>
-            <th className={TABLE_STYLES.headerCell}>상태</th>
+            <th className={TABLE_STYLES.headerCell}>{t('kr_kecbd94eb')}</th>
+            <th className={TABLE_STYLES.headerCell}>{t('kr_ked95adeb')}</th>
+            <th className={TABLE_STYLES.headerCell}>{t('kr_kecb9b4ed')}</th>
+            <th className={TABLE_STYLES.headerCell}>{t('kr_kebb295ec')}</th>
+            <th className={TABLE_STYLES.headerCell}>{t('status')}</th>
           </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{items.map((item) => (
             <tr key={item.id} className={TABLE_STYLES.row}>
               <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{item.code}</td>
@@ -50,7 +53,7 @@ export function DeductionsTab({ companyId }: Props) {
         </div>
       ) : (
         <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
-          <MinusCircle className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">등록된 공제 항목이 없습니다</p>
+          <MinusCircle className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">{t('register_keb909c_keab3b5ec_ked95adeb_kec9786ec')}</p>
         </div>
       )}
     </div>

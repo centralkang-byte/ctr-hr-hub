@@ -7,6 +7,7 @@ import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWith
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { TABLE_STYLES } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface Company {
   id: string
@@ -20,7 +21,9 @@ interface Company {
 
 interface Props { companyId: string | null }
 
-export function CompanyInfoTab({ companyId }: Props) {
+export function CompanyInfoTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const [companies, setCompanies] = useState<Company[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -41,7 +44,7 @@ export function CompanyInfoTab({ companyId }: Props) {
   return (
     <div className="space-y-4">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">법인 기본정보</h3>
+        <h3 className="text-base font-semibold text-[#1C1D21]">{t('company_keab8b0eb')}</h3>
         <p className="text-sm text-[#8181A5]">등록된 법인 {companies.length}개</p>
       </div>
 
@@ -50,11 +53,11 @@ export function CompanyInfoTab({ companyId }: Props) {
           <table className="w-full">
             <thead>
               <tr className={TABLE_STYLES.header}>
-                <th className={TABLE_STYLES.headerCell}>코드</th>
-                <th className={TABLE_STYLES.headerCell}>법인명</th>
-                <th className={TABLE_STYLES.headerCell}>국가</th>
-                <th className={TABLE_STYLES.headerCell}>통화</th>
-                <th className={TABLE_STYLES.headerCell}>타임존</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_kecbd94eb')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('company_persons')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_keab5adea')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_ked86b5ed')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_ked8380ec')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F0F0F3]">
@@ -73,7 +76,7 @@ export function CompanyInfoTab({ companyId }: Props) {
       ) : (
         <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
           <Building2 className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" />
-          <p className="text-sm font-medium text-[#1C1D21]">등록된 법인이 없습니다</p>
+          <p className="text-sm font-medium text-[#1C1D21]">{t('register_keb909c_kebb295ec_kec9786ec')}</p>
         </div>
       )}
     </div>

@@ -365,7 +365,7 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
         <button
           onClick={onClose}
           className="text-white/70 hover:text-white text-lg leading-none ml-2"
-          aria-label={t('close')}
+          aria-label={'close'}
         >
           ×
         </button>
@@ -374,13 +374,13 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {/* Dept Info */}
         <div className="space-y-2">
-          <h4 className="text-xs font-semibold text-[#999]">{t('deptInfo')}</h4>
+          <h4 className="text-xs font-semibold text-[#999]">{'deptInfo'}</h4>
           <div className="bg-[#FAFAFA] rounded-lg p-3 space-y-1.5 text-sm">
-            <InfoRow label={t('code')} value={dept.code} />
-            <InfoRow label={t('level')} value={String(dept.level)} />
-            <InfoRow label={t('status')} value={dept.isActive ? tc('active') : tc('inactive')} />
-            <InfoRow label={t('headcount')} value={t('headcountUnit', { count: dept.employeeCount })} />
-            {dept.nameEn && <InfoRow label={t('nameEn')} value={dept.nameEn} />}
+            <InfoRow label={'code'} value={dept.code} />
+            <InfoRow label={'level'} value={String(dept.level)} />
+            <InfoRow label={'상태'} value={dept.isActive ? tc('active') : tc('inactive')} />
+            <InfoRow label={'headcount'} value={t('headcountUnit', { count: dept.employeeCount })} />
+            {dept.nameEn && <InfoRow label={'nameEn'} value={dept.nameEn} />}
           </div>
         </div>
 
@@ -388,7 +388,7 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
         {dept.children.length > 0 && (
           <div className="space-y-2">
             <h4 className="text-xs font-semibold text-[#999]">
-              {t('subDepartments')} ({dept.children.length})
+              {'subDepartments'} ({dept.children.length})
             </h4>
             <ul className="space-y-1">
               {dept.children.map((child) => (
@@ -403,11 +403,11 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
 
         {/* Employees */}
         <div className="space-y-2">
-          <h4 className="text-xs font-semibold text-[#999]">{t('employees')}</h4>
+          <h4 className="text-xs font-semibold text-[#999]">{'employees'}</h4>
           {loadingEmps ? (
-            <p className="text-xs text-[#999] py-2">{t('loadingData')}</p>
+            <p className="text-xs text-[#999] py-2">{'loadingData'}</p>
           ) : employees.length === 0 ? (
-            <p className="text-xs text-[#999] py-2">{t('noEmployees')}</p>
+            <p className="text-xs text-[#999] py-2">{'noEmployees'}</p>
           ) : (
             <ul className="space-y-1">
               {employees.map((emp) => (

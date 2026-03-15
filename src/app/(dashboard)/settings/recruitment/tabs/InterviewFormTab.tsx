@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import type { InterviewFormSetting, InterviewFormCategoryEntry } from '@/types/process-settings'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface Props { companyId: string | null }
 
@@ -17,13 +18,15 @@ const DEFAULTS: InterviewFormSetting = {
   ],
 }
 
-export function InterviewFormTab({ companyId }: Props) {
+export function InterviewFormTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const { settings, loading, saving, isOverridden, hasChanges, save, revert } = useProcessSetting<InterviewFormSetting>({
     category: 'recruitment',
     key: 'interview-form',
     companyId,
     defaults: DEFAULTS,
-    description: '면접 평가항목 기본 템플릿',
+    description: t('interview_ked8f89ea_keab8b0eb_ked859ced'),
     merge: (raw, defs) => ({
       categories: Array.isArray(raw.categories) ? (raw.categories as InterviewFormCategoryEntry[]) : defs.categories,
     }),
@@ -35,11 +38,11 @@ export function InterviewFormTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">면접 평가항목</h3>
-          <p className="text-sm text-[#8181A5]">면접 평가표 기본 항목 관리</p>
+          <h3 className="text-base font-semibold text-[#1C1D21]">{t('interview_ked8f89ea')}</h3>
+          <p className="text-sm text-[#8181A5]">{t('interview_ked8f89ea_keab8b0eb_ked95adeb_management')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">법인 오버라이드</span>
+          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
         )}
       </div>
       {settings.categories.map((cat) => (
@@ -55,7 +58,7 @@ export function InterviewFormTab({ companyId }: Props) {
 
       <div className="flex justify-end gap-2 pt-4">
         <Button variant="outline" onClick={revert} disabled={!hasChanges}>
-          <RotateCcw className="mr-2 h-4 w-4" />되돌리기
+          <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장

@@ -192,10 +192,10 @@ function EmployeeQuickPanel({
           <p className="text-[11px] text-[#8181A5] mb-1.5">재직 상태</p>
           <Badge variant={STATUS_VARIANTS[employee.status] ?? 'outline'}>
             {{
-              ACTIVE: t('statusActive'),
-              ON_LEAVE: t('statusOnLeave'),
-              RESIGNED: t('statusResigned'),
-              TERMINATED: t('statusTerminated'),
+              ACTIVE: 'statusActive',
+              ON_LEAVE: 'statusOnLeave',
+              RESIGNED: 'statusResigned',
+              TERMINATED: 'statusTerminated',
             }[employee.status] ?? employee.status}
           </Badge>
         </div>

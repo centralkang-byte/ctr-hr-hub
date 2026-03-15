@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Info, Lock, Shield } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface Props { companyId: string | null }
 
@@ -14,21 +15,23 @@ const ROLES = [
   { key: 'VIEWER', label: '조회 전용', desc: '읽기 전용 접근', perms: ['*.view'] },
 ]
 
-export function RolesTab({ companyId }: Props) {
+export function RolesTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-base font-semibold text-[#1C1D21]">역할/권한</h3>
-            <span className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600"><Lock className="h-3 w-3" />글로벌 고정</span>
+            <h3 className="text-base font-semibold text-[#1C1D21]">{'역할/권한'}</h3>
+            <span className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600"><Lock className="h-3 w-3" />{'글로벌 고정'}</span>
           </div>
           <p className="text-sm text-[#8181A5]">RBAC 역할 정의 ({ROLES.length}개 역할)</p>
         </div>
       </div>
       <div className="flex items-start gap-3 rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4">
         <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
-        <p className="text-xs text-[#8181A5]">역할/권한은 시스템에서 관리됩니다. 변경이 필요하면 시스템 관리자에게 문의하세요.</p>
+        <p className="text-xs text-[#8181A5]">{'역할/권한은 시스템에서 관리됩니다. 변경이 필요하면 시스템 관리자에게 문의하세요.'}</p>
       </div>
       <div className="space-y-3">{ROLES.map((r) => (
         <div key={r.key} className="flex items-start gap-4 rounded-xl border border-[#F0F0F3] p-4 hover:bg-[#F5F5FA] transition-colors">

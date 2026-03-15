@@ -220,9 +220,9 @@ function EvaluationModal({
         evaluatorId: userId,
         overallScore: form.overallScore,
         competencyScores: {
-          [t('jobCompetency')]: form.jobCompetency,
-          [t('communication')]: form.communication,
-          [t('cultureFit')]: form.cultureFit,
+          ['직무역량']: form.jobCompetency,
+          ['커뮤니케이션']: form.communication,
+          ['문화적합']: form.cultureFit,
         },
         strengths: form.strengths || null,
         concerns: form.concerns || null,
@@ -239,6 +239,8 @@ function EvaluationModal({
     }
   }
 
+  const { guardedSubmit } = useSubmitGuard(handleSubmit)
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -246,7 +248,7 @@ function EvaluationModal({
       >
         <DialogHeader style={{ padding: '24px 24px 0' }}>
           <DialogTitle style={{ fontSize: 18, fontWeight: 700, color: '#1A1A1A' }}>
-            {t('evaluationTitle')}
+            {'면접 평가'}
           </DialogTitle>
           {interview && (
             <p style={{ fontSize: 13, color: '#999', marginTop: 4 }}>
@@ -268,7 +270,7 @@ function EvaluationModal({
           }}
         >
           <ScoreSelect
-            label={t('overallScore')}
+            label={'종합 점수'}
             value={form.overallScore}
             onChange={(v) => updateField('overallScore', v)}
           />
@@ -287,21 +289,21 @@ function EvaluationModal({
                 marginBottom: 12,
               }}
             >
-              {t('competencyScores')}
+              {'역량별 점수'}
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <ScoreSelect
-                label={t('jobCompetency')}
+                label={'직무역량'}
                 value={form.jobCompetency}
                 onChange={(v) => updateField('jobCompetency', v)}
               />
               <ScoreSelect
-                label={t('communication')}
+                label={'커뮤니케이션'}
                 value={form.communication}
                 onChange={(v) => updateField('communication', v)}
               />
               <ScoreSelect
-                label={t('cultureFit')}
+                label={'문화적합'}
                 value={form.cultureFit}
                 onChange={(v) => updateField('cultureFit', v)}
               />
@@ -309,22 +311,22 @@ function EvaluationModal({
           </div>
 
           <div>
-            <Label style={{ fontSize: 14, color: '#1A1A1A' }}>{t('strengthsLabel')}</Label>
+            <Label style={{ fontSize: 14, color: '#1A1A1A' }}>{'강점'}</Label>
             <Textarea
               value={form.strengths}
               onChange={(e) => updateField('strengths', e.target.value)}
-              placeholder={t('strengthsPlaceholder')}
+              placeholder={'지원자의 강점을 입력하세요'}
               rows={2}
               style={{ marginTop: 6 }}
             />
           </div>
 
           <div>
-            <Label style={{ fontSize: 14, color: '#1A1A1A' }}>{t('concernsLabel')}</Label>
+            <Label style={{ fontSize: 14, color: '#1A1A1A' }}>{'우려사항'}</Label>
             <Textarea
               value={form.concerns}
               onChange={(e) => updateField('concerns', e.target.value)}
-              placeholder={t('concernsPlaceholder')}
+              placeholder={'우려 사항이 있다면 입력하세요'}
               rows={2}
               style={{ marginTop: 6 }}
             />
@@ -332,7 +334,7 @@ function EvaluationModal({
 
           <div>
             <Label style={{ fontSize: 14, color: '#1A1A1A', marginBottom: 8, display: 'block' }}>
-              {t('recommendationLabel')}
+              {'추천'}
             </Label>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               {(
@@ -370,11 +372,11 @@ function EvaluationModal({
           </div>
 
           <div>
-            <Label style={{ fontSize: 14, color: '#1A1A1A' }}>{t('commentLabel')}</Label>
+            <Label style={{ fontSize: 14, color: '#1A1A1A' }}>{'코멘트'}</Label>
             <Textarea
               value={form.comment}
               onChange={(e) => updateField('comment', e.target.value)}
-              placeholder={t('commentPlaceholder')}
+              placeholder={'추가 코멘트'}
               rows={2}
               style={{ marginTop: 6 }}
             />
@@ -387,7 +389,7 @@ function EvaluationModal({
             onClick={() => onOpenChange(false)}
             style={{ borderRadius: 8 }}
           >
-            {t('cancelButton')}
+            {'취소'}
           </Button>
           <Button
             onClick={guardedSubmit}
@@ -399,7 +401,7 @@ function EvaluationModal({
             }}
           >
             {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {t('submitEvaluation')}
+            {'평가 제출'}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -430,15 +432,14 @@ export function InterviewListClient({
 
   // ─── Options (use t() for labels) ─────────────────────
   const STATUS_OPTIONS = [
-    { value: 'ALL', label: t('allStatus') },
-    { value: 'SCHEDULED', label: t('interviewStatusSCHEDULED') },
-    { value: 'COMPLETED', label: t('interviewStatusCOMPLETED') },
-    { value: 'CANCELLED', label: t('interviewStatusCANCELLED') },
-    { value: 'NO_SHOW', label: t('interviewStatusNO_SHOW') },
+    { value: 'ALL', label: '전체 상태' },
+    { value: 'SCHEDULED', label: '예정' },
+    { value: 'COMPLETED', label: '완료' },
+    { value: 'CANCELLED', label: '취소' },
+    { value: 'NO_SHOW', label: '불참' },
   ]
 
   const fetchInterviews = useCallback(async () => {
-  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmit)
     setLoading(true)
     try {
       const params: Record<string, string | number | undefined> = {
@@ -474,7 +475,7 @@ export function InterviewListClient({
   const columns: DataTableColumn<InterviewRow>[] = [
     {
       key: 'applicantName',
-      header: t('applicantColumn'),
+      header: '지원자',
       render: (row) => (
         <span style={{ fontWeight: 500, color: '#1A1A1A' }}>
           {row.application.applicant.name}
@@ -483,14 +484,14 @@ export function InterviewListClient({
     },
     {
       key: 'interviewerName',
-      header: t('interviewerColumn'),
+      header: '면접관',
       render: (row) => (
         <span style={{ color: '#1A1A1A' }}>{row.interviewer.name}</span>
       ),
     },
     {
       key: 'scheduledAt',
-      header: t('dateTimeColumn'),
+      header: '일시',
       sortable: true,
       render: (row) => (
         <span style={{ color: '#1A1A1A', fontSize: 14 }}>
@@ -500,7 +501,7 @@ export function InterviewListClient({
     },
     {
       key: 'durationMinutes',
-      header: t('durationColumn'),
+      header: '소요시간',
       render: (row) => (
         <span style={{ color: '#666', fontSize: 14 }}>
           {t('durationMinutes', { minutes: row.durationMinutes })}
@@ -509,7 +510,7 @@ export function InterviewListClient({
     },
     {
       key: 'interviewType',
-      header: t('typeColumn'),
+      header: '유형',
       render: (row) => (
         <span style={{ color: '#1A1A1A', fontSize: 14 }}>
           {row.interviewType
@@ -520,7 +521,7 @@ export function InterviewListClient({
     },
     {
       key: 'round',
-      header: t('roundColumn'),
+      header: '라운드',
       render: (row) => (
         <span style={{ color: '#1A1A1A', fontSize: 14 }}>
           {row.round ? ROUND_KEYS[row.round] ? t(ROUND_KEYS[row.round]) : row.round : '-'}
@@ -529,7 +530,7 @@ export function InterviewListClient({
     },
     {
       key: 'status',
-      header: t('statusCol'),
+      header: '상태',
       render: (row) => {
         const colors = STATUS_COLORS[row.status] ?? {
           bg: '#F5F5F5',
@@ -554,7 +555,7 @@ export function InterviewListClient({
     },
     {
       key: 'calendar',
-      header: t('calendarColumn'),
+      header: '캘린더',
       render: (row) => {
         if (row.status === 'CANCELLED') return <span style={{ color: '#999', fontSize: 12 }}>&mdash;</span>
         return (
@@ -571,7 +572,7 @@ export function InterviewListClient({
     },
     {
       key: 'evaluation',
-      header: t('evaluationColumn'),
+      header: '평가',
       render: (row) => {
         const evalCount = row.interviewEvaluations?.length ?? 0
         if (row.status === 'COMPLETED') {
@@ -598,7 +599,7 @@ export function InterviewListClient({
               }}
             >
               <ClipboardCheck size={14} />
-              {evalCount > 0 ? t('evalCount', { count: evalCount }) : t('evaluateButton')}
+              {evalCount > 0 ? t('evalCount', { count: evalCount }) : '평가하기'}
             </button>
           )
         }
@@ -612,8 +613,8 @@ export function InterviewListClient({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <PageHeader
-        title={t('interviewListTitle')}
-        description={t('interviewListDescription')}
+        title={'면접 일정'}
+        description={'채용 공고별 면접 일정 관리'}
         actions={
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Button
@@ -622,7 +623,7 @@ export function InterviewListClient({
               style={{ borderRadius: 8 }}
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              {t('backToPosting')}
+              {'공고로 돌아가기'}
             </Button>
             <Button
               onClick={() =>
@@ -635,7 +636,7 @@ export function InterviewListClient({
               }}
             >
               <Plus className="mr-2 h-4 w-4" />
-              {t('registerInterviewButton')}
+              {'면접 등록'}
             </Button>
           </div>
         }
@@ -658,7 +659,7 @@ export function InterviewListClient({
           }}
         >
           <SelectTrigger style={{ width: 160, borderRadius: 8 }}>
-            <SelectValue placeholder={t('statusFilter')} />
+            <SelectValue placeholder={'상태 필터'} />
           </SelectTrigger>
           <SelectContent>
             {STATUS_OPTIONS.map((opt) => (
@@ -689,8 +690,8 @@ export function InterviewListClient({
           pagination={pagination}
           onPageChange={setPage}
           loading={loading}
-          emptyMessage={t('noInterviews')}
-          emptyDescription={t('noInterviewsDescription')}
+          emptyMessage={'등록된 면접 일정이 없습니다'}
+          emptyDescription={'면접 등록 버튼을 눌러 일정을 추가하세요'}
           rowKey={(row) => (row as unknown as InterviewRow).id}
         />
       </div>

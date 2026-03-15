@@ -12,6 +12,7 @@ import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWith
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface LeavePromotionTabProps {
   companyId: string | null
@@ -22,7 +23,9 @@ interface LeavePromotionTabProps {
 // Settings-connected: leave promotion max notification count
 // Settings-connected: unused leave expiry rules
 
-export function LeavePromotionTab({ companyId }: LeavePromotionTabProps) {
+export function LeavePromotionTab({
+  companyId }: LeavePromotionTabProps) {
+  const t = useTranslations('settings')
   const [settings, setSettings] = useState({
     promotionStartMonth: 11,
     promotionStartDay: 1,
@@ -38,9 +41,9 @@ export function LeavePromotionTab({ companyId }: LeavePromotionTabProps) {
   return (
     <div className="space-y-6">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">연차촉진</h3>
+        <h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_kec97b0ec')}</h3>
         <p className="text-sm text-[#8181A5]">
-          미사용 연차 소진 알림 및 소멸 규칙 설정
+          {t('kr_kebafb8ec_kec97b0ec_kec868cec_')}
         </p>
       </div>
 
@@ -48,7 +51,7 @@ export function LeavePromotionTab({ companyId }: LeavePromotionTabProps) {
       <div className="flex items-start gap-3 rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4">
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
         <p className="text-xs text-[#8181A5]">
-          연차촉진 규칙은 현재 시스템에 하드코딩되어 있습니다. 이 설정 화면은 H-2c에서 실제 시스템과 연결됩니다.
+          {t('kr_kec97b0ec_keab79cec_ked9884ec_')}
         </p>
       </div>
 
@@ -68,7 +71,7 @@ export function LeavePromotionTab({ companyId }: LeavePromotionTabProps) {
             onChange={(e) => setSettings((p) => ({ ...p, promotionStartMonth: Number(e.target.value) }))}
             className="w-16"
           />
-          <span className="text-sm text-[#8181A5]">월</span>
+          <span className="text-sm text-[#8181A5]">{t('month')}</span>
           <Input
             type="number"
             min={1}
@@ -77,7 +80,7 @@ export function LeavePromotionTab({ companyId }: LeavePromotionTabProps) {
             onChange={(e) => setSettings((p) => ({ ...p, promotionStartDay: Number(e.target.value) }))}
             className="w-16"
           />
-          <span className="text-sm text-[#8181A5]">일 부터</span>
+          <span className="text-sm text-[#8181A5]">{t('kr_kec9dbc_kebb680ed')}</span>
         </div>
       </SettingFieldWithOverride>
 
@@ -97,7 +100,7 @@ export function LeavePromotionTab({ companyId }: LeavePromotionTabProps) {
             onChange={(e) => setSettings((p) => ({ ...p, notifyIntervalDays: Number(e.target.value) }))}
             className="w-20"
           />
-          <span className="text-sm text-[#8181A5]">일마다 발송</span>
+          <span className="text-sm text-[#8181A5]">{t('kr_kec9dbceb_kebb09cec')}</span>
         </div>
       </SettingFieldWithOverride>
 
@@ -117,7 +120,7 @@ export function LeavePromotionTab({ companyId }: LeavePromotionTabProps) {
             onChange={(e) => setSettings((p) => ({ ...p, maxNotifications: Number(e.target.value) }))}
             className="w-20"
           />
-          <span className="text-sm text-[#8181A5]">회</span>
+          <span className="text-sm text-[#8181A5]">{t('kr_ked9a8c')}</span>
         </div>
       </SettingFieldWithOverride>
 
@@ -136,7 +139,7 @@ export function LeavePromotionTab({ companyId }: LeavePromotionTabProps) {
               disabled
               className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]"
             />
-            <span className="text-[#1C1D21]">본인 (필수)</span>
+            <span className="text-[#1C1D21]">{t('kr_kebb3b8ec_required')}</span>
           </label>
           <label className="flex items-center gap-2 text-sm">
             <input
@@ -145,7 +148,7 @@ export function LeavePromotionTab({ companyId }: LeavePromotionTabProps) {
               onChange={(e) => setSettings((p) => ({ ...p, includeManager: e.target.checked }))}
               className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]"
             />
-            <span className="text-[#1C1D21]">직속 상사</span>
+            <span className="text-[#1C1D21]">{t('kr_keca781ec_kec8381ec')}</span>
           </label>
           <label className="flex items-center gap-2 text-sm">
             <input
@@ -154,7 +157,7 @@ export function LeavePromotionTab({ companyId }: LeavePromotionTabProps) {
               onChange={(e) => setSettings((p) => ({ ...p, includeHR: e.target.checked }))}
               className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]"
             />
-            <span className="text-[#1C1D21]">HR 담당자</span>
+            <span className="text-[#1C1D21]">{t('kr_hr_keb8bb4eb')}</span>
           </label>
         </div>
       </SettingFieldWithOverride>
@@ -175,8 +178,8 @@ export function LeavePromotionTab({ companyId }: LeavePromotionTabProps) {
               onChange={() => setSettings((p) => ({ ...p, expiryPolicy: 'year_end' }))}
               className="h-4 w-4 text-[#5E81F4]"
             />
-            <span className="text-[#1C1D21]">연말 소멸</span>
-            <span className="text-xs text-[#8181A5]">— 12/31에 잔여 연차 전액 소멸</span>
+            <span className="text-[#1C1D21]">{t('kr_kec97b0eb_kec868ceb')}</span>
+            <span className="text-xs text-[#8181A5]">{t('kr_12_31kec9790_kec9e94ec_kec97b0')}</span>
           </label>
           <label className="flex items-center gap-2 text-sm">
             <input
@@ -186,8 +189,8 @@ export function LeavePromotionTab({ companyId }: LeavePromotionTabProps) {
               onChange={() => setSettings((p) => ({ ...p, expiryPolicy: 'carry_then_expire' }))}
               className="h-4 w-4 text-[#5E81F4]"
             />
-            <span className="text-[#1C1D21]">이월 후 소멸</span>
-            <span className="text-xs text-[#8181A5]">— 이월 규칙에 따라 이월 후 잔여분 소멸</span>
+            <span className="text-[#1C1D21]">{t('kr_kec9db4ec_ked9b84_kec868ceb')}</span>
+            <span className="text-xs text-[#8181A5]">{t('kr_kec9db4ec_keab79cec_keb94b0eb_')}</span>
           </label>
         </div>
       </SettingFieldWithOverride>
@@ -200,7 +203,7 @@ export function LeavePromotionTab({ companyId }: LeavePromotionTabProps) {
         companySelected={!!companyId}
       >
         <div className="flex items-center gap-2">
-          <span className="text-sm text-[#8181A5]">소멸</span>
+          <span className="text-sm text-[#8181A5]">{t('kr_kec868ceb')}</span>
           <Input
             type="number"
             min={1}
@@ -209,14 +212,14 @@ export function LeavePromotionTab({ companyId }: LeavePromotionTabProps) {
             onChange={(e) => setSettings((p) => ({ ...p, expiryWarningDays: Number(e.target.value) }))}
             className="w-20"
           />
-          <span className="text-sm text-[#8181A5]">일 전 경고</span>
+          <span className="text-sm text-[#8181A5]">{t('kr_kec9dbc_keca084_keab2bdea')}</span>
         </div>
       </SettingFieldWithOverride>
 
       <div className="flex justify-end pt-4">
         <Button className={BUTTON_VARIANTS.primary}>
           <Save className="mr-2 h-4 w-4" />
-          저장
+          {t('save')}
         </Button>
       </div>
     </div>

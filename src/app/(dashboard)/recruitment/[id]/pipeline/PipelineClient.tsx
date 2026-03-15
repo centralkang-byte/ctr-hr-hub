@@ -140,7 +140,6 @@ export default function PipelineClient({ user, postingId }: Props) {
   // ─── Fetch data ──────────────────────────────────────
 
   const fetchData = useCallback(async () => {
-  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleRejectionSubmit)
     setLoading(true)
     try {
       const res = await apiClient.getList<ApplicationRecord>(
@@ -297,6 +296,8 @@ export default function PipelineClient({ user, postingId }: Props) {
     setModalSubmitting(false)
     setRejectionModal({ open: false, applicationId: '', reason: '' })
   }
+
+  const { guardedSubmit: guardedRejectionSubmit } = useSubmitGuard(handleRejectionSubmit)
 
   const handleOfferSubmit = async () => {
     const { offeredSalary, offeredDate, expectedStartDate } = offerModal.form
@@ -478,7 +479,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                 {t('cancelButton')}
               </button>
               <button
-                onClick={guardedSubmit}
+                onClick={guardedRejectionSubmit}
                 disabled={!rejectionModal.reason.trim() || modalSubmitting}
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#F44336] hover:bg-[#D32F2F] text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
               >

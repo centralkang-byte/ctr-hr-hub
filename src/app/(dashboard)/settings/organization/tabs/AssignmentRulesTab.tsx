@@ -5,23 +5,26 @@ import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import type { AssignmentRulesSetting } from '@/types/process-settings'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface Props { companyId: string | null }
 
 const DEFAULTS: AssignmentRulesSetting = {
   rules: [
     { code: 'PROMOTION', label: '승진', desc: '직급 상향 변경', requiresApproval: true },
-    { code: 'TRANSFER', label: '전보', desc: '부서 이동', requiresApproval: true },
+    { code: 'TRANSFER', label: '전문성', desc: '부서 이동', requiresApproval: true },
     { code: 'ROTATION', label: '순환보직', desc: '직무 순환 배치', requiresApproval: true },
     { code: 'SECONDMENT', label: '파견', desc: '타 법인/기관 파견', requiresApproval: true },
     { code: 'CONCURRENT', label: '겸직', desc: '2개 이상 직무 겸임', requiresApproval: true },
     { code: 'LEAVE_OF_ABSENCE', label: '휴직', desc: '육아/병가 등 장기 휴직', requiresApproval: true },
-    { code: 'REINSTATEMENT', label: '복직', desc: '휴직 후 복귀', requiresApproval: false },
+    { code: 'REINSTATEMENT', label: '복원', desc: '휴직 후 복귀', requiresApproval: false },
     { code: 'DEMOTION', label: '강등', desc: '직급 하향 변경', requiresApproval: true },
   ],
 }
 
-export function AssignmentRulesTab({ companyId }: Props) {
+export function AssignmentRulesTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const { settings, setSettings, loading, saving, isOverridden, hasChanges, save, revert } = useProcessSetting<AssignmentRulesSetting>({
     category: 'organization',
     key: 'assignment-rules',
@@ -45,11 +48,11 @@ export function AssignmentRulesTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">발령 규칙</h3>
-          <p className="text-sm text-[#8181A5]">발령 유형 및 승인 절차 설정</p>
+          <h3 className="text-base font-semibold text-[#1C1D21]">{'발령 규칙'}</h3>
+          <p className="text-sm text-[#8181A5]">{'발령 유형 및 승인 절차 설정'}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">법인 오버라이드</span>
+          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
         )}
       </div>
 
@@ -57,10 +60,10 @@ export function AssignmentRulesTab({ companyId }: Props) {
         <table className="w-full">
           <thead>
             <tr className={TABLE_STYLES.header}>
-              <th className={TABLE_STYLES.headerCell}>코드</th>
-              <th className={TABLE_STYLES.headerCell}>유형</th>
-              <th className={TABLE_STYLES.headerCell}>설명</th>
-              <th className={TABLE_STYLES.headerCell}>승인 필요</th>
+              <th className={TABLE_STYLES.headerCell}>{'코멘트'}</th>
+              <th className={TABLE_STYLES.headerCell}>{'유형'}</th>
+              <th className={TABLE_STYLES.headerCell}>{'설명'}</th>
+              <th className={TABLE_STYLES.headerCell}>{'승인 필요'}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#F0F0F3]">
@@ -85,7 +88,7 @@ export function AssignmentRulesTab({ companyId }: Props) {
 
       <div className="flex justify-end gap-2 pt-4">
         <Button variant="outline" onClick={revert} disabled={!hasChanges}>
-          <RotateCcw className="mr-2 h-4 w-4" />되돌리기
+          <RotateCcw className="mr-2 h-4 w-4" />{'되돌리기'}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장

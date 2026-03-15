@@ -27,19 +27,15 @@ export default function CompensationClient() {
 
   const [cycles, setCycles] = useState<CycleOption[]>([])
   const [selectedCycleId, setSelectedCycleId] = useState<string>('')
-  const [activeTab, setActiveTab] = useState('simulation')
-
-  // ─── pendingAdjustments: 시뮬레이션에서 설정 → 확정 탭으로 전달
-  const [pendingAdjustments, setPendingAdjustments] = useState<
-    Array<{
-      employeeId: string
-      employeeName: string
-      department: string
-      currentSalary: number
-      newSalary: number
-      changePct: number
-    }>
-  >([])
+  const [activeTab, setActiveTab] = useState<'simulation' | 'confirm' | 'history'>('simulation')
+  const [pendingAdjustments, setPendingAdjustments] = useState<Array<{
+    employeeId: string
+    employeeName: string
+    department: string
+    currentSalary: number
+    newSalary: number
+    changePct: number
+  }>>([])
 
   const fetchCycles = useCallback(async () => {
     try {
@@ -79,7 +75,7 @@ export default function CompensationClient() {
             value={selectedCycleId}
             onChange={(e) => setSelectedCycleId(e.target.value)}
           >
-            {!cycles?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+            {!cycles?.length && <option value="">{t('noCycle')}</option>}
               {cycles?.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name} ({c.year})
@@ -91,7 +87,7 @@ export default function CompensationClient() {
       </div>
 
       {/* ─── 탭 ─── */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as 'simulation' | 'confirm' | 'history')}>
         <TabsList className="mb-4">
           <TabsTrigger value="simulation">
             <Calculator className="mr-1.5 h-4 w-4" />

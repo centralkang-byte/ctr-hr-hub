@@ -71,6 +71,7 @@ export default function MandatoryConfigTab() {
   // ─ 설정 목록
   const [configs, setConfigs] = useState<MandatoryConfig[]>([])
   const [loadingConfigs, setLoadingConfigs] = useState(false)
+  const { confirm, dialogProps } = useConfirmDialog()
 
   // ─ 이수 현황
   const [statuses, setStatuses] = useState<MandatoryStatus[]>([])
@@ -119,7 +120,6 @@ export default function MandatoryConfigTab() {
   }, [toast, statusYear])
 
   const fetchCourseOptions = useCallback(async () => {
-  const { confirm, dialogProps } = useConfirmDialog()
     try {
       const res = await apiClient.getList<CourseOption>('/api/v1/training/courses', { limit: '100', isActive: 'true', isMandatory: 'true' })
       setCourseOptions(res.data ?? [])

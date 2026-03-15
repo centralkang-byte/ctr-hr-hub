@@ -91,7 +91,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
       })
       router.push(`/recruitment/requisitions`)
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : '저장 중 오류가 발생했습니다.')
+      setError(err instanceof Error ? err.message : t('save_keca491_kec98a4eb_kebb09cec'))
     } finally {
       setSaving(false)
     }
@@ -109,7 +109,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
         </button>
         <div>
           <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('requisitionFormTitle')}</h1>
-          <p className="text-sm text-[#666] mt-0.5">부서장이 HR에 채용을 요청합니다.</p>
+          <p className="text-sm text-[#666] mt-0.5">{t('department_kec9ea5ec_hrkec9790_kecb184ec_kec9a94ec')}</p>
         </div>
       </div>
 
@@ -120,7 +120,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-[#333] mb-1.5">
-              법인 <span className="text-[#EF4444]">*</span>
+              {t('company')} <span className="text-[#EF4444]">*</span>
             </label>
             <select
               value={form.companyId}
@@ -136,7 +136,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
           </div>
           <div>
             <label className="block text-sm font-medium text-[#333] mb-1.5">
-              부서 <span className="text-[#EF4444]">*</span>
+              {t('department')} <span className="text-[#EF4444]">*</span>
             </label>
             <select
               value={form.departmentId}
@@ -154,7 +154,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
         {/* 직무명 */}
         <div>
           <label className="block text-sm font-medium text-[#333] mb-1.5">
-            채용 직무명 <span className="text-[#EF4444]">*</span>
+            {t('kr_kecb184ec_keca781eb')} <span className="text-[#EF4444]">*</span>
           </label>
           <input
             value={form.title}
@@ -167,7 +167,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
         {/* 인원 / 직급 / 고용형태 */}
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1.5">채용 인원</label>
+            <label className="block text-sm font-medium text-[#333] mb-1.5">{t('kr_kecb184ec_kec9db8ec')}</label>
             <input
               type="number"
               min={1}
@@ -177,7 +177,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1.5">직급</label>
+            <label className="block text-sm font-medium text-[#333] mb-1.5">{t('grade')}</label>
             <input
               value={form.jobLevel}
               onChange={(e) => setForm({ ...form, jobLevel: e.target.value })}
@@ -186,15 +186,15 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1.5">고용형태</label>
+            <label className="block text-sm font-medium text-[#333] mb-1.5">{t('kr_keab3a0ec')}</label>
             <select
               value={form.employmentType}
               onChange={(e) => setForm({ ...form, employmentType: e.target.value as 'permanent' | 'contract' | 'intern' })}
               className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
             >
-              <option value="permanent">정규직</option>
-              <option value="contract">계약직</option>
-              <option value="intern">인턴</option>
+              <option value="permanent">{t('kr_keca095ea')}</option>
+              <option value="contract">{t('kr_keab384ec')}</option>
+              <option value="intern">{t('kr_kec9db8ed')}</option>
             </select>
           </div>
         </div>
@@ -202,7 +202,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
         {/* 긴급도 / 희망입사일 */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1.5">긴급도</label>
+            <label className="block text-sm font-medium text-[#333] mb-1.5">{t('kr_keab8b4ea')}</label>
             <div className="flex gap-3">
               {(['urgent', 'normal', 'low'] as const).map((u) => (
                 <label key={u} className="flex items-center gap-1.5 cursor-pointer">
@@ -222,7 +222,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1.5">희망 입사일</label>
+            <label className="block text-sm font-medium text-[#333] mb-1.5">{t('kr_ked9daceb_kec9e85ec')}</label>
             <input
               type="date"
               value={form.targetDate}
@@ -235,14 +235,14 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
         {/* 연결 포지션 */}
         <div>
           <label className="block text-sm font-medium text-[#333] mb-1.5">
-            연결 포지션 <span className="text-[#999] font-normal">(공석 선택 또는 미선택 시 신규 생성)</span>
+            {t('kr_kec97b0ea_ked8facec')} <span className="text-[#999] font-normal">{t('kr_keab3b5ec_kec84a0ed_keb9890eb_')}</span>
           </label>
           <select
             value={form.positionId}
             onChange={(e) => setForm({ ...form, positionId: e.target.value })}
             className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
           >
-            <option value="">신규 Position 생성</option>
+            <option value="">{t('kr_kec8ba0ea_position_kec839dec')}</option>
             {positions.map((p) => (
               <option key={p.id} value={p.id}>
                 [{p.code}] {p.titleKo}
@@ -254,7 +254,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
         {/* 채용 사유 */}
         <div>
           <label className="block text-sm font-medium text-[#333] mb-1.5">
-            채용 사유 <span className="text-[#EF4444]">*</span>
+            {t('kr_kecb184ec_kec82acec')} <span className="text-[#EF4444]">*</span>
           </label>
           <textarea
             rows={4}
@@ -267,7 +267,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
 
         {/* 결재선 안내 */}
         <div className="bg-[#EDF1FE] rounded-lg p-4">
-          <p className="text-sm text-[#4B6DE0] font-medium mb-1">결재선 (자동 적용)</p>
+          <p className="text-sm text-[#4B6DE0] font-medium mb-1">{t('kr_keab2b0ec_kec9e90eb_keca081ec')}</p>
           <p className="text-xs text-[#555]">
             {form.urgency === 'urgent'
               ? '긴급: 팀장 → 부서장 → HR → 대표 (4단계)'
@@ -289,7 +289,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
           onClick={() => router.back()}
           className="px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#555] hover:bg-[#FAFAFA]"
         >
-          취소
+          {t('cancel')}
         </button>
         <button
           onClick={() => handleSave(false)}
@@ -297,7 +297,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
           className="flex items-center gap-2 px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#333] hover:bg-[#FAFAFA] disabled:opacity-50"
         >
           <Save size={15} />
-          임시저장
+          {t('kr_kec9e84ec')}
         </button>
         <button
           onClick={() => handleSave(true)}
@@ -305,7 +305,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
           className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}
         >
           <Send size={15} />
-          결재 요청
+          {t('kr_keab2b0ec_kec9a94ec')}
         </button>
       </div>
     </div>

@@ -55,6 +55,8 @@ export default function MyEvaluationClient({user }: {
   user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
+  const { confirm, dialogProps } = useConfirmDialog()
+
     const [cycles, setCycles] = useState<CycleOption[]>([])
     const [selectedCycleId, setSelectedCycleId] = useState('')
     const [cycleStatus, setCycleStatus] = useState('')
@@ -79,14 +81,13 @@ export default function MyEvaluationClient({user }: {
                     setSelectedCycleId(evalCycles[0].id)
                     setCycleStatus(evalCycles[0].status)
                 }
-            } catch { setError('사이클 목록을 불러오지 못했습니다.') }
+            } catch { setError(t('cycleListLoadFailed')) }
         }
         load()
     }, [])
 
     // ─── Fetch evaluation data
     const fetchEvalData = useCallback(async () => {
-  const { confirm, dialogProps } = useConfirmDialog()
         if (!selectedCycleId) return
         setLoading(true); setError('')
         try {
@@ -105,7 +106,7 @@ export default function MyEvaluationClient({user }: {
                 for (const b of BEI_ITEMS) bs[b.key] = { score: 3, comment: '' }
                 setEvalData({ id: null, status: 'DRAFT', goalScores: gs, beiScores: bs, mboWeight: 60, beiWeight: 40 })
             }
-        } catch { setError('데이터를 불러오지 못했습니다.') }
+        } catch { setError(t('dataLoadFailed')) }
         finally { setLoading(false) }
     }, [selectedCycleId])
 
@@ -127,10 +128,10 @@ export default function MyEvaluationClient({user }: {
             const allCommentsNonEmpty = Object.values(evalData.goalScores).every((s) => s.comment.trim())
                 && Object.values(evalData.beiScores).every((s) => s.comment.trim())
             if (!allGoalsScored || !allBeiScored || !allCommentsNonEmpty) {
-                toast({ title: '모든 점수와 코멘트를 작성해주세요.', variant: 'destructive' })
+                toast({ title: t('kr_kebaaa8eb_keca090ec_kecbd94eb_'), variant: 'destructive' })
                 return
             }
-            confirm({ title: '제출하면 수정할 수 없습니다. 제출하시겠습니까?', onConfirm: async () => {
+            confirm({ title: t('submit_ked9598eb_kec8898ec_kec8898_kec9786ec_keca09cec'), onConfirm: async () => {
                 if (abortRef.current) abortRef.current.abort()
                 abortRef.current = new AbortController()
                 setSubmitting(true)
@@ -226,10 +227,10 @@ export default function MyEvaluationClient({user }: {
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
                     <Star className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">아직 자기평가 기간이 아닙니다.</h2>
-                    <p className="text-sm text-[#8181A5]">자기평가는 EVAL_OPEN 단계에서 진행됩니다.</p>
+                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">{t('kr_kec9584ec_selfeval_keab8b0ea_k')}</h2>
+                    <p className="text-sm text-[#8181A5]">{t('selfEval_keb8a94_eval_open_keb8ba8ea_keca784ed')}</p>
                     <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">
-                        <ArrowLeft className="h-4 w-4" /> 돌아가기
+                        <ArrowLeft className="h-4 w-4" /> {t('kr_keb8f8cec')}
                     </a>
                 </div>
             </div>
@@ -243,19 +244,19 @@ export default function MyEvaluationClient({user }: {
                 <div className="mb-6 flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-bold text-[#1C1D21]">{t('selfEvalTitle')}</h1>
-                        <p className="mt-1 text-sm text-[#8181A5]">MBO 업적과 BEI 역량을 평가합니다</p>
+                        <p className="mt-1 text-sm text-[#8181A5]">{t('kr_mbo_kec9785ec_bei_kec97adeb_ke')}</p>
                     </div>
                     <div className="flex items-center gap-3">
                         {/* Saving indicator (GEMINI FIX #2) */}
                         {saveStatus === 'saving' && (
-                            <span className="flex items-center gap-1.5 text-xs text-[#8181A5]"><Loader2 className="h-3.5 w-3.5 animate-spin" /> 저장 중...</span>
+                            <span className="flex items-center gap-1.5 text-xs text-[#8181A5]"><Loader2 className="h-3.5 w-3.5 animate-spin" /> {t('save_keca491')}</span>
                         )}
                         {saveStatus === 'saved' && (
-                            <span className="flex items-center gap-1.5 text-xs text-[#059669]"><CheckCircle2 className="h-3.5 w-3.5" /> 저장됨</span>
+                            <span className="flex items-center gap-1.5 text-xs text-[#059669]"><CheckCircle2 className="h-3.5 w-3.5" /> {t('save_keb90a8')}</span>
                         )}
                         {saveStatus === 'error' && (
                             <span className="flex items-center gap-1.5 text-xs text-[#C62828]">
-                                <XCircle className="h-3.5 w-3.5" /> 저장 실패
+                                <XCircle className="h-3.5 w-3.5" /> {t('saveFailed')}
                                 <button onClick={() => handleSave('DRAFT')} className="font-medium underline">{tCommon('retry')}</button>
                             </span>
                         )}
@@ -271,7 +272,7 @@ export default function MyEvaluationClient({user }: {
                 {isSubmitted && (
                     <div className="mb-6 flex items-center gap-2 rounded-xl border border-[#A7F3D0] bg-[#D1FAE5] p-4">
                         <CheckCircle2 className="h-5 w-5 text-[#059669]" />
-                        <span className="text-sm font-medium text-[#047857]">자기평가가 제출되었습니다. 수정할 수 없습니다.</span>
+                        <span className="text-sm font-medium text-[#047857]">{t('selfEval_keab080_keca09cec_kec8898ec_kec8898_kec9786ec')}</span>
                     </div>
                 )}
 
@@ -288,7 +289,7 @@ export default function MyEvaluationClient({user }: {
                         <p className="text-xs text-[#8181A5]">/ 5.0</p>
                     </div>
                     <div className="rounded-xl border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4 text-center">
-                        <p className="text-xs text-[#5E81F4]">종합 점수</p>
+                        <p className="text-xs text-[#5E81F4]">{t('kr_keca285ed_score')}</p>
                         <p className="mt-1 text-2xl font-bold text-[#5E81F4]">{totalScore.toFixed(2)}</p>
                         <p className="text-xs text-[#8181A5]">/ 5.0</p>
                     </div>
@@ -315,11 +316,11 @@ export default function MyEvaluationClient({user }: {
                         <div className="mb-6 flex border-b border-[#F0F0F3]">
                             <button onClick={() => setActiveTab('mbo')}
                                 className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'mbo' ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#8181A5] hover:text-[#1C1D21]'}`}>
-                                MBO 업적평가
+                                {t('kr_mbo_kec9785ec')}
                             </button>
                             <button onClick={() => setActiveTab('bei')}
                                 className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'bei' ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#8181A5] hover:text-[#1C1D21]'}`}>
-                                BEI 역량평가
+                                {t('kr_bei_kec97adeb')}
                             </button>
                         </div>
 
@@ -349,7 +350,7 @@ export default function MyEvaluationClient({user }: {
                                     ))}
                                 </div>
                                 <div className="border-t border-[#F0F0F3] px-5 py-3 text-right">
-                                    <span className="text-sm text-[#8181A5]">MBO 총점: </span>
+                                    <span className="text-sm text-[#8181A5]">{t('kr_mbo_kecb49dec')} </span>
                                     <span className="text-sm font-bold text-[#1C1D21]">{mboAvg.toFixed(1)} / 5.0</span>
                                 </div>
                             </div>
@@ -359,7 +360,7 @@ export default function MyEvaluationClient({user }: {
                         {activeTab === 'bei' && (
                             <div className="rounded-xl border border-[#F0F0F3] bg-white">
                                 <div className="border-b border-[#F0F0F3] px-5 py-4">
-                                    <h2 className="text-base font-semibold text-[#1C1D21]">BEI 역량평가 (CTR 핵심가치)</h2>
+                                    <h2 className="text-base font-semibold text-[#1C1D21]">{t('kr_bei_kec97adeb_ctr_ked95b5ec')}</h2>
                                 </div>
                                 <div className="divide-y divide-[#F0F0F3]">
                                     {BEI_ITEMS.map((bei) => (
@@ -380,7 +381,7 @@ export default function MyEvaluationClient({user }: {
                                     ))}
                                 </div>
                                 <div className="border-t border-[#F0F0F3] px-5 py-3 text-right">
-                                    <span className="text-sm text-[#8181A5]">BEI 총점: </span>
+                                    <span className="text-sm text-[#8181A5]">{t('kr_bei_kecb49dec')} </span>
                                     <span className="text-sm font-bold text-[#1C1D21]">{beiAvg.toFixed(1)} / 5.0</span>
                                 </div>
                             </div>
@@ -391,7 +392,7 @@ export default function MyEvaluationClient({user }: {
                             <div className="mt-6 flex items-center justify-end gap-3">
                                 <button onClick={() => handleSave('DRAFT')} disabled={submitting}
                                     className="inline-flex items-center gap-2 rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm font-medium text-[#1C1D21] hover:bg-[#F5F5FA] disabled:opacity-40 transition-colors">
-                                    <Save className="h-4 w-4" /> 임시저장
+                                    <Save className="h-4 w-4" /> {t('kr_kec9e84ec')}
                                 </button>
                                 <button onClick={() => handleSave('SUBMITTED')} disabled={submitting}
                                     className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40 transition-colors">

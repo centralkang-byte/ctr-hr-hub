@@ -10,6 +10,7 @@ import { Loader2, Plus, Clock, Users } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface ShiftSlot {
   name: string
@@ -37,7 +38,9 @@ interface ShiftPatternsTabProps {
   companyId: string | null
 }
 
-export function ShiftPatternsTab({ companyId }: ShiftPatternsTabProps) {
+export function ShiftPatternsTab({
+  companyId }: ShiftPatternsTabProps) {
+  const t = useTranslations('settings')
   const [patterns, setPatterns] = useState<ShiftPattern[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -68,14 +71,14 @@ export function ShiftPatternsTab({ companyId }: ShiftPatternsTabProps) {
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">교대근무 패턴</h3>
+          <h3 className="text-base font-semibold text-[#1C1D21]">{t('shiftWork_ked8ca8ed')}</h3>
           <p className="text-sm text-[#8181A5]">
-            교대 근무 패턴을 생성하고 조별로 배정합니다
+            {t('kr_keab590eb_keab7bceb_ked8ca8ed_')}
           </p>
         </div>
         <Button className={BUTTON_VARIANTS.primary}>
           <Plus className="mr-2 h-4 w-4" />
-          새 패턴 추가
+          {t('kr_kec8388_ked8ca8ed_add')}
         </Button>
       </div>
 
@@ -85,13 +88,13 @@ export function ShiftPatternsTab({ companyId }: ShiftPatternsTabProps) {
           <table className="w-full">
             <thead>
               <tr className={TABLE_STYLES.header}>
-                <th className={TABLE_STYLES.headerCell}>코드</th>
-                <th className={TABLE_STYLES.headerCell}>패턴명</th>
-                <th className={TABLE_STYLES.headerCell}>유형</th>
-                <th className={TABLE_STYLES.headerCell}>교대 수</th>
-                <th className={TABLE_STYLES.headerCell}>주기(일)</th>
-                <th className={TABLE_STYLES.headerCell}>조 수</th>
-                <th className={TABLE_STYLES.headerCell}>상태</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_kecbd94eb')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_ked8ca8ed')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_kec9ca0ed')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_keab590eb_kec8898')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_keca3bcea_kec9dbc')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_keca1b0_kec8898')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('status')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F0F0F3]">
@@ -132,9 +135,9 @@ export function ShiftPatternsTab({ companyId }: ShiftPatternsTabProps) {
       ) : (
         <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
           <Clock className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" />
-          <p className="text-sm font-medium text-[#1C1D21]">등록된 교대 패턴이 없습니다</p>
+          <p className="text-sm font-medium text-[#1C1D21]">{t('register_keb909c_keab590eb_ked8ca8ed_kec9786ec')}</p>
           <p className="mt-1 text-xs text-[#8181A5]">
-            교대근무가 필요한 법인에서 패턴을 추가하세요
+            {t('shiftWork_keab080_ked9584ec_kebb295ec_ked8ca8ed_kecb694ea')}
           </p>
         </div>
       )}

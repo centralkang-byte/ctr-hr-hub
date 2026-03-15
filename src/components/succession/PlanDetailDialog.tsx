@@ -189,7 +189,7 @@ export default function PlanDetailDialog({ planId, onClose }: PlanDetailDialogPr
                   </div>
                   <input
                     className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
-                    placeholder={tCommon('placeholderEmployeeId')}
+                    placeholder={'직원 ID (UUID)'}
                     value={candidateForm.employeeId}
                     onChange={(e) => setCandidateForm((f) => ({ ...f, employeeId: e.target.value }))}
                   />
@@ -205,7 +205,7 @@ export default function PlanDetailDialog({ planId, onClose }: PlanDetailDialogPr
                   <textarea
                     className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
                     rows={2}
-                    placeholder={tCommon('placeholderNote')}
+                    placeholder={'비고'}
                     value={candidateForm.notes}
                     onChange={(e) => setCandidateForm((f) => ({ ...f, notes: e.target.value }))}
                   />

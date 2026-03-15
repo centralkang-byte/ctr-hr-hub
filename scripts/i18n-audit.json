@@ -1,0 +1,5429 @@
+{
+  "generatedAt": "2026-03-15T05:14:18.379Z",
+  "summary": {
+    "tabLabels": 816,
+    "h1Titles": 8,
+    "emptyStateFiles": 53,
+    "placeholders": 46,
+    "supportedLocales": [
+      "ko",
+      "en",
+      "zh",
+      "vi",
+      "es"
+    ],
+    "removedLocales": [
+      "ru",
+      "pt"
+    ]
+  },
+  "tabLabels": {
+    "home": [
+      {
+        "file": "src/app/(dashboard)/recruitment/dashboard/RecruitmentDashboardClient.tsx",
+        "line": 421,
+        "current": "전체 공석",
+        "suggestedKey": "recruitment.dashboard.RecruitmentDashboard.전체_공석"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/dashboard/RecruitmentDashboardClient.tsx",
+        "line": 422,
+        "current": "채용 진행 중",
+        "suggestedKey": "recruitment.dashboard.RecruitmentDashboard.채용_진행_중"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/dashboard/RecruitmentDashboardClient.tsx",
+        "line": 423,
+        "current": "공고 없음",
+        "suggestedKey": "recruitment.dashboard.RecruitmentDashboard.공고_없음"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/dashboard/RecruitmentDashboardClient.tsx",
+        "line": 424,
+        "current": "30일 내 충원",
+        "suggestedKey": "recruitment.dashboard.RecruitmentDashboard.30일_내_충원"
+      },
+      {
+        "file": "src/app/(dashboard)/dashboard/compare/CompareClient.tsx",
+        "line": 28,
+        "current": "이직률",
+        "suggestedKey": "dashboard.compare.Compare.이직률"
+      },
+      {
+        "file": "src/app/(dashboard)/dashboard/compare/CompareClient.tsx",
+        "line": 29,
+        "current": "연차 사용률",
+        "suggestedKey": "dashboard.compare.Compare.연차_사용률"
+      },
+      {
+        "file": "src/app/(dashboard)/dashboard/compare/CompareClient.tsx",
+        "line": 30,
+        "current": "교육 이수율",
+        "suggestedKey": "dashboard.compare.Compare.교육_이수율"
+      },
+      {
+        "file": "src/app/(dashboard)/dashboard/compare/CompareClient.tsx",
+        "line": 31,
+        "current": "인건비",
+        "suggestedKey": "dashboard.compare.Compare.인건비"
+      },
+      {
+        "file": "src/app/(dashboard)/dashboard/DashboardClient.tsx",
+        "line": 41,
+        "current": "요약",
+        "suggestedKey": "dashboard.Dashboard.요약"
+      },
+      {
+        "file": "src/app/(dashboard)/dashboard/DashboardClient.tsx",
+        "line": 42,
+        "current": "인력",
+        "suggestedKey": "dashboard.Dashboard.인력"
+      },
+      {
+        "file": "src/app/(dashboard)/dashboard/DashboardClient.tsx",
+        "line": 43,
+        "current": "채용",
+        "suggestedKey": "dashboard.Dashboard.채용"
+      },
+      {
+        "file": "src/app/(dashboard)/dashboard/DashboardClient.tsx",
+        "line": 44,
+        "current": "성과",
+        "suggestedKey": "dashboard.Dashboard.성과"
+      },
+      {
+        "file": "src/app/(dashboard)/dashboard/DashboardClient.tsx",
+        "line": 45,
+        "current": "근태",
+        "suggestedKey": "dashboard.Dashboard.근태"
+      },
+      {
+        "file": "src/app/(dashboard)/dashboard/DashboardClient.tsx",
+        "line": 46,
+        "current": "급여",
+        "suggestedKey": "dashboard.Dashboard.급여"
+      },
+      {
+        "file": "src/app/(dashboard)/dashboard/DashboardClient.tsx",
+        "line": 47,
+        "current": "교육",
+        "suggestedKey": "dashboard.Dashboard.교육"
+      },
+      {
+        "file": "src/components/home/UnifiedTaskHub.tsx",
+        "line": 76,
+        "current": "전체",
+        "suggestedKey": "home.UnifiedTaskHub.전체"
+      },
+      {
+        "file": "src/components/home/UnifiedTaskHub.tsx",
+        "line": 77,
+        "current": "휴가",
+        "suggestedKey": "home.UnifiedTaskHub.휴가"
+      },
+      {
+        "file": "src/components/home/UnifiedTaskHub.tsx",
+        "line": 78,
+        "current": "성과",
+        "suggestedKey": "home.UnifiedTaskHub.성과"
+      },
+      {
+        "file": "src/components/home/UnifiedTaskHub.tsx",
+        "line": 79,
+        "current": "온보딩",
+        "suggestedKey": "home.UnifiedTaskHub.온보딩"
+      },
+      {
+        "file": "src/components/home/UnifiedTaskHub.tsx",
+        "line": 80,
+        "current": "퇴직",
+        "suggestedKey": "home.UnifiedTaskHub.퇴직"
+      },
+      {
+        "file": "src/components/home/UnifiedTaskHub.tsx",
+        "line": 81,
+        "current": "급여",
+        "suggestedKey": "home.UnifiedTaskHub.급여"
+      }
+    ],
+    "mySpace": [
+      {
+        "file": "src/app/(dashboard)/my/settings/notifications/NotificationPreferenceClient.tsx",
+        "line": 26,
+        "current": "근태 / 휴가",
+        "suggestedKey": "my.settings.notifications.근태_휴가"
+      },
+      {
+        "file": "src/app/(dashboard)/my/settings/notifications/NotificationPreferenceClient.tsx",
+        "line": 28,
+        "current": "휴가 승인",
+        "suggestedKey": "my.settings.notifications.휴가_승인"
+      },
+      {
+        "file": "src/app/(dashboard)/my/settings/notifications/NotificationPreferenceClient.tsx",
+        "line": 29,
+        "current": "휴가 반려",
+        "suggestedKey": "my.settings.notifications.휴가_반려"
+      },
+      {
+        "file": "src/app/(dashboard)/my/settings/notifications/NotificationPreferenceClient.tsx",
+        "line": 30,
+        "current": "주 48시간 경고",
+        "suggestedKey": "my.settings.notifications.주_48시간_경고"
+      },
+      {
+        "file": "src/app/(dashboard)/my/settings/notifications/NotificationPreferenceClient.tsx",
+        "line": 31,
+        "current": "주 52시간 차단",
+        "suggestedKey": "my.settings.notifications.주_52시간_차단"
+      },
+      {
+        "file": "src/app/(dashboard)/my/settings/notifications/NotificationPreferenceClient.tsx",
+        "line": 32,
+        "current": "연차 소멸 30일 전",
+        "suggestedKey": "my.settings.notifications.연차_소멸_30일_전"
+      },
+      {
+        "file": "src/app/(dashboard)/my/settings/notifications/NotificationPreferenceClient.tsx",
+        "line": 36,
+        "current": "급여",
+        "suggestedKey": "my.settings.notifications.급여"
+      },
+      {
+        "file": "src/app/(dashboard)/my/settings/notifications/NotificationPreferenceClient.tsx",
+        "line": 38,
+        "current": "급여명세서 발급",
+        "suggestedKey": "my.settings.notifications.급여명세서_발급"
+      },
+      {
+        "file": "src/app/(dashboard)/my/settings/notifications/NotificationPreferenceClient.tsx",
+        "line": 39,
+        "current": "연말정산 마감",
+        "suggestedKey": "my.settings.notifications.연말정산_마감"
+      },
+      {
+        "file": "src/app/(dashboard)/my/settings/notifications/NotificationPreferenceClient.tsx",
+        "line": 43,
+        "current": "교육 / 복리후생",
+        "suggestedKey": "my.settings.notifications.교육_복리후생"
+      },
+      {
+        "file": "src/app/(dashboard)/my/settings/notifications/NotificationPreferenceClient.tsx",
+        "line": 45,
+        "current": "법정교육 마감 30일 전",
+        "suggestedKey": "my.settings.notifications.법정교육_마감_30일_전"
+      },
+      {
+        "file": "src/app/(dashboard)/my/settings/notifications/NotificationPreferenceClient.tsx",
+        "line": 46,
+        "current": "복리후생 승인",
+        "suggestedKey": "my.settings.notifications.복리후생_승인"
+      },
+      {
+        "file": "src/app/(dashboard)/my/settings/notifications/NotificationPreferenceClient.tsx",
+        "line": 50,
+        "current": "성과 / 분석",
+        "suggestedKey": "my.settings.notifications.성과_분석"
+      },
+      {
+        "file": "src/app/(dashboard)/my/settings/notifications/NotificationPreferenceClient.tsx",
+        "line": 52,
+        "current": "성과평가 마감",
+        "suggestedKey": "my.settings.notifications.성과평가_마감"
+      },
+      {
+        "file": "src/app/(dashboard)/my/settings/notifications/NotificationPreferenceClient.tsx",
+        "line": 53,
+        "current": "이직위험 Critical",
+        "suggestedKey": "my.settings.notifications.이직위험_critical"
+      },
+      {
+        "file": "src/app/(dashboard)/my/tasks/MyTasksClient.tsx",
+        "line": 55,
+        "current": "휴가",
+        "suggestedKey": "my.tasks.MyTasks.휴가"
+      },
+      {
+        "file": "src/app/(dashboard)/my/tasks/MyTasksClient.tsx",
+        "line": 56,
+        "current": "급여",
+        "suggestedKey": "my.tasks.MyTasks.급여"
+      },
+      {
+        "file": "src/app/(dashboard)/my/tasks/MyTasksClient.tsx",
+        "line": 57,
+        "current": "온보딩",
+        "suggestedKey": "my.tasks.MyTasks.온보딩"
+      },
+      {
+        "file": "src/app/(dashboard)/my/tasks/MyTasksClient.tsx",
+        "line": 58,
+        "current": "오프보딩",
+        "suggestedKey": "my.tasks.MyTasks.오프보딩"
+      },
+      {
+        "file": "src/app/(dashboard)/my/tasks/MyTasksClient.tsx",
+        "line": 59,
+        "current": "성과",
+        "suggestedKey": "my.tasks.MyTasks.성과"
+      },
+      {
+        "file": "src/app/(dashboard)/my/tasks/MyTasksClient.tsx",
+        "line": 63,
+        "current": "긴급",
+        "suggestedKey": "my.tasks.MyTasks.긴급"
+      },
+      {
+        "file": "src/app/(dashboard)/my/tasks/MyTasksClient.tsx",
+        "line": 64,
+        "current": "높음",
+        "suggestedKey": "my.tasks.MyTasks.높음"
+      },
+      {
+        "file": "src/app/(dashboard)/my/tasks/MyTasksClient.tsx",
+        "line": 65,
+        "current": "보통",
+        "suggestedKey": "my.tasks.MyTasks.보통"
+      },
+      {
+        "file": "src/app/(dashboard)/my/tasks/MyTasksClient.tsx",
+        "line": 66,
+        "current": "낮음",
+        "suggestedKey": "my.tasks.MyTasks.낮음"
+      },
+      {
+        "file": "src/app/(dashboard)/my/tasks/MyTasksClient.tsx",
+        "line": 70,
+        "current": "전체",
+        "suggestedKey": "my.tasks.MyTasks.전체"
+      },
+      {
+        "file": "src/app/(dashboard)/my/tasks/MyTasksClient.tsx",
+        "line": 71,
+        "current": "휴가",
+        "suggestedKey": "my.tasks.MyTasks.휴가"
+      },
+      {
+        "file": "src/app/(dashboard)/my/tasks/MyTasksClient.tsx",
+        "line": 72,
+        "current": "급여",
+        "suggestedKey": "my.tasks.MyTasks.급여"
+      },
+      {
+        "file": "src/app/(dashboard)/my/tasks/MyTasksClient.tsx",
+        "line": 73,
+        "current": "온보딩",
+        "suggestedKey": "my.tasks.MyTasks.온보딩"
+      },
+      {
+        "file": "src/app/(dashboard)/my/tasks/MyTasksClient.tsx",
+        "line": 74,
+        "current": "오프보딩",
+        "suggestedKey": "my.tasks.MyTasks.오프보딩"
+      },
+      {
+        "file": "src/app/(dashboard)/my/tasks/MyTasksClient.tsx",
+        "line": 75,
+        "current": "성과",
+        "suggestedKey": "my.tasks.MyTasks.성과"
+      },
+      {
+        "file": "src/app/(dashboard)/my/tasks/MyTasksClient.tsx",
+        "line": 79,
+        "current": "우선순위",
+        "suggestedKey": "my.tasks.MyTasks.우선순위"
+      },
+      {
+        "file": "src/app/(dashboard)/my/tasks/MyTasksClient.tsx",
+        "line": 80,
+        "current": "마감일",
+        "suggestedKey": "my.tasks.MyTasks.마감일"
+      },
+      {
+        "file": "src/app/(dashboard)/my/tasks/MyTasksClient.tsx",
+        "line": 81,
+        "current": "생성일",
+        "suggestedKey": "my.tasks.MyTasks.생성일"
+      },
+      {
+        "file": "src/app/(dashboard)/my/year-end/YearEndWizardClient.tsx",
+        "line": 106,
+        "current": "부양가족 확인",
+        "suggestedKey": "my.year-end.YearEndWizard.부양가족_확인"
+      },
+      {
+        "file": "src/app/(dashboard)/my/year-end/YearEndWizardClient.tsx",
+        "line": 107,
+        "current": "공제항목 입력",
+        "suggestedKey": "my.year-end.YearEndWizard.공제항목_입력"
+      },
+      {
+        "file": "src/app/(dashboard)/my/year-end/YearEndWizardClient.tsx",
+        "line": 108,
+        "current": "추가공제",
+        "suggestedKey": "my.year-end.YearEndWizard.추가공제"
+      },
+      {
+        "file": "src/app/(dashboard)/my/year-end/YearEndWizardClient.tsx",
+        "line": 109,
+        "current": "결과 확인",
+        "suggestedKey": "my.year-end.YearEndWizard.결과_확인"
+      },
+      {
+        "file": "src/app/(dashboard)/my/training/MyTrainingClient.tsx",
+        "line": 92,
+        "current": "수강대기",
+        "suggestedKey": "my.training.MyTraining.수강대기"
+      },
+      {
+        "file": "src/app/(dashboard)/my/training/MyTrainingClient.tsx",
+        "line": 93,
+        "current": "수강중",
+        "suggestedKey": "my.training.MyTraining.수강중"
+      },
+      {
+        "file": "src/app/(dashboard)/my/MySpaceClient.tsx",
+        "line": 62,
+        "current": "내 프로필",
+        "suggestedKey": "my.MySpace.내_프로필"
+      },
+      {
+        "file": "src/app/(dashboard)/my/MySpaceClient.tsx",
+        "line": 63,
+        "current": "휴가 신청",
+        "suggestedKey": "my.MySpace.휴가_신청"
+      },
+      {
+        "file": "src/app/(dashboard)/my/MySpaceClient.tsx",
+        "line": 64,
+        "current": "내 성과",
+        "suggestedKey": "my.MySpace.내_성과"
+      },
+      {
+        "file": "src/app/(dashboard)/my/MySpaceClient.tsx",
+        "line": 65,
+        "current": "교육 신청",
+        "suggestedKey": "my.MySpace.교육_신청"
+      },
+      {
+        "file": "src/app/(dashboard)/my/MySpaceClient.tsx",
+        "line": 66,
+        "current": "사내 공고",
+        "suggestedKey": "my.MySpace.사내_공고"
+      },
+      {
+        "file": "src/app/(dashboard)/my/MySpaceClient.tsx",
+        "line": 67,
+        "current": "연말 정산",
+        "suggestedKey": "my.MySpace.연말_정산"
+      },
+      {
+        "file": "src/app/(dashboard)/my/profile/MyProfileClient.tsx",
+        "line": 107,
+        "current": "개요",
+        "suggestedKey": "my.profile.MyProfile.개요"
+      },
+      {
+        "file": "src/app/(dashboard)/my/profile/MyProfileClient.tsx",
+        "line": 108,
+        "current": "직무 및 이력",
+        "suggestedKey": "my.profile.MyProfile.직무_및_이력"
+      },
+      {
+        "file": "src/app/(dashboard)/my/profile/MyProfileClient.tsx",
+        "line": 109,
+        "current": "보상 및 급여",
+        "suggestedKey": "my.profile.MyProfile.보상_및_급여"
+      },
+      {
+        "file": "src/app/(dashboard)/my/profile/MyProfileClient.tsx",
+        "line": 110,
+        "current": "문서",
+        "suggestedKey": "my.profile.MyProfile.문서"
+      },
+      {
+        "file": "src/app/(dashboard)/my/profile/MyProfileClient.tsx",
+        "line": 346,
+        "current": "사원번호",
+        "suggestedKey": "my.profile.MyProfile.사원번호"
+      },
+      {
+        "file": "src/app/(dashboard)/my/profile/MyProfileClient.tsx",
+        "line": 347,
+        "current": "입사일",
+        "suggestedKey": "my.profile.MyProfile.입사일"
+      },
+      {
+        "file": "src/app/(dashboard)/my/profile/MyProfileClient.tsx",
+        "line": 348,
+        "current": "성별",
+        "suggestedKey": "my.profile.MyProfile.성별"
+      },
+      {
+        "file": "src/app/(dashboard)/my/profile/MyProfileClient.tsx",
+        "line": 349,
+        "current": "생년월일",
+        "suggestedKey": "my.profile.MyProfile.생년월일"
+      },
+      {
+        "file": "src/app/(dashboard)/my/profile/MyProfileClient.tsx",
+        "line": 350,
+        "current": "이메일 (회사)",
+        "suggestedKey": "my.profile.MyProfile.이메일_회사_"
+      },
+      {
+        "file": "src/app/(dashboard)/my/profile/MyProfileClient.tsx",
+        "line": 351,
+        "current": "연락처 (개인)",
+        "suggestedKey": "my.profile.MyProfile.연락처_개인_"
+      },
+      {
+        "file": "src/app/(dashboard)/my/profile/MyProfileClient.tsx",
+        "line": 474,
+        "current": "내 연락처",
+        "suggestedKey": "my.profile.MyProfile.내_연락처"
+      },
+      {
+        "file": "src/app/(dashboard)/my/profile/MyProfileClient.tsx",
+        "line": 475,
+        "current": "생일 정보",
+        "suggestedKey": "my.profile.MyProfile.생일_정보"
+      },
+      {
+        "file": "src/app/(dashboard)/my/profile/MyProfileClient.tsx",
+        "line": 476,
+        "current": "보유 스킬",
+        "suggestedKey": "my.profile.MyProfile.보유_스킬"
+      },
+      {
+        "file": "src/app/(dashboard)/my/profile/MyProfileClient.tsx",
+        "line": 662,
+        "current": "이름",
+        "suggestedKey": "my.profile.MyProfile.이름"
+      },
+      {
+        "file": "src/app/(dashboard)/my/profile/MyProfileClient.tsx",
+        "line": 663,
+        "current": "관계",
+        "suggestedKey": "my.profile.MyProfile.관계"
+      },
+      {
+        "file": "src/app/(dashboard)/my/profile/MyProfileClient.tsx",
+        "line": 664,
+        "current": "전화번호",
+        "suggestedKey": "my.profile.MyProfile.전화번호"
+      },
+      {
+        "file": "src/app/(dashboard)/my/benefits/MyBenefitsClient.tsx",
+        "line": 59,
+        "current": "승인대기",
+        "suggestedKey": "my.benefits.MyBenefits.승인대기"
+      },
+      {
+        "file": "src/app/(dashboard)/my/benefits/MyBenefitsClient.tsx",
+        "line": 60,
+        "current": "승인",
+        "suggestedKey": "my.benefits.MyBenefits.승인"
+      },
+      {
+        "file": "src/app/(dashboard)/my/benefits/MyBenefitsClient.tsx",
+        "line": 61,
+        "current": "반려",
+        "suggestedKey": "my.benefits.MyBenefits.반려"
+      },
+      {
+        "file": "src/app/(dashboard)/my/benefits/MyBenefitsClient.tsx",
+        "line": 62,
+        "current": "지급완료",
+        "suggestedKey": "my.benefits.MyBenefits.지급완료"
+      },
+      {
+        "file": "src/app/(dashboard)/my/benefits/MyBenefitsClient.tsx",
+        "line": 63,
+        "current": "취소",
+        "suggestedKey": "my.benefits.MyBenefits.취소"
+      },
+      {
+        "file": "src/app/(dashboard)/my/skills/MySkillsClient.tsx",
+        "line": 55,
+        "current": "기초",
+        "suggestedKey": "my.skills.MySkills.기초"
+      },
+      {
+        "file": "src/app/(dashboard)/my/skills/MySkillsClient.tsx",
+        "line": 56,
+        "current": "기본",
+        "suggestedKey": "my.skills.MySkills.기본"
+      },
+      {
+        "file": "src/app/(dashboard)/my/skills/MySkillsClient.tsx",
+        "line": 57,
+        "current": "우수",
+        "suggestedKey": "my.skills.MySkills.우수"
+      },
+      {
+        "file": "src/app/(dashboard)/my/skills/MySkillsClient.tsx",
+        "line": 58,
+        "current": "탁월",
+        "suggestedKey": "my.skills.MySkills.탁월"
+      },
+      {
+        "file": "src/app/(dashboard)/my/skills/MySkillsClient.tsx",
+        "line": 59,
+        "current": "전문가",
+        "suggestedKey": "my.skills.MySkills.전문가"
+      },
+      {
+        "file": "src/app/(dashboard)/my/leave/MyLeaveClient.tsx",
+        "line": 55,
+        "current": "대기중",
+        "suggestedKey": "my.leave.MyLeave.대기중"
+      },
+      {
+        "file": "src/app/(dashboard)/my/leave/MyLeaveClient.tsx",
+        "line": 56,
+        "current": "승인",
+        "suggestedKey": "my.leave.MyLeave.승인"
+      },
+      {
+        "file": "src/app/(dashboard)/my/leave/MyLeaveClient.tsx",
+        "line": 57,
+        "current": "반려",
+        "suggestedKey": "my.leave.MyLeave.반려"
+      },
+      {
+        "file": "src/app/(dashboard)/my/leave/MyLeaveClient.tsx",
+        "line": 58,
+        "current": "취소",
+        "suggestedKey": "my.leave.MyLeave.취소"
+      }
+    ],
+    "teamManagement": [
+      {
+        "file": "src/app/api/v1/analytics/performance/overview/route.ts",
+        "line": 131,
+        "current": "현재 사이클",
+        "suggestedKey": "api.v1.analytics.현재_사이클"
+      },
+      {
+        "file": "src/app/api/v1/analytics/performance/overview/route.ts",
+        "line": 133,
+        "current": "평가 완료율",
+        "suggestedKey": "api.v1.analytics.평가_완료율"
+      },
+      {
+        "file": "src/app/api/v1/analytics/performance/overview/route.ts",
+        "line": 136,
+        "current": "캘리 조정률",
+        "suggestedKey": "api.v1.analytics.캘리_조정률"
+      },
+      {
+        "file": "src/app/api/v1/analytics/performance/overview/route.ts",
+        "line": 138,
+        "current": "목표 제출률",
+        "suggestedKey": "api.v1.analytics.목표_제출률"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/performance/tabs/EvalCycleTab.tsx",
+        "line": 12,
+        "current": "초안",
+        "suggestedKey": "settings.performance.tabs.초안"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/performance/tabs/EvalCycleTab.tsx",
+        "line": 13,
+        "current": "목표설정",
+        "suggestedKey": "settings.performance.tabs.목표설정"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/performance/tabs/EvalCycleTab.tsx",
+        "line": 14,
+        "current": "진행중",
+        "suggestedKey": "settings.performance.tabs.진행중"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/performance/tabs/EvalCycleTab.tsx",
+        "line": 15,
+        "current": "자기평가",
+        "suggestedKey": "settings.performance.tabs.자기평가"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/performance/tabs/EvalCycleTab.tsx",
+        "line": 16,
+        "current": "상위평가",
+        "suggestedKey": "settings.performance.tabs.상위평가"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/performance/tabs/EvalCycleTab.tsx",
+        "line": 17,
+        "current": "캘리브레이션",
+        "suggestedKey": "settings.performance.tabs.캘리브레이션"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/performance/tabs/EvalCycleTab.tsx",
+        "line": 18,
+        "current": "완료",
+        "suggestedKey": "settings.performance.tabs.완료"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/performance/tabs/EvalCycleTab.tsx",
+        "line": 19,
+        "current": "마감",
+        "suggestedKey": "settings.performance.tabs.마감"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/cycles/CyclesClient.tsx",
+        "line": 27,
+        "current": "초안",
+        "suggestedKey": "performance.cycles.Cycles.초안"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/cycles/CyclesClient.tsx",
+        "line": 28,
+        "current": "진행 중",
+        "suggestedKey": "performance.cycles.Cycles.진행_중"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/cycles/CyclesClient.tsx",
+        "line": 29,
+        "current": "체크인",
+        "suggestedKey": "performance.cycles.Cycles.체크인"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/cycles/CyclesClient.tsx",
+        "line": 30,
+        "current": "평가 실시",
+        "suggestedKey": "performance.cycles.Cycles.평가_실시"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/cycles/CyclesClient.tsx",
+        "line": 31,
+        "current": "캘리브레이션",
+        "suggestedKey": "performance.cycles.Cycles.캘리브레이션"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/cycles/CyclesClient.tsx",
+        "line": 32,
+        "current": "확정",
+        "suggestedKey": "performance.cycles.Cycles.확정"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/cycles/CyclesClient.tsx",
+        "line": 33,
+        "current": "종료",
+        "suggestedKey": "performance.cycles.Cycles.종료"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/cycles/CyclesClient.tsx",
+        "line": 34,
+        "current": "보상 검토",
+        "suggestedKey": "performance.cycles.Cycles.보상_검토"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/cycles/CyclesClient.tsx",
+        "line": 35,
+        "current": "보상 완료",
+        "suggestedKey": "performance.cycles.Cycles.보상_완료"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/cycles/[id]/CycleDetailClient.tsx",
+        "line": 34,
+        "current": "초안",
+        "suggestedKey": "performance.cycles.[id].초안"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/cycles/[id]/CycleDetailClient.tsx",
+        "line": 35,
+        "current": "목표 설정",
+        "suggestedKey": "performance.cycles.[id].목표_설정"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/cycles/[id]/CycleDetailClient.tsx",
+        "line": 36,
+        "current": "체크인",
+        "suggestedKey": "performance.cycles.[id].체크인"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/cycles/[id]/CycleDetailClient.tsx",
+        "line": 37,
+        "current": "평가 실시",
+        "suggestedKey": "performance.cycles.[id].평가_실시"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/cycles/[id]/CycleDetailClient.tsx",
+        "line": 38,
+        "current": "캘리브레이션",
+        "suggestedKey": "performance.cycles.[id].캘리브레이션"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/cycles/[id]/CycleDetailClient.tsx",
+        "line": 39,
+        "current": "확정",
+        "suggestedKey": "performance.cycles.[id].확정"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/cycles/[id]/CycleDetailClient.tsx",
+        "line": 40,
+        "current": "종료",
+        "suggestedKey": "performance.cycles.[id].종료"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/cycles/[id]/CycleDetailClient.tsx",
+        "line": 41,
+        "current": "보상 검토",
+        "suggestedKey": "performance.cycles.[id].보상_검토"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/cycles/[id]/CycleDetailClient.tsx",
+        "line": 42,
+        "current": "보상 완료",
+        "suggestedKey": "performance.cycles.[id].보상_완료"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-peer-review/MyPeerReviewClient.tsx",
+        "line": 35,
+        "current": "제출 완료",
+        "suggestedKey": "performance.my-peer-review.MyPeerReview.제출_완료"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-peer-review/MyPeerReviewClient.tsx",
+        "line": 36,
+        "current": "작성 중",
+        "suggestedKey": "performance.my-peer-review.MyPeerReview.작성_중"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-peer-review/MyPeerReviewClient.tsx",
+        "line": 58,
+        "current": "도전",
+        "suggestedKey": "performance.my-peer-review.MyPeerReview.도전"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-peer-review/MyPeerReviewClient.tsx",
+        "line": 59,
+        "current": "신뢰",
+        "suggestedKey": "performance.my-peer-review.MyPeerReview.신뢰"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-peer-review/MyPeerReviewClient.tsx",
+        "line": 60,
+        "current": "책임",
+        "suggestedKey": "performance.my-peer-review.MyPeerReview.책임"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-peer-review/MyPeerReviewClient.tsx",
+        "line": 61,
+        "current": "존중",
+        "suggestedKey": "performance.my-peer-review.MyPeerReview.존중"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-goals/MyGoalsClient.tsx",
+        "line": 24,
+        "current": "초안",
+        "suggestedKey": "performance.my-goals.MyGoals.초안"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-goals/MyGoalsClient.tsx",
+        "line": 25,
+        "current": "승인 대기",
+        "suggestedKey": "performance.my-goals.MyGoals.승인_대기"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-goals/MyGoalsClient.tsx",
+        "line": 26,
+        "current": "승인됨",
+        "suggestedKey": "performance.my-goals.MyGoals.승인됨"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-goals/MyGoalsClient.tsx",
+        "line": 27,
+        "current": "반려",
+        "suggestedKey": "performance.my-goals.MyGoals.반려"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/calibration/CalibrationClient.tsx",
+        "line": 81,
+        "current": "초안",
+        "suggestedKey": "performance.calibration.Calibration.초안"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/calibration/CalibrationClient.tsx",
+        "line": 82,
+        "current": "진행중",
+        "suggestedKey": "performance.calibration.Calibration.진행중"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/calibration/CalibrationClient.tsx",
+        "line": 83,
+        "current": "완료",
+        "suggestedKey": "performance.calibration.Calibration.완료"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-checkins/MyCheckinsClient.tsx",
+        "line": 112,
+        "current": "1:1 미팅 기록",
+        "suggestedKey": "performance.my-checkins.MyCheckins.1_1_미팅_기록"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-checkins/MyCheckinsClient.tsx",
+        "line": 113,
+        "current": "매니저 기록",
+        "suggestedKey": "performance.my-checkins.MyCheckins.매니저_기록"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-checkins/MyCheckinsClient.tsx",
+        "line": 114,
+        "current": "목표 진행률 업데이트",
+        "suggestedKey": "performance.my-checkins.MyCheckins.목표_진행률_업데이트"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/pulse/PulseSurveyClient.tsx",
+        "line": 39,
+        "current": "초안",
+        "suggestedKey": "performance.pulse.PulseSurvey.초안"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/pulse/PulseSurveyClient.tsx",
+        "line": 40,
+        "current": "진행중",
+        "suggestedKey": "performance.pulse.PulseSurvey.진행중"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/pulse/PulseSurveyClient.tsx",
+        "line": 41,
+        "current": "종료",
+        "suggestedKey": "performance.pulse.PulseSurvey.종료"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/pulse/PulseSurveyClient.tsx",
+        "line": 265,
+        "current": "설문 관리",
+        "suggestedKey": "performance.pulse.PulseSurvey.설문_관리"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/pulse/PulseSurveyClient.tsx",
+        "line": 299,
+        "current": "전체",
+        "suggestedKey": "performance.pulse.PulseSurvey.전체"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-evaluation/MyEvaluationClient.tsx",
+        "line": 21,
+        "current": "도전",
+        "suggestedKey": "performance.my-evaluation.MyEvaluation.도전"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-evaluation/MyEvaluationClient.tsx",
+        "line": 22,
+        "current": "신뢰",
+        "suggestedKey": "performance.my-evaluation.MyEvaluation.신뢰"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-evaluation/MyEvaluationClient.tsx",
+        "line": 23,
+        "current": "책임",
+        "suggestedKey": "performance.my-evaluation.MyEvaluation.책임"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-evaluation/MyEvaluationClient.tsx",
+        "line": 24,
+        "current": "존중",
+        "suggestedKey": "performance.my-evaluation.MyEvaluation.존중"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/manager-evaluation/ManagerEvaluationClient.tsx",
+        "line": 51,
+        "current": "도전",
+        "suggestedKey": "performance.manager-evaluation.ManagerEvaluation.도전"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/manager-evaluation/ManagerEvaluationClient.tsx",
+        "line": 52,
+        "current": "책임",
+        "suggestedKey": "performance.manager-evaluation.ManagerEvaluation.책임"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/manager-evaluation/ManagerEvaluationClient.tsx",
+        "line": 278,
+        "current": "MBO 평가",
+        "suggestedKey": "performance.manager-evaluation.ManagerEvaluation.mbo_평가"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/manager-evaluation/ManagerEvaluationClient.tsx",
+        "line": 279,
+        "current": "BEI 평가",
+        "suggestedKey": "performance.manager-evaluation.ManagerEvaluation.bei_평가"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/manager-evaluation/ManagerEvaluationClient.tsx",
+        "line": 280,
+        "current": "동료평가 결과",
+        "suggestedKey": "performance.manager-evaluation.ManagerEvaluation.동료평가_결과"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/manager-evaluation/ManagerEvaluationClient.tsx",
+        "line": 281,
+        "current": "종합",
+        "suggestedKey": "performance.manager-evaluation.ManagerEvaluation.종합"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-result/MyResultClient.tsx",
+        "line": 52,
+        "current": "탁월 (E+)",
+        "suggestedKey": "performance.my-result.MyResult.탁월_e_"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-result/MyResultClient.tsx",
+        "line": 53,
+        "current": "우수 (E)",
+        "suggestedKey": "performance.my-result.MyResult.우수_e_"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-result/MyResultClient.tsx",
+        "line": 54,
+        "current": "기대 이상 (M+)",
+        "suggestedKey": "performance.my-result.MyResult.기대_이상_m_"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-result/MyResultClient.tsx",
+        "line": 55,
+        "current": "기대 충족 (M)",
+        "suggestedKey": "performance.my-result.MyResult.기대_충족_m_"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-result/MyResultClient.tsx",
+        "line": 56,
+        "current": "개선 필요 (B)",
+        "suggestedKey": "performance.my-result.MyResult.개선_필요_b_"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-result/MyResultClient.tsx",
+        "line": 57,
+        "current": "미흡 (B-)",
+        "suggestedKey": "performance.my-result.MyResult.미흡_b_"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-result/MyResultClient.tsx",
+        "line": 264,
+        "current": "도전",
+        "suggestedKey": "performance.my-result.MyResult.도전"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-result/MyResultClient.tsx",
+        "line": 265,
+        "current": "신뢰",
+        "suggestedKey": "performance.my-result.MyResult.신뢰"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-result/MyResultClient.tsx",
+        "line": 266,
+        "current": "책임",
+        "suggestedKey": "performance.my-result.MyResult.책임"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/my-result/MyResultClient.tsx",
+        "line": 267,
+        "current": "존중",
+        "suggestedKey": "performance.my-result.MyResult.존중"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/recognition/RecognitionClient.tsx",
+        "line": 49,
+        "current": "도전",
+        "suggestedKey": "performance.recognition.Recognition.도전"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/recognition/RecognitionClient.tsx",
+        "line": 50,
+        "current": "신뢰",
+        "suggestedKey": "performance.recognition.Recognition.신뢰"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/recognition/RecognitionClient.tsx",
+        "line": 51,
+        "current": "책임",
+        "suggestedKey": "performance.recognition.Recognition.책임"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/recognition/RecognitionClient.tsx",
+        "line": 52,
+        "current": "존중",
+        "suggestedKey": "performance.recognition.Recognition.존중"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/one-on-one/[id]/OneOnOneDetailClient.tsx",
+        "line": 236,
+        "current": "긍정적",
+        "suggestedKey": "performance.one-on-one.[id].긍정적"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/one-on-one/[id]/OneOnOneDetailClient.tsx",
+        "line": 237,
+        "current": "보통",
+        "suggestedKey": "performance.one-on-one.[id].보통"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/one-on-one/[id]/OneOnOneDetailClient.tsx",
+        "line": 238,
+        "current": "부정적",
+        "suggestedKey": "performance.one-on-one.[id].부정적"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/one-on-one/[id]/OneOnOneDetailClient.tsx",
+        "line": 239,
+        "current": "우려됨",
+        "suggestedKey": "performance.one-on-one.[id].우려됨"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/notifications/NotificationsClient.tsx",
+        "line": 124,
+        "current": "✅ 자동확인",
+        "suggestedKey": "performance.notifications.Notifications._자동확인"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/notifications/NotificationsClient.tsx",
+        "line": 125,
+        "current": "✅ 확인",
+        "suggestedKey": "performance.notifications.Notifications._확인"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/notifications/NotificationsClient.tsx",
+        "line": 127,
+        "current": "🟡 대기",
+        "suggestedKey": "performance.notifications.Notifications._대기"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/notifications/NotificationsClient.tsx",
+        "line": 128,
+        "current": "⬜ 미통보",
+        "suggestedKey": "performance.notifications.Notifications._미통보"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/peer-review/PeerReviewClient.tsx",
+        "line": 51,
+        "current": "미작성",
+        "suggestedKey": "performance.peer-review.PeerReview.미작성"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/peer-review/PeerReviewClient.tsx",
+        "line": 52,
+        "current": "제출 완료",
+        "suggestedKey": "performance.peer-review.PeerReview.제출_완료"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/peer-review/PeerReviewClient.tsx",
+        "line": 53,
+        "current": "확정",
+        "suggestedKey": "performance.peer-review.PeerReview.확정"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/peer-review/evaluate/[nominationId]/PeerEvalFormClient.tsx",
+        "line": 18,
+        "current": "협업 및 팀워크",
+        "suggestedKey": "performance.peer-review.evaluate.협업_및_팀워크"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/peer-review/evaluate/[nominationId]/PeerEvalFormClient.tsx",
+        "line": 19,
+        "current": "소통 능력",
+        "suggestedKey": "performance.peer-review.evaluate.소통_능력"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/peer-review/evaluate/[nominationId]/PeerEvalFormClient.tsx",
+        "line": 20,
+        "current": "신뢰성",
+        "suggestedKey": "performance.peer-review.evaluate.신뢰성"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/peer-review/evaluate/[nominationId]/PeerEvalFormClient.tsx",
+        "line": 21,
+        "current": "전문성",
+        "suggestedKey": "performance.peer-review.evaluate.전문성"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/peer-review/evaluate/[nominationId]/PeerEvalFormClient.tsx",
+        "line": 22,
+        "current": "주도성",
+        "suggestedKey": "performance.peer-review.evaluate.주도성"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/peer-review/evaluate/[nominationId]/PeerEvalFormClient.tsx",
+        "line": 23,
+        "current": "존중",
+        "suggestedKey": "performance.peer-review.evaluate.존중"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/peer-review/evaluate/[nominationId]/PeerEvalFormClient.tsx",
+        "line": 24,
+        "current": "성장 의지",
+        "suggestedKey": "performance.peer-review.evaluate.성장_의지"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/peer-review/evaluate/[nominationId]/PeerEvalFormClient.tsx",
+        "line": 25,
+        "current": "업무 영향력",
+        "suggestedKey": "performance.peer-review.evaluate.업무_영향력"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/peer-review/[cycleId]/setup/PeerNominationSetupClient.tsx",
+        "line": 50,
+        "current": "검토 대기",
+        "suggestedKey": "performance.peer-review.[cycleId].검토_대기"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/peer-review/[cycleId]/setup/PeerNominationSetupClient.tsx",
+        "line": 51,
+        "current": "승인",
+        "suggestedKey": "performance.peer-review.[cycleId].승인"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/peer-review/[cycleId]/setup/PeerNominationSetupClient.tsx",
+        "line": 52,
+        "current": "거부",
+        "suggestedKey": "performance.peer-review.[cycleId].거부"
+      },
+      {
+        "file": "src/app/(dashboard)/performance/peer-review/[cycleId]/setup/PeerNominationSetupClient.tsx",
+        "line": 53,
+        "current": "평가 완료",
+        "suggestedKey": "performance.peer-review.[cycleId].평가_완료"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/team-health/TeamHealthClient.tsx",
+        "line": 21,
+        "current": "초과근무",
+        "suggestedKey": "analytics.team-health.TeamHealth.초과근무"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/team-health/TeamHealthClient.tsx",
+        "line": 22,
+        "current": "연차사용",
+        "suggestedKey": "analytics.team-health.TeamHealth.연차사용"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/team-health/TeamHealthClient.tsx",
+        "line": 23,
+        "current": "성과분포",
+        "suggestedKey": "analytics.team-health.TeamHealth.성과분포"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/team-health/TeamHealthClient.tsx",
+        "line": 24,
+        "current": "이직위험",
+        "suggestedKey": "analytics.team-health.TeamHealth.이직위험"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/team-health/TeamHealthClient.tsx",
+        "line": 25,
+        "current": "번아웃",
+        "suggestedKey": "analytics.team-health.TeamHealth.번아웃"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/team-health/TeamHealthClient.tsx",
+        "line": 60,
+        "current": "다시 시도",
+        "suggestedKey": "analytics.team-health.TeamHealth.다시_시도"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/performance/PerformanceClient.tsx",
+        "line": 56,
+        "current": "다시 시도",
+        "suggestedKey": "analytics.performance.Performance.다시_시도"
+      },
+      {
+        "file": "src/components/teams/DigestPreview.tsx",
+        "line": 109,
+        "current": "신규입사",
+        "suggestedKey": "teams.DigestPreview.신규입사"
+      },
+      {
+        "file": "src/components/teams/DigestPreview.tsx",
+        "line": 110,
+        "current": "휴가중",
+        "suggestedKey": "teams.DigestPreview.휴가중"
+      },
+      {
+        "file": "src/components/teams/DigestPreview.tsx",
+        "line": 111,
+        "current": "평가 대기",
+        "suggestedKey": "teams.DigestPreview.평가_대기"
+      },
+      {
+        "file": "src/components/teams/DigestPreview.tsx",
+        "line": 112,
+        "current": "이탈 위험",
+        "suggestedKey": "teams.DigestPreview.이탈_위험"
+      },
+      {
+        "file": "src/components/teams/DigestPreview.tsx",
+        "line": 113,
+        "current": "승인 대기",
+        "suggestedKey": "teams.DigestPreview.승인_대기"
+      },
+      {
+        "file": "src/components/teams/TeamsWebhookSection.tsx",
+        "line": 9,
+        "current": "52시간 차단",
+        "suggestedKey": "teams.TeamsWebhookSection.52시간_차단"
+      },
+      {
+        "file": "src/components/teams/TeamsWebhookSection.tsx",
+        "line": 10,
+        "current": "48시간 경고",
+        "suggestedKey": "teams.TeamsWebhookSection.48시간_경고"
+      },
+      {
+        "file": "src/components/teams/TeamsWebhookSection.tsx",
+        "line": 11,
+        "current": "이직위험 Critical",
+        "suggestedKey": "teams.TeamsWebhookSection.이직위험_critical"
+      },
+      {
+        "file": "src/components/teams/TeamsWebhookSection.tsx",
+        "line": 12,
+        "current": "입사 수락",
+        "suggestedKey": "teams.TeamsWebhookSection.입사_수락"
+      },
+      {
+        "file": "src/components/teams/TeamsWebhookSection.tsx",
+        "line": 13,
+        "current": "조직 개편 적용",
+        "suggestedKey": "teams.TeamsWebhookSection.조직_개편_적용"
+      },
+      {
+        "file": "src/components/teams/TeamsWebhookSection.tsx",
+        "line": 14,
+        "current": "휴가 승인",
+        "suggestedKey": "teams.TeamsWebhookSection.휴가_승인"
+      },
+      {
+        "file": "src/components/teams/TeamsWebhookSection.tsx",
+        "line": 15,
+        "current": "급여명세서 발급",
+        "suggestedKey": "teams.TeamsWebhookSection.급여명세서_발급"
+      },
+      {
+        "file": "src/components/teams/TeamsWebhookSection.tsx",
+        "line": 16,
+        "current": "복리후생 승인",
+        "suggestedKey": "teams.TeamsWebhookSection.복리후생_승인"
+      },
+      {
+        "file": "src/components/teams/TeamsWebhookSection.tsx",
+        "line": 17,
+        "current": "성과평가 마감",
+        "suggestedKey": "teams.TeamsWebhookSection.성과평가_마감"
+      },
+      {
+        "file": "src/components/performance/EmployeeInsightPanel.tsx",
+        "line": 56,
+        "current": "1-2년 후",
+        "suggestedKey": "performance.EmployeeInsightPanel.1_2년_후"
+      },
+      {
+        "file": "src/components/performance/EmployeeInsightPanel.tsx",
+        "line": 57,
+        "current": "개발 필요",
+        "suggestedKey": "performance.EmployeeInsightPanel.개발_필요"
+      }
+    ],
+    "hrOperations": [
+      {
+        "file": "src/app/api/v1/leave/admin/stats/route.ts",
+        "line": 175,
+        "current": "0일 이하",
+        "suggestedKey": "api.v1.leave.0일_이하"
+      },
+      {
+        "file": "src/app/api/v1/leave/admin/stats/route.ts",
+        "line": 176,
+        "current": "1-3일",
+        "suggestedKey": "api.v1.leave.1_3일"
+      },
+      {
+        "file": "src/app/api/v1/leave/admin/stats/route.ts",
+        "line": 177,
+        "current": "4-7일",
+        "suggestedKey": "api.v1.leave.4_7일"
+      },
+      {
+        "file": "src/app/api/v1/leave/admin/stats/route.ts",
+        "line": 178,
+        "current": "8-11일",
+        "suggestedKey": "api.v1.leave.8_11일"
+      },
+      {
+        "file": "src/app/api/v1/leave/admin/stats/route.ts",
+        "line": 179,
+        "current": "12-15일",
+        "suggestedKey": "api.v1.leave.12_15일"
+      },
+      {
+        "file": "src/app/api/v1/leave/admin/stats/route.ts",
+        "line": 180,
+        "current": "15일 초과",
+        "suggestedKey": "api.v1.leave.15일_초과"
+      },
+      {
+        "file": "src/app/api/v1/analytics/attendance/overview/route.ts",
+        "line": 117,
+        "current": "연차 사용률",
+        "suggestedKey": "api.v1.analytics.연차_사용률"
+      },
+      {
+        "file": "src/app/api/v1/analytics/attendance/overview/route.ts",
+        "line": 118,
+        "current": "52h 위반",
+        "suggestedKey": "api.v1.analytics.52h_위반"
+      },
+      {
+        "file": "src/app/api/v1/analytics/attendance/overview/route.ts",
+        "line": 119,
+        "current": "평균 초과근무",
+        "suggestedKey": "api.v1.analytics.평균_초과근무"
+      },
+      {
+        "file": "src/app/api/v1/analytics/attendance/overview/route.ts",
+        "line": 120,
+        "current": "마이너스 연차",
+        "suggestedKey": "api.v1.analytics.마이너스_연차"
+      },
+      {
+        "file": "src/app/(dashboard)/attendance/shift-calendar/ShiftCalendarClient.tsx",
+        "line": 117,
+        "current": "예정",
+        "suggestedKey": "attendance.shift-calendar.ShiftCalendar.예정"
+      },
+      {
+        "file": "src/app/(dashboard)/attendance/shift-calendar/ShiftCalendarClient.tsx",
+        "line": 118,
+        "current": "완료",
+        "suggestedKey": "attendance.shift-calendar.ShiftCalendar.완료"
+      },
+      {
+        "file": "src/app/(dashboard)/attendance/shift-calendar/ShiftCalendarClient.tsx",
+        "line": 119,
+        "current": "결근",
+        "suggestedKey": "attendance.shift-calendar.ShiftCalendar.결근"
+      },
+      {
+        "file": "src/app/(dashboard)/attendance/shift-calendar/ShiftCalendarClient.tsx",
+        "line": 120,
+        "current": "교대변경",
+        "suggestedKey": "attendance.shift-calendar.ShiftCalendar.교대변경"
+      },
+      {
+        "file": "src/app/(dashboard)/attendance/shift-calendar/ShiftCalendarClient.tsx",
+        "line": 124,
+        "current": "대기",
+        "suggestedKey": "attendance.shift-calendar.ShiftCalendar.대기"
+      },
+      {
+        "file": "src/app/(dashboard)/attendance/shift-calendar/ShiftCalendarClient.tsx",
+        "line": 125,
+        "current": "승인",
+        "suggestedKey": "attendance.shift-calendar.ShiftCalendar.승인"
+      },
+      {
+        "file": "src/app/(dashboard)/attendance/shift-calendar/ShiftCalendarClient.tsx",
+        "line": 126,
+        "current": "반려",
+        "suggestedKey": "attendance.shift-calendar.ShiftCalendar.반려"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/attendance/tabs/OvertimeTab.tsx",
+        "line": 46,
+        "current": "연장근무 (주간)",
+        "suggestedKey": "settings.attendance.tabs.연장근무_주간_"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/attendance/tabs/OvertimeTab.tsx",
+        "line": 47,
+        "current": "야간근무",
+        "suggestedKey": "settings.attendance.tabs.야간근무"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/attendance/tabs/OvertimeTab.tsx",
+        "line": 48,
+        "current": "휴일근무",
+        "suggestedKey": "settings.attendance.tabs.휴일근무"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/attendance/AttendanceSettingsClient.tsx",
+        "line": 241,
+        "current": "근무유형 설정",
+        "suggestedKey": "settings.attendance.AttendanceSettings.근무유형_설정"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/attendance/AttendanceSettingsClient.tsx",
+        "line": 242,
+        "current": "52시간 관리",
+        "suggestedKey": "settings.attendance.AttendanceSettings.52시간_관리"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/attendance/AttendanceSettingsClient.tsx",
+        "line": 243,
+        "current": "교대근무",
+        "suggestedKey": "settings.attendance.AttendanceSettings.교대근무"
+      },
+      {
+        "file": "src/app/(dashboard)/approvals/attendance/AttendanceApprovalClient.tsx",
+        "line": 48,
+        "current": "휴가",
+        "suggestedKey": "approvals.attendance.AttendanceApproval.휴가"
+      },
+      {
+        "file": "src/app/(dashboard)/approvals/attendance/AttendanceApprovalClient.tsx",
+        "line": 49,
+        "current": "초과근무",
+        "suggestedKey": "approvals.attendance.AttendanceApproval.초과근무"
+      },
+      {
+        "file": "src/app/(dashboard)/approvals/attendance/AttendanceApprovalClient.tsx",
+        "line": 50,
+        "current": "근태수정",
+        "suggestedKey": "approvals.attendance.AttendanceApproval.근태수정"
+      },
+      {
+        "file": "src/app/(dashboard)/approvals/attendance/AttendanceApprovalClient.tsx",
+        "line": 51,
+        "current": "교대변경",
+        "suggestedKey": "approvals.attendance.AttendanceApproval.교대변경"
+      },
+      {
+        "file": "src/app/(dashboard)/approvals/attendance/AttendanceApprovalClient.tsx",
+        "line": 55,
+        "current": "대기중",
+        "suggestedKey": "approvals.attendance.AttendanceApproval.대기중"
+      },
+      {
+        "file": "src/app/(dashboard)/approvals/attendance/AttendanceApprovalClient.tsx",
+        "line": 56,
+        "current": "승인",
+        "suggestedKey": "approvals.attendance.AttendanceApproval.승인"
+      },
+      {
+        "file": "src/app/(dashboard)/approvals/attendance/AttendanceApprovalClient.tsx",
+        "line": 57,
+        "current": "반려",
+        "suggestedKey": "approvals.attendance.AttendanceApproval.반려"
+      },
+      {
+        "file": "src/app/(dashboard)/approvals/attendance/AttendanceApprovalClient.tsx",
+        "line": 58,
+        "current": "취소",
+        "suggestedKey": "approvals.attendance.AttendanceApproval.취소"
+      },
+      {
+        "file": "src/app/(dashboard)/approvals/attendance/AttendanceApprovalClient.tsx",
+        "line": 199,
+        "current": "결재 대기",
+        "suggestedKey": "approvals.attendance.AttendanceApproval.결재_대기"
+      },
+      {
+        "file": "src/app/(dashboard)/approvals/attendance/AttendanceApprovalClient.tsx",
+        "line": 200,
+        "current": "내 신청",
+        "suggestedKey": "approvals.attendance.AttendanceApproval.내_신청"
+      },
+      {
+        "file": "src/app/(dashboard)/approvals/attendance/AttendanceApprovalClient.tsx",
+        "line": 201,
+        "current": "팀 전체",
+        "suggestedKey": "approvals.attendance.AttendanceApproval.팀_전체"
+      },
+      {
+        "file": "src/app/(dashboard)/approvals/attendance/AttendanceApprovalClient.tsx",
+        "line": 225,
+        "current": "전체",
+        "suggestedKey": "approvals.attendance.AttendanceApproval.전체"
+      },
+      {
+        "file": "src/app/(dashboard)/approvals/attendance/AttendanceApprovalClient.tsx",
+        "line": 226,
+        "current": "휴가",
+        "suggestedKey": "approvals.attendance.AttendanceApproval.휴가"
+      },
+      {
+        "file": "src/app/(dashboard)/approvals/attendance/AttendanceApprovalClient.tsx",
+        "line": 227,
+        "current": "초과근무",
+        "suggestedKey": "approvals.attendance.AttendanceApproval.초과근무"
+      },
+      {
+        "file": "src/app/(dashboard)/approvals/attendance/AttendanceApprovalClient.tsx",
+        "line": 228,
+        "current": "근태수정",
+        "suggestedKey": "approvals.attendance.AttendanceApproval.근태수정"
+      },
+      {
+        "file": "src/app/(dashboard)/approvals/attendance/AttendanceApprovalClient.tsx",
+        "line": 229,
+        "current": "교대변경",
+        "suggestedKey": "approvals.attendance.AttendanceApproval.교대변경"
+      },
+      {
+        "file": "src/app/(dashboard)/onboarding/OnboardingDashboardClient.tsx",
+        "line": 79,
+        "current": "매우 좋음",
+        "suggestedKey": "onboarding.OnboardingDashboard.매우_좋음"
+      },
+      {
+        "file": "src/app/(dashboard)/onboarding/OnboardingDashboardClient.tsx",
+        "line": 80,
+        "current": "좋음",
+        "suggestedKey": "onboarding.OnboardingDashboard.좋음"
+      },
+      {
+        "file": "src/app/(dashboard)/onboarding/OnboardingDashboardClient.tsx",
+        "line": 81,
+        "current": "보통",
+        "suggestedKey": "onboarding.OnboardingDashboard.보통"
+      },
+      {
+        "file": "src/app/(dashboard)/onboarding/OnboardingDashboardClient.tsx",
+        "line": 82,
+        "current": "힘듦",
+        "suggestedKey": "onboarding.OnboardingDashboard.힘듦"
+      },
+      {
+        "file": "src/app/(dashboard)/onboarding/OnboardingDashboardClient.tsx",
+        "line": 83,
+        "current": "나쁨",
+        "suggestedKey": "onboarding.OnboardingDashboard.나쁨"
+      },
+      {
+        "file": "src/app/(dashboard)/onboarding/OnboardingDashboardClient.tsx",
+        "line": 87,
+        "current": "전체",
+        "suggestedKey": "onboarding.OnboardingDashboard.전체"
+      },
+      {
+        "file": "src/app/(dashboard)/onboarding/OnboardingDashboardClient.tsx",
+        "line": 88,
+        "current": "온보딩",
+        "suggestedKey": "onboarding.OnboardingDashboard.온보딩"
+      },
+      {
+        "file": "src/app/(dashboard)/onboarding/OnboardingDashboardClient.tsx",
+        "line": 89,
+        "current": "오프보딩",
+        "suggestedKey": "onboarding.OnboardingDashboard.오프보딩"
+      },
+      {
+        "file": "src/app/(dashboard)/onboarding/OnboardingDashboardClient.tsx",
+        "line": 90,
+        "current": "크로스보딩 출발",
+        "suggestedKey": "onboarding.OnboardingDashboard.크로스보딩_출발"
+      },
+      {
+        "file": "src/app/(dashboard)/onboarding/OnboardingDashboardClient.tsx",
+        "line": 91,
+        "current": "크로스보딩 도착",
+        "suggestedKey": "onboarding.OnboardingDashboard.크로스보딩_도착"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/attendance/AttendanceAnalyticsClient.tsx",
+        "line": 74,
+        "current": "다시 시도",
+        "suggestedKey": "analytics.attendance.AttendanceAnalytics.다시_시도"
+      },
+      {
+        "file": "src/components/attendance/ShiftRosterBoard.tsx",
+        "line": 83,
+        "current": "주간 (Morning)",
+        "suggestedKey": "attendance.ShiftRosterBoard.주간_morning_"
+      },
+      {
+        "file": "src/components/attendance/ShiftRosterBoard.tsx",
+        "line": 93,
+        "current": "야간 (Night)",
+        "suggestedKey": "attendance.ShiftRosterBoard.야간_night_"
+      },
+      {
+        "file": "src/components/attendance/ShiftRosterBoard.tsx",
+        "line": 103,
+        "current": "휴무 (Day Off)",
+        "suggestedKey": "attendance.ShiftRosterBoard.휴무_day_off_"
+      },
+      {
+        "file": "src/components/attendance/ScheduleAdjustmentModal.tsx",
+        "line": 40,
+        "current": "반차 사용",
+        "suggestedKey": "attendance.ScheduleAdjustmentModal.반차_사용"
+      },
+      {
+        "file": "src/components/attendance/ScheduleAdjustmentModal.tsx",
+        "line": 46,
+        "current": "근무 시간 단축",
+        "suggestedKey": "attendance.ScheduleAdjustmentModal.근무_시간_단축"
+      },
+      {
+        "file": "src/components/attendance/ScheduleAdjustmentModal.tsx",
+        "line": 52,
+        "current": "재택근무 전환",
+        "suggestedKey": "attendance.ScheduleAdjustmentModal.재택근무_전환"
+      },
+      {
+        "file": "src/components/attendance/ScheduleAdjustmentModal.tsx",
+        "line": 58,
+        "current": "초과근무 보류",
+        "suggestedKey": "attendance.ScheduleAdjustmentModal.초과근무_보류"
+      },
+      {
+        "file": "src/components/attendance/ScheduleAdjustmentModal.tsx",
+        "line": 82,
+        "current": "52시간 초과 — 즉시 조정 필요",
+        "suggestedKey": "attendance.ScheduleAdjustmentModal.52시간_초과_즉시_조정_필요"
+      },
+      {
+        "file": "src/components/attendance/ScheduleAdjustmentModal.tsx",
+        "line": 89,
+        "current": "48시간 초과 — 조정 권고",
+        "suggestedKey": "attendance.ScheduleAdjustmentModal.48시간_초과_조정_권고"
+      },
+      {
+        "file": "src/components/attendance/ScheduleAdjustmentModal.tsx",
+        "line": 96,
+        "current": "44시간 초과 — 주의",
+        "suggestedKey": "attendance.ScheduleAdjustmentModal.44시간_초과_주의"
+      },
+      {
+        "file": "src/components/succession/CandidateCard.tsx",
+        "line": 20,
+        "current": "즉시 가능",
+        "suggestedKey": "succession.CandidateCard.즉시_가능"
+      },
+      {
+        "file": "src/components/succession/CandidateCard.tsx",
+        "line": 21,
+        "current": "1-2년 내",
+        "suggestedKey": "succession.CandidateCard.1_2년_내"
+      },
+      {
+        "file": "src/components/succession/CandidateCard.tsx",
+        "line": 22,
+        "current": "3년 이상",
+        "suggestedKey": "succession.CandidateCard.3년_이상"
+      },
+      {
+        "file": "src/components/succession/PlansTab.tsx",
+        "line": 37,
+        "current": "낮음",
+        "suggestedKey": "succession.PlansTab.낮음"
+      },
+      {
+        "file": "src/components/succession/PlansTab.tsx",
+        "line": 38,
+        "current": "보통",
+        "suggestedKey": "succession.PlansTab.보통"
+      },
+      {
+        "file": "src/components/succession/PlansTab.tsx",
+        "line": 39,
+        "current": "높음",
+        "suggestedKey": "succession.PlansTab.높음"
+      },
+      {
+        "file": "src/components/succession/PlansTab.tsx",
+        "line": 40,
+        "current": "핵심",
+        "suggestedKey": "succession.PlansTab.핵심"
+      },
+      {
+        "file": "src/components/succession/PlansTab.tsx",
+        "line": 44,
+        "current": "초안",
+        "suggestedKey": "succession.PlansTab.초안"
+      },
+      {
+        "file": "src/components/succession/PlansTab.tsx",
+        "line": 45,
+        "current": "활성",
+        "suggestedKey": "succession.PlansTab.활성"
+      },
+      {
+        "file": "src/components/succession/PlansTab.tsx",
+        "line": 46,
+        "current": "보관",
+        "suggestedKey": "succession.PlansTab.보관"
+      },
+      {
+        "file": "src/components/employees/tabs/AssignmentHistoryTab.tsx",
+        "line": 95,
+        "current": "발효일",
+        "suggestedKey": "employees.tabs.AssignmentHistoryTab.발효일"
+      },
+      {
+        "file": "src/components/employees/tabs/AssignmentHistoryTab.tsx",
+        "line": 96,
+        "current": "종료일",
+        "suggestedKey": "employees.tabs.AssignmentHistoryTab.종료일"
+      },
+      {
+        "file": "src/components/employees/tabs/AssignmentHistoryTab.tsx",
+        "line": 97,
+        "current": "변경 유형",
+        "suggestedKey": "employees.tabs.AssignmentHistoryTab.변경_유형"
+      },
+      {
+        "file": "src/components/employees/tabs/AssignmentHistoryTab.tsx",
+        "line": 98,
+        "current": "법인",
+        "suggestedKey": "employees.tabs.AssignmentHistoryTab.법인"
+      },
+      {
+        "file": "src/components/employees/tabs/AssignmentHistoryTab.tsx",
+        "line": 99,
+        "current": "부서",
+        "suggestedKey": "employees.tabs.AssignmentHistoryTab.부서"
+      },
+      {
+        "file": "src/components/employees/tabs/AssignmentHistoryTab.tsx",
+        "line": 100,
+        "current": "직급",
+        "suggestedKey": "employees.tabs.AssignmentHistoryTab.직급"
+      },
+      {
+        "file": "src/components/employees/tabs/AssignmentHistoryTab.tsx",
+        "line": 101,
+        "current": "직무",
+        "suggestedKey": "employees.tabs.AssignmentHistoryTab.직무"
+      },
+      {
+        "file": "src/components/employees/tabs/AssignmentHistoryTab.tsx",
+        "line": 102,
+        "current": "고용형태",
+        "suggestedKey": "employees.tabs.AssignmentHistoryTab.고용형태"
+      },
+      {
+        "file": "src/components/employees/tabs/AssignmentHistoryTab.tsx",
+        "line": 103,
+        "current": "계약유형",
+        "suggestedKey": "employees.tabs.AssignmentHistoryTab.계약유형"
+      },
+      {
+        "file": "src/components/employees/tabs/AssignmentHistoryTab.tsx",
+        "line": 104,
+        "current": "상태",
+        "suggestedKey": "employees.tabs.AssignmentHistoryTab.상태"
+      },
+      {
+        "file": "src/components/employees/tabs/AssignmentHistoryTab.tsx",
+        "line": 105,
+        "current": "발령번호",
+        "suggestedKey": "employees.tabs.AssignmentHistoryTab.발령번호"
+      },
+      {
+        "file": "src/components/employees/tabs/AssignmentHistoryTab.tsx",
+        "line": 106,
+        "current": "사유",
+        "suggestedKey": "employees.tabs.AssignmentHistoryTab.사유"
+      },
+      {
+        "file": "src/components/employees/tabs/AssignmentHistoryTab.tsx",
+        "line": 107,
+        "current": "승인자",
+        "suggestedKey": "employees.tabs.AssignmentHistoryTab.승인자"
+      },
+      {
+        "file": "src/components/employees/tabs/AttendanceTab.tsx",
+        "line": 66,
+        "current": "정상",
+        "suggestedKey": "employees.tabs.AttendanceTab.정상"
+      },
+      {
+        "file": "src/components/employees/tabs/AttendanceTab.tsx",
+        "line": 67,
+        "current": "지각",
+        "suggestedKey": "employees.tabs.AttendanceTab.지각"
+      },
+      {
+        "file": "src/components/employees/tabs/AttendanceTab.tsx",
+        "line": 68,
+        "current": "조퇴",
+        "suggestedKey": "employees.tabs.AttendanceTab.조퇴"
+      },
+      {
+        "file": "src/components/employees/tabs/AttendanceTab.tsx",
+        "line": 69,
+        "current": "결근",
+        "suggestedKey": "employees.tabs.AttendanceTab.결근"
+      },
+      {
+        "file": "src/components/employees/tabs/AttendanceTab.tsx",
+        "line": 70,
+        "current": "휴가",
+        "suggestedKey": "employees.tabs.AttendanceTab.휴가"
+      }
+    ],
+    "recruitment": [
+      {
+        "file": "src/app/api/v1/recruitment/applicants/[id]/timeline/route.ts",
+        "line": 96,
+        "current": "면접",
+        "suggestedKey": "api.v1.recruitment.면접"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/recruitment/tabs/AiScreeningTab.tsx",
+        "line": 16,
+        "current": "이력서 자동 파싱",
+        "suggestedKey": "settings.recruitment.tabs.이력서_자동_파싱"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/recruitment/tabs/AiScreeningTab.tsx",
+        "line": 17,
+        "current": "JD 매칭 점수",
+        "suggestedKey": "settings.recruitment.tabs.jd_매칭_점수"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/recruitment/tabs/AiScreeningTab.tsx",
+        "line": 18,
+        "current": "편향 필터",
+        "suggestedKey": "settings.recruitment.tabs.편향_필터"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/recruitment/tabs/AiScreeningTab.tsx",
+        "line": 19,
+        "current": "스킬 갭 분석",
+        "suggestedKey": "settings.recruitment.tabs.스킬_갭_분석"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/requisitions/RequisitionListClient.tsx",
+        "line": 48,
+        "current": "긴급",
+        "suggestedKey": "recruitment.requisitions.RequisitionList.긴급"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/requisitions/RequisitionListClient.tsx",
+        "line": 49,
+        "current": "보통",
+        "suggestedKey": "recruitment.requisitions.RequisitionList.보통"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/requisitions/RequisitionListClient.tsx",
+        "line": 50,
+        "current": "낮음",
+        "suggestedKey": "recruitment.requisitions.RequisitionList.낮음"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/requisitions/RequisitionListClient.tsx",
+        "line": 54,
+        "current": "임시저장",
+        "suggestedKey": "recruitment.requisitions.RequisitionList.임시저장"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/requisitions/RequisitionListClient.tsx",
+        "line": 55,
+        "current": "결재중",
+        "suggestedKey": "recruitment.requisitions.RequisitionList.결재중"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/requisitions/RequisitionListClient.tsx",
+        "line": 56,
+        "current": "승인",
+        "suggestedKey": "recruitment.requisitions.RequisitionList.승인"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/requisitions/RequisitionListClient.tsx",
+        "line": 57,
+        "current": "반려",
+        "suggestedKey": "recruitment.requisitions.RequisitionList.반려"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/requisitions/RequisitionListClient.tsx",
+        "line": 58,
+        "current": "취소",
+        "suggestedKey": "recruitment.requisitions.RequisitionList.취소"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/requisitions/RequisitionListClient.tsx",
+        "line": 59,
+        "current": "충원완료",
+        "suggestedKey": "recruitment.requisitions.RequisitionList.충원완료"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/requisitions/RequisitionListClient.tsx",
+        "line": 125,
+        "current": "전체 요청",
+        "suggestedKey": "recruitment.requisitions.RequisitionList.전체_요청"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/requisitions/RequisitionListClient.tsx",
+        "line": 126,
+        "current": "결재 대기",
+        "suggestedKey": "recruitment.requisitions.RequisitionList.결재_대기"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/requisitions/RequisitionListClient.tsx",
+        "line": 127,
+        "current": "나의 결재함",
+        "suggestedKey": "recruitment.requisitions.RequisitionList.나의_결재함"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/talent-pool/TalentPoolClient.tsx",
+        "line": 46,
+        "current": "우수 불합격",
+        "suggestedKey": "recruitment.talent-pool.TalentPool.우수_불합격"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/talent-pool/TalentPoolClient.tsx",
+        "line": 47,
+        "current": "자진 철회",
+        "suggestedKey": "recruitment.talent-pool.TalentPool.자진_철회"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/talent-pool/TalentPoolClient.tsx",
+        "line": 48,
+        "current": "역량 초과",
+        "suggestedKey": "recruitment.talent-pool.TalentPool.역량_초과"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/talent-pool/TalentPoolClient.tsx",
+        "line": 49,
+        "current": "수동 등록",
+        "suggestedKey": "recruitment.talent-pool.TalentPool.수동_등록"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/talent-pool/TalentPoolClient.tsx",
+        "line": 53,
+        "current": "활성",
+        "suggestedKey": "recruitment.talent-pool.TalentPool.활성"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/talent-pool/TalentPoolClient.tsx",
+        "line": 54,
+        "current": "접촉 중",
+        "suggestedKey": "recruitment.talent-pool.TalentPool.접촉_중"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/talent-pool/TalentPoolClient.tsx",
+        "line": 55,
+        "current": "만료",
+        "suggestedKey": "recruitment.talent-pool.TalentPool.만료"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/talent-pool/TalentPoolClient.tsx",
+        "line": 56,
+        "current": "채용 완료",
+        "suggestedKey": "recruitment.talent-pool.TalentPool.채용_완료"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/talent-pool/TalentPoolClient.tsx",
+        "line": 132,
+        "current": "전체 인재",
+        "suggestedKey": "recruitment.talent-pool.TalentPool.전체_인재"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/talent-pool/TalentPoolClient.tsx",
+        "line": 133,
+        "current": "활성",
+        "suggestedKey": "recruitment.talent-pool.TalentPool.활성"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/talent-pool/TalentPoolClient.tsx",
+        "line": 134,
+        "current": "접촉 중",
+        "suggestedKey": "recruitment.talent-pool.TalentPool.접촉_중"
+      },
+      {
+        "file": "src/app/(dashboard)/recruitment/talent-pool/TalentPoolClient.tsx",
+        "line": 135,
+        "current": "30일 내 만료",
+        "suggestedKey": "recruitment.talent-pool.TalentPool.30일_내_만료"
+      }
+    ],
+    "performance": [
+      {
+        "file": "src/app/(dashboard)/benefits/BenefitApprovalTab.tsx",
+        "line": 29,
+        "current": "승인대기",
+        "suggestedKey": "benefits.BenefitApprovalTab.승인대기"
+      },
+      {
+        "file": "src/app/(dashboard)/benefits/BenefitApprovalTab.tsx",
+        "line": 30,
+        "current": "승인",
+        "suggestedKey": "benefits.BenefitApprovalTab.승인"
+      },
+      {
+        "file": "src/app/(dashboard)/benefits/BenefitApprovalTab.tsx",
+        "line": 31,
+        "current": "반려",
+        "suggestedKey": "benefits.BenefitApprovalTab.반려"
+      },
+      {
+        "file": "src/app/(dashboard)/benefits/BenefitApprovalTab.tsx",
+        "line": 32,
+        "current": "지급완료",
+        "suggestedKey": "benefits.BenefitApprovalTab.지급완료"
+      },
+      {
+        "file": "src/app/(dashboard)/benefits/BenefitApprovalTab.tsx",
+        "line": 33,
+        "current": "취소",
+        "suggestedKey": "benefits.BenefitApprovalTab.취소"
+      },
+      {
+        "file": "src/components/training/EnrollmentsTab.tsx",
+        "line": 26,
+        "current": "등록",
+        "suggestedKey": "training.EnrollmentsTab.등록"
+      },
+      {
+        "file": "src/components/training/EnrollmentsTab.tsx",
+        "line": 27,
+        "current": "진행중",
+        "suggestedKey": "training.EnrollmentsTab.진행중"
+      },
+      {
+        "file": "src/components/training/EnrollmentsTab.tsx",
+        "line": 28,
+        "current": "완료",
+        "suggestedKey": "training.EnrollmentsTab.완료"
+      },
+      {
+        "file": "src/components/training/EnrollmentsTab.tsx",
+        "line": 29,
+        "current": "탈락",
+        "suggestedKey": "training.EnrollmentsTab.탈락"
+      },
+      {
+        "file": "src/components/benefits/BenefitEnrollmentsTab.tsx",
+        "line": 27,
+        "current": "활성",
+        "suggestedKey": "benefits.BenefitEnrollmentsTab.활성"
+      },
+      {
+        "file": "src/components/benefits/BenefitEnrollmentsTab.tsx",
+        "line": 28,
+        "current": "일시중지",
+        "suggestedKey": "benefits.BenefitEnrollmentsTab.일시중지"
+      },
+      {
+        "file": "src/components/benefits/BenefitEnrollmentsTab.tsx",
+        "line": 29,
+        "current": "만료",
+        "suggestedKey": "benefits.BenefitEnrollmentsTab.만료"
+      }
+    ],
+    "payroll": [
+      {
+        "file": "src/app/api/v1/analytics/payroll/overview/route.ts",
+        "line": 115,
+        "current": "월 인건비",
+        "suggestedKey": "api.v1.analytics.월_인건비"
+      },
+      {
+        "file": "src/app/api/v1/analytics/payroll/overview/route.ts",
+        "line": 117,
+        "current": "전월 대비",
+        "suggestedKey": "api.v1.analytics.전월_대비"
+      },
+      {
+        "file": "src/app/api/v1/analytics/payroll/overview/route.ts",
+        "line": 121,
+        "current": "1인당 평균",
+        "suggestedKey": "api.v1.analytics.1인당_평균"
+      },
+      {
+        "file": "src/app/api/v1/analytics/payroll/overview/route.ts",
+        "line": 122,
+        "current": "이상감지 건수",
+        "suggestedKey": "api.v1.analytics.이상감지_건수"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/payroll/tabs/TaxFreeTab.tsx",
+        "line": 19,
+        "current": "식대",
+        "suggestedKey": "settings.payroll.tabs.식대"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/payroll/tabs/TaxFreeTab.tsx",
+        "line": 20,
+        "current": "교통비 (자가운전보조금)",
+        "suggestedKey": "settings.payroll.tabs.교통비_자가운전보조금_"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/payroll/tabs/TaxFreeTab.tsx",
+        "line": 21,
+        "current": "자녀보육수당",
+        "suggestedKey": "settings.payroll.tabs.자녀보육수당"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/payroll/tabs/TaxFreeTab.tsx",
+        "line": 22,
+        "current": "연구활동비",
+        "suggestedKey": "settings.payroll.tabs.연구활동비"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/payroll/tabs/TaxFreeTab.tsx",
+        "line": 23,
+        "current": "생산직 야간근로수당",
+        "suggestedKey": "settings.payroll.tabs.생산직_야간근로수당"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/payroll/tabs/BonusRulesTab.tsx",
+        "line": 22,
+        "current": "탁월",
+        "suggestedKey": "settings.payroll.tabs.탁월"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/payroll/tabs/BonusRulesTab.tsx",
+        "line": 23,
+        "current": "우수",
+        "suggestedKey": "settings.payroll.tabs.우수"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/payroll/tabs/BonusRulesTab.tsx",
+        "line": 24,
+        "current": "보통",
+        "suggestedKey": "settings.payroll.tabs.보통"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/payroll/tabs/BonusRulesTab.tsx",
+        "line": 25,
+        "current": "미흡",
+        "suggestedKey": "settings.payroll.tabs.미흡"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/year-end/YearEndHRClient.tsx",
+        "line": 184,
+        "current": "① 총급여",
+        "suggestedKey": "payroll.year-end.YearEndHR._총급여"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/year-end/YearEndHRClient.tsx",
+        "line": 185,
+        "current": "⑤ 과세표준",
+        "suggestedKey": "payroll.year-end.YearEndHR._과세표준"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/year-end/YearEndHRClient.tsx",
+        "line": 186,
+        "current": "⑦ 산출세액",
+        "suggestedKey": "payroll.year-end.YearEndHR._산출세액"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/year-end/YearEndHRClient.tsx",
+        "line": 187,
+        "current": "⑩ 기납부세액",
+        "suggestedKey": "payroll.year-end.YearEndHR._기납부세액"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/year-end/YearEndHRClient.tsx",
+        "line": 454,
+        "current": "전체",
+        "suggestedKey": "payroll.year-end.YearEndHR.전체"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/year-end/YearEndHRClient.tsx",
+        "line": 455,
+        "current": "제출완료",
+        "suggestedKey": "payroll.year-end.YearEndHR.제출완료"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/year-end/YearEndHRClient.tsx",
+        "line": 456,
+        "current": "HR검토중",
+        "suggestedKey": "payroll.year-end.YearEndHR.hr검토중"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/year-end/YearEndHRClient.tsx",
+        "line": 457,
+        "current": "확정",
+        "suggestedKey": "payroll.year-end.YearEndHR.확정"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/year-end/YearEndHRClient.tsx",
+        "line": 519,
+        "current": "미시작",
+        "suggestedKey": "payroll.year-end.YearEndHR.미시작"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/year-end/YearEndHRClient.tsx",
+        "line": 520,
+        "current": "진행중",
+        "suggestedKey": "payroll.year-end.YearEndHR.진행중"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/year-end/YearEndHRClient.tsx",
+        "line": 521,
+        "current": "제출완료",
+        "suggestedKey": "payroll.year-end.YearEndHR.제출완료"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/year-end/YearEndHRClient.tsx",
+        "line": 522,
+        "current": "HR검토중",
+        "suggestedKey": "payroll.year-end.YearEndHR.hr검토중"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/year-end/YearEndHRClient.tsx",
+        "line": 523,
+        "current": "확정",
+        "suggestedKey": "payroll.year-end.YearEndHR.확정"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/close-attendance/CloseAttendanceClient.tsx",
+        "line": 54,
+        "current": "근태 마감",
+        "suggestedKey": "payroll.close-attendance.CloseAttendance.근태_마감"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/close-attendance/CloseAttendanceClient.tsx",
+        "line": 55,
+        "current": "계산 중",
+        "suggestedKey": "payroll.close-attendance.CloseAttendance.계산_중"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/close-attendance/CloseAttendanceClient.tsx",
+        "line": 56,
+        "current": "조정 중",
+        "suggestedKey": "payroll.close-attendance.CloseAttendance.조정_중"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/close-attendance/CloseAttendanceClient.tsx",
+        "line": 57,
+        "current": "검토 중",
+        "suggestedKey": "payroll.close-attendance.CloseAttendance.검토_중"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/close-attendance/CloseAttendanceClient.tsx",
+        "line": 58,
+        "current": "결재 대기",
+        "suggestedKey": "payroll.close-attendance.CloseAttendance.결재_대기"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/close-attendance/CloseAttendanceClient.tsx",
+        "line": 59,
+        "current": "승인 완료",
+        "suggestedKey": "payroll.close-attendance.CloseAttendance.승인_완료"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/close-attendance/CloseAttendanceClient.tsx",
+        "line": 60,
+        "current": "지급 완료",
+        "suggestedKey": "payroll.close-attendance.CloseAttendance.지급_완료"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/bank-transfers/BankTransfersClient.tsx",
+        "line": 96,
+        "current": "초안",
+        "suggestedKey": "payroll.bank-transfers.BankTransfers.초안"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/bank-transfers/BankTransfersClient.tsx",
+        "line": 97,
+        "current": "생성중",
+        "suggestedKey": "payroll.bank-transfers.BankTransfers.생성중"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/bank-transfers/BankTransfersClient.tsx",
+        "line": 98,
+        "current": "생성완료",
+        "suggestedKey": "payroll.bank-transfers.BankTransfers.생성완료"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/bank-transfers/BankTransfersClient.tsx",
+        "line": 99,
+        "current": "제출됨",
+        "suggestedKey": "payroll.bank-transfers.BankTransfers.제출됨"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/bank-transfers/BankTransfersClient.tsx",
+        "line": 100,
+        "current": "부분완료",
+        "suggestedKey": "payroll.bank-transfers.BankTransfers.부분완료"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/bank-transfers/BankTransfersClient.tsx",
+        "line": 101,
+        "current": "완료",
+        "suggestedKey": "payroll.bank-transfers.BankTransfers.완료"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/bank-transfers/BankTransfersClient.tsx",
+        "line": 102,
+        "current": "실패",
+        "suggestedKey": "payroll.bank-transfers.BankTransfers.실패"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/bank-transfers/BankTransfersClient.tsx",
+        "line": 106,
+        "current": "대기",
+        "suggestedKey": "payroll.bank-transfers.BankTransfers.대기"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/bank-transfers/BankTransfersClient.tsx",
+        "line": 107,
+        "current": "성공",
+        "suggestedKey": "payroll.bank-transfers.BankTransfers.성공"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/bank-transfers/BankTransfersClient.tsx",
+        "line": 108,
+        "current": "실패",
+        "suggestedKey": "payroll.bank-transfers.BankTransfers.실패"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/bank-transfers/BankTransfersClient.tsx",
+        "line": 109,
+        "current": "취소",
+        "suggestedKey": "payroll.bank-transfers.BankTransfers.취소"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/adjustments/AdjustmentsClient.tsx",
+        "line": 70,
+        "current": "소급 지급",
+        "suggestedKey": "payroll.adjustments.Adjustments.소급_지급"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/adjustments/AdjustmentsClient.tsx",
+        "line": 71,
+        "current": "보너스",
+        "suggestedKey": "payroll.adjustments.Adjustments.보너스"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/adjustments/AdjustmentsClient.tsx",
+        "line": 72,
+        "current": "정정",
+        "suggestedKey": "payroll.adjustments.Adjustments.정정"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/adjustments/AdjustmentsClient.tsx",
+        "line": 73,
+        "current": "공제",
+        "suggestedKey": "payroll.adjustments.Adjustments.공제"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/adjustments/AdjustmentsClient.tsx",
+        "line": 74,
+        "current": "기타",
+        "suggestedKey": "payroll.adjustments.Adjustments.기타"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/approve/PayrollApproveClient.tsx",
+        "line": 64,
+        "current": "승인",
+        "suggestedKey": "payroll.[runId].approve.승인"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/approve/PayrollApproveClient.tsx",
+        "line": 65,
+        "current": "반려",
+        "suggestedKey": "payroll.[runId].approve.반려"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/approve/PayrollApproveClient.tsx",
+        "line": 66,
+        "current": "대기",
+        "suggestedKey": "payroll.[runId].approve.대기"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/approve/PayrollApproveClient.tsx",
+        "line": 226,
+        "current": "대상 인원",
+        "suggestedKey": "payroll.[runId].approve.대상_인원"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/approve/PayrollApproveClient.tsx",
+        "line": 227,
+        "current": "총 실수령액",
+        "suggestedKey": "payroll.[runId].approve.총_실수령액"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/approve/PayrollApproveClient.tsx",
+        "line": 228,
+        "current": "이상 항목",
+        "suggestedKey": "payroll.[runId].approve.이상_항목"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/approve/PayrollApproveClient.tsx",
+        "line": 229,
+        "current": "수동 조정",
+        "suggestedKey": "payroll.[runId].approve.수동_조정"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/publish/PayrollPublishDashboardClient.tsx",
+        "line": 183,
+        "current": "총 인원",
+        "suggestedKey": "payroll.[runId].publish.총_인원"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/publish/PayrollPublishDashboardClient.tsx",
+        "line": 184,
+        "current": "총 실수령액",
+        "suggestedKey": "payroll.[runId].publish.총_실수령액"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/publish/PayrollPublishDashboardClient.tsx",
+        "line": 185,
+        "current": "명세서 발행",
+        "suggestedKey": "payroll.[runId].publish.명세서_발행"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/publish/PayrollPublishDashboardClient.tsx",
+        "line": 186,
+        "current": "열람완료",
+        "suggestedKey": "payroll.[runId].publish.열람완료"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/publish/PayrollPublishDashboardClient.tsx",
+        "line": 231,
+        "current": "은행 이체파일",
+        "suggestedKey": "payroll.[runId].publish.은행_이체파일"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/publish/PayrollPublishDashboardClient.tsx",
+        "line": 239,
+        "current": "급여대장",
+        "suggestedKey": "payroll.[runId].publish.급여대장"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/publish/PayrollPublishDashboardClient.tsx",
+        "line": 247,
+        "current": "전월 대비 비교",
+        "suggestedKey": "payroll.[runId].publish.전월_대비_비교"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/publish/PayrollPublishDashboardClient.tsx",
+        "line": 255,
+        "current": "인건비 전표",
+        "suggestedKey": "payroll.[runId].publish.인건비_전표"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx",
+        "line": 126,
+        "current": "위험",
+        "suggestedKey": "payroll.[runId].review.위험"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx",
+        "line": 133,
+        "current": "경고",
+        "suggestedKey": "payroll.[runId].review.경고"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx",
+        "line": 140,
+        "current": "정보",
+        "suggestedKey": "payroll.[runId].review.정보"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx",
+        "line": 625,
+        "current": "총 급여",
+        "suggestedKey": "payroll.[runId].review.총_급여"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx",
+        "line": 626,
+        "current": "인원",
+        "suggestedKey": "payroll.[runId].review.인원"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx",
+        "line": 627,
+        "current": "이상 항목",
+        "suggestedKey": "payroll.[runId].review.이상_항목"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx",
+        "line": 628,
+        "current": "수동 조정",
+        "suggestedKey": "payroll.[runId].review.수동_조정"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx",
+        "line": 743,
+        "current": "증가",
+        "suggestedKey": "payroll.[runId].review.증가"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx",
+        "line": 744,
+        "current": "감소",
+        "suggestedKey": "payroll.[runId].review.감소"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx",
+        "line": 745,
+        "current": "동일",
+        "suggestedKey": "payroll.[runId].review.동일"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx",
+        "line": 800,
+        "current": "전월 대비 비교",
+        "suggestedKey": "payroll.[runId].review.전월_대비_비교"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx",
+        "line": 801,
+        "current": "급여대장",
+        "suggestedKey": "payroll.[runId].review.급여대장"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx",
+        "line": 802,
+        "current": "인건비 전표",
+        "suggestedKey": "payroll.[runId].review.인건비_전표"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx",
+        "line": 823,
+        "current": "이름",
+        "suggestedKey": "payroll.[runId].review.이름"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx",
+        "line": 824,
+        "current": "부서",
+        "suggestedKey": "payroll.[runId].review.부서"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx",
+        "line": 825,
+        "current": "실수령액",
+        "suggestedKey": "payroll.[runId].review.실수령액"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx",
+        "line": 826,
+        "current": "전월",
+        "suggestedKey": "payroll.[runId].review.전월"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx",
+        "line": 827,
+        "current": "변동",
+        "suggestedKey": "payroll.[runId].review.변동"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx",
+        "line": 828,
+        "current": "사유",
+        "suggestedKey": "payroll.[runId].review.사유"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/import/PayrollImportClient.tsx",
+        "line": 53,
+        "current": "사번",
+        "suggestedKey": "payroll.import.PayrollImport.사번"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/import/PayrollImportClient.tsx",
+        "line": 54,
+        "current": "성명",
+        "suggestedKey": "payroll.import.PayrollImport.성명"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/import/PayrollImportClient.tsx",
+        "line": 55,
+        "current": "기본급",
+        "suggestedKey": "payroll.import.PayrollImport.기본급"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/import/PayrollImportClient.tsx",
+        "line": 56,
+        "current": "총지급액",
+        "suggestedKey": "payroll.import.PayrollImport.총지급액"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/import/PayrollImportClient.tsx",
+        "line": 57,
+        "current": "실지급액",
+        "suggestedKey": "payroll.import.PayrollImport.실지급액"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/import/PayrollImportClient.tsx",
+        "line": 58,
+        "current": "공제합계",
+        "suggestedKey": "payroll.import.PayrollImport.공제합계"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/import/PayrollImportClient.tsx",
+        "line": 59,
+        "current": "연장수당",
+        "suggestedKey": "payroll.import.PayrollImport.연장수당"
+      },
+      {
+        "file": "src/app/(dashboard)/payroll/import/PayrollImportClient.tsx",
+        "line": 60,
+        "current": "성과급/상여",
+        "suggestedKey": "payroll.import.PayrollImport.성과급_상여"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/payroll/PayrollClient.tsx",
+        "line": 56,
+        "current": "다시 시도",
+        "suggestedKey": "analytics.payroll.Payroll.다시_시도"
+      },
+      {
+        "file": "src/components/payroll/PayrollKpiCards.tsx",
+        "line": 21,
+        "current": "대상 인원",
+        "suggestedKey": "payroll.PayrollKpiCards.대상_인원"
+      },
+      {
+        "file": "src/components/payroll/PayrollKpiCards.tsx",
+        "line": 28,
+        "current": "총 지급액",
+        "suggestedKey": "payroll.PayrollKpiCards.총_지급액"
+      },
+      {
+        "file": "src/components/payroll/PayrollKpiCards.tsx",
+        "line": 35,
+        "current": "총 공제액",
+        "suggestedKey": "payroll.PayrollKpiCards.총_공제액"
+      },
+      {
+        "file": "src/components/payroll/PayrollKpiCards.tsx",
+        "line": 42,
+        "current": "총 실지급액",
+        "suggestedKey": "payroll.PayrollKpiCards.총_실지급액"
+      },
+      {
+        "file": "src/components/payroll/PayrollPipeline.tsx",
+        "line": 32,
+        "current": "1단계",
+        "suggestedKey": "payroll.PayrollPipeline.1단계"
+      },
+      {
+        "file": "src/components/payroll/PayrollPipeline.tsx",
+        "line": 33,
+        "current": "2단계",
+        "suggestedKey": "payroll.PayrollPipeline.2단계"
+      },
+      {
+        "file": "src/components/payroll/PayrollPipeline.tsx",
+        "line": 34,
+        "current": "2.5단계",
+        "suggestedKey": "payroll.PayrollPipeline.2_5단계"
+      },
+      {
+        "file": "src/components/payroll/PayrollPipeline.tsx",
+        "line": 35,
+        "current": "3단계",
+        "suggestedKey": "payroll.PayrollPipeline.3단계"
+      },
+      {
+        "file": "src/components/payroll/PayrollPipeline.tsx",
+        "line": 36,
+        "current": "4단계",
+        "suggestedKey": "payroll.PayrollPipeline.4단계"
+      },
+      {
+        "file": "src/components/payroll/PayrollPipeline.tsx",
+        "line": 37,
+        "current": "5단계",
+        "suggestedKey": "payroll.PayrollPipeline.5단계"
+      },
+      {
+        "file": "src/components/payroll/PayrollPipeline.tsx",
+        "line": 174,
+        "current": "완료",
+        "suggestedKey": "payroll.PayrollPipeline.완료"
+      },
+      {
+        "file": "src/components/payroll/PayrollPipeline.tsx",
+        "line": 175,
+        "current": "진행중",
+        "suggestedKey": "payroll.PayrollPipeline.진행중"
+      },
+      {
+        "file": "src/components/payroll/PayrollPipeline.tsx",
+        "line": 176,
+        "current": "대기",
+        "suggestedKey": "payroll.PayrollPipeline.대기"
+      },
+      {
+        "file": "src/components/payroll/PayrollPipeline.tsx",
+        "line": 177,
+        "current": "미시작",
+        "suggestedKey": "payroll.PayrollPipeline.미시작"
+      },
+      {
+        "file": "src/components/payroll/PayStubBreakdown.tsx",
+        "line": 47,
+        "current": "기본급",
+        "suggestedKey": "payroll.PayStubBreakdown.기본급"
+      },
+      {
+        "file": "src/components/payroll/PayStubBreakdown.tsx",
+        "line": 48,
+        "current": "고정초과근무수당",
+        "suggestedKey": "payroll.PayStubBreakdown.고정초과근무수당"
+      },
+      {
+        "file": "src/components/payroll/PayStubBreakdown.tsx",
+        "line": 49,
+        "current": "식비",
+        "suggestedKey": "payroll.PayStubBreakdown.식비"
+      },
+      {
+        "file": "src/components/payroll/PayStubBreakdown.tsx",
+        "line": 50,
+        "current": "교통비",
+        "suggestedKey": "payroll.PayStubBreakdown.교통비"
+      },
+      {
+        "file": "src/components/payroll/PayStubBreakdown.tsx",
+        "line": 51,
+        "current": "연장근무수당",
+        "suggestedKey": "payroll.PayStubBreakdown.연장근무수당"
+      },
+      {
+        "file": "src/components/payroll/PayStubBreakdown.tsx",
+        "line": 52,
+        "current": "야간근무수당",
+        "suggestedKey": "payroll.PayStubBreakdown.야간근무수당"
+      },
+      {
+        "file": "src/components/payroll/PayStubBreakdown.tsx",
+        "line": 53,
+        "current": "휴일근무수당",
+        "suggestedKey": "payroll.PayStubBreakdown.휴일근무수당"
+      },
+      {
+        "file": "src/components/payroll/PayStubBreakdown.tsx",
+        "line": 54,
+        "current": "상여금",
+        "suggestedKey": "payroll.PayStubBreakdown.상여금"
+      },
+      {
+        "file": "src/components/payroll/PayStubBreakdown.tsx",
+        "line": 55,
+        "current": "기타수당",
+        "suggestedKey": "payroll.PayStubBreakdown.기타수당"
+      },
+      {
+        "file": "src/components/payroll/PayStubBreakdown.tsx",
+        "line": 59,
+        "current": "국민연금",
+        "suggestedKey": "payroll.PayStubBreakdown.국민연금"
+      },
+      {
+        "file": "src/components/payroll/PayStubBreakdown.tsx",
+        "line": 60,
+        "current": "건강보험",
+        "suggestedKey": "payroll.PayStubBreakdown.건강보험"
+      },
+      {
+        "file": "src/components/payroll/PayStubBreakdown.tsx",
+        "line": 61,
+        "current": "장기요양보험",
+        "suggestedKey": "payroll.PayStubBreakdown.장기요양보험"
+      },
+      {
+        "file": "src/components/payroll/PayStubBreakdown.tsx",
+        "line": 62,
+        "current": "고용보험",
+        "suggestedKey": "payroll.PayStubBreakdown.고용보험"
+      },
+      {
+        "file": "src/components/payroll/PayStubBreakdown.tsx",
+        "line": 63,
+        "current": "소득세",
+        "suggestedKey": "payroll.PayStubBreakdown.소득세"
+      },
+      {
+        "file": "src/components/payroll/PayStubBreakdown.tsx",
+        "line": 64,
+        "current": "지방소득세",
+        "suggestedKey": "payroll.PayStubBreakdown.지방소득세"
+      },
+      {
+        "file": "src/components/payroll/PayStubBreakdown.tsx",
+        "line": 65,
+        "current": "기타공제",
+        "suggestedKey": "payroll.PayStubBreakdown.기타공제"
+      },
+      {
+        "file": "src/components/payroll/PayrollStatusBadge.tsx",
+        "line": 5,
+        "current": "초안",
+        "suggestedKey": "payroll.PayrollStatusBadge.초안"
+      },
+      {
+        "file": "src/components/payroll/PayrollStatusBadge.tsx",
+        "line": 6,
+        "current": "근태 마감",
+        "suggestedKey": "payroll.PayrollStatusBadge.근태_마감"
+      },
+      {
+        "file": "src/components/payroll/PayrollStatusBadge.tsx",
+        "line": 7,
+        "current": "계산 중",
+        "suggestedKey": "payroll.PayrollStatusBadge.계산_중"
+      },
+      {
+        "file": "src/components/payroll/PayrollStatusBadge.tsx",
+        "line": 8,
+        "current": "수동 조정",
+        "suggestedKey": "payroll.PayrollStatusBadge.수동_조정"
+      },
+      {
+        "file": "src/components/payroll/PayrollStatusBadge.tsx",
+        "line": 9,
+        "current": "이상 검토",
+        "suggestedKey": "payroll.PayrollStatusBadge.이상_검토"
+      },
+      {
+        "file": "src/components/payroll/PayrollStatusBadge.tsx",
+        "line": 10,
+        "current": "결재 대기",
+        "suggestedKey": "payroll.PayrollStatusBadge.결재_대기"
+      },
+      {
+        "file": "src/components/payroll/PayrollStatusBadge.tsx",
+        "line": 11,
+        "current": "승인 완료",
+        "suggestedKey": "payroll.PayrollStatusBadge.승인_완료"
+      },
+      {
+        "file": "src/components/payroll/PayrollStatusBadge.tsx",
+        "line": 12,
+        "current": "지급 완료",
+        "suggestedKey": "payroll.PayrollStatusBadge.지급_완료"
+      },
+      {
+        "file": "src/components/payroll/PayrollStatusBadge.tsx",
+        "line": 13,
+        "current": "확정",
+        "suggestedKey": "payroll.PayrollStatusBadge.확정"
+      },
+      {
+        "file": "src/components/payroll/PayrollStatusBadge.tsx",
+        "line": 14,
+        "current": "취소",
+        "suggestedKey": "payroll.PayrollStatusBadge.취소"
+      },
+      {
+        "file": "src/lib/payroll/pdf.ts",
+        "line": 51,
+        "current": "기본급",
+        "suggestedKey": "src.lib.payroll.기본급"
+      },
+      {
+        "file": "src/lib/payroll/pdf.ts",
+        "line": 52,
+        "current": "고정초과근무수당",
+        "suggestedKey": "src.lib.payroll.고정초과근무수당"
+      },
+      {
+        "file": "src/lib/payroll/pdf.ts",
+        "line": 53,
+        "current": "식비",
+        "suggestedKey": "src.lib.payroll.식비"
+      },
+      {
+        "file": "src/lib/payroll/pdf.ts",
+        "line": 54,
+        "current": "교통비",
+        "suggestedKey": "src.lib.payroll.교통비"
+      },
+      {
+        "file": "src/lib/payroll/pdf.ts",
+        "line": 55,
+        "current": "연장근무수당",
+        "suggestedKey": "src.lib.payroll.연장근무수당"
+      },
+      {
+        "file": "src/lib/payroll/pdf.ts",
+        "line": 56,
+        "current": "야간근무수당",
+        "suggestedKey": "src.lib.payroll.야간근무수당"
+      },
+      {
+        "file": "src/lib/payroll/pdf.ts",
+        "line": 57,
+        "current": "휴일근무수당",
+        "suggestedKey": "src.lib.payroll.휴일근무수당"
+      },
+      {
+        "file": "src/lib/payroll/pdf.ts",
+        "line": 58,
+        "current": "상여금",
+        "suggestedKey": "src.lib.payroll.상여금"
+      },
+      {
+        "file": "src/lib/payroll/pdf.ts",
+        "line": 59,
+        "current": "기타수당",
+        "suggestedKey": "src.lib.payroll.기타수당"
+      },
+      {
+        "file": "src/lib/payroll/pdf.ts",
+        "line": 65,
+        "current": "국민연금",
+        "suggestedKey": "src.lib.payroll.국민연금"
+      },
+      {
+        "file": "src/lib/payroll/pdf.ts",
+        "line": 66,
+        "current": "건강보험",
+        "suggestedKey": "src.lib.payroll.건강보험"
+      },
+      {
+        "file": "src/lib/payroll/pdf.ts",
+        "line": 67,
+        "current": "장기요양보험",
+        "suggestedKey": "src.lib.payroll.장기요양보험"
+      },
+      {
+        "file": "src/lib/payroll/pdf.ts",
+        "line": 68,
+        "current": "고용보험",
+        "suggestedKey": "src.lib.payroll.고용보험"
+      },
+      {
+        "file": "src/lib/payroll/pdf.ts",
+        "line": 69,
+        "current": "소득세",
+        "suggestedKey": "src.lib.payroll.소득세"
+      },
+      {
+        "file": "src/lib/payroll/pdf.ts",
+        "line": 70,
+        "current": "지방소득세",
+        "suggestedKey": "src.lib.payroll.지방소득세"
+      }
+    ],
+    "insights": [
+      {
+        "file": "src/app/api/v1/analytics/workforce/overview/route.ts",
+        "line": 139,
+        "current": "총 인원",
+        "suggestedKey": "api.v1.analytics.총_인원"
+      },
+      {
+        "file": "src/app/api/v1/analytics/workforce/overview/route.ts",
+        "line": 140,
+        "current": "신규 입사",
+        "suggestedKey": "api.v1.analytics.신규_입사"
+      },
+      {
+        "file": "src/app/api/v1/analytics/workforce/overview/route.ts",
+        "line": 141,
+        "current": "퇴사",
+        "suggestedKey": "api.v1.analytics.퇴사"
+      },
+      {
+        "file": "src/app/api/v1/analytics/workforce/overview/route.ts",
+        "line": 142,
+        "current": "평균 연령",
+        "suggestedKey": "api.v1.analytics.평균_연령"
+      },
+      {
+        "file": "src/app/api/v1/analytics/turnover/overview/route.ts",
+        "line": 211,
+        "current": "월간 이직률",
+        "suggestedKey": "api.v1.analytics.월간_이직률"
+      },
+      {
+        "file": "src/app/api/v1/analytics/turnover/overview/route.ts",
+        "line": 214,
+        "current": "연간 누적",
+        "suggestedKey": "api.v1.analytics.연간_누적"
+      },
+      {
+        "file": "src/app/api/v1/analytics/turnover/overview/route.ts",
+        "line": 216,
+        "current": "핵심 인재 이직률",
+        "suggestedKey": "api.v1.analytics.핵심_인재_이직률"
+      },
+      {
+        "file": "src/app/api/v1/analytics/turnover/overview/route.ts",
+        "line": 219,
+        "current": "퇴사자 평균 재직",
+        "suggestedKey": "api.v1.analytics.퇴사자_평균_재직"
+      },
+      {
+        "file": "src/app/api/v1/analytics/turnover/overview/route.ts",
+        "line": 220,
+        "current": "이직 예측 고위험",
+        "suggestedKey": "api.v1.analytics.이직_예측_고위험"
+      },
+      {
+        "file": "src/app/api/v1/analytics/executive/summary/route.ts",
+        "line": 275,
+        "current": "총 재직인원",
+        "suggestedKey": "api.v1.analytics.총_재직인원"
+      },
+      {
+        "file": "src/app/api/v1/analytics/executive/summary/route.ts",
+        "line": 277,
+        "current": "월간 이직률",
+        "suggestedKey": "api.v1.analytics.월간_이직률"
+      },
+      {
+        "file": "src/app/api/v1/analytics/executive/summary/route.ts",
+        "line": 282,
+        "current": "평균 근속",
+        "suggestedKey": "api.v1.analytics.평균_근속"
+      },
+      {
+        "file": "src/app/api/v1/analytics/executive/summary/route.ts",
+        "line": 284,
+        "current": "월 인건비",
+        "suggestedKey": "api.v1.analytics.월_인건비"
+      },
+      {
+        "file": "src/app/api/v1/analytics/executive/summary/route.ts",
+        "line": 289,
+        "current": "채용 진행",
+        "suggestedKey": "api.v1.analytics.채용_진행"
+      },
+      {
+        "file": "src/app/api/v1/analytics/executive/summary/route.ts",
+        "line": 292,
+        "current": "온보딩 완료율",
+        "suggestedKey": "api.v1.analytics.온보딩_완료율"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/predictive/[employeeId]/EmployeeRiskDetailClient.tsx",
+        "line": 83,
+        "current": "낮음",
+        "suggestedKey": "analytics.predictive.[employeeId].낮음"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/predictive/[employeeId]/EmployeeRiskDetailClient.tsx",
+        "line": 84,
+        "current": "보통",
+        "suggestedKey": "analytics.predictive.[employeeId].보통"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/predictive/[employeeId]/EmployeeRiskDetailClient.tsx",
+        "line": 85,
+        "current": "높음",
+        "suggestedKey": "analytics.predictive.[employeeId].높음"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/predictive/[employeeId]/EmployeeRiskDetailClient.tsx",
+        "line": 86,
+        "current": "위험",
+        "suggestedKey": "analytics.predictive.[employeeId].위험"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/predictive/[employeeId]/EmployeeRiskDetailClient.tsx",
+        "line": 87,
+        "current": "데이터 부족",
+        "suggestedKey": "analytics.predictive.[employeeId].데이터_부족"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/predictive/PredictiveAnalyticsClient.tsx",
+        "line": 94,
+        "current": "이직예측",
+        "suggestedKey": "analytics.predictive.PredictiveAnalytics.이직예측"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/predictive/PredictiveAnalyticsClient.tsx",
+        "line": 95,
+        "current": "번아웃",
+        "suggestedKey": "analytics.predictive.PredictiveAnalytics.번아웃"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/predictive/PredictiveAnalyticsClient.tsx",
+        "line": 96,
+        "current": "팀건강",
+        "suggestedKey": "analytics.predictive.PredictiveAnalytics.팀건강"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/predictive/PredictiveAnalyticsClient.tsx",
+        "line": 97,
+        "current": "인력현황",
+        "suggestedKey": "analytics.predictive.PredictiveAnalytics.인력현황"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/predictive/PredictiveAnalyticsClient.tsx",
+        "line": 103,
+        "current": "낮음",
+        "suggestedKey": "analytics.predictive.PredictiveAnalytics.낮음"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/predictive/PredictiveAnalyticsClient.tsx",
+        "line": 104,
+        "current": "보통",
+        "suggestedKey": "analytics.predictive.PredictiveAnalytics.보통"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/predictive/PredictiveAnalyticsClient.tsx",
+        "line": 105,
+        "current": "높음",
+        "suggestedKey": "analytics.predictive.PredictiveAnalytics.높음"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/predictive/PredictiveAnalyticsClient.tsx",
+        "line": 106,
+        "current": "위험",
+        "suggestedKey": "analytics.predictive.PredictiveAnalytics.위험"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/predictive/PredictiveAnalyticsClient.tsx",
+        "line": 167,
+        "current": "이직 고위험 인원",
+        "suggestedKey": "analytics.predictive.PredictiveAnalytics.이직_고위험_인원"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/predictive/PredictiveAnalyticsClient.tsx",
+        "line": 175,
+        "current": "번아웃 고위험 인원",
+        "suggestedKey": "analytics.predictive.PredictiveAnalytics.번아웃_고위험_인원"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/predictive/PredictiveAnalyticsClient.tsx",
+        "line": 183,
+        "current": "위험 팀",
+        "suggestedKey": "analytics.predictive.PredictiveAnalytics.위험_팀"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/predictive/PredictiveAnalyticsClient.tsx",
+        "line": 191,
+        "current": "분석 대상 인원",
+        "suggestedKey": "analytics.predictive.PredictiveAnalytics.분석_대상_인원"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/ExecutiveSummaryClient.tsx",
+        "line": 79,
+        "current": "다시 시도",
+        "suggestedKey": "analytics.ExecutiveSummary.다시_시도"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/workforce/WorkforceClient.tsx",
+        "line": 53,
+        "current": "다시 시도",
+        "suggestedKey": "analytics.workforce.Workforce.다시_시도"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/AnalyticsOverviewClient.tsx",
+        "line": 112,
+        "current": "새로고침",
+        "suggestedKey": "analytics.AnalyticsOverview.새로고침"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/AnalyticsOverviewClient.tsx",
+        "line": 119,
+        "current": "다시 시도",
+        "suggestedKey": "analytics.AnalyticsOverview.다시_시도"
+      },
+      {
+        "file": "src/app/(dashboard)/analytics/turnover/TurnoverClient.tsx",
+        "line": 59,
+        "current": "다시 시도",
+        "suggestedKey": "analytics.turnover.Turnover.다시_시도"
+      },
+      {
+        "file": "src/components/analytics/AnalyticsFilterBar.tsx",
+        "line": 8,
+        "current": "최근 12개월",
+        "suggestedKey": "analytics.AnalyticsFilterBar.최근_12개월"
+      },
+      {
+        "file": "src/components/analytics/AnalyticsFilterBar.tsx",
+        "line": 9,
+        "current": "최근 6개월",
+        "suggestedKey": "analytics.AnalyticsFilterBar.최근_6개월"
+      },
+      {
+        "file": "src/components/analytics/AnalyticsFilterBar.tsx",
+        "line": 10,
+        "current": "최근 3개월",
+        "suggestedKey": "analytics.AnalyticsFilterBar.최근_3개월"
+      },
+      {
+        "file": "src/components/analytics/AnalyticsFilterBar.tsx",
+        "line": 13,
+        "current": "사용자 지정",
+        "suggestedKey": "analytics.AnalyticsFilterBar.사용자_지정"
+      }
+    ],
+    "compliance": [
+      {
+        "file": "src/app/api/v1/compliance/cn/employee-registry/export/route.ts",
+        "line": 45,
+        "current": "사번",
+        "suggestedKey": "api.v1.compliance.사번"
+      },
+      {
+        "file": "src/app/api/v1/compliance/cn/employee-registry/export/route.ts",
+        "line": 46,
+        "current": "이름",
+        "suggestedKey": "api.v1.compliance.이름"
+      },
+      {
+        "file": "src/app/api/v1/compliance/cn/employee-registry/export/route.ts",
+        "line": 47,
+        "current": "영문 이름",
+        "suggestedKey": "api.v1.compliance.영문_이름"
+      },
+      {
+        "file": "src/app/api/v1/compliance/cn/employee-registry/export/route.ts",
+        "line": 48,
+        "current": "성별",
+        "suggestedKey": "api.v1.compliance.성별"
+      },
+      {
+        "file": "src/app/api/v1/compliance/cn/employee-registry/export/route.ts",
+        "line": 49,
+        "current": "생년월일",
+        "suggestedKey": "api.v1.compliance.생년월일"
+      },
+      {
+        "file": "src/app/api/v1/compliance/cn/employee-registry/export/route.ts",
+        "line": 50,
+        "current": "입사일",
+        "suggestedKey": "api.v1.compliance.입사일"
+      },
+      {
+        "file": "src/app/api/v1/compliance/cn/employee-registry/export/route.ts",
+        "line": 51,
+        "current": "부서",
+        "suggestedKey": "api.v1.compliance.부서"
+      },
+      {
+        "file": "src/app/api/v1/compliance/cn/employee-registry/export/route.ts",
+        "line": 52,
+        "current": "직급",
+        "suggestedKey": "api.v1.compliance.직급"
+      },
+      {
+        "file": "src/app/api/v1/compliance/cn/employee-registry/export/route.ts",
+        "line": 53,
+        "current": "고용 형태",
+        "suggestedKey": "api.v1.compliance.고용_형태"
+      },
+      {
+        "file": "src/app/api/v1/compliance/cn/employee-registry/export/route.ts",
+        "line": 54,
+        "current": "재직 상태",
+        "suggestedKey": "api.v1.compliance.재직_상태"
+      },
+      {
+        "file": "src/app/api/v1/compliance/cn/employee-registry/export/route.ts",
+        "line": 55,
+        "current": "이메일",
+        "suggestedKey": "api.v1.compliance.이메일"
+      },
+      {
+        "file": "src/app/(dashboard)/compliance/cn/CnComplianceClient.tsx",
+        "line": 24,
+        "current": "월간보고",
+        "suggestedKey": "compliance.cn.CnCompliance.월간보고"
+      },
+      {
+        "file": "src/components/compliance/cn/SocialInsuranceConfigForm.tsx",
+        "line": 33,
+        "current": "양로보험 (养老保险)",
+        "suggestedKey": "compliance.cn.SocialInsuranceConfigForm.양로보험_"
+      },
+      {
+        "file": "src/components/compliance/cn/SocialInsuranceConfigForm.tsx",
+        "line": 34,
+        "current": "의료보험 (医疗保险)",
+        "suggestedKey": "compliance.cn.SocialInsuranceConfigForm.의료보험_"
+      },
+      {
+        "file": "src/components/compliance/cn/SocialInsuranceConfigForm.tsx",
+        "line": 35,
+        "current": "실업보험 (失业保险)",
+        "suggestedKey": "compliance.cn.SocialInsuranceConfigForm.실업보험_"
+      },
+      {
+        "file": "src/components/compliance/cn/SocialInsuranceConfigForm.tsx",
+        "line": 36,
+        "current": "산재보험 (工伤保险)",
+        "suggestedKey": "compliance.cn.SocialInsuranceConfigForm.산재보험_"
+      },
+      {
+        "file": "src/components/compliance/cn/SocialInsuranceConfigForm.tsx",
+        "line": 37,
+        "current": "생육보험 (生育保险)",
+        "suggestedKey": "compliance.cn.SocialInsuranceConfigForm.생육보험_"
+      },
+      {
+        "file": "src/components/compliance/cn/SocialInsuranceConfigForm.tsx",
+        "line": 38,
+        "current": "주택적립금 (住房公积金)",
+        "suggestedKey": "compliance.cn.SocialInsuranceConfigForm.주택적립금_"
+      },
+      {
+        "file": "src/components/compliance/kr/WorkHoursChart.tsx",
+        "line": 28,
+        "current": "준수 (40시간 이하)",
+        "suggestedKey": "compliance.kr.WorkHoursChart.준수_40시간_이하_"
+      },
+      {
+        "file": "src/components/compliance/kr/WorkHoursChart.tsx",
+        "line": 38,
+        "current": "주의 (40~52시간)",
+        "suggestedKey": "compliance.kr.WorkHoursChart.주의_40_52시간_"
+      },
+      {
+        "file": "src/components/compliance/kr/WorkHoursChart.tsx",
+        "line": 48,
+        "current": "위반 (52시간 초과)",
+        "suggestedKey": "compliance.kr.WorkHoursChart.위반_52시간_초과_"
+      },
+      {
+        "file": "src/components/compliance/kr/WorkHoursMonitorTab.tsx",
+        "line": 78,
+        "current": "준수율",
+        "suggestedKey": "compliance.kr.WorkHoursMonitorTab.준수율"
+      },
+      {
+        "file": "src/components/compliance/kr/WorkHoursMonitorTab.tsx",
+        "line": 86,
+        "current": "준수 인원",
+        "suggestedKey": "compliance.kr.WorkHoursMonitorTab.준수_인원"
+      },
+      {
+        "file": "src/components/compliance/kr/WorkHoursMonitorTab.tsx",
+        "line": 94,
+        "current": "주의 인원",
+        "suggestedKey": "compliance.kr.WorkHoursMonitorTab.주의_인원"
+      },
+      {
+        "file": "src/components/compliance/kr/WorkHoursMonitorTab.tsx",
+        "line": 102,
+        "current": "위반 인원",
+        "suggestedKey": "compliance.kr.WorkHoursMonitorTab.위반_인원"
+      },
+      {
+        "file": "src/components/compliance/kr/SeveranceInterimForm.tsx",
+        "line": 25,
+        "current": "주택 구입",
+        "suggestedKey": "compliance.kr.SeveranceInterimForm.주택_구입"
+      },
+      {
+        "file": "src/components/compliance/kr/SeveranceInterimForm.tsx",
+        "line": 26,
+        "current": "주거 임차 (전세/보증금)",
+        "suggestedKey": "compliance.kr.SeveranceInterimForm.주거_임차_전세_보증금_"
+      },
+      {
+        "file": "src/components/compliance/kr/SeveranceInterimForm.tsx",
+        "line": 27,
+        "current": "본인 또는 부양가족 의료비",
+        "suggestedKey": "compliance.kr.SeveranceInterimForm.본인_또는_부양가족_의료비"
+      },
+      {
+        "file": "src/components/compliance/kr/SeveranceInterimForm.tsx",
+        "line": 28,
+        "current": "재난·재해 피해",
+        "suggestedKey": "compliance.kr.SeveranceInterimForm.재난_재해_피해"
+      },
+      {
+        "file": "src/components/compliance/kr/SeveranceInterimForm.tsx",
+        "line": 29,
+        "current": "퇴직연금 전환",
+        "suggestedKey": "compliance.kr.SeveranceInterimForm.퇴직연금_전환"
+      },
+      {
+        "file": "src/components/compliance/kr/SeveranceInterimForm.tsx",
+        "line": 30,
+        "current": "기타 (노동부 장관 인정 사유)",
+        "suggestedKey": "compliance.kr.SeveranceInterimForm.기타_노동부_장관_인정_사유_"
+      },
+      {
+        "file": "src/components/compliance/kr/MandatoryTrainingForm.tsx",
+        "line": 25,
+        "current": "성희롱 예방교육",
+        "suggestedKey": "compliance.kr.MandatoryTrainingForm.성희롱_예방교육"
+      },
+      {
+        "file": "src/components/compliance/kr/MandatoryTrainingForm.tsx",
+        "line": 26,
+        "current": "직장 내 괴롭힘 예방교육",
+        "suggestedKey": "compliance.kr.MandatoryTrainingForm.직장_내_괴롭힘_예방교육"
+      },
+      {
+        "file": "src/components/compliance/kr/MandatoryTrainingForm.tsx",
+        "line": 27,
+        "current": "개인정보보호 교육",
+        "suggestedKey": "compliance.kr.MandatoryTrainingForm.개인정보보호_교육"
+      },
+      {
+        "file": "src/components/compliance/kr/MandatoryTrainingForm.tsx",
+        "line": 28,
+        "current": "안전보건 교육",
+        "suggestedKey": "compliance.kr.MandatoryTrainingForm.안전보건_교육"
+      },
+      {
+        "file": "src/components/compliance/kr/MandatoryTrainingForm.tsx",
+        "line": 29,
+        "current": "장애인 인식개선 교육",
+        "suggestedKey": "compliance.kr.MandatoryTrainingForm.장애인_인식개선_교육"
+      },
+      {
+        "file": "src/components/compliance/kr/MandatoryTrainingForm.tsx",
+        "line": 34,
+        "current": "직장 내 성희롱 예방 기초",
+        "suggestedKey": "compliance.kr.MandatoryTrainingForm.직장_내_성희롱_예방_기초"
+      },
+      {
+        "file": "src/components/compliance/kr/MandatoryTrainingForm.tsx",
+        "line": 35,
+        "current": "직장 내 성희롱 예방 심화",
+        "suggestedKey": "compliance.kr.MandatoryTrainingForm.직장_내_성희롱_예방_심화"
+      },
+      {
+        "file": "src/components/compliance/kr/MandatoryTrainingForm.tsx",
+        "line": 38,
+        "current": "직장 내 괴롭힘 방지 교육",
+        "suggestedKey": "compliance.kr.MandatoryTrainingForm.직장_내_괴롭힘_방지_교육"
+      },
+      {
+        "file": "src/components/compliance/kr/MandatoryTrainingForm.tsx",
+        "line": 39,
+        "current": "관리자 괴롭힘 예방 과정",
+        "suggestedKey": "compliance.kr.MandatoryTrainingForm.관리자_괴롭힘_예방_과정"
+      },
+      {
+        "file": "src/components/compliance/kr/MandatoryTrainingForm.tsx",
+        "line": 42,
+        "current": "개인정보 처리 및 보호 실무",
+        "suggestedKey": "compliance.kr.MandatoryTrainingForm.개인정보_처리_및_보호_실무"
+      },
+      {
+        "file": "src/components/compliance/kr/MandatoryTrainingForm.tsx",
+        "line": 43,
+        "current": "GDPR 및 개인정보보호법 개요",
+        "suggestedKey": "compliance.kr.MandatoryTrainingForm.gdpr_및_개인정보보호법_개요"
+      },
+      {
+        "file": "src/components/compliance/kr/MandatoryTrainingForm.tsx",
+        "line": 46,
+        "current": "산업안전보건 기초 과정",
+        "suggestedKey": "compliance.kr.MandatoryTrainingForm.산업안전보건_기초_과정"
+      },
+      {
+        "file": "src/components/compliance/kr/MandatoryTrainingForm.tsx",
+        "line": 47,
+        "current": "위험성 평가 실무",
+        "suggestedKey": "compliance.kr.MandatoryTrainingForm.위험성_평가_실무"
+      },
+      {
+        "file": "src/components/compliance/kr/MandatoryTrainingForm.tsx",
+        "line": 50,
+        "current": "장애인식 개선 연간 교육",
+        "suggestedKey": "compliance.kr.MandatoryTrainingForm.장애인식_개선_연간_교육"
+      },
+      {
+        "file": "src/components/compliance/kr/MandatoryTrainingForm.tsx",
+        "line": 51,
+        "current": "장애인 포용 직장문화 교육",
+        "suggestedKey": "compliance.kr.MandatoryTrainingForm.장애인_포용_직장문화_교육"
+      },
+      {
+        "file": "src/components/compliance/kr/SeveranceInterimTab.tsx",
+        "line": 39,
+        "current": "검토 중",
+        "suggestedKey": "compliance.kr.SeveranceInterimTab.검토_중"
+      },
+      {
+        "file": "src/components/compliance/kr/SeveranceInterimTab.tsx",
+        "line": 43,
+        "current": "승인",
+        "suggestedKey": "compliance.kr.SeveranceInterimTab.승인"
+      },
+      {
+        "file": "src/components/compliance/kr/SeveranceInterimTab.tsx",
+        "line": 47,
+        "current": "반려",
+        "suggestedKey": "compliance.kr.SeveranceInterimTab.반려"
+      },
+      {
+        "file": "src/components/compliance/kr/SeveranceInterimTab.tsx",
+        "line": 51,
+        "current": "지급 완료",
+        "suggestedKey": "compliance.kr.SeveranceInterimTab.지급_완료"
+      },
+      {
+        "file": "src/components/compliance/kr/WorkHoursEmployeeList.tsx",
+        "line": 29,
+        "current": "준수",
+        "suggestedKey": "compliance.kr.WorkHoursEmployeeList.준수"
+      },
+      {
+        "file": "src/components/compliance/kr/WorkHoursEmployeeList.tsx",
+        "line": 34,
+        "current": "주의",
+        "suggestedKey": "compliance.kr.WorkHoursEmployeeList.주의"
+      },
+      {
+        "file": "src/components/compliance/kr/WorkHoursEmployeeList.tsx",
+        "line": 39,
+        "current": "위반",
+        "suggestedKey": "compliance.kr.WorkHoursEmployeeList.위반"
+      }
+    ],
+    "settings": [
+      {
+        "file": "src/app/(dashboard)/settings/organization/tabs/AssignmentRulesTab.tsx",
+        "line": 13,
+        "current": "승진",
+        "suggestedKey": "settings.organization.tabs.승진"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/organization/tabs/AssignmentRulesTab.tsx",
+        "line": 14,
+        "current": "전보",
+        "suggestedKey": "settings.organization.tabs.전보"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/organization/tabs/AssignmentRulesTab.tsx",
+        "line": 15,
+        "current": "순환보직",
+        "suggestedKey": "settings.organization.tabs.순환보직"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/organization/tabs/AssignmentRulesTab.tsx",
+        "line": 16,
+        "current": "파견",
+        "suggestedKey": "settings.organization.tabs.파견"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/organization/tabs/AssignmentRulesTab.tsx",
+        "line": 17,
+        "current": "겸직",
+        "suggestedKey": "settings.organization.tabs.겸직"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/organization/tabs/AssignmentRulesTab.tsx",
+        "line": 18,
+        "current": "휴직",
+        "suggestedKey": "settings.organization.tabs.휴직"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/organization/tabs/AssignmentRulesTab.tsx",
+        "line": 19,
+        "current": "복직",
+        "suggestedKey": "settings.organization.tabs.복직"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/organization/tabs/AssignmentRulesTab.tsx",
+        "line": 20,
+        "current": "강등",
+        "suggestedKey": "settings.organization.tabs.강등"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/system/tabs/RolesTab.tsx",
+        "line": 9,
+        "current": "최고 관리자",
+        "suggestedKey": "settings.system.tabs.최고_관리자"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/system/tabs/RolesTab.tsx",
+        "line": 10,
+        "current": "HR 관리자",
+        "suggestedKey": "settings.system.tabs.hr_관리자"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/system/tabs/RolesTab.tsx",
+        "line": 11,
+        "current": "HR 담당자",
+        "suggestedKey": "settings.system.tabs.hr_담당자"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/system/tabs/RolesTab.tsx",
+        "line": 12,
+        "current": "매니저",
+        "suggestedKey": "settings.system.tabs.매니저"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/system/tabs/RolesTab.tsx",
+        "line": 13,
+        "current": "일반 직원",
+        "suggestedKey": "settings.system.tabs.일반_직원"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/system/tabs/RolesTab.tsx",
+        "line": 14,
+        "current": "조회 전용",
+        "suggestedKey": "settings.system.tabs.조회_전용"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/system/tabs/AuditLogTab.tsx",
+        "line": 40,
+        "current": "생성",
+        "suggestedKey": "settings.system.tabs.생성"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/system/tabs/AuditLogTab.tsx",
+        "line": 41,
+        "current": "수정",
+        "suggestedKey": "settings.system.tabs.수정"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/system/tabs/AuditLogTab.tsx",
+        "line": 42,
+        "current": "복원",
+        "suggestedKey": "settings.system.tabs.복원"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/system/tabs/IntegrationsTab.tsx",
+        "line": 11,
+        "current": "ERP 연동",
+        "suggestedKey": "settings.system.tabs.erp_연동"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/system/tabs/IntegrationsTab.tsx",
+        "line": 12,
+        "current": "API 키 관리",
+        "suggestedKey": "settings.system.tabs.api_키_관리"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/system/tabs/NotificationChannelsTab.tsx",
+        "line": 15,
+        "current": "이메일",
+        "suggestedKey": "settings.system.tabs.이메일"
+      },
+      {
+        "file": "src/app/(dashboard)/settings/system/tabs/NotificationChannelsTab.tsx",
+        "line": 16,
+        "current": "앱 푸시",
+        "suggestedKey": "settings.system.tabs.앱_푸시"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 58,
+        "current": "조직/인사",
+        "suggestedKey": "settings.settings-config.조직_인사"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 62,
+        "current": "법인 기본정보",
+        "suggestedKey": "settings.settings-config.법인_기본정보"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 63,
+        "current": "부서 구조",
+        "suggestedKey": "settings.settings-config.부서_구조"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 64,
+        "current": "직급 체계",
+        "suggestedKey": "settings.settings-config.직급_체계"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 65,
+        "current": "직종/직무",
+        "suggestedKey": "settings.settings-config.직종_직무"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 66,
+        "current": "발령 규칙",
+        "suggestedKey": "settings.settings-config.발령_규칙"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 67,
+        "current": "수습 기간",
+        "suggestedKey": "settings.settings-config.수습_기간"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 68,
+        "current": "커스텀 필드",
+        "suggestedKey": "settings.settings-config.커스텀_필드"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 69,
+        "current": "코드 관리",
+        "suggestedKey": "settings.settings-config.코드_관리"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 74,
+        "current": "근태/휴가",
+        "suggestedKey": "settings.settings-config.근태_휴가"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 78,
+        "current": "근무 스케줄",
+        "suggestedKey": "settings.settings-config.근무_스케줄"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 79,
+        "current": "주간 근무한도",
+        "suggestedKey": "settings.settings-config.주간_근무한도"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 80,
+        "current": "교대근무",
+        "suggestedKey": "settings.settings-config.교대근무"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 81,
+        "current": "휴가 유형",
+        "suggestedKey": "settings.settings-config.휴가_유형"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 82,
+        "current": "휴가 부여 규칙",
+        "suggestedKey": "settings.settings-config.휴가_부여_규칙"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 83,
+        "current": "연차촉진",
+        "suggestedKey": "settings.settings-config.연차촉진"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 84,
+        "current": "법정 공휴일",
+        "suggestedKey": "settings.settings-config.법정_공휴일"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 85,
+        "current": "초과근무",
+        "suggestedKey": "settings.settings-config.초과근무"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 90,
+        "current": "급여/보상",
+        "suggestedKey": "settings.settings-config.급여_보상"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 94,
+        "current": "급여 항목",
+        "suggestedKey": "settings.settings-config.급여_항목"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 95,
+        "current": "공제 항목",
+        "suggestedKey": "settings.settings-config.공제_항목"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 96,
+        "current": "비과세 한도",
+        "suggestedKey": "settings.settings-config.비과세_한도"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 97,
+        "current": "연봉 밴드",
+        "suggestedKey": "settings.settings-config.연봉_밴드"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 98,
+        "current": "인상률 매트릭스",
+        "suggestedKey": "settings.settings-config.인상률_매트릭스"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 99,
+        "current": "성과급 규칙",
+        "suggestedKey": "settings.settings-config.성과급_규칙"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 100,
+        "current": "급여일",
+        "suggestedKey": "settings.settings-config.급여일"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 101,
+        "current": "통화/환율",
+        "suggestedKey": "settings.settings-config.통화_환율"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 106,
+        "current": "성과/평가",
+        "suggestedKey": "settings.settings-config.성과_평가"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 110,
+        "current": "평가 주기",
+        "suggestedKey": "settings.settings-config.평가_주기"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 111,
+        "current": "평가 방법론",
+        "suggestedKey": "settings.settings-config.평가_방법론"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 112,
+        "current": "등급 체계",
+        "suggestedKey": "settings.settings-config.등급_체계"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 113,
+        "current": "배분 가이드라인",
+        "suggestedKey": "settings.settings-config.배분_가이드라인"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 114,
+        "current": "캘리브레이션",
+        "suggestedKey": "settings.settings-config.캘리브레이션"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 115,
+        "current": "CFR 설정",
+        "suggestedKey": "settings.settings-config.cfr_설정"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 116,
+        "current": "역량 라이브러리",
+        "suggestedKey": "settings.settings-config.역량_라이브러리"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 121,
+        "current": "채용/온보딩",
+        "suggestedKey": "settings.settings-config.채용_온보딩"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 125,
+        "current": "채용 파이프라인",
+        "suggestedKey": "settings.settings-config.채용_파이프라인"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 126,
+        "current": "면접 평가항목",
+        "suggestedKey": "settings.settings-config.면접_평가항목"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 127,
+        "current": "AI 스크리닝",
+        "suggestedKey": "settings.settings-config.ai_스크리닝"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 128,
+        "current": "온보딩 템플릿",
+        "suggestedKey": "settings.settings-config.온보딩_템플릿"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 129,
+        "current": "오프보딩 체크리스트",
+        "suggestedKey": "settings.settings-config.오프보딩_체크리스트"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 130,
+        "current": "수습 평가",
+        "suggestedKey": "settings.settings-config.수습_평가"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 135,
+        "current": "시스템",
+        "suggestedKey": "settings.settings-config.시스템"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 139,
+        "current": "알림 채널",
+        "suggestedKey": "settings.settings-config.알림_채널"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 140,
+        "current": "알림 규칙",
+        "suggestedKey": "settings.settings-config.알림_규칙"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 141,
+        "current": "언어/타임존",
+        "suggestedKey": "settings.settings-config.언어_타임존"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 142,
+        "current": "역할/권한",
+        "suggestedKey": "settings.settings-config.역할_권한"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 143,
+        "current": "감사 로그",
+        "suggestedKey": "settings.settings-config.감사_로그"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 144,
+        "current": "데이터 보존",
+        "suggestedKey": "settings.settings-config.데이터_보존"
+      },
+      {
+        "file": "src/components/settings/settings-config.ts",
+        "line": 145,
+        "current": "연동",
+        "suggestedKey": "settings.settings-config.연동"
+      },
+      {
+        "file": "src/components/settings/ApprovalFlowEditor.tsx",
+        "line": 8,
+        "current": "직속 팀장",
+        "suggestedKey": "settings.ApprovalFlowEditor.직속_팀장"
+      },
+      {
+        "file": "src/components/settings/ApprovalFlowEditor.tsx",
+        "line": 9,
+        "current": "부서장",
+        "suggestedKey": "settings.ApprovalFlowEditor.부서장"
+      },
+      {
+        "file": "src/components/settings/ApprovalFlowEditor.tsx",
+        "line": 10,
+        "current": "HR 담당",
+        "suggestedKey": "settings.ApprovalFlowEditor.hr_담당"
+      },
+      {
+        "file": "src/components/settings/ApprovalFlowEditor.tsx",
+        "line": 11,
+        "current": "경영관리",
+        "suggestedKey": "settings.ApprovalFlowEditor.경영관리"
+      },
+      {
+        "file": "src/components/settings/ApprovalFlowEditor.tsx",
+        "line": 12,
+        "current": "대표이사",
+        "suggestedKey": "settings.ApprovalFlowEditor.대표이사"
+      }
+    ],
+    "other": [
+      {
+        "file": "src/app/api/v1/cron/leave-promotion/route.ts",
+        "line": 15,
+        "current": "60일 전",
+        "suggestedKey": "api.v1.cron.60일_전"
+      },
+      {
+        "file": "src/app/api/v1/cron/leave-promotion/route.ts",
+        "line": 16,
+        "current": "30일 전",
+        "suggestedKey": "api.v1.cron.30일_전"
+      },
+      {
+        "file": "src/app/api/v1/cron/leave-promotion/route.ts",
+        "line": 17,
+        "current": "10일 전",
+        "suggestedKey": "api.v1.cron.10일_전"
+      },
+      {
+        "file": "src/app/(dashboard)/organization/skill-matrix/SkillMatrixClient.tsx",
+        "line": 121,
+        "current": "미달 (≥2)",
+        "suggestedKey": "organization.skill-matrix.SkillMatrix.미달_2_"
+      },
+      {
+        "file": "src/app/(dashboard)/organization/skill-matrix/SkillMatrixClient.tsx",
+        "line": 122,
+        "current": "부족 (1)",
+        "suggestedKey": "organization.skill-matrix.SkillMatrix.부족_1_"
+      },
+      {
+        "file": "src/app/(dashboard)/organization/skill-matrix/SkillMatrixClient.tsx",
+        "line": 123,
+        "current": "충족 (0)",
+        "suggestedKey": "organization.skill-matrix.SkillMatrix.충족_0_"
+      },
+      {
+        "file": "src/app/(dashboard)/organization/skill-matrix/SkillMatrixClient.tsx",
+        "line": 124,
+        "current": "초과",
+        "suggestedKey": "organization.skill-matrix.SkillMatrix.초과"
+      },
+      {
+        "file": "src/app/(dashboard)/organization/skill-matrix/SkillMatrixClient.tsx",
+        "line": 125,
+        "current": "전문가 (5)",
+        "suggestedKey": "organization.skill-matrix.SkillMatrix.전문가_5_"
+      },
+      {
+        "file": "src/app/(dashboard)/organization/skill-matrix/SkillMatrixClient.tsx",
+        "line": 126,
+        "current": "미평가",
+        "suggestedKey": "organization.skill-matrix.SkillMatrix.미평가"
+      },
+      {
+        "file": "src/app/(dashboard)/organization/skill-matrix/SkillMatrixClient.tsx",
+        "line": 194,
+        "current": "미달 역량",
+        "suggestedKey": "organization.skill-matrix.SkillMatrix.미달_역량"
+      },
+      {
+        "file": "src/app/(dashboard)/organization/skill-matrix/SkillMatrixClient.tsx",
+        "line": 195,
+        "current": "강점 역량",
+        "suggestedKey": "organization.skill-matrix.SkillMatrix.강점_역량"
+      },
+      {
+        "file": "src/app/(dashboard)/organization/skill-matrix/SkillMatrixClient.tsx",
+        "line": 196,
+        "current": "달성률",
+        "suggestedKey": "organization.skill-matrix.SkillMatrix.달성률"
+      },
+      {
+        "file": "src/app/(dashboard)/organization/skill-matrix/SkillMatrixClient.tsx",
+        "line": 329,
+        "current": "전체 직원",
+        "suggestedKey": "organization.skill-matrix.SkillMatrix.전체_직원"
+      },
+      {
+        "file": "src/app/(dashboard)/organization/skill-matrix/SkillMatrixClient.tsx",
+        "line": 330,
+        "current": "평가 완료율",
+        "suggestedKey": "organization.skill-matrix.SkillMatrix.평가_완료율"
+      },
+      {
+        "file": "src/app/(dashboard)/organization/skill-matrix/SkillMatrixClient.tsx",
+        "line": 331,
+        "current": "주요 갭 역량",
+        "suggestedKey": "organization.skill-matrix.SkillMatrix.주요_갭_역량"
+      },
+      {
+        "file": "src/app/(dashboard)/organization/skill-matrix/SkillMatrixClient.tsx",
+        "line": 332,
+        "current": "강점 역량",
+        "suggestedKey": "organization.skill-matrix.SkillMatrix.강점_역량"
+      },
+      {
+        "file": "src/app/(dashboard)/organization/skill-matrix/SkillMatrixClient.tsx",
+        "line": 349,
+        "current": "직원별 매트릭스",
+        "suggestedKey": "organization.skill-matrix.SkillMatrix.직원별_매트릭스"
+      },
+      {
+        "file": "src/app/(dashboard)/organization/skill-matrix/SkillMatrixClient.tsx",
+        "line": 350,
+        "current": "부서별 집계",
+        "suggestedKey": "organization.skill-matrix.SkillMatrix.부서별_집계"
+      },
+      {
+        "file": "src/app/(dashboard)/organization/skill-matrix/SkillMatrixClient.tsx",
+        "line": 351,
+        "current": "갭 리포트",
+        "suggestedKey": "organization.skill-matrix.SkillMatrix.갭_리포트"
+      },
+      {
+        "file": "src/app/(dashboard)/approvals/inbox/ApprovalInboxClient.tsx",
+        "line": 78,
+        "current": "전체",
+        "suggestedKey": "approvals.inbox.ApprovalInbox.전체"
+      },
+      {
+        "file": "src/app/(dashboard)/approvals/inbox/ApprovalInboxClient.tsx",
+        "line": 79,
+        "current": "휴가",
+        "suggestedKey": "approvals.inbox.ApprovalInbox.휴가"
+      },
+      {
+        "file": "src/app/(dashboard)/approvals/inbox/ApprovalInboxClient.tsx",
+        "line": 80,
+        "current": "성과",
+        "suggestedKey": "approvals.inbox.ApprovalInbox.성과"
+      },
+      {
+        "file": "src/app/(dashboard)/approvals/inbox/ApprovalInboxClient.tsx",
+        "line": 81,
+        "current": "급여",
+        "suggestedKey": "approvals.inbox.ApprovalInbox.급여"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 132,
+        "current": "홈",
+        "suggestedKey": "src.config.navigation.홈"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 139,
+        "current": "대시보드",
+        "suggestedKey": "src.config.navigation.대시보드"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 147,
+        "current": "알림",
+        "suggestedKey": "src.config.navigation.알림"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 155,
+        "current": "승인함",
+        "suggestedKey": "src.config.navigation.승인함"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 168,
+        "current": "나의 공간",
+        "suggestedKey": "src.config.navigation.나의_공간"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 175,
+        "current": "나의 업무",
+        "suggestedKey": "src.config.navigation.나의_업무"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 184,
+        "current": "내 프로필",
+        "suggestedKey": "src.config.navigation.내_프로필"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 192,
+        "current": "출퇴근",
+        "suggestedKey": "src.config.navigation.출퇴근"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 200,
+        "current": "휴가 신청",
+        "suggestedKey": "src.config.navigation.휴가_신청"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 208,
+        "current": "급여명세서",
+        "suggestedKey": "src.config.navigation.급여명세서"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 216,
+        "current": "목표/평가",
+        "suggestedKey": "src.config.navigation.목표_평가"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 224,
+        "current": "복리후생",
+        "suggestedKey": "src.config.navigation.복리후생"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 232,
+        "current": "연말 정산",
+        "suggestedKey": "src.config.navigation.연말_정산"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 242,
+        "current": "나의 온보딩",
+        "suggestedKey": "src.config.navigation.나의_온보딩"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 250,
+        "current": "나의 퇴직처리",
+        "suggestedKey": "src.config.navigation.나의_퇴직처리"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 262,
+        "current": "팀 관리",
+        "suggestedKey": "src.config.navigation.팀_관리"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 269,
+        "current": "팀 현황",
+        "suggestedKey": "src.config.navigation.팀_현황"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 277,
+        "current": "팀 근태",
+        "suggestedKey": "src.config.navigation.팀_근태"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 285,
+        "current": "팀 휴가",
+        "suggestedKey": "src.config.navigation.팀_휴가"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 293,
+        "current": "팀 목표/성과",
+        "suggestedKey": "src.config.navigation.팀_목표_성과"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 301,
+        "current": "매니저 평가",
+        "suggestedKey": "src.config.navigation.매니저_평가"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 309,
+        "current": "1:1 미팅",
+        "suggestedKey": "src.config.navigation.1_1_미팅"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 317,
+        "current": "위임 설정",
+        "suggestedKey": "src.config.navigation.위임_설정"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 330,
+        "current": "인사 관리",
+        "suggestedKey": "src.config.navigation.인사_관리"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 337,
+        "current": "직원 관리",
+        "suggestedKey": "src.config.navigation.직원_관리"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 345,
+        "current": "구성원 디렉토리",
+        "suggestedKey": "src.config.navigation.구성원_디렉토리"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 353,
+        "current": "조직 관리",
+        "suggestedKey": "src.config.navigation.조직_관리"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 361,
+        "current": "근태 관리",
+        "suggestedKey": "src.config.navigation.근태_관리"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 369,
+        "current": "휴가 관리",
+        "suggestedKey": "src.config.navigation.휴가_관리"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 377,
+        "current": "온보딩/오프보딩",
+        "suggestedKey": "src.config.navigation.온보딩_오프보딩"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 385,
+        "current": "퇴직 면담 분석",
+        "suggestedKey": "src.config.navigation.퇴직_면담_분석"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 393,
+        "current": "징계/포상",
+        "suggestedKey": "src.config.navigation.징계_포상"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 405,
+        "current": "채용",
+        "suggestedKey": "src.config.navigation.채용"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 412,
+        "current": "채용 공고",
+        "suggestedKey": "src.config.navigation.채용_공고"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 420,
+        "current": "채용 대시보드",
+        "suggestedKey": "src.config.navigation.채용_대시보드"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 428,
+        "current": "칸반 보드",
+        "suggestedKey": "src.config.navigation.칸반_보드"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 437,
+        "current": "인재 풀",
+        "suggestedKey": "src.config.navigation.인재_풀"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 449,
+        "current": "성과/보상",
+        "suggestedKey": "src.config.navigation.성과_보상"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 456,
+        "current": "성과 관리",
+        "suggestedKey": "src.config.navigation.성과_관리"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 464,
+        "current": "목표 관리",
+        "suggestedKey": "src.config.navigation.목표_관리"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 472,
+        "current": "캘리브레이션",
+        "suggestedKey": "src.config.navigation.캘리브레이션"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 480,
+        "current": "성과 결과",
+        "suggestedKey": "src.config.navigation.성과_결과"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 488,
+        "current": "동료 평가",
+        "suggestedKey": "src.config.navigation.동료_평가"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 496,
+        "current": "보상 관리",
+        "suggestedKey": "src.config.navigation.보상_관리"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 504,
+        "current": "복리후생 관리",
+        "suggestedKey": "src.config.navigation.복리후생_관리"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 516,
+        "current": "급여",
+        "suggestedKey": "src.config.navigation.급여"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 523,
+        "current": "급여 대시보드",
+        "suggestedKey": "src.config.navigation.급여_대시보드"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 531,
+        "current": "근태 마감",
+        "suggestedKey": "src.config.navigation.근태_마감"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 540,
+        "current": "수동 조정",
+        "suggestedKey": "src.config.navigation.수동_조정"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 549,
+        "current": "이상 검토",
+        "suggestedKey": "src.config.navigation.이상_검토"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 557,
+        "current": "글로벌 급여",
+        "suggestedKey": "src.config.navigation.글로벌_급여"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 565,
+        "current": "급여 시뮬레이션",
+        "suggestedKey": "src.config.navigation.급여_시뮬레이션"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 573,
+        "current": "이체 내역",
+        "suggestedKey": "src.config.navigation.이체_내역"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 581,
+        "current": "연말정산",
+        "suggestedKey": "src.config.navigation.연말정산"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 595,
+        "current": "인사이트",
+        "suggestedKey": "src.config.navigation.인사이트"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 610,
+        "current": "인력 분석",
+        "suggestedKey": "src.config.navigation.인력_분석"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 618,
+        "current": "급여 분석",
+        "suggestedKey": "src.config.navigation.급여_분석"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 626,
+        "current": "성과 분석",
+        "suggestedKey": "src.config.navigation.성과_분석"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 634,
+        "current": "근태/휴가 분석",
+        "suggestedKey": "src.config.navigation.근태_휴가_분석"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 642,
+        "current": "이직 분석",
+        "suggestedKey": "src.config.navigation.이직_분석"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 650,
+        "current": "팀 건강",
+        "suggestedKey": "src.config.navigation.팀_건강"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 658,
+        "current": "AI 리포트",
+        "suggestedKey": "src.config.navigation.ai_리포트"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 670,
+        "current": "컴플라이언스",
+        "suggestedKey": "src.config.navigation.컴플라이언스"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 677,
+        "current": "GDPR/개인정보",
+        "suggestedKey": "src.config.navigation.gdpr_개인정보"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 685,
+        "current": "데이터 보관",
+        "suggestedKey": "src.config.navigation.데이터_보관"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 693,
+        "current": "PII 감사",
+        "suggestedKey": "src.config.navigation.pii_감사"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 709,
+        "current": "한국 컴플라이언스",
+        "suggestedKey": "src.config.navigation.한국_컴플라이언스"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 718,
+        "current": "중국 컴플라이언스",
+        "suggestedKey": "src.config.navigation.중국_컴플라이언스"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 727,
+        "current": "러시아 컴플라이언스",
+        "suggestedKey": "src.config.navigation.러시아_컴플라이언스"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 740,
+        "current": "설정",
+        "suggestedKey": "src.config.navigation.설정"
+      },
+      {
+        "file": "src/config/navigation.ts",
+        "line": 747,
+        "current": "설정",
+        "suggestedKey": "src.config.navigation.설정"
+      },
+      {
+        "file": "src/components/org/RestructureModal.tsx",
+        "line": 355,
+        "current": "① 변경 사항 작성",
+        "suggestedKey": "org.RestructureModal._변경_사항_작성"
+      },
+      {
+        "file": "src/components/org/RestructureModal.tsx",
+        "line": 356,
+        "current": "② 영향도 검토",
+        "suggestedKey": "org.RestructureModal._영향도_검토"
+      },
+      {
+        "file": "src/components/org/RestructureModal.tsx",
+        "line": 357,
+        "current": "③ 확인 및 저장",
+        "suggestedKey": "org.RestructureModal._확인_및_저장"
+      },
+      {
+        "file": "src/components/layout/MobileBottomNav.tsx",
+        "line": 13,
+        "current": "홈",
+        "suggestedKey": "layout.MobileBottomNav.홈"
+      },
+      {
+        "file": "src/components/layout/MobileBottomNav.tsx",
+        "line": 14,
+        "current": "근태",
+        "suggestedKey": "layout.MobileBottomNav.근태"
+      },
+      {
+        "file": "src/components/layout/MobileBottomNav.tsx",
+        "line": 15,
+        "current": "승인함",
+        "suggestedKey": "layout.MobileBottomNav.승인함"
+      },
+      {
+        "file": "src/components/layout/MobileBottomNav.tsx",
+        "line": 16,
+        "current": "내 정보",
+        "suggestedKey": "layout.MobileBottomNav.내_정보"
+      },
+      {
+        "file": "src/components/shared/EffectiveDatePicker.tsx",
+        "line": 31,
+        "current": "오늘",
+        "suggestedKey": "shared.EffectiveDatePicker.오늘"
+      },
+      {
+        "file": "src/components/shared/EffectiveDatePicker.tsx",
+        "line": 32,
+        "current": "1년전",
+        "suggestedKey": "shared.EffectiveDatePicker.1년전"
+      },
+      {
+        "file": "src/components/shared/EffectiveDatePicker.tsx",
+        "line": 34,
+        "current": "전기말",
+        "suggestedKey": "shared.EffectiveDatePicker.전기말"
+      },
+      {
+        "file": "src/components/shared/EffectiveDatePicker.tsx",
+        "line": 43,
+        "current": "입사일",
+        "suggestedKey": "shared.EffectiveDatePicker.입사일"
+      },
+      {
+        "file": "src/components/common/EmployeeCell.tsx",
+        "line": 21,
+        "current": "재직",
+        "suggestedKey": "common.EmployeeCell.재직"
+      },
+      {
+        "file": "src/components/common/EmployeeCell.tsx",
+        "line": 22,
+        "current": "휴직",
+        "suggestedKey": "common.EmployeeCell.휴직"
+      },
+      {
+        "file": "src/components/common/EmployeeCell.tsx",
+        "line": 23,
+        "current": "퇴사",
+        "suggestedKey": "common.EmployeeCell.퇴사"
+      },
+      {
+        "file": "src/components/common/EmployeeCell.tsx",
+        "line": 24,
+        "current": "해고",
+        "suggestedKey": "common.EmployeeCell.해고"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 46,
+        "current": "홈",
+        "suggestedKey": "command-palette.CommandPalette.홈"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 47,
+        "current": "직원 관리",
+        "suggestedKey": "command-palette.CommandPalette.직원_관리"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 48,
+        "current": "근태 관리",
+        "suggestedKey": "command-palette.CommandPalette.근태_관리"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 49,
+        "current": "팀 근태",
+        "suggestedKey": "command-palette.CommandPalette.팀_근태"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 50,
+        "current": "휴가 관리",
+        "suggestedKey": "command-palette.CommandPalette.휴가_관리"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 51,
+        "current": "휴가 관리 (관리자)",
+        "suggestedKey": "command-palette.CommandPalette.휴가_관리_관리자_"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 52,
+        "current": "성과 관리",
+        "suggestedKey": "command-palette.CommandPalette.성과_관리"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 53,
+        "current": "MBO 목표",
+        "suggestedKey": "command-palette.CommandPalette.mbo_목표"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 54,
+        "current": "성과 평가",
+        "suggestedKey": "command-palette.CommandPalette.성과_평가"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 55,
+        "current": "1:1 미팅",
+        "suggestedKey": "command-palette.CommandPalette.1_1_미팅"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 56,
+        "current": "채용 관리",
+        "suggestedKey": "command-palette.CommandPalette.채용_관리"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 57,
+        "current": "채용 칸반 보드",
+        "suggestedKey": "command-palette.CommandPalette.채용_칸반_보드"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 58,
+        "current": "급여 관리",
+        "suggestedKey": "command-palette.CommandPalette.급여_관리"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 59,
+        "current": "연봉/보상",
+        "suggestedKey": "command-palette.CommandPalette.연봉_보상"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 60,
+        "current": "온보딩",
+        "suggestedKey": "command-palette.CommandPalette.온보딩"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 61,
+        "current": "퇴직 관리",
+        "suggestedKey": "command-palette.CommandPalette.퇴직_관리"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 62,
+        "current": "교육 관리",
+        "suggestedKey": "command-palette.CommandPalette.교육_관리"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 63,
+        "current": "복리후생",
+        "suggestedKey": "command-palette.CommandPalette.복리후생"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 64,
+        "current": "승계 계획",
+        "suggestedKey": "command-palette.CommandPalette.승계_계획"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 65,
+        "current": "분석 대시보드",
+        "suggestedKey": "command-palette.CommandPalette.분석_대시보드"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 66,
+        "current": "HR 예측 애널리틱스",
+        "suggestedKey": "command-palette.CommandPalette.hr_예측_애널리틱스"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 67,
+        "current": "징계·포상",
+        "suggestedKey": "command-palette.CommandPalette.징계_포상"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 68,
+        "current": "매니저 허브",
+        "suggestedKey": "command-palette.CommandPalette.매니저_허브"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 69,
+        "current": "승인함",
+        "suggestedKey": "command-palette.CommandPalette.승인함"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 71,
+        "current": "조직 관리",
+        "suggestedKey": "command-palette.CommandPalette.조직_관리"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 72,
+        "current": "설정",
+        "suggestedKey": "command-palette.CommandPalette.설정"
+      },
+      {
+        "file": "src/components/command-palette/CommandPalette.tsx",
+        "line": 73,
+        "current": "알림",
+        "suggestedKey": "command-palette.CommandPalette.알림"
+      },
+      {
+        "file": "src/components/manager-hub/ManagerInsightsHub.tsx",
+        "line": 105,
+        "current": "팀원 수",
+        "suggestedKey": "manager-hub.ManagerInsightsHub.팀원_수"
+      },
+      {
+        "file": "src/components/manager-hub/ManagerInsightsHub.tsx",
+        "line": 112,
+        "current": "이직 위험",
+        "suggestedKey": "manager-hub.ManagerInsightsHub.이직_위험"
+      },
+      {
+        "file": "src/components/manager-hub/ManagerInsightsHub.tsx",
+        "line": 120,
+        "current": "평균 초과근무",
+        "suggestedKey": "manager-hub.ManagerInsightsHub.평균_초과근무"
+      },
+      {
+        "file": "src/components/manager-hub/ManagerInsightsHub.tsx",
+        "line": 128,
+        "current": "1:1 미완료",
+        "suggestedKey": "manager-hub.ManagerInsightsHub.1_1_미완료"
+      },
+      {
+        "file": "src/lib/compensation.ts",
+        "line": 37,
+        "current": "저보상",
+        "suggestedKey": "src.lib.compensation.저보상"
+      },
+      {
+        "file": "src/lib/compensation.ts",
+        "line": 43,
+        "current": "시장 대비 낮음",
+        "suggestedKey": "src.lib.compensation.시장_대비_낮음"
+      },
+      {
+        "file": "src/lib/compensation.ts",
+        "line": 49,
+        "current": "적정",
+        "suggestedKey": "src.lib.compensation.적정"
+      },
+      {
+        "file": "src/lib/compensation.ts",
+        "line": 55,
+        "current": "높음",
+        "suggestedKey": "src.lib.compensation.높음"
+      },
+      {
+        "file": "src/lib/compensation.ts",
+        "line": 61,
+        "current": "과보상",
+        "suggestedKey": "src.lib.compensation.과보상"
+      },
+      {
+        "file": "src/lib/constants.ts",
+        "line": 104,
+        "current": "도전",
+        "suggestedKey": "src.lib.constants.도전"
+      },
+      {
+        "file": "src/lib/constants.ts",
+        "line": 105,
+        "current": "신뢰",
+        "suggestedKey": "src.lib.constants.신뢰"
+      },
+      {
+        "file": "src/lib/constants.ts",
+        "line": 106,
+        "current": "책임",
+        "suggestedKey": "src.lib.constants.책임"
+      },
+      {
+        "file": "src/lib/constants.ts",
+        "line": 107,
+        "current": "존중",
+        "suggestedKey": "src.lib.constants.존중"
+      },
+      {
+        "file": "src/lib/labor/kr.ts",
+        "line": 65,
+        "current": "연장근로 (평일)",
+        "suggestedKey": "src.lib.labor.연장근로_평일_"
+      },
+      {
+        "file": "src/lib/labor/kr.ts",
+        "line": 66,
+        "current": "휴일근로",
+        "suggestedKey": "src.lib.labor.휴일근로"
+      },
+      {
+        "file": "src/lib/labor/kr.ts",
+        "line": 67,
+        "current": "공휴일근로",
+        "suggestedKey": "src.lib.labor.공휴일근로"
+      },
+      {
+        "file": "src/lib/labor/kr.ts",
+        "line": 68,
+        "current": "야간근로 가산",
+        "suggestedKey": "src.lib.labor.야간근로_가산"
+      }
+    ]
+  },
+  "h1Titles": [
+    {
+      "file": "src/app/(dashboard)/settings/page.tsx",
+      "line": 23,
+      "current": "설정",
+      "suggestedKey": "settings.page._h1_classname_text_2xl_font_bo"
+    },
+    {
+      "file": "src/app/(dashboard)/analytics/attendance/page.tsx",
+      "line": 7,
+      "current": "근태/휴가 분석",
+      "suggestedKey": "analytics.attendance.page._h1_classname_text_2xl_font_bo"
+    },
+    {
+      "file": "src/app/(dashboard)/analytics/workforce/page.tsx",
+      "line": 7,
+      "current": "인력 분석",
+      "suggestedKey": "analytics.workforce.page._h1_classname_text_2xl_font_bo"
+    },
+    {
+      "file": "src/app/(dashboard)/analytics/team-health/page.tsx",
+      "line": 7,
+      "current": "팀 건강 대시보드",
+      "suggestedKey": "analytics.team-health.page._h1_classname_text_2xl_font_bo"
+    },
+    {
+      "file": "src/app/(dashboard)/analytics/payroll/page.tsx",
+      "line": 7,
+      "current": "급여 분석",
+      "suggestedKey": "analytics.payroll.page._h1_classname_text_2xl_font_bo"
+    },
+    {
+      "file": "src/app/(dashboard)/analytics/performance/page.tsx",
+      "line": 7,
+      "current": "성과 분석",
+      "suggestedKey": "analytics.performance.page._h1_classname_text_2xl_font_bo"
+    },
+    {
+      "file": "src/app/(dashboard)/analytics/turnover/page.tsx",
+      "line": 7,
+      "current": "이직 분석",
+      "suggestedKey": "analytics.turnover.page._h1_classname_text_2xl_font_bo"
+    },
+    {
+      "file": "src/app/(dashboard)/analytics/ai-report/page.tsx",
+      "line": 7,
+      "current": "AI 월간 리포트",
+      "suggestedKey": "analytics.ai-report.page._h1_classname_text_2xl_font_bo"
+    }
+  ],
+  "emptyStateFiles": [
+    {
+      "file": "src/app/(dashboard)/analytics/ai-report/AiReportClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/analytics/attendance/AttendanceClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/analytics/attrition/AttritionRiskClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/analytics/compensation/CompensationAnalyticsClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/analytics/predictive/PredictiveAnalyticsClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/analytics/recruitment/RecruitmentAnalyticsClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/analytics/report/ExecutiveReportClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/attendance/AttendanceClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/attendance/team/AttendanceTeamClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/benefits/BenefitsClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/compliance/ComplianceClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/compliance/cn/CnComplianceClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/compliance/gdpr/GdprClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/compliance/kr/KrComplianceClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/compliance/pii-audit/PiiAuditClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/compliance/ru/RuComplianceClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/dashboard/DashboardClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/discipline/DisciplineListClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/discipline/[id]/DisciplineDetailClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/discipline/rewards/RewardsListClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/discipline/rewards/[id]/RewardDetailClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/employees/EmployeeListClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/my/settings/notifications/NotificationPreferenceClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/my/skills/MySkillsClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/onboarding/checkin/CheckinFormClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/onboarding/checkins/CheckinsAdminClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/org-studio/OrgStudioClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/payroll/PayrollClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/payroll/[runId]/approve/PayrollApproveClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/payroll/[runId]/publish/PayrollPublishDashboardClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/payroll/anomalies/PayrollAnomaliesClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/payroll/close-attendance/CloseAttendanceClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/payroll/global/GlobalPayrollClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/payroll/me/[runId]/PayStubDetailClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/payroll/year-end/YearEndHRClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/peer-review/evaluate/[nominationId]/PeerEvalFormClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/pulse/[id]/respond/PulseRespondClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/pulse/[id]/results/PulseResultsClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/team-goals/TeamGoalsClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/recruitment/RecruitmentListClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/recruitment/[id]/PostingDetailClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/recruitment/[id]/applicants/new/ApplicantFormClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/recruitment/[id]/interviews/InterviewListClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/settings/attendance/AttendanceSettingsClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/settings/attendance/AttendanceSettingsV2Client.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/settings/organization/OrganizationSettingsClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/settings/payroll/PayrollSettingsClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/settings/performance/PerformanceSettingsClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/settings/recruitment/RecruitmentSettingsClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/settings/system/SystemSettingsClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/succession/SuccessionClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/training/TrainingClient.tsx"
+    },
+    {
+      "file": "src/app/(dashboard)/training/enrollments/TrainingEnrollmentsClient.tsx"
+    }
+  ],
+  "placeholders": [
+    {
+      "file": "src/app/(dashboard)/offboarding/OffboardingDashboardClient.tsx",
+      "line": 327,
+      "current": "전체 법인",
+      "suggestedKey": "offboarding.OffboardingDashboard.전체_법인"
+    },
+    {
+      "file": "src/app/(dashboard)/recruitment/board/BoardClient.tsx",
+      "line": 599,
+      "current": "예: 60000000",
+      "suggestedKey": "recruitment.board.Board.예_60000000"
+    },
+    {
+      "file": "src/app/(dashboard)/recruitment/board/BoardClient.tsx",
+      "line": 696,
+      "current": "불합격 사유를 입력해주세요.",
+      "suggestedKey": "recruitment.board.Board.불합격_사유를_입력해주세요_"
+    },
+    {
+      "file": "src/app/(dashboard)/recruitment/requisitions/RequisitionListClient.tsx",
+      "line": 151,
+      "current": "직무명, 부서, 요청자 검색...",
+      "suggestedKey": "recruitment.requisitions.RequisitionList.직무명_부서_요청자_검색_"
+    },
+    {
+      "file": "src/app/(dashboard)/recruitment/requisitions/new/RequisitionFormClient.tsx",
+      "line": 162,
+      "current": "예: 시니어 백엔드 개발자",
+      "suggestedKey": "recruitment.requisitions.new.예_시니어_백엔드_개발자"
+    },
+    {
+      "file": "src/app/(dashboard)/recruitment/requisitions/new/RequisitionFormClient.tsx",
+      "line": 184,
+      "current": "예: 과장",
+      "suggestedKey": "recruitment.requisitions.new.예_과장"
+    },
+    {
+      "file": "src/app/(dashboard)/recruitment/requisitions/new/RequisitionFormClient.tsx",
+      "line": 263,
+      "current": "채용이 필요한 사유를 상세히 작성해주세요. (예: 신규 프로젝트 인력 확충, 퇴직자 대체 충원 등)",
+      "suggestedKey": "recruitment.requisitions.new.채용이_필요한_사유를_상세히_작성해주세요_예_신규_프로"
+    },
+    {
+      "file": "src/app/(dashboard)/recruitment/cost-analysis/CostAnalysisClient.tsx",
+      "line": 542,
+      "current": "거래처명",
+      "suggestedKey": "recruitment.cost-analysis.CostAnalysis.거래처명"
+    },
+    {
+      "file": "src/app/(dashboard)/delegation/settings/DelegationSettingsClient.tsx",
+      "line": 552,
+      "current": "출장, 휴가 등...",
+      "suggestedKey": "delegation.settings.DelegationSettings.출장_휴가_등_"
+    },
+    {
+      "file": "src/app/(dashboard)/my/internal-jobs/InternalJobsClient.tsx",
+      "line": 135,
+      "current": "공고명 또는 부서 검색...",
+      "suggestedKey": "my.internal-jobs.InternalJobs.공고명_또는_부서_검색_"
+    },
+    {
+      "file": "src/app/(dashboard)/my/benefits/MyBenefitsClient.tsx",
+      "line": 208,
+      "current": "예: 본인 결혼",
+      "suggestedKey": "my.benefits.MyBenefits.예_본인_결혼"
+    },
+    {
+      "file": "src/app/(dashboard)/payroll/adjustments/AdjustmentsClient.tsx",
+      "line": 516,
+      "current": "예: 500000 또는 -200000",
+      "suggestedKey": "payroll.adjustments.Adjustments.예_500000_또는_200000"
+    },
+    {
+      "file": "src/app/(dashboard)/payroll/import/PayrollImportClient.tsx",
+      "line": 396,
+      "current": "예: 기본 급여 양식",
+      "suggestedKey": "payroll.import.PayrollImport.예_기본_급여_양식"
+    },
+    {
+      "file": "src/app/(dashboard)/payroll/import/PayrollImportClient.tsx",
+      "line": 439,
+      "current": "파일 헤더명",
+      "suggestedKey": "payroll.import.PayrollImport.파일_헤더명"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/cycles/CyclesClient.tsx",
+      "line": 182,
+      "current": "2025년 상반기",
+      "suggestedKey": "performance.cycles.Cycles.2025년_상반기"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/my-peer-review/MyPeerReviewClient.tsx",
+      "line": 301,
+      "current": "동료에 대한 종합적인 의견을 작성해주세요...",
+      "suggestedKey": "performance.my-peer-review.MyPeerReview.동료에_대한_종합적인_의견을_작성해주세요_"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/my-goals/MyGoalsClient.tsx",
+      "line": 51,
+      "current": "목표 제목",
+      "suggestedKey": "performance.my-goals.MyGoals.목표_제목"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/my-goals/MyGoalsClient.tsx",
+      "line": 56,
+      "current": "목표 상세 설명",
+      "suggestedKey": "performance.my-goals.MyGoals.목표_상세_설명"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/my-goals/MyGoalsClient.tsx",
+      "line": 61,
+      "current": "매출액, 수주잔고",
+      "suggestedKey": "performance.my-goals.MyGoals.매출액_수주잔고"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/calibration/CalibrationClient.tsx",
+      "line": 375,
+      "current": "세션 이름",
+      "suggestedKey": "performance.calibration.Calibration.세션_이름"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/pulse/PulseSurveyClient.tsx",
+      "line": 126,
+      "current": "서베이 제목",
+      "suggestedKey": "performance.pulse.PulseSurvey.서베이_제목"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/pulse/PulseSurveyClient.tsx",
+      "line": 182,
+      "current": "질문 내용",
+      "suggestedKey": "performance.pulse.PulseSurvey.질문_내용"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/pulse/PulseSurveyClient.tsx",
+      "line": 200,
+      "current": "보기를 쉼표로 구분 (예: 매우 만족, 만족, 보통, 불만족)",
+      "suggestedKey": "performance.pulse.PulseSurvey.보기를_쉼표로_구분_예_매우_만족_만족_보통_불만족_"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/my-evaluation/MyEvaluationClient.tsx",
+      "line": 346,
+      "current": "달성 내용을 기술하세요...",
+      "suggestedKey": "performance.my-evaluation.MyEvaluation.달성_내용을_기술하세요_"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/my-evaluation/MyEvaluationClient.tsx",
+      "line": 377,
+      "current": "근거를 기술하세요...",
+      "suggestedKey": "performance.my-evaluation.MyEvaluation.근거를_기술하세요_"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/manager-eval/ManagerEvalClient.tsx",
+      "line": 488,
+      "current": "팀원에 대한 종합 평가 의견을 작성하세요...",
+      "suggestedKey": "performance.manager-eval.ManagerEval.팀원에_대한_종합_평가_의견을_작성하세요_"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/recognition/RecognitionClient.tsx",
+      "line": 455,
+      "current": "칭찬 메시지를 작성하세요...",
+      "suggestedKey": "performance.recognition.Recognition.칭찬_메시지를_작성하세요_"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/one-on-one/OneOnOneClient.tsx",
+      "line": 414,
+      "current": "논의할 내용을 입력하세요",
+      "suggestedKey": "performance.one-on-one.OneOnOne.논의할_내용을_입력하세요"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/one-on-one/[id]/OneOnOneDetailClient.tsx",
+      "line": 225,
+      "current": "미팅 내용을 기록하세요...",
+      "suggestedKey": "performance.one-on-one.[id].미팅_내용을_기록하세요_"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/one-on-one/[id]/OneOnOneDetailClient.tsx",
+      "line": 276,
+      "current": "액션 아이템 입력",
+      "suggestedKey": "performance.one-on-one.[id].액션_아이템_입력"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/self-eval/SelfEvalClient.tsx",
+      "line": 352,
+      "current": "이번 평가 주기에 대한 종합 의견을 작성하세요...",
+      "suggestedKey": "performance.self-eval.SelfEval.이번_평가_주기에_대한_종합_의견을_작성하세요_"
+    },
+    {
+      "file": "src/app/(dashboard)/performance/peer-review/evaluate/[nominationId]/PeerEvalFormClient.tsx",
+      "line": 135,
+      "current": "건설적인 피드백을 작성해 주세요...",
+      "suggestedKey": "performance.peer-review.evaluate.건설적인_피드백을_작성해_주세요_"
+    },
+    {
+      "file": "src/app/(dashboard)/leave/admin/LeaveAdminClient.tsx",
+      "line": 558,
+      "current": "예: 1.0",
+      "suggestedKey": "leave.admin.LeaveAdmin.예_1_0"
+    },
+    {
+      "file": "src/app/(dashboard)/employees/new/EmployeeNewClient.tsx",
+      "line": 271,
+      "current": "홍길동",
+      "suggestedKey": "employees.new.EmployeeNew.홍길동"
+    },
+    {
+      "file": "src/components/org/RestructureModal.tsx",
+      "line": 167,
+      "current": "예: DEPT-NEW",
+      "suggestedKey": "org.RestructureModal.예_dept_new"
+    },
+    {
+      "file": "src/components/org/RestructureModal.tsx",
+      "line": 507,
+      "current": "예: 2026년 상반기 조직 개편",
+      "suggestedKey": "org.RestructureModal.예_2026년_상반기_조직_개편"
+    },
+    {
+      "file": "src/components/recruitment/ConvertToEmployeeButton.tsx",
+      "line": 75,
+      "current": "예: CTR-2025-0042",
+      "suggestedKey": "recruitment.ConvertToEmployeeButton.예_ctr_2025_0042"
+    },
+    {
+      "file": "src/components/compliance/cn/SocialInsuranceConfigForm.tsx",
+      "line": 158,
+      "current": "예: 上海, 北京",
+      "suggestedKey": "compliance.cn.SocialInsuranceConfigForm.예_"
+    },
+    {
+      "file": "src/components/compliance/cn/SocialInsuranceConfigForm.tsx",
+      "line": 178,
+      "current": "예: 16.00",
+      "suggestedKey": "compliance.cn.SocialInsuranceConfigForm.예_16_00"
+    },
+    {
+      "file": "src/components/compliance/cn/SocialInsuranceConfigForm.tsx",
+      "line": 195,
+      "current": "예: 8.00",
+      "suggestedKey": "compliance.cn.SocialInsuranceConfigForm.예_8_00"
+    },
+    {
+      "file": "src/components/compliance/cn/SocialInsuranceConfigForm.tsx",
+      "line": 215,
+      "current": "예: 3000",
+      "suggestedKey": "compliance.cn.SocialInsuranceConfigForm.예_3000"
+    },
+    {
+      "file": "src/components/compliance/cn/SocialInsuranceConfigForm.tsx",
+      "line": 231,
+      "current": "예: 30000",
+      "suggestedKey": "compliance.cn.SocialInsuranceConfigForm.예_30000"
+    },
+    {
+      "file": "src/components/compliance/ru/MilitaryRegistrationForm.tsx",
+      "line": 197,
+      "current": "예: 상사",
+      "suggestedKey": "compliance.ru.MilitaryRegistrationForm.예_상사"
+    },
+    {
+      "file": "src/components/compliance/ru/MilitaryRegistrationForm.tsx",
+      "line": 208,
+      "current": "예: 106A",
+      "suggestedKey": "compliance.ru.MilitaryRegistrationForm.예_106a"
+    },
+    {
+      "file": "src/components/compliance/ru/MilitaryRegistrationForm.tsx",
+      "line": 222,
+      "current": "담당 군사기관명",
+      "suggestedKey": "compliance.ru.MilitaryRegistrationForm.담당_군사기관명"
+    },
+    {
+      "file": "src/components/hr-chatbot/HrChatbot.tsx",
+      "line": 493,
+      "current": "질문을 입력하세요...",
+      "suggestedKey": "hr-chatbot.HrChatbot.질문을_입력하세요_"
+    }
+  ]
+}

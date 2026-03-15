@@ -31,7 +31,7 @@ import {
   Tooltip,
 } from 'recharts'
 import { apiClient } from '@/lib/api'
-import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS,  TABLE_STYLES, CHART_THEME } from '@/lib/styles'
 
 // ─── 타입 ────────────────────────────────────────────────
 
@@ -112,6 +112,7 @@ function RiskBadge({ level }: { level: string }) {
 }
 
 function ScoreGauge({ score, riskLevel }: { score: number; riskLevel: string }) {
+  const t = useTranslations('analytics')
   const cfg = RISK_CONFIG[riskLevel] ?? RISK_CONFIG.low!
   return (
     <div className="relative flex items-center justify-center">
@@ -132,7 +133,7 @@ function ScoreGauge({ score, riskLevel }: { score: number; riskLevel: string }) 
           {score}
         </text>
         <text x="60" y="75" textAnchor="middle" style={{ fill: '#999', fontSize: '11px' }}>
-          위험 점수
+          {'risk_score'}
         </text>
       </svg>
     </div>
@@ -145,28 +146,29 @@ function RecommendedActions({ turnover, burnout }: {
   turnover: EmployeeRiskData['turnover']
   burnout: EmployeeRiskData['burnout']
 }) {
+  const t = useTranslations('analytics')
   const actions: { icon: string; text: string; priority: 'high' | 'medium' }[] = []
 
   if (turnover && ['high', 'critical'].includes(turnover.riskLevel)) {
-    actions.push({ icon: '💬', text: '1:1 미팅 즉시 예약 — 이직 의향 파악', priority: 'high' })
-    actions.push({ icon: '💰', text: '보상 수준 검토 및 조정 검토', priority: 'high' })
+    actions.push({ icon: '💬', text: 'oneOnOne_keca689ec_kec9888ec_kec9db4ec_kec9d98ed_ked8c8cec', priority: 'high' })
+    actions.push({ icon: '💰', text: 'kr_kebb3b4ec_kec8898ec_keab280ed_', priority: 'high' })
     if (turnover.topFactors.includes('승진 정체')) {
-      actions.push({ icon: '📈', text: '경력 개발 계획 수립 지원', priority: 'medium' })
+      actions.push({ icon: '📈', text: 'kr_keab2bdeb_keab09ceb_keab384ed_', priority: 'medium' })
     }
   }
 
   if (burnout && ['high', 'critical'].includes(burnout.riskLevel)) {
-    actions.push({ icon: '🏖️', text: '연차 사용 독려 — 단기 휴가 권장', priority: 'high' })
-    actions.push({ icon: '⏱️', text: '초과근무 제한 조치 검토', priority: 'high' })
+    actions.push({ icon: '🏖️', text: 'kr_kec97b0ec_kec82acec_keb8f85eb_', priority: 'high' })
+    actions.push({ icon: '⏱️', text: 'kr_kecb488ea_keca09ced_keca1b0ec_', priority: 'high' })
   }
 
   if (actions.length === 0) {
-    actions.push({ icon: '✅', text: '현재 위험 수준 낮음 — 정기 모니터링 유지', priority: 'medium' })
+    actions.push({ icon: '✅', text: 'kr_ked9884ec_risk_kec8898ec_low_k', priority: 'medium' })
   }
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">권고 액션</h3>
+      <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">{'kr_keab68cea_kec95a1ec'}</h3>
       <div className="space-y-3">
         {actions.map((action, i) => (
           <div key={i} className={`flex items-start gap-3 p-3 rounded-lg ${
@@ -176,7 +178,7 @@ function RecommendedActions({ turnover, burnout }: {
             <div>
               <p className="text-sm text-[#1A1A1A]">{action.text}</p>
               {action.priority === 'high' && (
-                <span className="text-xs text-[#C2410C] font-medium">즉시 조치 필요</span>
+                <span className="text-xs text-[#C2410C] font-medium">{'kr_keca689ec_keca1b0ec_ked9584ec'}</span>
               )}
             </div>
           </div>
@@ -226,7 +228,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
     return (
       <div className="p-6">
         <Link href="/analytics/predictive" className="flex items-center gap-2 text-sm text-[#666] hover:text-[#333] mb-6">
-          <ArrowLeft className="w-4 h-4" /> 예측 애널리틱스로 돌아가기
+          <ArrowLeft className="w-4 h-4" /> {t('kr_kec9888ec_kec95a0eb_keb8f8cec')}
         </Link>
         <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
       </div>
@@ -249,7 +251,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/analytics/predictive" className="flex items-center gap-2 text-sm text-[#666] hover:text-[#333]">
-            <ArrowLeft className="w-4 h-4" /> 목록으로
+            <ArrowLeft className="w-4 h-4" /> {t('kr_kebaaa9eb')}
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-[#1A1A1A]">{data.employee.name}</h1>
@@ -278,14 +280,14 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-2 mb-4">
             <TrendingDown className="w-5 h-5 text-[#EF4444]" />
-            <h3 className="text-base font-semibold text-[#1A1A1A]">이직 위험도</h3>
+            <h3 className="text-base font-semibold text-[#1A1A1A]">{t('kr_kec9db4ec_kec9c84ed')}</h3>
             {data.turnover && <RiskBadge level={data.turnover.riskLevel} />}
           </div>
           {data.turnover ? (
             <div className="flex items-center gap-6">
               <ScoreGauge score={data.turnover.overallScore} riskLevel={data.turnover.riskLevel} />
               <div className="flex-1">
-                <p className="text-xs text-[#666] mb-2">주요 위험 요인</p>
+                <p className="text-xs text-[#666] mb-2">{t('kr_keca3bcec_risk_kec9a94ec')}</p>
                 <div className="space-y-1">
                   {data.turnover.topFactors.slice(0, 4).map((f) => (
                     <div key={f} className="flex items-center gap-2">
@@ -301,7 +303,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
             </div>
           ) : (
             <div className="flex items-center gap-2 py-8 text-sm text-[#999]">
-              <Info className="w-4 h-4" /> 데이터 부족 — 재계산을 실행해주세요
+              <Info className="w-4 h-4" /> {t('kr_keb8db0ec_insufficient_kec9eac')}
             </div>
           )}
         </div>
@@ -310,14 +312,14 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-2 mb-4">
             <Activity className="w-5 h-5 text-[#F59E0B]" />
-            <h3 className="text-base font-semibold text-[#1A1A1A]">번아웃 위험도</h3>
+            <h3 className="text-base font-semibold text-[#1A1A1A]">{t('kr_kebb288ec_kec9c84ed')}</h3>
             {data.burnout && <RiskBadge level={data.burnout.riskLevel} />}
           </div>
           {data.burnout ? (
             <div className="flex items-center gap-6">
               <ScoreGauge score={data.burnout.overallScore} riskLevel={data.burnout.riskLevel} />
               <div className="flex-1">
-                <p className="text-xs text-[#666] mb-2">지표별 현황</p>
+                <p className="text-xs text-[#666] mb-2">{t('kr_keca780ed_status')}</p>
                 <div className="space-y-2">
                   {(data.burnout.indicators as unknown as Indicator[])
                     .filter((i) => i.available)
@@ -344,7 +346,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
             </div>
           ) : (
             <div className="flex items-center gap-2 py-8 text-sm text-[#999]">
-              <Info className="w-4 h-4" /> 데이터 부족 — 재계산을 실행해주세요
+              <Info className="w-4 h-4" /> {t('kr_keb8db0ec_insufficient_kec9eac')}
             </div>
           )}
         </div>
@@ -354,7 +356,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {radarData.length > 0 && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">이직 위험 신호 레이더</h3>
+            <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">{t('kr_kec9db4ec_risk_kec8ba0ed_keba0')}</h3>
             <ResponsiveContainer width="100%" height={250}>
               <RadarChart data={radarData}>
                 <PolarGrid />
@@ -379,17 +381,17 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
       {data.turnover && (
         <div className="bg-white rounded-xl border border-[#E8E8E8]">
           <div className="px-5 py-4 border-b border-[#F5F5F5]">
-            <h3 className="text-base font-semibold text-[#1A1A1A]">이직 위험 신호 상세</h3>
+            <h3 className="text-base font-semibold text-[#1A1A1A]">{t('kr_kec9db4ec_risk_kec8ba0ed_kec83')}</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className={TABLE_STYLES.header}>
-                  <th className={TABLE_STYLES.headerCell}>신호</th>
-                  <th className={TABLE_STYLES.headerCell}>가중치</th>
-                  <th className={TABLE_STYLES.headerCell}>점수</th>
-                  <th className={TABLE_STYLES.headerCell}>상태</th>
-                  <th className={TABLE_STYLES.headerCell}>원시 데이터</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('kr_kec8ba0ed')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('kr_keab080ec')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('score')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('status')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('krw_kec8b9c_keb8db0ec')}</th>
                 </tr>
               </thead>
               <tbody>

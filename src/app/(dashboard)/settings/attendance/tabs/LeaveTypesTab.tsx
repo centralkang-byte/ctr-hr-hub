@@ -11,6 +11,7 @@ import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface LeaveTypeDef {
   id: string
@@ -32,7 +33,9 @@ interface LeaveTypesTabProps {
   companyId: string | null
 }
 
-export function LeaveTypesTab({ companyId }: LeaveTypesTabProps) {
+export function LeaveTypesTab({
+  companyId }: LeaveTypesTabProps) {
+  const t = useTranslations('settings')
   const [typeDefs, setTypeDefs] = useState<LeaveTypeDef[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedType, setSelectedType] = useState<LeaveTypeDef | null>(null)
@@ -66,14 +69,14 @@ export function LeaveTypesTab({ companyId }: LeaveTypesTabProps) {
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">휴가 유형</h3>
+          <h3 className="text-base font-semibold text-[#1C1D21]">{'휴가 유형'}</h3>
           <p className="text-sm text-[#8181A5]">
             글로벌 표준 유형 {globalTypes.length}개{companyTypes.length > 0 ? ` + 법인 커스텀 ${companyTypes.length}개` : ''}
           </p>
         </div>
         <Button className={BUTTON_VARIANTS.primary}>
           <Plus className="mr-2 h-4 w-4" />
-          유형 추가
+          {'유형 추가'}
         </Button>
       </div>
 
@@ -82,14 +85,14 @@ export function LeaveTypesTab({ companyId }: LeaveTypesTabProps) {
         <table className="w-full">
           <thead>
             <tr className={TABLE_STYLES.header}>
-              <th className={TABLE_STYLES.headerCell}>코드</th>
-              <th className={TABLE_STYLES.headerCell}>유형명</th>
-              <th className={TABLE_STYLES.headerCell}>유급</th>
-              <th className={TABLE_STYLES.headerCell}>반차</th>
-              <th className={TABLE_STYLES.headerCell}>증빙</th>
-              <th className={TABLE_STYLES.headerCell}>최대 연속일</th>
-              <th className={TABLE_STYLES.headerCell}>사전 신청</th>
-              <th className={TABLE_STYLES.headerCell}>범위</th>
+              <th className={TABLE_STYLES.headerCell}>{'코멘트'}</th>
+              <th className={TABLE_STYLES.headerCell}>{'유형'}</th>
+              <th className={TABLE_STYLES.headerCell}>{'유급'}</th>
+              <th className={TABLE_STYLES.headerCell}>{'반차'}</th>
+              <th className={TABLE_STYLES.headerCell}>{'증빙'}</th>
+              <th className={TABLE_STYLES.headerCell}>{'최대 연속일'}</th>
+              <th className={TABLE_STYLES.headerCell}>{'사전 신청'}</th>
+              <th className={TABLE_STYLES.headerCell}>{'범위'}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#F0F0F3]">
@@ -137,9 +140,9 @@ export function LeaveTypesTab({ companyId }: LeaveTypesTabProps) {
       {typeDefs.length === 0 && (
         <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
           <Briefcase className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" />
-          <p className="text-sm font-medium text-[#1C1D21]">등록된 휴가 유형이 없습니다</p>
+          <p className="text-sm font-medium text-[#1C1D21]">{'등록된 휴가 유형이 없습니다'}</p>
           <p className="mt-1 text-xs text-[#8181A5]">
-            시드 데이터를 실행하거나 유형을 직접 추가하세요
+            {'시드 데이터를 실행하거나 유형을 직접 추가하세요'}
           </p>
         </div>
       )}
@@ -186,7 +189,7 @@ function LeaveTypeDetailPanel({
       <div className="absolute inset-0 bg-black/30" onClick={onClose} />
       <div className="relative w-full max-w-md bg-white p-6 shadow-xl animate-in slide-in-from-right duration-200">
         <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-[#1C1D21]">휴가 유형 상세</h3>
+          <h3 className="text-lg font-semibold text-[#1C1D21]">{'휴가 유형 상세'}</h3>
           <button type="button" onClick={onClose} className="text-[#8181A5] hover:text-[#1C1D21]">
             <X className="h-5 w-5" />
           </button>

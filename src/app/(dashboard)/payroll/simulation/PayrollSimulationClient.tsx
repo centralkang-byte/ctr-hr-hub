@@ -79,10 +79,10 @@ function EmployeeExpandedDetail({ emp }: { emp: EmployeeSimResult }) {
           <table className="w-full">
             <thead>
               <tr className="text-xs text-[#8181A5] border-b border-[#F0F0F3]">
-                <th className="text-left py-1.5 pl-8 font-medium">항목</th>
-                <th className="text-right py-1.5 font-medium">현재</th>
-                <th className="text-right py-1.5 font-medium">시뮬레이션</th>
-                <th className="text-right py-1.5 font-medium">차이</th>
+                <th className="text-left py-1.5 pl-8 font-medium">{'항목'}</th>
+                <th className="text-right py-1.5 font-medium">{'현재연봉'}</th>
+                <th className="text-right py-1.5 font-medium">{'시뮬레이션'}</th>
+                <th className="text-right py-1.5 font-medium">{'차이'}</th>
               </tr>
             </thead>
             <tbody>
@@ -92,7 +92,7 @@ function EmployeeExpandedDetail({ emp }: { emp: EmployeeSimResult }) {
               <DetailRow label="식대" c={c.mealAllowance} s={s.mealAllowance} />
               <DetailRow label="교통비" c={c.transportAllowance} s={s.transportAllowance} />
               <tr className="border-b-2 border-[#E0E0E0] text-[13px] font-semibold">
-                <td className="py-1.5 pl-8">총 지급액</td>
+                <td className="py-1.5 pl-8">{'총 지급액'}</td>
                 <td className="py-1.5 text-right font-mono">{fmtKRW(c.grossPay)}</td>
                 <td className="py-1.5 text-right font-mono">{fmtKRW(s.grossPay)}</td>
                 <td className={`py-1.5 text-right font-mono ${diffColor(s.grossPay - c.grossPay)}`}>{signedKRW(s.grossPay - c.grossPay)}</td>
@@ -104,13 +104,13 @@ function EmployeeExpandedDetail({ emp }: { emp: EmployeeSimResult }) {
               <DetailRow label="소득세" c={c.incomeTax} s={s.incomeTax} />
               <DetailRow label="지방소득세" c={c.localIncomeTax} s={s.localIncomeTax} />
               <tr className="border-b-2 border-[#E0E0E0] text-[13px] font-semibold">
-                <td className="py-1.5 pl-8">총 공제액</td>
+                <td className="py-1.5 pl-8">{'총 공제액'}</td>
                 <td className="py-1.5 text-right font-mono">{fmtKRW(c.totalDeductions)}</td>
                 <td className="py-1.5 text-right font-mono">{fmtKRW(s.totalDeductions)}</td>
                 <td className={`py-1.5 text-right font-mono ${diffColor(s.totalDeductions - c.totalDeductions)}`}>{signedKRW(s.totalDeductions - c.totalDeductions)}</td>
               </tr>
               <tr className="text-sm font-bold">
-                <td className="py-2 pl-8">실수령액</td>
+                <td className="py-2 pl-8">{'실수령액'}</td>
                 <td className="py-2 text-right font-mono">{fmtKRW(c.netPay)}</td>
                 <td className="py-2 text-right font-mono">{fmtKRW(s.netPay)}</td>
                 <td className={`py-2 text-right font-mono ${diffColor(s.netPay - c.netPay)}`}>{signedKRW(s.netPay - c.netPay)}</td>
@@ -429,7 +429,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
                       </select>
                       <select value={selectedDeptId} onChange={e => setSelectedDeptId(e.target.value)}
                         className="w-48 px-2 py-1.5 border border-[#F0F0F3] rounded text-sm">
-                        <option value="">부서 선택</option>
+                        <option value="">{t('department_kec84a0ed')}</option>
                         {filteredDepts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
                       </select>
                     </div>
@@ -560,12 +560,12 @@ export default function PayrollSimulationClient({ user, companies, departments }
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="text-xs text-[#8181A5] border-b border-[#F0F0F3]">
-                        <th className="text-left py-2 font-medium">부서</th>
-                        <th className="text-right py-2 font-medium">인원</th>
-                        <th className="text-right py-2 font-medium">현재 합계</th>
-                        <th className="text-right py-2 font-medium">시뮬 합계</th>
-                        <th className="text-right py-2 font-medium">차이</th>
-                        <th className="text-right py-2 font-medium">변동률</th>
+                        <th className="text-left py-2 font-medium">{t('department')}</th>
+                        <th className="text-right py-2 font-medium">{t('kr_kec9db8ec')}</th>
+                        <th className="text-right py-2 font-medium">{t('kr_ked9884ec_ked95a9ea')}</th>
+                        <th className="text-right py-2 font-medium">{t('kr_kec8b9ceb_ked95a9ea')}</th>
+                        <th className="text-right py-2 font-medium">{t('kr_kecb0a8ec')}</th>
+                        <th className="text-right py-2 font-medium">{t('kr_kebb380eb')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -600,13 +600,13 @@ export default function PayrollSimulationClient({ user, companies, departments }
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="text-xs text-[#8181A5] border-b border-[#F0F0F3]">
-                      <th className="text-left py-2 font-medium">직원명</th>
-                      <th className="text-left py-2 font-medium">부서</th>
+                      <th className="text-left py-2 font-medium">{t('kr_keca781ec')}</th>
+                      <th className="text-left py-2 font-medium">{t('department')}</th>
                       <th className="text-left py-2 font-medium">직위</th>
-                      <th className="text-right py-2 font-medium">현재 실수령</th>
-                      <th className="text-right py-2 font-medium">시뮬 실수령</th>
-                      <th className="text-right py-2 font-medium">차이</th>
-                      <th className="text-right py-2 font-medium">변동률</th>
+                      <th className="text-right py-2 font-medium">{t('kr_ked9884ec_kec8ba4ec')}</th>
+                      <th className="text-right py-2 font-medium">{t('kr_kec8b9ceb_kec8ba4ec')}</th>
+                      <th className="text-right py-2 font-medium">{t('kr_kecb0a8ec')}</th>
+                      <th className="text-right py-2 font-medium">{t('kr_kebb380eb')}</th>
                     </tr>
                   </thead>
                   <tbody>

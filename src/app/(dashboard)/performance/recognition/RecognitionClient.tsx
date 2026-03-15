@@ -11,7 +11,7 @@ import { PieChart, Pie, Cell, BarChart, Bar, LineChart, Line, XAxis, YAxis, Cart
 import { apiClient } from '@/lib/api'
 import { useSession } from 'next-auth/react'
 import { ROLE } from '@/lib/constants'
-import { BUTTON_VARIANTS, MODAL_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS, MODAL_STYLES, CHART_THEME } from '@/lib/styles'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 
@@ -172,7 +172,7 @@ export default function RecognitionClient() {
           onClick={() => setShowCreateModal(true)}
           className={`flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm`}
         >
-          <Send className="w-4 h-4" /> 칭찬 보내기
+          <Send className="w-4 h-4" /> {t('kr_kecb9adec_kebb3b4eb')}
         </button>
       </div>
 
@@ -185,7 +185,7 @@ export default function RecognitionClient() {
               activeTab === 'feed' ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#666] hover:text-[#333]'
             }`}
           >
-            피드
+            {t('kr_ked94bceb')}
           </button>
           {isAdmin && (
             <button
@@ -194,7 +194,7 @@ export default function RecognitionClient() {
                 activeTab === 'stats' ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#666] hover:text-[#333]'
               }`}
             >
-              통계
+              {t('statistics')}
             </button>
           )}
         </div>
@@ -266,7 +266,7 @@ export default function RecognitionClient() {
                     onClick={() => fetchFeed(nextCursor)}
                     className="px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#555] hover:bg-[#FAFAFA]"
                   >
-                    더 보기
+                    {t('kr_keb8d94_view')}
                   </button>
                 </div>
               )}
@@ -281,7 +281,7 @@ export default function RecognitionClient() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Value Distribution */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">핵심가치별 분포</h3>
+              <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">{t('kr_ked95b5ec_kebb684ed')}</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -307,7 +307,7 @@ export default function RecognitionClient() {
 
             {/* Department Activity */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">부서별 활성도</h3>
+              <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">{t('department_kebb384_ked999cec')}</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={stats.departmentActivity.slice(0, 8)}>
@@ -326,7 +326,7 @@ export default function RecognitionClient() {
 
           {/* Monthly Trend */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">월별 추이</h3>
+            <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">{t('month_kebb384_kecb694ec')}</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={stats.monthlyTrend}>
@@ -384,18 +384,18 @@ export default function RecognitionClient() {
         <div className={MODAL_STYLES.container}>
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
             <div className="p-6 border-b border-[#E8E8E8]">
-              <h3 className="text-lg font-semibold text-[#1A1A1A]">칭찬 보내기</h3>
+              <h3 className="text-lg font-semibold text-[#1A1A1A]">{t('kr_kecb9adec_kebb3b4eb')}</h3>
             </div>
             <div className="p-6 space-y-4">
               {/* Receiver search */}
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">받는 사람</label>
+                <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_kebb09beb_kec82aceb')}</label>
                 {selectedReceiver ? (
                   <div className="flex items-center justify-between px-3 py-2 border border-[#D4D4D4] rounded-lg bg-[#FAFAFA]">
                     <span className="text-sm text-[#1A1A1A]">
                       {selectedReceiver.name} ({selectedReceiver.employeeNo})
                     </span>
-                    <button onClick={() => { setSelectedReceiver(null); setSearchQuery('') }} className="text-xs text-[#999] hover:text-[#EF4444]">변경</button>
+                    <button onClick={() => { setSelectedReceiver(null); setSearchQuery('') }} className="text-xs text-[#999] hover:text-[#EF4444]">{t('kr_kebb380ea')}</button>
                   </div>
                 ) : (
                   <div className="relative">
@@ -427,7 +427,7 @@ export default function RecognitionClient() {
 
               {/* Core Value selection */}
               <div>
-                <label className="text-sm font-medium text-[#333] mb-2 block">CTR 핵심가치 선택 (필수)</label>
+                <label className="text-sm font-medium text-[#333] mb-2 block">{t('kr_ctr_ked95b5ec_kec84a0ed_requir')}</label>
                 <div className="grid grid-cols-2 gap-2">
                   {Object.entries(VALUE_CONFIG).map(([key, config]) => (
                     <button
@@ -448,7 +448,7 @@ export default function RecognitionClient() {
 
               {/* Message */}
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">메시지 (10~500자)</label>
+                <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_keba994ec_10_500kec9e90')}</label>
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
@@ -465,7 +465,7 @@ export default function RecognitionClient() {
                 onClick={() => { setShowCreateModal(false); setSelectedReceiver(null); setSelectedValue(''); setMessage('') }}
                 className="px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#333] hover:bg-[#FAFAFA]"
               >
-                취소
+                {t('cancel')}
               </button>
               <button
                 onClick={handleCreate}

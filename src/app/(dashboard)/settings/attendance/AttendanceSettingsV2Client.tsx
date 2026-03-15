@@ -64,8 +64,8 @@ function WorkSchedulesTab({ companyId }: { companyId: string | null }) {
   return (
     <div className="space-y-4">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">근무 스케줄</h3>
-        <p className="text-sm text-[#8181A5]">기본 근무시간, 점심시간, 유연근무 설정</p>
+        <h3 className="text-base font-semibold text-[#1C1D21]">{'근무 스케줄'}</h3>
+        <p className="text-sm text-[#8181A5]">{'기본 근무시간, 점심시간, 유연근무 설정'}</p>
       </div>
 
       <SettingFieldWithOverride label="일일 소정근로시간" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
@@ -76,7 +76,7 @@ function WorkSchedulesTab({ companyId }: { companyId: string | null }) {
             onChange={(e) => setSettings((p) => ({ ...p, standardHoursPerDay: Number(e.target.value) }))}
             className="w-24"
           />
-          <span className="text-sm text-[#8181A5]">시간</span>
+          <span className="text-sm text-[#8181A5]">{'시간'}</span>
         </div>
       </SettingFieldWithOverride>
 
@@ -88,7 +88,7 @@ function WorkSchedulesTab({ companyId }: { companyId: string | null }) {
             onChange={(e) => setSettings((p) => ({ ...p, standardDaysPerWeek: Number(e.target.value) }))}
             className="w-24"
           />
-          <span className="text-sm text-[#8181A5]">일</span>
+          <span className="text-sm text-[#8181A5]">{'일'}</span>
         </div>
       </SettingFieldWithOverride>
 
@@ -118,14 +118,14 @@ function WorkSchedulesTab({ companyId }: { companyId: string | null }) {
             onChange={(e) => setSettings((p) => ({ ...p, flexEnabled: e.target.checked }))}
             className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]"
           />
-          <span className="text-[#1C1D21]">유연근무제 활성화</span>
+          <span className="text-[#1C1D21]">{'유연근무제 활성화'}</span>
         </label>
       </SettingFieldWithOverride>
 
       <div className="flex justify-end pt-4">
         <Button className={BUTTON_VARIANTS.primary}>
           <Save className="mr-2 h-4 w-4" />
-          저장
+          {'저장'}
         </Button>
       </div>
     </div>
@@ -165,43 +165,43 @@ function WeeklyHoursTab({ companyId }: { companyId: string | null }) {
   return (
     <div className="space-y-4">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">주간 근무한도</h3>
-        <p className="text-sm text-[#8181A5]">법정 주간 근무 상한과 알림 임계값 설정</p>
+        <h3 className="text-base font-semibold text-[#1C1D21]">{'주간 근무한도'}</h3>
+        <p className="text-sm text-[#8181A5]">{'법정 주간 근무 상한과 알림 임계값 설정'}</p>
       </div>
 
       {/* Settings-connected: weekly hours alert thresholds (ATTENDANCE/alert-thresholds) */}
       <SettingFieldWithOverride label="법정 주간 최대 근로시간" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input type="number" value={hours.weeklyMax} onChange={(e) => setHours((p) => ({ ...p, weeklyMax: Number(e.target.value) }))} className="w-24" />
-          <span className="text-sm text-[#8181A5]">시간 (근로기준법 기준)</span>
+          <span className="text-sm text-[#8181A5]">{'시간 (근로기준법 기준)'}</span>
         </div>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="주의 알림 (Caution)" status={companyId ? 'custom' : 'global'} description="이 시간을 초과하면 주의 알림이 발송됩니다" companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input type="number" value={hours.caution} onChange={(e) => setHours((p) => ({ ...p, caution: Number(e.target.value) }))} className="w-24" />
-          <span className="text-sm text-[#8181A5]">시간</span>
+          <span className="text-sm text-[#8181A5]">{'시간'}</span>
         </div>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="경고 알림 (Warning)" status={companyId ? 'custom' : 'global'} description="이 시간을 초과하면 경고 알림이 발송됩니다" companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input type="number" value={hours.warning} onChange={(e) => setHours((p) => ({ ...p, warning: Number(e.target.value) }))} className="w-24" />
-          <span className="text-sm text-[#8181A5]">시간</span>
+          <span className="text-sm text-[#8181A5]">{'시간'}</span>
         </div>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="차단 (Blocked)" status={companyId ? 'custom' : 'global'} description="이 시간을 초과하면 근무 등록이 차단됩니다" companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input type="number" value={hours.blocked} onChange={(e) => setHours((p) => ({ ...p, blocked: Number(e.target.value) }))} className="w-24" />
-          <span className="text-sm text-[#8181A5]">시간</span>
+          <span className="text-sm text-[#8181A5]">{'시간'}</span>
         </div>
       </SettingFieldWithOverride>
 
       <div className="flex justify-end pt-4">
         <Button className={BUTTON_VARIANTS.primary}>
           <Save className="mr-2 h-4 w-4" />
-          저장
+          {'저장'}
         </Button>
       </div>
     </div>
@@ -246,7 +246,7 @@ function AttendanceSettingsContent() {
 
 export function AttendanceSettingsV2Client() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center p-16 text-[#8181A5]">로딩 중...</div>}>
+    <Suspense fallback={<div className="flex items-center justify-center p-16 text-[#8181A5]">{'로딩 중...'}</div>}>
       <AttendanceSettingsContent />
     </Suspense>
   )

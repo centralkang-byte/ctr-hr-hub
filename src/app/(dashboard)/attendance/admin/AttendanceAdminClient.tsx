@@ -11,7 +11,10 @@ import { toast } from '@/hooks/use-toast'
 
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { TYPOGRAPHY } from '@/lib/styles/typography'
 import { apiClient } from '@/lib/api'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable } from '@/components/shared/DataTable'
@@ -191,8 +194,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
 
   // ─── Submit correction ───
 
-  const handleSubmitCorrection = useCallback(async () => {
-  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmitCorrection)
+  const submitAction = useCallback(async () => {
     if (!selectedAnomaly || !correction.note.trim()) return
     setSubmitting(true)
     try {
@@ -211,6 +213,8 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
       setSubmitting(false)
     }
   }, [selectedAnomaly, correction, handleCloseDialog, fetchData])
+
+  const { guardedSubmit } = useSubmitGuard(submitAction)
 
   // ─── KPI data ───
 
@@ -291,7 +295,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
       {/* Average work hours */}
       <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
         <p className="text-xs text-[#999] font-medium mb-2">{t('averageWorkHours')}</p>
-        <p className={TYPOGRAPHY.stat}><AnimatedNumber value={kpi ? formatMinutes(kpi.avgTotalMinutes) : '—'} /></p>
+        <p className={TYPOGRAPHY.stat}>{kpi ? formatMinutes(kpi.avgTotalMinutes) : '—'}</p>
       </div>
 
       {/* 52시간 모니터링 위젯 */}

@@ -37,18 +37,18 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
 
   // ─── Filter tabs ────────────────────────────────────────────
   const TRIGGER_TABS = [
-    { label: t('triggerAll'), value: '' },
-    { label: t('triggerApproval'), value: 'approval' },
-    { label: t('triggerPerformance'), value: 'performance' },
-    { label: t('triggerAttendance'), value: 'attendance' },
-    { label: t('triggerRecruitment'), value: 'recruitment' },
-    { label: t('triggerSystem'), value: 'system' },
+    { label: '전체', value: '' },
+    { label: '승인', value: 'approval' },
+    { label: '성과', value: 'performance' },
+    { label: '근태', value: 'attendance' },
+    { label: '채용', value: 'recruitment' },
+    { label: '시스템', value: 'system' },
   ] as const
 
   const READ_FILTERS = [
-    { label: t('triggerAll'), value: '' },
-    { label: t('unread'), value: 'false' },
-    { label: t('read'), value: 'true' },
+    { label: '전체', value: '' },
+    { label: '미읽음', value: 'false' },
+    { label: '읽음', value: 'true' },
   ] as const
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([])
@@ -100,7 +100,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
         prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
       )
     } catch {
-      toast({ title: tCommon('error'), description: '읽음 처리에 실패했습니다', variant: 'destructive' })
+      toast({ title: tc('error'), description: '읽음 처리에 실패했습니다', variant: 'destructive' })
     }
   }
 
@@ -110,9 +110,9 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
     try {
       await apiClient.put('/api/v1/notifications/read-all')
       setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })))
-      toast({ title: t('allMarkedRead') })
+      toast({ title: '모든 알림을 읽음 처리했습니다' })
     } catch {
-      toast({ title: tCommon('error'), description: '모두 읽음 처리에 실패했습니다', variant: 'destructive' })
+      toast({ title: tc('error'), description: '모두 읽음 처리에 실패했습니다', variant: 'destructive' })
     } finally {
       setMarkingAll(false)
     }
@@ -124,8 +124,8 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={t('title')}
-        description={t('description')}
+        title={'제목'}
+        description={'설명'}
         actions={
           <Button
             variant="outline"
@@ -139,7 +139,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
             ) : (
               <CheckCheck className="h-4 w-4" />
             )}
-            {t('markAllRead')}
+            {'전체 읽기'}
           </Button>
         }
       />
@@ -192,8 +192,8 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
         ) : notifications.length === 0 ? (
           <EmptyState
             icon={Bell}
-            title={t('noNotifications')}
-            description={t('noNotificationsDesc')}
+            title={'알림이 없습니다.'}
+            description={'알림이 발생하면 여기에 표시됩니다.'}
           />
         ) : (
           <div className="divide-y divide-[#F5F5F5]">
@@ -240,7 +240,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
                         className="text-xs text-[#5E81F4] hover:text-[#4B6DE0]"
                         onClick={() => handleMarkRead(item.id)}
                       >
-                        {t('markAsRead')}
+                        {'읽음 처리'}
                       </button>
                     )}
                     {item.link && (
@@ -248,7 +248,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
                         href={item.link}
                         className="text-xs text-[#5E81F4] hover:text-[#4B6DE0]"
                       >
-                        {t('goToLink')}
+                        {'바로가기'}
                       </a>
                     )}
                   </div>

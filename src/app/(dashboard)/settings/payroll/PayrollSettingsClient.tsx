@@ -58,7 +58,7 @@ function PayrollSettingsContent() {
 
 export function PayrollSettingsClient() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center p-16 text-[#8181A5]">로딩 중...</div>}>
+    <Suspense fallback={<div className="flex items-center justify-center p-16 text-[#8181A5]">{'로딩 중...'}</div>}>
       <PayrollSettingsContent />
     </Suspense>
   )

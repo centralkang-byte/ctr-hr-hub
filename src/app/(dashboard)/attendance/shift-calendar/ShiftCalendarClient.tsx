@@ -1,6 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
@@ -36,6 +37,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { cn } from '@/lib/utils'
+import { TYPOGRAPHY } from '@/lib/styles/typography'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
@@ -148,6 +151,7 @@ function formatDateKey(date: Date): string {
 
 export function ShiftCalendarClient({ user }: { user: SessionUser }) {
   void user
+  const tCommon = useTranslations('common')
 
   const now = new Date()
   const [year, setYear] = useState(now.getFullYear())

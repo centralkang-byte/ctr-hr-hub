@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import type { PipelineStageSetting, PipelineStageEntry } from '@/types/process-settings'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface Props { companyId: string | null }
 
@@ -17,11 +18,13 @@ const DEFAULTS: PipelineStageSetting = {
     { id: '5', name: '2차 면접', nameEn: '2nd Interview', color: '#00C48C' },
     { id: '6', name: '처우 협의', nameEn: 'Offer', color: '#FF9F43' },
     { id: '7', name: '최종합격', nameEn: 'Hired', color: '#00C48C' },
-    { id: '8', name: '불합격', nameEn: 'Rejected', color: '#FF6B6B' },
+    { id: '8', name: '실패', nameEn: 'Rejected', color: '#FF6B6B' },
   ],
 }
 
-export function PipelineTab({ companyId }: Props) {
+export function PipelineTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const { settings, setSettings, loading, saving, isOverridden, hasChanges, save, revert } = useProcessSetting<PipelineStageSetting>({
     category: 'recruitment',
     key: 'pipeline-stages',
@@ -47,11 +50,11 @@ export function PipelineTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">채용 파이프라인</h3>
+          <h3 className="text-base font-semibold text-[#1C1D21]">{'채용 파이프라인'}</h3>
           <p className="text-sm text-[#8181A5]">{settings.stages.length}단계 파이프라인</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">법인 오버라이드</span>
+          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
         )}
       </div>
       <div className="space-y-2">{settings.stages.map((s, i) => (
@@ -69,7 +72,7 @@ export function PipelineTab({ companyId }: Props) {
 
       <div className="flex justify-end gap-2 pt-4">
         <Button variant="outline" onClick={revert} disabled={!hasChanges}>
-          <RotateCcw className="mr-2 h-4 w-4" />되돌리기
+          <RotateCcw className="mr-2 h-4 w-4" />{'되돌리기'}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장

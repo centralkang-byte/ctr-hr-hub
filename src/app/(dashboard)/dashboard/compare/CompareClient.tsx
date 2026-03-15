@@ -25,11 +25,12 @@ import { useRouter } from 'next/navigation'
 type KpiKey = 'turnover_rate' | 'leave_usage' | 'training_completion' | 'payroll_cost'
 
 const KPI_OPTIONS: { key: KpiKey; label: string; unit: string }[] = [
-  { key: 'turnover_rate', label: '이직률', unit: '%' },
-  { key: 'leave_usage', label: '연차 사용률', unit: '%' },
-  { key: 'training_completion', label: '교육 이수율', unit: '%' },
-  { key: 'payroll_cost', label: '인건비', unit: '백만 KRW' },
+  { key: 'turnover_rate', label: 'KPI_TURNOVER_RATE', unit: '%' },
+  { key: 'leave_usage', label: 'KPI_LEAVE_USAGE', unit: '%' },
+  { key: 'training_completion', label: 'KPI_TRAINING_COMPLETION', unit: '%' },
+  { key: 'payroll_cost', label: 'KPI_PAYROLL_COST', unit: '백만 KRW' },
 ]
+// Note: labels are translation keys; resolved via t(`compareKpi.${kpiKey}`) in JSX
 
 const CHART_COLORS = ['#5E81F4', '#059669', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
 
@@ -45,6 +46,7 @@ interface CompareData {
 
 export function CompareClient() {
   const router = useRouter()
+  const t = useTranslations('home')
   const [kpi, setKpi] = useState<KpiKey>('turnover_rate')
   const [year, setYear] = useState(new Date().getFullYear())
   const [data, setData] = useState<CompareData | null>(null)
@@ -71,8 +73,8 @@ export function CompareClient() {
           <ArrowLeft className="w-5 h-5 text-[#555]" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">글로벌 법인 비교</h1>
-          <p className="text-sm text-[#666] mt-1">6개 법인 KPI 나란히 비교</p>
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('compareTitle')}</h1>
+          <p className="text-sm text-[#666] mt-1">{t('compareSubtitle')}</p>
         </div>
       </div>
 
@@ -84,7 +86,7 @@ export function CompareClient() {
         >
           {KPI_OPTIONS.map((o) => (
             <option key={o.key} value={o.key}>
-              {o.label}
+              {t(`compareKpi.${o.key}`)}
             </option>
           ))}
         </select>
@@ -95,7 +97,7 @@ export function CompareClient() {
         >
           {[2025, 2026].map((y) => (
             <option key={y} value={y}>
-              {y}년
+              {y}{t('yearSuffix')}
             </option>
           ))}
         </select>
@@ -104,12 +106,12 @@ export function CompareClient() {
       {loading ? (
         <WidgetSkeleton height="h-64" />
       ) : !data ? (
-        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+        <EmptyState title={t('noData')} description={t('noDataDesc')} />
       ) : (
         <>
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <p className="text-sm font-semibold text-[#1A1A1A] mb-4">
-              {kpiOption?.label} 법인 비교 ({year}년, {kpiOption?.unit})
+              {t(`compareKpi.${kpi}`)} {t('compareByCompany')} ({year}{t('yearSuffix')}, {kpiOption?.unit})
             </p>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart
@@ -117,7 +119,7 @@ export function CompareClient() {
                 layout="vertical"
                 margin={{ left: 20, right: 20, top: 4, bottom: 4 }}
               >
-                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
+                <CartesianGrid stroke="#E8E8E8" strokeDasharray="3 3" />
                 <XAxis type="number" tick={{ fontSize: 11, fill: '#666' }} />
                 <YAxis
                   dataKey="company"
@@ -140,20 +142,20 @@ export function CompareClient() {
 
           {data.trend.length > 0 && (
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <p className="text-sm font-semibold text-[#1A1A1A] mb-4">월별 추이</p>
+              <p className="text-sm font-semibold text-[#1A1A1A] mb-4">{t('monthlyTrend')}</p>
               <ResponsiveContainer width="100%" height={250}>
                 <LineChart
                   data={data.trend}
                   margin={{ top: 4, right: 8, bottom: 4, left: 0 }}
                 >
-                  <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
+                  <CartesianGrid stroke="#E8E8E8" strokeDasharray="3 3" />
                   <XAxis dataKey="snapshotDate" tick={{ fontSize: 11, fill: '#666' }} />
                   <YAxis tick={{ fontSize: 11, fill: '#666' }} />
                   <Tooltip contentStyle={{ fontSize: 12, borderColor: '#E8E8E8' }} />
                   <Line
                     type="monotone"
                     dataKey="value"
-                    stroke={CHART_THEME.colors[3]}
+                    stroke="#5E81F4"
                     strokeWidth={2}
                     dot={false}
                   />

@@ -1,6 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
+import { EmptyState } from '@/components/ui/EmptyState'
 
 import React, { useEffect, useState, useCallback } from 'react'
 import {
@@ -22,6 +23,7 @@ export default function TurnoverClient() {
   const t = useTranslations('analytics')
   const [data, setData] = useState<TurnoverResponse | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const [companies, setCompanies] = useState<{ id: string; name: string }[]>([])
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [predictions, setPredictions] = useState<any>(null)
@@ -29,6 +31,7 @@ export default function TurnoverClient() {
 
   const fetchData = useCallback(async () => {
     setLoading(true)
+    setError(false)
     try {
       const [res, compRes, predRes] = await Promise.all([
         fetch(`/api/v1/analytics/turnover/overview${window.location.search}`),
@@ -36,15 +39,26 @@ export default function TurnoverClient() {
         fetch(`/api/v1/analytics/prediction/turnover?limit=20`),
       ])
       if (res.ok) { const j = await res.json(); setData(j.data) }
+      else { setError(true) }
       if (compRes.ok) { const c = await compRes.json(); setCompanies(c.data || []) }
       if (predRes.ok) { const p = await predRes.json(); setPredictions(p.data) }
-    } catch { /* */ } finally { setLoading(false) }
+    } catch { setError(true) } finally { setLoading(false) }
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])
 
-  if (loading || !data) {
+  if (loading) {
     return <div className="space-y-6 animate-pulse">{[...Array(5)].map((_, i) => <div key={i} className="h-48 bg-gray-100 rounded-xl" />)}</div>
+  }
+
+  if (error || !data) {
+    return (
+      <EmptyState
+        title="데이터를 불러올 수 없습니다"
+        description="인사이트 데이터를 불러오는 중 오류가 발생했습니다. 새로고침하거나 잠시 후 다시 시도해주세요."
+        action={{ label: t('retry'), onClick: () => fetchData() }}
+      />
+    )
   }
 
   const { kpis, charts, exitInterviewStats, benchmarkRate } = data
@@ -72,7 +86,7 @@ export default function TurnoverClient() {
               <XAxis dataKey="month" fontSize={10} tickFormatter={(v) => v.substring(2).replace('-', '/')} />
               <YAxis fontSize={11} unit="%" />
               <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
-              <ReferenceLine y={benchmarkRate} label={{ value: '업계 평균', position: 'insideTopRight', fill: '#EF4444', fontSize: 11 }} stroke={CHART_COLORS.danger} strokeDasharray="3 3" />
+              <ReferenceLine y={benchmarkRate} label={{ value: t('kr_kec9785ea_average'), position: 'insideTopRight', fill: '#EF4444', fontSize: 11 }} stroke={CHART_COLORS.danger} strokeDasharray="3 3" />
               <Line type="monotone" dataKey="rate" name="이직률" stroke={CHART_COLORS.primary} strokeWidth={2} dot={{ r: 2 }} />
             </LineChart>
           </ResponsiveContainer>
@@ -132,16 +146,16 @@ export default function TurnoverClient() {
           {/* Summary row */}
           <div className="flex gap-4 mb-4 text-xs">
             <span className="px-2.5 py-1 rounded-full bg-gray-50 text-gray-600">
-              분석 대상: <strong>{predictions.summary?.totalAnalyzed || 0}명</strong>
+              {t('analytics_keb8c80ec')} <strong>{predictions.summary?.totalAnalyzed || 0}명</strong>
             </span>
             <span className="px-2.5 py-1 rounded-full bg-red-50 text-red-700">
-              고위험: <strong>{predictions.summary?.highRisk || 0}명</strong>
+              {t('kr_keab3a0ec')} <strong>{predictions.summary?.highRisk || 0}명</strong>
             </span>
             <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700">
-              주의: <strong>{predictions.summary?.mediumRisk || 0}명</strong>
+              {t('kr_keca3bcec')} <strong>{predictions.summary?.mediumRisk || 0}명</strong>
             </span>
             <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700">
-              안전: <strong>{predictions.summary?.lowRisk || 0}명</strong>
+              {t('kr_kec9588ec')} <strong>{predictions.summary?.lowRisk || 0}명</strong>
             </span>
           </div>
 
@@ -149,12 +163,12 @@ export default function TurnoverClient() {
             <table className="w-full text-sm">
               <thead>
                 <tr className={TABLE_STYLES.header}>
-                  <th className="px-3 py-2.5 font-medium text-gray-600 rounded-tl-lg">이름</th>
-                  <th className="px-3 py-2.5 font-medium text-gray-600">부서</th>
-                  <th className="px-3 py-2.5 font-medium text-gray-600">직급</th>
-                  <th className="px-3 py-2.5 font-medium text-gray-600 text-right">위험 점수</th>
-                  <th className="px-3 py-2.5 font-medium text-gray-600 text-center">수준</th>
-                  <th className="px-3 py-2.5 font-medium text-gray-600 rounded-tr-lg text-center">상세</th>
+                  <th className="px-3 py-2.5 font-medium text-gray-600 rounded-tl-lg">{t('name')}</th>
+                  <th className="px-3 py-2.5 font-medium text-gray-600">{t('department')}</th>
+                  <th className="px-3 py-2.5 font-medium text-gray-600">{t('grade')}</th>
+                  <th className="px-3 py-2.5 font-medium text-gray-600 text-right">{t('risk_score')}</th>
+                  <th className="px-3 py-2.5 font-medium text-gray-600 text-center">{t('kr_kec8898ec')}</th>
+                  <th className="px-3 py-2.5 font-medium text-gray-600 rounded-tr-lg text-center">{t('kr_kec8381ec')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -181,7 +195,7 @@ export default function TurnoverClient() {
                           emp.level === 'MEDIUM' ? 'bg-amber-100 text-amber-700' :
                           'bg-emerald-100 text-emerald-700'
                         }`}>
-                          {emp.level === 'HIGH' ? '고위험' : emp.level === 'MEDIUM' ? '주의' : '안전'}
+                          {emp.level === 'HIGH' ? '고위험' : emp.level === 'MEDIUM' ? t('caution') : '안전'}
                         </span>
                       </td>
                       <td className="px-3 py-2.5 text-center">
@@ -227,7 +241,7 @@ export default function TurnoverClient() {
             <Shield className="h-8 w-8 text-gray-300" />
             <div className="text-center">
               <p className="text-sm font-medium text-gray-600">
-                개인정보 보호를 위해 5건 이상의 퇴직 면담 데이터가 필요합니다.
+                {t('kr_keab09cec_kebb3b4ed_kec9c84ed_')}
               </p>
               <p className="text-xs text-gray-400 mt-1">
                 현재: {exitInterviewStats.totalCount}건
@@ -237,7 +251,7 @@ export default function TurnoverClient() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <p className="text-xs text-gray-500 mb-2">퇴직 사유 비중</p>
+              <p className="text-xs text-gray-500 mb-2">{t('kr_ked87b4ec_kec82acec_kebb984ec')}</p>
               {exitInterviewStats.reasonBreakdown?.map((r) => (
                 <div key={r.reason} className="flex items-center justify-between py-1">
                   <span className="text-sm text-gray-700">{r.reason}</span>
@@ -251,7 +265,7 @@ export default function TurnoverClient() {
               ))}
             </div>
             <div className="flex flex-col items-center justify-center">
-              <p className="text-xs text-gray-500 mb-2">재입사 의향</p>
+              <p className="text-xs text-gray-500 mb-2">{t('kr_kec9eacec_kec9d98ed')}</p>
               <div className="relative w-24 h-24">
                 <svg viewBox="0 0 36 36" className="w-24 h-24">
                   <path d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#E5E7EB" strokeWidth="3" />
@@ -264,7 +278,7 @@ export default function TurnoverClient() {
               </div>
             </div>
             <div>
-              <p className="text-xs text-gray-500 mb-2">만족도 추이</p>
+              <p className="text-xs text-gray-500 mb-2">{t('kr_keba78cec_kecb694ec')}</p>
               {exitInterviewStats.satisfactionTrend?.map((s) => (
                 <div key={s.period} className="flex items-center gap-2 py-1">
                   <span className="text-sm text-gray-700">{s.period}</span>

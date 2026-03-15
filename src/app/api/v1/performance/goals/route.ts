@@ -16,13 +16,13 @@ import type { GoalStatus } from '@/generated/prisma/client'
 // ─── Schemas ──────────────────────────────────────────────
 
 const searchSchema = z.object({
-  cycleId: z.string().cuid(),
+  cycleId: z.string().uuid(),
   page: z.coerce.number().int().positive().default(DEFAULT_PAGE),
   limit: z.coerce.number().int().positive().max(100).default(DEFAULT_PAGE_SIZE),
 })
 
 const createSchema = z.object({
-  cycleId: z.string().cuid(),
+  cycleId: z.string().uuid(),
   title: z.string().min(1).max(200),
   description: z.string().max(2000).optional(),
   weight: z.number().min(0).max(100),

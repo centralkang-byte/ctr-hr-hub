@@ -9,6 +9,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Users, Sparkles, Plus, CheckCircle2, XCircle, Search } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -69,6 +70,7 @@ export default function PeerNominationSetupClient() {
   const [candidates, setCandidates] = useState<PeerCandidate[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [empLoading, setEmpLoading] = useState(false)
+  const { confirm, dialogProps } = useConfirmDialog()
 
   const fetchNominations = useCallback(async () => {
     setLoading(true)
@@ -125,11 +127,25 @@ export default function PeerNominationSetupClient() {
     } catch { /* ignore */ }
   }
 
-  const handleApproveReject = async (nomId: string, status: string) => {
-    try {
-      await apiClient.put(`/api/v1/peer-review/nominations/${nomId}`, { status })
-      fetchNominations()
-    } catch { /* ignore */ }
+  const handleApproveReject = (nomId: string, status: string) => {
+    if (status === 'NOMINATION_APPROVED') {
+      confirm({
+        title: '승인 확인',
+        description: '이 피어 리뷰 지명을 승인하시겠습니까? 승인 후에는 취소할 수 없습니다.',
+        confirmLabel: '승인',
+        variant: 'default',
+        onConfirm: async () => {
+          try {
+            await apiClient.put(`/api/v1/peer-review/nominations/${nomId}`, { status })
+            fetchNominations()
+          } catch { /* ignore */ }
+        },
+      })
+    } else {
+      void apiClient.put(`/api/v1/peer-review/nominations/${nomId}`, { status })
+        .then(() => fetchNominations())
+        .catch(() => { /* ignore */ })
+    }
   }
 
   return (
@@ -140,21 +156,21 @@ export default function PeerNominationSetupClient() {
           <ArrowLeft className="w-5 h-5 text-[#666]" />
         </button>
         <Users className="w-6 h-6 text-[#5E81F4]" />
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">동료 평가 추천/지정</h1>
+        <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('peerReview_kecb694ec_keca780ec')}</h1>
       </div>
 
       <div className="grid grid-cols-2 gap-6">
         {/* Left: Employee Search + AI Recommendations */}
         <div className="space-y-4">
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h2 className="text-base font-semibold text-[#1A1A1A] mb-3">대상 직원 선택</h2>
+            <h2 className="text-base font-semibold text-[#1A1A1A] mb-3">{t('kr_keb8c80ec_keca781ec_kec84a0ed')}</h2>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
               <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={tCommon('searchEmployee')}
                 className="w-full pl-9 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm placeholder:text-[#999]" />
             </div>
-            {empLoading && <p className="text-xs text-[#999] mt-2">검색 중...</p>}
+            {empLoading && <p className="text-xs text-[#999] mt-2">{t('search_keca491')}</p>}
             {employees.length > 0 && (
               <div className="mt-2 space-y-1">
                 {employees.map((emp) => (
@@ -174,7 +190,7 @@ export default function PeerNominationSetupClient() {
             <div className="bg-[#E0E7FF] rounded-xl border border-[#C7D2FE] p-5">
               <div className="flex items-center gap-2 mb-3">
                 <Sparkles className="w-4 h-4 text-[#4B6DE0]" />
-                <h3 className="text-sm font-semibold text-[#4B6DE0]">AI 추천 평가자</h3>
+                <h3 className="text-sm font-semibold text-[#4B6DE0]">{t('kr_ai_kecb694ec_ked8f89ea')}</h3>
               </div>
               <div className="space-y-2">
                 {candidates.map((c) => (
@@ -185,7 +201,7 @@ export default function PeerNominationSetupClient() {
                     </div>
                     <button onClick={() => handleNominate(c.employeeId, 'AI_RECOMMENDED', c.totalScore)}
                       className="flex items-center gap-1 px-3 py-1.5 bg-[#4B6DE0] text-white rounded-lg text-xs font-medium hover:bg-[#3730A3]">
-                      <Plus className="w-3 h-3" /> 추천
+                      <Plus className="w-3 h-3" /> {t('kr_kecb694ec')}
                     </button>
                   </div>
                 ))}
@@ -243,6 +259,7 @@ export default function PeerNominationSetupClient() {
           )}
         </div>
       </div>
+      <ConfirmDialog {...dialogProps} />
     </div>
   )
 }

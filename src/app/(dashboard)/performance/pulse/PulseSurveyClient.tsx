@@ -9,7 +9,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { BarChart3, Plus, Eye, Trash2, Play, Square, Calendar } from 'lucide-react'
 import { apiClient } from '@/lib/api'
-import { CARD_STYLES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { CARD_STYLES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -36,8 +36,8 @@ interface PendingSurvey {
 }
 
 const STATUS_MAP: Record<string, { label: string; cls: string }> = {
-  PULSE_DRAFT: { label: '초안', cls: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' },
-  PULSE_ACTIVE: { label: '진행중', cls: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
+  PULSE_DRAFT: { label: '임시저장', cls: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' },
+  PULSE_ACTIVE: { label: '진행 중', cls: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
   PULSE_CLOSED: { label: '종료', cls: 'bg-[#F5F5F5] text-[#666] border-[#E8E8E8]' },
 }
 
@@ -118,47 +118,47 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
     <div className={MODAL_STYLES.container}>
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-[#E8E8E8]">
-          <h2 className="text-lg font-semibold text-[#1A1A1A]">새 펄스 서베이</h2>
+          <h2 className="text-lg font-semibold text-[#1A1A1A]">{'새 펄스 서베이'}</h2>
         </div>
         <div className="p-6 space-y-4">
           <div>
-            <label className="text-sm font-medium text-[#333] mb-1 block">제목</label>
+            <label className="text-sm font-medium text-[#333] mb-1 block">{'제목'}</label>
             <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="서베이 제목"
               className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]" />
           </div>
           <div>
-            <label className="text-sm font-medium text-[#333] mb-1 block">설명 (선택)</label>
+            <label className="text-sm font-medium text-[#333] mb-1 block">{'설명 (선택)'}</label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2}
               className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">대상 범위</label>
+              <label className="text-sm font-medium text-[#333] mb-1 block">{'대상 범위'}</label>
               <select value={targetScope} onChange={(e) => setTargetScope(e.target.value)}
                 className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm">
-                <option value="ALL">전사</option>
-                <option value="DIVISION">사업부</option>
-                <option value="DEPARTMENT">부서</option>
-                <option value="TEAM">팀</option>
+                <option value="ALL">{'전사'}</option>
+                <option value="DIVISION">{'사업부'}</option>
+                <option value="DEPARTMENT">{'부서'}</option>
+                <option value="TEAM">{'팀'}</option>
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">익명 수준</label>
+              <label className="text-sm font-medium text-[#333] mb-1 block">{'익명 수준'}</label>
               <select value={anonymityLevel} onChange={(e) => setAnonymityLevel(e.target.value)}
                 className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm">
-                <option value="FULL_ANONYMOUS">완전 익명</option>
-                <option value="FULL_DIVISION">부서 공개</option>
+                <option value="FULL_ANONYMOUS">{'완전 익명'}</option>
+                <option value="FULL_DIVISION">{'부서 공개'}</option>
               </select>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">시작일</label>
+              <label className="text-sm font-medium text-[#333] mb-1 block">{'시작일'}</label>
               <input type="datetime-local" value={openAt} onChange={(e) => setOpenAt(e.target.value)}
                 className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm" />
             </div>
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">종료일</label>
+              <label className="text-sm font-medium text-[#333] mb-1 block">{'종료일'}</label>
               <input type="datetime-local" value={closeAt} onChange={(e) => setCloseAt(e.target.value)}
                 className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm" />
             </div>
@@ -167,9 +167,9 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
           {/* Questions */}
           <div className="border-t border-[#E8E8E8] pt-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-[#1A1A1A]">질문 구성</h3>
+              <h3 className="text-sm font-semibold text-[#1A1A1A]">{'질문 구성'}</h3>
               <button onClick={addQuestion} className="flex items-center gap-1 text-sm text-[#5E81F4] hover:text-[#4B6DE0] font-medium">
-                <Plus className="w-4 h-4" /> 질문 추가
+                <Plus className="w-4 h-4" /> {'질문 추가'}
               </button>
             </div>
             <div className="space-y-3">
@@ -182,9 +182,9 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
                       placeholder="질문 내용" className="flex-1 px-3 py-1.5 border border-[#D4D4D4] rounded-lg text-sm placeholder:text-[#999]" />
                     <select value={q.questionType} onChange={(e) => updateQuestion(i, 'questionType', e.target.value)}
                       className="px-2 py-1.5 border border-[#D4D4D4] rounded-lg text-xs">
-                      <option value="LIKERT">리커트 (1-5)</option>
-                      <option value="TEXT">주관식</option>
-                      <option value="CHOICE">객관식</option>
+                      <option value="LIKERT">{'리커트 (1-5)'}</option>
+                      <option value="TEXT">{'주관식'}</option>
+                      <option value="CHOICE">{'객관식'}</option>
                     </select>
                     {questions.length > 1 && (
                       <button onClick={() => removeQuestion(i)} className="p-1 text-[#999] hover:text-[#EF4444]">
@@ -208,7 +208,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
           </div>
         </div>
         <div className="p-6 border-t border-[#E8E8E8] flex justify-end gap-3">
-          <button onClick={onClose} className="px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#333] hover:bg-[#FAFAFA]">{tCommon('cancel')}</button>
+          <button onClick={onClose} className="px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#333] hover:bg-[#FAFAFA]">{'취소'}</button>
           <button onClick={handleSubmit} disabled={saving} className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}>
             {saving ? '생성 중...' : '생성'}
           </button>
@@ -262,7 +262,7 @@ export default function PulseSurveyClient() {
   }
 
   const TABS = [
-    { key: 'manage', label: '설문 관리' },
+    { key: 'manage', label: t('kr_kec84a4eb_management') },
     { key: 'respond', label: `응답 대기 (${pending.length})` },
   ] as const
 
@@ -276,7 +276,7 @@ export default function PulseSurveyClient() {
         </div>
         <button onClick={() => setShowCreate(true)}
           className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}>
-          <Plus className="w-4 h-4" /> 새 설문
+          <Plus className="w-4 h-4" /> {t('kr_kec8388_kec84a4eb')}
         </button>
       </div>
 
@@ -296,7 +296,7 @@ export default function PulseSurveyClient() {
         <>
           {/* Status Filter */}
           <div className="flex gap-2">
-            {[{ key: '', label: '전체' }, { key: 'PULSE_DRAFT', label: '초안' }, { key: 'PULSE_ACTIVE', label: '진행중' }, { key: 'PULSE_CLOSED', label: '종료' }].map((f) => (
+            {[{ key: '', label: t('all') }, { key: 'PULSE_DRAFT', label: t('draft') }, { key: 'PULSE_ACTIVE', label: t('inProgress') }, { key: 'PULSE_CLOSED', label: t('ended') }].map((f) => (
               <button key={f.key} onClick={() => setStatusFilter(f.key)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium border ${statusFilter === f.key ? 'bg-[#5E81F4] text-white border-[#5E81F4]' : 'bg-white text-[#555] border-[#D4D4D4] hover:bg-[#FAFAFA]'}`}>
                 {f.label}
@@ -309,13 +309,13 @@ export default function PulseSurveyClient() {
             <table className="w-full">
               <thead>
                 <tr className={TABLE_STYLES.header}>
-                  <th className={TABLE_STYLES.headerCell}>제목</th>
-                  <th className={TABLE_STYLES.headerCell}>대상</th>
-                  <th className={TABLE_STYLES.headerCell}>기간</th>
-                  <th className={TABLE_STYLES.headerCell}>질문</th>
-                  <th className={TABLE_STYLES.headerCell}>응답</th>
-                  <th className={TABLE_STYLES.headerCell}>상태</th>
-                  <th className={TABLE_STYLES.headerCell}>액션</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('kr_keca09ceb')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('kr_keb8c80ec')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('period')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('kr_keca788eb')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('kr_kec9d91eb')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('status')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('kr_kec95a1ec')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -336,7 +336,7 @@ export default function PulseSurveyClient() {
                     <td className="px-4 py-3 text-center">
                       <div className="flex items-center justify-center gap-1">
                         {s.status === 'PULSE_DRAFT' && (
-                          <button onClick={() => handleStatusChange(s.id, 'PULSE_ACTIVE')} title="시작"
+                          <button onClick={() => handleStatusChange(s.id, 'PULSE_ACTIVE')} title={t('start')}
                             className="p-1.5 text-[#5E81F4] hover:bg-[#EDF1FE] rounded-lg">
                             <Play className="w-4 h-4" />
                           </button>
@@ -364,7 +364,7 @@ export default function PulseSurveyClient() {
                   </tr>
                 ))}
                 {surveys.length === 0 && (
-                  <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-[#999]">등록된 설문이 없습니다.</td></tr>
+                  <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-[#999]">{t('register_keb909c_kec84a4eb_kec9786ec')}</td></tr>
                 )}
               </tbody>
             </table>
@@ -374,7 +374,7 @@ export default function PulseSurveyClient() {
         /* Pending Surveys */
         <div className="space-y-4">
           {pending.length === 0 ? (
-            <div className="text-center text-[#999] py-10 text-sm">응답 대기 중인 설문이 없습니다.</div>
+            <div className="text-center text-[#999] py-10 text-sm">{t('kr_kec9d91eb_keb8c80ea_keca491ec_')}</div>
           ) : (
             pending.map((s) => (
               <div key={s.id} className={`${CARD_STYLES.kpi} flex items-center justify-between`}>

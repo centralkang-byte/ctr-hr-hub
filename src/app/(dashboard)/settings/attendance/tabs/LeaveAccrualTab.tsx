@@ -13,6 +13,7 @@ import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWith
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface AccrualRule {
   minTenureMonths?: number
@@ -54,7 +55,9 @@ const DEFAULT_SETTINGS = {
   negativeBalanceLimit: -3,
 }
 
-export function LeaveAccrualTab({ companyId }: LeaveAccrualTabProps) {
+export function LeaveAccrualTab({
+  companyId }: LeaveAccrualTabProps) {
+  const t = useTranslations('settings')
   const [loading, setLoading] = useState(true)
   const [typeDefs, setTypeDefs] = useState<LeaveTypeDef[]>([])
   const [expandedId, setExpandedId] = useState<string | null>(null)
@@ -88,9 +91,9 @@ export function LeaveAccrualTab({ companyId }: LeaveAccrualTabProps) {
   return (
     <div className="space-y-6">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">휴가 부여 규칙</h3>
+        <h3 className="text-base font-semibold text-[#1C1D21]">{'휴가 부여 규칙'}</h3>
         <p className="text-sm text-[#8181A5]">
-          휴가 유형별 부여 방식, 근속 가산, 이월 정책 설정
+          {'휴가 유형별 부여 방식, 근속 가산, 이월 정책 설정'}
         </p>
       </div>
 
@@ -109,18 +112,18 @@ export function LeaveAccrualTab({ companyId }: LeaveAccrualTabProps) {
               onChange={(e) => setSettings((p) => ({ ...p, allowNegativeBalance: e.target.checked }))}
               className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]"
             />
-            <span className="text-[#1C1D21]">마이너스 연차 허용</span>
+            <span className="text-[#1C1D21]">{'마이너스 연차 허용'}</span>
           </label>
           {settings.allowNegativeBalance && (
             <div className="flex items-center gap-2 pl-6">
-              <span className="text-sm text-[#8181A5]">최대 마이너스 한도:</span>
+              <span className="text-sm text-[#8181A5]">{'최대 마이너스 한도:'}</span>
               <Input
                 type="number"
                 value={settings.negativeBalanceLimit}
                 onChange={(e) => setSettings((p) => ({ ...p, negativeBalanceLimit: Number(e.target.value) }))}
                 className="w-20"
               />
-              <span className="text-sm text-[#8181A5]">일</span>
+              <span className="text-sm text-[#8181A5]">{'일'}</span>
             </div>
           )}
         </div>
@@ -128,7 +131,7 @@ export function LeaveAccrualTab({ companyId }: LeaveAccrualTabProps) {
 
       {/* 유형별 부여 규칙 accordion */}
       <div>
-        <h4 className="mb-3 text-sm font-semibold text-[#1C1D21]">유형별 부여 규칙</h4>
+        <h4 className="mb-3 text-sm font-semibold text-[#1C1D21]">{'유형별 부여 규칙'}</h4>
         {typesWithRules.length > 0 ? (
           <div className="space-y-2">
             {typesWithRules.map((typeDef) => {
@@ -167,10 +170,10 @@ export function LeaveAccrualTab({ companyId }: LeaveAccrualTabProps) {
           <div className="rounded-xl border border-dashed border-[#F0F0F3] py-8 text-center">
             <Info className="mx-auto mb-2 h-6 w-6 text-[#8181A5]" />
             <p className="text-sm text-[#8181A5]">
-              부여 규칙이 설정된 휴가 유형이 없습니다
+              {'부여 규칙이 설정된 휴가 유형이 없습니다'}
             </p>
             <p className="mt-1 text-xs text-[#8181A5]">
-              휴가 유형 탭에서 유형을 추가한 후 부여 규칙을 설정하세요
+              {'휴가 유형 탭에서 유형을 추가한 후 부여 규칙을 설정하세요'}
             </p>
           </div>
         )}
@@ -189,14 +192,14 @@ export function LeaveAccrualTab({ companyId }: LeaveAccrualTabProps) {
             defaultChecked={true}
             className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]"
           />
-          <span className="text-[#1C1D21]">비례 부여 활성화</span>
+          <span className="text-[#1C1D21]">{'비례 부여 활성화'}</span>
         </label>
       </SettingFieldWithOverride>
 
       <div className="flex justify-end pt-4">
         <Button className={BUTTON_VARIANTS.primary}>
           <Save className="mr-2 h-4 w-4" />
-          저장
+          {'저장'}
         </Button>
       </div>
     </div>
@@ -213,19 +216,19 @@ function AccrualRuleDetail({ rule }: { rule: LeaveAccrualRuleRow }) {
       {/* Summary */}
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div className="rounded-lg bg-[#F5F5FA] px-3 py-2">
-          <p className="text-xs text-[#8181A5]">부여 방식</p>
+          <p className="text-xs text-[#8181A5]">{'부여 방식'}</p>
           <p className="font-medium text-[#1C1D21]">
             {rule.accrualType === 'annual' ? '연간 일괄 부여' : rule.accrualType === 'monthly' ? '월별 적립' : '수동 부여'}
           </p>
         </div>
         <div className="rounded-lg bg-[#F5F5FA] px-3 py-2">
-          <p className="text-xs text-[#8181A5]">기준 기간</p>
+          <p className="text-xs text-[#8181A5]">{'기준 기간'}</p>
           <p className="font-medium text-[#1C1D21]">
             {rule.accrualBasis === 'hire_date_anniversary' ? '입사일 기준' : '회계연도 (1/1)'}
           </p>
         </div>
         <div className="rounded-lg bg-[#F5F5FA] px-3 py-2">
-          <p className="text-xs text-[#8181A5]">이월 정책</p>
+          <p className="text-xs text-[#8181A5]">{'이월 정책'}</p>
           <p className="font-medium text-[#1C1D21]">
             {rule.carryOverType === 'none'
               ? '이월 불가'
@@ -236,7 +239,7 @@ function AccrualRuleDetail({ rule }: { rule: LeaveAccrualRuleRow }) {
         </div>
         {rule.carryOverExpiryMonths && (
           <div className="rounded-lg bg-[#F5F5FA] px-3 py-2">
-            <p className="text-xs text-[#8181A5]">이월 소멸</p>
+            <p className="text-xs text-[#8181A5]">{'이월 소멸'}</p>
             <p className="font-medium text-[#1C1D21]">{rule.carryOverExpiryMonths}개월 후 소멸</p>
           </div>
         )}
@@ -248,10 +251,10 @@ function AccrualRuleDetail({ rule }: { rule: LeaveAccrualRuleRow }) {
           <table className="w-full text-sm">
             <thead>
               <tr className={TABLE_STYLES.header}>
-                <th className={TABLE_STYLES.headerCell}>근속 기간</th>
-                <th className={TABLE_STYLES.headerCellRight}>부여일수</th>
-                <th className={TABLE_STYLES.headerCellRight}>가산</th>
-                <th className={TABLE_STYLES.headerCellRight}>상한</th>
+                <th className={TABLE_STYLES.headerCell}>{'근속 기간'}</th>
+                <th className={TABLE_STYLES.headerCellRight}>{'부정적'}</th>
+                <th className={TABLE_STYLES.headerCellRight}>{'가중치 (%)'}</th>
+                <th className={TABLE_STYLES.headerCellRight}>{'상한'}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F0F0F3]">

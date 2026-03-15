@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import { BUTTON_VARIANTS,  FORM_STYLES } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface Props { companyId: string | null }
 
@@ -18,13 +19,15 @@ interface CalibSettings {
 
 const DEFAULTS: CalibSettings = { required: true, scope: 'DEPARTMENT', minParticipants: 5, allowManagerOverride: false }
 
-export function CalibrationTab({ companyId }: Props) {
+export function CalibrationTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const { settings, setSettings, loading, saving, isOverridden, hasChanges, save, revert } = useProcessSetting<CalibSettings>({
     category: 'performance',
     key: 'calibration-rules',
     companyId,
     defaults: DEFAULTS,
-    description: '캘리브레이션 설정',
+    description: t('calibration_settings'),
     merge: (raw, defs) => ({
       required: typeof raw.required === 'boolean' ? raw.required : defs.required,
       scope: (raw.scope as CalibSettings['scope']) ?? defs.scope,
@@ -39,46 +42,46 @@ export function CalibrationTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">캘리브레이션</h3>
-          <p className="text-sm text-[#8181A5]">등급 조정 회의 필수 여부 및 참여 범위 설정</p>
+          <h3 className="text-base font-semibold text-[#1C1D21]">{t('calibration')}</h3>
+          <p className="text-sm text-[#8181A5]">{t('kr_keb93b1ea_keca1b0ec_ked9a8cec_')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">법인 오버라이드</span>
+          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
         )}
       </div>
 
       <SettingFieldWithOverride label="캘리브레이션 필수" description="평가 프로세스에서 캘리브레이션 단계를 필수로 할지" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={settings.required} onChange={(e) => setSettings((p) => ({ ...p, required: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]" />
-          <span className="text-[#1C1D21]">캘리브레이션 필수</span>
+          <span className="text-[#1C1D21]">{t('calibration_required')}</span>
         </label>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="참여 범위" description="캘리브레이션 회의 단위" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <select className={FORM_STYLES.select} value={settings.scope} onChange={(e) => setSettings((p) => ({ ...p, scope: e.target.value as CalibSettings['scope'] }))}>
-          <option value="DEPARTMENT">부서 단위</option>
-          <option value="DIVISION">본부 단위</option>
-          <option value="COMPANY">법인 전체</option>
+          <option value="DEPARTMENT">{t('department_keb8ba8ec')}</option>
+          <option value="DIVISION">{t('kr_kebb3b8eb_keb8ba8ec')}</option>
+          <option value="COMPANY">{t('company_all')}</option>
         </select>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="최소 참여 인원" description="캘리브레이션 대상 최소 인원 수" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input type="number" value={settings.minParticipants} onChange={(e) => setSettings((p) => ({ ...p, minParticipants: Number(e.target.value) }))} className="w-20" />
-          <span className="text-sm text-[#8181A5]">명 이상</span>
+          <span className="text-sm text-[#8181A5]">{t('persons_kec9db4ec')}</span>
         </div>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="관리자 직접 변경 허용" description="캘리브레이션 없이 관리자가 등급 직접 변경 가능" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={settings.allowManagerOverride} onChange={(e) => setSettings((p) => ({ ...p, allowManagerOverride: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]" />
-          <span className="text-[#1C1D21]">직접 변경 허용</span>
+          <span className="text-[#1C1D21]">{t('kr_keca781ec_kebb380ea_ked9788ec')}</span>
         </label>
       </SettingFieldWithOverride>
 
       <div className="flex justify-end gap-2 pt-4">
         <Button variant="outline" onClick={revert} disabled={!hasChanges}>
-          <RotateCcw className="mr-2 h-4 w-4" />되돌리기
+          <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장

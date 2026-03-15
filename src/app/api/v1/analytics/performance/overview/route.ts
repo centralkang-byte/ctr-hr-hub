@@ -109,7 +109,7 @@ export const GET = withPermission(
       for (const [g, cnt] of Object.entries(grades)) {
         row[GRADE_LABELS[g] || g] = total > 0 ? Math.round((cnt / total) * 100) : 0
       }
-      return row
+      return row as { department: string; [grade: string]: number | string }
     })
 
     // Chart: Evaluation progress

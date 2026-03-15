@@ -79,6 +79,7 @@ export default function SelfEvalClient({
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [aiLoading, setAiLoading] = useState(false)
+  const { confirm, dialogProps } = useConfirmDialog()
 
   // ─── Fetch cycles ────────────────────────────────────
 
@@ -99,7 +100,6 @@ export default function SelfEvalClient({
   // ─── Fetch evaluation data ──────────────────────────
 
   const fetchEvalData = useCallback(async () => {
-  const { confirm, dialogProps } = useConfirmDialog()
     if (!selectedCycleId) return
     setLoading(true)
     try {
@@ -145,8 +145,8 @@ export default function SelfEvalClient({
   // ─── Save / Submit ──────────────────────────────────
 
   const handleSave = async (status: 'DRAFT' | 'SUBMITTED') => {
-    if (!(status === 'SUBMITTED')) return
-        confirm({ title: '제출하면 수정할 수 없습니다. 제출하시겠습니까?', onConfirm: async () => {
+    if (status === 'SUBMITTED') {
+        confirm({ title: t('submit_ked9598eb_kec8898ec_kec8898_kec9786ec_keca09cec'), onConfirm: async () => {
       setSubmitting(true)
       try {
         await apiClient.post('/api/v1/performance/evaluations/self', {
@@ -157,13 +157,31 @@ export default function SelfEvalClient({
           status,
         })
         await fetchEvalData()
-        toast({ title: status === 'DRAFT' ? '임시 저장되었습니다.' : '제출 완료되었습니다.' })
+        toast({ title: '제출 완료되었습니다.' })
       } catch {
-        toast({ title: '저장에 실패했습니다.', variant: 'destructive' })
+        toast({ title: t('saveFailed'), variant: 'destructive' })
       } finally {
         setSubmitting(false)
       }
     }})
+    } else {
+      setSubmitting(true)
+      try {
+        await apiClient.post('/api/v1/performance/evaluations/self', {
+          cycleId: selectedCycleId,
+          goalScores: Object.values(goalScores),
+          competencyScores: Object.values(compScores),
+          overallComment,
+          status,
+        })
+        await fetchEvalData()
+        toast({ title: '임시 저장되었습니다.' })
+      } catch {
+        toast({ title: t('saveFailed'), variant: 'destructive' })
+      } finally {
+        setSubmitting(false)
+      }
+    }
   }
 
   // ─── AI Comment Suggestion ──────────────────────────
@@ -191,7 +209,7 @@ export default function SelfEvalClient({
       })
       setOverallComment(res.data.suggested_comment)
     } catch {
-      toast({ title: 'AI 코멘트 생성에 실패했습니다.', variant: 'destructive' })
+      toast({ title: t('kr_ai_kecbd94eb_kec839dec_kec8ba4'), variant: 'destructive' })
     } finally {
       setAiLoading(false)
     }
@@ -215,7 +233,7 @@ export default function SelfEvalClient({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('selfEval')}</h1>
-          <p className="text-sm text-[#666] mt-1">자기 성과 및 역량을 평가합니다</p>
+          <p className="text-sm text-[#666] mt-1">{t('kr_kec9e90ea_kec84b1ea_kebb08f_ke')}</p>
         </div>
         <select
           value={selectedCycleId}
@@ -232,7 +250,7 @@ export default function SelfEvalClient({
       {isSubmitted && (
         <div className="flex items-center gap-2 p-4 rounded-xl border border-[#A7F3D0] bg-[#D1FAE5]">
           <CheckCircle2 className="w-5 h-5 text-[#059669]" />
-          <span className="text-sm font-medium text-[#047857]">자기평가가 제출되었습니다.</span>
+          <span className="text-sm font-medium text-[#047857]">{t('selfEval_keab080_keca09cec')}</span>
         </div>
       )}
 
@@ -240,7 +258,7 @@ export default function SelfEvalClient({
       {goals.length > 0 && (
         <div className="rounded-xl border border-[#E8E8E8] bg-white">
           <div className="px-5 py-4 border-b border-[#E8E8E8]">
-            <h2 className="text-lg font-semibold text-[#1A1A1A]">목표 평가</h2>
+            <h2 className="text-lg font-semibold text-[#1A1A1A]">{t('goals_evaluation')}</h2>
           </div>
           <div className="divide-y divide-[#F5F5F5]">
             {goals.map((goal) => (
@@ -292,7 +310,7 @@ export default function SelfEvalClient({
       {competencies.length > 0 && (
         <div className="rounded-xl border border-[#E8E8E8] bg-white">
           <div className="px-5 py-4 border-b border-[#E8E8E8]">
-            <h2 className="text-lg font-semibold text-[#1A1A1A]">역량 평가</h2>
+            <h2 className="text-lg font-semibold text-[#1A1A1A]">{t('kr_kec97adeb_evaluation')}</h2>
           </div>
           <div className="divide-y divide-[#F5F5F5]">
             {competencies.map((comp) => (
@@ -332,7 +350,7 @@ export default function SelfEvalClient({
       {/* Overall Comment */}
       <div className="rounded-xl border border-[#E8E8E8] bg-white p-5 space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-[#1A1A1A]">종합 의견</h2>
+          <h2 className="text-lg font-semibold text-[#1A1A1A]">{t('kr_keca285ed_kec9d98ea')}</h2>
           {!isSubmitted && (
             <button
               onClick={handleAiSuggest}
@@ -340,7 +358,7 @@ export default function SelfEvalClient({
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#E0E7FF] text-[#4B6DE0] hover:bg-[#C7D2FE] transition-colors disabled:opacity-50"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              {aiLoading ? 'AI 생성 중...' : 'AI 코멘트 제안'}
+              {aiLoading ? t('aiGenerating') : 'AI 코멘트 제안'}
             </button>
           )}
         </div>
@@ -363,7 +381,7 @@ export default function SelfEvalClient({
             className="flex items-center gap-2 px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm font-medium text-[#333] hover:bg-[#FAFAFA] disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
-            임시 저장
+            {t('kr_kec9e84ec_save')}
           </button>
           <button
             onClick={() => handleSave('SUBMITTED')}
@@ -371,7 +389,7 @@ export default function SelfEvalClient({
             className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}
           >
             <Send className="w-4 h-4" />
-            제출
+            {t('submit')}
           </button>
         </div>
       )}

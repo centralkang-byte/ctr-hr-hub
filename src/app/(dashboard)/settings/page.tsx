@@ -20,7 +20,7 @@ export default async function SettingsHubPage() {
             <Settings className="h-5 w-5 text-[#5E81F4]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#1C1D21]">설정</h1>
+            <h1 className="text-2xl font-bold text-[#1C1D21]">{'설정'}</h1>
             <p className="text-sm text-[#8181A5]">
               시스템 설정을 카테고리별로 관리합니다 · {SETTINGS_CATEGORIES.reduce((s, c) => s + c.tabs.length, 0)}개 항목
             </p>

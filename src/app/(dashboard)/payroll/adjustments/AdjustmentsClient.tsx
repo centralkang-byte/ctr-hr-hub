@@ -21,9 +21,8 @@ import {
     Layers,
 } from 'lucide-react'
 import type { SessionUser } from '@/types'
-import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
-import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 interface Employee {
     id: string
@@ -69,21 +68,21 @@ interface Props {
 const ADJUSTMENT_TYPE_LABELS: Record<string, { label: string; color: string; bg: string }> = {
     RETROACTIVE: { label: '소급 지급', color: '#047857', bg: '#D1FAE5' },
     BONUS: { label: '보너스', color: '#1D4ED8', bg: '#DBEAFE' },
-    CORRECTION: { label: '정정', color: '#B45309', bg: '#FEF3C7' },
-    DEDUCTION: { label: '공제', color: '#DC2626', bg: '#FEE2E2' },
+    CORRECTION: { label: '정상', color: '#B45309', bg: '#FEF3C7' },
+    DEDUCTION: { label: '공제합계', color: '#DC2626', bg: '#FEE2E2' },
     OTHER: { label: '기타', color: '#6B7280', bg: '#F3F4F6' },
 }
 
 const CATEGORIES = ['기본급', '초과근무수당', '식대', '교통비', '직책수당', '상여금', '복리후생', '기타']
 
 function TypeBadge({ type }: { type: string }) {
-    const t = ADJUSTMENT_TYPE_LABELS[type] ?? ADJUSTMENT_TYPE_LABELS.OTHER
+    const info = ADJUSTMENT_TYPE_LABELS[type] ?? ADJUSTMENT_TYPE_LABELS.OTHER
     return (
         <span
             className="inline-flex px-2 py-0.5 rounded-full text-[11px] font-semibold"
-            style={{ color: t.color, background: t.bg }}
+            style={{ color: info.color, background: info.bg }}
         >
-            {t.label}
+            {info.label}
         </span>
     )
 }
@@ -97,6 +96,7 @@ function formatKRW(amount: number) {
 export default function AdjustmentsClient({user }: Props) {
   const t = useTranslations('payroll')
   const tCommon = useTranslations('common')
+  const { confirm, dialogProps } = useConfirmDialog()
 
     const [runs, setRuns] = useState<PayrollRun[]>([])
     const [selectedRun, setSelectedRun] = useState<PayrollRun | null>(null)
@@ -114,7 +114,7 @@ export default function AdjustmentsClient({user }: Props) {
     const [form, setForm] = useState({
         employeeId: '',
         type: 'BONUS' as Adjustment['type'],
-        category: '기본급',
+        category: t('baseSalary'),
         description: '',
         amount: '',
         evidenceUrl: '',
@@ -148,8 +148,6 @@ export default function AdjustmentsClient({user }: Props) {
 
     // 직원 목록 로드
     const loadEmployees = useCallback(async () => {
-  const { confirm, dialogProps } = useConfirmDialog()
-  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleCreate)
         const res = await fetch(`/api/v1/employees?companyId=${user.companyId}&limit=200`)
         if (res.ok) {
             const json = await res.json()
@@ -182,7 +180,7 @@ export default function AdjustmentsClient({user }: Props) {
             })
             if (res.ok) {
                 setShowForm(false)
-                setForm({ employeeId: '', type: 'BONUS', category: '기본급', description: '', amount: '', evidenceUrl: '' })
+                setForm({ employeeId: '', type: 'BONUS', category: t('baseSalary'), description: '', amount: '', evidenceUrl: '' })
                 await loadAdjustments(selectedRun.id)
                 await loadRuns()
             } else {
@@ -196,7 +194,7 @@ export default function AdjustmentsClient({user }: Props) {
 
     const handleDelete = async (adjustmentId: string) => {
         if (!selectedRun) return
-        confirm({ variant: 'destructive', title: '이 조정 항목을 삭제하시겠습니까?', onConfirm: async () => {
+        confirm({ variant: 'destructive', title: t('kr_kec9db4_keca1b0ec_ked95adeb_ke'), onConfirm: async () => {
             const res = await fetch(`/api/v1/payroll/${selectedRun.id}/adjustments/${adjustmentId}`, {
                 method: 'DELETE',
             })
@@ -209,7 +207,7 @@ export default function AdjustmentsClient({user }: Props) {
 
     const handleComplete = async () => {
         if (!selectedRun) return
-        confirm({ title: '조정을 완료하고 이상 검토 단계로 전환하시겠습니까? 이상 탐지 엔진이 실행됩니다.', onConfirm: async () => {
+        confirm({ title: t('kr_keca1b0ec_kec9984eb_kec9db4ec_'), onConfirm: async () => {
             setCompleting(true)
             try {
                 const res = await fetch(`/api/v1/payroll/${selectedRun.id}/adjustments/complete`, {
@@ -244,9 +242,9 @@ export default function AdjustmentsClient({user }: Props) {
         <div className="p-6 bg-[#FAFAFA] min-h-screen">
             {/* Header */}
             <div className="mb-6">
-                <nav className="text-xs text-[#999] mb-1">급여 / 수동 조정</nav>
+                <nav className="text-xs text-[#999] mb-1">{t('kr_keab889ec_kec8898eb_keca1b0ec')}</nav>
                 <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-tight">{t('adjustmentsTitle')}</h1>
-                <p className="text-sm text-[#666] mt-0.5">소급 지급, 보너스, 공제 등 수동 조정을 추가합니다.</p>
+                <p className="text-sm text-[#666] mt-0.5">{t('kr_kec868cea_keca780ea_kebb3b4eb_')}</p>
             </div>
 
             <div className="flex gap-5">
@@ -254,7 +252,7 @@ export default function AdjustmentsClient({user }: Props) {
                 <div className="w-72 flex-shrink-0">
                     <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
                         <div className="px-4 py-3 border-b border-[#F5F5F5]">
-                            <p className="text-xs font-semibold text-[#666] uppercase tracking-wider">조정 대기 급여</p>
+                            <p className="text-xs font-semibold text-[#666] uppercase tracking-wider">{t('kr_keca1b0ec_keb8c80ea_keab889ec')}</p>
                         </div>
                         <div className="divide-y divide-[#F5F5F5]">
                             {runs.length === 0 ? (
@@ -285,7 +283,7 @@ export default function AdjustmentsClient({user }: Props) {
                         <div className="bg-white rounded-xl border border-[#E8E8E8] flex items-center justify-center h-64">
                             <div className="text-center">
                                 <FileText size={32} className="text-[#D4D4D4] mx-auto mb-3" />
-                                <p className="text-[#999]">급여 실행을 선택하세요</p>
+                                <p className="text-[#999]">{t('kr_keab889ec_kec8ba4ed_kec84a0ed')}</p>
                             </div>
                         </div>
                     ) : (
@@ -294,19 +292,19 @@ export default function AdjustmentsClient({user }: Props) {
                             {summary && (
                                 <div className="grid grid-cols-3 gap-4 mb-4">
                                     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                                        <p className="text-xs text-[#666] mb-1">추가 합계</p>
+                                        <p className="text-xs text-[#666] mb-1">{t('add_ked95a9ea')}</p>
                                         <p className="text-xl font-bold text-[#059669]">
                                             +{summary.totalAdd.toLocaleString()}원
                                         </p>
                                     </div>
                                     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                                        <p className="text-xs text-[#666] mb-1">공제 합계</p>
+                                        <p className="text-xs text-[#666] mb-1">{t('kr_keab3b5ec_ked95a9ea')}</p>
                                         <p className="text-xl font-bold text-[#EF4444]">
                                             −{summary.totalDeduct.toLocaleString()}원
                                         </p>
                                     </div>
                                     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                                        <p className="text-xs text-[#666] mb-1">순 조정액</p>
+                                        <p className="text-xs text-[#666] mb-1">{t('kr_kec889c_keca1b0ec')}</p>
                                         <p className={`text-xl font-bold ${summary.netAdjustment >= 0 ? 'text-[#059669]' : 'text-[#EF4444]'}`}>
                                             {formatKRW(summary.netAdjustment)}
                                         </p>
@@ -336,7 +334,7 @@ export default function AdjustmentsClient({user }: Props) {
                                             onChange={(e) => setFilterType(e.target.value)}
                                             className="pl-8 pr-6 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white appearance-none focus:border-[#5E81F4]"
                                         >
-                                            <option value="ALL">전체 유형</option>
+                                            <option value="ALL">{t('all_kec9ca0ed')}</option>
                                             {Object.entries(ADJUSTMENT_TYPE_LABELS).map(([k, v]) => (
                                                 <option key={k} value={k}>{v.label}</option>
                                             ))}
@@ -350,7 +348,7 @@ export default function AdjustmentsClient({user }: Props) {
                                         className={`flex items-center gap-1.5 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-semibold transition-colors`}
                                     >
                                         <Plus size={15} />
-                                        조정 추가
+                                        {t('kr_keca1b0ec_add')}
                                     </button>
                                     <button
                                         onClick={handleComplete}
@@ -358,7 +356,7 @@ export default function AdjustmentsClient({user }: Props) {
                                         className="flex items-center gap-1.5 px-4 py-2 border border-[#D4D4D4] hover:bg-[#F5F5F5] text-[#333] rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                                     >
                                         <ArrowRight size={15} />
-                                        {completing ? '처리 중...' : '이상 검토로 전환'}
+                                        {completing ? t('processing') : '이상 검토로 전환'}
                                     </button>
                                 </div>
                             </div>
@@ -376,12 +374,12 @@ export default function AdjustmentsClient({user }: Props) {
                                     <table className="w-full text-sm">
                                         <thead className="bg-[#FAFAFA] border-b border-[#E8E8E8]">
                                             <tr>
-                                                <th className="text-left px-4 py-3 text-xs font-semibold text-[#666] uppercase tracking-wider">직원</th>
-                                                <th className="text-left px-4 py-3 text-xs font-semibold text-[#666] uppercase tracking-wider">유형</th>
-                                                <th className="text-left px-4 py-3 text-xs font-semibold text-[#666] uppercase tracking-wider">카테고리</th>
-                                                <th className="text-left px-4 py-3 text-xs font-semibold text-[#666] uppercase tracking-wider">설명</th>
-                                                <th className="text-right px-4 py-3 text-xs font-semibold text-[#666] uppercase tracking-wider">금액</th>
-                                                <th className="text-right px-4 py-3 text-xs font-semibold text-[#666] uppercase tracking-wider">증빙</th>
+                                                <th className="text-left px-4 py-3 text-xs font-semibold text-[#666] uppercase tracking-wider">{t('kr_keca781ec')}</th>
+                                                <th className="text-left px-4 py-3 text-xs font-semibold text-[#666] uppercase tracking-wider">{t('kr_kec9ca0ed')}</th>
+                                                <th className="text-left px-4 py-3 text-xs font-semibold text-[#666] uppercase tracking-wider">{t('kr_kecb9b4ed')}</th>
+                                                <th className="text-left px-4 py-3 text-xs font-semibold text-[#666] uppercase tracking-wider">{t('description')}</th>
+                                                <th className="text-right px-4 py-3 text-xs font-semibold text-[#666] uppercase tracking-wider">{t('amount')}</th>
+                                                <th className="text-right px-4 py-3 text-xs font-semibold text-[#666] uppercase tracking-wider">{t('kr_keca69deb')}</th>
                                                 <th className="px-4 py-3" />
                                             </tr>
                                         </thead>
@@ -415,7 +413,7 @@ export default function AdjustmentsClient({user }: Props) {
                                                                 className="inline-flex items-center gap-1 text-xs text-[#1D4ED8] hover:underline"
                                                             >
                                                                 <Upload size={11} />
-                                                                파일
+                                                                {t('kr_ked8c8cec')}
                                                             </a>
                                                         ) : (
                                                             <span className="text-xs text-[#D4D4D4]">—</span>
@@ -445,15 +443,15 @@ export default function AdjustmentsClient({user }: Props) {
                 <div className={MODAL_STYLES.container}>
                     <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full mx-4 overflow-hidden">
                         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8E8E8]">
-                            <h2 className="text-lg font-bold text-[#1A1A1A]">조정 추가</h2>
+                            <h2 className="text-lg font-bold text-[#1A1A1A]">{t('kr_keca1b0ec_add')}</h2>
                             <button onClick={() => setShowForm(false)} className="p-1 hover:bg-[#F5F5F5] rounded-lg">
                                 <XCircle size={20} className="text-[#999]" />
                             </button>
                         </div>
-                        <form ref={formRef} onSubmit={guardedSubmit} className="px-6 py-5 space-y-4">
+                        <form ref={formRef} onSubmit={handleCreate} className="px-6 py-5 space-y-4">
                             {/* Employee */}
                             <div>
-                                <label className="block text-xs font-semibold text-[#444] mb-1.5">대상 직원 *</label>
+                                <label className="block text-xs font-semibold text-[#444] mb-1.5">{t('kr_keb8c80ec_keca781ec')}</label>
                                 <div className="relative">
                                     <select
                                         value={form.employeeId}
@@ -461,7 +459,7 @@ export default function AdjustmentsClient({user }: Props) {
                                         required
                                         className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 appearance-none"
                                     >
-                                        <option value="">직원 선택...</option>
+                                        <option value="">{t('kr_keca781ec_kec84a0ed')}</option>
                                         {employees.map((e) => (
                                             <option key={e.id} value={e.id}>{e.name} ({e.email})</option>
                                         ))}
@@ -488,7 +486,7 @@ export default function AdjustmentsClient({user }: Props) {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-semibold text-[#444] mb-1.5">급여 항목</label>
+                                    <label className="block text-xs font-semibold text-[#444] mb-1.5">{t('kr_keab889ec_ked95adeb')}</label>
                                     <div className="relative">
                                         <select
                                             value={form.category}
@@ -505,8 +503,8 @@ export default function AdjustmentsClient({user }: Props) {
                             {/* Amount */}
                             <div>
                                 <label className="block text-xs font-semibold text-[#444] mb-1.5">
-                                    금액 (원) *
-                                    <span className="font-normal text-[#999] ml-1">양수=추가, 음수=공제</span>
+                                    {t('amount_krw')}
+                                    <span className="font-normal text-[#999] ml-1">{t('kr_kec9691ec_add_kec9d8cec_keab3b')}</span>
                                 </label>
                                 <input
                                     type="number"
@@ -520,7 +518,7 @@ export default function AdjustmentsClient({user }: Props) {
 
                             {/* Description */}
                             <div>
-                                <label className="block text-xs font-semibold text-[#444] mb-1.5">사유/설명 *</label>
+                                <label className="block text-xs font-semibold text-[#444] mb-1.5">{t('kr_kec82acec_description')}</label>
                                 <textarea
                                     value={form.description}
                                     onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
@@ -534,8 +532,8 @@ export default function AdjustmentsClient({user }: Props) {
                             {/* Evidence URL */}
                             <div>
                                 <label className="block text-xs font-semibold text-[#444] mb-1.5">
-                                    증빙 URL
-                                    <span className="font-normal text-[#999] ml-1">선택사항</span>
+                                    {t('kr_keca69deb_url')}
+                                    <span className="font-normal text-[#999] ml-1">{t('kr_kec84a0ed')}</span>
                                 </label>
                                 <input
                                     type="url"
@@ -553,7 +551,7 @@ export default function AdjustmentsClient({user }: Props) {
                                     onClick={() => setShowForm(false)}
                                     className="px-4 py-2 border border-[#D4D4D4] hover:bg-[#F5F5F5] text-[#333] rounded-lg text-sm"
                                 >
-                                    취소
+                                    {t('cancel')}
                                 </button>
                                 <button
                                     type="submit"
@@ -563,9 +561,8 @@ export default function AdjustmentsClient({user }: Props) {
                                     {submitting ? '저장 중...' : (
                                         <>
                                             <CheckCircle2 size={14} />
-                                            저장
-                                          <ConfirmDialog {...dialogProps} />
-      </>
+                                            {t('save')}
+                                          </>
                                     )}
                                 </button>
                             </div>
@@ -573,6 +570,7 @@ export default function AdjustmentsClient({user }: Props) {
                     </div>
                 </div>
             )}
+      <ConfirmDialog {...dialogProps} />
         </div>
     )
 }

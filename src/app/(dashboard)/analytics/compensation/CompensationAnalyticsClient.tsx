@@ -24,7 +24,7 @@ import { EmptyChart } from '@/components/analytics/EmptyChart'
 import { AnalyticsKpiCard } from '@/components/analytics/AnalyticsKpiCard'
 import type { CompensationData } from '@/lib/analytics/types'
 import { Banknote } from 'lucide-react'
-import { TABLE_STYLES } from '@/lib/styles'
+import { TABLE_STYLES, CHART_THEME } from '@/lib/styles'
 
 const BAND_COLORS = ['#EF4444', '#10B981', '#F59E0B']
 
@@ -166,7 +166,7 @@ export default function CompensationAnalyticsClient() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.distribution.map((r, i) => (
+                  {data.distribution.map((r: any, i: number) => (
                     <tr key={i} className={TABLE_STYLES.header}>
                       <td className="px-4 py-3 font-medium text-[#333]">{r.grade_name}</td>
                       <td className="px-4 py-3 text-[#555]">{r.job_category_code}</td>

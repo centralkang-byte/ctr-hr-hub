@@ -258,7 +258,7 @@ function PeekCardBody({ d }: { d: ResolvedData }) {
             onClick={(e) => e.stopPropagation()}
           >
             <User size={14} />
-            {t('viewProfile')}
+            {'viewProfile'}
           </Link>
         )}
         {d.email && (

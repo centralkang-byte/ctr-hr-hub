@@ -26,6 +26,7 @@ import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
 import type { SessionUser, PaginationInfo, OnboardingCheckin } from '@/types'
+import { CHART_THEME } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -68,23 +69,23 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
   const t = useTranslations('onboarding')
 
   const MOOD_MAP: Record<string, { emoji: string; label: string; value: number }> = {
-    GREAT: { emoji: '\u{1F603}', label: t('moodBestShort'), value: 5 },
-    GOOD: { emoji: '\u{1F642}', label: t('moodGoodShort'), value: 4 },
-    NEUTRAL: { emoji: '\u{1F610}', label: t('moodNeutralShort'), value: 3 },
-    STRUGGLING: { emoji: '\u{1F61F}', label: t('moodStrugglingShort'), value: 2 },
-    BAD: { emoji: '\u{1F622}', label: t('moodBadShort'), value: 1 },
+    GREAT: { emoji: '\u{1F603}', label: '최고', value: 5 },
+    GOOD: { emoji: '\u{1F642}', label: '좋음', value: 4 },
+    NEUTRAL: { emoji: '\u{1F610}', label: '보통', value: 3 },
+    STRUGGLING: { emoji: '\u{1F61F}', label: '힘듦', value: 2 },
+    BAD: { emoji: '\u{1F622}', label: '매우 힘듦', value: 1 },
   }
 
   const SENTIMENT_BADGE: Record<string, { label: string; className: string }> = {
-    POSITIVE: { label: t('sentimentPositive'), className: 'bg-[#DCFCE7] text-[#16A34A]' },
-    MIXED: { label: t('sentimentMixed'), className: 'bg-[#EDF1FE] text-[#5E81F4]' },
-    CONCERNING: { label: t('sentimentConcerning'), className: 'bg-[#FEF2F2] text-[#EF4444]' },
+    POSITIVE: { label: '긍정적', className: 'bg-[#DCFCE7] text-[#16A34A]' },
+    MIXED: { label: '혼합', className: 'bg-[#EDF1FE] text-[#5E81F4]' },
+    CONCERNING: { label: '우려', className: 'bg-[#FEF2F2] text-[#EF4444]' },
   }
 
   const TREND_BADGE: Record<string, { label: string; className: string }> = {
-    IMPROVING: { label: t('trendImproving'), className: 'bg-[#DCFCE7] text-[#16A34A]' },
-    STABLE: { label: t('trendStable'), className: 'bg-[#F5F5FA] text-[#8181A5]' },
-    DECLINING: { label: t('trendDeclining'), className: 'bg-[#FEF2F2] text-[#EF4444]' },
+    IMPROVING: { label: '개선 중', className: 'bg-[#DCFCE7] text-[#16A34A]' },
+    STABLE: { label: '안정적', className: 'bg-[#F5F5FA] text-[#8181A5]' },
+    DECLINING: { label: '하락 중', className: 'bg-[#FEF2F2] text-[#EF4444]' },
   }
 
   const [checkins, setCheckins] = useState<CheckinRow[]>([])
@@ -178,7 +179,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
     () => [
       {
         key: 'employeeName',
-        header: t('employeeName'),
+        header: '직원명',
         render: (r) => {
           const row = r as unknown as CheckinRow
           return (
@@ -197,7 +198,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
       },
       {
         key: 'checkinWeek',
-        header: t('checkinWeekLabel'),
+        header: '체크인 주차',
         render: (r) => {
           const row = r as unknown as CheckinRow
           return <span className="text-sm">{t('weekLabel', { week: row.checkinWeek })}</span>
@@ -238,7 +239,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
       },
       {
         key: 'submittedAt',
-        header: t('submittedDate'),
+        header: '제출일',
         render: (r) => {
           const row = r as unknown as CheckinRow
           return <span className="text-sm text-[#8181A5]">{formatDate(String(row.submittedAt))}</span>
@@ -261,14 +262,14 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
   return (
     <div className="space-y-6 p-6">
       <PageHeader
-        title={t('checkinAdminTitle')}
-        description={t('checkinAdminDescription')}
+        title={'온보딩 체크인 관리'}
+        description={'신입사원 주간 체크인 현황을 확인하고 AI 분석을 요청하세요.'}
       />
 
       {/* ─── Employee selector ─── */}
       {uniqueEmployees.length > 0 && (
         <div className="flex items-center gap-3">
-          <label className="text-sm font-medium text-[#1C1D21]">{t('selectEmployee')}</label>
+          <label className="text-sm font-medium text-[#1C1D21]">{'직원 선택:'}</label>
           <select
             className="rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10"
             value={selectedEmployeeId ?? ''}
@@ -277,7 +278,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
               if (emp) selectEmployee(emp.id, emp.name)
             }}
           >
-            <option value="">{t('selectEmployeePlaceholder')}</option>
+            <option value="">{'-- 직원을 선택하세요 --'}</option>
             {uniqueEmployees.map((emp) => (
               <option key={emp.id} value={emp.id}>
                 {emp.name}
@@ -294,8 +295,8 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
         pagination={pagination ?? undefined}
         onPageChange={setPage}
         loading={loading}
-        emptyMessage={t('noCheckinData')}
-        emptyDescription={t('noCheckinDataDesc')}
+        emptyMessage={'체크인 데이터가 없습니다'}
+        emptyDescription={'아직 제출된 체크인이 없습니다.'}
         rowKey={(row) => (row as unknown as CheckinRow).id}
       />
 
@@ -305,7 +306,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-bold text-[#1C1D21] tracking-[-0.02em]">
-                {selectedEmployeeName} - {t('checkinTrend')}
+                {selectedEmployeeName} - {'체크인 트렌드'}
               </h3>
               <button
                 onClick={requestAiSummary}
@@ -313,14 +314,14 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
                 className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg border border-[#F0F0F3] text-[#8181A5] hover:bg-[#F5F5FA] disabled:opacity-50 transition-colors"
               >
                 <Sparkles className="h-4 w-4" />
-                {loadingAi ? t('aiAnalyzing') : t('aiSummary')}
+                {loadingAi ? 'AI 분석 중...' : 'AI 요약'}
               </button>
             </div>
             <div>
               {loadingDetail ? (
                 <div className="h-64 w-full bg-[#F5F5FA] rounded-xl animate-pulse" />
               ) : chartData.length === 0 ? (
-                <p className="py-8 text-center text-sm text-[#8181A5]">{t('noCheckinData')}</p>
+                <p className="py-8 text-center text-sm text-[#8181A5]">{'체크인 데이터가 없습니다'}</p>
               ) : (
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={chartData}>
@@ -384,7 +385,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="h-4 w-4 text-[#5E81F4]" />
                 <h3 className="text-base font-bold text-[#1C1D21] tracking-[-0.02em]">
-                  {t('aiAnalysisSummary')}
+                  {'AI 분석 요약'}
                 </h3>
                 <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-semibold bg-[#F5F5FA] text-[#8181A5] ml-2">
                   AI Generated
@@ -393,7 +394,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
               <div className="space-y-4">
                 <div className="flex gap-3">
                   <div>
-                    <span className="text-xs text-[#8181A5]">{t('overallSentiment')}</span>
+                    <span className="text-xs text-[#8181A5]">{'전반적 감정'}</span>
                     <div className="mt-1">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${SENTIMENT_BADGE[aiSummary.overall_sentiment]?.className ?? 'bg-[#F5F5FA] text-[#8181A5]'}`}>
                         {SENTIMENT_BADGE[aiSummary.overall_sentiment]?.label ?? aiSummary.overall_sentiment}
@@ -401,7 +402,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
                     </div>
                   </div>
                   <div>
-                    <span className="text-xs text-[#8181A5]">{t('trendLabel')}</span>
+                    <span className="text-xs text-[#8181A5]">{'추이'}</span>
                     <div className="mt-1">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${TREND_BADGE[aiSummary.trend]?.className ?? 'bg-[#F5F5FA] text-[#8181A5]'}`}>
                         {TREND_BADGE[aiSummary.trend]?.label ?? aiSummary.trend}
@@ -412,7 +413,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
 
                 {aiSummary.key_observations.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-[#1C1D21] mb-1">{t('keyObservations')}</h4>
+                    <h4 className="text-sm font-medium text-[#1C1D21] mb-1">{'주요 관찰 사항'}</h4>
                     <ul className="space-y-1 text-sm text-[#8181A5]">
                       {aiSummary.key_observations.map((obs, i) => (
                         <li key={i} className="flex items-start gap-2">
@@ -426,7 +427,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
 
                 {aiSummary.recommended_actions.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-[#1C1D21] mb-1">{t('recommendedActions')}</h4>
+                    <h4 className="text-sm font-medium text-[#1C1D21] mb-1">{'권장 조치'}</h4>
                     <ul className="space-y-1 text-sm text-[#8181A5]">
                       {aiSummary.recommended_actions.map((action, i) => (
                         <li key={i} className="flex items-start gap-2">

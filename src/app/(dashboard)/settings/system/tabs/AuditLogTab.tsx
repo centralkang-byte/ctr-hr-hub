@@ -10,6 +10,7 @@ import { Loader2, FileSearch, RefreshCw } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { TABLE_STYLES } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface AuditLogChanges {
   category?: string
@@ -53,7 +54,9 @@ const CATEGORY_LABELS: Record<string, string> = {
   LEAVE: '휴가',
 }
 
-export function AuditLogTab({ companyId }: Props) {
+export function AuditLogTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const [logs, setLogs] = useState<AuditLogEntry[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -86,7 +89,7 @@ export function AuditLogTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">설정 변경 이력</h3>
+          <h3 className="text-base font-semibold text-[#1C1D21]">{'설정 변경 이력'}</h3>
           <p className="text-sm text-[#8181A5]">
             최근 설정 변경 기록 · 총 {total}건
           </p>
@@ -98,7 +101,7 @@ export function AuditLogTab({ companyId }: Props) {
           className="gap-1.5 text-xs"
         >
           <RefreshCw className="h-3.5 w-3.5" />
-          새로고침
+          {'새로고침'}
         </Button>
       </div>
 
@@ -108,12 +111,12 @@ export function AuditLogTab({ companyId }: Props) {
             <table className="w-full">
               <thead>
                 <tr className={TABLE_STYLES.header}>
-                  <th className={TABLE_STYLES.headerCell}>날짜</th>
-                  <th className={TABLE_STYLES.headerCell}>카테고리</th>
-                  <th className={TABLE_STYLES.headerCell}>설정항목</th>
-                  <th className={TABLE_STYLES.headerCell}>법인</th>
-                  <th className={TABLE_STYLES.headerCell}>액션</th>
-                  <th className={TABLE_STYLES.headerCell}>변경내용</th>
+                  <th className={TABLE_STYLES.headerCell}>{'날짜'}</th>
+                  <th className={TABLE_STYLES.headerCell}>{'카테고리'}</th>
+                  <th className={TABLE_STYLES.headerCell}>{'설정항목'}</th>
+                  <th className={TABLE_STYLES.headerCell}>{'법인'}</th>
+                  <th className={TABLE_STYLES.headerCell}>{'액션'}</th>
+                  <th className={TABLE_STYLES.headerCell}>{'변경'}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#F0F0F3]">
@@ -171,7 +174,7 @@ export function AuditLogTab({ companyId }: Props) {
                   onClick={() => setOffset(Math.max(0, offset - limit))}
                   className="text-xs"
                 >
-                  이전
+                  {'이전'}
                 </Button>
                 <Button
                   variant="outline"
@@ -180,7 +183,7 @@ export function AuditLogTab({ companyId }: Props) {
                   onClick={() => setOffset(offset + limit)}
                   className="text-xs"
                 >
-                  다음
+                  {'다음'}
                 </Button>
               </div>
             </div>
@@ -190,10 +193,10 @@ export function AuditLogTab({ companyId }: Props) {
         <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
           <FileSearch className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" />
           <p className="text-sm font-medium text-[#1C1D21]">
-            📋 설정 변경 기록이 없습니다
+            {'📋 설정 변경 기록이 없습니다'}
           </p>
           <p className="mt-1 text-xs text-[#8181A5]">
-            설정을 변경하면 자동으로 기록됩니다.
+            {'설정을 변경하면 자동으로 기록됩니다.'}
           </p>
         </div>
       )}

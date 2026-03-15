@@ -86,7 +86,7 @@ export const GET = withPermission(
     const months = generateMonthRange(params.startDate, params.endDate)
     // Simplified: show current count for each month (full time-series needs snapshot table)
     const companyHeadcountTrend = months.map((m) => {
-      const row: Record<string, number | string> = { month: m }
+      const row: { month: string; [companyName: string]: number | string } = { month: m }
       for (const [name, cnt] of companyGroups) row[name] = cnt
       return row
     })

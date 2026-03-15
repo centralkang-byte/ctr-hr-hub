@@ -79,7 +79,7 @@ export default function TeamResultsClient({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('teamResults')}</h1>
-          <p className="text-sm text-[#666] mt-1">팀원 성과 결과 현황</p>
+          <p className="text-sm text-[#666] mt-1">{t('kr_ked8c80ec_kec84b1ea_keab2b0ea_')}</p>
         </div>
         <select
           value={selectedCycleId}
@@ -94,15 +94,15 @@ export default function TeamResultsClient({
       {/* KPI */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Users className="w-3.5 h-3.5" /> 팀원 수</p>
+          <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Users className="w-3.5 h-3.5" /> {t('kr_ked8c80ec_kec8898')}</p>
           <p className="text-3xl font-bold text-[#1A1A1A]">{results.length}</p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Target className="w-3.5 h-3.5" /> 평균 성과</p>
+          <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Target className="w-3.5 h-3.5" /> {t('average_kec84b1ea')}</p>
           <p className="text-3xl font-bold text-[#1A1A1A]">{avgPerfScore.toFixed(1)}</p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5" /> 평가 완료율</p>
+          <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5" /> {t('evaluation_kec9984eb')}</p>
           <p className="text-3xl font-bold text-[#5E81F4]">
             {results.length > 0 ? Math.round(results.filter((r) => r.managerEval?.status === 'SUBMITTED').length / results.length * 100) : 0}%
           </p>
@@ -114,13 +114,13 @@ export default function TeamResultsClient({
         <table className="w-full">
           <thead>
             <tr className={TABLE_STYLES.header}>
-              <th className={TABLE_STYLES.headerCell}>직원</th>
-              <th className={TABLE_STYLES.headerCell}>부서</th>
-              <th className={TABLE_STYLES.headerCell}>자기평가</th>
-              <th className={TABLE_STYLES.headerCell}>매니저 평가</th>
-              <th className={TABLE_STYLES.headerCell}>최종 성과</th>
-              <th className={TABLE_STYLES.headerCell}>최종 역량</th>
-              <th className={TABLE_STYLES.headerCell}>EMS 블록</th>
+              <th className={TABLE_STYLES.headerCell}>{t('kr_keca781ec')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('department')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('selfEval')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('managerEval')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('kr_kecb59cec_kec84b1ea')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('kr_kecb59cec_kec97adeb')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('kr_ems_kebb894eb')}</th>
             </tr>
           </thead>
           <tbody>

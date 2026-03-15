@@ -19,7 +19,7 @@ import {
   Users, BookOpen, BarChart2,
 } from 'lucide-react'
 import type { SessionUser } from '@/types'
-import { TABLE_STYLES } from '@/lib/styles'
+import { TABLE_STYLES, CHART_THEME, MODAL_STYLES } from '@/lib/styles'
 
 // ── 타입 ──────────────────────────────────────────────────
 

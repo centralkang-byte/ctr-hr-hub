@@ -17,6 +17,7 @@ import { EmptyChart } from '@/components/analytics/EmptyChart'
 import { AnalyticsFilterBar } from '@/components/analytics/AnalyticsFilterBar'
 import { CHART_COLORS } from '@/components/analytics/chart-colors'
 import type { AttendanceResponse } from '@/lib/analytics/types'
+import { CHART_THEME } from '@/lib/styles'
 
 export default function AttendanceClient() {
   const tCommon = useTranslations('common')
@@ -68,9 +69,9 @@ export default function AttendanceClient() {
           {charts.overtimeTrend.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <LineChart data={charts.overtimeTrend}>
-                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
+                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                 <XAxis dataKey="month" fontSize={11} tickFormatter={(v) => v.split('-')[1] + '월'} />
-                <YAxis fontSize={11} label={{ value: '분', position: 'insideLeft', style: { fontSize: 11 } }} />
+                <YAxis fontSize={11} label={{ value: t('kr_kebb684'), position: 'insideLeft', style: { fontSize: 11 } }} />
                 <Tooltip labelFormatter={(v) => `${String(v).split('-')[1]}월`} contentStyle={{ borderRadius: 8, fontSize: 12 }} />
                 <Line type="monotone" dataKey="avgMinutes" name="평균 OT(분)" stroke={CHART_COLORS.primary} strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
@@ -82,7 +83,7 @@ export default function AttendanceClient() {
           {charts.violationTrend.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={charts.violationTrend}>
-                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} stroke={CHART_COLORS.grid} />
+                <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                 <XAxis dataKey="month" fontSize={11} tickFormatter={(v) => v.split('-')[1] + '월'} />
                 <YAxis fontSize={11} />
                 <Tooltip labelFormatter={(v) => `${String(v).split('-')[1]}월`} contentStyle={{ borderRadius: 8, fontSize: 12 }} />

@@ -177,14 +177,14 @@ function SettlementDetailModal({
           {/* Calculation Breakdown */}
           <div className="rounded-xl border border-[#E8E8E8] overflow-hidden">
             <div className="bg-[#FAFAFA] px-4 py-2 text-xs font-semibold text-[#666] uppercase tracking-wider">
-              소득세 계산 요약
+              {'소득세 계산 요약'}
             </div>
             <div className="divide-y divide-[#F5F5F5]">
               {[
                 { label: '① 총급여', value: settlement.totalSalary },
                 { label: '⑤ 과세표준', value: settlement.totalSalary },
                 { label: '⑦ 산출세액', value: settlement.determinedTax },
-                { label: '⑩ 기납부세액', value: settlement.prepaidTax },
+                { label: '기록하기', value: settlement.prepaidTax },
               ].map((row) => (
                 <div key={row.label} className="flex items-center justify-between px-4 py-2.5">
                   <span className="text-sm text-[#555]">{row.label}</span>
@@ -237,7 +237,7 @@ function SettlementDetailModal({
             onClick={onClose}
             className="px-4 py-2 text-sm text-[#555] hover:bg-[#F5F5F5] rounded-lg"
           >
-            닫기
+            {'닫기'}
           </button>
           <div className="flex gap-2">
             {settlement.status === 'confirmed' && (
@@ -311,7 +311,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
         not_started: 0, in_progress: 0, submitted: 0, hr_review: 0, confirmed: 0,
       })
     } catch (err) {
-      const msg = err instanceof Error ? err.message : '데이터를 불러오지 못했습니다.'
+      const msg = err instanceof Error ? err.message : t('loadFailed')
       setError(msg)
     } finally {
       setLoading(false)
@@ -330,7 +330,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
         await fetchSettlements()
         setSelectedSettlement(null)
       } catch (err) {
-        const msg = err instanceof Error ? err.message : '확정 처리에 실패했습니다.'
+        const msg = err instanceof Error ? err.message : t('confirmed_kecb298eb_kec8ba4ed')
         setError(msg)
       } finally {
         setConfirming(false)
@@ -356,7 +356,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
       window.open(url, '_blank')
       URL.revokeObjectURL(url)
     } catch (err) {
-      const msg = err instanceof Error ? err.message : '영수증 발행에 실패했습니다.'
+      const msg = err instanceof Error ? err.message : t('kr_kec9881ec_kebb09ced_kec8ba4ed')
       setError(msg)
     } finally {
       setIssuingReceipt(false)
@@ -387,7 +387,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
       setSelectedIds(new Set())
       await fetchSettlements()
     } catch (err) {
-      const msg = err instanceof Error ? err.message : '일괄 확정에 실패했습니다.'
+      const msg = err instanceof Error ? err.message : t('kr_kec9dbcea_ked9995ec_kec8ba4ed')
       setError(msg)
     } finally {
       setBulkConfirming(false)
@@ -413,7 +413,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
         })
         await fetchSettlements()
       } catch (err) {
-        const msg = err instanceof Error ? err.message : '일괄 확정에 실패했습니다.'
+        const msg = err instanceof Error ? err.message : t('kr_kec9dbcea_ked9995ec_kec8ba4ed')
         setError(msg)
       } finally {
         setBulkConfirming(false)
@@ -451,10 +451,10 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
   const YEAR_OPTIONS = [defaultYear, defaultYear - 1, defaultYear - 2]
 
   const STATUS_TABS = [
-    { key: 'all', label: '전체', count: total },
-    { key: 'submitted', label: '제출완료', count: summary.submitted },
-    { key: 'hr_review', label: 'HR검토중', count: summary.hr_review },
-    { key: 'confirmed', label: '확정', count: summary.confirmed },
+    { key: 'all', label: t('all'), count: total },
+    { key: 'submitted', label: t('submitted'), count: summary.submitted },
+    { key: 'hr_review', label: t('hrReviewing'), count: summary.hr_review },
+    { key: 'confirmed', label: t('confirmed'), count: summary.confirmed },
   ]
 
   return (
@@ -491,7 +491,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
             >
               <CheckCircle2 className="h-4 w-4" />
               {bulkConfirming
-                ? '처리 중...'
+                ? t('processing')
                 : `일괄 확정 (${confirmableCount}건)`}
             </button>
           )}
@@ -516,11 +516,11 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
       {/* Progress Overview Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {[
-          { key: 'not_started', label: '미시작', icon: Users, color: 'text-[#666]' },
-          { key: 'in_progress', label: '진행중', icon: Clock, color: 'text-[#B45309]' },
-          { key: 'submitted', label: '제출완료', icon: Send, color: 'text-[#4B6DE0]' },
-          { key: 'hr_review', label: 'HR검토중', icon: Eye, color: 'text-[#C2410C]' },
-          { key: 'confirmed', label: '확정', icon: CheckCircle2, color: 'text-[#059669]' },
+          { key: 'not_started', label: t('kr_kebafb8ec'), icon: Users, color: 'text-[#666]' },
+          { key: 'in_progress', label: t('inProgress'), icon: Clock, color: 'text-[#B45309]' },
+          { key: 'submitted', label: t('submitted'), icon: Send, color: 'text-[#4B6DE0]' },
+          { key: 'hr_review', label: t('hrReviewing'), icon: Eye, color: 'text-[#C2410C]' },
+          { key: 'confirmed', label: t('confirmed'), icon: CheckCircle2, color: 'text-[#059669]' },
         ].map(({ key, label, icon: Icon, color }) => (
           <div key={key} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className={`flex items-center gap-1.5 text-xs ${color} mb-1`}>
@@ -535,7 +535,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
 
         {/* Progress bar card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <p className="text-xs text-[#666] mb-1">전체 완료율</p>
+          <p className="text-xs text-[#666] mb-1">{t('all_kec9984eb')}</p>
           <p className="text-2xl font-bold text-[#5E81F4]">{completionPct}%</p>
           <div className="mt-2 h-1.5 bg-[#F5F5F5] rounded-full overflow-hidden">
             <div
@@ -614,13 +614,13 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
               {loading ? (
                 <tr>
                   <td colSpan={8} className="px-4 py-16 text-center text-[#666] text-sm">
-                    데이터를 불러오는 중...
+                    {t('kr_keb8db0ec_kebb688eb_keca491')}
                   </td>
                 </tr>
               ) : filteredSettlements.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-4 py-16 text-center text-[#666] text-sm">
-                    해당 조건의 연말정산 내역이 없습니다.
+                    {t('kr_ked95b4eb_keca1b0ea_yearend_ke')}
                   </td>
                 </tr>
               ) : (
@@ -674,7 +674,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                             className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-[#555] hover:bg-[#F5F5F5] rounded-lg"
                           >
                             <Eye className="h-3.5 w-3.5" />
-                            검토
+                            {t('kr_keab280ed')}
                           </button>
                           {(s.status === 'submitted' || s.status === 'hr_review') && (
                             <button
@@ -684,7 +684,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                               className={`inline-flex items-center gap-1 ${BUTTON_SIZES.sm} ${BUTTON_VARIANTS.primary} disabled:opacity-50`}
                             >
                               <CheckCircle2 className="h-3.5 w-3.5" />
-                              확정
+                              {t('confirmed')}
                             </button>
                           )}
                           {s.status === 'confirmed' && (
@@ -695,7 +695,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                               className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-[#4B6DE0] bg-[#E0E7FF] hover:bg-[#C7D2FE] rounded-lg disabled:opacity-50"
                             >
                               <Download className="h-3.5 w-3.5" />
-                              영수증
+                              {t('kr_kec9881ec')}
                             </button>
                           )}
                           <ChevronRight className="h-3.5 w-3.5 text-[#CCC]" />
@@ -722,7 +722,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
               className={`flex items-center gap-2 px-4 py-2 text-sm ${BUTTON_VARIANTS.primary} rounded-lg disabled:opacity-50`}
             >
               <CheckCircle2 className="h-4 w-4" />
-              {bulkConfirming ? '처리 중...' : '선택 항목 확정'}
+              {bulkConfirming ? t('processing') : '선택 항목 확정'}
             </button>
           </div>
         )}

@@ -5,11 +5,14 @@ import { Loader2, Plus, Hash } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface EnumOption { id: string; enumGroup: string; optionKey: string; label: string; color?: string; sortOrder: number }
 interface Props { companyId: string | null }
 
-export function CodeManagementTab({ companyId }: Props) {
+export function CodeManagementTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const [options, setOptions] = useState<EnumOption[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -29,8 +32,8 @@ export function CodeManagementTab({ companyId }: Props) {
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
-        <div><h3 className="text-base font-semibold text-[#1C1D21]">코드 관리</h3><p className="text-sm text-[#8181A5]">시스템 코드/열거형 {Object.keys(grouped).length}개 그룹</p></div>
-        <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />코드 추가</Button>
+        <div><h3 className="text-base font-semibold text-[#1C1D21]">{t('codeManagement')}</h3><p className="text-sm text-[#8181A5]">시스템 코드/열거형 {Object.keys(grouped).length}개 그룹</p></div>
+        <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />{t('kr_kecbd94eb_add')}</Button>
       </div>
       {Object.keys(grouped).length > 0 ? Object.entries(grouped).sort(([a],[b]) => a.localeCompare(b)).map(([group, items]) => (
         <div key={group}>
@@ -38,10 +41,10 @@ export function CodeManagementTab({ companyId }: Props) {
           <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
             <table className="w-full">
               <thead><tr className={TABLE_STYLES.header}>
-                <th className={TABLE_STYLES.headerCell}>키</th>
-                <th className={TABLE_STYLES.headerCell}>라벨</th>
-                <th className={TABLE_STYLES.headerCell}>색상</th>
-                <th className={TABLE_STYLES.headerCell}>순서</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_ked82a4')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_keb9dbceb')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_kec8389ec')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_kec889cec')}</th>
               </tr></thead>
               <tbody className="divide-y divide-[#F0F0F3]">{items.sort((a,b) => a.sortOrder - b.sortOrder).map((o) => (
                 <tr key={o.id} className={TABLE_STYLES.row}>
@@ -56,7 +59,7 @@ export function CodeManagementTab({ companyId }: Props) {
         </div>
       )) : (
         <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
-          <Hash className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">등록된 코드가 없습니다</p>
+          <Hash className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">{t('register_keb909c_kecbd94eb_kec9786ec')}</p>
         </div>
       )}
     </div>

@@ -58,6 +58,7 @@ export default function BenefitPoliciesTab() {
   const [policies, setPolicies] = useState<PolicyRow[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | null>(null)
   const [loading, setLoading] = useState(false)
+  const { confirm, dialogProps } = useConfirmDialog()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingPolicy, setEditingPolicy] = useState<PolicyRow | null>(null)
   const [saving, setSaving] = useState(false)
@@ -75,7 +76,6 @@ export default function BenefitPoliciesTab() {
   })
 
   const fetchPolicies = useCallback(async (page = 1) => {
-  const { confirm, dialogProps } = useConfirmDialog()
     setLoading(true)
     try {
       const res = await apiClient.getList<PolicyRow>('/api/v1/benefits/policies', {

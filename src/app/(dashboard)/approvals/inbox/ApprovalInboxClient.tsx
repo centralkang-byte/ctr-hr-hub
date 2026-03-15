@@ -44,7 +44,7 @@ import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import type { ApprovalItem } from '@/app/api/v1/approvals/inbox/route'
 import { BUTTON_VARIANTS } from '@/lib/styles'
-import { useSubmitGuard } from '@/hooks/useSubmitGuard'
+
 
 // ─── Constants ────────────────────────────────────────────
 
@@ -129,7 +129,7 @@ function RejectionModal({ item, onClose, onConfirm }: RejectionModalProps) {
         <textarea
           className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm text-[#1C1D21] placeholder:text-[#C0C0D0] focus:border-[#5E81F4] focus:outline-none"
           rows={4}
-          placeholder={tCommon('placeholderRejectReasonRequired')}
+          placeholder={'placeholderRejectReasonRequired'}
           value={reason}
           onChange={(e) => { setReason(e.target.value); setError('') }}
         />
@@ -148,10 +148,61 @@ function RejectionModal({ item, onClose, onConfirm }: RejectionModalProps) {
           <Button
             size="sm"
             className="bg-[#EF4444] text-white hover:bg-[#DC2626]"
-            onClick={guardedSubmit}
+            onClick={handleSubmit}
             disabled={submitting}
           >
             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : '반려 확인'}
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Approve Confirm Modal ──────────────────────────────────
+
+interface ApproveConfirmModalProps {
+  item:      ApprovalItem
+  onClose:   () => void
+  onConfirm: () => Promise<void>
+}
+
+function ApproveConfirmModal({ item, onClose, onConfirm }: ApproveConfirmModalProps) {
+  const [submitting, setSubmitting] = useState(false)
+
+  const handleConfirm = async () => {
+    setSubmitting(true)
+    try {
+      await onConfirm()
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-base font-semibold text-[#1C1D21]">승인 확인</h2>
+          <button type="button" onClick={onClose} className="rounded p-1 text-[#8181A5] hover:bg-[#F5F5FA]">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <div className="mb-4 rounded-lg bg-[#F5F5FA] px-3 py-2 text-sm text-[#8181A5]">
+          {item.title}
+        </div>
+        <p className="text-sm text-[#1C1D21]">이 요청을 승인하시겠습니까?</p>
+        <div className="mt-5 flex justify-end gap-2">
+          <Button variant="outline" size="sm" onClick={onClose} disabled={submitting}>
+            취소
+          </Button>
+          <Button
+            size="sm"
+            className={BUTTON_VARIANTS.primary}
+            onClick={handleConfirm}
+            disabled={submitting}
+          >
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : '승인'}
           </Button>
         </div>
       </div>
@@ -347,12 +398,12 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
 
   // Modals
   const [rejectTarget,    setRejectTarget]    = useState<ApprovalItem | null>(null)
+  const [approveTarget,   setApproveTarget]   = useState<ApprovalItem | null>(null)
   const [showBulkConfirm, setShowBulkConfirm] = useState(false)
 
   // ─── Fetch ───────────────────────────────────────────────
 
   const fetchItems = useCallback(async () => {
-  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmit)
     try {
       const [pendingRes, historyRes] = await Promise.all([
         apiClient.get<{ items: ApprovalItem[]; pendingCount: number }>(
@@ -513,7 +564,7 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
               item={item}
               isSelected={selectedIds.has(item.id)}
               onToggle={toggleSelect}
-              onApprove={doApprove}
+              onApprove={(i) => setApproveTarget(i)}
               onReject={(i) => setRejectTarget(i)}
               processing={processing}
             />
@@ -580,6 +631,15 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
             </button>
           </div>
         </div>
+      )}
+
+      {/* ── Approve Confirm Modal ── */}
+      {approveTarget && (
+        <ApproveConfirmModal
+          item={approveTarget}
+          onClose={() => setApproveTarget(null)}
+          onConfirm={async () => { await doApprove(approveTarget); setApproveTarget(null) }}
+        />
       )}
 
       {/* ── Rejection Modal ── */}

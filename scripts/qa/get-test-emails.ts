@@ -4,9 +4,7 @@
  * DB에서 역할별 테스트 계정 이메일을 조회하여 출력한다.
  * 실행: npx tsx scripts/qa/get-test-emails.ts
  */
-import { PrismaClient } from '../../src/generated/prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
 
 async function main() {
   const roles = ['EMPLOYEE', 'MANAGER', 'HR_ADMIN', 'SUPER_ADMIN'] as const

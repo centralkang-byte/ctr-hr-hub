@@ -20,6 +20,7 @@ import {
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { CARD_STYLES, MODAL_STYLES } from '@/lib/styles'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ──────────────────────────────────────────────
 
@@ -63,7 +64,7 @@ interface ApprovalStatus {
 const STEP_STATUS_CONFIG = {
     APPROVED: { icon: <CheckCircle2 className="h-5 w-5 text-[#059669]" />, bg: 'bg-[#D1FAE5]', label: '승인' },
     REJECTED: { icon: <XCircle className="h-5 w-5 text-[#DC2626]" />, bg: 'bg-[#FEE2E2]', label: '반려' },
-    PENDING: { icon: <Clock className="h-5 w-5 text-[#F59E0B]" />, bg: 'bg-[#FEF3C7]', label: '대기' },
+    PENDING: { icon: <Clock className="h-5 w-5 text-[#F59E0B]" />, bg: 'bg-[#FEF3C7]', label: '🟡 대기' },
 }
 
 const fmt = (n: number | string | null | undefined) => {
@@ -81,7 +82,7 @@ const fmtDate = (d: string | null | undefined) => {
 function ApprovalProgressBar({ chain, currentStep }: { chain: ApprovalChainStep[]; currentStep: number }) {
     return (
         <div className={CARD_STYLES.padded}>
-            <p className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-4">결재 진행 현황</p>
+            <p className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-4">{'결재 진행 현황'}</p>
             <div className="flex items-center gap-0">
                 {chain.map((step, idx) => {
                     const cfg = STEP_STATUS_CONFIG[step.status]
@@ -121,6 +122,7 @@ interface Props {
 export default function PayrollApproveClient({ user: _user, runId }: Props) {
   const t = useTranslations('payroll')
   const tCommon = useTranslations('common')
+  const { confirm, dialogProps } = useConfirmDialog()
 
     const router = useRouter()
     const [run, setRun] = useState<RunInfo | null>(null)
@@ -146,7 +148,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
 
     useEffect(() => { void fetchData() }, [fetchData])
 
-    const handleApprove = async () => {
+    const doApprove = async () => {
         setSubmitting(true)
         try {
             await apiClient.post(`/api/v1/payroll/${runId}/approve`, { comment })
@@ -159,6 +161,16 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
         } catch { /* silent */ } finally {
             setSubmitting(false)
         }
+    }
+
+    const handleApprove = () => {
+        confirm({
+            title: '승인 확인',
+            description: '이 급여 결재를 승인하시겠습니까? 승인 후에는 취소할 수 없습니다.',
+            confirmLabel: '승인',
+            variant: 'default',
+            onConfirm: doApprove,
+        })
     }
 
     const handleReject = async () => {
@@ -195,23 +207,23 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                     <ArrowLeft className="h-5 w-5" />
                 </button>
                 <div>
-                    <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-[-0.02em]">급여 결재</h1>
+                    <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-[-0.02em]">{t('kr_keab889ec_keab2b0ec')}</h1>
                     <p className="text-sm text-[#666] mt-0.5">{run.name} · {run.yearMonth}</p>
                 </div>
                 <div className="ml-auto">
                     {isComplete && (
                         <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#D1FAE5] text-[#047857] text-sm font-semibold">
-                            <CheckCheck className="h-4 w-4" /> 승인 완료
+                            <CheckCheck className="h-4 w-4" /> {t('approve_complete')}
                         </span>
                     )}
                     {isRejected && (
                         <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#FEE2E2] text-[#B91C1C] text-sm font-semibold">
-                            <XCircle className="h-4 w-4" /> 반려됨
+                            <XCircle className="h-4 w-4" /> {t('reject_keb90a8')}
                         </span>
                     )}
                     {isPending && !isComplete && !isRejected && (
                         <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#FEF3C7] text-[#B45309] text-sm font-semibold">
-                            <Clock className="h-4 w-4" /> 결재 대기
+                            <Clock className="h-4 w-4" /> {t('kr_keab2b0ec_keb8c80ea')}
                         </span>
                     )}
                 </div>
@@ -223,10 +235,10 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             {/* Run Summary */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
-                    { label: '대상 인원', value: `${run.headcount ?? 0}명`, icon: <Users className="h-4 w-4 text-[#4B6DE0]" /> },
-                    { label: '총 실수령액', value: fmt(Number(run.totalNet ?? 0)), icon: <DollarSign className="h-4 w-4 text-[#059669]" /> },
-                    { label: '이상 항목', value: run.allAnomaliesResolved ? '없음 ✅' : '있음 ⚠️', icon: <AlertTriangle className="h-4 w-4 text-[#F59E0B]" /> },
-                    { label: '수동 조정', value: `${run.adjustmentCount ?? 0}건`, icon: <CheckCircle2 className="h-4 w-4 text-[#999]" /> },
+                    { label: t('kr_keb8c80ec_kec9db8ec'), value: `${run.headcount ?? 0}명`, icon: <Users className="h-4 w-4 text-[#4B6DE0]" /> },
+                    { label: t('netPay'), value: fmt(Number(run.totalNet ?? 0)), icon: <DollarSign className="h-4 w-4 text-[#059669]" /> },
+                    { label: t('kr_kec9db4ec_ked95adeb'), value: run.allAnomaliesResolved ? '없음 ✅' : '있음 ⚠️', icon: <AlertTriangle className="h-4 w-4 text-[#F59E0B]" /> },
+                    { label: t('adjustments'), value: `${run.adjustmentCount ?? 0}건`, icon: <CheckCircle2 className="h-4 w-4 text-[#999]" /> },
                 ].map((kpi) => (
                     <div key={kpi.label} className={CARD_STYLES.padded}>
                         <div className="flex items-center justify-between mb-1">
@@ -241,7 +253,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             {/* HR Notes */}
             {run.notes && (
                 <div className="bg-[#FAFAFA] rounded-xl border border-[#E8E8E8] p-4">
-                    <p className="text-xs font-semibold text-[#999] mb-1">HR 메모</p>
+                    <p className="text-xs font-semibold text-[#999] mb-1">{t('kr_hr_keba994eb')}</p>
                     <p className="text-sm text-[#555]">{run.notes}</p>
                 </div>
             )}
@@ -249,7 +261,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             {/* Step History */}
             {chain.filter((s) => s.status !== 'PENDING').length > 0 && (
                 <div className={CARD_STYLES.padded}>
-                    <p className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-3">결재 이력</p>
+                    <p className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-3">{t('kr_keab2b0ec_kec9db4eb')}</p>
                     <div className="space-y-3">
                         {chain.filter((s) => s.status !== 'PENDING').map((step) => (
                             <div key={step.stepNumber} className="flex items-start gap-3">
@@ -281,7 +293,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             {/* Action Area (pending only) */}
             {isPending && !isComplete && !isRejected && (
                 <div className={`${CARD_STYLES.kpi} space-y-4`}>
-                    <p className="text-xs font-semibold text-[#999] uppercase tracking-wider">내 결재 의견</p>
+                    <p className="text-xs font-semibold text-[#999] uppercase tracking-wider">{t('kr_keb82b4_keab2b0ec_kec9d98ea')}</p>
                     <textarea
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
@@ -303,7 +315,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                             className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-[#DC2626] text-[#DC2626] font-semibold text-sm hover:bg-[#FEF2F2]"
                         >
                             <XCircle className="h-4 w-4" />
-                            반려
+                            {t('reject')}
                         </button>
                     </div>
                 </div>
@@ -315,7 +327,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                     onClick={() => router.push(`/payroll/${runId}/review`)}
                     className="text-sm text-[#5E81F4] hover:underline"
                 >
-                    상세 검토 내용 보기 →
+                    {t('kr_kec8381ec_keab280ed_keb82b4ec_')}
                 </button>
             </div>
 
@@ -324,13 +336,13 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                 <div className={MODAL_STYLES.container}>
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
                         <div className="p-5 border-b border-[#E8E8E8] flex items-center justify-between">
-                            <h3 className="font-bold text-lg text-[#1A1A1A]">반려 사유 입력</h3>
+                            <h3 className="font-bold text-lg text-[#1A1A1A]">{t('reject_kec82acec_kec9e85eb')}</h3>
                             <button onClick={() => setShowReject(false)} className="text-[#999] hover:text-[#333]">
                                 <X className="h-5 w-5" />
                             </button>
                         </div>
                         <div className="p-5 space-y-3">
-                            <p className="text-sm text-[#666]">반려 시 급여 담당자에게 사유가 전달됩니다. 자세히 입력해 주세요.</p>
+                            <p className="text-sm text-[#666]">{t('reject_kec8b9c_keab889ec_keb8bb4eb_kec82acec_keca084eb_kec9e90ec_kec9e85eb_keca3bcec')}</p>
                             <textarea
                                 value={rejectComment}
                                 onChange={(e) => setRejectComment(e.target.value)}
@@ -344,7 +356,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                                 onClick={() => setShowReject(false)}
                                 className="px-4 py-2 rounded-lg border border-[#D4D4D4] text-sm text-[#555] hover:bg-[#F5F5F5]"
                             >
-                                취소
+                                {t('cancel')}
                             </button>
                             <button
                                 onClick={handleReject}
@@ -357,6 +369,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                     </div>
                 </div>
             )}
+            <ConfirmDialog {...dialogProps} />
         </div>
     )
 }

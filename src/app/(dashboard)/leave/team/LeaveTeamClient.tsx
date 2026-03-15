@@ -28,6 +28,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
 import { EmptyState } from '@/components/ui/EmptyState'
 import type { SessionUser } from '@/types'
+import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -108,28 +109,29 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
   const tc = useTranslations('common')
 
   const STATUS_LABEL: Record<string, string> = {
-    PENDING: t('pending'),
-    APPROVED: t('approved'),
-    REJECTED: t('rejected'),
-    CANCELLED: t('cancelled'),
+    PENDING: '대기중',
+    APPROVED: '승인되었습니다',
+    REJECTED: '반려되었습니다',
+    CANCELLED: '취소되었습니다',
   }
 
   const LEAVE_TYPE_LABEL: Record<string, string> = {
-    ANNUAL: t('annual'),
-    SICK: t('sick'),
-    MATERNITY: t('maternity'),
-    PATERNITY: t('paternity'),
-    BEREAVEMENT: t('bereavement'),
-    SPECIAL: t('special'),
-    COMPENSATORY: t('compensatory'),
-    FAMILY_CARE: t('familyCare'),
-    WEDDING: t('wedding'),
-    MENSTRUAL: t('menstrual'),
+    ANNUAL: '연차',
+    SICK: '병가',
+    MATERNITY: '출산휴가',
+    PATERNITY: '배우자출산휴가',
+    BEREAVEMENT: '경조사',
+    SPECIAL: '특별휴가',
+    COMPENSATORY: '보상휴가',
+    FAMILY_CARE: '가족돌봄휴가',
+    WEDDING: '결혼휴가',
+    MENSTRUAL: '생리휴가',
   }
 
   const [month, setMonth] = useState(getCurrentMonth)
   const [data, setData] = useState<TeamLeaveData | null>(null)
   const [loading, setLoading] = useState(true)
+  const { confirm, dialogProps } = useConfirmDialog()
 
   // Reject dialog state
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false)
@@ -195,19 +197,27 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
 
   // ─── Actions ───
   const handleApprove = useCallback(
-    async (requestId: string) => {
-      // 1. Optimistic: immediately show green row
-      setOptimisticMap((prev) => ({ ...prev, [requestId]: 'APPROVED' }))
-      try {
-        await apiClient.put(`/api/v1/leave/requests/${requestId}/approve`)
-        // 2. Success: fade out after 1.5s
-        scheduleRowFadeAndRefresh(requestId)
-      } catch {
-        revertOptimistic(requestId)
-        toast({ title: tCommon('error'), description: '승인 처리 중 오류가 발생했습니다', variant: 'destructive' })
-      }
+    (requestId: string) => {
+      confirm({
+        title: '승인 확인',
+        description: '이 휴가 요청을 승인하시겠습니까? 승인 후에는 취소할 수 없습니다.',
+        confirmLabel: '승인',
+        variant: 'default',
+        onConfirm: async () => {
+          // 1. Optimistic: immediately show green row
+          setOptimisticMap((prev) => ({ ...prev, [requestId]: 'APPROVED' }))
+          try {
+            await apiClient.put(`/api/v1/leave/requests/${requestId}/approve`)
+            // 2. Success: fade out after 1.5s
+            scheduleRowFadeAndRefresh(requestId)
+          } catch {
+            revertOptimistic(requestId)
+            toast({ title: tc('error'), description: '승인 처리 중 오류가 발생했습니다', variant: 'destructive' })
+          }
+        },
+      })
     },
-    [scheduleRowFadeAndRefresh, revertOptimistic],
+    [confirm, scheduleRowFadeAndRefresh, revertOptimistic, tc],
   )
 
   const openRejectDialog = useCallback((requestId: string) => {
@@ -233,7 +243,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
       scheduleRowFadeAndRefresh(requestId)
     } catch {
       revertOptimistic(requestId)
-      toast({ title: tCommon('error'), description: '반려 처리 중 오류가 발생했습니다', variant: 'destructive' })
+      toast({ title: tc('error'), description: '반려 처리 중 오류가 발생했습니다', variant: 'destructive' })
     }
   }, [rejectTargetId, rejectionReason, scheduleRowFadeAndRefresh, revertOptimistic])
 
@@ -258,8 +268,8 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
   return (
     <div className="space-y-6 p-6">
       <PageHeader
-        title={t('teamCalendar')}
-        description={hasPending ? t('hasPendingRequests') : undefined}
+        title={'팀 휴가 캘린더'}
+        description={hasPending ? '승인 대기 요청이 있습니다' : undefined}
       />
 
       {/* ─── Month Selector ─── */}
@@ -349,7 +359,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                           </div>
                           <div className="flex items-center gap-3">
                             <span className="text-xs text-[#999]">
-                              {req.days}{t('days')}
+                              {req.days}{'일수'}
                             </span>
                             {isPending && absenceCount > 0 && (
                               <span className="text-xs text-[#F59E0B] font-medium">
@@ -366,14 +376,14 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                               onClick={() => handleApprove(req.id)}
                             >
                               <Check className="mr-1 h-4 w-4" />
-                              {t('approve')}
+                              {'승인'}
                             </button>
                             <button
                               className="h-8 px-3 text-sm font-semibold rounded-lg border border-[#F44336] text-[#F44336] hover:bg-[#FFEBEE] flex items-center"
                               onClick={() => openRejectDialog(req.id)}
                             >
                               <X className="mr-1 h-4 w-4" />
-                              {t('reject')}
+                              {'반려'}
                             </button>
                           </div>
                         )}
@@ -389,15 +399,15 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
       <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{t('reject')}</DialogTitle>
+            <DialogTitle>{'반려'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
-            <Label htmlFor="rejection-reason">{t('rejectionReason')}</Label>
+            <Label htmlFor="rejection-reason">{'반려 사유'}</Label>
             <Textarea
               id="rejection-reason"
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
-              placeholder={t('rejectionReasonPlaceholder')}
+              placeholder={'반려 사유를 입력하세요'}
               rows={3}
             />
           </div>
@@ -413,11 +423,12 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
               onClick={handleReject}
               disabled={!rejectionReason.trim()}
             >
-              {t('reject')}
+              {'반려'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <ConfirmDialog {...dialogProps} />
     </div>
   )
 }

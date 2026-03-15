@@ -468,7 +468,7 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8181A5]" />
                     <Input
-                      placeholder={tCommon('placeholderSearchNameEmail')}
+                      placeholder={'이름 또는 이메일로 검색...'}
                       className="pl-9 h-10"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}

@@ -4,11 +4,9 @@
  * DB에서 실제 ID를 조회하여 동적 라우트 URL 목록을 생성.
  * 실행: npx tsx scripts/qa/build-dynamic-urls.ts
  */
-import { PrismaClient } from '../../src/generated/prisma/client'
+import { prisma } from '@/lib/prisma'
 import * as fs from 'fs'
 import * as path from 'path'
-
-const prisma = new PrismaClient()
 
 type Role = 'EMPLOYEE' | 'MANAGER' | 'HR_ADMIN' | 'SUPER_ADMIN'
 interface UrlEntry { path: string; role: Role; group: string }
@@ -26,7 +24,6 @@ async function main() {
     nomination,
     discipline,
     reward,
-    oneOnOne,
     pulse,
     analyticsEmp,
   ] = await Promise.all([
@@ -39,7 +36,6 @@ async function main() {
     prisma.peerReviewNomination.findFirst({ select: { id: true } }).catch(() => null),
     prisma.disciplinaryAction.findFirst({ select: { id: true } }).catch(() => null),
     prisma.rewardRecord.findFirst({ select: { id: true } }).catch(() => null),
-    prisma.oneOnOneMeeting.findFirst({ select: { id: true } }).catch(() => null),
     prisma.pulseSurvey.findFirst({ select: { id: true } }).catch(() => null),
     prisma.employee.findFirst({ select: { id: true }, skip: 1 }),
   ])
@@ -110,9 +106,7 @@ async function main() {
     urls.push({ path: `/discipline/rewards/${reward.id}`, role: 'HR_ADMIN', group: 'discipline' })
   }
 
-  if (oneOnOne) {
-    urls.push({ path: `/performance/one-on-one/${oneOnOne.id}`, role: 'MANAGER', group: 'performance' })
-  }
+
 
   if (pulse) {
     urls.push(

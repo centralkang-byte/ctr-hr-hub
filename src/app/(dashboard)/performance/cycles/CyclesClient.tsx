@@ -24,12 +24,12 @@ interface Cycle {
 }
 
 const STATUS_BADGE: Record<string, { label: string; color: string }> = {
-    DRAFT: { label: '초안', color: 'bg-[#F5F5FA] text-[#8181A5]' },
+    DRAFT: { label: '임시저장', color: 'bg-[#F5F5FA] text-[#8181A5]' },
     ACTIVE: { label: '진행 중', color: 'bg-[#DBEAFE] text-[#1D4ED8]' },
     CHECK_IN: { label: '체크인', color: 'bg-[#FEF3C7] text-[#92400E]' },
     EVAL_OPEN: { label: '평가 실시', color: 'bg-[#D1FAE5] text-[#047857]' },
     CALIBRATION: { label: '캘리브레이션', color: 'bg-[#EDE9FE] text-[#6D28D9]' },
-    FINALIZED: { label: '확정', color: 'bg-[#D1FAE5] text-[#047857]' },
+    FINALIZED: { label: '확정됨', color: 'bg-[#D1FAE5] text-[#047857]' },
     CLOSED: { label: '종료', color: 'bg-[#F5F5FA] text-[#8181A5]' },
     COMP_REVIEW: { label: '보상 검토', color: 'bg-[#FEF3C7] text-[#92400E]' },
     COMP_COMPLETED: { label: '보상 완료', color: 'bg-[#D1FAE5] text-[#047857]' },
@@ -108,7 +108,7 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
                         <Settings2 className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
                         <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
                         <button onClick={() => setShowCreateForm(true)}
-                            className="mt-3 text-sm font-medium text-[#5E81F4] hover:underline">+ 첫 사이클 만들기</button>
+                            className="mt-3 text-sm font-medium text-[#5E81F4] hover:underline">{t('kr_kecb2ab_cycle_keba78ceb')}</button>
                     </div>
                 ) : (
                     <div className="space-y-4">
@@ -175,27 +175,27 @@ function CreateCycleModal({ onClose, onCreated }: { onClose: () => void; onCreat
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={onClose}>
             <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-white p-6" onClick={(e) => e.stopPropagation()}>
-                <h3 className="mb-5 text-lg font-bold text-[#1C1D21]">새 사이클 생성</h3>
+                <h3 className="mb-5 text-lg font-bold text-[#1C1D21]">{t('kr_kec8388_cycle_kec839dec')}</h3>
                 <div className="space-y-4">
                     <div>
-                        <label className="mb-1 block text-sm font-medium text-[#1C1D21]">사이클 이름 *</label>
+                        <label className="mb-1 block text-sm font-medium text-[#1C1D21]">{t('cycle_name')}</label>
                         <input value={form.name} onChange={(e) => set('name', e.target.value)} placeholder="2025년 상반기"
                             className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="mb-1 block text-sm font-medium text-[#1C1D21]">시작일 *</label>
+                            <label className="mb-1 block text-sm font-medium text-[#1C1D21]">{t('kr_kec8b9cec')}</label>
                             <input type="date" value={form.startDate} onChange={(e) => set('startDate', e.target.value)}
                                 className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
                         </div>
                         <div>
-                            <label className="mb-1 block text-sm font-medium text-[#1C1D21]">종료일 *</label>
+                            <label className="mb-1 block text-sm font-medium text-[#1C1D21]">{t('ended_kec9dbc')}</label>
                             <input type="date" value={form.endDate} onChange={(e) => set('endDate', e.target.value)}
                                 className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
                         </div>
                     </div>
                     <div>
-                        <label className="mb-1 block text-sm font-medium text-[#1C1D21]">체크인 모드</label>
+                        <label className="mb-1 block text-sm font-medium text-[#1C1D21]">{t('kr_kecb2b4ed_kebaaa8eb')}</label>
                         <div className="flex gap-4">
                             {['MANDATORY', 'RECOMMENDED'].map((mode) => (
                                 <label key={mode} className="flex items-center gap-2 text-sm">
@@ -207,31 +207,31 @@ function CreateCycleModal({ onClose, onCreated }: { onClose: () => void; onCreat
                         </div>
                     </div>
                     <div>
-                        <label className="mb-1 block text-sm font-medium text-[#1C1D21]">체크인 마감일</label>
+                        <label className="mb-1 block text-sm font-medium text-[#1C1D21]">{t('kr_kecb2b4ed_keba788ea')}</label>
                         <input type="date" value={form.checkInDeadline} onChange={(e) => set('checkInDeadline', e.target.value)}
                             className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
                     </div>
                     <div className="flex items-center gap-3">
                         <input type="checkbox" id="peerEnabled" checked={form.peerReviewEnabled} onChange={(e) => set('peerReviewEnabled', e.target.checked)}
                             className="rounded border-[#F0F0F3]" />
-                        <label htmlFor="peerEnabled" className="text-sm text-[#1C1D21]">동료평가 활성화</label>
+                        <label htmlFor="peerEnabled" className="text-sm text-[#1C1D21]">{t('kr_keb8f99eb_ked999cec')}</label>
                     </div>
                     {form.peerReviewEnabled && (
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="mb-1 block text-sm font-medium text-[#1C1D21]">최소 인원</label>
+                                <label className="mb-1 block text-sm font-medium text-[#1C1D21]">{t('kr_kecb59cec_kec9db8ec')}</label>
                                 <input type="number" min={2} max={5} value={form.peerReviewMinCount} onChange={(e) => set('peerReviewMinCount', Number(e.target.value))}
                                     className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
                             </div>
                             <div>
-                                <label className="mb-1 block text-sm font-medium text-[#1C1D21]">최대 인원</label>
+                                <label className="mb-1 block text-sm font-medium text-[#1C1D21]">{t('kr_kecb59ceb_kec9db8ec')}</label>
                                 <input type="number" min={2} max={5} value={form.peerReviewMaxCount} onChange={(e) => set('peerReviewMaxCount', Number(e.target.value))}
                                     className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
                             </div>
                         </div>
                     )}
                     <div>
-                        <label className="mb-1 block text-sm font-medium text-[#1C1D21]">MBO:BEI 비중 (합계 100%)</label>
+                        <label className="mb-1 block text-sm font-medium text-[#1C1D21]">{t('kr_mbo_bei_kebb984ec_ked95a9ea_10')}</label>
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2">
                                 <span className="text-xs text-[#8181A5]">MBO</span>
@@ -250,7 +250,7 @@ function CreateCycleModal({ onClose, onCreated }: { onClose: () => void; onCreat
                     <div className="flex items-center gap-3">
                         <input type="checkbox" id="excludeProb" checked={form.excludeProbation} onChange={(e) => set('excludeProbation', e.target.checked)}
                             className="rounded border-[#F0F0F3]" />
-                        <label htmlFor="excludeProb" className="text-sm text-[#1C1D21]">수습 기간 직원 제외</label>
+                        <label htmlFor="excludeProb" className="text-sm text-[#1C1D21]">{t('probation_keca781ec_keca09cec')}</label>
                     </div>
                 </div>
                 <div className="mt-6 flex justify-end gap-3">

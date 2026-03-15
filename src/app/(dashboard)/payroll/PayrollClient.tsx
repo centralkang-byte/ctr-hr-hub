@@ -175,8 +175,8 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
             <Wallet className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-[-0.02em]">급여 관리</h1>
-            <p className="text-sm text-[#666] mt-0.5">전체 법인 파이프라인 현황</p>
+            <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-[-0.02em]">{'급여 관리'}</h1>
+            <p className="text-sm text-[#666] mt-0.5">{'전체 법인 파이프라인 현황'}</p>
           </div>
         </div>
 
@@ -203,7 +203,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#5E81F4] hover:bg-[#4F70E0] text-white text-sm font-semibold"
           >
             <Plus className="h-4 w-4" />
-            급여 실행 생성
+            {'급여 실행 생성'}
           </button>
         </div>
       </div>
@@ -268,14 +268,14 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
           <div className="bg-white rounded-2xl border border-[#E8E8E8] p-5">
             <div className="flex items-center gap-2 mb-4">
               <LayoutGrid className="h-4 w-4 text-[#5E81F4]" />
-              <h2 className="font-semibold text-[#1A1A1A]">파이프라인 현황</h2>
-              <span className="ml-1 text-xs text-[#999]">— 각 배지를 클릭하면 해당 단계로 이동합니다</span>
+              <h2 className="font-semibold text-[#1A1A1A]">{'파이프라인 현황'}</h2>
+              <span className="ml-1 text-xs text-[#999]">{'— 각 배지를 클릭하면 해당 단계로 이동합니다'}</span>
             </div>
 
             {data.pipelines.length === 0 ? (
               <div className="py-8 text-center text-[#999] text-sm">
                 <Users className="h-8 w-8 mx-auto mb-2 text-[#D4D4D4]" />
-                이 월에 급여 실행이 없습니다. 급여 실행을 생성해 주세요.
+                {'이 월에 급여 실행이 없습니다. 급여 실행을 생성해 주세요.'}
               </div>
             ) : (
               <PayrollPipeline pipelines={data.pipelines} />
@@ -294,7 +294,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
           <div>
             <h2 className="font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
               <Play className="h-4 w-4 text-[#5E81F4]" />
-              빠른 실행
+              {'빠른 실행'}
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <QuickAction

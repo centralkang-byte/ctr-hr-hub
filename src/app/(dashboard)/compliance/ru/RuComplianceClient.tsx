@@ -39,7 +39,7 @@ export default function RuComplianceClient() {
         <div>
           <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('ru.title')}</h1>
           <p className="text-sm text-[#666] mt-0.5">
-            군복무 등록, 전자문서(КЭДО) 및 법정 보고서 관리
+            {t('kr_keab5b0eb_register_keca084ec_k')}
           </p>
         </div>
       </div>

@@ -4,8 +4,6 @@ import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
-import { useSubmitGuard } from '@/hooks/useSubmitGuard'
-
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Send, CheckCircle2 } from 'lucide-react'
@@ -38,7 +36,6 @@ const LIKERT_LABELS = ['매우 부정', '부정', '보통', '긍정', '매우 �
 
 export default function PulseRespondClient() {
   const tCommon = useTranslations('common')
-  const { isSubmitting, guardedSubmit } = useSubmitGuard()
   const t = useTranslations('performance')
 
   const { id } = useParams<{ id: string }>()
@@ -79,17 +76,17 @@ export default function PulseRespondClient() {
   }
 
   if (loading) return <div className="p-6 text-center text-[#999]">{tCommon('loading')}</div>
-  if (!survey) return <div className="p-6 text-center text-[#999]">설문을 찾을 수 없습니다.</div>
+  if (!survey) return <div className="p-6 text-center text-[#999]">{t('kr_kec84a4eb_kecb0beec_kec8898_ke')}</div>
 
   if (submitted) {
     return (
       <div className="p-6 flex flex-col items-center justify-center min-h-[60vh] space-y-4">
         <CheckCircle2 className="w-16 h-16 text-[#5E81F4]" />
-        <h2 className="text-xl font-bold text-[#1A1A1A]">응답이 제출되었습니다</h2>
-        <p className="text-sm text-[#666]">소중한 의견 감사합니다.</p>
+        <h2 className="text-xl font-bold text-[#1A1A1A]">{t('kr_kec9d91eb_keca09cec')}</h2>
+        <p className="text-sm text-[#666]">{t('kr_kec868cec_kec9d98ea_keab090ec')}</p>
         <button onClick={() => router.push('/performance/pulse')}
           className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}>
-          돌아가기
+          {t('kr_keb8f8cec')}
         </button>
       </div>
     )

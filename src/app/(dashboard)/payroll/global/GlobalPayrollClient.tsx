@@ -17,7 +17,7 @@ import {
 import Link from 'next/link'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-import { TABLE_STYLES } from '@/lib/styles'
+import { TABLE_STYLES, CHART_THEME } from '@/lib/styles'
 
 interface CompanyStat {
   companyId: string
@@ -122,8 +122,8 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
             <Globe className="w-5 h-5 text-[#5E81F4]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#1A1A1A]">글로벌 급여 현황</h1>
-            <p className="text-sm text-[#666]">6개 법인 급여를 KRW로 통합하여 분석합니다</p>
+            <h1 className="text-2xl font-bold text-[#1A1A1A]">{'글로벌 급여 현황'}</h1>
+            <p className="text-sm text-[#666]">{'6개 법인 급여를 KRW로 통합하여 분석합니다'}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -131,13 +131,13 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
             href="/payroll/import"
             className="flex items-center gap-1.5 px-3 py-1.5 border border-[#D4D4D4] rounded-lg text-sm text-[#555] hover:bg-[#FAFAFA]"
           >
-            <Upload className="w-4 h-4" /> 급여 업로드
+            <Upload className="w-4 h-4" /> {'급여 업로드'}
           </Link>
           <Link
             href="/settings/exchange-rates"
             className="flex items-center gap-1.5 px-3 py-1.5 border border-[#D4D4D4] rounded-lg text-sm text-[#555] hover:bg-[#FAFAFA]"
           >
-            <Settings className="w-4 h-4" /> 환율 설정
+            <Settings className="w-4 h-4" /> {'환율 설정'}
           </Link>
           <button onClick={fetchData} className="p-2 hover:bg-[#F5F5F5] rounded-lg">
             <RefreshCw className={`w-4 h-4 text-[#555] ${loading ? 'animate-spin' : ''}`} />
@@ -159,15 +159,15 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
         {data && !data.hasExchangeRates && (
           <div className="flex items-center gap-1.5 text-sm text-[#B45309] bg-[#FEF3C7] px-3 py-1.5 rounded-lg">
             <AlertTriangle className="w-4 h-4" />
-            환율 미설정 — KRW 환산이 정확하지 않을 수 있습니다
-            <Link href="/settings/exchange-rates" className="underline ml-1">환율 설정</Link>
+            {'환율 미설정 — KRW 환산이 정확하지 않을 수 있습니다'}
+            <Link href="/settings/exchange-rates" className="underline ml-1">{'환율 설정'}</Link>
           </div>
         )}
       </div>
 
       {loading && (
         <div className="flex items-center justify-center py-20 text-[#999] text-sm gap-2">
-          <RefreshCw className="w-4 h-4 animate-spin" /> 데이터 로딩 중...
+          <RefreshCw className="w-4 h-4 animate-spin" /> {'데이터 로딩 중...'}
         </div>
       )}
 
@@ -176,28 +176,28 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
           {/* KPI Cards */}
           <div className="grid grid-cols-4 gap-4 mb-6">
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <p className="text-xs text-[#666] mb-1">전사 총 급여 (KRW)</p>
+              <p className="text-xs text-[#666] mb-1">{'전사 총 급여 (KRW)'}</p>
               <p className="text-3xl font-bold text-[#1A1A1A]">₩{fmtBillion(data.totalKRW)}</p>
               <p className="text-xs text-[#999] mt-1">{fmt(Math.round(data.totalKRW / 10000))}만원</p>
             </div>
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <p className="text-xs text-[#666] mb-1">전체 급여 인원</p>
+              <p className="text-xs text-[#666] mb-1">{'전체 급여 인원'}</p>
               <p className="text-3xl font-bold text-[#1A1A1A]">{data.totalHeadcount.toLocaleString()}명</p>
               <p className="text-xs text-[#999] mt-1">{data.companies.filter(c => c.hasData).length}개 법인 집계</p>
             </div>
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <p className="text-xs text-[#666] mb-1">인당 평균 급여 (KRW)</p>
+              <p className="text-xs text-[#666] mb-1">{'인당 평균 급여 (KRW)'}</p>
               <p className="text-3xl font-bold text-[#1A1A1A]">
                 ₩{data.totalHeadcount > 0 ? fmtBillion(data.totalKRW / data.totalHeadcount) : '—'}
               </p>
-              <p className="text-xs text-[#999] mt-1">전사 평균</p>
+              <p className="text-xs text-[#999] mt-1">{'전사 평균'}</p>
             </div>
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <p className="text-xs text-[#666] mb-1">데이터 있는 법인</p>
+              <p className="text-xs text-[#666] mb-1">{'데이터 있는 법인'}</p>
               <p className="text-3xl font-bold text-[#1A1A1A]">
                 {data.companies.filter(c => c.hasData).length} / {data.companies.length}
               </p>
-              <p className="text-xs text-[#999] mt-1">개 법인 집계 완료</p>
+              <p className="text-xs text-[#999] mt-1">{'개 법인 집계 완료'}</p>
             </div>
           </div>
 
@@ -205,9 +205,9 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
           <div className="grid grid-cols-2 gap-4 mb-4">
             {/* Bar: 법인별 총지급 */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-sm font-semibold text-[#1A1A1A] mb-4">법인별 급여 총액 (KRW 만원)</h3>
+              <h3 className="text-sm font-semibold text-[#1A1A1A] mb-4">{'법인별 급여 총액 (KRW 만원)'}</h3>
               {barData.length === 0 ? (
-                <div className="h-52 flex items-center justify-center text-sm text-[#999]">데이터 없음</div>
+                <div className="h-52 flex items-center justify-center text-sm text-[#999]">{'데이터 없음'}</div>
               ) : (
                 <ResponsiveContainer width="100%" height={210}>
                   <BarChart data={barData} margin={{ top: 0, right: 16, bottom: 0, left: 0 }}>
@@ -225,9 +225,9 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
 
             {/* Pie: 법인 비중 */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-sm font-semibold text-[#1A1A1A] mb-4">법인별 급여 비중</h3>
+              <h3 className="text-sm font-semibold text-[#1A1A1A] mb-4">{'법인별 급여 비중'}</h3>
               {pieData.length === 0 ? (
-                <div className="h-52 flex items-center justify-center text-sm text-[#999]">데이터 없음</div>
+                <div className="h-52 flex items-center justify-center text-sm text-[#999]">{'데이터 없음'}</div>
               ) : (
                 <ResponsiveContainer width="100%" height={210}>
                   <PieChart>
@@ -255,7 +255,7 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
           <div className="grid grid-cols-2 gap-4 mb-6">
             {/* Line: 월별 트렌드 */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-sm font-semibold text-[#1A1A1A] mb-4">최근 6개월 급여 트렌드 (KRW 만원)</h3>
+              <h3 className="text-sm font-semibold text-[#1A1A1A] mb-4">{'최근 6개월 급여 트렌드 (KRW 만원)'}</h3>
               <ResponsiveContainer width="100%" height={210}>
                 <LineChart data={trendData} margin={{ top: 0, right: 16, bottom: 0, left: 0 }}>
                   <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
@@ -270,9 +270,9 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
 
             {/* Bar: 인당 평균 */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-sm font-semibold text-[#1A1A1A] mb-4">법인별 인당 평균 급여 (KRW 만원)</h3>
+              <h3 className="text-sm font-semibold text-[#1A1A1A] mb-4">{'법인별 인당 평균 급여 (KRW 만원)'}</h3>
               {headcountData.length === 0 ? (
-                <div className="h-52 flex items-center justify-center text-sm text-[#999]">데이터 없음</div>
+                <div className="h-52 flex items-center justify-center text-sm text-[#999]">{'데이터 없음'}</div>
               ) : (
                 <ResponsiveContainer width="100%" height={210}>
                   <BarChart data={headcountData} layout="vertical" margin={{ top: 0, right: 16, bottom: 0, left: 24 }}>
@@ -294,20 +294,20 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
           {/* Company Detail Table */}
           <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
             <div className="px-5 py-4 border-b border-[#F5F5F5]">
-              <h3 className="text-sm font-semibold text-[#1A1A1A]">법인별 상세 현황</h3>
+              <h3 className="text-sm font-semibold text-[#1A1A1A]">{'법인별 상세 현황'}</h3>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className={TABLE_STYLES.header}>
-                    <th className={TABLE_STYLES.headerCell}>법인</th>
-                    <th className={TABLE_STYLES.headerCell}>통화</th>
-                    <th className={TABLE_STYLES.headerCellRight}>환율 (→KRW)</th>
-                    <th className={TABLE_STYLES.headerCellRight}>총지급 (현지)</th>
-                    <th className={TABLE_STYLES.headerCellRight}>총지급 (KRW)</th>
-                    <th className={TABLE_STYLES.headerCellRight}>인원</th>
-                    <th className={TABLE_STYLES.headerCellRight}>인당 평균 (KRW)</th>
-                    <th className={TABLE_STYLES.headerCell}>데이터</th>
+                    <th className={TABLE_STYLES.headerCell}>{'법인'}</th>
+                    <th className={TABLE_STYLES.headerCell}>{'통화'}</th>
+                    <th className={TABLE_STYLES.headerCellRight}>{'환율 (→KRW)'}</th>
+                    <th className={TABLE_STYLES.headerCellRight}>{'총지급(현지)'}</th>
+                    <th className={TABLE_STYLES.headerCellRight}>{'총지급 (KRW)'}</th>
+                    <th className={TABLE_STYLES.headerCellRight}>{'인원'}</th>
+                    <th className={TABLE_STYLES.headerCellRight}>{'인당 평균 (KRW)'}</th>
+                    <th className={TABLE_STYLES.headerCell}>{'데이터'}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#F5F5F5]">
@@ -340,9 +340,9 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
                       </td>
                       <td className="px-4 py-3 text-center">
                         {co.hasData ? (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-[#D1FAE5] text-[#047857]">집계됨</span>
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-[#D1FAE5] text-[#047857]">{'집계됨'}</span>
                         ) : (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-[#F5F5F5] text-[#999]">미집계</span>
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-[#F5F5F5] text-[#999]">{'미작성'}</span>
                         )}
                       </td>
                     </tr>

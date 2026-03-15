@@ -40,6 +40,8 @@ export const GET = withPermission(
               { name: { contains: search, mode: 'insensitive' as const } },
               { nameEn: { contains: search, mode: 'insensitive' as const } },
               { email: { contains: search, mode: 'insensitive' as const } },
+              { employeeNo: { contains: search, mode: 'insensitive' as const } },
+              { assignments: { some: { department: { name: { contains: search, mode: 'insensitive' as const } } } } },
             ],
           }
         : {}),

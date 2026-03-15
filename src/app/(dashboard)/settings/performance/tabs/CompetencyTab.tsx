@@ -4,11 +4,14 @@ import { useEffect, useState } from 'react'
 import { Loader2, BookOpen, Lock } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { TABLE_STYLES } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface Competency { id: string; name: string; nameEn?: string; category: string; description?: string; _count?: { indicators?: number } }
 interface Props { companyId: string | null }
 
-export function CompetencyTab({ companyId }: Props) {
+export function CompetencyTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const [items, setItems] = useState<Competency[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -28,8 +31,8 @@ export function CompetencyTab({ companyId }: Props) {
       <div className="mb-4 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-base font-semibold text-[#1C1D21]">역량 라이브러리</h3>
-            <span className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600"><Lock className="h-3 w-3" />글로벌 고정</span>
+            <h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_kec97adeb_keb9dbcec')}</h3>
+            <span className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600"><Lock className="h-3 w-3" />{t('global_keab3a0ec')}</span>
           </div>
           <p className="text-sm text-[#8181A5]">핵심가치 역량 {items.length}개</p>
         </div>
@@ -37,10 +40,10 @@ export function CompetencyTab({ companyId }: Props) {
       {items.length > 0 ? (
         <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
           <table className="w-full"><thead><tr className={TABLE_STYLES.header}>
-            <th className={TABLE_STYLES.headerCell}>역량명</th>
-            <th className={TABLE_STYLES.headerCell}>영문</th>
-            <th className={TABLE_STYLES.headerCell}>카테고리</th>
-            <th className={TABLE_STYLES.headerCell}>행동지표</th>
+            <th className={TABLE_STYLES.headerCell}>{t('kr_kec97adeb')}</th>
+            <th className={TABLE_STYLES.headerCell}>{t('kr_kec9881eb')}</th>
+            <th className={TABLE_STYLES.headerCell}>{t('kr_kecb9b4ed')}</th>
+            <th className={TABLE_STYLES.headerCell}>{t('kr_ked9689eb')}</th>
           </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{items.map((c) => (
             <tr key={c.id} className={TABLE_STYLES.row}>
               <td className={TABLE_STYLES.cell}>{c.name}</td>
@@ -52,7 +55,7 @@ export function CompetencyTab({ companyId }: Props) {
         </div>
       ) : (
         <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
-          <BookOpen className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">등록된 역량이 없습니다</p>
+          <BookOpen className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">{t('register_keb909c_kec97adeb_kec9786ec')}</p>
         </div>
       )}
     </div>

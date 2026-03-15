@@ -115,24 +115,24 @@ export default function TalentPoolClient({user }: {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#1A1A1A]">Talent Pool</h1>
-          <p className="text-sm text-[#666] mt-0.5">우수 후보자 인재 풀 관리 (GDPR 2년 보관)</p>
+          <p className="text-sm text-[#666] mt-0.5">{t('good_ked9b84eb_kec9db8ec_ked9280_management_gdpr_2keb8584_kebb3b4ea')}</p>
         </div>
         <button
           onClick={load}
           className="flex items-center gap-2 px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#555] hover:bg-[#FAFAFA]"
         >
           <RefreshCw size={14} />
-          새로고침
+          {t('kr_kec8388eb')}
         </button>
       </div>
 
       {/* KPI */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: '전체 인재', value: stats.total, icon: <Users size={18} />, color: 'text-[#4B6DE0]' },
-          { label: '활성', value: stats.active, icon: <CheckCircle2 size={18} />, color: 'text-[#047857]' },
-          { label: '접촉 중', value: stats.contacted, icon: <Mail size={18} />, color: 'text-[#B45309]' },
-          { label: '30일 내 만료', value: stats.expiringSoon, icon: <Clock size={18} />, color: 'text-[#B91C1C]' },
+          { label: t('all_kec9db8ec'), value: stats.total, icon: <Users size={18} />, color: 'text-[#4B6DE0]' },
+          { label: t('active'), value: stats.active, icon: <CheckCircle2 size={18} />, color: 'text-[#047857]' },
+          { label: t('kr_keca091ec_keca491'), value: stats.contacted, icon: <Mail size={18} />, color: 'text-[#B45309]' },
+          { label: t('kr_30kec9dbc_keb82b4_keba78ceb'), value: stats.expiringSoon, icon: <Clock size={18} />, color: 'text-[#B91C1C]' },
         ].map((kpi) => (
           <div key={kpi.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className={`${kpi.color} mb-1`}>{kpi.icon}</div>
@@ -158,11 +158,11 @@ export default function TalentPoolClient({user }: {
           onChange={(e) => setStatusFilter(e.target.value)}
           className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#555] focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
         >
-          <option value="">전체 상태</option>
-          <option value="active">활성</option>
-          <option value="contacted">접촉 중</option>
-          <option value="expired">만료</option>
-          <option value="hired">채용 완료</option>
+          <option value="">{t('all_status')}</option>
+          <option value="active">{t('active')}</option>
+          <option value="contacted">{t('kr_keca091ec_keca491')}</option>
+          <option value="expired">{t('kr_keba78ceb')}</option>
+          <option value="hired">{t('kr_kecb184ec_complete')}</option>
         </select>
       </div>
 
@@ -197,7 +197,7 @@ export default function TalentPoolClient({user }: {
                       {!entry.consentGiven && (
                         <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-[#FEE2E2] text-[#B91C1C]">
                           <AlertTriangle size={10} />
-                          동의 없음
+                          {t('kr_keb8f99ec_kec9786ec')}
                         </span>
                       )}
                       {isExpiringSoon && (
@@ -264,10 +264,10 @@ export default function TalentPoolClient({user }: {
                       disabled={updatingId === entry.id}
                       className="px-2 py-1.5 border border-[#D4D4D4] rounded-lg text-xs text-[#555] disabled:opacity-50"
                     >
-                      <option value="active">활성</option>
-                      <option value="contacted">접촉 중</option>
-                      <option value="hired">채용 완료</option>
-                      <option value="expired">만료</option>
+                      <option value="active">{t('active')}</option>
+                      <option value="contacted">{t('kr_keca091ec_keca491')}</option>
+                      <option value="hired">{t('kr_kecb184ec_complete')}</option>
+                      <option value="expired">{t('kr_keba78ceb')}</option>
                     </select>
                     <p className="text-xs text-[#999] mt-1 text-right">
                       만료: {new Date(entry.expiresAt).toLocaleDateString('ko-KR')}

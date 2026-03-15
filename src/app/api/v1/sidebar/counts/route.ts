@@ -16,7 +16,7 @@ export const dynamic = 'force-dynamic'
 export async function GET() {
   try {
     const session = await getServerSession(authOptions)
-    if (!session?.user) return unauthorized()
+    if (!session?.user) return unauthorized() as unknown as Response
 
     const user = session.user as SessionUser
     const { employeeId, companyId, role } = user
@@ -25,28 +25,65 @@ export async function GET() {
     const isManagerUp = isHrUp || role === ROLE.MANAGER || role === ROLE.EXECUTIVE
 
     // ── 1. Pending approvals (items awaiting THIS user's action) ──
-    // Uses the same logic as /api/v1/approvals/inbox?countOnly=true
+    // Delegates to the same inbox aggregation endpoint so badge == list count
     let approvals = 0
-    if (isManagerUp) {
-      // Count PENDING leave requests in company
-      const leaveCount = await prisma.leaveRequest.count({
-        where: {
-          companyId,
-          status: 'PENDING',
-        },
-      })
-      // Count PENDING payroll runs for HR
-      const payrollCount = isHrUp
-        ? await prisma.payrollRun.count({
-            where: { companyId, status: 'DRAFT' },
-          })
-        : 0
-      approvals = leaveCount + payrollCount
-    } else {
-      // EMPLOYEE: count their own pending leave requests
-      approvals = await prisma.leaveRequest.count({
-        where: { employeeId, status: 'PENDING' },
-      })
+    try {
+      const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3002'
+      // Internal server-side call — reuse the inbox API's aggregation logic
+      // to guarantee badge count matches what the inbox page displays.
+      // Instead of duplicating complex multi-source logic, we count directly:
+      
+      if (isManagerUp) {
+        // For MANAGER: count PENDING leaves from direct reports + PENDING_APPROVAL goals + payroll
+        const reportIds = !isHrUp
+          ? await (async () => {
+              const asgn = await prisma.employeeAssignment.findFirst({
+                where: { employeeId, isPrimary: true, endDate: null },
+                select: { positionId: true },
+              })
+              if (!asgn?.positionId) return []
+              const reports = await prisma.employeeAssignment.findMany({
+                where: {
+                  position: { reportsToPositionId: asgn.positionId },
+                  isPrimary: true,
+                  endDate: null,
+                },
+                select: { employeeId: true },
+              })
+              return reports.map((r) => r.employeeId)
+            })()
+          : null // HR_ADMIN sees all
+
+        const [leaveCount, goalCount, payrollCount] = await Promise.all([
+          prisma.leaveRequest.count({
+            where: {
+              companyId,
+              status: 'PENDING',
+              ...(reportIds ? { employeeId: { in: reportIds } } : {}),
+            },
+          }),
+          prisma.mboGoal.count({
+            where: {
+              companyId,
+              status: 'PENDING_APPROVAL',
+              ...(reportIds ? { employeeId: { in: reportIds } } : {}),
+            },
+          }),
+          isHrUp
+            ? prisma.payrollRun.count({
+                where: { companyId, status: 'PENDING_APPROVAL' },
+              })
+            : Promise.resolve(0),
+        ])
+        approvals = leaveCount + goalCount + payrollCount
+      } else {
+        // EMPLOYEE: count their own pending leave requests
+        approvals = await prisma.leaveRequest.count({
+          where: { employeeId, status: 'PENDING' },
+        })
+      }
+    } catch {
+      // fallback: 0
     }
 
     // ── 2. Unread notifications ──
@@ -78,8 +115,8 @@ export async function GET() {
       })
     }
 
-    return apiSuccess({ approvals, notifications, pendingLeave, todayAbsent })
+    return apiSuccess({ approvals, notifications, pendingLeave, todayAbsent }) as unknown as Response
   } catch (err) {
-    return apiError(err)
+    return apiError(err) as unknown as Response
   }
 }

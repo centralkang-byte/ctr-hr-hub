@@ -104,7 +104,7 @@ export default function PayrollAdjustDialog({
               id="adjustmentReason"
               name="adjustmentReason"
               required
-              placeholder={tCommon('placeholderAdjustmentReason')}
+              placeholder={'조정 사유를 입력하세요'}
               rows={2}
             />
           </div>

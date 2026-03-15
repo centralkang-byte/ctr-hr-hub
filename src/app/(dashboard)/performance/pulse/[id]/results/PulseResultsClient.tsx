@@ -10,6 +10,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, BarChart3, Sparkles } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { apiClient } from '@/lib/api'
+import { CHART_THEME } from '@/lib/styles'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -75,7 +76,7 @@ export default function PulseResultsClient() {
   }
 
   if (loading) return <div className="p-6 text-center text-[#999]">{tCommon('loading')}</div>
-  if (!results) return <div className="p-6 text-center text-[#999]">결과를 불러올 수 없습니다.</div>
+  if (!results) return <div className="p-6 text-center text-[#999]">{t('kr_keab2b0ea_kebb688eb_kec8898_ke')}</div>
 
   return (
     <div className="p-6 space-y-6">
@@ -94,7 +95,7 @@ export default function PulseResultsClient() {
         <button onClick={handleAiAnalysis} disabled={aiLoading}
           className="flex items-center gap-2 px-4 py-2 border border-[#C7D2FE] text-[#4B6DE0] rounded-lg text-sm font-medium hover:bg-[#E0E7FF] disabled:opacity-50">
           <Sparkles className="w-4 h-4" />
-          {aiLoading ? 'AI 분석 중...' : 'AI 인사이트'}
+          {aiLoading ? t('aiAnalyzing') : 'AI 인사이트'}
         </button>
       </div>
 
@@ -103,24 +104,24 @@ export default function PulseResultsClient() {
         <div className="bg-[#E0E7FF] rounded-xl border border-[#C7D2FE] p-5 space-y-3">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-[#4B6DE0]" />
-            <span className="text-sm font-semibold text-[#4B6DE0]">AI 분석 결과</span>
+            <span className="text-sm font-semibold text-[#4B6DE0]">{t('kr_ai_analytics_keab2b0ea')}</span>
           </div>
           <p className="text-sm text-[#333]">{aiAnalysis.overall_sentiment}</p>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <h4 className="text-xs font-medium text-[#4B6DE0] mb-2">핵심 인사이트</h4>
+              <h4 className="text-xs font-medium text-[#4B6DE0] mb-2">{t('kr_ked95b5ec_kec9db8ec')}</h4>
               <ul className="space-y-1">{aiAnalysis.key_insights.map((ins, i) => (
                 <li key={i} className="text-xs text-[#333]">• {ins}</li>
               ))}</ul>
             </div>
             <div>
-              <h4 className="text-xs font-medium text-[#B91C1C] mb-2">주의 영역</h4>
+              <h4 className="text-xs font-medium text-[#B91C1C] mb-2">{t('kr_keca3bcec_kec9881ec')}</h4>
               <ul className="space-y-1">{aiAnalysis.risk_areas.map((r, i) => (
                 <li key={i} className="text-xs text-[#333]">• {r}</li>
               ))}</ul>
             </div>
             <div>
-              <h4 className="text-xs font-medium text-[#059669] mb-2">개선 제안</h4>
+              <h4 className="text-xs font-medium text-[#059669] mb-2">{t('kr_keab09cec_keca09cec')}</h4>
               <ul className="space-y-1">{aiAnalysis.recommendations.map((r, i) => (
                 <li key={i} className="text-xs text-[#333]">• {r}</li>
               ))}</ul>

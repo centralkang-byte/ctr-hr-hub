@@ -63,6 +63,8 @@ export default function MyResultClient({user }: {
   user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
+  const { confirm, dialogProps } = useConfirmDialog()
+
     const [cycles, setCycles] = useState<CycleOption[]>([])
     const [selectedCycleId, setSelectedCycleId] = useState('')
     const [cycleStatus, setCycleStatus] = useState('')
@@ -82,13 +84,12 @@ export default function MyResultClient({user }: {
                     setSelectedCycleId(resultCycles[0].id)
                     setCycleStatus(resultCycles[0].status)
                 }
-            } catch { setError('사이클 목록을 불러오지 못했습니다.') }
+            } catch { setError(t('cycleListLoadFailed')) }
         }
         load()
     }, [])
 
     const fetchResult = useCallback(async () => {
-  const { confirm, dialogProps } = useConfirmDialog()
         if (!selectedCycleId) return
         setLoading(true); setError('')
         try {
@@ -112,12 +113,12 @@ export default function MyResultClient({user }: {
 
     async function handleAcknowledge() {
         if (!result?.reviewId) return
-        confirm({ title: '결과를 확인하시겠습니까? 결과 확인은 동의가 아닌 수신 확인입니다.', onConfirm: async () => {
+        confirm({ title: t('kr_keab2b0ea_ked9995ec_keab2b0ea_'), onConfirm: async () => {
             setAcknowledging(true)
             try {
                 await apiClient.post(`/api/v1/performance/reviews/${result.reviewId}/acknowledge`)
                 setResult((p) => p ? { ...p, acknowledgedAt: new Date().toISOString() } : p)
-            } catch { toast({ title: '확인 처리에 실패했습니다.', variant: 'destructive' }) }
+            } catch { toast({ title: t('confirm_kecb298eb_kec8ba4ed'), variant: 'destructive' }) }
             finally { setAcknowledging(false) }
         }})
     }
@@ -131,10 +132,10 @@ export default function MyResultClient({user }: {
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
                     <Award className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">아직 결과가 공개되지 않았습니다.</h2>
-                    <p className="text-sm text-[#8181A5]">결과는 평가가 완료된 후 공개됩니다.</p>
+                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">{t('kr_kec9584ec_keab2b0ea_keab3b5ea_')}</h2>
+                    <p className="text-sm text-[#8181A5]">{t('kr_keab2b0ea_ked8f89ea_kec9984eb_')}</p>
                     <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">
-                        <ArrowLeft className="h-4 w-4" /> 돌아가기
+                        <ArrowLeft className="h-4 w-4" /> {t('kr_keb8f8cec')}
                     </a>
                 </div>
             </div>
@@ -146,8 +147,8 @@ export default function MyResultClient({user }: {
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
                     <Award className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">현재 진행 중인 성과 사이클이 없습니다.</h2>
-                    <p className="text-sm text-[#8181A5]">결과가 공개되면 여기에서 확인할 수 있습니다.</p>
+                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">{t('kr_ked9884ec_keca784ed_keca491ec_')}</h2>
+                    <p className="text-sm text-[#8181A5]">{t('kr_keab2b0ea_keab3b5ea_kec97acea_')}</p>
                 </div>
             </div>
         )
@@ -163,8 +164,8 @@ export default function MyResultClient({user }: {
                 {/* Header */}
                 <div className="mb-6 flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-[#1C1D21]">나의 성과 결과 (My Performance Result)</h1>
-                        <p className="mt-1 text-sm text-[#8181A5]">성과 평가 결과를 확인합니다</p>
+                        <h1 className="text-2xl font-bold text-[#1C1D21]">{t('kr_keb8298ec_kec84b1ea_keab2b0ea_')}</h1>
+                        <p className="mt-1 text-sm text-[#8181A5]">{t('kr_kec84b1ea_evaluation_keab2b0ea')}</p>
                     </div>
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
                         className="rounded-lg border border-[#F0F0F3] bg-white px-3 py-2 text-sm">
@@ -196,25 +197,25 @@ export default function MyResultClient({user }: {
                     <>
                         {/* Grade card */}
                         <div className="mb-6 rounded-xl border border-[#F0F0F3] bg-white p-8 text-center">
-                            <p className="mb-3 text-sm text-[#8181A5]">최종 등급</p>
+                            <p className="mb-3 text-sm text-[#8181A5]">{t('kr_kecb59cec_keb93b1ea')}</p>
                             {grade ? (
                                 <div className={`mx-auto inline-flex rounded-xl px-8 py-4 ${grade.bg}`}>
                                     <span className={`text-2xl font-bold ${grade.text}`}>{grade.label}</span>
                                 </div>
                             ) : (
-                                <p className="text-lg text-[#8181A5]">등급 미정</p>
+                                <p className="text-lg text-[#8181A5]">{t('kr_keb93b1ea_kebafb8ec')}</p>
                             )}
                             <div className="mt-6 grid grid-cols-3 gap-4">
                                 <div>
-                                    <div className="flex items-center justify-center gap-1 text-xs text-[#8181A5]"><Target className="h-3.5 w-3.5" /> MBO 점수</div>
+                                    <div className="flex items-center justify-center gap-1 text-xs text-[#8181A5]"><Target className="h-3.5 w-3.5" /> {t('kr_mbo_score')}</div>
                                     <p className="mt-1 text-xl font-bold text-[#1C1D21]">{result.performanceScore?.toFixed(1) ?? '-'}<span className="text-sm text-[#8181A5]">/5.0</span></p>
                                 </div>
                                 <div>
-                                    <div className="flex items-center justify-center gap-1 text-xs text-[#8181A5]"><TrendingUp className="h-3.5 w-3.5" /> BEI 점수</div>
+                                    <div className="flex items-center justify-center gap-1 text-xs text-[#8181A5]"><TrendingUp className="h-3.5 w-3.5" /> {t('kr_bei_score')}</div>
                                     <p className="mt-1 text-xl font-bold text-[#1C1D21]">{result.competencyScore?.toFixed(1) ?? '-'}<span className="text-sm text-[#8181A5]">/5.0</span></p>
                                 </div>
                                 <div>
-                                    <div className="flex items-center justify-center gap-1 text-xs text-[#5E81F4]"><Award className="h-3.5 w-3.5" /> 종합 점수</div>
+                                    <div className="flex items-center justify-center gap-1 text-xs text-[#5E81F4]"><Award className="h-3.5 w-3.5" /> {t('kr_keca285ed_score')}</div>
                                     <p className="mt-1 text-xl font-bold text-[#5E81F4]">{result.totalScore?.toFixed(2) ?? '-'}<span className="text-sm text-[#8181A5]">/5.0</span></p>
                                 </div>
                             </div>
@@ -225,7 +226,7 @@ export default function MyResultClient({user }: {
                         {result.goals.length > 0 && (
                             <div className="mb-6 rounded-xl border border-[#F0F0F3] bg-white">
                                 <div className="border-b border-[#F0F0F3] px-5 py-4">
-                                    <h2 className="text-base font-semibold text-[#1C1D21]">MBO 목표별 결과</h2>
+                                    <h2 className="text-base font-semibold text-[#1C1D21]">{t('kr_mbo_kebaaa9ed_keab2b0ea')}</h2>
                                 </div>
                                 <div className="divide-y divide-[#F0F0F3]">
                                     {result.goals.map((goal) => (
@@ -236,8 +237,8 @@ export default function MyResultClient({user }: {
                                                     <span className="text-xs text-[#8181A5]">가중치: {goal.weight}%</span>
                                                 </div>
                                                 <div className="text-right text-sm">
-                                                    <span className="text-[#8181A5]">자기: </span><span className="font-medium text-[#1C1D21]">{goal.selfScore ?? '-'}</span>
-                                                    <span className="ml-3 text-[#8181A5]">매니저: </span><span className="font-medium text-[#1C1D21]">{goal.managerScore ?? '-'}</span>
+                                                    <span className="text-[#8181A5]">{t('kr_kec9e90ea')} </span><span className="font-medium text-[#1C1D21]">{goal.selfScore ?? '-'}</span>
+                                                    <span className="ml-3 text-[#8181A5]">{t('kr_keba7a4eb')} </span><span className="font-medium text-[#1C1D21]">{goal.managerScore ?? '-'}</span>
                                                 </div>
                                             </div>
                                             {goal.managerComment && (
@@ -261,10 +262,10 @@ export default function MyResultClient({user }: {
                                     {/* Score summary */}
                                     <div className="mb-4 grid grid-cols-4 gap-3">
                                         {[
-                                            { label: '도전', score: peerResult.summary.averageChallenge },
-                                            { label: '신뢰', score: peerResult.summary.averageTrust },
-                                            { label: '책임', score: peerResult.summary.averageResponsibility },
-                                            { label: '존중', score: peerResult.summary.averageRespect },
+                                            { label: t('challenge'), score: peerResult.summary.averageChallenge },
+                                            { label: t('trust'), score: peerResult.summary.averageTrust },
+                                            { label: t('responsibility'), score: peerResult.summary.averageResponsibility },
+                                            { label: t('respect'), score: peerResult.summary.averageRespect },
                                         ].map((v) => (
                                             <div key={v.label} className="rounded-lg bg-[#F5F5FA] p-3 text-center">
                                                 <p className="text-xs text-[#8181A5]">{v.label}</p>
@@ -273,7 +274,7 @@ export default function MyResultClient({user }: {
                                         ))}
                                     </div>
                                     <div className="mb-4 rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-3 text-center">
-                                        <span className="text-sm text-[#8181A5]">종합 평균: </span>
+                                        <span className="text-sm text-[#8181A5]">{t('kr_keca285ed_average')} </span>
                                         <span className="text-lg font-bold text-[#5E81F4]">{peerResult.summary.overallAverage.toFixed(1)} / 5.0</span>
                                     </div>
 
@@ -290,7 +291,7 @@ export default function MyResultClient({user }: {
                                     )}
 
                                     <div className="mt-4 flex items-center gap-1.5 text-xs text-[#8181A5]">
-                                        <Shield className="h-3.5 w-3.5" /> 평가자 정보는 익명으로 처리되었습니다.
+                                        <Shield className="h-3.5 w-3.5" /> {t('evaluation_kec9e90_keca095eb_kec9db5eb_kecb298eb')}
                                     </div>
                                 </div>
                             </div>
@@ -298,7 +299,7 @@ export default function MyResultClient({user }: {
 
                         {/* Acknowledge section */}
                         <div className="rounded-xl border border-[#F0F0F3] bg-white p-5">
-                            <h2 className="mb-3 text-base font-semibold text-[#1C1D21]">결과 확인</h2>
+                            <h2 className="mb-3 text-base font-semibold text-[#1C1D21]">{t('kr_keab2b0ea_confirm')}</h2>
                             {isAcknowledged ? (
                                 <div className="flex items-center gap-2 rounded-lg border border-[#A7F3D0] bg-[#D1FAE5] p-4">
                                     <CheckCircle2 className="h-5 w-5 text-[#059669]" />
@@ -318,11 +319,11 @@ export default function MyResultClient({user }: {
                                     )}
                                     <button onClick={handleAcknowledge} disabled={acknowledging}
                                         className="w-full rounded-lg bg-[#5E81F4] py-3 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40 transition-colors">
-                                        {acknowledging ? '처리 중...' : '결과를 확인합니다'}
+                                        {acknowledging ? t('processing') : '결과를 확인합니다'}
                                     </button>
                                     <div className="mt-3 flex items-start gap-1.5 text-xs text-[#8181A5]">
                                         <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                                        <p>결과 확인은 동의가 아닌 수신 확인입니다. 이의가 있으시면 매니저와 상담하세요.</p>
+                                        <p>{t('kr_keab2b0ea_ked9995ec_keb8f99ec_')}</p>
                                     </div>
                                 </>
                             )}

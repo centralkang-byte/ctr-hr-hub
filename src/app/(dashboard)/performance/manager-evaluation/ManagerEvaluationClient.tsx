@@ -74,7 +74,7 @@ export default function ManagerEvaluationClient({user }: {
                 const evalCycles = res.data.filter((c) => ['EVAL_OPEN', 'CALIBRATION', 'FINALIZED', 'CLOSED'].includes(c.status))
                 setCycles(evalCycles)
                 if (evalCycles.length > 0) { setSelectedCycleId(evalCycles[0].id); setCycleStatus(evalCycles[0].status) }
-            } catch { setError('사이클을 불러오지 못했습니다.') }
+            } catch { setError(t('cycleLoadFailed')) }
         }
         load()
     }, [])
@@ -104,9 +104,9 @@ export default function ManagerEvaluationClient({user }: {
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
                     <Users className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">아직 평가 기간이 아닙니다.</h2>
-                    <p className="text-sm text-[#8181A5]">매니저 평가는 EVAL_OPEN 단계에서 진행됩니다.</p>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline"><ArrowLeft className="h-4 w-4" /> 돌아가기</a>
+                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">{t('kr_kec9584ec_evaluation_keab8b0ea')}</h2>
+                    <p className="text-sm text-[#8181A5]">{t('managerEval_keb8a94_eval_open_keb8ba8ea_keca784ed')}</p>
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline"><ArrowLeft className="h-4 w-4" /> {t('kr_keb8f8cec')}</a>
                 </div>
             </div>
         )
@@ -173,7 +173,7 @@ export default function ManagerEvaluationClient({user }: {
                                                 )}
                                                 {isCompleted && (
                                                     <span className="inline-flex items-center gap-1 rounded-full bg-[#D1FAE5] px-2 py-0.5 text-xs font-medium text-[#047857]">
-                                                        <CheckCircle2 className="h-3 w-3" /> 평가 완료
+                                                        <CheckCircle2 className="h-3 w-3" /> {t('evaluation_complete')}
                                                     </span>
                                                 )}
                                             </div>
@@ -187,13 +187,13 @@ export default function ManagerEvaluationClient({user }: {
                                                 <p className="mt-1 text-xs text-[#EF4444]">Overdue: {member.overdueFlags.join(', ')}</p>
                                             )}
                                             {isCompleted && member.managerEval?.originalGradeEnum && (
-                                                <p className="mt-1 text-xs text-[#8181A5]">매니저 등급: <span className="font-medium text-[#1C1D21]">{getGradeLabel(member.managerEval.originalGradeEnum)}</span></p>
+                                                <p className="mt-1 text-xs text-[#8181A5]">{t('kr_keba7a4eb_keb93b1ea')} <span className="font-medium text-[#1C1D21]">{getGradeLabel(member.managerEval.originalGradeEnum)}</span></p>
                                             )}
                                         </div>
                                         <div className="flex gap-2">
                                             <button onClick={() => setNominating(member)}
                                                 className="rounded-lg border border-[#F0F0F3] px-3 py-1.5 text-xs font-medium text-[#8181A5] hover:bg-[#F5F5FA]">
-                                                동료지명
+                                                {t('kr_keb8f99eb')}
                                             </button>
                                             <button onClick={() => setActiveEval(member)}
                                                 className="rounded-lg bg-[#5E81F4] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#4A6FE0]">
@@ -228,6 +228,9 @@ export default function ManagerEvaluationClient({user }: {
 function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
     member: TeamMember; cycleId: string; onClose: () => void; onSaved: () => void
 }) {
+    const t = useTranslations('performance')
+    const tCommon = useTranslations('common')
+    const { confirm, dialogProps } = useConfirmDialog()
     const [tab, setTab] = useState<'mbo' | 'bei' | 'peer' | 'summary'>('mbo')
     const [goalScores, setGoalScores] = useState<Record<string, { score: number; comment: string }>>({})
     const [beiScores, setBeiScores] = useState<Record<string, { score: number; comment: string }>>({})
@@ -259,7 +262,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
 
     async function handleSave(status: 'DRAFT' | 'SUBMITTED') {
         if (!(status === 'SUBMITTED')) return
-        confirm({ title: '평가를 확정하시겠습니까? 확정 후에는 수정이 제한됩니다.', onConfirm: async () => {
+        confirm({ title: t('evaluation_keba5bc_ked9995ec_confirmed_ked9b84ec_kec8898ec_keca09ced'), onConfirm: async () => {
             setSaving(true)
             try {
                 await apiClient.put(`/api/v1/performance/evaluations/${member.managerEval?.id ?? 'new'}`, {
@@ -269,16 +272,16 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                     originalGradeEnum: finalGrade,
                 })
                 onSaved()
-            } catch { toast({ title: '저장에 실패했습니다.', variant: 'destructive' }) }
+            } catch { toast({ title: t('saveFailed'), variant: 'destructive' }) }
             finally { setSaving(false) }
         }})
     }
 
     const TABS = [
-        { key: 'mbo' as const, label: 'MBO 평가' },
-        { key: 'bei' as const, label: 'BEI 평가' },
-        { key: 'peer' as const, label: '동료평가 결과' },
-        { key: 'summary' as const, label: '종합' },
+        { key: 'mbo' as const, label: t('kr_mbo_evaluation') },
+        { key: 'bei' as const, label: t('kr_bei_evaluation') },
+        { key: 'peer' as const, label: t('kr_keb8f99eb_keab2b0ea') },
+        { key: 'summary' as const, label: t('kr_keca285ed') },
     ]
 
     return (
@@ -311,7 +314,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3">
-                                        <span className="text-xs text-[#8181A5]">매니저 점수:</span>
+                                        <span className="text-xs text-[#8181A5]">{t('kr_keba7a4eb_score')}</span>
                                         <Stars value={goalScores[goal.id]?.score ?? 3}
                                             onChange={(v) => setGoalScores((p) => ({ ...p, [goal.id]: { ...p[goal.id], score: v } }))} disabled={false} />
                                     </div>
@@ -371,13 +374,13 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                                     <p className="text-xl font-bold text-[#1C1D21]">{beiAvg.toFixed(1)}</p>
                                 </div>
                                 <div className="rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-3 text-center">
-                                    <p className="text-xs text-[#5E81F4]">종합 점수</p>
+                                    <p className="text-xs text-[#5E81F4]">{t('kr_keca285ed_score')}</p>
                                     <p className="text-xl font-bold text-[#5E81F4]">{totalScore.toFixed(2)}</p>
                                 </div>
                             </div>
 
                             <div className="rounded-xl border border-[#F0F0F3] p-4">
-                                <label className="mb-2 block text-sm font-medium text-[#1C1D21]">매니저 최종 등급</label>
+                                <label className="mb-2 block text-sm font-medium text-[#1C1D21]">{t('kr_keba7a4eb_kecb59cec_keb93b1ea')}</label>
                                 <select value={finalGrade} onChange={(e) => setFinalGrade(e.target.value)}
                                     className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none">
                                     {GRADES.map((g) => <option key={g} value={g}>{getGradeLabel(g)} ({g})</option>)}
@@ -390,7 +393,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                     <div className="flex justify-end gap-3 border-t border-[#F0F0F3] pt-4">
                         <button onClick={() => handleSave('DRAFT')} disabled={saving}
                             className="inline-flex items-center gap-2 rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm font-medium text-[#1C1D21] hover:bg-[#F5F5FA] disabled:opacity-40">
-                            <Save className="h-4 w-4" /> 임시저장
+                            <Save className="h-4 w-4" /> {t('kr_kec9e84ec')}
                         </button>
                         <button onClick={() => handleSave('SUBMITTED')} disabled={saving}
                             className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40">
@@ -408,6 +411,8 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
 function NominationModal({ member, cycleId, onClose, onSaved }: {
     member: TeamMember; cycleId: string; onClose: () => void; onSaved: () => void
 }) {
+    const t = useTranslations('performance')
+    const tCommon = useTranslations('common')
     const [candidates, setCandidates] = useState<PeerCandidate[]>([])
     const [selected, setSelected] = useState<Set<string>>(new Set())
     const [loading, setLoading] = useState(true)
@@ -430,7 +435,7 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
     }
 
     async function handleNominate() {
-        if (selected.size < 2) { toast({ title: '최소 2명을 지명해주세요.', variant: 'destructive' }); return }
+        if (selected.size < 2) { toast({ title: t('kr_kecb59cec_2kebaa85ec_keca780eb'), variant: 'destructive' }); return }
         confirm({ title: `${selected.size}명을 동료평가자로 지명하시겠습니까?`, onConfirm: async () => {
             setSaving(true)
             try {
@@ -438,7 +443,7 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
                     cycleId, employeeId: member.employeeId, reviewerIds: Array.from(selected),
                 })
                 onSaved()
-            } catch { toast({ title: '지명에 실패했습니다.', variant: 'destructive' }) }
+            } catch { toast({ title: t('kr_keca780eb_kec8ba4ed'), variant: 'destructive' }) }
             finally { setSaving(false) }
         }})
     }
@@ -455,7 +460,7 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
                 {loading ? (
                     <div className="py-8 text-center text-sm text-[#8181A5]">{tCommon('loading')}</div>
                 ) : candidates.length === 0 ? (
-                    <div className="py-8 text-center text-sm text-[#8181A5]">추천 후보가 없습니다.</div>
+                    <div className="py-8 text-center text-sm text-[#8181A5]">{t('kr_kecb694ec_ked9b84eb_kec9786ec')}</div>
                 ) : (
                     <div className="space-y-2">
                         {candidates.map((c) => (

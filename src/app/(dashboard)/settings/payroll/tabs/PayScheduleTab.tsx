@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/api'
 import { BUTTON_VARIANTS,  FORM_STYLES } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface Props { companyId: string | null }
 
@@ -19,7 +20,9 @@ interface PayScheduleSettings {
 
 const DEFAULTS: PayScheduleSettings = { payDay: 25, cutoffDay: 20, paymentMethod: 'BANK_TRANSFER' }
 
-export function PayScheduleTab({ companyId }: Props) {
+export function PayScheduleTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const [settings, setSettings] = useState<PayScheduleSettings>(() => structuredClone(DEFAULTS))
   const [original, setOriginal] = useState<PayScheduleSettings>(() => structuredClone(DEFAULTS))
   const [loading, setLoading] = useState(true)
@@ -67,12 +70,12 @@ export function PayScheduleTab({ companyId }: Props) {
         key: 'pay-schedule',
         value: { payDay: settings.payDay, closingDay: settings.cutoffDay, paymentMethod: settings.paymentMethod },
         companyId: companyId ?? undefined,
-        description: '급여 지급일/마감일 설정',
+        description: t('kr_keab889ec_keca780ea_keba788ea_'),
       })
-      toast({ title: '저장되었습니다', description: '급여 일정이 업데이트되었습니다.' })
+      toast({ title: t('savedSuccess'), description: t('paySchedule_kec9db4_kec9785eb') })
       setOriginal(structuredClone(settings))
     } catch {
-      toast({ title: '저장 실패', description: '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('saveFailed'), description: t('retry_ked95b4_keca3bcec'), variant: 'destructive' })
     } finally {
       setSaving(false)
     }
@@ -80,7 +83,7 @@ export function PayScheduleTab({ companyId }: Props) {
 
   const handleRevert = () => {
     setSettings(structuredClone(original))
-    toast({ title: '변경을 취소했습니다' })
+    toast({ title: t('changeCancelled') })
   }
 
   const hasChanges = JSON.stringify(settings) !== JSON.stringify(original)
@@ -91,40 +94,40 @@ export function PayScheduleTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">급여일</h3>
-          <p className="text-sm text-[#8181A5]">매월 급여 지급일 설정 (법인별)</p>
+          <h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_keab889ec')}</h3>
+          <p className="text-sm text-[#8181A5]">{t('kr_keba7a4ec_keab889ec_keca780ea_')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">법인 오버라이드</span>
+          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
         )}
       </div>
 
       <SettingFieldWithOverride label="급여 지급일" description="매월 급여가 지급되는 날짜" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-[#8181A5]">매월</span>
+          <span className="text-sm text-[#8181A5]">{t('kr_keba7a4ec')}</span>
           <Input type="number" value={settings.payDay} min={1} max={31} onChange={(e) => setSettings((p) => ({ ...p, payDay: Number(e.target.value) }))} className="w-20" />
-          <span className="text-sm text-[#8181A5]">일</span>
+          <span className="text-sm text-[#8181A5]">{t('kr_kec9dbc')}</span>
         </div>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="급여 마감일" description="급여 계산 기준 마감일" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-[#8181A5]">매월</span>
+          <span className="text-sm text-[#8181A5]">{t('kr_keba7a4ec')}</span>
           <Input type="number" value={settings.cutoffDay} min={1} max={31} onChange={(e) => setSettings((p) => ({ ...p, cutoffDay: Number(e.target.value) }))} className="w-20" />
-          <span className="text-sm text-[#8181A5]">일</span>
+          <span className="text-sm text-[#8181A5]">{t('kr_kec9dbc')}</span>
         </div>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="지급 방법" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <select className={FORM_STYLES.select} value={settings.paymentMethod} onChange={(e) => setSettings((p) => ({ ...p, paymentMethod: e.target.value as PayScheduleSettings['paymentMethod'] }))}>
-          <option value="BANK_TRANSFER">계좌이체</option>
-          <option value="CHECK">수표</option>
+          <option value="BANK_TRANSFER">{t('kr_keab384ec')}</option>
+          <option value="CHECK">{t('kr_kec8898ed')}</option>
         </select>
       </SettingFieldWithOverride>
 
       <div className="flex justify-end gap-2 pt-4">
         <Button variant="outline" onClick={handleRevert} disabled={!hasChanges}>
-          <RotateCcw className="mr-2 h-4 w-4" />되돌리기
+          <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={handleSave} disabled={!hasChanges || saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장

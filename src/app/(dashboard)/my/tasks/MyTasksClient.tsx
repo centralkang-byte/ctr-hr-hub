@@ -49,38 +49,6 @@ import {
 } from '@/lib/unified-task/types'
 import type { UnifiedTask, UnifiedTaskListResponse } from '@/lib/unified-task/types'
 
-// ─── Constants ───────────────────────────────────────────
-
-const TYPE_CONFIG: Record<string, { label: string; color: string; icon: React.ElementType }> = {
-    [UnifiedTaskType.LEAVE_APPROVAL]: { label: '휴가', color: '#818CF8', icon: CalendarDays },
-    [UnifiedTaskType.PAYROLL_REVIEW]: { label: '급여', color: '#F59E0B', icon: Clock },
-    [UnifiedTaskType.ONBOARDING_TASK]: { label: '온보딩', color: '#10B981', icon: ClipboardCheck },
-    [UnifiedTaskType.OFFBOARDING_TASK]: { label: '오프보딩', color: '#EF4444', icon: DoorOpen },
-    [UnifiedTaskType.PERFORMANCE_REVIEW]: { label: '성과', color: '#8B5CF6', icon: Target },
-}
-
-const PRIORITY_CONFIG: Record<string, { color: string; bg: string; label: string }> = {
-    [UnifiedTaskPriority.URGENT]: { color: '#EF4444', bg: '#FEF2F2', label: '긴급' },
-    [UnifiedTaskPriority.HIGH]: { color: '#F59E0B', bg: '#FFFBEB', label: '높음' },
-    [UnifiedTaskPriority.MEDIUM]: { color: '#10B981', bg: '#F0FDF4', label: '보통' },
-    [UnifiedTaskPriority.LOW]: { color: '#5E81F4', bg: '#EDF1FE', label: '낮음' },
-}
-
-const FILTER_TABS = [
-    { key: 'all', label: '전체', type: null },
-    { key: 'LEAVE_APPROVAL', label: '휴가', type: UnifiedTaskType.LEAVE_APPROVAL },
-    { key: 'PAYROLL_REVIEW', label: '급여', type: UnifiedTaskType.PAYROLL_REVIEW },
-    { key: 'ONBOARDING_TASK', label: '온보딩', type: UnifiedTaskType.ONBOARDING_TASK },
-    { key: 'OFFBOARDING_TASK', label: '오프보딩', type: UnifiedTaskType.OFFBOARDING_TASK },
-    { key: 'PERFORMANCE_REVIEW', label: '성과', type: UnifiedTaskType.PERFORMANCE_REVIEW },
-]
-
-const SORT_OPTIONS = [
-    { value: 'priority', label: '우선순위' },
-    { value: 'dueDate', label: '마감일' },
-    { value: 'createdAt', label: '생성일' },
-]
-
 // ─── Helpers ─────────────────────────────────────────────
 
 function getDday(dueDate?: string): string | null {
@@ -110,14 +78,19 @@ function UnifiedTaskCard({
     user,
     onAction,
     processing,
+    typeConfig,
+    priorityConfig,
 }: {
     task: UnifiedTask
     user: SessionUser
     onAction: (taskId: string, action: 'approve' | 'reject', sourceId: string) => void
     processing: string | null
+    typeConfig: Record<string, { label: string; color: string; icon: React.ElementType }>
+    priorityConfig: Record<string, { color: string; bg: string; label: string }>
 }) {
-    const typeInfo = TYPE_CONFIG[task.type]
-    const prioInfo = PRIORITY_CONFIG[task.priority]
+    const t = useTranslations('myTasks')
+    const typeInfo = typeConfig[task.type]
+    const prioInfo = priorityConfig[task.priority]
     const Icon = typeInfo?.icon ?? ListChecks
     const dday = getDday(task.dueDate)
     const ddayStyle = getDdayStyle(task.dueDate)
@@ -176,7 +149,7 @@ function UnifiedTaskCard({
                                 variant="outline"
                                 className="h-5 rounded-md border-[#C7D2FE] bg-[#EDF1FE] px-1.5 text-[10px] font-medium text-[#8B5CF6]"
                             >
-                                대결
+                                {'delegated'}
                             </Badge>
                         )}
                     </div>
@@ -217,7 +190,7 @@ function UnifiedTaskCard({
                                     onClick={(e) => { e.stopPropagation(); onAction(task.id, 'approve', task.sourceId) }}
                                 >
                                     {isBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
-                                    <span className="hidden sm:inline">승인</span>
+                                    <span className="hidden sm:inline">{'actionApprove'}</span>
                                 </Button>
                                 <Button
                                     size="sm"
@@ -227,14 +200,14 @@ function UnifiedTaskCard({
                                     onClick={(e) => { e.stopPropagation(); onAction(task.id, 'reject', task.sourceId) }}
                                 >
                                     <XCircle className="h-3.5 w-3.5" />
-                                    <span className="hidden sm:inline">반려</span>
+                                    <span className="hidden sm:inline">{'actionReject'}</span>
                                 </Button>
                             </>
                         ) : isPending && task.actionUrl ? (
                             <Link href={task.actionUrl}>
                                 <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-[11px] text-[#8181A5] hover:bg-[#F5F5FA]">
                                     <ExternalLink className="h-3.5 w-3.5" />
-                                    <span className="hidden sm:inline">보기</span>
+                                    <span className="hidden sm:inline">{'actionView'}</span>
                                 </Button>
                             </Link>
                         ) : task.actionUrl ? (
@@ -263,6 +236,34 @@ function MyTasksInner({ user }: { user: SessionUser }) {
     const typeFilter = searchParams.get('type') ?? 'all'
     const sortBy = searchParams.get('sortBy') ?? 'priority'
     const page = parseInt(searchParams.get('page') ?? '1', 10)
+
+    // Config arrays defined here for t() access
+    const TYPE_CONFIG: Record<string, { label: string; color: string; icon: React.ElementType }> = {
+        [UnifiedTaskType.LEAVE_APPROVAL]: { label: 'typeLeave', color: '#818CF8', icon: CalendarDays },
+        [UnifiedTaskType.PAYROLL_REVIEW]: { label: 'typePayroll', color: '#F59E0B', icon: Clock },
+        [UnifiedTaskType.ONBOARDING_TASK]: { label: 'typeOnboarding', color: '#10B981', icon: ClipboardCheck },
+        [UnifiedTaskType.OFFBOARDING_TASK]: { label: 'typeOffboarding', color: '#EF4444', icon: DoorOpen },
+        [UnifiedTaskType.PERFORMANCE_REVIEW]: { label: 'typePerformance', color: '#8B5CF6', icon: Target },
+    }
+    const PRIORITY_CONFIG: Record<string, { color: string; bg: string; label: string }> = {
+        [UnifiedTaskPriority.URGENT]: { color: '#EF4444', bg: '#FEF2F2', label: 'priorityUrgent' },
+        [UnifiedTaskPriority.HIGH]: { color: '#F59E0B', bg: '#FFFBEB', label: 'priorityHigh' },
+        [UnifiedTaskPriority.MEDIUM]: { color: '#10B981', bg: '#F0FDF4', label: 'priorityMedium' },
+        [UnifiedTaskPriority.LOW]: { color: '#5E81F4', bg: '#EDF1FE', label: 'priorityLow' },
+    }
+    const FILTER_TABS = [
+        { key: 'all', label: 'filterAll', type: null },
+        { key: 'LEAVE_APPROVAL', label: 'typeLeave', type: UnifiedTaskType.LEAVE_APPROVAL },
+        { key: 'PAYROLL_REVIEW', label: 'typePayroll', type: UnifiedTaskType.PAYROLL_REVIEW },
+        { key: 'ONBOARDING_TASK', label: 'typeOnboarding', type: UnifiedTaskType.ONBOARDING_TASK },
+        { key: 'OFFBOARDING_TASK', label: 'typeOffboarding', type: UnifiedTaskType.OFFBOARDING_TASK },
+        { key: 'PERFORMANCE_REVIEW', label: 'typePerformance', type: UnifiedTaskType.PERFORMANCE_REVIEW },
+    ]
+    const SORT_OPTIONS = [
+        { value: 'priority', label: 'sortPriority' },
+        { value: 'dueDate', label: 'sortDueDate' },
+        { value: 'createdAt', label: 'sortCreatedAt' },
+    ]
 
     const [tasks, setTasks] = useState<UnifiedTask[]>([])
     const [countByType, setCountByType] = useState<Partial<Record<UnifiedTaskType, number>>>({})
@@ -353,8 +354,8 @@ function MyTasksInner({ user }: { user: SessionUser }) {
     return (
         <div className="space-y-6 p-6">
             <PageHeader
-                title={t('title')}
-                description={t('description')}
+                title={'title'}
+                description={'description'}
             />
 
             {/* ── Status Tabs ── */}
@@ -367,7 +368,7 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                         : 'text-[#8181A5] hover:text-[#1C1D21]'
                         }`}
                 >
-                    {t('tabInProgress')}
+                    {'tabInProgress'}
                     {statusTab === 'PENDING' && totalAllTypes > 0 && (
                         <span className="ml-1.5 rounded-full bg-[#5E81F4] px-2 py-0.5 text-[10px] font-bold text-white">
                             {totalAllTypes}
@@ -382,7 +383,7 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                         : 'text-[#8181A5] hover:text-[#1C1D21]'
                         }`}
                 >
-                    {t('tabCompleted')}
+                    {'tabCompleted'}
                 </button>
             </div>
 
@@ -466,14 +467,14 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                                 : <Info className="h-12 w-12" />
                             }
                             title={
-                                typeFilter !== 'all' ? t('emptyNoType') :
-                                    statusTab === 'COMPLETED' ? t('emptyCompleted') :
-                                        t('emptyNoTasks')
+                                typeFilter !== 'all' ? 'emptyNoType' :
+                                    statusTab === 'COMPLETED' ? 'emptyCompleted' :
+                                        'emptyNoTasks'
                             }
                             description={
                                 statusTab === 'PENDING'
-                                    ? t('emptyNoTasksDesc')
-                                    : t('emptyCompletedDesc')
+                                    ? 'emptyNoTasksDesc'
+                                    : 'emptyCompletedDesc'
                             }
                         />
                     </CardContent>
@@ -487,6 +488,8 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                             user={user}
                             onAction={handleAction}
                             processing={processing}
+                            typeConfig={TYPE_CONFIG}
+                            priorityConfig={PRIORITY_CONFIG}
                         />
                     ))}
                 </div>
@@ -497,13 +500,13 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                 <div className="flex items-start gap-3 rounded-xl border border-[#C7D2FE] bg-[#EDF1FE] p-4">
                     <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
                     <div className="text-xs text-[#5E81F4]">
-                        <p className="font-medium">{t('completedNotice')}</p>
+                        <p className="font-medium">{'completedNotice'}</p>
                         <p className="mt-1 text-[#8181A5]">
-                            {t('completedLinks')}
+                            {'completedLinks'}
                             <span className="ml-1 space-x-2">
-                                <Link href="/leave" className="underline hover:text-[#5E81F4]">{t('linkLeave')}</Link>
-                                <Link href="/payroll/me" className="underline hover:text-[#5E81F4]">{t('linkPayslip')}</Link>
-                                <Link href="/performance" className="underline hover:text-[#5E81F4]">{t('linkPerformance')}</Link>
+                                <Link href="/leave" className="underline hover:text-[#5E81F4]">{'linkLeave'}</Link>
+                                <Link href="/payroll/me" className="underline hover:text-[#5E81F4]">{'linkPayslip'}</Link>
+                                <Link href="/performance" className="underline hover:text-[#5E81F4]">{'linkPerformance'}</Link>
                             </span>
                         </p>
                     </div>
@@ -514,7 +517,7 @@ function MyTasksInner({ user }: { user: SessionUser }) {
             {totalPages > 1 && !loading && (
                 <div className="flex items-center justify-between px-1">
                     <p className="text-sm text-[#8181A5]">
-                        총 {total.toLocaleString()}건
+                        {t('totalCount', { count: total.toLocaleString() })}
                     </p>
                     <div className="flex items-center gap-2">
                         <Button

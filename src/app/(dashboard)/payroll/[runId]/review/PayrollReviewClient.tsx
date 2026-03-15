@@ -20,8 +20,7 @@ import {
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-import { CARD_STYLES, TABLE_STYLES } from '@/lib/styles'
-import { useSubmitGuard } from '@/hooks/useSubmitGuard'
+import { CARD_STYLES, TABLE_STYLES, MODAL_STYLES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────
 
@@ -197,13 +196,13 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
         {(anomaly.currentValue || anomaly.previousValue) && (
           <div className="flex items-center gap-6 text-xs text-[#666] bg-[#FAFAFA] rounded-lg p-3">
             {anomaly.currentValue != null && (
-              <span>이번 달: <strong className="text-[#1A1A1A]">{Number(anomaly.currentValue).toLocaleString()}</strong></span>
+              <span>{'이번 달:'} <strong className="text-[#1A1A1A]">{Number(anomaly.currentValue).toLocaleString()}</strong></span>
             )}
             {anomaly.previousValue != null && (
               <span>전월: <strong className="text-[#1A1A1A]">{Number(anomaly.previousValue).toLocaleString()}</strong></span>
             )}
             {anomaly.threshold && (
-              <span>기준: <strong className="text-[#F59E0B]">{anomaly.threshold}</strong></span>
+              <span>{'기준:'} <strong className="text-[#F59E0B]">{anomaly.threshold}</strong></span>
             )}
           </div>
         )}
@@ -215,20 +214,20 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#D1FAE5] text-[#047857] text-xs font-semibold hover:bg-[#A7F3D0] transition-colors disabled:opacity-50"
           >
             <CheckCircle2 className="h-3.5 w-3.5" />
-            정상 확인
+            {'정상 확인'}
           </button>
           <button
             onClick={() => router.push(`/payroll/adjustments`)}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#D4D4D4] text-[#555] text-xs font-medium hover:bg-[#F5F5F5] transition-colors"
           >
-            수정 →
+            {'수정 →'}
           </button>
           <button
             onClick={() => setShowWhitelistModal(true)}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#D4D4D4] text-[#555] text-xs font-medium hover:bg-[#F5F5F5] transition-colors"
           >
             <ShieldX className="h-3.5 w-3.5" />
-            예외 등록
+            {'예외 등록'}
           </button>
         </div>
       </div>
@@ -237,19 +236,19 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
         <div className={MODAL_STYLES.container}>
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
             <div className="p-5 border-b border-[#E8E8E8] flex items-center justify-between">
-              <h3 className="font-semibold text-[#1A1A1A]">예외 등록</h3>
+              <h3 className="font-semibold text-[#1A1A1A]">{'예외 등록'}</h3>
               <button onClick={() => setShowWhitelistModal(false)} className="text-[#999] hover:text-[#333]">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <div className="p-5 space-y-3">
               <p className="text-sm text-[#555]">
-                <strong>{anomaly.employee.name}</strong>의 <strong>{anomaly.ruleCode}</strong> 규칙을 예외 처리합니다.
+                <strong>{anomaly.employee.name}</strong>{'의'} <strong>{anomaly.ruleCode}</strong> {'규칙을 예외 처리합니다.'}
               </p>
               <textarea
                 value={whitelistNote}
                 onChange={(e) => setWhitelistNote(e.target.value)}
-                placeholder={tCommon('placeholderExceptionReason')}
+                placeholder={'placeholderExceptionReason'}
                 rows={3}
                 className="w-full px-3 py-2.5 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 resize-none"
               />
@@ -259,7 +258,7 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
                 onClick={() => setShowWhitelistModal(false)}
                 className="px-4 py-2 rounded-lg border border-[#D4D4D4] text-sm text-[#555] hover:bg-[#F5F5F5]"
               >
-                취소
+                {'취소'}
               </button>
               <button
                 onClick={async () => {
@@ -270,7 +269,7 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
                 className="px-4 py-2 rounded-lg bg-[#5E81F4] text-white text-sm font-semibold hover:bg-[#4B6DE0] disabled:opacity-50"
               >
                 <ShieldCheck className="h-4 w-4 inline mr-1" />
-                예외 등록
+                {'예외 등록'}
               </button>
             </div>
           </div>
@@ -319,7 +318,7 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
           <div className="p-4 space-y-4">
             {/* 지급 */}
             <div>
-              <p className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-2">지급</p>
+              <p className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-2">{'지급'}</p>
               <div className="space-y-1.5">
                 {[
                   ['기본급', detail.baseSalary],
@@ -343,7 +342,7 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
 
             {/* 공제 */}
             <div>
-              <p className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-2">공제</p>
+              <p className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-2">{'공제합계'}</p>
               <div className="border-t border-[#E8E8E8] pt-1.5 flex justify-between text-sm font-semibold">
                 <span className="text-[#DC2626]">공제합계</span>
                 <span className="text-[#DC2626]">-{detail.deductions.toLocaleString()}</span>
@@ -353,7 +352,7 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
             {/* 실수령액 */}
             <div className="bg-[#F0FDF4] rounded-xl p-4">
               <div className="flex justify-between items-center">
-                <span className="font-semibold text-[#1A1A1A]">실수령액</span>
+                <span className="font-semibold text-[#1A1A1A]">{'실수령액'}</span>
                 <span className="text-xl font-bold text-[#059669]">{detail.netPay.toLocaleString()}원</span>
               </div>
             </div>
@@ -367,14 +366,14 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
             {/* 전월 비교 */}
             {row.previousNet != null && (
               <div className="border-t border-[#E8E8E8] pt-3">
-                <p className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-2">전월 비교</p>
+                <p className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-2">{'전월 비교'}</p>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-[#666]">전월 실수령</span>
+                    <span className="text-[#666]">{'전월 실수령'}</span>
                     <span>{row.previousNet.toLocaleString()}원</span>
                   </div>
                   <div className="flex justify-between font-semibold">
-                    <span className="text-[#666]">변동</span>
+                    <span className="text-[#666]">{'변동률'}</span>
                     <span className={row.diffNet > 0 ? 'text-[#059669]' : row.diffNet < 0 ? 'text-[#DC2626]' : 'text-[#999]'}>
                       {row.diffNet > 0 ? '+' : ''}{row.diffNet.toLocaleString()}원
                       &nbsp;({fmtPct(row.diffPercent)})
@@ -401,7 +400,7 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
               ))}
               {row.diffNet !== 0 && (
                 <div className="flex justify-between text-sm font-semibold">
-                  <span className="text-[#666]">변동</span>
+                  <span className="text-[#666]">{'변동률'}</span>
                   <span className={row.diffNet > 0 ? 'text-[#059669]' : 'text-[#DC2626]'}>
                     {row.diffNet > 0 ? '+' : ''}{row.diffNet.toLocaleString()}원 ({fmtPct(row.diffPercent)})
                   </span>
@@ -495,7 +494,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
   }, [runId, sortBy, sortOrder, deptFilter, anomalyOnly])
 
   const fetchWhitelist = useCallback(async () => {
-  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmit)
+
     if (!run?.id) return
     try {
       const res = await apiClient.get<{ items: WhitelistEntry[] }>(
@@ -595,7 +594,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
             <div className="flex items-center gap-2 mt-0.5">
               <span className="text-sm text-[#666]">{run.yearMonth}</span>
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#E0E7FF] text-[#4B6DE0] border border-[#C7D2FE]">
-                이상 검토 중
+                {t('anomalies_keca491')}
               </span>
             </div>
           </div>
@@ -622,10 +621,10 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: '총 급여', value: fmt(Number(run.totalGross ?? 0)), icon: <DollarSign className="h-4 w-4 text-[#059669]" /> },
-          { label: '인원', value: `${run.headcount ?? 0}명`, icon: <Users className="h-4 w-4 text-[#4B6DE0]" /> },
-          { label: '이상 항목', value: `${anomalySummary?.open ?? 0}건`, icon: <AlertTriangle className="h-4 w-4 text-[#F59E0B]" />, highlight: (anomalySummary?.open ?? 0) > 0 },
-          { label: '수동 조정', value: `${run.adjustmentCount ?? 0}건`, icon: <Clock className="h-4 w-4 text-[#999]" /> },
+          { label: t('kr_kecb49d_keab889ec'), value: fmt(Number(run.totalGross ?? 0)), icon: <DollarSign className="h-4 w-4 text-[#059669]" /> },
+          { label: t('kr_kec9db8ec'), value: `${run.headcount ?? 0}명`, icon: <Users className="h-4 w-4 text-[#4B6DE0]" /> },
+          { label: t('kr_kec9db4ec_ked95adeb'), value: `${anomalySummary?.open ?? 0}건`, icon: <AlertTriangle className="h-4 w-4 text-[#F59E0B]" />, highlight: (anomalySummary?.open ?? 0) > 0 },
+          { label: t('adjustments'), value: `${run.adjustmentCount ?? 0}건`, icon: <Clock className="h-4 w-4 text-[#999]" /> },
         ].map((kpi) => (
           <div key={kpi.label} className={`bg-white rounded-xl border p-5 ${kpi.highlight ? 'border-[#F59E0B]' : 'border-[#E8E8E8]'}`}>
             <div className="flex items-center justify-between mb-1">
@@ -655,7 +654,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       {allResolved && (
         <div className="bg-[#D1FAE5] border border-[#A7F3D0] rounded-xl p-4 flex items-center gap-3">
           <CheckCircle2 className="h-5 w-5 text-[#059669] flex-shrink-0" />
-          <p className="text-sm text-[#047857] font-medium">모든 이상 항목이 처리되었습니다. 승인 요청이 가능합니다.</p>
+          <p className="text-sm text-[#047857] font-medium">{t('kr_kebaaa8eb_kec9db4ec_ked95adeb_')}</p>
         </div>
       )}
 
@@ -740,9 +739,9 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
           {comparisonSummary && (
             <div className="grid grid-cols-3 gap-3">
               {[
-                { label: '증가', value: comparisonSummary.employeesIncreased, color: 'text-[#059669]', icon: <TrendingUp className="h-4 w-4 text-[#059669]" /> },
-                { label: '감소', value: comparisonSummary.employeesDecreased, color: 'text-[#DC2626]', icon: <TrendingDown className="h-4 w-4 text-[#DC2626]" /> },
-                { label: '동일', value: comparisonSummary.employeesUnchanged, color: 'text-[#999]', icon: <Minus className="h-4 w-4 text-[#999]" /> },
+                { label: t('kr_keca69dea'), value: comparisonSummary.employeesIncreased, color: 'text-[#059669]', icon: <TrendingUp className="h-4 w-4 text-[#059669]" /> },
+                { label: t('kr_keab090ec'), value: comparisonSummary.employeesDecreased, color: 'text-[#DC2626]', icon: <TrendingDown className="h-4 w-4 text-[#DC2626]" /> },
+                { label: t('kr_keb8f99ec'), value: comparisonSummary.employeesUnchanged, color: 'text-[#999]', icon: <Minus className="h-4 w-4 text-[#999]" /> },
               ].map((item) => (
                 <div key={item.label} className={`${CARD_STYLES.kpi} flex items-center gap-3`}>
                   {item.icon}
@@ -771,7 +770,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
               onChange={(e) => setDeptFilter(e.target.value)}
               className="px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm text-[#555] bg-white"
             >
-              <option value="">전체 부서</option>
+              <option value="">{t('all_department')}</option>
               {depts.map((d) => <option key={d} value={d}>{d}</option>)}
             </select>
             <label className="inline-flex items-center gap-2 text-sm text-[#555] cursor-pointer">
@@ -781,7 +780,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                 onChange={(e) => setAnomalyOnly(e.target.checked)}
                 className="w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4]"
               />
-              이상항목만
+              {t('kr_kec9db4ec')}
             </label>
 
             {/* Download dropdown */}
@@ -791,15 +790,15 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[#D4D4D4] text-sm text-[#555] hover:bg-[#F5F5F5]"
               >
                 <Download className="h-4 w-4" />
-                엑셀
+                {t('kr_kec9791ec')}
                 <ChevronDown className="h-3.5 w-3.5" />
               </button>
               {showDownloadMenu && (
                 <div className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg border border-[#E8E8E8] py-1 w-44 z-10">
                   {[
-                    { label: '전월 대비 비교', href: `/api/v1/payroll/${runId}/export/comparison` },
-                    { label: '급여대장', href: `/api/v1/payroll/${runId}/export/ledger` },
-                    { label: '인건비 전표', href: `/api/v1/payroll/${runId}/export/journal` },
+                    { label: t('kr_keca084ec_keb8c80eb_kebb984ea'), href: `/api/v1/payroll/${runId}/export/comparison` },
+                    { label: t('kr_keab889ec'), href: `/api/v1/payroll/${runId}/export/ledger` },
+                    { label: t('kr_kec9db8ea_keca084ed'), href: `/api/v1/payroll/${runId}/export/journal` },
                   ].map((item) => (
                     <button
                       key={item.label}
@@ -820,12 +819,12 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
               <thead>
                 <tr className="border-b border-[#E8E8E8]">
                   {[
-                    { label: '이름', key: 'name' },
-                    { label: '부서', key: null },
-                    { label: '실수령액', key: 'currentNet' },
-                    { label: '전월', key: null },
-                    { label: '변동', key: 'diffPercent' },
-                    { label: '사유', key: null },
+                    { label: t('name'), key: 'name' },
+                    { label: t('department'), key: null },
+                    { label: t('kr_kec8ba4ec'), key: 'currentNet' },
+                    { label: t('kr_keca084ec'), key: null },
+                    { label: t('kr_kebb380eb'), key: 'diffPercent' },
+                    { label: t('kr_kec82acec'), key: null },
                   ].map(({ label, key }) => (
                     <th
                       key={label}
@@ -882,7 +881,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
               </tbody>
             </table>
             {filteredRows.length === 0 && (
-              <div className="py-10 text-center text-sm text-[#999]">검색 결과가 없습니다.</div>
+              <div className="py-10 text-center text-sm text-[#999]">{t('search_keab2b0ea_kec9786ec')}</div>
             )}
           </div>
         </div>
@@ -900,10 +899,10 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-[#E8E8E8]">
-                  <th className={TABLE_STYLES.headerCell}>직원</th>
-                  <th className={TABLE_STYLES.headerCell}>규칙</th>
-                  <th className={TABLE_STYLES.headerCell}>등록 사유</th>
-                  <th className={TABLE_STYLES.headerCell}>등록월</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('kr_keca781ec')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('kr_keab79cec')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('register_kec82acec')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('register_month')}</th>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
@@ -919,7 +918,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                         onClick={() => handleRemoveWhitelist(entry.id)}
                         className="text-xs text-[#DC2626] hover:underline"
                       >
-                        해제
+                        {t('kr_ked95b4ec')}
                       </button>
                     </td>
                   </tr>
@@ -944,7 +943,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
         <div className={MODAL_STYLES.container}>
           <div className={MODAL_STYLES.content.md}>
             <div className="p-5 border-b border-[#E8E8E8] flex items-center justify-between">
-              <h3 className="font-bold text-lg text-[#1A1A1A]">승인 요청</h3>
+              <h3 className="font-bold text-lg text-[#1A1A1A]">{t('approve_kec9a94ec')}</h3>
               <button onClick={() => setShowSubmitModal(false)} className="text-[#999] hover:text-[#333]">
                 <X className="h-5 w-5" />
               </button>
@@ -964,7 +963,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                 ))}
               </div>
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">메모 (선택)</label>
+                <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_keba994eb_kec84a0ed')}</label>
                 <textarea
                   value={submitNote}
                   onChange={(e) => setSubmitNote(e.target.value)}
@@ -979,10 +978,10 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                 onClick={() => setShowSubmitModal(false)}
                 className="px-4 py-2 rounded-lg border border-[#D4D4D4] text-sm text-[#555] hover:bg-[#F5F5F5]"
               >
-                취소
+                {t('cancel')}
               </button>
               <button
-                onClick={guardedSubmit}
+                onClick={handleSubmit}
                 disabled={submitting}
                 className="px-5 py-2 rounded-lg bg-[#059669] hover:bg-[#047857] text-white text-sm font-semibold disabled:opacity-50"
               >

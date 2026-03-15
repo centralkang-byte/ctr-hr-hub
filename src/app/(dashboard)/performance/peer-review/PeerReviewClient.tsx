@@ -50,7 +50,7 @@ interface TeamResult {
 const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
   DRAFT: { label: '미작성', cls: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' },
   SUBMITTED: { label: '제출 완료', cls: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
-  CONFIRMED: { label: '확정', cls: 'bg-[#EDF1FE] text-[#4B6DE0] border-[#EDF1FE]' },
+  CONFIRMED: { label: '확정됨', cls: 'bg-[#EDF1FE] text-[#4B6DE0] border-[#EDF1FE]' },
 }
 
 // ─── Component ───────────────────────────────────────────

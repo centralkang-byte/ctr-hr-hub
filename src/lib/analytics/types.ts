@@ -109,6 +109,27 @@ export interface AttendanceResponse {
   }
 }
 
+// AttendanceData: shape returned by /api/v1/analytics/attendance
+export interface AttendanceData {
+  over52hCount: number
+  weeklyTrend: {
+    week_start: string
+    avg_total_hours: number
+    avg_overtime_hours: number
+  }[]
+  overtimeByDept: {
+    department_name: string
+    avg_overtime_hours: number
+  }[]
+  issuesTrend: {
+    week_start: string
+    late_count: number
+    absent_count: number
+    early_out_count: number
+  }[]
+}
+
+
 // --- 6. Turnover ---
 export interface TurnoverResponse {
   kpis: {
@@ -247,4 +268,64 @@ export interface CompaRatioRow {
   p25: number
   median: number
   p75: number
+}
+
+
+export interface ExecutiveReport {
+  content: string
+  generatedAt: string
+  companyId: string | null
+}
+
+// ─── API Route Data Types ────────────────────────────────
+
+export interface OverviewKpi {
+  totalHeadcount: number
+  newHires30d: number
+  resignations30d: number
+  turnoverRateAnnualized: number
+  avgOvertimeHours: number
+  burnoutRiskCount: number
+}
+
+export interface CompensationData {
+  distribution: unknown[]
+  byGrade: { grade_code: string; grade_name: string; avg_compa_ratio: number }[]
+  bandFit: { under: number; in_band: number; over: number }
+}
+
+export interface PerformanceData {
+  emsDistribution: { ems_block: string; employee_count: number }[]
+  byDepartment: { department_name: string; avg_score: number }[]
+  gradeDistribution: unknown[]
+}
+
+export interface RecruitmentData {
+  funnel: { stage: string; candidate_count: number }[]
+  conversionByPosting: {
+    posting_id: string
+    posting_title: string
+    stage: string
+    candidate_count: number
+    avg_screening_score: number | null
+  }[]
+  avgHiringDays: number | null
+}
+
+export interface TeamHealthData {
+  teams: unknown[]
+  burnoutList: unknown[]
+}
+
+export interface TurnoverData {
+  monthlyTrend: { month: string; resignations: number; turnover_rate: number }[]
+  byReason: { reason: string; count: number }[]
+  byDepartment: { department_name: string; turnover_rate: number }[]
+  byResignType: { resign_type: string; count: number }[]
+}
+
+export interface WorkforceData {
+  byDepartment: { department_id: string; department_name: string; headcount: number }[]
+  byEmploymentType: { employment_type: string; headcount: number }[]
+  byGrade: { grade_code: string; grade_name: string; headcount: number }[]
 }

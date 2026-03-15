@@ -503,6 +503,7 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
     onBlock: (taskId: string, title: string) => void
     onUnblock: (taskId: string) => void
 }) {
+    const tCommon = useTranslations('common')
     const isAssignee = task.assigneeId === user.employeeId
     const canAct = isAssignee || isHrAdmin
     const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && task.status !== 'DONE' && task.status !== 'SKIPPED'

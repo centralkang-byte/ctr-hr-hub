@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/api'
 import { BUTTON_VARIANTS,  FORM_STYLES, TABLE_STYLES } from '@/lib/styles'
+import { useTranslations } from 'next-intl'
 
 interface Props { companyId: string | null }
 
@@ -21,14 +22,16 @@ const DEFAULTS: BonusSettings = {
   gradeMultipliers: [
     { grade: 'E', label: '탁월', multiplier: 200 },
     { grade: 'M_PLUS', label: '우수', multiplier: 150 },
-    { grade: 'M', label: '보통', multiplier: 100 },
+    { grade: 'M', label: '평균', multiplier: 100 },
     { grade: 'B', label: '미흡', multiplier: 0 },
   ],
   bonusType: 'MONTHLY_SALARY',
   maxMultiplier: 300,
 }
 
-export function BonusRulesTab({ companyId }: Props) {
+export function BonusRulesTab({
+  companyId }: Props) {
+  const t = useTranslations('settings')
   const [settings, setSettings] = useState<BonusSettings>(() => structuredClone(DEFAULTS))
   const [original, setOriginal] = useState<BonusSettings>(() => structuredClone(DEFAULTS))
   const [loading, setLoading] = useState(true)
@@ -78,7 +81,7 @@ export function BonusRulesTab({ companyId }: Props) {
         companyId: companyId ?? undefined,
         description: '성과급 규칙',
       })
-      toast({ title: '저장되었습니다', description: '성과급 규칙이 업데이트되었습니다.' })
+      toast({ title: '저장되었습니다.', description: '성과급 규칙이 업데이트되었습니다.' })
       setOriginal(structuredClone(settings))
     } catch {
       toast({ title: '저장 실패', description: '다시 시도해 주세요.', variant: 'destructive' })
@@ -100,27 +103,27 @@ export function BonusRulesTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">성과급 규칙</h3>
-          <p className="text-sm text-[#8181A5]">등급별 성과급 배율 설정</p>
+          <h3 className="text-base font-semibold text-[#1C1D21]">{'성과급 규칙'}</h3>
+          <p className="text-sm text-[#8181A5]">{'등급별 성과급 배율 설정'}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">법인 오버라이드</span>
+          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
         )}
       </div>
 
       <SettingFieldWithOverride label="성과급 기준" description="성과급 산정 기준" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <select className={FORM_STYLES.select} value={settings.bonusType} onChange={(e) => setSettings((p) => ({ ...p, bonusType: e.target.value as BonusSettings['bonusType'] }))}>
-          <option value="MONTHLY_SALARY">월 기본급 기준</option>
-          <option value="ANNUAL_SALARY">연봉 기준</option>
-          <option value="FIXED_AMOUNT">정액</option>
+          <option value="MONTHLY_SALARY">{'월 기본급 기준'}</option>
+          <option value="ANNUAL_SALARY">{'연봉 기준'}</option>
+          <option value="FIXED_AMOUNT">{'정상'}</option>
         </select>
       </SettingFieldWithOverride>
 
       <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
         <table className="w-full"><thead><tr className={TABLE_STYLES.header}>
-          <th className={TABLE_STYLES.headerCell}>등급</th>
-          <th className={TABLE_STYLES.headerCell}>라벨</th>
-          <th className={TABLE_STYLES.headerCellRight}>배율 (%)</th>
+          <th className={TABLE_STYLES.headerCell}>{'등급'}</th>
+          <th className={TABLE_STYLES.headerCell}>{'라벨'}</th>
+          <th className={TABLE_STYLES.headerCellRight}>{'배율 (%)'}</th>
         </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{settings.gradeMultipliers.map((g, i) => (
           <tr key={g.grade} className={TABLE_STYLES.row}>
             <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{g.grade}</td>
@@ -132,7 +135,7 @@ export function BonusRulesTab({ companyId }: Props) {
 
       <div className="flex justify-end gap-2 pt-4">
         <Button variant="outline" onClick={handleRevert} disabled={!hasChanges}>
-          <RotateCcw className="mr-2 h-4 w-4" />되돌리기
+          <RotateCcw className="mr-2 h-4 w-4" />{'되돌리기'}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={handleSave} disabled={!hasChanges || saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장

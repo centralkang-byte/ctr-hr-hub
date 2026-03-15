@@ -45,8 +45,8 @@ interface Requisition {
 }
 
 const URGENCY_LABELS: Record<string, { label: string; color: string }> = {
-  urgent: { label: '긴급', color: 'bg-[#FEE2E2] text-[#B91C1C]' },
-  normal: { label: '보통', color: 'bg-[#FEF3C7] text-[#B45309]' },
+  urgent: { label: '긴급도', color: 'bg-[#FEE2E2] text-[#B91C1C]' },
+  normal: { label: '평균', color: 'bg-[#FEF3C7] text-[#B45309]' },
   low: { label: '낮음', color: 'bg-[#F0F9FF] text-[#0369A1]' },
 }
 
@@ -108,23 +108,23 @@ export default function RequisitionListClient({user }: {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('requisitionTitle')}</h1>
-          <p className="text-sm text-[#666] mt-0.5">부서장 채용 요청 및 결재 관리</p>
+          <p className="text-sm text-[#666] mt-0.5">{t('department_kec9ea5_kecb184ec_kec9a94ec_kebb08f_keab2b0ec_management')}</p>
         </div>
         <button
           onClick={() => router.push('/recruitment/requisitions/new')}
           className={`flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg text-sm font-medium`}
         >
           <Plus size={16} />
-          채용 요청 작성
+          {t('requisition_kec9e91ec')}
         </button>
       </div>
 
       {/* 탭 */}
       <div className="flex border-b border-[#E8E8E8]">
         {[
-          { key: 'all', label: '전체 요청' },
-          { key: 'pending', label: '결재 대기' },
-          ...(isHR ? [{ key: 'my', label: '나의 결재함' }] : []),
+          { key: 'all', label: t('all_kec9a94ec') },
+          { key: 'pending', label: t('kr_keab2b0ec_keb8c80ea') },
+          ...(isHR ? [{ key: 'my', label: t('kr_keb8298ec_keab2b0ec') }] : []),
         ].map((t) => (
           <button
             key={t.key}
@@ -154,7 +154,7 @@ export default function RequisitionListClient({user }: {
         </div>
         <button className="flex items-center gap-2 px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#555] hover:bg-[#FAFAFA]">
           <Filter size={14} />
-          필터
+          {t('filter')}
         </button>
       </div>
 
@@ -252,7 +252,7 @@ export default function RequisitionListClient({user }: {
                       onClick={() => router.push(`/recruitment/requisitions/${item.id}`)}
                       className="flex items-center gap-1 px-3 py-1.5 border border-[#D4D4D4] text-[#555] text-xs rounded-lg hover:bg-[#FAFAFA]"
                     >
-                      상세
+                      {t('kr_kec8381ec')}
                     </button>
                   </div>
                 </div>

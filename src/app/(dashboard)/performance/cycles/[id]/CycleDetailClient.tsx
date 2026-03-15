@@ -29,18 +29,7 @@ interface Participant {
     peerReviewProgress: string; overdueFlags: string[] | null; reviewStatus: string
 }
 
-// 9-state pipeline
-const PIPELINE_STATES = [
-    { key: 'DRAFT', label: '초안' },
-    { key: 'ACTIVE', label: '목표 설정' },
-    { key: 'CHECK_IN', label: '체크인' },
-    { key: 'EVAL_OPEN', label: '평가 실시' },
-    { key: 'CALIBRATION', label: '캘리브레이션' },
-    { key: 'FINALIZED', label: '확정' },
-    { key: 'CLOSED', label: '종료' },
-    { key: 'COMP_REVIEW', label: '보상 검토' },
-    { key: 'COMP_COMPLETED', label: '보상 완료' },
-]
+// PIPELINE_STATES is defined inside the component (needs t())
 
 const TRANSITIONS: Record<string, string> = {
     DRAFT: 'ACTIVE', ACTIVE: 'CHECK_IN', CHECK_IN: 'EVAL_OPEN',
@@ -55,6 +44,18 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
     const t = useTranslations('performance')
     const router = useRouter()
     const isHrAdmin = user.role === 'SUPER_ADMIN' || user.role === 'HR_ADMIN'
+
+    const PIPELINE_STATES = [
+        { key: 'DRAFT', label: t('draft') },
+        { key: 'ACTIVE', label: t('goals_settings') },
+        { key: 'CHECK_IN', label: t('kr_kecb2b4ed') },
+        { key: 'EVAL_OPEN', label: t('evaluation_kec8ba4ec') },
+        { key: 'CALIBRATION', label: t('calibration') },
+        { key: 'FINALIZED', label: t('confirmed') },
+        { key: 'CLOSED', label: t('ended') },
+        { key: 'COMP_REVIEW', label: t('kr_kebb3b4ec_keab280ed') },
+        { key: 'COMP_COMPLETED', label: t('kr_kebb3b4ec_complete') },
+    ]
 
     const [cycle, setCycle] = useState<CycleDetail | null>(null)
     const [participants, setParticipants] = useState<Participant[]>([])
@@ -95,7 +96,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
             try {
                 await apiClient.post(`/api/v1/performance/cycles/${cycleId}/advance`)
                 await fetchData()
-            } catch { toast({ title: '상태 전환에 실패했습니다.', variant: 'destructive' }) }
+            } catch { toast({ title: t('status_keca084ed_kec8ba4ed'), variant: 'destructive' }) }
             finally { setAdvancing(false) }
         }})
     }
@@ -105,8 +106,8 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
                     <ShieldAlert className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">접근 권한이 없습니다.</h2>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">← 돌아가기</a>
+                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">{t('kr_keca091ea_keab68ced_kec9786ec')}</h2>
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">{t('kr_keb8f8cec')}</a>
                 </div>
             </div>
         )
@@ -132,7 +133,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
                     <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
-                    <a href="/performance/cycles" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">← 돌아가기</a>
+                    <a href="/performance/cycles" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">{t('kr_keb8f8cec')}</a>
                 </div>
             </div>
         )
@@ -142,16 +143,16 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
     const nextState = TRANSITIONS[cycle.status]
     const overdueParticipants = participants.filter((p) => p.overdueFlags && p.overdueFlags.length > 0)
     const departments = [...new Set(participants.map((p) => p.employee.department?.name ?? '미지정'))]
-    const filteredParticipants = deptFilter ? participants.filter((p) => (p.employee.department?.name ?? '미지정') === deptFilter) : participants
-
+    const filteredParticipants = deptFilter ? participants.filter((p) =>
+        p.employee.department?.name === deptFilter
+    ) : participants
     return (
         <>
-        <div className="min-h-screen bg-[#F5F5FA] p-6">
             <div className="mx-auto max-w-5xl">
                 {/* Back + Title */}
                 <button onClick={() => router.push('/performance/cycles')}
                     className="mb-4 inline-flex items-center gap-1 text-sm text-[#8181A5] hover:text-[#1C1D21]">
-                    <ArrowLeft className="h-4 w-4" /> 사이클 목록
+                    <ArrowLeft className="h-4 w-4" /> {t('cycle_kebaaa9eb')}
                 </button>
                 <div className="mb-6">
                     <h1 className="text-2xl font-bold text-[#1C1D21]">{cycle.name}</h1>
@@ -166,7 +167,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
 
                 {/* Pipeline Visualization */}
                 <div className="mb-6 rounded-xl border border-[#F0F0F3] bg-white p-6">
-                    <h2 className="mb-4 text-base font-semibold text-[#1C1D21]">파이프라인 진행 상태</h2>
+                    <h2 className="mb-4 text-base font-semibold text-[#1C1D21]">{t('pipeline_keca784ed_status')}</h2>
                     <div className="flex items-center gap-1 overflow-x-auto pb-2">
                         {PIPELINE_STATES.map((state, idx) => {
                             const isCurrent = idx === currentIdx
@@ -200,7 +201,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                             </div>
                             <button onClick={handleAdvance} disabled={advancing}
                                 className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-5 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40 transition-colors">
-                                {advancing ? '전환 중...' : <><span>다음 단계로 진행</span><ChevronRight className="h-4 w-4" /></>}
+                                {advancing ? '전환 중...' : <><span>{t('next_keb8ba8ea_keca784ed')}</span><ChevronRight className="h-4 w-4" /></>}
                             </button>
                         </div>
                     )}
@@ -226,7 +227,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                 <div className="mb-4 flex border-b border-[#F0F0F3]">
                     <button onClick={() => setTab('pipeline')}
                         className={`px-5 py-3 text-sm font-medium border-b-2 ${tab === 'pipeline' ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#8181A5]'}`}>
-                        사이클 정보
+                        {t('cycle_keca095eb')}
                     </button>
                     <button onClick={() => setTab('participants')}
                         className={`px-5 py-3 text-sm font-medium border-b-2 ${tab === 'participants' ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#8181A5]'}`}>
@@ -237,9 +238,9 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                 {tab === 'pipeline' ? (
                     <div className="rounded-xl border border-[#F0F0F3] bg-white p-5 space-y-3">
                         <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div><span className="text-[#8181A5]">체크인 모드:</span> <span className="font-medium text-[#1C1D21]">{cycle.checkInMode === 'MANDATORY' ? '필수' : '권장'}</span></div>
-                            <div><span className="text-[#8181A5]">동료평가:</span> <span className="font-medium text-[#1C1D21]">{cycle.peerReviewEnabled ? `활성 (${cycle.peerReviewMinCount}~${cycle.peerReviewMaxCount}명)` : '비활성'}</span></div>
-                            <div><span className="text-[#8181A5]">참여자 수:</span> <span className="font-medium text-[#1C1D21]">{participants.length}명</span></div>
+                            <div><span className="text-[#8181A5]">{t('kr_kecb2b4ed_kebaaa8eb')}</span> <span className="font-medium text-[#1C1D21]">{cycle.checkInMode === 'MANDATORY' ? '필수' : '권장'}</span></div>
+                            <div><span className="text-[#8181A5]">{t('kr_keb8f99eb')}</span> <span className="font-medium text-[#1C1D21]">{cycle.peerReviewEnabled ? `활성 (${cycle.peerReviewMinCount}~${cycle.peerReviewMaxCount}명)` : '비활성'}</span></div>
+                            <div><span className="text-[#8181A5]">{t('kr_kecb0b8ec_kec8898')}</span> <span className="font-medium text-[#1C1D21]">{participants.length}명</span></div>
                         </div>
                     </div>
                 ) : (
@@ -250,7 +251,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                             <Users className="h-4 w-4 text-[#8181A5]" />
                             <select value={deptFilter} onChange={(e) => setDeptFilter(e.target.value)}
                                 className="rounded-lg border border-[#F0F0F3] px-2 py-1 text-xs text-[#1C1D21] focus:border-[#5E81F4] focus:outline-none">
-                                <option value="">전체 부서</option>
+                                <option value="">{t('all_department')}</option>
                                 {departments.map((d) => <option key={d} value={d}>{d}</option>)}
                             </select>
                         </div>
@@ -258,13 +259,13 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="bg-[#F5F5FA] text-xs text-[#8181A5] font-medium">
-                                        <th className={TABLE_STYLES.headerCell}>이름</th>
-                                        <th className={TABLE_STYLES.headerCell}>부서</th>
-                                        <th className={TABLE_STYLES.headerCell}>목표</th>
-                                        <th className={TABLE_STYLES.headerCell}>체크인</th>
-                                        <th className={TABLE_STYLES.headerCell}>자기평가</th>
+                                        <th className={TABLE_STYLES.headerCell}>{t('name')}</th>
+                                        <th className={TABLE_STYLES.headerCell}>{t('department')}</th>
+                                        <th className={TABLE_STYLES.headerCell}>{t('goals')}</th>
+                                        <th className={TABLE_STYLES.headerCell}>{t('kr_kecb2b4ed')}</th>
+                                        <th className={TABLE_STYLES.headerCell}>{t('selfEval')}</th>
                                         <th className={TABLE_STYLES.headerCell}>동료평가</th>
-                                        <th className={TABLE_STYLES.headerCell}>상태</th>
+                                        <th className={TABLE_STYLES.headerCell}>{t('status')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -289,10 +290,10 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                                                 <td className="px-4 py-3 text-center">
                                                     {hasOverdue ? (
                                                         <span className="inline-flex items-center gap-1 rounded-full bg-[#FFEBEE] px-2 py-0.5 text-xs font-medium text-[#C62828]">
-                                                            <AlertTriangle className="h-3 w-3" /> 지연
+                                                            <AlertTriangle className="h-3 w-3" /> {t('kr_keca780ec')}
                                                         </span>
                                                     ) : (
-                                                        <span className="inline-flex rounded-full bg-[#D1FAE5] px-2 py-0.5 text-xs font-medium text-[#047857]">정상</span>
+                                                        <span className="inline-flex rounded-full bg-[#D1FAE5] px-2 py-0.5 text-xs font-medium text-[#047857]">{t('kr_keca095ec')}</span>
                                                     )}
                                                 </td>
                                             </tr>
@@ -305,10 +306,9 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                         <div className="border-t border-[#F0F0F3] px-5 py-3 text-xs text-[#8181A5]">
                             합계: {filteredParticipants.length}명 | 정상: {filteredParticipants.filter((p) => !p.overdueFlags || p.overdueFlags.length === 0).length} | 지연: {filteredParticipants.filter((p) => p.overdueFlags && p.overdueFlags.length > 0).length}
                         </div>
-                    </div>
-                )}
             </div>
-        </div>
+        )}
+            </div>
         <ConfirmDialog {...dialogProps} />
         </>
     )

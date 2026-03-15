@@ -29,7 +29,7 @@ const DEFAULT_STATUS_TO_STEP: Record<string, number> = {
 
 // ─── Payroll Calendar (법인별 마감/지급일) ──────────────────
 // Settings-connected: reads from PAYROLL/pay-schedule, falls back to defaults
-export const DEFAULT_PAYROLL_CALENDAR: Record<string, { closingDay: number; payDay: number; payDayNextMonth?: boolean }> = {
+const DEFAULT_PAYROLL_CALENDAR: Record<string, { closingDay: number; payDay: number; payDayNextMonth?: boolean }> = {
     'CTR-CN': { closingDay: 5, payDay: 10 },
     'CTR-US': { closingDay: 15, payDay: 20 },
     'CTR-KR': { closingDay: 20, payDay: 25 },
