@@ -1,0 +1,462 @@
+[
+  {
+    "path": "settings.warning",
+    "ko": "경고"
+  },
+  {
+    "path": "settings.blocked",
+    "ko": "차단"
+  },
+  {
+    "path": "settings.overtimeBlocking",
+    "ko": "초과근무 차단"
+  },
+  {
+    "path": "settings.overtimeBlockingDesc",
+    "ko": "차단 임계값 도달 시 클락인을 차단합니다."
+  },
+  {
+    "path": "settings.enableClockInBlocking",
+    "ko": "클락인 차단 활성화"
+  },
+  {
+    "path": "settings.clockInBlockingToggleDesc",
+    "ko": "차단 임계값 초과 시 직원의 출근 기록이 자동으로 거부됩니다."
+  },
+  {
+    "path": "settings.enableShiftWork",
+    "ko": "교대근무 활성화"
+  },
+  {
+    "path": "settings.shiftWorkDesc",
+    "ko": "법인에서 교대근무(2교대/3교대)를 운영합니다."
+  },
+  {
+    "path": "settings.useShiftWork",
+    "ko": "교대근무 사용"
+  },
+  {
+    "path": "settings.enableShiftWorkDesc",
+    "ko": "활성화하면 교대근무 패턴 및 그룹 관리 기능이 활성화됩니다."
+  },
+  {
+    "path": "settings.shiftWorkDetailSettings",
+    "ko": "교대근무 상세 설정"
+  },
+  {
+    "path": "settings.attendanceSettings",
+    "ko": "근태 설정"
+  },
+  {
+    "path": "settings.attendanceSettingsDesc",
+    "ko": "근무유형, 52시간 관리, 교대근무 정책을 설정합니다."
+  },
+  {
+    "path": "settings.hrAlertSend",
+    "ko": "HR 알림 발송"
+  },
+  {
+    "path": "settings.managerHrAlert",
+    "ko": "매니저 + HR 알림"
+  },
+  {
+    "path": "settings.overtimeBlock",
+    "ko": "초과 근무 차단"
+  },
+  {
+    "path": "settings.retryPlease",
+    "ko": "다시 시도해 주세요."
+  },
+  {
+    "path": "settings.hours",
+    "ko": "시간"
+  },
+  {
+    "path": "settings.days",
+    "ko": "일"
+  },
+  {
+    "path": "settings.krw",
+    "ko": "원"
+  },
+  {
+    "path": "settings.months",
+    "ko": "월"
+  },
+  {
+    "path": "settings.years",
+    "ko": "년"
+  },
+  {
+    "path": "settings.negativeLeave",
+    "ko": "마이너스 연차"
+  },
+  {
+    "path": "settings.negativeLeaveDesc",
+    "ko": "잔여 연차가 0일 미만으로 내려갈 수 있도록 허용"
+  },
+  {
+    "path": "settings.annualGrant",
+    "ko": "연간 부여"
+  },
+  {
+    "path": "settings.monthlyGrant",
+    "ko": "월별 부여"
+  },
+  {
+    "path": "settings.manualGrant",
+    "ko": "수동 부여"
+  },
+  {
+    "path": "settings.hireDateAnniversary",
+    "ko": "입사일 기준"
+  },
+  {
+    "path": "settings.fiscalYearBasis",
+    "ko": "회계연도 기준"
+  },
+  {
+    "path": "settings.firstYearProrated",
+    "ko": "입사 첫해 비례 부여"
+  },
+  {
+    "path": "settings.firstYearProratedDesc",
+    "ko": "입사일이 연도 중간인 경우 비례 계산하여 부여"
+  },
+  {
+    "path": "settings.annualBulkGrant",
+    "ko": "연간 일괄 부여"
+  },
+  {
+    "path": "settings.monthlyAccrual",
+    "ko": "월별 적립"
+  },
+  {
+    "path": "settings.fiscalYearJan1",
+    "ko": "회계연도 (1/1)"
+  },
+  {
+    "path": "settings.noCarryOver",
+    "ko": "이월 불가"
+  },
+  {
+    "path": "settings.fullCarryOver",
+    "ko": "전액 이월"
+  },
+  {
+    "path": "settings.unlimited",
+    "ko": "무제한"
+  },
+  {
+    "path": "settings.start",
+    "ko": "시작"
+  },
+  {
+    "path": "settings.persons",
+    "ko": "명"
+  },
+  {
+    "path": "compliance.month_keab084eb",
+    "ko": "월간보고"
+  },
+  {
+    "path": "compliance.kr_keab5b0eb_register_keca084ec_k",
+    "ko": "군복무 등록, 전자문서(КЭДО) 및 법정 보고서 관리"
+  },
+  {
+    "path": "compliance.count",
+    "ko": "건"
+  },
+  {
+    "path": "compliance.hours",
+    "ko": "시간"
+  },
+  {
+    "path": "nav.payroll.closeAttendance",
+    "ko": "근태 마감"
+  },
+  {
+    "path": "nav.payroll.adjustments",
+    "ko": "수동 조정"
+  },
+  {
+    "path": "nav.payroll.anomalyReview",
+    "ko": "이상 검토"
+  },
+  {
+    "path": "nav.payroll.bankTransfers",
+    "ko": "이체 관리"
+  },
+  {
+    "path": "myTasks.typeLeave",
+    "ko": "휴가"
+  },
+  {
+    "path": "myTasks.typePayroll",
+    "ko": "급여"
+  },
+  {
+    "path": "myTasks.typeOnboarding",
+    "ko": "온보딩"
+  },
+  {
+    "path": "myTasks.typeOffboarding",
+    "ko": "오프보딩"
+  },
+  {
+    "path": "myTasks.typePerformance",
+    "ko": "성과"
+  },
+  {
+    "path": "myTasks.priorityUrgent",
+    "ko": "긴급"
+  },
+  {
+    "path": "myTasks.priorityHigh",
+    "ko": "높음"
+  },
+  {
+    "path": "myTasks.priorityMedium",
+    "ko": "보통"
+  },
+  {
+    "path": "myTasks.priorityLow",
+    "ko": "낮음"
+  },
+  {
+    "path": "myTasks.delegated",
+    "ko": "대결"
+  },
+  {
+    "path": "myTasks.actionApprove",
+    "ko": "승인"
+  },
+  {
+    "path": "myTasks.actionReject",
+    "ko": "반려"
+  },
+  {
+    "path": "myTasks.actionView",
+    "ko": "보기"
+  },
+  {
+    "path": "home.tab.headcount",
+    "ko": "인원 현황"
+  },
+  {
+    "path": "home.tab.leave",
+    "ko": "연차 현황"
+  },
+  {
+    "path": "home.tab.attendance",
+    "ko": "근태 현황"
+  },
+  {
+    "path": "home.tab.performance",
+    "ko": "성과 현황"
+  },
+  {
+    "path": "home.tab.payroll",
+    "ko": "급여 현황"
+  },
+  {
+    "path": "home.tab.onboarding",
+    "ko": "온보딩 현황"
+  },
+  {
+    "path": "home.tab.compliance",
+    "ko": "컴플라이언스"
+  },
+  {
+    "path": "home.kpi.totalEmployees",
+    "ko": "전체 인원"
+  },
+  {
+    "path": "home.kpi.newHires",
+    "ko": "금월 입사"
+  },
+  {
+    "path": "home.kpi.resigned",
+    "ko": "금월 퇴사"
+  },
+  {
+    "path": "home.kpi.onLeave",
+    "ko": "휴직"
+  },
+  {
+    "path": "home.kpi.turnoverRate",
+    "ko": "이직률"
+  },
+  {
+    "path": "home.kpi.leaveUsageRate",
+    "ko": "연차 사용률"
+  },
+  {
+    "path": "home.compareSubtitle",
+    "ko": "6개 법인 KPI 나란히 비교"
+  },
+  {
+    "path": "home.compareByCompany",
+    "ko": "법인 비교"
+  },
+  {
+    "path": "home.yearSuffix",
+    "ko": "년"
+  },
+  {
+    "path": "home.monthlyTrend",
+    "ko": "월별 추이"
+  },
+  {
+    "path": "home.compareKpi.turnover_rate",
+    "ko": "이직률"
+  },
+  {
+    "path": "home.compareKpi.leave_usage",
+    "ko": "연차 사용률"
+  },
+  {
+    "path": "home.compareKpi.training_completion",
+    "ko": "교육 이수율"
+  },
+  {
+    "path": "home.compareKpi.payroll_cost",
+    "ko": "인건비"
+  },
+  {
+    "path": "home.noData",
+    "ko": "데이터가 없습니다"
+  },
+  {
+    "path": "home.noDataDesc",
+    "ko": "조건을 변경하거나 새로운 데이터를 추가해 보세요"
+  },
+  {
+    "path": "mySpace.greeting",
+    "ko": "안녕하세요, {name}님!"
+  },
+  {
+    "path": "mySpace.yearsOfService",
+    "ko": "재직 {period}"
+  },
+  {
+    "path": "mySpace.editProfile",
+    "ko": "프로필 편집"
+  },
+  {
+    "path": "mySpace.kpi.leaveRemaining",
+    "ko": "연차 잔여"
+  },
+  {
+    "path": "mySpace.kpi.leaveUsed",
+    "ko": "사용 연차"
+  },
+  {
+    "path": "mySpace.kpi.pendingRequests",
+    "ko": "대기 중 변경 요청"
+  },
+  {
+    "path": "mySpace.kpi.tenure",
+    "ko": "재직 기간"
+  },
+  {
+    "path": "mySpace.unitDay",
+    "ko": "일"
+  },
+  {
+    "path": "mySpace.unitCase",
+    "ko": "건"
+  },
+  {
+    "path": "mySpace.viewDetail",
+    "ko": "자세히"
+  },
+  {
+    "path": "mySpace.recentNotifications",
+    "ko": "최근 알림"
+  },
+  {
+    "path": "mySpace.quickLink.myProfile",
+    "ko": "내 프로필"
+  },
+  {
+    "path": "mySpace.quickLink.leaveRequest",
+    "ko": "휴가 신청"
+  },
+  {
+    "path": "mySpace.quickLink.myPerformance",
+    "ko": "내 성과"
+  },
+  {
+    "path": "mySpace.quickLink.trainingApply",
+    "ko": "교육 신청"
+  },
+  {
+    "path": "mySpace.quickLink.internalJob",
+    "ko": "사내 공고"
+  },
+  {
+    "path": "mySpace.quickLink.yearEnd",
+    "ko": "연말 정산"
+  },
+  {
+    "path": "mySpace.status.pending",
+    "ko": "대기중"
+  },
+  {
+    "path": "mySpace.status.approved",
+    "ko": "승인"
+  },
+  {
+    "path": "mySpace.status.rejected",
+    "ko": "반려"
+  },
+  {
+    "path": "mySpace.status.cancelled",
+    "ko": "취소"
+  },
+  {
+    "path": "mySpace.paid",
+    "ko": "유급"
+  },
+  {
+    "path": "mySpace.unpaid",
+    "ko": "무급"
+  },
+  {
+    "path": "mySpace.carriedOver",
+    "ko": "이월 {days}일 포함"
+  },
+  {
+    "path": "mySpace.usedDays",
+    "ko": "사용 {days}일"
+  },
+  {
+    "path": "mySpace.pendingDays",
+    "ko": "대기 {days}일"
+  },
+  {
+    "path": "mySpace.expiresOn",
+    "ko": "소멸 {date}"
+  },
+  {
+    "path": "mySpace.col.leaveType",
+    "ko": "휴가 유형"
+  },
+  {
+    "path": "mySpace.col.period",
+    "ko": "기간"
+  },
+  {
+    "path": "mySpace.col.days",
+    "ko": "일수"
+  },
+  {
+    "path": "mySpace.col.status",
+    "ko": "상태"
+  },
+  {
+    "path": "mySpace.col.requestedAt",
+    "ko": "신청일"
+  }
+]

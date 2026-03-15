@@ -1,0 +1,1002 @@
+[
+  {
+    "path": "common.confirmReopen",
+    "ko": "마감을 해제하시겠습니까? 계산이 시작된 이후에는 해제할 수 없습니다."
+  },
+  {
+    "path": "common.unlock",
+    "ko": "마감 해제"
+  },
+  {
+    "path": "common.processing",
+    "ko": "처리 중..."
+  },
+  {
+    "path": "common.used",
+    "ko": "사용"
+  },
+  {
+    "path": "common.remaining",
+    "ko": "잔여"
+  },
+  {
+    "path": "common.pending",
+    "ko": "대기중"
+  },
+  {
+    "path": "common.empty",
+    "ko": "비어 있음"
+  },
+  {
+    "path": "common.saving",
+    "ko": "저장 중..."
+  },
+  {
+    "path": "common.filterAll",
+    "ko": "전체"
+  },
+  {
+    "path": "common.filterAllCompanies",
+    "ko": "법인 전체"
+  },
+  {
+    "path": "common.filterAllDepartments",
+    "ko": "부서 전체"
+  },
+  {
+    "path": "common.filterAllGrades",
+    "ko": "직급 전체"
+  },
+  {
+    "path": "common.filterAllYears",
+    "ko": "전체 연도"
+  },
+  {
+    "path": "common.filterAllStatuses",
+    "ko": "상태 필터"
+  },
+  {
+    "path": "common.filterSelectCompany",
+    "ko": "법인 선택"
+  },
+  {
+    "path": "common.filterSelectShift",
+    "ko": "교대조 선택"
+  },
+  {
+    "path": "common.filterSelect",
+    "ko": "선택"
+  },
+  {
+    "path": "common.placeholderNote",
+    "ko": "비고"
+  },
+  {
+    "path": "common.placeholderNoteOptional",
+    "ko": "비고 입력 (선택)"
+  },
+  {
+    "path": "common.placeholderMemo",
+    "ko": "추가 메모"
+  },
+  {
+    "path": "common.placeholderReason",
+    "ko": "사유를 입력하세요..."
+  },
+  {
+    "path": "common.placeholderApprovalComment",
+    "ko": "결재 의견을 입력하세요 (선택)"
+  },
+  {
+    "path": "common.placeholderApprovalReason",
+    "ko": "승인/반려 사유를 입력하세요..."
+  },
+  {
+    "path": "common.placeholderApprovalReasonAlt",
+    "ko": "승인 또는 반려 사유를 입력하세요..."
+  },
+  {
+    "path": "common.placeholderApprovalMemo",
+    "ko": "승인 요청 메모를 입력하세요"
+  },
+  {
+    "path": "common.placeholderRejectReason",
+    "ko": "반려 사유를 입력해 주세요."
+  },
+  {
+    "path": "common.placeholderRejectReasonDetail",
+    "ko": "반려 사유를 상세히 입력하세요."
+  },
+  {
+    "path": "common.placeholderRejectReasonRequired",
+    "ko": "반려 사유를 구체적으로 입력해주세요. (필수)"
+  },
+  {
+    "path": "common.placeholderRejectReasonRequiredAlt",
+    "ko": "반려 사유를 구체적으로 입력해 주세요. (필수)"
+  },
+  {
+    "path": "common.placeholderSearchNameId",
+    "ko": "이름, 사번 검색..."
+  },
+  {
+    "path": "common.placeholderSearchNameEmail",
+    "ko": "이름 또는 이메일로 검색..."
+  },
+  {
+    "path": "common.placeholderSearchNameIdAlt",
+    "ko": "이름 또는 사번 검색..."
+  },
+  {
+    "path": "common.placeholderSearchNameIdDept",
+    "ko": "이름 / 사번 / 부서 검색"
+  },
+  {
+    "path": "common.placeholderBlockReason",
+    "ko": "차단 사유를 입력하세요 (필수)"
+  },
+  {
+    "path": "common.placeholderExceptionReason",
+    "ko": "예외 사유를 입력하세요 (예: 대표이사 승인된 특별 근무)"
+  },
+  {
+    "path": "common.placeholderExceptionReasonRequired",
+    "ko": "예외 사유 (필수)"
+  },
+  {
+    "path": "common.placeholderChangeReason",
+    "ko": "변경 사유를 입력하세요..."
+  },
+  {
+    "path": "common.placeholderChangeNewValue",
+    "ko": "변경할 새 값을 입력하세요"
+  },
+  {
+    "path": "common.placeholderChangeName",
+    "ko": "변경될 이름"
+  },
+  {
+    "path": "common.placeholderDocTitle",
+    "ko": "문서 제목"
+  },
+  {
+    "path": "common.placeholderDocContent",
+    "ko": "문서 내용을 입력하세요..."
+  },
+  {
+    "path": "common.placeholderDocContentOptional",
+    "ko": "문서 내용 (선택)"
+  },
+  {
+    "path": "common.placeholderCostDesc",
+    "ko": "비용 설명 (선택)"
+  },
+  {
+    "path": "common.placeholderEmployeeUuid",
+    "ko": "직원 UUID 입력"
+  },
+  {
+    "path": "common.placeholderEmployeeId",
+    "ko": "직원 ID (UUID)"
+  },
+  {
+    "path": "common.placeholderAdjustmentReason",
+    "ko": "조정 사유를 입력하세요"
+  },
+  {
+    "path": "common.placeholderAdjustmentReasonBrief",
+    "ko": "조정 사유를 간략히 입력하세요..."
+  },
+  {
+    "path": "common.placeholderSelfIntro",
+    "ko": "자기소개를 입력하세요..."
+  },
+  {
+    "path": "common.placeholderSkillAdd",
+    "ko": "스킬 추가 (Enter)"
+  },
+  {
+    "path": "common.placeholderChannelName",
+    "ko": "채널명 (예: HR-알림)"
+  },
+  {
+    "path": "common.placeholderAutoApproveDays",
+    "ko": "자동승인 일수"
+  },
+  {
+    "path": "common.placeholderNewDeptName",
+    "ko": "신설 부서명"
+  },
+  {
+    "path": "common.placeholderNewSystemName",
+    "ko": "개편 배경 및 목적"
+  },
+  {
+    "path": "common.placeholderSettingsSearch",
+    "ko": "설정 항목 검색... (예: 휴가, 급여, 등급)"
+  },
+  {
+    "path": "common.benefitApply",
+    "ko": "복리후생 신청"
+  },
+  {
+    "path": "common.unitDay",
+    "ko": "일"
+  },
+  {
+    "path": "common.unitYear",
+    "ko": "년"
+  },
+  {
+    "path": "common.unitPerson",
+    "ko": "명"
+  },
+  {
+    "path": "common.unitCount",
+    "ko": "건"
+  },
+  {
+    "path": "common.unitMonth",
+    "ko": "개월"
+  },
+  {
+    "path": "menu.selfEval",
+    "ko": "자기평가"
+  },
+  {
+    "path": "menu.managerEval",
+    "ko": "매니저 평가"
+  },
+  {
+    "path": "menu.calibration",
+    "ko": "캘리브레이션"
+  },
+  {
+    "path": "menu.teamResults",
+    "ko": "팀 성과"
+  },
+  {
+    "path": "menu.adminResults",
+    "ko": "전사 성과"
+  },
+  {
+    "path": "menu.pulseSurvey",
+    "ko": "펄스 서베이"
+  },
+  {
+    "path": "menu.calibrationSettings",
+    "ko": "캘리브레이션 설정"
+  },
+  {
+    "path": "menu.peerReview",
+    "ko": "동료 평가"
+  },
+  {
+    "path": "menu.year-end",
+    "ko": "연말정산"
+  },
+  {
+    "path": "menu.close-attendance",
+    "ko": "근태 마감"
+  },
+  {
+    "path": "menu.adjustments",
+    "ko": "수동 조정"
+  },
+  {
+    "path": "menu.anomalies",
+    "ko": "이상 검토"
+  },
+  {
+    "path": "menu.approve",
+    "ko": "급여 승인"
+  },
+  {
+    "path": "menu.publish",
+    "ko": "급여 확정"
+  },
+  {
+    "path": "menu.bank-transfers",
+    "ko": "이체 관리"
+  },
+  {
+    "path": "menu.global",
+    "ko": "글로벌 급여"
+  },
+  {
+    "path": "menu.simulation",
+    "ko": "급여 시뮬레이션"
+  },
+  {
+    "path": "menu.dashboard",
+    "ko": "대시보드"
+  },
+  {
+    "path": "menu.my",
+    "ko": "나의 공간"
+  },
+  {
+    "path": "menu.directory",
+    "ko": "인사 디렉터리"
+  },
+  {
+    "path": "menu.import",
+    "ko": "급여 가져오기"
+  },
+  {
+    "path": "menu.turnover",
+    "ko": "이직 분석"
+  },
+  {
+    "path": "menu.workforce",
+    "ko": "인력 현황"
+  },
+  {
+    "path": "menu.team-health",
+    "ko": "팀 건강도"
+  },
+  {
+    "path": "menu.gender-pay-gap",
+    "ko": "성별 임금 격차"
+  },
+  {
+    "path": "menu.predictive",
+    "ko": "예측 분석"
+  },
+  {
+    "path": "menu.compare",
+    "ko": "비교 분석"
+  },
+  {
+    "path": "menu.report",
+    "ko": "리포트"
+  },
+  {
+    "path": "menu.peer-review",
+    "ko": "동료 평가"
+  },
+  {
+    "path": "menu.self-eval",
+    "ko": "자기 평가"
+  },
+  {
+    "path": "menu.comp-review",
+    "ko": "보상 리뷰"
+  },
+  {
+    "path": "menu.one-on-one",
+    "ko": "1:1 미팅"
+  },
+  {
+    "path": "menu.pulse",
+    "ko": "펄스 서베이"
+  },
+  {
+    "path": "menu.cycles",
+    "ko": "평가 사이클"
+  },
+  {
+    "path": "menu.admin",
+    "ko": "관리"
+  },
+  {
+    "path": "menu.team",
+    "ko": "팀"
+  },
+  {
+    "path": "menu.profile",
+    "ko": "프로필"
+  },
+  {
+    "path": "menu.tasks",
+    "ko": "할 일"
+  },
+  {
+    "path": "menu.rewards",
+    "ko": "포상"
+  },
+  {
+    "path": "menu.new",
+    "ko": "신규"
+  },
+  {
+    "path": "menu.edit",
+    "ko": "편집"
+  },
+  {
+    "path": "menu.review",
+    "ko": "검토"
+  },
+  {
+    "path": "menu.me",
+    "ko": "나"
+  },
+  {
+    "path": "employee.approver",
+    "ko": "승인자"
+  },
+  {
+    "path": "employee.assignment",
+    "ko": "배정"
+  },
+  {
+    "path": "employee.autoGenerate",
+    "ko": "자동 생성"
+  },
+  {
+    "path": "employee.change",
+    "ko": "변경"
+  },
+  {
+    "path": "employee.changeApproved",
+    "ko": "승인됨"
+  },
+  {
+    "path": "employee.changePending",
+    "ko": "대기중"
+  },
+  {
+    "path": "employee.changeRejected",
+    "ko": "반려됨"
+  },
+  {
+    "path": "employee.changeRequest",
+    "ko": "변경 요청"
+  },
+  {
+    "path": "employee.changeRequestError",
+    "ko": "변경 요청 제출 실패"
+  },
+  {
+    "path": "employee.changeRequestHistory",
+    "ko": "변경 요청 내역"
+  },
+  {
+    "path": "employee.companyEntity",
+    "ko": "법인"
+  },
+  {
+    "path": "employee.companyId",
+    "ko": "법인"
+  },
+  {
+    "path": "employee.compensationComingSoon",
+    "ko": "급여 정보 준비 중"
+  },
+  {
+    "path": "employee.compensationHistory",
+    "ko": "급여 이력"
+  },
+  {
+    "path": "employee.contractEndDateOptional",
+    "ko": "계약 종료일 (선택)"
+  },
+  {
+    "path": "employee.contractFixedTerm",
+    "ko": "기간제"
+  },
+  {
+    "path": "employee.contractHistory",
+    "ko": "계약 이력"
+  },
+  {
+    "path": "employee.contractPermanent",
+    "ko": "정규직"
+  },
+  {
+    "path": "employee.contractProbation",
+    "ko": "수습"
+  },
+  {
+    "path": "employee.contractSequence",
+    "ko": "계약 #{number}호"
+  },
+  {
+    "path": "employee.contractSequenceSuffix",
+    "ko": "호"
+  },
+  {
+    "path": "employee.contractStartDate",
+    "ko": "계약 시작일"
+  },
+  {
+    "path": "employee.contractType",
+    "ko": "계약 유형"
+  },
+  {
+    "path": "employee.createFailed",
+    "ko": "구성원 생성 실패"
+  },
+  {
+    "path": "employee.creating",
+    "ko": "생성 중..."
+  },
+  {
+    "path": "employee.currentValue",
+    "ko": "현재 값"
+  },
+  {
+    "path": "employee.defaultNationality",
+    "ko": "대한민국"
+  },
+  {
+    "path": "employee.departmentAll",
+    "ko": "전체 부서"
+  },
+  {
+    "path": "employee.departmentId",
+    "ko": "부서"
+  },
+  {
+    "path": "employee.discipline",
+    "ko": "징계"
+  },
+  {
+    "path": "employee.disciplineComingSoon",
+    "ko": "징계 정보 준비 중"
+  },
+  {
+    "path": "employee.docCertificate",
+    "ko": "증명서"
+  },
+  {
+    "path": "employee.docContract",
+    "ko": "계약서"
+  },
+  {
+    "path": "employee.docHandover",
+    "ko": "인수인계서"
+  },
+  {
+    "path": "employee.docIdCard",
+    "ko": "신분증"
+  },
+  {
+    "path": "employee.docOther",
+    "ko": "기타"
+  },
+  {
+    "path": "employee.docResume",
+    "ko": "이력서"
+  },
+  {
+    "path": "employee.docTitle",
+    "ko": "문서 제목"
+  },
+  {
+    "path": "employee.documents",
+    "ko": "문서"
+  },
+  {
+    "path": "employee.editableFields",
+    "ko": "수정 가능 항목"
+  },
+  {
+    "path": "employee.emergencyContactName",
+    "ko": "비상 연락처 이름"
+  },
+  {
+    "path": "employee.emergencyContactPhone",
+    "ko": "비상 연락처 전화번호"
+  },
+  {
+    "path": "employee.employeeLabel",
+    "ko": "구성원"
+  },
+  {
+    "path": "employee.employeeNo",
+    "ko": "사번"
+  },
+  {
+    "path": "employee.employmentTypeAll",
+    "ko": "전체 고용형태"
+  },
+  {
+    "path": "employee.emptyDescription",
+    "ko": "새 구성원을 추가하세요"
+  },
+  {
+    "path": "employee.emptyMessage",
+    "ko": "구성원이 없습니다"
+  },
+  {
+    "path": "employee.enterNewValue",
+    "ko": "새 값 입력"
+  },
+  {
+    "path": "employee.enterNewValuePlaceholder",
+    "ko": "새 값을 입력하세요..."
+  },
+  {
+    "path": "employee.expiryDate",
+    "ko": "만료일"
+  },
+  {
+    "path": "employee.expiryDateOptional",
+    "ko": "만료일 (선택)"
+  },
+  {
+    "path": "employee.fileSize",
+    "ko": "파일 크기"
+  },
+  {
+    "path": "employee.finalConfirmation",
+    "ko": "최종 확인"
+  },
+  {
+    "path": "employee.handoverToId",
+    "ko": "인수인계 담당자"
+  },
+  {
+    "path": "employee.handoverToIdPlaceholder",
+    "ko": "인수인계 담당자 선택"
+  },
+  {
+    "path": "employee.historyDetail",
+    "ko": "이력 상세"
+  },
+  {
+    "path": "employee.hrHistory",
+    "ko": "인사 이력"
+  },
+  {
+    "path": "employee.indefinite",
+    "ko": "무기한"
+  },
+  {
+    "path": "employee.inlineEdit",
+    "ko": "클릭하여 편집"
+  },
+  {
+    "path": "employee.issueDate",
+    "ko": "발급일"
+  },
+  {
+    "path": "employee.issuingAuthorityOptional",
+    "ko": "발급기관 (선택)"
+  },
+  {
+    "path": "employee.issuingCountry",
+    "ko": "발급 국가"
+  },
+  {
+    "path": "employee.jobCategoryId",
+    "ko": "직무"
+  },
+  {
+    "path": "employee.jobGradeId",
+    "ko": "직급"
+  },
+  {
+    "path": "employee.lastWorkingDate",
+    "ko": "마지막 근무일"
+  },
+  {
+    "path": "employee.listDescription",
+    "ko": "전체 구성원 정보를 관리합니다"
+  },
+  {
+    "path": "employee.managerId",
+    "ko": "상급자"
+  },
+  {
+    "path": "employee.managerName",
+    "ko": "상급자 이름"
+  },
+  {
+    "path": "employee.managerOptional",
+    "ko": "상급자 (선택)"
+  },
+  {
+    "path": "employee.managerSearchPlaceholder",
+    "ko": "상급자 검색..."
+  },
+  {
+    "path": "employee.myProfile",
+    "ko": "내 프로필"
+  },
+  {
+    "path": "employee.myProfileDescription",
+    "ko": "개인 정보를 확인하고 변경을 요청합니다"
+  },
+  {
+    "path": "employee.nameKorean",
+    "ko": "한국어 이름"
+  },
+  {
+    "path": "employee.newContract",
+    "ko": "신규 계약"
+  },
+  {
+    "path": "employee.newContractRegistration",
+    "ko": "계약 등록"
+  },
+  {
+    "path": "employee.newEmployeeDescription",
+    "ko": "새 구성원 정보를 입력하세요"
+  },
+  {
+    "path": "employee.newValueLabel",
+    "ko": "새 값"
+  },
+  {
+    "path": "employee.newWorkPermit",
+    "ko": "비자/취업허가 등록"
+  },
+  {
+    "path": "employee.noChangeRequests",
+    "ko": "변경 요청 내역이 없습니다"
+  },
+  {
+    "path": "employee.noCompensationHistory",
+    "ko": "급여 이력이 없습니다"
+  },
+  {
+    "path": "employee.noContractHistory",
+    "ko": "계약 이력이 없습니다"
+  },
+  {
+    "path": "employee.noDiscipline",
+    "ko": "징계 내역이 없습니다"
+  },
+  {
+    "path": "employee.noDocuments",
+    "ko": "문서가 없습니다"
+  },
+  {
+    "path": "employee.noHrHistory",
+    "ko": "인사 이력이 없습니다"
+  },
+  {
+    "path": "employee.noSelection",
+    "ko": "선택 안 함"
+  },
+  {
+    "path": "employee.noValue",
+    "ko": "값 없음"
+  },
+  {
+    "path": "employee.noWorkPermits",
+    "ko": "비자/취업허가 내역이 없습니다"
+  },
+  {
+    "path": "employee.offboarding",
+    "ko": "퇴직 처리"
+  },
+  {
+    "path": "employee.offboardingFailed",
+    "ko": "퇴직 처리 실패"
+  },
+  {
+    "path": "employee.offboardingWarning",
+    "ko": "이 작업은 구성원 상태를 퇴직으로 변경합니다. 되돌릴 수 없습니다."
+  },
+  {
+    "path": "employee.permitActive",
+    "ko": "유효"
+  },
+  {
+    "path": "employee.permitExpired",
+    "ko": "만료"
+  },
+  {
+    "path": "employee.permitI9",
+    "ko": "I-9"
+  },
+  {
+    "path": "employee.permitNumber",
+    "ko": "허가 번호"
+  },
+  {
+    "path": "employee.permitNumberOptional",
+    "ko": "허가 번호 (선택)"
+  },
+  {
+    "path": "employee.permitOther",
+    "ko": "기타"
+  },
+  {
+    "path": "employee.permitPendingRenewal",
+    "ko": "갱신 대기"
+  },
+  {
+    "path": "employee.permitResidence",
+    "ko": "거주 허가"
+  },
+  {
+    "path": "employee.permitRevoked",
+    "ko": "취소됨"
+  },
+  {
+    "path": "employee.permitType",
+    "ko": "허가 유형"
+  },
+  {
+    "path": "employee.permitWorkPermit",
+    "ko": "취업 허가"
+  },
+  {
+    "path": "employee.permitWorkVisa",
+    "ko": "취업 비자"
+  },
+  {
+    "path": "employee.probationEndDate",
+    "ko": "수습 종료일"
+  },
+  {
+    "path": "employee.processing",
+    "ko": "처리 중..."
+  },
+  {
+    "path": "employee.profileLoadError",
+    "ko": "프로필 로드 실패"
+  },
+  {
+    "path": "employee.rejectionReason",
+    "ko": "반려 사유"
+  },
+  {
+    "path": "employee.requesting",
+    "ko": "요청 중..."
+  },
+  {
+    "path": "employee.resignContractEnd",
+    "ko": "계약 만료"
+  },
+  {
+    "path": "employee.resignDate",
+    "ko": "퇴직일"
+  },
+  {
+    "path": "employee.resignInvoluntary",
+    "ko": "비자발적"
+  },
+  {
+    "path": "employee.resignReasonCode",
+    "ko": "퇴직 사유"
+  },
+  {
+    "path": "employee.resignReasonCodePlaceholder",
+    "ko": "퇴직 사유 선택"
+  },
+  {
+    "path": "employee.resignReasonDetail",
+    "ko": "퇴직 상세 사유"
+  },
+  {
+    "path": "employee.resignReasonDetailPlaceholder",
+    "ko": "퇴직 상세 사유를 입력하세요..."
+  },
+  {
+    "path": "employee.resignRetirement",
+    "ko": "정년 퇴직"
+  },
+  {
+    "path": "employee.resignType",
+    "ko": "퇴직 유형"
+  },
+  {
+    "path": "employee.resignVoluntary",
+    "ko": "자발적"
+  },
+  {
+    "path": "employee.salaryAmountOptional",
+    "ko": "급여액 (선택)"
+  },
+  {
+    "path": "employee.saveFailed",
+    "ko": "저장 실패"
+  },
+  {
+    "path": "employee.saving",
+    "ko": "저장 중..."
+  },
+  {
+    "path": "employee.searching",
+    "ko": "검색 중..."
+  },
+  {
+    "path": "employee.selectCompany",
+    "ko": "법인 선택"
+  },
+  {
+    "path": "employee.selectDepartment",
+    "ko": "부서 선택"
+  },
+  {
+    "path": "employee.selectJobCategory",
+    "ko": "직무 선택"
+  },
+  {
+    "path": "employee.selectJobGrade",
+    "ko": "직급 선택"
+  },
+  {
+    "path": "employee.selectResignType",
+    "ko": "퇴직 유형 선택"
+  },
+  {
+    "path": "employee.sensitive",
+    "ko": "민감 정보"
+  },
+  {
+    "path": "employee.signedDate",
+    "ko": "서명일"
+  },
+  {
+    "path": "employee.startOffboarding",
+    "ko": "퇴직 처리 시작"
+  },
+  {
+    "path": "employee.statusAll",
+    "ko": "전체 상태"
+  },
+  {
+    "path": "employee.uploadDate",
+    "ko": "업로드일"
+  },
+  {
+    "path": "employee.uploadDocument",
+    "ko": "문서 업로드"
+  },
+  {
+    "path": "employee.uploader",
+    "ko": "업로더"
+  },
+  {
+    "path": "employee.validationCompanyRequired",
+    "ko": "법인을 선택해주세요"
+  },
+  {
+    "path": "employee.validationDepartmentRequired",
+    "ko": "부서를 선택해주세요"
+  },
+  {
+    "path": "employee.validationEmailInvalid",
+    "ko": "이메일 형식이 올바르지 않습니다"
+  },
+  {
+    "path": "employee.validationEmailRequired",
+    "ko": "이메일을 입력해주세요"
+  },
+  {
+    "path": "employee.validationEmployeeNoRequired",
+    "ko": "사번을 입력해주세요"
+  },
+  {
+    "path": "employee.validationEmploymentTypeRequired",
+    "ko": "고용형태를 선택해주세요"
+  },
+  {
+    "path": "employee.validationHireDateRequired",
+    "ko": "입사일을 입력해주세요"
+  },
+  {
+    "path": "employee.validationJobCategoryRequired",
+    "ko": "직무를 선택해주세요"
+  },
+  {
+    "path": "employee.validationJobGradeRequired",
+    "ko": "직급을 선택해주세요"
+  },
+  {
+    "path": "employee.validationNameRequired",
+    "ko": "이름을 입력해주세요"
+  },
+  {
+    "path": "employee.workPermitRegistration",
+    "ko": "취업허가 등록"
+  },
+  {
+    "path": "employee.workPermitsTitle",
+    "ko": "비자/취업허가"
+  },
+  {
+    "path": "leave.yearSuffix",
+    "ko": "년"
+  },
+  {
+    "path": "performance.adminResults",
+    "ko": "전체 결과"
+  }
+]

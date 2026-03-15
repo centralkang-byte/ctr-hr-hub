@@ -1,0 +1,478 @@
+[
+  {
+    "path": "nav.compliance.dataRetention",
+    "ko": "데이터 보관"
+  },
+  {
+    "path": "nav.compliance.piiAudit",
+    "ko": "PII 감사"
+  },
+  {
+    "path": "nav.compliance.dpia",
+    "ko": "DPIA"
+  },
+  {
+    "path": "nav.compliance.kr",
+    "ko": "한국 컴플라이언스"
+  },
+  {
+    "path": "nav.compliance.cn",
+    "ko": "중국 컴플라이언스"
+  },
+  {
+    "path": "nav.compliance.ru",
+    "ko": "러시아 컴플라이언스"
+  },
+  {
+    "path": "nav.favorites.label",
+    "ko": "즐겨찾기"
+  },
+  {
+    "path": "header.directory",
+    "ko": "구성원 디렉토리"
+  },
+  {
+    "path": "header.quickActions",
+    "ko": "빠른 실행"
+  },
+  {
+    "path": "header.actions.registerEmployee",
+    "ko": "직원 등록"
+  },
+  {
+    "path": "header.actions.requestLeave",
+    "ko": "휴가 신청"
+  },
+  {
+    "path": "header.actions.createPosting",
+    "ko": "채용 공고 작성"
+  },
+  {
+    "path": "header.actions.scheduleOneOnOne",
+    "ko": "1:1 미팅 예약"
+  },
+  {
+    "path": "header.actions.sendRecognition",
+    "ko": "칭찬 보내기"
+  },
+  {
+    "path": "commandPalette.placeholder",
+    "ko": "검색..."
+  },
+  {
+    "path": "commandPalette.recentPages",
+    "ko": "최근 방문"
+  },
+  {
+    "path": "commandPalette.menu",
+    "ko": "메뉴"
+  },
+  {
+    "path": "commandPalette.employees",
+    "ko": "구성원"
+  },
+  {
+    "path": "commandPalette.noResults",
+    "ko": "검색 결과가 없습니다"
+  },
+  {
+    "path": "myTasks.typeLeave",
+    "ko": "휴가"
+  },
+  {
+    "path": "myTasks.typePayroll",
+    "ko": "급여"
+  },
+  {
+    "path": "myTasks.typeOnboarding",
+    "ko": "온보딩"
+  },
+  {
+    "path": "myTasks.typeOffboarding",
+    "ko": "오프보딩"
+  },
+  {
+    "path": "myTasks.typePerformance",
+    "ko": "성과"
+  },
+  {
+    "path": "myTasks.priorityUrgent",
+    "ko": "긴급"
+  },
+  {
+    "path": "myTasks.priorityHigh",
+    "ko": "높음"
+  },
+  {
+    "path": "myTasks.priorityMedium",
+    "ko": "보통"
+  },
+  {
+    "path": "myTasks.priorityLow",
+    "ko": "낮음"
+  },
+  {
+    "path": "myTasks.delegated",
+    "ko": "대결"
+  },
+  {
+    "path": "myTasks.actionApprove",
+    "ko": "승인"
+  },
+  {
+    "path": "myTasks.actionReject",
+    "ko": "반려"
+  },
+  {
+    "path": "myTasks.actionView",
+    "ko": "보기"
+  },
+  {
+    "path": "home.tab.headcount",
+    "ko": "인원 현황"
+  },
+  {
+    "path": "home.tab.leave",
+    "ko": "연차 현황"
+  },
+  {
+    "path": "home.tab.attendance",
+    "ko": "근태 현황"
+  },
+  {
+    "path": "home.tab.performance",
+    "ko": "성과 현황"
+  },
+  {
+    "path": "home.tab.payroll",
+    "ko": "급여 현황"
+  },
+  {
+    "path": "home.tab.onboarding",
+    "ko": "온보딩 현황"
+  },
+  {
+    "path": "home.tab.compliance",
+    "ko": "컴플라이언스"
+  },
+  {
+    "path": "home.kpi.totalEmployees",
+    "ko": "전체 인원"
+  },
+  {
+    "path": "home.kpi.newHires",
+    "ko": "금월 입사"
+  },
+  {
+    "path": "home.kpi.resigned",
+    "ko": "금월 퇴사"
+  },
+  {
+    "path": "home.kpi.onLeave",
+    "ko": "휴직"
+  },
+  {
+    "path": "home.kpi.turnoverRate",
+    "ko": "이직률"
+  },
+  {
+    "path": "home.kpi.leaveUsageRate",
+    "ko": "연차 사용률"
+  },
+  {
+    "path": "home.compareTitle",
+    "ko": "글로벌 법인 비교"
+  },
+  {
+    "path": "home.compareSubtitle",
+    "ko": "6개 법인 KPI 나란히 비교"
+  },
+  {
+    "path": "home.compareByCompany",
+    "ko": "법인 비교"
+  },
+  {
+    "path": "home.yearSuffix",
+    "ko": "년"
+  },
+  {
+    "path": "home.monthlyTrend",
+    "ko": "월별 추이"
+  },
+  {
+    "path": "home.compareKpi.turnover_rate",
+    "ko": "이직률"
+  },
+  {
+    "path": "home.compareKpi.leave_usage",
+    "ko": "연차 사용률"
+  },
+  {
+    "path": "home.compareKpi.training_completion",
+    "ko": "교육 이수율"
+  },
+  {
+    "path": "home.compareKpi.payroll_cost",
+    "ko": "인건비"
+  },
+  {
+    "path": "home.noData",
+    "ko": "데이터가 없습니다"
+  },
+  {
+    "path": "home.noDataDesc",
+    "ko": "조건을 변경하거나 새로운 데이터를 추가해 보세요"
+  },
+  {
+    "path": "mySpace.profileDesc",
+    "ko": "개인 정보를 확인하고 편집합니다."
+  },
+  {
+    "path": "mySpace.changeReqDone",
+    "ko": "변경 요청 완료"
+  },
+  {
+    "path": "mySpace.changeReqDesc",
+    "ko": "HR 담당자가 검토 후 처리합니다."
+  },
+  {
+    "path": "mySpace.myLeave",
+    "ko": "내 휴가"
+  },
+  {
+    "path": "mySpace.myLeaveDesc",
+    "ko": "연간 부여 현황 및 사용 내역을 확인합니다"
+  },
+  {
+    "path": "mySpace.totalEntitled",
+    "ko": "총 부여일수"
+  },
+  {
+    "path": "mySpace.leaveByType",
+    "ko": "유형별 휴가 현황"
+  },
+  {
+    "path": "mySpace.leaveHistory",
+    "ko": "휴가 신청 내역"
+  },
+  {
+    "path": "mySpace.emptyLeaveBalance",
+    "ko": "부여된 휴가 정보가 없습니다"
+  },
+  {
+    "path": "mySpace.emptyLeaveBalanceDesc",
+    "ko": "관리자에게 연간 부여 실행을 요청하세요"
+  },
+  {
+    "path": "mySpace.emptyLeaveHistory",
+    "ko": "신청 내역이 없습니다"
+  },
+  {
+    "path": "mySpace.emptyLeaveHistoryDesc",
+    "ko": "아직 휴가 신청 내역이 없습니다."
+  },
+  {
+    "path": "mySpace.myBenefits",
+    "ko": "나의 복리후생"
+  },
+  {
+    "path": "mySpace.myBenefitsDesc",
+    "ko": "복리후생 신청 및 사용 현황을 확인합니다"
+  },
+  {
+    "path": "mySpace.applyBenefit",
+    "ko": "복리후생 신청"
+  },
+  {
+    "path": "mySpace.usageSummary",
+    "ko": "사용 현황"
+  },
+  {
+    "path": "mySpace.claimHistory",
+    "ko": "신청 내역"
+  },
+  {
+    "path": "mySpace.emptyBenefitClaim",
+    "ko": "신청 내역이 없습니다"
+  },
+  {
+    "path": "mySpace.emptyBenefitClaimDesc",
+    "ko": "아직 복리후생 신청 내역이 없습니다."
+  },
+  {
+    "path": "mySpace.emptyTitle",
+    "ko": "데이터가 없습니다"
+  },
+  {
+    "path": "mySpace.emptyDesc",
+    "ko": "아직 등록된 내용이 없습니다"
+  },
+  {
+    "path": "mySpace.greeting",
+    "ko": "안녕하세요, {name}님!"
+  },
+  {
+    "path": "mySpace.yearsOfService",
+    "ko": "재직 {period}"
+  },
+  {
+    "path": "mySpace.editProfile",
+    "ko": "프로필 편집"
+  },
+  {
+    "path": "mySpace.kpi.leaveRemaining",
+    "ko": "연차 잔여"
+  },
+  {
+    "path": "mySpace.kpi.leaveUsed",
+    "ko": "사용 연차"
+  },
+  {
+    "path": "mySpace.kpi.pendingRequests",
+    "ko": "대기 중 변경 요청"
+  },
+  {
+    "path": "mySpace.kpi.tenure",
+    "ko": "재직 기간"
+  },
+  {
+    "path": "mySpace.unitDay",
+    "ko": "일"
+  },
+  {
+    "path": "mySpace.unitCase",
+    "ko": "건"
+  },
+  {
+    "path": "mySpace.quickLinksTitle",
+    "ko": "바로가기"
+  },
+  {
+    "path": "mySpace.leaveBalanceTitle",
+    "ko": "휴가 잔여 현황"
+  },
+  {
+    "path": "mySpace.viewDetail",
+    "ko": "자세히"
+  },
+  {
+    "path": "mySpace.recentNotifications",
+    "ko": "최근 알림"
+  },
+  {
+    "path": "mySpace.quickLink.myProfile",
+    "ko": "내 프로필"
+  },
+  {
+    "path": "mySpace.quickLink.leaveRequest",
+    "ko": "휴가 신청"
+  },
+  {
+    "path": "mySpace.quickLink.myPerformance",
+    "ko": "내 성과"
+  },
+  {
+    "path": "mySpace.quickLink.trainingApply",
+    "ko": "교육 신청"
+  },
+  {
+    "path": "mySpace.quickLink.internalJob",
+    "ko": "사내 공고"
+  },
+  {
+    "path": "mySpace.quickLink.yearEnd",
+    "ko": "연말 정산"
+  },
+  {
+    "path": "mySpace.status.pending",
+    "ko": "대기중"
+  },
+  {
+    "path": "mySpace.status.approved",
+    "ko": "승인"
+  },
+  {
+    "path": "mySpace.status.rejected",
+    "ko": "반려"
+  },
+  {
+    "path": "mySpace.status.cancelled",
+    "ko": "취소"
+  },
+  {
+    "path": "mySpace.paid",
+    "ko": "유급"
+  },
+  {
+    "path": "mySpace.unpaid",
+    "ko": "무급"
+  },
+  {
+    "path": "mySpace.carriedOver",
+    "ko": "이월 {days}일 포함"
+  },
+  {
+    "path": "mySpace.usedDays",
+    "ko": "사용 {days}일"
+  },
+  {
+    "path": "mySpace.pendingDays",
+    "ko": "대기 {days}일"
+  },
+  {
+    "path": "mySpace.expiresOn",
+    "ko": "소멸 {date}"
+  },
+  {
+    "path": "mySpace.col.leaveType",
+    "ko": "휴가 유형"
+  },
+  {
+    "path": "mySpace.col.period",
+    "ko": "기간"
+  },
+  {
+    "path": "mySpace.col.days",
+    "ko": "일수"
+  },
+  {
+    "path": "mySpace.col.status",
+    "ko": "상태"
+  },
+  {
+    "path": "mySpace.col.requestedAt",
+    "ko": "신청일"
+  },
+  {
+    "path": "directory.totalMembers",
+    "ko": "총 {count}명의 구성원"
+  },
+  {
+    "path": "directory.searchPlaceholder",
+    "ko": "이름, 부서, 이메일로 검색..."
+  },
+  {
+    "path": "directory.allCompanies",
+    "ko": "법인 전체"
+  },
+  {
+    "path": "directory.allDepts",
+    "ko": "부서 전체"
+  },
+  {
+    "path": "directory.allGrades",
+    "ko": "직급 전체"
+  },
+  {
+    "path": "directory.company",
+    "ko": "법인"
+  },
+  {
+    "path": "directory.contact",
+    "ko": "연락처"
+  },
+  {
+    "path": "directory.skills",
+    "ko": "스킬"
+  }
+]

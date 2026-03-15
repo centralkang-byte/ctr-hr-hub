@@ -1,0 +1,550 @@
+[
+  {
+    "path": "performance.kr_keb85bcec_keb82b4ec_summary",
+    "ko": "논의 내용 요약"
+  },
+  {
+    "path": "settings.kr_keb8ba8ec_kec8b9cea_keca3bc",
+    "ko": "단위: 시간/주"
+  },
+  {
+    "path": "settings.kr_kec889cec",
+    "ko": "순서"
+  },
+  {
+    "path": "settings.company_keab8b0eb",
+    "ko": "법인 기본정보"
+  },
+  {
+    "path": "settings.kr_ked86b5ed",
+    "ko": "통화"
+  },
+  {
+    "path": "settings.kr_ked9584eb_ked82a4",
+    "ko": "필드 키"
+  },
+  {
+    "path": "settings.kr_kec9881eb",
+    "ko": "영문"
+  },
+  {
+    "path": "settings.kr_keba088eb",
+    "ko": "레벨"
+  },
+  {
+    "path": "settings.kr_kec9eaceb_ked9a8cea",
+    "ko": "재무/회계"
+  },
+  {
+    "path": "settings.kr_kec839dec_keca09cec",
+    "ko": "생산/제조"
+  },
+  {
+    "path": "settings.kr_kec9881ec",
+    "ko": "영업"
+  },
+  {
+    "path": "settings.kr_keba788ec",
+    "ko": "마케팅"
+  },
+  {
+    "path": "settings.kr_keca781ec_keca781eb",
+    "ko": "직종/직무"
+  },
+  {
+    "path": "settings.kr_keca781ec_keca781eb_kebb684eb_",
+    "ko": "직종/직무 분류는 현재 시스템에서 관리됩니다. API 연결 후 편집이 가능합니다."
+  },
+  {
+    "path": "settings.kr_keb8c80eb",
+    "ko": "대리"
+  },
+  {
+    "path": "settings.kr_keab3bcec",
+    "ko": "과세"
+  },
+  {
+    "path": "settings.kr_kecb0a8ec",
+    "ko": "차장"
+  },
+  {
+    "path": "settings.kr_kec9db4ec",
+    "ko": "이사"
+  },
+  {
+    "path": "settings.grade_kecb2b4ea_ked9884ec_kec8b9cec_keab480eb_api_kec97b0ea_ked9b84_ked8eb8ec_keab080eb",
+    "ko": "직급 체계는 현재 시스템에서 관리됩니다. API 연결 후 편집이 가능합니다."
+  },
+  {
+    "path": "settings.kr_kec8ab9ec_kec868cec",
+    "ko": "승진 소요"
+  },
+  {
+    "path": "settings.kr_kec8898ec_kec97b0ec_ked9788ec",
+    "ko": "수습 연장 허용"
+  },
+  {
+    "path": "settings.changeCancelled",
+    "ko": "변경을 취소했습니다"
+  },
+  {
+    "path": "settings.month_basesalary_keab8b0ec",
+    "ko": "월 기본급 기준"
+  },
+  {
+    "path": "settings.kr_kec97b0eb_keab8b0ec",
+    "ko": "연봉 기준"
+  },
+  {
+    "path": "settings.kr_keca095ec",
+    "ko": "정액"
+  },
+  {
+    "path": "settings.kr_ked86b5ed_ked9998ec",
+    "ko": "통화/환율"
+  },
+  {
+    "path": "settings.kr_ked9998ec",
+    "ko": "환율"
+  },
+  {
+    "path": "settings.kr_kecb69cec",
+    "ko": "출처"
+  },
+  {
+    "path": "settings.kr_kebb295ec",
+    "ko": "법정"
+  },
+  {
+    "path": "settings.kr_kec9db8ec_keba7a4ed",
+    "ko": "인상률 매트릭스"
+  },
+  {
+    "path": "settings.kr_keb93b1ea_kebb0b4eb_keab8b0eb_",
+    "ko": "등급 × 밴드위치 기반 연봉 인상률 (%)"
+  },
+  {
+    "path": "settings.kr_kec9db8ec_keba7a4ed_kec84a4ec_",
+    "ko": "인상률 매트릭스가 설정되지 않았습니다"
+  },
+  {
+    "path": "settings.kr_keab384ec",
+    "ko": "계좌이체"
+  },
+  {
+    "path": "settings.kr_kec8898ed",
+    "ko": "수표"
+  },
+  {
+    "path": "settings.kr_kec97b0eb_kebb0b4eb",
+    "ko": "연봉 밴드"
+  },
+  {
+    "path": "settings.kr_keca781ec",
+    "ko": "직종"
+  },
+  {
+    "path": "settings.kr_keca491ea",
+    "ko": "중간"
+  },
+  {
+    "path": "settings.kr_keab590ed_kec9e90ea",
+    "ko": "교통비 (자가운전보조금)"
+  },
+  {
+    "path": "settings.kr_kec9e90eb",
+    "ko": "자녀보육수당"
+  },
+  {
+    "path": "settings.kr_kec97b0ea",
+    "ko": "연구활동비"
+  },
+  {
+    "path": "settings.kr_kec839dec_kec95bcea",
+    "ko": "생산직 야간근로수당"
+  },
+  {
+    "path": "settings.kr_ked959cea_kebb984ea_ked959ceb_",
+    "ko": "한국 비과세 한도 (소득세법 §12 ②)"
+  },
+  {
+    "path": "settings.kr_kebb984ea_ked959ceb",
+    "ko": "비과세 한도"
+  },
+  {
+    "path": "settings.kr_ked95adeb_kebb984ea_ked959ceb_",
+    "ko": "항목별 비과세 한도액 (2025 기준)"
+  },
+  {
+    "path": "settings.kr_kec84b8eb_keab09cec_kec8b9c_ke",
+    "ko": "세법 개정 시 관리자가 직접 한도액을 수정할 수 있습니다. 변경 사항은 급여 계산에 즉시 반영됩니다."
+  },
+  {
+    "path": "settings.kr_ked959ceb_month",
+    "ko": "한도액 (월)"
+  },
+  {
+    "path": "settings.kr_keab7bcea",
+    "ko": "근거"
+  },
+  {
+    "path": "settings.kr_kebb3b8eb_keb8ba8ec",
+    "ko": "본부 단위"
+  },
+  {
+    "path": "settings.company_all",
+    "ko": "법인 전체"
+  },
+  {
+    "path": "settings.kr_keca781ec_kebb380ea_ked9788ec",
+    "ko": "직접 변경 허용"
+  },
+  {
+    "path": "settings.kr_ked9a8c_kec9db4ec",
+    "ko": "회 이상"
+  },
+  {
+    "path": "settings.kr_kec9dbceb_keba6aceb",
+    "ko": "일마다 리마인더"
+  },
+  {
+    "path": "settings.kr_kec97adeb_keb9dbcec",
+    "ko": "역량 라이브러리"
+  },
+  {
+    "path": "settings.global_keab3a0ec",
+    "ko": "글로벌 고정"
+  },
+  {
+    "path": "settings.kr_kebb0b0eb_keab080ec_settings",
+    "ko": "배분 가이드라인 설정"
+  },
+  {
+    "path": "settings.kr_kebb0b0eb_keab080ec",
+    "ko": "배분 가이드"
+  },
+  {
+    "path": "settings.kr_keb93b1ea_recommended_kebb0b0e",
+    "ko": "등급별 권장 배분 비율"
+  },
+  {
+    "path": "settings.kr_keab095ec_kebb0b0eb_keca081ec",
+    "ko": "강제 배분 적용"
+  },
+  {
+    "path": "settings.draft",
+    "ko": "초안"
+  },
+  {
+    "path": "settings.kr_keb93b1ea_kecb2b4ea_kec84a4ec_",
+    "ko": "등급 체계가 설정되지 않았습니다"
+  },
+  {
+    "path": "settings.kr_keab09c",
+    "ko": "개"
+  },
+  {
+    "path": "settings.kr_kec9db4eb_kec9e90eb_ked8c8cec",
+    "ko": "이력서 자동 파싱"
+  },
+  {
+    "path": "settings.kr_ai_keab8b0eb_screening_kec8bac",
+    "ko": "AI 기반 서류 심사 자동화 설정"
+  },
+  {
+    "path": "settings.aiScreening",
+    "ko": "AI 스크리닝"
+  },
+  {
+    "path": "settings.kr_keca090_kec9db4ec",
+    "ko": "점 이상"
+  },
+  {
+    "path": "settings.kr_kec98a4ed_kecb2b4ed",
+    "ko": "오프보딩 체크리스트"
+  },
+  {
+    "path": "settings.kr_kecb2b4ed_add",
+    "ko": "체크리스트 추가"
+  },
+  {
+    "path": "settings.kr_kecb2b4ed",
+    "ko": "체크리스트명"
+  },
+  {
+    "path": "settings.kr_ked839cec_kec8898",
+    "ko": "태스크 수"
+  },
+  {
+    "path": "settings.screening_keca091ec",
+    "ko": "서류접수"
+  },
+  {
+    "path": "settings.screening_kec8bacec",
+    "ko": "서류심사"
+  },
+  {
+    "path": "settings.kr_kecb298ec_ked9891ec",
+    "ko": "처우 협의"
+  },
+  {
+    "path": "settings.failed",
+    "ko": "불합격"
+  },
+  {
+    "path": "settings.passed_kec8b9c_kec9e90eb_keca084ed",
+    "ko": "합격 시 자동 전환"
+  },
+  {
+    "path": "settings.kr_kec8388eb",
+    "ko": "새로고침"
+  },
+  {
+    "path": "settings.date",
+    "ko": "날짜"
+  },
+  {
+    "path": "settings.settings_kec9d84_kebb380ea_kec9e90eb_keab8b0eb",
+    "ko": "설정을 변경하면 자동으로 기록됩니다."
+  },
+  {
+    "path": "settings.kr_keb8db0ec_kebb3b4ec_keca095ec",
+    "ko": "데이터 보존 정책"
+  },
+  {
+    "path": "settings.kr_keb8db0ec_kebb3b4ec",
+    "ko": "데이터 보존"
+  },
+  {
+    "path": "settings.kr_pii_keba788ec_ked999cec",
+    "ko": "PII 마스킹 활성화"
+  },
+  {
+    "path": "settings.kr_kec9e90eb_delete_ked999cec",
+    "ko": "자동 삭제 활성화"
+  },
+  {
+    "path": "settings.kr_erp_kec97b0eb",
+    "ko": "ERP 연동"
+  },
+  {
+    "path": "settings.kr_kec97b0eb",
+    "ko": "연동"
+  },
+  {
+    "path": "settings.company_kebb384_keab8b0eb_kec96b8ec_kebb08f_ked8380ec_settings",
+    "ko": "법인별 기본 언어 및 타임존 설정"
+  },
+  {
+    "path": "settings.kr_kec96b8ec_ked8380ec",
+    "ko": "언어/타임존"
+  },
+  {
+    "path": "settings.kr_kec95b1_ked91b8ec",
+    "ko": "앱 푸시"
+  },
+  {
+    "path": "settings.kr_kec9db4eb",
+    "ko": "이벤트"
+  },
+  {
+    "path": "settings.kr_keca1b0ed_keca084ec",
+    "ko": "조회 전용"
+  },
+  {
+    "path": "settings.role_keab68ced_kec8b9cec_keab480eb_kebb380ea_ked9584ec_kec8b9cec_keab480eb_kebacb8ec",
+    "ko": "역할/권한은 시스템에서 관리됩니다. 변경이 필요하면 시스템 관리자에게 문의하세요."
+  },
+  {
+    "path": "settings.loadSettingsFailed",
+    "ko": "설정을 불러오는데 실패했습니다."
+  },
+  {
+    "path": "settings.thresholdOrderError",
+    "ko": "경고 임계값은 주의 < 경고 < 차단 순서여야 합니다."
+  },
+  {
+    "path": "settings.basicWorkHours",
+    "ko": "기본 근무시간"
+  },
+  {
+    "path": "settings.basicWorkHoursDesc",
+    "ko": "법인 기준 표준 근무시간을 설정합니다."
+  },
+  {
+    "path": "settings.dailyWorkHours",
+    "ko": "일 기준 근무시간"
+  },
+  {
+    "path": "settings.weeklyWorkDays",
+    "ko": "주 근무일수"
+  },
+  {
+    "path": "settings.weeklyMaxHours",
+    "ko": "주 최대 근무시간"
+  },
+  {
+    "path": "settings.flexTime",
+    "ko": "유연근무제 (Flex Time)"
+  },
+  {
+    "path": "settings.flexTimeDesc",
+    "ko": "코어 타임과 최소 일일 근무시간을 설정합니다."
+  },
+  {
+    "path": "settings.enableFlexTime",
+    "ko": "유연근무제 활성화"
+  },
+  {
+    "path": "settings.flexTimeToggleDesc",
+    "ko": "직원이 코어 타임 내에서 출퇴근 시간을 자유롭게 조정합니다."
+  },
+  {
+    "path": "settings.alertThresholdsDesc",
+    "ko": "주간 누적 근무시간이 임계값에 도달하면 알림이 발송됩니다."
+  },
+  {
+    "path": "settings.threshold",
+    "ko": "임계값"
+  },
+  {
+    "path": "settings.caution",
+    "ko": "주의"
+  },
+  {
+    "path": "settings.overtimeBlockingDesc",
+    "ko": "차단 임계값 도달 시 클락인을 차단합니다."
+  },
+  {
+    "path": "settings.enableClockInBlocking",
+    "ko": "클락인 차단 활성화"
+  },
+  {
+    "path": "settings.clockInBlockingToggleDesc",
+    "ko": "차단 임계값 초과 시 직원의 출근 기록이 자동으로 거부됩니다."
+  },
+  {
+    "path": "settings.enableShiftWork",
+    "ko": "교대근무 활성화"
+  },
+  {
+    "path": "settings.shiftWorkDesc",
+    "ko": "법인에서 교대근무(2교대/3교대)를 운영합니다."
+  },
+  {
+    "path": "settings.useShiftWork",
+    "ko": "교대근무 사용"
+  },
+  {
+    "path": "settings.enableShiftWorkDesc",
+    "ko": "활성화하면 교대근무 패턴 및 그룹 관리 기능이 활성화됩니다."
+  },
+  {
+    "path": "settings.shiftWorkDetailSettings",
+    "ko": "교대근무 상세 설정"
+  },
+  {
+    "path": "settings.overtimeBlock",
+    "ko": "초과 근무 차단"
+  },
+  {
+    "path": "settings.hours",
+    "ko": "시간"
+  },
+  {
+    "path": "settings.negativeLeaveDesc",
+    "ko": "잔여 연차가 0일 미만으로 내려갈 수 있도록 허용"
+  },
+  {
+    "path": "settings.annualGrant",
+    "ko": "연간 부여"
+  },
+  {
+    "path": "settings.monthlyGrant",
+    "ko": "월별 부여"
+  },
+  {
+    "path": "settings.manualGrant",
+    "ko": "수동 부여"
+  },
+  {
+    "path": "settings.fiscalYearBasis",
+    "ko": "회계연도 기준"
+  },
+  {
+    "path": "settings.firstYearProrated",
+    "ko": "입사 첫해 비례 부여"
+  },
+  {
+    "path": "settings.firstYearProratedDesc",
+    "ko": "입사일이 연도 중간인 경우 비례 계산하여 부여"
+  },
+  {
+    "path": "settings.annualBulkGrant",
+    "ko": "연간 일괄 부여"
+  },
+  {
+    "path": "settings.monthlyAccrual",
+    "ko": "월별 적립"
+  },
+  {
+    "path": "settings.fiscalYearJan1",
+    "ko": "회계연도 (1/1)"
+  },
+  {
+    "path": "settings.noCarryOver",
+    "ko": "이월 불가"
+  },
+  {
+    "path": "settings.fullCarryOver",
+    "ko": "전액 이월"
+  },
+  {
+    "path": "settings.unlimited",
+    "ko": "무제한"
+  },
+  {
+    "path": "compliance.month_keab084eb",
+    "ko": "월간보고"
+  },
+  {
+    "path": "compliance.kr_keab5b0eb_register_keca084ec_k",
+    "ko": "군복무 등록, 전자문서(КЭДО) 및 법정 보고서 관리"
+  },
+  {
+    "path": "myTasks.delegated",
+    "ko": "대결"
+  },
+  {
+    "path": "myTasks.actionView",
+    "ko": "보기"
+  },
+  {
+    "path": "home.tab.compliance",
+    "ko": "컴플라이언스"
+  },
+  {
+    "path": "home.compareSubtitle",
+    "ko": "6개 법인 KPI 나란히 비교"
+  },
+  {
+    "path": "mySpace.kpi.pendingRequests",
+    "ko": "대기 중 변경 요청"
+  },
+  {
+    "path": "mySpace.viewDetail",
+    "ko": "자세히"
+  },
+  {
+    "path": "mySpace.quickLink.yearEnd",
+    "ko": "연말 정산"
+  },
+  {
+    "path": "mySpace.paid",
+    "ko": "유급"
+  },
+  {
+    "path": "mySpace.unpaid",
+    "ko": "무급"
+  }
+]

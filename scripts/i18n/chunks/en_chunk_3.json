@@ -1,0 +1,1002 @@
+[
+  {
+    "path": "payroll.kr_kec9db8ec",
+    "ko": "인원"
+  },
+  {
+    "path": "payroll.kr_keca69dea",
+    "ko": "증가"
+  },
+  {
+    "path": "payroll.kr_keab090ec",
+    "ko": "감소"
+  },
+  {
+    "path": "payroll.kr_keb8f99ec",
+    "ko": "동일"
+  },
+  {
+    "path": "payroll.name",
+    "ko": "이름"
+  },
+  {
+    "path": "payroll.department",
+    "ko": "부서"
+  },
+  {
+    "path": "payroll.kr_kec8ba4ec",
+    "ko": "실수령액"
+  },
+  {
+    "path": "payroll.kr_keca084ec",
+    "ko": "전월"
+  },
+  {
+    "path": "payroll.kr_kebb380eb",
+    "ko": "변동률"
+  },
+  {
+    "path": "payroll.kr_kec82acec",
+    "ko": "사유"
+  },
+  {
+    "path": "payroll.kr_kec9db4eb_keb8bac",
+    "ko": "이번 달:"
+  },
+  {
+    "path": "payroll.kr_keab8b0ec",
+    "ko": "기준:"
+  },
+  {
+    "path": "payroll.kr_keca095ec_confirm",
+    "ko": "정상 확인"
+  },
+  {
+    "path": "payroll.edit_",
+    "ko": "수정 →"
+  },
+  {
+    "path": "payroll.kr_kec9888ec_register",
+    "ko": "예외 등록"
+  },
+  {
+    "path": "payroll.kr_kec9d98",
+    "ko": "의"
+  },
+  {
+    "path": "payroll.kr_keab79cec_kec9888ec_kecb298eb",
+    "ko": "규칙을 예외 처리합니다."
+  },
+  {
+    "path": "payroll.kr_keca780ea",
+    "ko": "지급"
+  },
+  {
+    "path": "payroll.kr_keab3b5ec",
+    "ko": "공제합계"
+  },
+  {
+    "path": "payroll.kr_keca084ec_kebb984ea",
+    "ko": "전월 비교"
+  },
+  {
+    "path": "payroll.kr_keca084ec_kec8ba4ec",
+    "ko": "전월 실수령"
+  },
+  {
+    "path": "payroll.anomalies_keca491",
+    "ko": "이상 검토 중"
+  },
+  {
+    "path": "payroll.kr_kebaaa8eb_kec9db4ec_ked95adeb_",
+    "ko": "모든 이상 항목이 처리되었습니다. 승인 요청이 가능합니다."
+  },
+  {
+    "path": "payroll.all_department",
+    "ko": "전체 부서"
+  },
+  {
+    "path": "payroll.kr_kec9db4ec",
+    "ko": "이상항목만"
+  },
+  {
+    "path": "payroll.kr_kec9791ec",
+    "ko": "엑셀"
+  },
+  {
+    "path": "payroll.search_keab2b0ea_kec9786ec",
+    "ko": "검색 결과가 없습니다."
+  },
+  {
+    "path": "payroll.kr_keca781ec",
+    "ko": "직원명"
+  },
+  {
+    "path": "payroll.kr_keab79cec",
+    "ko": "규칙"
+  },
+  {
+    "path": "payroll.register_kec82acec",
+    "ko": "등록 사유"
+  },
+  {
+    "path": "payroll.register_month",
+    "ko": "등록월"
+  },
+  {
+    "path": "payroll.kr_ked95b4ec",
+    "ko": "해제"
+  },
+  {
+    "path": "payroll.approve_kec9a94ec",
+    "ko": "승인 요청"
+  },
+  {
+    "path": "payroll.kr_keba994eb_kec84a0ed",
+    "ko": "메모 (선택)"
+  },
+  {
+    "path": "payroll.kr_kec868cea_keca780ea",
+    "ko": "소급 지급"
+  },
+  {
+    "path": "payroll.kr_kebb3b4eb",
+    "ko": "보너스"
+  },
+  {
+    "path": "payroll.kr_keca095ec",
+    "ko": "정정"
+  },
+  {
+    "path": "payroll.other",
+    "ko": "기타"
+  },
+  {
+    "path": "payroll.kr_kec9db4_keca1b0ec_ked95adeb_ke",
+    "ko": "이 조정 항목을 삭제하시겠습니까?"
+  },
+  {
+    "path": "payroll.kr_keca1b0ec_kec9984eb_kec9db4ec_",
+    "ko": "조정을 완료하고 이상 검토 단계로 전환하시겠습니까? 이상 탐지 엔진이 실행됩니다."
+  },
+  {
+    "path": "payroll.kr_keab889ec_kec8898eb_keca1b0ec",
+    "ko": "급여 / 수동 조정"
+  },
+  {
+    "path": "payroll.kr_kec868cea_keca780ea_kebb3b4eb_",
+    "ko": "소급 지급, 보너스, 공제 등 급여 수동 조정을 추가합니다."
+  },
+  {
+    "path": "payroll.kr_keca1b0ec_keb8c80ea_keab889ec",
+    "ko": "조정 대기 급여"
+  },
+  {
+    "path": "payroll.kr_keab889ec_kec8ba4ed_kec84a0ed",
+    "ko": "급여 실행을 선택하세요"
+  },
+  {
+    "path": "payroll.add_ked95a9ea",
+    "ko": "추가 합계"
+  },
+  {
+    "path": "payroll.kr_keab3b5ec_ked95a9ea",
+    "ko": "공제 합계"
+  },
+  {
+    "path": "payroll.kr_kec889c_keca1b0ec",
+    "ko": "순 조정액"
+  },
+  {
+    "path": "payroll.all_kec9ca0ed",
+    "ko": "전체 유형"
+  },
+  {
+    "path": "payroll.kr_keca1b0ec_add",
+    "ko": "조정 추가"
+  },
+  {
+    "path": "payroll.kr_kec9ca0ed",
+    "ko": "유형"
+  },
+  {
+    "path": "payroll.kr_kecb9b4ed",
+    "ko": "카테고리"
+  },
+  {
+    "path": "payroll.amount",
+    "ko": "금액"
+  },
+  {
+    "path": "payroll.kr_keca69deb",
+    "ko": "증빙"
+  },
+  {
+    "path": "payroll.kr_ked8c8cec",
+    "ko": "파일명"
+  },
+  {
+    "path": "payroll.kr_keb8c80ec_keca781ec",
+    "ko": "대상 직원 *"
+  },
+  {
+    "path": "payroll.kr_keca781ec_kec84a0ed",
+    "ko": "직원 선택..."
+  },
+  {
+    "path": "payroll.kr_keab889ec_ked95adeb",
+    "ko": "급여 항목"
+  },
+  {
+    "path": "payroll.amount_krw",
+    "ko": "금액 (원) *"
+  },
+  {
+    "path": "payroll.kr_kec9691ec_add_kec9d8cec_keab3b",
+    "ko": "양수=추가, 음수=공제"
+  },
+  {
+    "path": "payroll.kr_kec82acec_description",
+    "ko": "사유/설명 *"
+  },
+  {
+    "path": "payroll.kr_keca69deb_url",
+    "ko": "증빙 URL"
+  },
+  {
+    "path": "payroll.kr_kec84a0ed",
+    "ko": "선택사항"
+  },
+  {
+    "path": "payroll.save",
+    "ko": "저장"
+  },
+  {
+    "path": "payroll.adjustments_ctr_hr_hub",
+    "ko": "수동 조정 | CTR HR Hub"
+  },
+  {
+    "path": "payroll.kr_keab889ec_kec9db4ec_ked8390ec",
+    "ko": "급여 이상 탐지"
+  },
+  {
+    "path": "payroll.kr_kebb0b4eb_kec9db4ed_keb82b4eb_",
+    "ko": "밴드 이탈 · 내부 분산 · 법인간 격차 · 급격한 변화를 자동으로 탐지합니다"
+  },
+  {
+    "path": "payroll.analytics_keca491",
+    "ko": "분석 중..."
+  },
+  {
+    "path": "payroll.kr_kecb49d_kec9db4ec_keab1b4ec",
+    "ko": "총 이상 건수"
+  },
+  {
+    "path": "payroll.kr_high_kec9db4ec",
+    "ko": "High 이상"
+  },
+  {
+    "path": "payroll.analytics_keab79cec",
+    "ko": "분석 규칙"
+  },
+  {
+    "path": "payroll.kr_kec8aa4ec_kec9db8ec",
+    "ko": "스캔 인원"
+  },
+  {
+    "path": "payroll.kr_kec9db4ec_kec9786ec",
+    "ko": "이상 없음"
+  },
+  {
+    "path": "payroll.kr_keab889ec_kec9db4ec_ked8390ec_",
+    "ko": "급여 이상 탐지 | CTR HR Hub"
+  },
+  {
+    "path": "payroll.kr_kec8ba0ed",
+    "ko": "신한은행"
+  },
+  {
+    "path": "payroll.kr_kbkeab5adeb",
+    "ko": "KB국민은행"
+  },
+  {
+    "path": "payroll.kr_kec9ab0eb",
+    "ko": "우리은행"
+  },
+  {
+    "path": "payroll.kr_ked9598eb",
+    "ko": "하나은행"
+  },
+  {
+    "path": "payroll.kr_nhkeb868ded",
+    "ko": "NH농협은행"
+  },
+  {
+    "path": "payroll.kr_ibkkeab8b0ec",
+    "ko": "IBK기업은행"
+  },
+  {
+    "path": "payroll.kr_sckeca09cec",
+    "ko": "SC제일은행"
+  },
+  {
+    "path": "payroll.draft",
+    "ko": "초안"
+  },
+  {
+    "path": "payroll.kr_kec839dec",
+    "ko": "생성중"
+  },
+  {
+    "path": "payroll.submit_keb90a8",
+    "ko": "제출됨"
+  },
+  {
+    "path": "payroll.kr_kebb680eb",
+    "ko": "부분완료"
+  },
+  {
+    "path": "payroll.complete",
+    "ko": "완료"
+  },
+  {
+    "path": "payroll.failed",
+    "ko": "실패"
+  },
+  {
+    "path": "payroll.kr_kec84b1ea",
+    "ko": "성공"
+  },
+  {
+    "path": "payroll.kr_keab889ec_kec9db4ec_management",
+    "ko": "급여 이체 관리"
+  },
+  {
+    "path": "payroll.kr_kec9d80ed_keab889ec_kec9db4ec_",
+    "ko": "은행별 급여 이체 파일 생성 및 결과 관리"
+  },
+  {
+    "path": "payroll.kr_kec9db4ec_kebb0b0ec_kec839dec",
+    "ko": "이체 배치 생성"
+  },
+  {
+    "path": "payroll.all_kebb0b0ec",
+    "ko": "전체 배치"
+  },
+  {
+    "path": "payroll.kr_kecb298eb_keb8c80ea",
+    "ko": "처리 대기"
+  },
+  {
+    "path": "payroll.kr_kecb49d_kec9db4ec",
+    "ko": "총 이체액"
+  },
+  {
+    "path": "payroll.all_status",
+    "ko": "전체 상태"
+  },
+  {
+    "path": "payroll.kr_kec8381ec",
+    "ko": "상세"
+  },
+  {
+    "path": "payroll.kr_keb8ba4ec",
+    "ko": "다운로드"
+  },
+  {
+    "path": "payroll.kr_kec9d80ed_kec84a0ed",
+    "ko": "은행 선택"
+  },
+  {
+    "path": "payroll.kr_ked8c8cec_ked9895ec",
+    "ko": "파일 형식"
+  },
+  {
+    "path": "payroll.kr_kebb984ea",
+    "ko": "비고"
+  },
+  {
+    "path": "payroll.kr_kecb49dea",
+    "ko": "① 총급여"
+  },
+  {
+    "path": "payroll.kr_kecb49dec",
+    "ko": "총지급액"
+  },
+  {
+    "path": "payroll.kr_kec82aceb",
+    "ko": "사번"
+  },
+  {
+    "path": "payroll.kr_keab384ec",
+    "ko": "계좌번호"
+  },
+  {
+    "path": "payroll.kr_kec9888ea",
+    "ko": "예금주"
+  },
+  {
+    "path": "payroll.kr_kec9db4ec_ked95adeb_kec9786ec",
+    "ko": "이체 항목이 없습니다."
+  },
+  {
+    "path": "payroll.kr_ctr_kr_ked959cea",
+    "ko": "CTR-KR (한국)"
+  },
+  {
+    "path": "payroll.kr_ctr_cn_keca491ea",
+    "ko": "CTR-CN (중국)"
+  },
+  {
+    "path": "payroll.kr_ctr_us_kebafb8ea",
+    "ko": "CTR-US (미국)"
+  },
+  {
+    "path": "payroll.kr_ctr_vn_kebb2a0ed",
+    "ko": "CTR-VN (베트남)"
+  },
+  {
+    "path": "payroll.kr_ctr_mx_keba995ec",
+    "ko": "CTR-MX (멕시코)"
+  },
+  {
+    "path": "payroll.kr_ctr_ru_keb9facec",
+    "ko": "CTR-RU (러시아)"
+  },
+  {
+    "path": "payroll.calculating",
+    "ko": "계산 중"
+  },
+  {
+    "path": "payroll.kr_keca1b0ec_keca491",
+    "ko": "조정 중"
+  },
+  {
+    "path": "payroll.kr_keab280ed_keca491",
+    "ko": "검토 중"
+  },
+  {
+    "path": "payroll.kr_keca780ea_complete",
+    "ko": "지급 완료"
+  },
+  {
+    "path": "payroll.kr_kecb298eb_keca491_kec98a4eb_ke",
+    "ko": "처리 중 오류가 발생했습니다"
+  },
+  {
+    "path": "payroll.kr_keab889ec_keab7bced_closed",
+    "ko": "급여 / 근태 마감"
+  },
+  {
+    "path": "payroll.kr_keab7bced_confirmed_status",
+    "ko": "근태 확정 현황"
+  },
+  {
+    "path": "payroll.confirmed",
+    "ko": "확정"
+  },
+  {
+    "path": "payroll.kr_kebafb8ed",
+    "ko": "미확정"
+  },
+  {
+    "path": "payroll.closeAttendance_confirm",
+    "ko": "근태 마감 확인"
+  },
+  {
+    "path": "payroll.kr_keb8c80ec_company",
+    "ko": "대상 법인"
+  },
+  {
+    "path": "payroll.kr_keb8c80ec_month",
+    "ko": "대상 월"
+  },
+  {
+    "path": "payroll.all_keca781ec",
+    "ko": "전체 직원"
+  },
+  {
+    "path": "payroll.confirmed_keca781ec",
+    "ko": "확정 직원"
+  },
+  {
+    "path": "payroll.kr_kebafb8ed_keca781ec",
+    "ko": "미확정 직원"
+  },
+  {
+    "path": "payroll.closed_ked9b84ec_ked95b4eb_kec9b94ec_keab7bced_kec8898ec_kebb688ea_closed_ked95b4ec_keab384ec_kec8b9cec_keca084ea_keab080eb",
+    "ko": "마감 후에는 해당 월의 근태 수정이 불가합니다. 마감 해제는 계산 시작 전까지만 가능합니다."
+  },
+  {
+    "path": "payroll.closeAttendance_ctr_hr_hub",
+    "ko": "근태 마감 | CTR HR Hub"
+  },
+  {
+    "path": "payroll.month_kebb384_keab7bced_keba788ea_keab889ec_keab384ec_kec8b9cec",
+    "ko": "월별 근태를 마감하여 급여 계산을 시작합니다."
+  },
+  {
+    "path": "payroll.globalPayroll_status",
+    "ko": "글로벌 급여 현황"
+  },
+  {
+    "path": "payroll.kr_6keab09c_company_keab889ec_krw",
+    "ko": "6개 법인 급여를 KRW로 통합하여 분석합니다"
+  },
+  {
+    "path": "payroll.kr_keab889ec_kec9785eb",
+    "ko": "급여 업로드"
+  },
+  {
+    "path": "payroll.kr_ked9998ec_settings",
+    "ko": "환율 설정"
+  },
+  {
+    "path": "payroll.kr_ked9998ec_kebafb8ec_krw_ked999",
+    "ko": "환율 미설정 — KRW 환산이 정확하지 않을 수 있습니다"
+  },
+  {
+    "path": "payroll.kr_keb8db0ec_keba19ceb_keca491",
+    "ko": "데이터 로딩 중..."
+  },
+  {
+    "path": "payroll.kr_keca084ec_kecb49d_keab889ec_kr",
+    "ko": "전사 총 급여 (KRW)"
+  },
+  {
+    "path": "payroll.all_keab889ec_kec9db8ec",
+    "ko": "전체 급여 인원"
+  },
+  {
+    "path": "payroll.kr_kec9db8eb_average_keab889ec_kr",
+    "ko": "인당 평균 급여 (KRW)"
+  },
+  {
+    "path": "payroll.kr_keca084ec_average",
+    "ko": "전사 평균"
+  },
+  {
+    "path": "payroll.kr_keb8db0ec_kec9e88eb_company",
+    "ko": "데이터 있는 법인"
+  },
+  {
+    "path": "payroll.kr_keab09c_company_keca791ea_comp",
+    "ko": "개 법인 집계 완료"
+  },
+  {
+    "path": "payroll.company_kebb384_keab889ec_kecb49dec_krw_keba78cec",
+    "ko": "법인별 급여 총액 (KRW 만원)"
+  },
+  {
+    "path": "payroll.kr_keb8db0ec_kec9786ec",
+    "ko": "데이터 없음"
+  },
+  {
+    "path": "payroll.company_kebb384_keab889ec_kebb984ec",
+    "ko": "법인별 급여 비중"
+  },
+  {
+    "path": "payroll.kr_kecb59cea_6keab09cec_keab889ec",
+    "ko": "최근 6개월 급여 트렌드 (KRW 만원)"
+  },
+  {
+    "path": "payroll.company_kebb384_kec9db8eb_average_keab889ec_krw_keba78cec",
+    "ko": "법인별 인당 평균 급여 (KRW 만원)"
+  },
+  {
+    "path": "payroll.company_kebb384_kec8381ec_status",
+    "ko": "법인별 상세 현황"
+  },
+  {
+    "path": "payroll.company",
+    "ko": "법인"
+  },
+  {
+    "path": "payroll.kr_ked86b5ed",
+    "ko": "통화"
+  },
+  {
+    "path": "payroll.kr_ked9998ec_krw",
+    "ko": "환율 (→KRW)"
+  },
+  {
+    "path": "payroll.kr_kecb49dec_ked9884ec",
+    "ko": "총지급(현지)"
+  },
+  {
+    "path": "payroll.kr_kecb49dec_krw",
+    "ko": "총지급 (KRW)"
+  },
+  {
+    "path": "payroll.kr_kec9db8eb_average_krw",
+    "ko": "인당 평균 (KRW)"
+  },
+  {
+    "path": "payroll.kr_keb8db0ec",
+    "ko": "데이터"
+  },
+  {
+    "path": "payroll.kr_keca791ea",
+    "ko": "집계됨"
+  },
+  {
+    "path": "payroll.kr_kebafb8ec",
+    "ko": "미시작"
+  },
+  {
+    "path": "payroll.globalPayroll_status_ctr_hr_hub",
+    "ko": "글로벌 급여 현황 | CTR HR Hub"
+  },
+  {
+    "path": "payroll.kr_kec84b1eb",
+    "ko": "성명"
+  },
+  {
+    "path": "payroll.kr_kec97b0ec",
+    "ko": "연장수당"
+  },
+  {
+    "path": "payroll.kr_kec84b1ea_kec8381ec",
+    "ko": "성과급/상여"
+  },
+  {
+    "path": "payroll.kr_ked95b4ec_company_keab889ec_ke",
+    "ko": "해외 법인 급여 파일을 업로드하여 글로벌 급여 현황에 통합합니다"
+  },
+  {
+    "path": "payroll.company_kec84a0ed",
+    "ko": "법인 선택:"
+  },
+  {
+    "path": "payroll.kr_kecbbaceb_keba7a4ed_kec84a0ed",
+    "ko": "컬럼 매핑 선택"
+  },
+  {
+    "path": "payroll.kr_keba7a4ed_add",
+    "ko": "매핑 추가"
+  },
+  {
+    "path": "payroll.kr_keab8b0eb",
+    "ko": "⑩ 기납부세액"
+  },
+  {
+    "path": "payroll.kr_keab889ec_keca780ea_month",
+    "ko": "급여 지급 월"
+  },
+  {
+    "path": "payroll.kr_ked8c8cec_ked81b4eb_kec84a0ed",
+    "ko": "파일을 클릭하여 선택"
+  },
+  {
+    "path": "payroll.kr_xlsx_csv_keca780ec",
+    "ko": ".xlsx, .csv 지원"
+  },
+  {
+    "path": "payroll.kr_kecbbaceb_keba7a4ed_keba8bcec_",
+    "ko": "컬럼 매핑을 먼저 설정해주세요."
+  },
+  {
+    "path": "payroll.kr_kec8388_keba7a4ed_add",
+    "ko": "새 매핑 추가"
+  },
+  {
+    "path": "payroll.kr_keba7a4ed",
+    "ko": "매핑명"
+  },
+  {
+    "path": "payroll.kr_kec8388_keba7a4ed_settings",
+    "ko": "새 매핑 설정"
+  },
+  {
+    "path": "payroll.kr_ked97a4eb_ked9689_kebb288ed",
+    "ko": "헤더 행 번호"
+  },
+  {
+    "path": "payroll.kr_kecbbaceb_keba7a4ed_ked8c8cec_",
+    "ko": "컬럼 매핑 (파일의 헤더명 → 시스템 필드)"
+  },
+  {
+    "path": "payroll.kr_keab8b0eb_keba7a4ed_settings",
+    "ko": "기본 매핑으로 설정"
+  },
+  {
+    "path": "payroll.kr_kec9785eb",
+    "ko": "업로드일"
+  },
+  {
+    "path": "payroll.kr_kec9785eb_kec9db4eb_kec9786ec",
+    "ko": "업로드 이력이 없습니다."
+  },
+  {
+    "path": "payroll.kr_ked95b4ec_keab889ec_kec9785eb_",
+    "ko": "해외 급여 업로드 | CTR HR Hub"
+  },
+  {
+    "path": "payroll.kr_keca084ec_keb8f99ec",
+    "ko": "전월 동일"
+  },
+  {
+    "path": "payroll.kr_ked95adeb",
+    "ko": "항목"
+  },
+  {
+    "path": "payroll.kr_ked9884ec",
+    "ko": "현재"
+  },
+  {
+    "path": "payroll.kr_kec8b9ceb",
+    "ko": "시뮬레이션"
+  },
+  {
+    "path": "payroll.kr_kecb0a8ec",
+    "ko": "차이"
+  },
+  {
+    "path": "payroll.kr_kecb49d_keca780ea",
+    "ko": "총 지급액"
+  },
+  {
+    "path": "payroll.kr_kecb49d_keab3b5ec",
+    "ko": "총 공제액"
+  },
+  {
+    "path": "payroll.department_kec84a0ed",
+    "ko": "부서 선택"
+  },
+  {
+    "path": "payroll.kr_ked9884ec_ked95a9ea",
+    "ko": "현재 합계"
+  },
+  {
+    "path": "payroll.kr_kec8b9ceb_ked95a9ea",
+    "ko": "시뮬 합계"
+  },
+  {
+    "path": "payroll.kr_ked9884ec_kec8ba4ec",
+    "ko": "현재 실수령"
+  },
+  {
+    "path": "payroll.kr_kec8b9ceb_kec8ba4ec",
+    "ko": "시뮬 실수령"
+  },
+  {
+    "path": "payroll.simulation_ctr_hr_hub",
+    "ko": "급여 시뮬레이션 | CTR HR Hub"
+  },
+  {
+    "path": "payroll.kr_keab3bcec",
+    "ko": "⑤ 과세표준"
+  },
+  {
+    "path": "payroll.kr_kec82b0ec",
+    "ko": "⑦ 산출세액"
+  },
+  {
+    "path": "payroll.loadFailed",
+    "ko": "데이터를 불러오지 못했습니다."
+  },
+  {
+    "path": "payroll.confirmed_kecb298eb_kec8ba4ed",
+    "ko": "확정 처리에 실패했습니다."
+  },
+  {
+    "path": "payroll.kr_kec9881ec_kebb09ced_kec8ba4ed",
+    "ko": "영수증 발행에 실패했습니다."
+  },
+  {
+    "path": "payroll.kr_kec9dbcea_ked9995ec_kec8ba4ed",
+    "ko": "일괄 확정에 실패했습니다."
+  },
+  {
+    "path": "payroll.all",
+    "ko": "전체"
+  },
+  {
+    "path": "payroll.submitted",
+    "ko": "제출완료"
+  },
+  {
+    "path": "payroll.hrReviewing",
+    "ko": "HR검토중"
+  },
+  {
+    "path": "payroll.inProgress",
+    "ko": "진행중"
+  },
+  {
+    "path": "payroll.kr_kec868ceb_keab384ec_summary",
+    "ko": "소득세 계산 요약"
+  },
+  {
+    "path": "payroll.all_kec9984eb",
+    "ko": "전체 완료율"
+  },
+  {
+    "path": "payroll.kr_keb8db0ec_kebb688eb_keca491",
+    "ko": "데이터를 불러오는 중..."
+  },
+  {
+    "path": "payroll.kr_ked95b4eb_keca1b0ea_yearend_ke",
+    "ko": "해당 조건의 연말정산 내역이 없습니다."
+  },
+  {
+    "path": "payroll.kr_keab280ed",
+    "ko": "검토"
+  },
+  {
+    "path": "payroll.kr_kec9881ec",
+    "ko": "영수증"
+  },
+  {
+    "path": "payroll.manualAdjustment",
+    "ko": "수동 조정"
+  },
+  {
+    "path": "payroll.months",
+    "ko": "월"
+  },
+  {
+    "path": "payroll.years",
+    "ko": "년"
+  },
+  {
+    "path": "payroll.krw",
+    "ko": "원"
+  },
+  {
+    "path": "payroll.count",
+    "ko": "건"
+  },
+  {
+    "path": "payroll.persons",
+    "ko": "명"
+  },
+  {
+    "path": "payroll.warning",
+    "ko": "경고"
+  },
+  {
+    "path": "payroll.days",
+    "ko": "일"
+  },
+  {
+    "path": "payroll.average",
+    "ko": "보통"
+  },
+  {
+    "path": "payroll.shinhanBank",
+    "ko": "신한은행"
+  },
+  {
+    "path": "payroll.start",
+    "ko": "시작"
+  },
+  {
+    "path": "payroll.hours",
+    "ko": "시간"
+  },
+  {
+    "path": "analytics.personSuffix",
+    "ko": "명"
+  },
+  {
+    "path": "analytics.kr_kec8388eb",
+    "ko": "새로고침"
+  },
+  {
+    "path": "analytics.retry",
+    "ko": "다시 시도"
+  },
+  {
+    "path": "analytics.kr_ked9884ec_keab090ec_risk_kec8b",
+    "ko": "현재 감지된 위험 신호가 없습니다 ✅"
+  },
+  {
+    "path": "analytics.company",
+    "ko": "법인"
+  },
+  {
+    "path": "analytics.kr_kec9db8ec",
+    "ko": "인원"
+  },
+  {
+    "path": "analytics.kr_kec9db4ec",
+    "ko": "이직위험"
+  },
+  {
+    "path": "analytics.average_keab7bcec",
+    "ko": "평균 근속"
+  },
+  {
+    "path": "analytics.kr_kec9db8ea",
+    "ko": "인건비"
+  },
+  {
+    "path": "analytics.kr_keca084ec",
+    "ko": "전사"
+  },
+  {
+    "path": "analytics.kr_kec839dec_keca491",
+    "ko": "생성 중..."
+  },
+  {
+    "path": "analytics.kr_keba6aced_kec839dec",
+    "ko": "리포트 생성"
+  },
+  {
+    "path": "analytics.kr_aikeab080_keba6aced_kec839dec_",
+    "ko": "AI가 리포트를 생성하고 있습니다..."
+  },
+  {
+    "path": "analytics.kr_kec95bd_5_15kecb488_kec868cec_",
+    "ko": "약 5-15초 소요됩니다. 잠시만 기다려주세요."
+  },
+  {
+    "path": "analytics.kr_kec9584ec_kec839dec_keba6aced_",
+    "ko": "아직 생성된 리포트가 없습니다"
+  },
+  {
+    "path": "analytics.kr_kec8381eb_quot_keba6aced_kec83",
+    "ko": "상단의 &quot;리포트 생성&quot; 버튼을 클릭하여 첫 월간 HR 리포트를 생성해보세요."
+  },
+  {
+    "path": "analytics.prev_keba6aced",
+    "ko": "이전 리포트"
+  },
+  {
+    "path": "analytics.kr_ai_kec9b94ea_keba6aced",
+    "ko": "AI 월간 리포트"
+  },
+  {
+    "path": "analytics.kr_aikeab080_kebb684ec_kec9db8ec_",
+    "ko": "AI가 분석한 인사 현황 보고서를 확인합니다."
+  },
+  {
+    "path": "analytics.kr_kebb684",
+    "ko": "분"
+  },
+  {
+    "path": "analytics.kr_keab7bced_ked9cb4ea_analytics",
+    "ko": "근태/휴가 분석"
+  },
+  {
+    "path": "analytics.kr_kecb488ea_52h_kec9c84eb_keab7b",
+    "ko": "초과근무, 52h 위반, 근태 패턴을 분석합니다."
+  },
+  {
+    "path": "analytics.grade_keca781eb_kebb680ec_kec84b1eb_kebb3b4ec_kebb984ea_analytics",
+    "ko": "직급·직무·부서별 성별 보상 비교 분석"
+  },
+  {
+    "path": "analytics.all",
+    "ko": "전체"
+  },
+  {
+    "path": "analytics.kr_keb82a8ec_kec9db8ec",
+    "ko": "남성 인원"
+  },
+  {
+    "path": "analytics.kr_kec97acec_kec9db8ec",
+    "ko": "여성 인원"
+  },
+  {
+    "path": "analytics.kr_keb82a8ec_average_keab889ec",
+    "ko": "남성 평균 급여"
+  },
+  {
+    "path": "analytics.kr_kec97acec_average_keab889ec",
+    "ko": "여성 평균 급여"
+  },
+  {
+    "path": "analytics.all_keab2a9ec",
+    "ko": "전체 격차"
+  },
+  {
+    "path": "analytics.kr_keab7b8eb",
+    "ko": "그룹"
+  },
+  {
+    "path": "analytics.kr_keb82a8ec_persons",
+    "ko": "남성 (명)"
+  }
+]

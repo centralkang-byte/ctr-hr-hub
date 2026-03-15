@@ -1,0 +1,1002 @@
+[
+  {
+    "path": "analytics.baseSalary",
+    "ko": "기본급"
+  },
+  {
+    "path": "analytics.excellent",
+    "ko": "탁월"
+  },
+  {
+    "path": "analytics.good",
+    "ko": "우수"
+  },
+  {
+    "path": "analytics.belowAverage",
+    "ko": "미흡"
+  },
+  {
+    "path": "analytics.calculating",
+    "ko": "계산 중"
+  },
+  {
+    "path": "analytics.caution",
+    "ko": "주의"
+  },
+  {
+    "path": "analytics.warning",
+    "ko": "경고"
+  },
+  {
+    "path": "notification.types.leave_approved",
+    "ko": "휴가 승인"
+  },
+  {
+    "path": "notification.types.leave_rejected",
+    "ko": "휴가 반려"
+  },
+  {
+    "path": "notification.types.overtime_warning_48h",
+    "ko": "초과근무 경고 (48h)"
+  },
+  {
+    "path": "notification.types.overtime_blocked_52h",
+    "ko": "근무 제한 (52h)"
+  },
+  {
+    "path": "notification.types.payslip_issued",
+    "ko": "급여 명세서 발급"
+  },
+  {
+    "path": "notification.types.turnover_risk_critical",
+    "ko": "이탈 위험 경보"
+  },
+  {
+    "path": "notification.types.benefit_approved",
+    "ko": "복리후생 승인"
+  },
+  {
+    "path": "notification.types.onboarding_task_overdue",
+    "ko": "온보딩 과제 미완료"
+  },
+  {
+    "path": "notification.types.evaluation_deadline",
+    "ko": "평가 마감 임박"
+  },
+  {
+    "path": "notification.priority.low",
+    "ko": "낮음"
+  },
+  {
+    "path": "notification.priority.normal",
+    "ko": "보통"
+  },
+  {
+    "path": "notification.priority.high",
+    "ko": "높음"
+  },
+  {
+    "path": "notification.priority.urgent",
+    "ko": "긴급"
+  },
+  {
+    "path": "notification.channels.IN_APP",
+    "ko": "인앱"
+  },
+  {
+    "path": "notification.channels.EMAIL",
+    "ko": "이메일"
+  },
+  {
+    "path": "notification.channels.TEAMS",
+    "ko": "Teams"
+  },
+  {
+    "path": "notification.preference.title",
+    "ko": "알림 설정"
+  },
+  {
+    "path": "notification.preference.quietHours",
+    "ko": "방해금지 시간"
+  },
+  {
+    "path": "notification.preference.quietHoursStart",
+    "ko": "시작"
+  },
+  {
+    "path": "notification.preference.quietHoursEnd",
+    "ko": "종료"
+  },
+  {
+    "path": "notification.preference.save",
+    "ko": "저장"
+  },
+  {
+    "path": "notification.preference.saved",
+    "ko": "저장됨"
+  },
+  {
+    "path": "notification.noNotificationsDesc",
+    "ko": "알림이 발생하면 여기에 표시됩니다."
+  },
+  {
+    "path": "notification.allMarkedRead",
+    "ko": "모든 알림을 읽음 처리했습니다"
+  },
+  {
+    "path": "settings.input",
+    "ko": "입력"
+  },
+  {
+    "path": "settings.saved",
+    "ko": "설정이 저장되었습니다"
+  },
+  {
+    "path": "settings.saveFailed",
+    "ko": "설정 저장에 실패했습니다"
+  },
+  {
+    "path": "settings.unknown",
+    "ko": "승진"
+  },
+  {
+    "path": "settings._",
+    "ko": "최고 관리자"
+  },
+  {
+    "path": "settings.hr",
+    "ko": "HR 관리자"
+  },
+  {
+    "path": "settings.erp",
+    "ko": "ERP 연동"
+  },
+  {
+    "path": "settings.api_",
+    "ko": "API 키 관리"
+  },
+  {
+    "path": "settings.cfr",
+    "ko": "CFR 설정"
+  },
+  {
+    "path": "settings.ai",
+    "ko": "AI 스크리닝"
+  },
+  {
+    "path": "settings.workTypeSettings",
+    "ko": "근무유형 설정"
+  },
+  {
+    "path": "settings.hour52Management",
+    "ko": "52시간 관리"
+  },
+  {
+    "path": "settings.shiftWork",
+    "ko": "교대근무"
+  },
+  {
+    "path": "settings.kr_kecbd94ec_ked8380ec_kec8b9cec",
+    "ko": "코어 타임 시작"
+  },
+  {
+    "path": "settings.kr_kecbd94ec_ked8380ec_ended",
+    "ko": "코어 타임 종료"
+  },
+  {
+    "path": "settings.kr_ked8380ec",
+    "ko": "타입"
+  },
+  {
+    "path": "settings.kr_kec8b9cec",
+    "ko": "시작"
+  },
+  {
+    "path": "settings.kr_keca3bcec",
+    "ko": "주임"
+  },
+  {
+    "path": "settings.kr_keab2bdea",
+    "ko": "경고"
+  },
+  {
+    "path": "settings.kr_kecb0a8eb",
+    "ko": "차단"
+  },
+  {
+    "path": "settings.kr_keb8ba8ec_kec8b9cea_keca3bc",
+    "ko": "단위: 시간/주"
+  },
+  {
+    "path": "settings.kr_keca3bcec_caution",
+    "ko": "주의 (Caution)"
+  },
+  {
+    "path": "settings.kr_keab2bdea_warning",
+    "ko": "경고 (Warning)"
+  },
+  {
+    "path": "settings.kr_kecb0a8eb_blocked",
+    "ko": "차단 (Blocked)"
+  },
+  {
+    "path": "settings.kr_kecb0a8eb_ked999cec_ked81b4eb_",
+    "ko": "차단이 활성화되면 클락인 API에서 52시간 초과 여부를 확인합니다.\n                HR 관리자만 차단을 해제할 수 있습니다."
+  },
+  {
+    "path": "settings.shiftPatterns_management",
+    "ko": "교대 패턴 관리"
+  },
+  {
+    "path": "settings.kr_2keab590eb_3keab590eb_ked8ca8e",
+    "ko": "2교대/3교대 패턴 정의 및 슬롯 설정"
+  },
+  {
+    "path": "settings.kr_keab590eb_keba19cec",
+    "ko": "교대 로스터"
+  },
+  {
+    "path": "settings.month_kebb384_keab590eb_kec9dbcec_kebb0b0ec_kebb08f_keca1b0_ked8eb8ec",
+    "ko": "월별 교대 일정 배정 및 조 편성"
+  },
+  {
+    "path": "settings.shiftWork_kec95bcea_kec8898eb_kec9588eb",
+    "ko": "교대근무 야간 수당 안내"
+  },
+  {
+    "path": "settings.kr_kec95bcea_keab590eb_22_00_06_0",
+    "ko": "야간 교대(22:00~06:00) 근무는 야간 수당이 자동 계산됩니다.\n            급여 설정에서 수당 비율을 조정하세요."
+  },
+  {
+    "path": "settings.company_kecbba4ec_settings",
+    "ko": "법인 커스텀 설정"
+  },
+  {
+    "path": "settings.global_keab8b0eb",
+    "ko": "글로벌 기본값"
+  },
+  {
+    "path": "settings.reset",
+    "ko": "초기화"
+  },
+  {
+    "path": "settings.kr_keab7bceb_kec8aa4ec",
+    "ko": "근무 스케줄"
+  },
+  {
+    "path": "settings.kr_keab8b0eb_keab7bceb_keca090ec_",
+    "ko": "기본 근무시간, 점심시간, 유연근무 설정"
+  },
+  {
+    "path": "settings.kr_kec8b9cea",
+    "ko": "시간"
+  },
+  {
+    "path": "settings.kr_kec9dbc",
+    "ko": "일"
+  },
+  {
+    "path": "settings.kr_kec9ca0ec_ked999cec",
+    "ko": "유연근무제 활성화"
+  },
+  {
+    "path": "settings.save",
+    "ko": "저장"
+  },
+  {
+    "path": "settings.kr_keca3bcea_keab7bceb",
+    "ko": "주간 근무한도"
+  },
+  {
+    "path": "settings.kr_kebb295ec_keca3bcea_keab7bceb_",
+    "ko": "법정 주간 근무 상한과 알림 임계값 설정"
+  },
+  {
+    "path": "settings.kr_kec8b9cea_keab7bceb_keab8b0ec",
+    "ko": "시간 (근로기준법 기준)"
+  },
+  {
+    "path": "settings.kr_keba19ceb_keca491",
+    "ko": "로딩 중..."
+  },
+  {
+    "path": "settings.kr_kebb295ec_holidays",
+    "ko": "법정 공휴일"
+  },
+  {
+    "path": "settings.kr_kebb295ec_kec84a0ed_ked95b4eb_",
+    "ko": "· 법인을 선택하면 해당 법인 공휴일이 표시됩니다"
+  },
+  {
+    "path": "settings.holidays_add",
+    "ko": "공휴일 추가"
+  },
+  {
+    "path": "settings.kr_keb8c80ec",
+    "ko": "대상"
+  },
+  {
+    "path": "settings.kr_ked9cb4ea_kebb680ec_keab79cec",
+    "ko": "휴가 부여 규칙"
+  },
+  {
+    "path": "settings.leaveTypes_kebb384_kebb680ec_kebb0a9ec_keab7bcec_keab080ec_kec9db4ec_keca095ec_settings",
+    "ko": "휴가 유형별 부여 방식, 근속 가산, 이월 정책 설정"
+  },
+  {
+    "path": "settings.kr_keba788ec_kec97b0ec_ked9788ec",
+    "ko": "마이너스 연차 허용"
+  },
+  {
+    "path": "settings.kr_kecb59ceb_keba788ec_ked959ceb",
+    "ko": "최대 마이너스 한도:"
+  },
+  {
+    "path": "settings.kr_kec9ca0ed_kebb680ec_keab79cec",
+    "ko": "유형별 부여 규칙"
+  },
+  {
+    "path": "settings.kr_kebb680ec_keab79cec_kec84a4ec_",
+    "ko": "부여 규칙이 설정된 휴가 유형이 없습니다"
+  },
+  {
+    "path": "settings.leaveTypes_ked83adec_kec9ca0ed_kecb694ea_ked9b84_kebb680ec_keab79cec_kec84a4ec",
+    "ko": "휴가 유형 탭에서 유형을 추가한 후 부여 규칙을 설정하세요"
+  },
+  {
+    "path": "settings.kr_kebb984eb_kebb680ec_ked999cec",
+    "ko": "비례 부여 활성화"
+  },
+  {
+    "path": "settings.kr_kebb680ec_kebb0a9ec",
+    "ko": "부여 방식"
+  },
+  {
+    "path": "settings.kr_keab8b0ec_period",
+    "ko": "기준 기간"
+  },
+  {
+    "path": "settings.kr_kec9db4ec_keca095ec",
+    "ko": "이월 정책"
+  },
+  {
+    "path": "settings.kr_kec9db4ec_kec868ceb",
+    "ko": "이월 소멸"
+  },
+  {
+    "path": "settings.kr_keab7bcec_period",
+    "ko": "근속 기간"
+  },
+  {
+    "path": "settings.kr_kebb680ec",
+    "ko": "부장"
+  },
+  {
+    "path": "settings.kr_keab080ec",
+    "ko": "가산"
+  },
+  {
+    "path": "settings.kr_kec8381ed",
+    "ko": "상한"
+  },
+  {
+    "path": "settings.kr_kec97b0ec",
+    "ko": "연장"
+  },
+  {
+    "path": "settings.kr_kebafb8ec_kec97b0ec_kec868cec_",
+    "ko": "미사용 연차 소진 알림 및 소멸 규칙 설정"
+  },
+  {
+    "path": "settings.kr_kec97b0ec_keab79cec_ked9884ec_",
+    "ko": "연차촉진 규칙은 현재 시스템에 하드코딩되어 있습니다. 이 설정 화면은 H-2c에서 실제 시스템과 연결됩니다."
+  },
+  {
+    "path": "settings.month",
+    "ko": "월"
+  },
+  {
+    "path": "settings.kr_kec9dbc_kebb680ed",
+    "ko": "일 부터"
+  },
+  {
+    "path": "settings.kr_kec9dbceb_kebb09cec",
+    "ko": "일마다 발송"
+  },
+  {
+    "path": "settings.kr_ked9a8c",
+    "ko": "회"
+  },
+  {
+    "path": "settings.kr_kebb3b8ec_required",
+    "ko": "본인 (필수)"
+  },
+  {
+    "path": "settings.kr_keca781ec_kec8381ec",
+    "ko": "직속 상사"
+  },
+  {
+    "path": "settings.kr_hr_keb8bb4eb",
+    "ko": "HR 담당자"
+  },
+  {
+    "path": "settings.kr_kec97b0eb_kec868ceb",
+    "ko": "연말 소멸"
+  },
+  {
+    "path": "settings.kr_12_31kec9790_kec9e94ec_kec97b0",
+    "ko": "— 12/31에 잔여 연차 전액 소멸"
+  },
+  {
+    "path": "settings.kr_kec9db4ec_ked9b84_kec868ceb",
+    "ko": "이월 후 소멸"
+  },
+  {
+    "path": "settings.kr_kec9db4ec_keab79cec_keb94b0eb_",
+    "ko": "— 이월 규칙에 따라 이월 후 잔여분 소멸"
+  },
+  {
+    "path": "settings.kr_kec868ceb",
+    "ko": "소멸"
+  },
+  {
+    "path": "settings.kr_kec9dbc_keca084_keab2bdea",
+    "ko": "일 전 경고"
+  },
+  {
+    "path": "settings.leaveTypes",
+    "ko": "휴가 유형"
+  },
+  {
+    "path": "settings.kr_kec9ca0ed_add",
+    "ko": "유형 추가"
+  },
+  {
+    "path": "settings.kr_kecbd94eb",
+    "ko": "코드"
+  },
+  {
+    "path": "settings.kr_kec9ca0ed",
+    "ko": "유형"
+  },
+  {
+    "path": "settings.kr_kec9ca0ea",
+    "ko": "유급"
+  },
+  {
+    "path": "settings.kr_kebb098ec",
+    "ko": "반차"
+  },
+  {
+    "path": "settings.kr_keca69deb",
+    "ko": "증빙"
+  },
+  {
+    "path": "settings.kr_kecb59ceb_kec97b0ec",
+    "ko": "최대 연속일"
+  },
+  {
+    "path": "settings.kr_kec82acec_kec8ba0ec",
+    "ko": "사전 신청"
+  },
+  {
+    "path": "settings.kr_kebb294ec",
+    "ko": "범위"
+  },
+  {
+    "path": "settings.register_keb909c_ked9cb4ea_kec9ca0ed_kec9786ec",
+    "ko": "등록된 휴가 유형이 없습니다"
+  },
+  {
+    "path": "settings.kr_kec8b9ceb_keb8db0ec_kec8ba4ed_",
+    "ko": "시드 데이터를 실행하거나 유형을 직접 추가하세요"
+  },
+  {
+    "path": "settings.leaveTypes_kec8381ec",
+    "ko": "휴가 유형 상세"
+  },
+  {
+    "path": "settings.overtime_keca3bcea",
+    "ko": "연장근무 (주간)"
+  },
+  {
+    "path": "settings.kr_kebb295ec_kecb488ea_kec8b9c",
+    "ko": "법정근로시간 초과 시"
+  },
+  {
+    "path": "settings.kr_kebb0b0",
+    "ko": "배"
+  },
+  {
+    "path": "settings.kr_kec95bcea",
+    "ko": "야간근무"
+  },
+  {
+    "path": "settings.kr_22_00_06_00_keab7bceb_kec8b9c",
+    "ko": "22:00~06:00 근무 시"
+  },
+  {
+    "path": "settings.kr_kebb0b0_keab080ec",
+    "ko": "배 가산"
+  },
+  {
+    "path": "settings.kr_ked9cb4ec",
+    "ko": "휴직"
+  },
+  {
+    "path": "settings.kr_kebb295ec_holidays_kebb08f_kec",
+    "ko": "법정 공휴일 및 주말 근무 시"
+  },
+  {
+    "path": "settings.kr_kecb488ea",
+    "ko": "초과근무"
+  },
+  {
+    "path": "settings.kr_kec82acec_kec8898eb_kebb0b0ec_",
+    "ko": "사전승인, 수당 배율, 야간근무 기준 설정"
+  },
+  {
+    "path": "settings.company_kebb384_kec8898eb_kebb0b0ec_keb8ba4eb",
+    "ko": "법인별 수당 배율이 다릅니다"
+  },
+  {
+    "path": "settings.kr_kr_kec97b0ec_1_5kebb0b0_ru_2_0",
+    "ko": "KR: 연장 1.5배 / RU: 2.0배 / VN: 야간 +0.3배 / MX: 연장 2.0배"
+  },
+  {
+    "path": "settings.kr_kec82acec_approve_ked999cec",
+    "ko": "사전 승인 활성화"
+  },
+  {
+    "path": "settings.kr_kec8898eb_keab384ec_kebb0b0ec",
+    "ko": "수당 계산 배율"
+  },
+  {
+    "path": "settings.kr_keab7bceb_kec9ca0ed",
+    "ko": "근무 유형"
+  },
+  {
+    "path": "settings.description",
+    "ko": "설명"
+  },
+  {
+    "path": "settings.kr_kebb0b0ec",
+    "ko": "배율 (%)"
+  },
+  {
+    "path": "settings.kr_keb8ba8ec",
+    "ko": "단위"
+  },
+  {
+    "path": "settings.company_kebb384_kecb0b8ea_kebb0b0ec",
+    "ko": "법인별 참고 배율"
+  },
+  {
+    "path": "settings.company",
+    "ko": "법인"
+  },
+  {
+    "path": "settings.kr_kec95bcea_keab080ec",
+    "ko": "야간 가산"
+  },
+  {
+    "path": "settings.kr_1_5kebb0b0",
+    "ko": "1.5배"
+  },
+  {
+    "path": "settings.kr_0_5kebb0b0",
+    "ko": "+0.5배"
+  },
+  {
+    "path": "settings.kr_2_0kebb0b0",
+    "ko": "2.0배"
+  },
+  {
+    "path": "settings.kr_0_3kebb0b0",
+    "ko": "+0.3배"
+  },
+  {
+    "path": "settings.kr_0_25kebb0b0",
+    "ko": "+0.25배"
+  },
+  {
+    "path": "settings.shiftWork_ked8ca8ed",
+    "ko": "교대근무 패턴"
+  },
+  {
+    "path": "settings.kr_keab590eb_keab7bceb_ked8ca8ed_",
+    "ko": "교대 근무 패턴을 생성하고 조별로 배정합니다"
+  },
+  {
+    "path": "settings.kr_kec8388_ked8ca8ed_add",
+    "ko": "새 패턴 추가"
+  },
+  {
+    "path": "settings.kr_ked8ca8ed",
+    "ko": "패턴명"
+  },
+  {
+    "path": "settings.kr_keab590eb_kec8898",
+    "ko": "교대 수"
+  },
+  {
+    "path": "settings.kr_keca3bcea_kec9dbc",
+    "ko": "주기(일)"
+  },
+  {
+    "path": "settings.kr_keca1b0_kec8898",
+    "ko": "조 수"
+  },
+  {
+    "path": "settings.status",
+    "ko": "상태"
+  },
+  {
+    "path": "settings.register_keb909c_keab590eb_ked8ca8ed_kec9786ec",
+    "ko": "등록된 교대 패턴이 없습니다"
+  },
+  {
+    "path": "settings.shiftWork_keab080_ked9584ec_kebb295ec_ked8ca8ed_kecb694ea",
+    "ko": "교대근무가 필요한 법인에서 패턴을 추가하세요"
+  },
+  {
+    "path": "settings.kr_kec8ab9ec",
+    "ko": "승진"
+  },
+  {
+    "path": "settings.kr_keca084eb",
+    "ko": "전무"
+  },
+  {
+    "path": "settings.kr_kec889ced",
+    "ko": "순환보직"
+  },
+  {
+    "path": "settings.kr_ked8c8cea",
+    "ko": "파견"
+  },
+  {
+    "path": "settings.kr_keab2b8ec",
+    "ko": "겸직"
+  },
+  {
+    "path": "settings.kr_kebb3b5ec",
+    "ko": "복원"
+  },
+  {
+    "path": "settings.kr_keab095eb",
+    "ko": "강등"
+  },
+  {
+    "path": "settings.kr_kebb09ceb_kec9ca0ed_approve_ke",
+    "ko": "발령 유형별 승인 규칙"
+  },
+  {
+    "path": "settings.kr_kebb09ceb_keab79cec",
+    "ko": "발령 규칙"
+  },
+  {
+    "path": "settings.kr_kebb09ceb_kec9ca0ed_kebb08f_ap",
+    "ko": "발령 유형 및 승인 절차 설정"
+  },
+  {
+    "path": "settings.company_kec98a4eb",
+    "ko": "법인 오버라이드"
+  },
+  {
+    "path": "settings.approve_ked9584ec",
+    "ko": "승인 필요"
+  },
+  {
+    "path": "settings.kr_keb9098eb",
+    "ko": "되돌리기"
+  },
+  {
+    "path": "settings.codeManagement",
+    "ko": "코드 관리"
+  },
+  {
+    "path": "settings.kr_kecbd94eb_add",
+    "ko": "코드 추가"
+  },
+  {
+    "path": "settings.kr_ked82a4",
+    "ko": "키"
+  },
+  {
+    "path": "settings.kr_keb9dbceb",
+    "ko": "라벨"
+  },
+  {
+    "path": "settings.kr_kec8389ec",
+    "ko": "색상"
+  },
+  {
+    "path": "settings.kr_kec889cec",
+    "ko": "순서"
+  },
+  {
+    "path": "settings.register_keb909c_kecbd94eb_kec9786ec",
+    "ko": "등록된 코드가 없습니다"
+  },
+  {
+    "path": "settings.company_keab8b0eb",
+    "ko": "법인 기본정보"
+  },
+  {
+    "path": "settings.company_persons",
+    "ko": "법인명"
+  },
+  {
+    "path": "settings.kr_keab5adea",
+    "ko": "국가"
+  },
+  {
+    "path": "settings.kr_ked86b5ed",
+    "ko": "통화"
+  },
+  {
+    "path": "settings.register_keb909c_kebb295ec_kec9786ec",
+    "ko": "등록된 법인이 없습니다"
+  },
+  {
+    "path": "settings.kr_ked9584eb_add",
+    "ko": "필드 추가"
+  },
+  {
+    "path": "settings.kr_ked9584eb_ked82a4",
+    "ko": "필드 키"
+  },
+  {
+    "path": "settings.search",
+    "ko": "검색"
+  },
+  {
+    "path": "settings.register_keb909c_kecbba4ec_ked9584eb_kec9786ec",
+    "ko": "등록된 커스텀 필드가 없습니다"
+  },
+  {
+    "path": "settings.department_keab5acec",
+    "ko": "부서 구조"
+  },
+  {
+    "path": "settings.department_persons",
+    "ko": "부서명"
+  },
+  {
+    "path": "settings.kr_kec9881eb",
+    "ko": "영문"
+  },
+  {
+    "path": "settings.kr_keba088eb",
+    "ko": "레벨"
+  },
+  {
+    "path": "settings.kr_ked9598ec_department",
+    "ko": "하위 부서"
+  },
+  {
+    "path": "settings.kr_kec868cec_kec9db8ec",
+    "ko": "소속 인원"
+  },
+  {
+    "path": "settings.register_keb909c_kebb680ec_kec9786ec",
+    "ko": "등록된 부서가 없습니다"
+  },
+  {
+    "path": "settings.kr_keab2bdec",
+    "ko": "경영관리"
+  },
+  {
+    "path": "settings.kr_kec9db8ec",
+    "ko": "인사"
+  },
+  {
+    "path": "settings.kr_kec9eaceb_ked9a8cea",
+    "ko": "재무/회계"
+  },
+  {
+    "path": "settings.kr_it_keab09ceb",
+    "ko": "IT/개발"
+  },
+  {
+    "path": "settings.kr_kec839dec_keca09cec",
+    "ko": "생산/제조"
+  },
+  {
+    "path": "settings.kr_kec9881ec",
+    "ko": "영업"
+  },
+  {
+    "path": "settings.kr_keba788ec",
+    "ko": "마케팅"
+  },
+  {
+    "path": "settings.kr_keca781ec_keca781eb",
+    "ko": "직종/직무"
+  },
+  {
+    "path": "settings.kr_keca781ec_keca781eb_kebb684eb_",
+    "ko": "직종/직무 분류는 현재 시스템에서 관리됩니다. API 연결 후 편집이 가능합니다."
+  },
+  {
+    "path": "settings.kr_keca781ec_kr",
+    "ko": "직종명 (KR)"
+  },
+  {
+    "path": "settings.kr_keca781ec_en",
+    "ko": "직종명 (EN)"
+  },
+  {
+    "path": "settings.kr_kec82acec",
+    "ko": "사원"
+  },
+  {
+    "path": "settings.kr_keb8c80eb",
+    "ko": "대리"
+  },
+  {
+    "path": "settings.kr_keab3bcec",
+    "ko": "과세"
+  },
+  {
+    "path": "settings.kr_kecb0a8ec",
+    "ko": "차장"
+  },
+  {
+    "path": "settings.kr_kec9db4ec",
+    "ko": "이사"
+  },
+  {
+    "path": "settings.kr_kec8381eb",
+    "ko": "상무"
+  },
+  {
+    "path": "settings.kr_keb8c80ed",
+    "ko": "대표이사"
+  },
+  {
+    "path": "settings.grade_kecb2b4ea",
+    "ko": "직급 체계"
+  },
+  {
+    "path": "settings.grade_kecb2b4ea_ked9884ec_kec8b9cec_keab480eb_api_kec97b0ea_ked9b84_ked8eb8ec_keab080eb",
+    "ko": "직급 체계는 현재 시스템에서 관리됩니다. API 연결 후 편집이 가능합니다."
+  },
+  {
+    "path": "settings.grade_persons",
+    "ko": "직급명"
+  },
+  {
+    "path": "settings.kr_kecb59cec_kec97b0ec",
+    "ko": "최소 연차"
+  },
+  {
+    "path": "settings.kr_kec8ab9ec_kec868cec",
+    "ko": "승진 소요"
+  },
+  {
+    "path": "settings.probation",
+    "ko": "수습 기간"
+  },
+  {
+    "path": "settings.probation_evaluation_keab8b0ec_kec9e90eb_keca084ed_settings",
+    "ko": "수습 기간, 평가 기준, 자동 전환 설정"
+  },
+  {
+    "path": "settings.kr_keab09cec",
+    "ko": "개월"
+  },
+  {
+    "path": "settings.kr_kec8898ec_complete_kec8b9c_kec",
+    "ko": "수습 완료 시 자동 전환"
+  },
+  {
+    "path": "settings.kr_kec8898ec_kec97b0ec_ked9788ec",
+    "ko": "수습 연장 허용"
+  },
+  {
+    "path": "settings.kr_kecb59ceb",
+    "ko": "최대"
+  },
+  {
+    "path": "settings.settings",
+    "ko": "설정"
+  },
+  {
+    "path": "settings.excellent",
+    "ko": "탁월"
+  },
+  {
+    "path": "settings.good",
+    "ko": "우수"
+  },
+  {
+    "path": "settings.average",
+    "ko": "보통"
+  },
+  {
+    "path": "settings.belowAverage",
+    "ko": "미흡"
+  },
+  {
+    "path": "settings.kr_kec84b1ea_keab79cec",
+    "ko": "성과급 규칙"
+  },
+  {
+    "path": "settings.savedSuccess",
+    "ko": "저장되었습니다"
+  },
+  {
+    "path": "settings.kr_kec84b1ea_keab79cec_kec9785eb",
+    "ko": "성과급 규칙이 업데이트되었습니다."
+  },
+  {
+    "path": "settings.retry_ked95b4_keca3bcec",
+    "ko": "다시 시도해 주세요."
+  },
+  {
+    "path": "settings.changeCancelled",
+    "ko": "변경을 취소했습니다"
+  },
+  {
+    "path": "settings.kr_keb93b1ea_kec84b1ea_kebb0b0ec_",
+    "ko": "등급별 성과급 배율 설정"
+  },
+  {
+    "path": "settings.month_basesalary_keab8b0ec",
+    "ko": "월 기본급 기준"
+  },
+  {
+    "path": "settings.kr_kec97b0eb_keab8b0ec",
+    "ko": "연봉 기준"
+  },
+  {
+    "path": "settings.kr_keca095ec",
+    "ko": "정액"
+  },
+  {
+    "path": "settings.kr_keb93b1ea",
+    "ko": "등급"
+  },
+  {
+    "path": "settings.kr_ked86b5ed_ked9998ec",
+    "ko": "통화/환율"
+  },
+  {
+    "path": "settings.kr_ked9998ec",
+    "ko": "환율"
+  },
+  {
+    "path": "settings.kr_kecb69cec",
+    "ko": "출처"
+  },
+  {
+    "path": "settings.deductions",
+    "ko": "공제 항목"
+  },
+  {
+    "path": "settings.kr_ked95adeb_add",
+    "ko": "항목 추가"
+  },
+  {
+    "path": "settings.kr_ked95adeb",
+    "ko": "항목"
+  },
+  {
+    "path": "settings.kr_kecb9b4ed",
+    "ko": "카테고리"
+  },
+  {
+    "path": "settings.kr_kebb295ec",
+    "ko": "법정"
+  },
+  {
+    "path": "settings.register_keb909c_keab3b5ec_ked95adeb_kec9786ec",
+    "ko": "등록된 공제 항목이 없습니다"
+  },
+  {
+    "path": "settings.kr_keab889ec_ked95adeb",
+    "ko": "급여 항목"
+  }
+]

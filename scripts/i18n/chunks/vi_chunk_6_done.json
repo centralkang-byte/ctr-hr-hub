@@ -1,0 +1,1252 @@
+[
+  {
+    "path": "analytics.baseSalary",
+    "ko": "기본급",
+    "translated": "Lương cơ bản"
+  },
+  {
+    "path": "analytics.excellent",
+    "ko": "탁월",
+    "translated": "Exceptional"
+  },
+  {
+    "path": "analytics.good",
+    "ko": "우수",
+    "translated": "Excellent"
+  },
+  {
+    "path": "analytics.belowAverage",
+    "ko": "미흡",
+    "translated": "Below Expectations"
+  },
+  {
+    "path": "analytics.calculating",
+    "ko": "계산 중",
+    "translated": "계산..."
+  },
+  {
+    "path": "analytics.caution",
+    "ko": "주의",
+    "translated": "Chú ý"
+  },
+  {
+    "path": "analytics.warning",
+    "ko": "경고",
+    "translated": "Cảnh báo"
+  },
+  {
+    "path": "notification.types.leave_approved",
+    "ko": "휴가 승인",
+    "translated": "Leave Phê duyệtd"
+  },
+  {
+    "path": "notification.types.leave_rejected",
+    "ko": "휴가 반려",
+    "translated": "Leave Từ chốied"
+  },
+  {
+    "path": "notification.types.overtime_warning_48h",
+    "ko": "초과근무 경고 (48h)",
+    "translated": "Làm thêm giờ Cảnh báo (48h)"
+  },
+  {
+    "path": "notification.types.overtime_blocked_52h",
+    "ko": "근무 제한 (52h)",
+    "translated": "Work Giờ Blocked (52h)"
+  },
+  {
+    "path": "notification.types.payslip_issued",
+    "ko": "급여 명세서 발급",
+    "translated": "Thanh toánslip Issued"
+  },
+  {
+    "path": "notification.types.turnover_risk_critical",
+    "ko": "이탈 위험 경보",
+    "translated": "Critical Rủi ro nghỉ việc"
+  },
+  {
+    "path": "notification.types.benefit_approved",
+    "ko": "복리후생 승인",
+    "translated": "Benefit Phê duyệtd"
+  },
+  {
+    "path": "notification.types.onboarding_task_overdue",
+    "ko": "온보딩 과제 미완료",
+    "translated": "Onboarding Task Overdue"
+  },
+  {
+    "path": "notification.types.evaluation_deadline",
+    "ko": "평가 마감 임박",
+    "translated": "Đánh giá Deadline"
+  },
+  {
+    "path": "notification.priority.low",
+    "ko": "낮음",
+    "translated": "Thấp"
+  },
+  {
+    "path": "notification.priority.normal",
+    "ko": "보통",
+    "translated": "Normal"
+  },
+  {
+    "path": "notification.priority.high",
+    "ko": "높음",
+    "translated": "Cao"
+  },
+  {
+    "path": "notification.priority.urgent",
+    "ko": "긴급",
+    "translated": "Urgent"
+  },
+  {
+    "path": "notification.channels.IN_APP",
+    "ko": "인앱",
+    "translated": "In-App"
+  },
+  {
+    "path": "notification.channels.EMAIL",
+    "ko": "이메일",
+    "translated": "Email"
+  },
+  {
+    "path": "notification.channels.TEAMS",
+    "ko": "Teams",
+    "translated": "Nhóms"
+  },
+  {
+    "path": "notification.preference.title",
+    "ko": "알림 설정",
+    "translated": "Thông báo Cài đặt"
+  },
+  {
+    "path": "notification.preference.quietHours",
+    "ko": "방해금지 시간",
+    "translated": "Quiet Giờ"
+  },
+  {
+    "path": "notification.preference.quietHoursStart",
+    "ko": "시작",
+    "translated": "Bắt đầu"
+  },
+  {
+    "path": "notification.preference.quietHoursEnd",
+    "ko": "종료",
+    "translated": "Kết thúc"
+  },
+  {
+    "path": "notification.preference.save",
+    "ko": "저장",
+    "translated": "Lưu"
+  },
+  {
+    "path": "notification.preference.saved",
+    "ko": "저장됨",
+    "translated": "Lưud"
+  },
+  {
+    "path": "notification.noNotificationsDesc",
+    "ko": "알림이 발생하면 여기에 표시됩니다.",
+    "translated": "Thông báos will appear here."
+  },
+  {
+    "path": "notification.allMarkedRead",
+    "ko": "모든 알림을 읽음 처리했습니다",
+    "translated": "All notifications marked as read"
+  },
+  {
+    "path": "settings.input",
+    "ko": "입력",
+    "translated": "Input"
+  },
+  {
+    "path": "settings.saved",
+    "ko": "설정이 저장되었습니다",
+    "translated": "Cài đặt saved"
+  },
+  {
+    "path": "settings.saveFailed",
+    "ko": "설정 저장에 실패했습니다",
+    "translated": "Thất bại to save settings"
+  },
+  {
+    "path": "settings.unknown",
+    "ko": "승진",
+    "translated": "Promotion"
+  },
+  {
+    "path": "settings._",
+    "ko": "최고 관리자",
+    "translated": "최 Management자"
+  },
+  {
+    "path": "settings.hr",
+    "ko": "HR 관리자",
+    "translated": "HR Management자"
+  },
+  {
+    "path": "settings.erp",
+    "ko": "ERP 연동",
+    "translated": "Tích hợp ERP"
+  },
+  {
+    "path": "settings.api_",
+    "ko": "API 키 관리",
+    "translated": "API 키 Management"
+  },
+  {
+    "path": "settings.cfr",
+    "ko": "CFR 설정",
+    "translated": "CFR Cài đặt"
+  },
+  {
+    "path": "settings.ai",
+    "ko": "AI 스크리닝",
+    "translated": "Sàng lọc AI"
+  },
+  {
+    "path": "settings.workTypeSettings",
+    "ko": "근무유형 설정",
+    "translated": "근무Loại Cài đặt"
+  },
+  {
+    "path": "settings.hour52Management",
+    "ko": "52시간 관리",
+    "translated": "52시간 Management"
+  },
+  {
+    "path": "settings.shiftWork",
+    "ko": "교대근무",
+    "translated": "Ca kíp"
+  },
+  {
+    "path": "settings.kr_kecbd94ec_ked8380ec_kec8b9cec",
+    "ko": "코어 타임 시작",
+    "translated": "Core Time Bắt đầu"
+  },
+  {
+    "path": "settings.kr_kecbd94ec_ked8380ec_ended",
+    "ko": "코어 타임 종료",
+    "translated": "Core Time Kết thúc"
+  },
+  {
+    "path": "settings.kr_ked8380ec",
+    "ko": "타입",
+    "translated": "Loại"
+  },
+  {
+    "path": "settings.kr_kec8b9cec",
+    "ko": "시작",
+    "translated": "Bắt đầu"
+  },
+  {
+    "path": "settings.kr_keca3bcec",
+    "ko": "주임",
+    "translated": "Assistant Quản lý"
+  },
+  {
+    "path": "settings.kr_keab2bdea",
+    "ko": "경고",
+    "translated": "Cảnh báo"
+  },
+  {
+    "path": "settings.kr_kecb0a8eb",
+    "ko": "차단",
+    "translated": "Blocked"
+  },
+  {
+    "path": "settings.kr_keb8ba8ec_kec8b9cea_keca3bc",
+    "ko": "단위: 시간/주",
+    "translated": "Unit: Giờ/Tuần"
+  },
+  {
+    "path": "settings.kr_keca3bcec_caution",
+    "ko": "주의 (Caution)",
+    "translated": "주 (Cảnh báo)"
+  },
+  {
+    "path": "settings.kr_keab2bdea_warning",
+    "ko": "경고 (Warning)",
+    "translated": "경 (Cảnh báo)"
+  },
+  {
+    "path": "settings.kr_kecb0a8eb_blocked",
+    "ko": "차단 (Blocked)",
+    "translated": "차단 (Blocked)"
+  },
+  {
+    "path": "settings.kr_kecb0a8eb_ked999cec_ked81b4eb_",
+    "ko": "차단이 활성화되면 클락인 API에서 52시간 초과 여부를 확인합니다.\n                HR 관리자만 차단을 해제할 수 있습니다.",
+    "translated": "When blocking is enabled, the clock-in API checks 52-hour limit.\n                Only HR admins can release blocks."
+  },
+  {
+    "path": "settings.shiftPatterns_management",
+    "ko": "교대 패턴 관리",
+    "translated": "교대 패턴 Management"
+  },
+  {
+    "path": "settings.kr_2keab590eb_3keab590eb_ked8ca8e",
+    "ko": "2교대/3교대 패턴 정의 및 슬롯 설정",
+    "translated": "Define 2-shift/3-shift patterns and slot settings"
+  },
+  {
+    "path": "settings.kr_keab590eb_keba19cec",
+    "ko": "교대 로스터",
+    "translated": "Shift Roster"
+  },
+  {
+    "path": "settings.month_kebb384_keab590eb_kec9dbcec_kebb0b0ec_kebb08f_keca1b0_ked8eb8ec",
+    "ko": "월별 교대 일정 배정 및 조 편성",
+    "translated": "Hàng tháng shift schedule assignment and group allocation"
+  },
+  {
+    "path": "settings.shiftWork_kec95bcea_kec8898eb_kec9588eb",
+    "ko": "교대근무 야간 수당 안내",
+    "translated": "Ca kíp Night Premium Info"
+  },
+  {
+    "path": "settings.kr_kec95bcea_keab590eb_22_00_06_0",
+    "ko": "야간 교대(22:00~06:00) 근무는 야간 수당이 자동 계산됩니다.\n            급여 설정에서 수당 비율을 조정하세요.",
+    "translated": "야간 교대(22:00~06:00) 근무 야간 Phụ cấp 자동 계산됩니다. Thanh toánroll Cài đặt Phụ cấp Ratio Adjustment하세요."
+  },
+  {
+    "path": "settings.company_kecbba4ec_settings",
+    "ko": "법인 커스텀 설정",
+    "translated": "Pháp nhân Custom Cài đặt"
+  },
+  {
+    "path": "settings.global_keab8b0eb",
+    "ko": "글로벌 기본값",
+    "translated": "Global Default"
+  },
+  {
+    "path": "settings.reset",
+    "ko": "초기화",
+    "translated": "Đặt lại"
+  },
+  {
+    "path": "settings.kr_keab7bceb_kec8aa4ec",
+    "ko": "근무 스케줄",
+    "translated": "Work Schedule"
+  },
+  {
+    "path": "settings.kr_keab8b0eb_keab7bceb_keca090ec_",
+    "ko": "기본 근무시간, 점심시간, 유연근무 설정",
+    "translated": "Base working hours, lunch break, flex work settings"
+  },
+  {
+    "path": "settings.kr_kec8b9cea",
+    "ko": "시간",
+    "translated": "Timeline"
+  },
+  {
+    "path": "settings.kr_kec9dbc",
+    "ko": "일",
+    "translated": "day(s)"
+  },
+  {
+    "path": "settings.kr_kec9ca0ec_ked999cec",
+    "ko": "유연근무제 활성화",
+    "translated": "Enable Flexible Work"
+  },
+  {
+    "path": "settings.save",
+    "ko": "저장",
+    "translated": "Lưu"
+  },
+  {
+    "path": "settings.kr_keca3bcea_keab7bceb",
+    "ko": "주간 근무한도",
+    "translated": "Hàng tuần Work Limit"
+  },
+  {
+    "path": "settings.kr_kebb295ec_keca3bcea_keab7bceb_",
+    "ko": "법정 주간 근무 상한과 알림 임계값 설정",
+    "translated": "Statutory weekly work limit and notification threshold settings"
+  },
+  {
+    "path": "settings.kr_kec8b9cea_keab7bceb_keab8b0ec",
+    "ko": "시간 (근로기준법 기준)",
+    "translated": "Giờ (per labor standards)"
+  },
+  {
+    "path": "settings.kr_keba19ceb_keca491",
+    "ko": "로딩 중...",
+    "translated": "Đang tải..."
+  },
+  {
+    "path": "settings.kr_kebb295ec_holidays",
+    "ko": "법정 공휴일",
+    "translated": "Statutory Holidays"
+  },
+  {
+    "path": "settings.kr_kebb295ec_kec84a0ed_ked95b4eb_",
+    "ko": "· 법인을 선택하면 해당 법인 공휴일이 표시됩니다",
+    "translated": "· Chọn an entity to display its statutory holidays"
+  },
+  {
+    "path": "settings.holidays_add",
+    "ko": "공휴일 추가",
+    "translated": "공휴day(s) Thêmitional"
+  },
+  {
+    "path": "settings.kr_keb8c80ec",
+    "ko": "대상",
+    "translated": "Target"
+  },
+  {
+    "path": "settings.kr_ked9cb4ea_kebb680ec_keab79cec",
+    "ko": "휴가 부여 규칙",
+    "translated": "Leave 부여 Rule"
+  },
+  {
+    "path": "settings.leaveTypes_kebb384_kebb680ec_kebb0a9ec_keab7bcec_keab080ec_kec9db4ec_keca095ec_settings",
+    "ko": "휴가 유형별 부여 방식, 근속 가산, 이월 정책 설정",
+    "translated": "Leave Loại별 부여 방식, 근속 산, month Policy Cài đặt"
+  },
+  {
+    "path": "settings.kr_keba788ec_kec97b0ec_ked9788ec",
+    "ko": "마이너스 연차 허용",
+    "translated": "Allow Negative Hàng năm Leave"
+  },
+  {
+    "path": "settings.kr_kecb59ceb_keba788ec_ked959ceb",
+    "ko": "최대 마이너스 한도:",
+    "translated": "Tối đa negative leave limit:"
+  },
+  {
+    "path": "settings.kr_kec9ca0ed_kebb680ec_keab79cec",
+    "ko": "유형별 부여 규칙",
+    "translated": "Loại별 부여 Rule"
+  },
+  {
+    "path": "settings.kr_kebb680ec_keab79cec_kec84a4ec_",
+    "ko": "부여 규칙이 설정된 휴가 유형이 없습니다",
+    "translated": "No 부여 rule이 settings된 leave type available."
+  },
+  {
+    "path": "settings.leaveTypes_ked83adec_kec9ca0ed_kecb694ea_ked9b84_kebb680ec_keab79cec_kec84a4ec",
+    "ko": "휴가 유형 탭에서 유형을 추가한 후 부여 규칙을 설정하세요",
+    "translated": "Please additional한 후 부여 rule을 settings leave type 탭에서 type."
+  },
+  {
+    "path": "settings.kr_kebb984eb_kebb680ec_ked999cec",
+    "ko": "비례 부여 활성화",
+    "translated": "Enable Proportional Granting"
+  },
+  {
+    "path": "settings.kr_kebb680ec_kebb0a9ec",
+    "ko": "부여 방식",
+    "translated": "Granting Method"
+  },
+  {
+    "path": "settings.kr_keab8b0ec_period",
+    "ko": "기준 기간",
+    "translated": "기준 Khoảng thời gian"
+  },
+  {
+    "path": "settings.kr_kec9db4ec_keca095ec",
+    "ko": "이월 정책",
+    "translated": "month Policy"
+  },
+  {
+    "path": "settings.kr_kec9db4ec_kec868ceb",
+    "ko": "이월 소멸",
+    "translated": "Carryover Expiration"
+  },
+  {
+    "path": "settings.kr_keab7bcec_period",
+    "ko": "근속 기간",
+    "translated": "근속 Khoảng thời gian"
+  },
+  {
+    "path": "settings.kr_kebb680ec",
+    "ko": "부장",
+    "translated": "Trưởng phòng"
+  },
+  {
+    "path": "settings.kr_keab080ec",
+    "ko": "가산",
+    "translated": "Premium"
+  },
+  {
+    "path": "settings.kr_kec8381ed",
+    "ko": "상한",
+    "translated": "Upper Limit"
+  },
+  {
+    "path": "settings.kr_kec97b0ec",
+    "ko": "연장",
+    "translated": "Hàng năm Leave"
+  },
+  {
+    "path": "settings.kr_kebafb8ec_kec97b0ec_kec868cec_",
+    "ko": "미사용 연차 소진 알림 및 소멸 규칙 설정",
+    "translated": "미사용 Hàng năm Leave 소진 Thông báo 및 소멸 Rule Cài đặt"
+  },
+  {
+    "path": "settings.kr_kec97b0ec_keab79cec_ked9884ec_",
+    "ko": "연차촉진 규칙은 현재 시스템에 하드코딩되어 있습니다. 이 설정 화면은 H-2c에서 실제 시스템과 연결됩니다.",
+    "translated": "Hàng năm leave promotion rules are currently hardcoded. This settings screen connects to the actual system in phase H-2c."
+  },
+  {
+    "path": "settings.month",
+    "ko": "월",
+    "translated": "month"
+  },
+  {
+    "path": "settings.kr_kec9dbc_kebb680ed",
+    "ko": "일 부터",
+    "translated": "day(s) 부터"
+  },
+  {
+    "path": "settings.kr_kec9dbceb_kebb09cec",
+    "ko": "일마다 발송",
+    "translated": "day(s)마다 Send"
+  },
+  {
+    "path": "settings.kr_ked9a8c",
+    "ko": "회",
+    "translated": "times"
+  },
+  {
+    "path": "settings.kr_kebb3b8ec_required",
+    "ko": "본인 (필수)",
+    "translated": "Self (Required)"
+  },
+  {
+    "path": "settings.kr_keca781ec_kec8381ec",
+    "ko": "직속 상사",
+    "translated": "Direct Supervisor"
+  },
+  {
+    "path": "settings.kr_hr_keb8bb4eb",
+    "ko": "HR 담당자",
+    "translated": "HR Quản lý"
+  },
+  {
+    "path": "settings.kr_kec97b0eb_kec868ceb",
+    "ko": "연말 소멸",
+    "translated": "Năm-end Expiration"
+  },
+  {
+    "path": "settings.kr_12_31kec9790_kec9e94ec_kec97b0",
+    "ko": "— 12/31에 잔여 연차 전액 소멸",
+    "translated": "— 12/31 잔여 Hàng năm Leave 전액 소멸"
+  },
+  {
+    "path": "settings.kr_kec9db4ec_ked9b84_kec868ceb",
+    "ko": "이월 후 소멸",
+    "translated": "Post-carryover Expiration"
+  },
+  {
+    "path": "settings.kr_kec9db4ec_keab79cec_keb94b0eb_",
+    "ko": "— 이월 규칙에 따라 이월 후 잔여분 소멸",
+    "translated": "— Remaining leave after carryover expires per rule"
+  },
+  {
+    "path": "settings.kr_kec868ceb",
+    "ko": "소멸",
+    "translated": "Expiration"
+  },
+  {
+    "path": "settings.kr_kec9dbc_keca084_keab2bdea",
+    "ko": "일 전 경고",
+    "translated": "days prior warning"
+  },
+  {
+    "path": "settings.leaveTypes",
+    "ko": "휴가 유형",
+    "translated": "Leave Loại"
+  },
+  {
+    "path": "settings.kr_kec9ca0ed_add",
+    "ko": "유형 추가",
+    "translated": "Loại Thêmitional"
+  },
+  {
+    "path": "settings.kr_kecbd94eb",
+    "ko": "코드",
+    "translated": "Code"
+  },
+  {
+    "path": "settings.kr_kec9ca0ed",
+    "ko": "유형",
+    "translated": "Loại"
+  },
+  {
+    "path": "settings.kr_kec9ca0ea",
+    "ko": "유급",
+    "translated": "Đã thanh toán"
+  },
+  {
+    "path": "settings.kr_kebb098ec",
+    "ko": "반차",
+    "translated": "Nửa ngày"
+  },
+  {
+    "path": "settings.kr_keca69deb",
+    "ko": "증빙",
+    "translated": "Bằng chứng"
+  },
+  {
+    "path": "settings.kr_kecb59ceb_kec97b0ec",
+    "ko": "최대 연속일",
+    "translated": "Tối đa 연속day(s)"
+  },
+  {
+    "path": "settings.kr_kec82acec_kec8ba0ec",
+    "ko": "사전 신청",
+    "translated": "Pre-application"
+  },
+  {
+    "path": "settings.kr_kebb294ec",
+    "ko": "범위",
+    "translated": "Range"
+  },
+  {
+    "path": "settings.register_keb909c_ked9cb4ea_kec9ca0ed_kec9786ec",
+    "ko": "등록된 휴가 유형이 없습니다",
+    "translated": "No 등록된 leave type available."
+  },
+  {
+    "path": "settings.kr_kec8b9ceb_keb8db0ec_kec8ba4ed_",
+    "ko": "시드 데이터를 실행하거나 유형을 직접 추가하세요",
+    "translated": "Please 실행하거나 type을 직접 additional 시드 데이터."
+  },
+  {
+    "path": "settings.leaveTypes_kec8381ec",
+    "ko": "휴가 유형 상세",
+    "translated": "Leave Loại 상세"
+  },
+  {
+    "path": "settings.overtime_keca3bcea",
+    "ko": "연장근무 (주간)",
+    "translated": "Làm thêm giờ (Hàng tuần)"
+  },
+  {
+    "path": "settings.kr_kebb295ec_kecb488ea_kec8b9c",
+    "ko": "법정근로시간 초과 시",
+    "translated": "When statutory work hours exceeded"
+  },
+  {
+    "path": "settings.kr_kebb0b0",
+    "ko": "배",
+    "translated": "×"
+  },
+  {
+    "path": "settings.kr_kec95bcea",
+    "ko": "야간근무",
+    "translated": "Ca đêm"
+  },
+  {
+    "path": "settings.kr_22_00_06_00_keab7bceb_kec8b9c",
+    "ko": "22:00~06:00 근무 시",
+    "translated": "22:00~06:00 근무 시"
+  },
+  {
+    "path": "settings.kr_kebb0b0_keab080ec",
+    "ko": "배 가산",
+    "translated": "× Premium"
+  },
+  {
+    "path": "settings.kr_ked9cb4ec",
+    "ko": "휴직",
+    "translated": "Nghỉ phép dài hạn"
+  },
+  {
+    "path": "settings.kr_kebb295ec_holidays_kebb08f_kec",
+    "ko": "법정 공휴일 및 주말 근무 시",
+    "translated": "Statutory holidays and weekend work"
+  },
+  {
+    "path": "settings.kr_kecb488ea",
+    "ko": "초과근무",
+    "translated": "Làm thêm giờ"
+  },
+  {
+    "path": "settings.kr_kec82acec_kec8898eb_kebb0b0ec_",
+    "ko": "사전승인, 수당 배율, 야간근무 기준 설정",
+    "translated": "사전Phê duyệt, Phụ cấp 배율, 야간근무 기준 Cài đặt"
+  },
+  {
+    "path": "settings.company_kebb384_kec8898eb_kebb0b0ec_keb8ba4eb",
+    "ko": "법인별 수당 배율이 다릅니다",
+    "translated": "Phụ cấp multipliers differ by entity"
+  },
+  {
+    "path": "settings.kr_kr_kec97b0ec_1_5kebb0b0_ru_2_0",
+    "ko": "KR: 연장 1.5배 / RU: 2.0배 / VN: 야간 +0.3배 / MX: 연장 2.0배",
+    "translated": "KR: 연장 1.5배 / RU: 2.0배 / VN: 야간 +0.3배 / MX: 연장 2.0배"
+  },
+  {
+    "path": "settings.kr_kec82acec_approve_ked999cec",
+    "ko": "사전 승인 활성화",
+    "translated": "Enable Pre-approval"
+  },
+  {
+    "path": "settings.kr_kec8898eb_keab384ec_kebb0b0ec",
+    "ko": "수당 계산 배율",
+    "translated": "Phụ cấp Calculation Multiplier"
+  },
+  {
+    "path": "settings.kr_keab7bceb_kec9ca0ed",
+    "ko": "근무 유형",
+    "translated": "Work Loại"
+  },
+  {
+    "path": "settings.description",
+    "ko": "설명",
+    "translated": "Mô tả"
+  },
+  {
+    "path": "settings.kr_kebb0b0ec",
+    "ko": "배율 (%)",
+    "translated": "Batch"
+  },
+  {
+    "path": "settings.kr_keb8ba8ec",
+    "ko": "단위",
+    "translated": "Unit"
+  },
+  {
+    "path": "settings.company_kebb384_kecb0b8ea_kebb0b0ec",
+    "ko": "법인별 참고 배율",
+    "translated": "Reference multiplier by entity"
+  },
+  {
+    "path": "settings.company",
+    "ko": "법인",
+    "translated": "Pháp nhân"
+  },
+  {
+    "path": "settings.kr_kec95bcea_keab080ec",
+    "ko": "야간 가산",
+    "translated": "Night Premium"
+  },
+  {
+    "path": "settings.kr_1_5kebb0b0",
+    "ko": "1.5배",
+    "translated": "1.5배"
+  },
+  {
+    "path": "settings.kr_0_5kebb0b0",
+    "ko": "+0.5배",
+    "translated": "+0.5배"
+  },
+  {
+    "path": "settings.kr_2_0kebb0b0",
+    "ko": "2.0배",
+    "translated": "2.0배"
+  },
+  {
+    "path": "settings.kr_0_3kebb0b0",
+    "ko": "+0.3배",
+    "translated": "+0.3배"
+  },
+  {
+    "path": "settings.kr_0_25kebb0b0",
+    "ko": "+0.25배",
+    "translated": "+0.25배"
+  },
+  {
+    "path": "settings.shiftWork_ked8ca8ed",
+    "ko": "교대근무 패턴",
+    "translated": "Ca kíp Pattern"
+  },
+  {
+    "path": "settings.kr_keab590eb_keab7bceb_ked8ca8ed_",
+    "ko": "교대 근무 패턴을 생성하고 조별로 배정합니다",
+    "translated": "Create shift work patterns and assign to groups"
+  },
+  {
+    "path": "settings.kr_kec8388_ked8ca8ed_add",
+    "ko": "새 패턴 추가",
+    "translated": "New 패턴 Thêmitional"
+  },
+  {
+    "path": "settings.kr_ked8ca8ed",
+    "ko": "패턴명",
+    "translated": "패턴person(s)"
+  },
+  {
+    "path": "settings.kr_keab590eb_kec8898",
+    "ko": "교대 수",
+    "translated": "Number of Shifts"
+  },
+  {
+    "path": "settings.kr_keca3bcea_kec9dbc",
+    "ko": "주기(일)",
+    "translated": "Cycle(day(s))"
+  },
+  {
+    "path": "settings.kr_keca1b0_kec8898",
+    "ko": "조 수",
+    "translated": "Number of Nhóms"
+  },
+  {
+    "path": "settings.status",
+    "ko": "상태",
+    "translated": "Trạng thái"
+  },
+  {
+    "path": "settings.register_keb909c_keab590eb_ked8ca8ed_kec9786ec",
+    "ko": "등록된 교대 패턴이 없습니다",
+    "translated": "No 등록된 교대 패턴 available."
+  },
+  {
+    "path": "settings.shiftWork_keab080_ked9584ec_kebb295ec_ked8ca8ed_kecb694ea",
+    "ko": "교대근무가 필요한 법인에서 패턴을 추가하세요",
+    "translated": "Please additional 교대근무가 필요한 법인에서 패턴."
+  },
+  {
+    "path": "settings.kr_kec8ab9ec",
+    "ko": "승진",
+    "translated": "Promotion"
+  },
+  {
+    "path": "settings.kr_keca084eb",
+    "ko": "전무",
+    "translated": "Phó tổng giám đốc"
+  },
+  {
+    "path": "settings.kr_kec889ced",
+    "ko": "순환보직",
+    "translated": "Job Rotation"
+  },
+  {
+    "path": "settings.kr_ked8c8cea",
+    "ko": "파견",
+    "translated": "Secondment"
+  },
+  {
+    "path": "settings.kr_keab2b8ec",
+    "ko": "겸직",
+    "translated": "Concurrent Chức vụ"
+  },
+  {
+    "path": "settings.kr_kebb3b5ec",
+    "ko": "복원",
+    "translated": "Restore"
+  },
+  {
+    "path": "settings.kr_keab095eb",
+    "ko": "강등",
+    "translated": "Demotion"
+  },
+  {
+    "path": "settings.kr_kebb09ceb_kec9ca0ed_approve_ke",
+    "ko": "발령 유형별 승인 규칙",
+    "translated": "Approval Rules by Appointment Loại"
+  },
+  {
+    "path": "settings.kr_kebb09ceb_keab79cec",
+    "ko": "발령 규칙",
+    "translated": "Appointment Rule"
+  },
+  {
+    "path": "settings.kr_kebb09ceb_kec9ca0ed_kebb08f_ap",
+    "ko": "발령 유형 및 승인 절차 설정",
+    "translated": "Appointment Loại 및 Phê duyệt 절차 Cài đặt"
+  },
+  {
+    "path": "settings.company_kec98a4eb",
+    "ko": "법인 오버라이드",
+    "translated": "Pháp nhân Override"
+  },
+  {
+    "path": "settings.approve_ked9584ec",
+    "ko": "승인 필요",
+    "translated": "Phê duyệt 필요"
+  },
+  {
+    "path": "settings.kr_keb9098eb",
+    "ko": "되돌리기",
+    "translated": "Revert"
+  },
+  {
+    "path": "settings.codeManagement",
+    "ko": "코드 관리",
+    "translated": "코드 Management"
+  },
+  {
+    "path": "settings.kr_kecbd94eb_add",
+    "ko": "코드 추가",
+    "translated": "코드 Thêmitional"
+  },
+  {
+    "path": "settings.kr_ked82a4",
+    "ko": "키",
+    "translated": "Key"
+  },
+  {
+    "path": "settings.kr_keb9dbceb",
+    "ko": "라벨",
+    "translated": "Label"
+  },
+  {
+    "path": "settings.kr_kec8389ec",
+    "ko": "색상",
+    "translated": "Color"
+  },
+  {
+    "path": "settings.kr_kec889cec",
+    "ko": "순서",
+    "translated": "Order"
+  },
+  {
+    "path": "settings.register_keb909c_kecbd94eb_kec9786ec",
+    "ko": "등록된 코드가 없습니다",
+    "translated": "No 등록된 코드 available."
+  },
+  {
+    "path": "settings.company_keab8b0eb",
+    "ko": "법인 기본정보",
+    "translated": "Pháp nhân Basic Info"
+  },
+  {
+    "path": "settings.company_persons",
+    "ko": "법인명",
+    "translated": "법인person(s)"
+  },
+  {
+    "path": "settings.kr_keab5adea",
+    "ko": "국가",
+    "translated": "Số lượngry"
+  },
+  {
+    "path": "settings.kr_ked86b5ed",
+    "ko": "통화",
+    "translated": "Tiền tệ"
+  },
+  {
+    "path": "settings.register_keb909c_kebb295ec_kec9786ec",
+    "ko": "등록된 법인이 없습니다",
+    "translated": "No 등록된 법인 available."
+  },
+  {
+    "path": "settings.kr_ked9584eb_add",
+    "ko": "필드 추가",
+    "translated": "필드 Thêmitional"
+  },
+  {
+    "path": "settings.kr_ked9584eb_ked82a4",
+    "ko": "필드 키",
+    "translated": "Field Key"
+  },
+  {
+    "path": "settings.search",
+    "ko": "검색",
+    "translated": "Tìm kiếm"
+  },
+  {
+    "path": "settings.register_keb909c_kecbba4ec_ked9584eb_kec9786ec",
+    "ko": "등록된 커스텀 필드가 없습니다",
+    "translated": "No 등록된 커스텀 필드 available."
+  },
+  {
+    "path": "settings.department_keab5acec",
+    "ko": "부서 구조",
+    "translated": "Phòng ban 구조"
+  },
+  {
+    "path": "settings.department_persons",
+    "ko": "부서명",
+    "translated": "Phòng banperson(s)"
+  },
+  {
+    "path": "settings.kr_kec9881eb",
+    "ko": "영문",
+    "translated": "English"
+  },
+  {
+    "path": "settings.kr_keba088eb",
+    "ko": "레벨",
+    "translated": "Cấp độ"
+  },
+  {
+    "path": "settings.kr_ked9598ec_department",
+    "ko": "하위 부서",
+    "translated": "하위 Phòng ban"
+  },
+  {
+    "path": "settings.kr_kec868cec_kec9db8ec",
+    "ko": "소속 인원",
+    "translated": "소속 Headcount"
+  },
+  {
+    "path": "settings.register_keb909c_kebb680ec_kec9786ec",
+    "ko": "등록된 부서가 없습니다",
+    "translated": "No 등록된 department available."
+  },
+  {
+    "path": "settings.kr_keab2bdec",
+    "ko": "경영관리",
+    "translated": "경영Management"
+  },
+  {
+    "path": "settings.kr_kec9db8ec",
+    "ko": "인사",
+    "translated": "Nhân sự"
+  },
+  {
+    "path": "settings.kr_kec9eaceb_ked9a8cea",
+    "ko": "재무/회계",
+    "translated": "Finance/Tài khoảning"
+  },
+  {
+    "path": "settings.kr_it_keab09ceb",
+    "ko": "IT/개발",
+    "translated": "IT/Development"
+  },
+  {
+    "path": "settings.kr_kec839dec_keca09cec",
+    "ko": "생산/제조",
+    "translated": "Production/Manufacturing"
+  },
+  {
+    "path": "settings.kr_kec9881ec",
+    "ko": "영업",
+    "translated": "Sales"
+  },
+  {
+    "path": "settings.kr_keba788ec",
+    "ko": "마케팅",
+    "translated": "Marketing"
+  },
+  {
+    "path": "settings.kr_keca781ec_keca781eb",
+    "ko": "직종/직무",
+    "translated": "Job Danh mục/Function"
+  },
+  {
+    "path": "settings.kr_keca781ec_keca781eb_kebb684eb_",
+    "ko": "직종/직무 분류는 현재 시스템에서 관리됩니다. API 연결 후 편집이 가능합니다.",
+    "translated": "Job category/function classification is managed by the system. Chỉnh sửaing available after API connection."
+  },
+  {
+    "path": "settings.kr_keca781ec_kr",
+    "ko": "직종명 (KR)",
+    "translated": "직종person(s) (KR)"
+  },
+  {
+    "path": "settings.kr_keca781ec_en",
+    "ko": "직종명 (EN)",
+    "translated": "직종person(s) (EN)"
+  },
+  {
+    "path": "settings.kr_kec82acec",
+    "ko": "사원",
+    "translated": "Nhân viên"
+  },
+  {
+    "path": "settings.kr_keb8c80eb",
+    "ko": "대리",
+    "translated": "Trưởng nhóm"
+  },
+  {
+    "path": "settings.kr_keab3bcec",
+    "ko": "과세",
+    "translated": "Thuếable"
+  },
+  {
+    "path": "settings.kr_kecb0a8ec",
+    "ko": "차장",
+    "translated": "Phó phòng"
+  },
+  {
+    "path": "settings.kr_kec9db4ec",
+    "ko": "이사",
+    "translated": "Giám đốc"
+  },
+  {
+    "path": "settings.kr_kec8381eb",
+    "ko": "상무",
+    "translated": "Giám đốc điều hành"
+  },
+  {
+    "path": "settings.kr_keb8c80ed",
+    "ko": "대표이사",
+    "translated": "Tổng giám đốc"
+  },
+  {
+    "path": "settings.grade_kecb2b4ea",
+    "ko": "직급 체계",
+    "translated": "Job Hạng System"
+  },
+  {
+    "path": "settings.grade_kecb2b4ea_ked9884ec_kec8b9cec_keab480eb_api_kec97b0ea_ked9b84_ked8eb8ec_keab080eb",
+    "ko": "직급 체계는 현재 시스템에서 관리됩니다. API 연결 후 편집이 가능합니다.",
+    "translated": "Job grade system is managed by the system. Chỉnh sửaing available after API connection."
+  },
+  {
+    "path": "settings.grade_persons",
+    "ko": "직급명",
+    "translated": "Job Hạngperson(s)"
+  },
+  {
+    "path": "settings.kr_kecb59cec_kec97b0ec",
+    "ko": "최소 연차",
+    "translated": "Tối thiểu Hàng năm Leave"
+  },
+  {
+    "path": "settings.kr_kec8ab9ec_kec868cec",
+    "ko": "승진 소요",
+    "translated": "Promotion Tenure"
+  },
+  {
+    "path": "settings.probation",
+    "ko": "수습 기간",
+    "translated": "Probation Khoảng thời gian"
+  },
+  {
+    "path": "settings.probation_evaluation_keab8b0ec_kec9e90eb_keca084ed_settings",
+    "ko": "수습 기간, 평가 기준, 자동 전환 설정",
+    "translated": "Probation Khoảng thời gian, Đánh giá 기준, 자동 전환 Cài đặt"
+  },
+  {
+    "path": "settings.kr_keab09cec",
+    "ko": "개월",
+    "translated": "개month"
+  },
+  {
+    "path": "settings.kr_kec8898ec_complete_kec8b9c_kec",
+    "ko": "수습 완료 시 자동 전환",
+    "translated": "Probation Hoàn thành 시 자동 전환"
+  },
+  {
+    "path": "settings.kr_kec8898ec_kec97b0ec_ked9788ec",
+    "ko": "수습 연장 허용",
+    "translated": "Allow Probation Extension"
+  },
+  {
+    "path": "settings.kr_kecb59ceb",
+    "ko": "최대",
+    "translated": "Tối đa"
+  },
+  {
+    "path": "settings.settings",
+    "ko": "설정",
+    "translated": "Cài đặt"
+  },
+  {
+    "path": "settings.excellent",
+    "ko": "탁월",
+    "translated": "Exceptional"
+  },
+  {
+    "path": "settings.good",
+    "ko": "우수",
+    "translated": "Excellent"
+  },
+  {
+    "path": "settings.average",
+    "ko": "보통",
+    "translated": "Medium"
+  },
+  {
+    "path": "settings.belowAverage",
+    "ko": "미흡",
+    "translated": "Below Expectations"
+  },
+  {
+    "path": "settings.kr_kec84b1ea_keab79cec",
+    "ko": "성과급 규칙",
+    "translated": "Hiệu suất급 Rule"
+  },
+  {
+    "path": "settings.savedSuccess",
+    "ko": "저장되었습니다",
+    "translated": "save completed."
+  },
+  {
+    "path": "settings.kr_kec84b1ea_keab79cec_kec9785eb",
+    "ko": "성과급 규칙이 업데이트되었습니다.",
+    "translated": "performance급 rule이 업데이트 completed."
+  },
+  {
+    "path": "settings.retry_ked95b4_keca3bcec",
+    "ko": "다시 시도해 주세요.",
+    "translated": "Please 다시 시도해 ."
+  },
+  {
+    "path": "settings.changeCancelled",
+    "ko": "변경을 취소했습니다",
+    "translated": "Change has been cancelled."
+  },
+  {
+    "path": "settings.kr_keb93b1ea_kec84b1ea_kebb0b0ec_",
+    "ko": "등급별 성과급 배율 설정",
+    "translated": "Hạng별 Hiệu suất급 배율 Cài đặt"
+  },
+  {
+    "path": "settings.month_basesalary_keab8b0ec",
+    "ko": "월 기본급 기준",
+    "translated": "Based on Hàng tháng Base Lương"
+  },
+  {
+    "path": "settings.kr_kec97b0eb_keab8b0ec",
+    "ko": "연봉 기준",
+    "translated": "Based on Hàng năm Lương"
+  },
+  {
+    "path": "settings.kr_keca095ec",
+    "ko": "정액",
+    "translated": "Fixed Số tiền"
+  },
+  {
+    "path": "settings.kr_keb93b1ea",
+    "ko": "등급",
+    "translated": "Hạng"
+  },
+  {
+    "path": "settings.kr_ked86b5ed_ked9998ec",
+    "ko": "통화/환율",
+    "translated": "Tiền tệ/Exchange Tỷ lệ"
+  },
+  {
+    "path": "settings.kr_ked9998ec",
+    "ko": "환율",
+    "translated": "Tỷ giá"
+  },
+  {
+    "path": "settings.kr_kecb69cec",
+    "ko": "출처",
+    "translated": "Source"
+  },
+  {
+    "path": "settings.deductions",
+    "ko": "공제 항목",
+    "translated": "Khấu trừ Items"
+  },
+  {
+    "path": "settings.kr_ked95adeb_add",
+    "ko": "항목 추가",
+    "translated": "Item Thêmitional"
+  },
+  {
+    "path": "settings.kr_ked95adeb",
+    "ko": "항목",
+    "translated": "Item"
+  },
+  {
+    "path": "settings.kr_kecb9b4ed",
+    "ko": "카테고리",
+    "translated": "Danh mục"
+  },
+  {
+    "path": "settings.kr_kebb295ec",
+    "ko": "법정",
+    "translated": "Statutory"
+  },
+  {
+    "path": "settings.register_keb909c_keab3b5ec_ked95adeb_kec9786ec",
+    "ko": "등록된 공제 항목이 없습니다",
+    "translated": "No 등록된 deduction item available."
+  },
+  {
+    "path": "settings.kr_keab889ec_ked95adeb",
+    "ko": "급여 항목",
+    "translated": "Thanh toán Items"
+  }
+]

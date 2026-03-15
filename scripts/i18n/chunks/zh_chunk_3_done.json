@@ -1,0 +1,1252 @@
+[
+  {
+    "path": "performance.kr_kec9888ec_1_1",
+    "ko": "예정된 1:1",
+    "translated": "Scheduled된 1:1"
+  },
+  {
+    "path": "performance.kr_keab8b0eb",
+    "ko": "기록하기",
+    "translated": "Record하기"
+  },
+  {
+    "path": "performance.complete_keb909c_1_1",
+    "ko": "완료된 1:1",
+    "translated": "完成된 1:1"
+  },
+  {
+    "path": "performance.kr_kec9dbcec",
+    "ko": "일시",
+    "translated": "日期/Time"
+  },
+  {
+    "path": "performance.kr_kec9ca0ed",
+    "ko": "유형",
+    "translated": "类型"
+  },
+  {
+    "path": "performance.kr_kec95a1ec_kebafb8ec",
+    "ko": "액션 미완료",
+    "translated": "Action Incomplete"
+  },
+  {
+    "path": "performance.kr_0keab1b4",
+    "ko": "0건",
+    "translated": "0item(s)"
+  },
+  {
+    "path": "performance.kr_1_1_kebb988eb_keb8c80ec",
+    "ko": "1:1 빈도 대시보드",
+    "translated": "1:1 Frequency Dashboard"
+  },
+  {
+    "path": "performance.kr_kebafb8ec_kec95a1ec_kec9584ec",
+    "ko": "미완료 액션 아이템",
+    "translated": "Incomplete Action 아 템"
+  },
+  {
+    "path": "performance.kr_ked8c80ec",
+    "ko": "팀원",
+    "translated": "团队 Member"
+  },
+  {
+    "path": "performance.kr_kec84a0ed",
+    "ko": "선택하세요",
+    "translated": "选择"
+  },
+  {
+    "path": "performance.kr_kec9584ec",
+    "ko": "아젠다",
+    "translated": "Agenda"
+  },
+  {
+    "path": "performance.kr_keab88dec",
+    "ko": "긍정적",
+    "translated": "Positive"
+  },
+  {
+    "path": "performance.average",
+    "ko": "보통",
+    "translated": "Medium"
+  },
+  {
+    "path": "performance.kr_kebb680ec",
+    "ko": "부정적",
+    "translated": "Negative"
+  },
+  {
+    "path": "performance.kr_kec9ab0eb",
+    "ko": "우려됨",
+    "translated": "Concerning"
+  },
+  {
+    "path": "performance.prev_kec95a1ec_kec9584ec_kecb694ec",
+    "ko": "이전 액션 아이템 추적",
+    "translated": "上一步 Action 아 템 추적"
+  },
+  {
+    "path": "performance.kr_keb85bcec_keb82b4ec_summary",
+    "ko": "논의 내용 요약",
+    "translated": "Discussion 摘要"
+  },
+  {
+    "path": "performance.kr_kebafb8ed_kebb684ec",
+    "ko": "미팅 분위기",
+    "translated": "Meeting Atmosphere"
+  },
+  {
+    "path": "performance.kr_kec8388_kec95a1ec_kec9584ec",
+    "ko": "새 액션 아이템",
+    "translated": "New Action Item"
+  },
+  {
+    "path": "performance.kr_ked95adeb_add",
+    "ko": "항목 추가",
+    "translated": "添加 Item"
+  },
+  {
+    "path": "performance.kr_ai_kecbd94ec_ked8c81",
+    "ko": "AI 코칭 팁",
+    "translated": "AI Coaching Tip"
+  },
+  {
+    "path": "performance.next_1_1_kec9888ec",
+    "ko": "다음 1:1 예약",
+    "translated": "下一步 1:1 Booking"
+  },
+  {
+    "path": "performance.oneOnOne_keab8b0eb_ctr_hr_hub",
+    "ko": "1:1 미팅 기록 | CTR HR Hub",
+    "translated": "1:1 Meeting Records | CTR HR Hub"
+  },
+  {
+    "path": "performance.oneOnOne_ctr_hr_hub",
+    "ko": "1:1 미팅 | CTR HR Hub",
+    "translated": "1:1 Meetings | CTR HR Hub"
+  },
+  {
+    "path": "performance.kr_kebafb8ec",
+    "ko": "미작성",
+    "translated": "Not Written"
+  },
+  {
+    "path": "performance.kr_keab280ed_keb8c80ea",
+    "ko": "검토 대기",
+    "translated": "待处理 评审"
+  },
+  {
+    "path": "performance.approve",
+    "ko": "승인",
+    "translated": "批准"
+  },
+  {
+    "path": "performance.kr_keab1b0eb",
+    "ko": "거부",
+    "translated": "Decline"
+  },
+  {
+    "path": "performance.peerReview_kecb694ec_keca780ec",
+    "ko": "동료 평가 추천/지정",
+    "translated": "Peer 评审er Nomination"
+  },
+  {
+    "path": "performance.kr_keb8c80ec_keca781ec_kec84a0ed",
+    "ko": "대상 직원 선택",
+    "translated": "选择 Target 员工"
+  },
+  {
+    "path": "performance.search_keca491",
+    "ko": "검색 중...",
+    "translated": "搜索ing..."
+  },
+  {
+    "path": "performance.kr_ai_kecb694ec_ked8f89ea",
+    "ko": "AI 추천 평가자",
+    "translated": "AI Recommended Evaluator"
+  },
+  {
+    "path": "performance.peerReview_keca780ec_ctr_hr_hub",
+    "ko": "동료 평가 지정 | CTR HR Hub",
+    "translated": "Peer 评审 Assignment | CTR HR Hub"
+  },
+  {
+    "path": "performance.kr_ked9891ec_kebb08f_ked8c80ec",
+    "ko": "협업 및 팀워크",
+    "translated": "Collaboration & 团队work"
+  },
+  {
+    "path": "performance.kr_kec868ced_keb8aa5eb",
+    "ko": "소통 능력",
+    "translated": "Communication Skills"
+  },
+  {
+    "path": "performance.trust_kec84b1",
+    "ko": "신뢰성",
+    "translated": "Reliability"
+  },
+  {
+    "path": "performance.kr_keca084eb",
+    "ko": "전문성",
+    "translated": "专业性"
+  },
+  {
+    "path": "performance.kr_keca3bceb",
+    "ko": "주도성",
+    "translated": "Initiative"
+  },
+  {
+    "path": "performance.kr_kec84b1ec_kec9d98ec",
+    "ko": "성장 의지",
+    "translated": "Growth Mindset"
+  },
+  {
+    "path": "performance.kr_kec9785eb_kec9881ed",
+    "ko": "업무 영향력",
+    "translated": "Work Impact"
+  },
+  {
+    "path": "performance.peerReview_keab080_keca09cec",
+    "ko": "동료 평가가 제출되었습니다",
+    "translated": "Peer evaluation has been submitted."
+  },
+  {
+    "path": "performance.kr_kec868cec_ked94bceb_keab090ec",
+    "ko": "소중한 피드백 감사합니다.",
+    "translated": "Thank you for your valuable feedback."
+  },
+  {
+    "path": "performance.peerReview_kec9e91ec",
+    "ko": "동료 평가 작성",
+    "translated": "Write Peer 评估"
+  },
+  {
+    "path": "performance.peerReview_keb8a94_kec9db5eb_keca791ea_kec8694ec_keab1b4ec_ked94bceb_kebb680ed",
+    "ko": "동료 평가는 익명으로 집계됩니다. 솔직하고 건설적인 피드백을 부탁드립니다.",
+    "translated": "Peer evaluations are aggregated anonymously. Please provide honest and constructive feedback."
+  },
+  {
+    "path": "performance.kr_keca285ed_kecbd94eb",
+    "ko": "종합 코멘트",
+    "translated": "Overall Comment"
+  },
+  {
+    "path": "performance.kr_keb8f99eb_keab095ec_kebb09cec_",
+    "ko": "동료의 강점과 발전 가능성에 대한 구체적인 피드백을 남겨주세요. (최소 10자)",
+    "translated": "Please provide specific feedback on strengths and areas for improvement. (Min. 10 characters)"
+  },
+  {
+    "path": "performance.peerReview_kec9e91ec_ctr_hr_hub",
+    "ko": "동료 평가 작성 | CTR HR Hub",
+    "translated": "Peer 评估 작성 | CTR HR Hub"
+  },
+  {
+    "path": "performance.kr_360_keb8f99eb_evaluation_ctr_h",
+    "ko": "360° 동료 평가 | CTR HR Hub",
+    "translated": "360° Peer 评估 | CTR HR Hub"
+  },
+  {
+    "path": "performance.peerReview_keab2b0ea",
+    "ko": "동료 평가 결과",
+    "translated": "Peer 评估 결"
+  },
+  {
+    "path": "performance.kr_kec97adeb_keba088ec",
+    "ko": "역량 레이더",
+    "translated": "Competency 레 더"
+  },
+  {
+    "path": "performance.kr_ai_keca285ed_analytics",
+    "ko": "AI 종합 분석",
+    "translated": "AI Overall 分析"
+  },
+  {
+    "path": "performance.kr_keab095ec",
+    "ko": "강점",
+    "translated": "Strengths"
+  },
+  {
+    "path": "performance.kr_keab09ceb_kec9881ec",
+    "ko": "개발 영역",
+    "translated": "Development 영역"
+  },
+  {
+    "path": "performance.kr_kecbd94ec_keca09cec",
+    "ko": "코칭 제안",
+    "translated": "Coaching 제안"
+  },
+  {
+    "path": "performance.kr_keab09ceb_kecbd94eb",
+    "ko": "개별 코멘트",
+    "translated": "개별 Comment"
+  },
+  {
+    "path": "performance.peerReview_keab2b0ea_ctr_hr_hub",
+    "ko": "동료 평가 결과 | CTR HR Hub",
+    "translated": "Peer 评估 결 | CTR HR Hub"
+  },
+  {
+    "path": "performance.kr_kec84a4eb_management",
+    "ko": "설문 관리",
+    "translated": "설문 Management"
+  },
+  {
+    "path": "performance.all",
+    "ko": "전체",
+    "translated": "全部"
+  },
+  {
+    "path": "performance.kr_kec8388_ked8e84ec_kec849ceb",
+    "ko": "새 펄스 서베이",
+    "translated": "New Pulse Survey"
+  },
+  {
+    "path": "performance.description_kec84a0ed",
+    "ko": "설명 (선택)",
+    "translated": "说明 (选择)"
+  },
+  {
+    "path": "performance.kr_keb8c80ec_kebb294ec",
+    "ko": "대상 범위",
+    "translated": "Target Range"
+  },
+  {
+    "path": "performance.kr_keca084ec",
+    "ko": "전사",
+    "translated": "公司-wide"
+  },
+  {
+    "path": "performance.kr_ked8c80",
+    "ko": "팀",
+    "translated": "团队"
+  },
+  {
+    "path": "performance.kr_kec9db5eb_kec8898ec",
+    "ko": "익명 수준",
+    "translated": "익person(s) 수준"
+  },
+  {
+    "path": "performance.kr_kec9984ec_kec9db5eb",
+    "ko": "완전 익명",
+    "translated": "완전 익person(s)"
+  },
+  {
+    "path": "performance.department_keab3b5ea",
+    "ko": "부서 공개",
+    "translated": "部门 공개"
+  },
+  {
+    "path": "performance.kr_keca788eb_keab5acec",
+    "ko": "질문 구성",
+    "translated": "Question Design"
+  },
+  {
+    "path": "performance.kr_keca788eb_add",
+    "ko": "질문 추가",
+    "translated": "질문 添加itional"
+  },
+  {
+    "path": "performance.kr_keba6acec_1_5",
+    "ko": "리커트 (1-5)",
+    "translated": "Likert (1-5)"
+  },
+  {
+    "path": "performance.kr_keca3bcea",
+    "ko": "주관식",
+    "translated": "Open-ended"
+  },
+  {
+    "path": "performance.kr_keab09dea",
+    "ko": "객관식",
+    "translated": "Multiple Choice"
+  },
+  {
+    "path": "performance.kr_kec8388_kec84a4eb",
+    "ko": "새 설문",
+    "translated": "New Survey"
+  },
+  {
+    "path": "performance.kr_keb8c80ec",
+    "ko": "대상",
+    "translated": "Target"
+  },
+  {
+    "path": "performance.period",
+    "ko": "기간",
+    "translated": "期间"
+  },
+  {
+    "path": "performance.kr_keca788eb",
+    "ko": "질문",
+    "translated": "Question"
+  },
+  {
+    "path": "performance.kr_kec9d91eb",
+    "ko": "응답",
+    "translated": "Response"
+  },
+  {
+    "path": "performance.register_keb909c_kec84a4eb_kec9786ec",
+    "ko": "등록된 설문이 없습니다.",
+    "translated": "No 등록된 설문 available."
+  },
+  {
+    "path": "performance.kr_kec9d91eb_keb8c80ea_keca491ec_",
+    "ko": "응답 대기 중인 설문이 없습니다.",
+    "translated": "No 응답 pending 중인 설문 available."
+  },
+  {
+    "path": "performance.kr_kec84a4eb_kecb0beec_kec8898_ke",
+    "ko": "설문을 찾을 수 없습니다.",
+    "translated": "Cannot 설문을 찾을 ."
+  },
+  {
+    "path": "performance.kr_kec9d91eb_keca09cec",
+    "ko": "응답이 제출되었습니다",
+    "translated": "응답이 submit completed."
+  },
+  {
+    "path": "performance.kr_kec868cec_kec9d98ea_keab090ec",
+    "ko": "소중한 의견 감사합니다.",
+    "translated": "Thank you for your valuable feedback."
+  },
+  {
+    "path": "performance.kr_kec84a4eb_kec9d91eb_ctr_hr_hub",
+    "ko": "설문 응답 | CTR HR Hub",
+    "translated": "Survey Response | CTR HR Hub"
+  },
+  {
+    "path": "performance.kr_keab2b0ea_kebb688eb_kec8898_ke",
+    "ko": "결과를 불러올 수 없습니다.",
+    "translated": "Cannot 결과를 불러올 ."
+  },
+  {
+    "path": "performance.kr_ai_analytics_keab2b0ea",
+    "ko": "AI 분석 결과",
+    "translated": "AI 分析 결"
+  },
+  {
+    "path": "performance.kr_ked95b5ec_kec9db8ec",
+    "ko": "핵심 인사이트",
+    "translated": "Key Insights"
+  },
+  {
+    "path": "performance.kr_keca3bcec_kec9881ec",
+    "ko": "주의 영역",
+    "translated": "Areas of Concern"
+  },
+  {
+    "path": "performance.kr_keab09cec_keca09cec",
+    "ko": "개선 제안",
+    "translated": "Improvement Suggestions"
+  },
+  {
+    "path": "performance.kr_kec84a4eb_keab2b0ea_ctr_hr_hub",
+    "ko": "설문 결과 | CTR HR Hub",
+    "translated": "Survey 结果s | CTR HR Hub"
+  },
+  {
+    "path": "performance.pulseSurvey_ctr_hr_hub",
+    "ko": "펄스 서베이 | CTR HR Hub",
+    "translated": "Pulse Survey | CTR HR Hub"
+  },
+  {
+    "path": "performance.kr_kecb9adec_kebb3b4eb",
+    "ko": "칭찬 보내기",
+    "translated": "Send Kudos"
+  },
+  {
+    "path": "performance.kr_ked94bceb",
+    "ko": "피드",
+    "translated": "Feed"
+  },
+  {
+    "path": "performance.statistics",
+    "ko": "통계",
+    "translated": "统计"
+  },
+  {
+    "path": "performance.kr_keb8d94_view",
+    "ko": "더 보기",
+    "translated": "查看 More"
+  },
+  {
+    "path": "performance.kr_ked95b5ec_kebb684ed",
+    "ko": "핵심가치별 분포",
+    "translated": "핵심 치별 Distribution"
+  },
+  {
+    "path": "performance.department_kebb384_ked999cec",
+    "ko": "부서별 활성도",
+    "translated": "部门별 활성"
+  },
+  {
+    "path": "performance.month_kebb384_kecb694ec",
+    "ko": "월별 추이",
+    "translated": "月度 Trend"
+  },
+  {
+    "path": "performance.kr_kebb09beb_kec82aceb",
+    "ko": "받는 사람",
+    "translated": "Recipient"
+  },
+  {
+    "path": "performance.kr_kebb380ea",
+    "ko": "변경",
+    "translated": "Change"
+  },
+  {
+    "path": "performance.kr_ctr_ked95b5ec_kec84a0ed_requir",
+    "ko": "CTR 핵심가치 선택 (필수)",
+    "translated": "CTR Core Values 选择ion (Required)"
+  },
+  {
+    "path": "performance.kr_keba994ec_10_500kec9e90",
+    "ko": "메시지 (10~500자)",
+    "translated": "Message (10–500 characters)"
+  },
+  {
+    "path": "performance.kr_ems_kebb894eb",
+    "ko": "EMS 블록",
+    "translated": "EMS Block"
+  },
+  {
+    "path": "performance.calibration_kebb098ec",
+    "ko": "캘리브레이션 반영",
+    "translated": "Calibration 반영"
+  },
+  {
+    "path": "performance.evaluation_kebb984ea",
+    "ko": "평가 비교",
+    "translated": "评估 Comparison"
+  },
+  {
+    "path": "performance.kr_keab5aceb",
+    "ko": "구분",
+    "translated": "类别"
+  },
+  {
+    "path": "performance.goals_keb8bacec",
+    "ko": "목표 달성",
+    "translated": "目标达成"
+  },
+  {
+    "path": "performance.kr_kec9e90ea_kec84b1ea_kebb08f_ke",
+    "ko": "자기 성과 및 역량을 평가합니다",
+    "translated": "Self 绩效 및 Competency 评估합니다"
+  },
+  {
+    "path": "performance.selfEval_keab080_keca09cec",
+    "ko": "자기평가가 제출되었습니다.",
+    "translated": "selfevaluation가 submit completed."
+  },
+  {
+    "path": "performance.kr_kec97adeb_evaluation",
+    "ko": "역량 평가",
+    "translated": "Competency 评估"
+  },
+  {
+    "path": "performance.kr_ked8c80ec_kec84b1ea_keab2b0ea_",
+    "ko": "팀원 성과 결과 현황",
+    "translated": "团队 Member 绩效 결 状态"
+  },
+  {
+    "path": "performance.kr_ked8c80ec_kec8898",
+    "ko": "팀원 수",
+    "translated": "团队 Member 수"
+  },
+  {
+    "path": "performance.average_kec84b1ea",
+    "ko": "평균 성과",
+    "translated": "平均 绩效"
+  },
+  {
+    "path": "performance.evaluation_kec9984eb",
+    "ko": "평가 완료율",
+    "translated": "评估 完成율"
+  },
+  {
+    "path": "performance.kr_const_activetab_setactivetab_u",
+    "ko": "('')\n  const [activeTab, setActiveTab] = useState('simulation')\n\n  // ─── pendingAdjustments: 시뮬레이션에서 설정 → 확정 탭으로 전달\n  const [pendingAdjustments, setPendingAdjustments] = useState",
+    "translated": "('') const [activeTab, set活跃Tab] = useState('simulation') // ─── pendingAdjustments: 시뮬레 션 设置 → Finalized 탭 전달 const [pendingAdjustments, set待处理Adjustments] = useState"
+  },
+  {
+    "path": "performance.days",
+    "ko": "일",
+    "translated": "day(s)"
+  },
+  {
+    "path": "performance.count",
+    "ko": "건",
+    "translated": "item(s)"
+  },
+  {
+    "path": "performance.reset",
+    "ko": "초기화",
+    "translated": "重置"
+  },
+  {
+    "path": "performance.aiAnalyzing",
+    "ko": "AI 분석 중...",
+    "translated": "AI analysis..."
+  },
+  {
+    "path": "performance.persons",
+    "ko": "명",
+    "translated": "person(s)"
+  },
+  {
+    "path": "performance.krw",
+    "ko": "원",
+    "translated": "元"
+  },
+  {
+    "path": "performance.save",
+    "ko": "저장",
+    "translated": "保存"
+  },
+  {
+    "path": "performance.years",
+    "ko": "년",
+    "translated": "year"
+  },
+  {
+    "path": "performance.excellent",
+    "ko": "탁월",
+    "translated": "Exceptional"
+  },
+  {
+    "path": "performance.good",
+    "ko": "우수",
+    "translated": "Excellent"
+  },
+  {
+    "path": "performance.insufficient",
+    "ko": "부족",
+    "translated": "Insufficient"
+  },
+  {
+    "path": "performance.veryInsufficient",
+    "ko": "매우 부족",
+    "translated": "Very Insufficient"
+  },
+  {
+    "path": "performance.aiGenerating",
+    "ko": "AI 생성 중...",
+    "translated": "AI create..."
+  },
+  {
+    "path": "performance.months",
+    "ko": "월",
+    "translated": "month"
+  },
+  {
+    "path": "performance.start",
+    "ko": "시작",
+    "translated": "开始"
+  },
+  {
+    "path": "performance.hours",
+    "ko": "시간",
+    "translated": "小时"
+  },
+  {
+    "path": "performance.savedSuccess",
+    "ko": "저장되었습니다",
+    "translated": "save completed."
+  },
+  {
+    "path": "recruitment.kanbanBoard",
+    "ko": "채용 칸반 보드",
+    "translated": "Recruitment Kanban Board"
+  },
+  {
+    "path": "recruitment.kanbanBoardDesc",
+    "ko": "공고별 스윔레인 — 카드를 드래그해 단계를 변경하세요",
+    "translated": "Swimlanes per posting — drag cards to change stage"
+  },
+  {
+    "path": "recruitment.listView",
+    "ko": "목록 보기",
+    "translated": "列表 查看"
+  },
+  {
+    "path": "recruitment.recruit",
+    "ko": "모집",
+    "translated": "Headcount"
+  },
+  {
+    "path": "recruitment.emptyBoard",
+    "ko": "진행 중인 공고가 없습니다",
+    "translated": "No active job postings"
+  },
+  {
+    "path": "recruitment.emptyBoardDesc",
+    "ko": "새 공고를 등록하여 채용 파이프라인을 시작하세요.",
+    "translated": "Create a new posting to start the recruitment pipeline."
+  },
+  {
+    "path": "recruitment.offerModal",
+    "ko": "오퍼 정보 입력",
+    "translated": "Enter Offer 详情"
+  },
+  {
+    "path": "recruitment.offeredSalary",
+    "ko": "제안 연봉",
+    "translated": "Offered 薪资"
+  },
+  {
+    "path": "recruitment.offeredDate",
+    "ko": "제안일",
+    "translated": "Offer 日期"
+  },
+  {
+    "path": "recruitment.expectedStartDate",
+    "ko": "입사 예정일",
+    "translated": "Expected 开始 日期"
+  },
+  {
+    "path": "recruitment.confirmOffer",
+    "ko": "오퍼 확정",
+    "translated": "确认 Offer"
+  },
+  {
+    "path": "recruitment.rejectionModal",
+    "ko": "불합격 처리",
+    "translated": "驳回 Application"
+  },
+  {
+    "path": "recruitment.confirmRejection",
+    "ko": "불합격 처리",
+    "translated": "驳回"
+  },
+  {
+    "path": "recruitment.delete_ked9598ec",
+    "ko": "삭제하시겠습니까?",
+    "translated": "Would you like to delete?"
+  },
+  {
+    "path": "recruitment.kr_kecb184ec_kebb984ec_kecb694ec_",
+    "ko": "채용 비용 추적 및 투자 대비 효율 분석",
+    "translated": "Recruitment cost tracking and ROI analysis"
+  },
+  {
+    "path": "recruitment.kr_kebb984ec_register",
+    "ko": "비용 등록",
+    "translated": "Register Cost"
+  },
+  {
+    "path": "recruitment.kr_kecb49d_kecb184ec_kebb984ec",
+    "ko": "총 채용 비용",
+    "translated": "合计 Recruitment 비용"
+  },
+  {
+    "path": "recruitment.kr_kecb49d_kecb184ec_kec9db8ec",
+    "ko": "총 채용 인원",
+    "translated": "合计 Recruitment Headcount"
+  },
+  {
+    "path": "recruitment.kr_kec9db8eb_kecb184ec_keb8ba8ea",
+    "ko": "인당 채용 단가",
+    "translated": "인당 Recruitment 단"
+  },
+  {
+    "path": "recruitment.kr_kebb984ec_kec9ca0ed_kec8898",
+    "ko": "비용 유형 수",
+    "translated": "Number of Cost 类型s"
+  },
+  {
+    "path": "recruitment.kr_kecb184ec_kec868cec_ked9aa8ec",
+    "ko": "채용 소스별 효율",
+    "translated": "Efficiency by Recruitment Source"
+  },
+  {
+    "path": "recruitment.kr_kec868cec",
+    "ko": "소스",
+    "translated": "Source"
+  },
+  {
+    "path": "recruitment.kr_kecb49d_kebb984ec",
+    "ko": "총 비용",
+    "translated": "合计 비용"
+  },
+  {
+    "path": "recruitment.kr_kecb184ec_kec8898",
+    "ko": "채용 수",
+    "translated": "Recruitment 수"
+  },
+  {
+    "path": "recruitment.kr_kec9db8eb_keb8ba8ea",
+    "ko": "인당 단가",
+    "translated": "Cost Per Hire"
+  },
+  {
+    "path": "recruitment.kr_kebb984ec",
+    "ko": "비중",
+    "translated": "Weight"
+  },
+  {
+    "path": "recruitment.kr_kebb984ec_kec9ca0ed_analytics",
+    "ko": "비용 유형별 분석",
+    "translated": "비용 类型별 分析"
+  },
+  {
+    "path": "recruitment.kr_keab3b5ea_kecb184ec_kebb984ec_",
+    "ko": "공고별 채용 비용 (Top 20)",
+    "translated": "Posting별 Recruitment 비용 (Top 20)"
+  },
+  {
+    "path": "recruitment.kr_keab3b5ea",
+    "ko": "공고명",
+    "translated": "Postingperson(s)"
+  },
+  {
+    "path": "recruitment.kr_kebaaa8ec",
+    "ko": "모집인원",
+    "translated": "모집Headcount"
+  },
+  {
+    "path": "recruitment.kr_kecb184ec",
+    "ko": "채용인원",
+    "translated": "RecruitmentHeadcount"
+  },
+  {
+    "path": "recruitment.all",
+    "ko": "전체",
+    "translated": "全部"
+  },
+  {
+    "path": "recruitment.kr_kebb984ec_kec9ca0ed",
+    "ko": "비용 유형",
+    "translated": "Cost 类型"
+  },
+  {
+    "path": "recruitment.amount",
+    "ko": "금액",
+    "translated": "金额"
+  },
+  {
+    "path": "recruitment.kr_keab1b0eb",
+    "ko": "거래처",
+    "translated": "Vendor"
+  },
+  {
+    "path": "recruitment.kr_kecb2adea",
+    "ko": "청구일",
+    "translated": "청구day(s)"
+  },
+  {
+    "path": "recruitment.kr_kec95a1ec",
+    "ko": "액션",
+    "translated": "Action"
+  },
+  {
+    "path": "recruitment.kr_kecb184ec_kebb984ec_register",
+    "ko": "채용 비용 등록",
+    "translated": "Recruitment 비용 등록"
+  },
+  {
+    "path": "recruitment.kr_kecb184ec_kec868cec",
+    "ko": "채용 소스",
+    "translated": "Recruitment 소스"
+  },
+  {
+    "path": "recruitment.kr_ked86b5ed",
+    "ko": "통화",
+    "translated": "货币"
+  },
+  {
+    "path": "recruitment.description",
+    "ko": "설명",
+    "translated": "说明"
+  },
+  {
+    "path": "recruitment.cancel",
+    "ko": "취소",
+    "translated": "取消"
+  },
+  {
+    "path": "recruitment.kr_kebb984ec_kec8381ec",
+    "ko": "비용 상세",
+    "translated": "Cost 详情"
+  },
+  {
+    "path": "recruitment.all_keab3b5ec",
+    "ko": "전체 공석",
+    "translated": "All Vacancies"
+  },
+  {
+    "path": "recruitment.kr_kecb184ec_keca784ed_keca491",
+    "ko": "채용 진행 중",
+    "translated": "recruitment progress..."
+  },
+  {
+    "path": "recruitment.kr_keab3b5ea_kec9786ec",
+    "ko": "공고 없음",
+    "translated": "Posting 없음"
+  },
+  {
+    "path": "recruitment.kr_30kec9dbc_keb82b4_kecb6a9ec",
+    "ko": "30일 내 충원",
+    "translated": "30day(s) 내 충KRW"
+  },
+  {
+    "path": "recruitment.kr_keab3b5ec_status_position_vaca",
+    "ko": "공석 현황 (Position Vacancies)",
+    "translated": "공석 状态 (职位 Vacancies)"
+  },
+  {
+    "path": "recruitment.average_kecb184ec_kec868cec",
+    "ko": "평균 채용 소요일",
+    "translated": "平均 Recruitment 소요day(s)"
+  },
+  {
+    "path": "recruitment.company",
+    "ko": "법인",
+    "translated": "法人"
+  },
+  {
+    "path": "recruitment.requisition_keab2b0ec",
+    "ko": "채용 요청 결재",
+    "translated": "Recruitment 요청 Approval"
+  },
+  {
+    "path": "recruitment.kr_kecbd94eb",
+    "ko": "코멘트",
+    "translated": "Comment"
+  },
+  {
+    "path": "recruitment.kr_reject_kec8b9c_required",
+    "ko": "(반려 시 필수)",
+    "translated": "(驳回 시 필수)"
+  },
+  {
+    "path": "recruitment.reject",
+    "ko": "반려",
+    "translated": "驳回"
+  },
+  {
+    "path": "recruitment.approve",
+    "ko": "승인",
+    "translated": "批准"
+  },
+  {
+    "path": "recruitment.kr_keab8b4ea",
+    "ko": "긴급도",
+    "translated": "Urgency"
+  },
+  {
+    "path": "recruitment.average",
+    "ko": "보통",
+    "translated": "Medium"
+  },
+  {
+    "path": "recruitment.low",
+    "ko": "낮음",
+    "translated": "低"
+  },
+  {
+    "path": "recruitment.kr_kec9e84ec",
+    "ko": "임시저장",
+    "translated": "保存 草稿"
+  },
+  {
+    "path": "recruitment.kr_keab2b0ec",
+    "ko": "결재중",
+    "translated": "Approval중"
+  },
+  {
+    "path": "recruitment.kr_kecb6a9ec",
+    "ko": "충원완료",
+    "translated": "충KRW完成"
+  },
+  {
+    "path": "recruitment.all_kec9a94ec",
+    "ko": "전체 요청",
+    "translated": "All 请求s"
+  },
+  {
+    "path": "recruitment.kr_keab2b0ec_keb8c80ea",
+    "ko": "결재 대기",
+    "translated": "Approval 待处理"
+  },
+  {
+    "path": "recruitment.kr_keb8298ec_keab2b0ec",
+    "ko": "나의 결재함",
+    "translated": "나 Approval함"
+  },
+  {
+    "path": "recruitment.department_kec9ea5_kecb184ec_kec9a94ec_kebb08f_keab2b0ec_management",
+    "ko": "부서장 채용 요청 및 결재 관리",
+    "translated": "部门장 Recruitment 요청 및 Approval Management"
+  },
+  {
+    "path": "recruitment.requisition_kec9e91ec",
+    "ko": "채용 요청 작성",
+    "translated": "Recruitment 요청 작성"
+  },
+  {
+    "path": "recruitment.filter",
+    "ko": "필터",
+    "translated": "筛选"
+  },
+  {
+    "path": "recruitment.kr_kec8381ec",
+    "ko": "상세",
+    "translated": "详情"
+  },
+  {
+    "path": "recruitment.save_keca491_kec98a4eb_kebb09cec",
+    "ko": "저장 중 오류가 발생했습니다.",
+    "translated": "An error occurred while saving."
+  },
+  {
+    "path": "recruitment.department_kec9ea5ec_hrkec9790_kecb184ec_kec9a94ec",
+    "ko": "부서장이 HR에 채용을 요청합니다.",
+    "translated": "部门장 HR Recruitment 요청합니다."
+  },
+  {
+    "path": "recruitment.kr_kecb184ec_keca781eb",
+    "ko": "채용 직무명",
+    "translated": "Recruitment 직무person(s)"
+  },
+  {
+    "path": "recruitment.kr_kecb184ec_kec9db8ec",
+    "ko": "채용 인원",
+    "translated": "Recruitment Headcount"
+  },
+  {
+    "path": "recruitment.grade",
+    "ko": "직급",
+    "translated": "职级"
+  },
+  {
+    "path": "recruitment.kr_keab3a0ec",
+    "ko": "고용형태",
+    "translated": "Employment 类型"
+  },
+  {
+    "path": "recruitment.kr_keca095ea",
+    "ko": "정규직",
+    "translated": "正式员工"
+  },
+  {
+    "path": "recruitment.kr_keab384ec",
+    "ko": "계약직",
+    "translated": "合同工"
+  },
+  {
+    "path": "recruitment.kr_kec9db8ed",
+    "ko": "인턴",
+    "translated": "实习生"
+  },
+  {
+    "path": "recruitment.kr_ked9daceb_kec9e85ec",
+    "ko": "희망 입사일",
+    "translated": "희망 Joiningday(s)"
+  },
+  {
+    "path": "recruitment.kr_kec97b0ea_ked8facec",
+    "ko": "연결 포지션",
+    "translated": "연결 职位"
+  },
+  {
+    "path": "recruitment.kr_keab3b5ec_kec84a0ed_keb9890eb_",
+    "ko": "(공석 선택 또는 미선택 시 신규 생성)",
+    "translated": "(공석 选择 또 미选择 시 신규 Create)"
+  },
+  {
+    "path": "recruitment.kr_kec8ba0ea_position_kec839dec",
+    "ko": "신규 Position 생성",
+    "translated": "신규 职位 Create"
+  },
+  {
+    "path": "recruitment.kr_kecb184ec_kec82acec",
+    "ko": "채용 사유",
+    "translated": "Recruitment 사유"
+  },
+  {
+    "path": "recruitment.kr_keab2b0ec_kec9e90eb_keca081ec",
+    "ko": "결재선 (자동 적용)",
+    "translated": "Approval Chain (자동 적용)"
+  },
+  {
+    "path": "recruitment.kr_keab2b0ec_kec9a94ec",
+    "ko": "결재 요청",
+    "translated": "Approval 요청"
+  },
+  {
+    "path": "recruitment.good_failed",
+    "ko": "우수 불합격",
+    "translated": "Excellent 불합격"
+  },
+  {
+    "path": "recruitment.kr_kec9e90ec_kecb2a0ed",
+    "ko": "자진 철회",
+    "translated": "Voluntary Withdrawal"
+  },
+  {
+    "path": "recruitment.kr_kec97adeb_kecb488ea",
+    "ko": "역량 초과",
+    "translated": "Competency 초"
+  },
+  {
+    "path": "recruitment.kr_kec8898eb_register",
+    "ko": "수동 등록",
+    "translated": "Manual Registration"
+  },
+  {
+    "path": "recruitment.active",
+    "ko": "활성",
+    "translated": "活跃"
+  },
+  {
+    "path": "recruitment.kr_keca091ec_keca491",
+    "ko": "접촉 중",
+    "translated": "접촉..."
+  },
+  {
+    "path": "recruitment.kr_keba78ceb",
+    "ko": "만료",
+    "translated": "Expired"
+  },
+  {
+    "path": "recruitment.kr_kecb184ec_complete",
+    "ko": "채용 완료",
+    "translated": "Recruitment 完成"
+  },
+  {
+    "path": "recruitment.all_kec9db8ec",
+    "ko": "전체 인재",
+    "translated": "All Talent"
+  },
+  {
+    "path": "recruitment.kr_30kec9dbc_keb82b4_keba78ceb",
+    "ko": "30일 내 만료",
+    "translated": "30day(s) 내 만료"
+  },
+  {
+    "path": "recruitment.good_ked9b84eb_kec9db8ec_ked9280_management_gdpr_2keb8584_kebb3b4ea",
+    "ko": "우수 후보자 인재 풀 관리 (GDPR 2년 보관)",
+    "translated": "Excellent Candidate 인재 풀 Management (GDPR 2year 보관)"
+  },
+  {
+    "path": "recruitment.kr_kec8388eb",
+    "ko": "새로고침",
+    "translated": "刷新"
+  },
+  {
+    "path": "recruitment.all_status",
+    "ko": "전체 상태",
+    "translated": "All 状态"
+  },
+  {
+    "path": "recruitment.kr_keb8f99ec_kec9786ec",
+    "ko": "동의 없음",
+    "translated": "No Consent"
+  },
+  {
+    "path": "recruitment.krw",
+    "ko": "원",
+    "translated": "元"
+  },
+  {
+    "path": "recruitment.count",
+    "ko": "건",
+    "translated": "item(s)"
+  },
+  {
+    "path": "recruitment.warning",
+    "ko": "경고",
+    "translated": "警告"
+  },
+  {
+    "path": "recruitment.save",
+    "ko": "저장",
+    "translated": "保存"
+  },
+  {
+    "path": "recruitment.failed",
+    "ko": "실패",
+    "translated": "失败"
+  },
+  {
+    "path": "recruitment.days",
+    "ko": "일",
+    "translated": "day(s)"
+  },
+  {
+    "path": "recruitment.blocked",
+    "ko": "차단",
+    "translated": "Blocked"
+  },
+  {
+    "path": "recruitment.confirmed",
+    "ko": "확정",
+    "translated": "Finalized"
+  },
+  {
+    "path": "recruitment.years",
+    "ko": "년",
+    "translated": "year"
+  },
+  {
+    "path": "recruitment.persons",
+    "ko": "명",
+    "translated": "person(s)"
+  },
+  {
+    "path": "offboarding.ddayPrefix",
+    "ko": "D-",
+    "translated": "D-"
+  },
+  {
+    "path": "offboarding.ddayToday",
+    "ko": "D-Day",
+    "translated": "D-Day"
+  },
+  {
+    "path": "offboarding.reschedule",
+    "ko": "퇴직일 변경",
+    "translated": "Reschedule"
+  },
+  {
+    "path": "offboarding.rescheduleTitle",
+    "ko": "퇴직일 변경",
+    "translated": "Reschedule Last Working 日期"
+  },
+  {
+    "path": "offboarding.rescheduleDesc",
+    "ko": "최종 근무일을 변경하면 관련 태스크의 기한이 자동으로 재계산됩니다.",
+    "translated": "Changing the last working date will automatically recalculate all task deadlines."
+  },
+  {
+    "path": "offboarding.rescheduleNewDate",
+    "ko": "새로운 최종 근무일",
+    "translated": "New Last Working 日期"
+  },
+  {
+    "path": "offboarding.rescheduleReason",
+    "ko": "변경 사유",
+    "translated": "Reason for Change"
+  },
+  {
+    "path": "offboarding.exitInterviewStatsTitle",
+    "ko": "퇴직 면담 분석",
+    "translated": "Exit Interview 分析"
+  },
+  {
+    "path": "offboarding.exitInterviewStatsDesc",
+    "ko": "익명화된 퇴직 사유 통계 및 조직 건강 지표",
+    "translated": "Anonymized resignation reason statistics and organization health indicators"
+  },
+  {
+    "path": "offboarding.exitInterviewPrivacy",
+    "ko": "5건 미만의 데이터는 통계로 생성되지 않습니다.",
+    "translated": "统计 require at least 5 interviews."
+  },
+  {
+    "path": "offboarding.exitInterviewPrivacyFull",
+    "ko": "모든 통계는 익명화되어 표시됩니다. 개인 식별 정보는 포함되지 않으며, 5건 미만의 데이터는 통계로 생성되지 않습니다.",
+    "translated": "All statistics are anonymized. Personal information is excluded, and statistics are not generated for fewer than 5 interviews."
+  }
+]

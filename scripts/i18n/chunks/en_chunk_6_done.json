@@ -1,0 +1,577 @@
+[
+  {
+    "path": "settings.warning",
+    "ko": "경고",
+    "translated": "Warning"
+  },
+  {
+    "path": "settings.blocked",
+    "ko": "차단",
+    "translated": "Blocked"
+  },
+  {
+    "path": "settings.overtimeBlocking",
+    "ko": "초과근무 차단",
+    "translated": "Overtime Blocking"
+  },
+  {
+    "path": "settings.overtimeBlockingDesc",
+    "ko": "차단 임계값 도달 시 클락인을 차단합니다.",
+    "translated": "Clock-in is blocked when blocking threshold is reached."
+  },
+  {
+    "path": "settings.enableClockInBlocking",
+    "ko": "클락인 차단 활성화",
+    "translated": "Enable Clock-in Blocking"
+  },
+  {
+    "path": "settings.clockInBlockingToggleDesc",
+    "ko": "차단 임계값 초과 시 직원의 출근 기록이 자동으로 거부됩니다.",
+    "translated": "Employee clock-in records are automatically rejected when blocking threshold is exceeded."
+  },
+  {
+    "path": "settings.enableShiftWork",
+    "ko": "교대근무 활성화",
+    "translated": "Enable Shift Work"
+  },
+  {
+    "path": "settings.shiftWorkDesc",
+    "ko": "법인에서 교대근무(2교대/3교대)를 운영합니다.",
+    "translated": "Entity operates shift work (2-shift/3-shift)."
+  },
+  {
+    "path": "settings.useShiftWork",
+    "ko": "교대근무 사용",
+    "translated": "Use Shift Work"
+  },
+  {
+    "path": "settings.enableShiftWorkDesc",
+    "ko": "활성화하면 교대근무 패턴 및 그룹 관리 기능이 활성화됩니다.",
+    "translated": "When enabled, shift work pattern and group management features are activated."
+  },
+  {
+    "path": "settings.shiftWorkDetailSettings",
+    "ko": "교대근무 상세 설정",
+    "translated": "Shift Work Detail Settings"
+  },
+  {
+    "path": "settings.attendanceSettings",
+    "ko": "근태 설정",
+    "translated": "Attendance Settings"
+  },
+  {
+    "path": "settings.attendanceSettingsDesc",
+    "ko": "근무유형, 52시간 관리, 교대근무 정책을 설정합니다.",
+    "translated": "근무Type, 52시간 Management, 교대근무 Policy Settings합니다."
+  },
+  {
+    "path": "settings.hrAlertSend",
+    "ko": "HR 알림 발송",
+    "translated": "HR Notification Send"
+  },
+  {
+    "path": "settings.managerHrAlert",
+    "ko": "매니저 + HR 알림",
+    "translated": "Manager + HR Notification"
+  },
+  {
+    "path": "settings.overtimeBlock",
+    "ko": "초과 근무 차단",
+    "translated": "Overtime Blocking"
+  },
+  {
+    "path": "settings.retryPlease",
+    "ko": "다시 시도해 주세요.",
+    "translated": "Please 다시 시도해 ."
+  },
+  {
+    "path": "settings.hours",
+    "ko": "시간",
+    "translated": "Hours"
+  },
+  {
+    "path": "settings.days",
+    "ko": "일",
+    "translated": "day(s)"
+  },
+  {
+    "path": "settings.krw",
+    "ko": "원",
+    "translated": "KRW"
+  },
+  {
+    "path": "settings.months",
+    "ko": "월",
+    "translated": "month"
+  },
+  {
+    "path": "settings.years",
+    "ko": "년",
+    "translated": "year"
+  },
+  {
+    "path": "settings.negativeLeave",
+    "ko": "마이너스 연차",
+    "translated": "마 너스 Annual Leave"
+  },
+  {
+    "path": "settings.negativeLeaveDesc",
+    "ko": "잔여 연차가 0일 미만으로 내려갈 수 있도록 허용",
+    "translated": "Allow remaining annual leave to go below 0 days"
+  },
+  {
+    "path": "settings.annualGrant",
+    "ko": "연간 부여",
+    "translated": "Annual Grant"
+  },
+  {
+    "path": "settings.monthlyGrant",
+    "ko": "월별 부여",
+    "translated": "Monthly Grant"
+  },
+  {
+    "path": "settings.manualGrant",
+    "ko": "수동 부여",
+    "translated": "Manual Grant"
+  },
+  {
+    "path": "settings.hireDateAnniversary",
+    "ko": "입사일 기준",
+    "translated": "Joiningday(s) 기준"
+  },
+  {
+    "path": "settings.fiscalYearBasis",
+    "ko": "회계연도 기준",
+    "translated": "Fiscal Year Basis"
+  },
+  {
+    "path": "settings.firstYearProrated",
+    "ko": "입사 첫해 비례 부여",
+    "translated": "Prorated granting in first year"
+  },
+  {
+    "path": "settings.firstYearProratedDesc",
+    "ko": "입사일이 연도 중간인 경우 비례 계산하여 부여",
+    "translated": "Prorated calculation for mid-year hires"
+  },
+  {
+    "path": "settings.annualBulkGrant",
+    "ko": "연간 일괄 부여",
+    "translated": "Annual Bulk Grant"
+  },
+  {
+    "path": "settings.monthlyAccrual",
+    "ko": "월별 적립",
+    "translated": "Monthly Accrual"
+  },
+  {
+    "path": "settings.fiscalYearJan1",
+    "ko": "회계연도 (1/1)",
+    "translated": "Fiscal Year (Jan 1)"
+  },
+  {
+    "path": "settings.noCarryOver",
+    "ko": "이월 불가",
+    "translated": "No Carryover"
+  },
+  {
+    "path": "settings.fullCarryOver",
+    "ko": "전액 이월",
+    "translated": "Full Carryover"
+  },
+  {
+    "path": "settings.unlimited",
+    "ko": "무제한",
+    "translated": "Unlimited"
+  },
+  {
+    "path": "settings.start",
+    "ko": "시작",
+    "translated": "Start"
+  },
+  {
+    "path": "settings.persons",
+    "ko": "명",
+    "translated": "person(s)"
+  },
+  {
+    "path": "compliance.month_keab084eb",
+    "ko": "월간보고",
+    "translated": "Monthly Report"
+  },
+  {
+    "path": "compliance.kr_keab5b0eb_register_keca084ec_k",
+    "ko": "군복무 등록, 전자문서(КЭДО) 및 법정 보고서 관리",
+    "translated": "Military service registration, electronic documents, and statutory reports"
+  },
+  {
+    "path": "compliance.count",
+    "ko": "건",
+    "translated": "item(s)"
+  },
+  {
+    "path": "compliance.hours",
+    "ko": "시간",
+    "translated": "Hours"
+  },
+  {
+    "path": "nav.payroll.closeAttendance",
+    "ko": "근태 마감",
+    "translated": "Attendance Deadline"
+  },
+  {
+    "path": "nav.payroll.adjustments",
+    "ko": "수동 조정",
+    "translated": "수동 Adjustment"
+  },
+  {
+    "path": "nav.payroll.anomalyReview",
+    "ko": "이상 검토",
+    "translated": "상 Review"
+  },
+  {
+    "path": "nav.payroll.bankTransfers",
+    "ko": "이체 관리",
+    "translated": "체 Management"
+  },
+  {
+    "path": "myTasks.typeLeave",
+    "ko": "휴가",
+    "translated": "On Leave"
+  },
+  {
+    "path": "myTasks.typePayroll",
+    "ko": "급여",
+    "translated": "Payroll"
+  },
+  {
+    "path": "myTasks.typeOnboarding",
+    "ko": "온보딩",
+    "translated": "Onboarding"
+  },
+  {
+    "path": "myTasks.typeOffboarding",
+    "ko": "오프보딩",
+    "translated": "Offboarding"
+  },
+  {
+    "path": "myTasks.typePerformance",
+    "ko": "성과",
+    "translated": "Performance"
+  },
+  {
+    "path": "myTasks.priorityUrgent",
+    "ko": "긴급",
+    "translated": "Urgent"
+  },
+  {
+    "path": "myTasks.priorityHigh",
+    "ko": "높음",
+    "translated": "High"
+  },
+  {
+    "path": "myTasks.priorityMedium",
+    "ko": "보통",
+    "translated": "Medium"
+  },
+  {
+    "path": "myTasks.priorityLow",
+    "ko": "낮음",
+    "translated": "Low"
+  },
+  {
+    "path": "myTasks.delegated",
+    "ko": "대결",
+    "translated": "Acting"
+  },
+  {
+    "path": "myTasks.actionApprove",
+    "ko": "승인",
+    "translated": "Approve"
+  },
+  {
+    "path": "myTasks.actionReject",
+    "ko": "반려",
+    "translated": "Reject"
+  },
+  {
+    "path": "myTasks.actionView",
+    "ko": "보기",
+    "translated": "View"
+  },
+  {
+    "path": "home.tab.headcount",
+    "ko": "인원 현황",
+    "translated": "Headcount Status"
+  },
+  {
+    "path": "home.tab.leave",
+    "ko": "연차 현황",
+    "translated": "Annual Leave Status"
+  },
+  {
+    "path": "home.tab.attendance",
+    "ko": "근태 현황",
+    "translated": "Attendance Status"
+  },
+  {
+    "path": "home.tab.performance",
+    "ko": "성과 현황",
+    "translated": "Performance Status"
+  },
+  {
+    "path": "home.tab.payroll",
+    "ko": "급여 현황",
+    "translated": "Payroll Status"
+  },
+  {
+    "path": "home.tab.onboarding",
+    "ko": "온보딩 현황",
+    "translated": "Onboarding Status"
+  },
+  {
+    "path": "home.tab.compliance",
+    "ko": "컴플라이언스",
+    "translated": "Compliance"
+  },
+  {
+    "path": "home.kpi.totalEmployees",
+    "ko": "전체 인원",
+    "translated": "All Headcount"
+  },
+  {
+    "path": "home.kpi.newHires",
+    "ko": "금월 입사",
+    "translated": "금month Joining"
+  },
+  {
+    "path": "home.kpi.resigned",
+    "ko": "금월 퇴사",
+    "translated": "금month Separation"
+  },
+  {
+    "path": "home.kpi.onLeave",
+    "ko": "휴직",
+    "translated": "Leave of Absence"
+  },
+  {
+    "path": "home.kpi.turnoverRate",
+    "ko": "이직률",
+    "translated": "Turnover Rate"
+  },
+  {
+    "path": "home.kpi.leaveUsageRate",
+    "ko": "연차 사용률",
+    "translated": "Annual Leave 사용률"
+  },
+  {
+    "path": "home.compareSubtitle",
+    "ko": "6개 법인 KPI 나란히 비교",
+    "translated": "Compare KPIs across 6 entities side by side"
+  },
+  {
+    "path": "home.compareByCompany",
+    "ko": "법인 비교",
+    "translated": "법인 Comparison"
+  },
+  {
+    "path": "home.yearSuffix",
+    "ko": "년",
+    "translated": "year"
+  },
+  {
+    "path": "home.monthlyTrend",
+    "ko": "월별 추이",
+    "translated": "Monthly Trend"
+  },
+  {
+    "path": "home.compareKpi.turnover_rate",
+    "ko": "이직률",
+    "translated": "Turnover Rate"
+  },
+  {
+    "path": "home.compareKpi.leave_usage",
+    "ko": "연차 사용률",
+    "translated": "Annual Leave 사용률"
+  },
+  {
+    "path": "home.compareKpi.training_completion",
+    "ko": "교육 이수율",
+    "translated": "Training 수율"
+  },
+  {
+    "path": "home.compareKpi.payroll_cost",
+    "ko": "인건비",
+    "translated": "인item(s)비"
+  },
+  {
+    "path": "home.noData",
+    "ko": "데이터가 없습니다",
+    "translated": "No 데이터 available."
+  },
+  {
+    "path": "home.noDataDesc",
+    "ko": "조건을 변경하거나 새로운 데이터를 추가해 보세요",
+    "translated": "Please 변경하거나 new로운 데이터를 additional해 보 조item(s)."
+  },
+  {
+    "path": "mySpace.greeting",
+    "ko": "안녕하세요, {name}님!",
+    "translated": "Hello, {name}!"
+  },
+  {
+    "path": "mySpace.yearsOfService",
+    "ko": "재직 {period}",
+    "translated": "재직 {period}"
+  },
+  {
+    "path": "mySpace.editProfile",
+    "ko": "프로필 편집",
+    "translated": "Profile 편집"
+  },
+  {
+    "path": "mySpace.kpi.leaveRemaining",
+    "ko": "연차 잔여",
+    "translated": "Annual Leave 잔여"
+  },
+  {
+    "path": "mySpace.kpi.leaveUsed",
+    "ko": "사용 연차",
+    "translated": "Used Annual Leave"
+  },
+  {
+    "path": "mySpace.kpi.pendingRequests",
+    "ko": "대기 중 변경 요청",
+    "translated": "Pending Change Requests"
+  },
+  {
+    "path": "mySpace.kpi.tenure",
+    "ko": "재직 기간",
+    "translated": "재직 Period"
+  },
+  {
+    "path": "mySpace.unitDay",
+    "ko": "일",
+    "translated": "day(s)"
+  },
+  {
+    "path": "mySpace.unitCase",
+    "ko": "건",
+    "translated": "item(s)"
+  },
+  {
+    "path": "mySpace.viewDetail",
+    "ko": "자세히",
+    "translated": "Details"
+  },
+  {
+    "path": "mySpace.recentNotifications",
+    "ko": "최근 알림",
+    "translated": "최근 Notification"
+  },
+  {
+    "path": "mySpace.quickLink.myProfile",
+    "ko": "내 프로필",
+    "translated": "내 Profile"
+  },
+  {
+    "path": "mySpace.quickLink.leaveRequest",
+    "ko": "휴가 신청",
+    "translated": "Leave 신청"
+  },
+  {
+    "path": "mySpace.quickLink.myPerformance",
+    "ko": "내 성과",
+    "translated": "내 Performance"
+  },
+  {
+    "path": "mySpace.quickLink.trainingApply",
+    "ko": "교육 신청",
+    "translated": "Training 신청"
+  },
+  {
+    "path": "mySpace.quickLink.internalJob",
+    "ko": "사내 공고",
+    "translated": "사내 Posting"
+  },
+  {
+    "path": "mySpace.quickLink.yearEnd",
+    "ko": "연말 정산",
+    "translated": "Year-end Tax Settlement"
+  },
+  {
+    "path": "mySpace.status.pending",
+    "ko": "대기중",
+    "translated": "Pending중"
+  },
+  {
+    "path": "mySpace.status.approved",
+    "ko": "승인",
+    "translated": "Approve"
+  },
+  {
+    "path": "mySpace.status.rejected",
+    "ko": "반려",
+    "translated": "Reject"
+  },
+  {
+    "path": "mySpace.status.cancelled",
+    "ko": "취소",
+    "translated": "Cancel"
+  },
+  {
+    "path": "mySpace.paid",
+    "ko": "유급",
+    "translated": "Paid"
+  },
+  {
+    "path": "mySpace.unpaid",
+    "ko": "무급",
+    "translated": "Unpaid"
+  },
+  {
+    "path": "mySpace.carriedOver",
+    "ko": "이월 {days}일 포함",
+    "translated": "month {days}day(s) 포함"
+  },
+  {
+    "path": "mySpace.usedDays",
+    "ko": "사용 {days}일",
+    "translated": "사용 {days}day(s)"
+  },
+  {
+    "path": "mySpace.pendingDays",
+    "ko": "대기 {days}일",
+    "translated": "Pending {days}day(s)"
+  },
+  {
+    "path": "mySpace.expiresOn",
+    "ko": "소멸 {date}",
+    "translated": "소멸 {date}"
+  },
+  {
+    "path": "mySpace.col.leaveType",
+    "ko": "휴가 유형",
+    "translated": "Leave Type"
+  },
+  {
+    "path": "mySpace.col.period",
+    "ko": "기간",
+    "translated": "Period"
+  },
+  {
+    "path": "mySpace.col.days",
+    "ko": "일수",
+    "translated": "day(s)수"
+  },
+  {
+    "path": "mySpace.col.status",
+    "ko": "상태",
+    "translated": "Status"
+  },
+  {
+    "path": "mySpace.col.requestedAt",
+    "ko": "신청일",
+    "translated": "신청day(s)"
+  }
+]
