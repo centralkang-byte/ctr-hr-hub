@@ -1,8 +1,5 @@
-// ═══════════════════════════════════════════════════════════
-// CTR HR Hub — API Utilities (Server + Client)
-// ═══════════════════════════════════════════════════════════
-
 import { NextResponse } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 import { AppError, isAppError } from '@/lib/errors'
 import type {
   ApiResponse,
@@ -26,6 +23,13 @@ export function apiPaginated<T>(
 
 export function apiError(error: unknown): NextResponse<{ error: ApiErrorDetail }> {
   if (isAppError(error)) {
+    // Capture 5xx AppErrors to Sentry
+    if (error.statusCode >= 500) {
+      Sentry.captureException(error, {
+        tags: { errorCode: error.code },
+        extra: { status: error.statusCode },
+      })
+    }
     return NextResponse.json(
       {
         error: {
@@ -38,8 +42,14 @@ export function apiError(error: unknown): NextResponse<{ error: ApiErrorDetail }
     )
   }
 
+  // Unknown errors → always 500 → always capture to Sentry
   const message =
     error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.'
+
+  Sentry.captureException(error instanceof Error ? error : new Error(message), {
+    tags: { errorCode: 'INTERNAL_ERROR' },
+    extra: { status: 500 },
+  })
 
   return NextResponse.json(
     { error: { code: 'INTERNAL_ERROR', message } },
