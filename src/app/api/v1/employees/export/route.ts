@@ -6,8 +6,9 @@ import * as XLSX from 'xlsx'
 import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
 import { badRequest } from '@/lib/errors'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { employeeSearchSchema } from '@/lib/schemas/employee'
+import { maskPhone } from '@/lib/masking'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
@@ -65,6 +66,9 @@ export const GET = withPermission(
       take: 5000,
     })
 
+    const isPrivileged = user.role === ROLE.SUPER_ADMIN || user.role === ROLE.HR_ADMIN
+
+    // residentId is never included in export (not selected from DB)
     const rows = employees.map((e) => {
       const a = e.assignments[0]
       return {
@@ -72,7 +76,7 @@ export const GET = withPermission(
         이름: e.name,
         영문이름: e.nameEn ?? '',
         이메일: e.email,
-        전화번호: e.phone ?? '',
+        전화번호: isPrivileged ? (e.phone ?? '') : maskPhone(e.phone ?? ''),
         법인: a?.company?.name ?? '',
         부서: a?.department?.name ?? '',
         직급: a?.jobGrade?.name ?? '',

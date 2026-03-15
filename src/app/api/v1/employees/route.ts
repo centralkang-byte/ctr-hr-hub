@@ -8,13 +8,14 @@ import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
 import { badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import {
   employeeSearchSchema,
   employeeCreateSchema,
 } from '@/lib/schemas/employee'
 import { createAssignment } from '@/lib/assignments'
 import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
+import { maskSensitiveFields } from '@/lib/masking'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/employees ────────────────────────────────
@@ -124,7 +125,13 @@ export const GET = withPermission(
       }
     })
 
-    return apiPaginated(mapped, buildPagination(page, limit, total))
+    // PII masking: non-HR roles get phone/email masked; residentId is never selected
+    const isPrivileged = user.role === ROLE.SUPER_ADMIN || user.role === ROLE.HR_ADMIN
+    const sanitized = isPrivileged
+      ? mapped
+      : maskSensitiveFields(mapped, user.role, user.employeeId ?? undefined)
+
+    return apiPaginated(sanitized, buildPagination(page, limit, total))
   },
   perm(MODULE.EMPLOYEES, ACTION.VIEW),
 )

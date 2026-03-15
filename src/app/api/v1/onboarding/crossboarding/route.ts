@@ -5,10 +5,11 @@
 
 import { type NextRequest } from 'next/server'
 import { z } from 'zod'
+import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, handlePrismaError } from '@/lib/errors'
+import { badRequest, conflict, handlePrismaError } from '@/lib/errors'
 import { triggerCrossboarding } from '@/lib/crossboarding'
 import type { SessionUser } from '@/types'
 
@@ -38,6 +39,19 @@ export const POST = withPermission(
 
     if (fromCompanyId === toCompanyId) {
       throw badRequest('출발 법인과 도착 법인이 동일합니다.')
+    }
+
+    // Duplicate prevention: block if active crossboarding already in progress
+    const existingCrossboard = await prisma.employeeOnboarding.findFirst({
+      where: {
+        employeeId,
+        planType: { in: ['CROSSBOARDING_DEPARTURE', 'CROSSBOARDING_ARRIVAL'] },
+        status: { in: ['IN_PROGRESS', 'NOT_STARTED'] },
+      },
+      select: { id: true, planType: true, status: true },
+    })
+    if (existingCrossboard) {
+      throw conflict('이미 진행 중인 크로스보딩이 있습니다. 기존 프로세스를 완료하거나 취소한 후 다시 시도하세요.')
     }
 
     try {

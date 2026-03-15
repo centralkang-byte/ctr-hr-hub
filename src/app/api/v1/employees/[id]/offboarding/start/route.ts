@@ -78,13 +78,15 @@ export const POST = withPermission(
       throw notFound('활성 상태의 직원을 찾을 수 없습니다.')
     }
 
-    // 3. Check for existing in-progress offboarding
+    // 3. Duplicate prevention: OffboardingStatus has IN_PROGRESS | COMPLETED | CANCELLED.
+    //    Only IN_PROGRESS is an active (non-terminal) state — block to prevent duplicate processes.
     const existingOffboarding = await prisma.employeeOffboarding.findFirst({
       where: { employeeId, status: 'IN_PROGRESS' },
+      select: { id: true, status: true },
     })
 
     if (existingOffboarding) {
-      throw conflict('이미 진행 중인 퇴직 프로세스가 있습니다.')
+      throw conflict(`이미 진행 중인 퇴직 프로세스가 있습니다. (ID: ${existingOffboarding.id})`)
     }
 
     // 4. Map resignType to OffboardingTargetType for checklist matching
