@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
-import { User, Settings, LogOut, Users } from 'lucide-react'
+import { User, Settings, LogOut, Users, Menu } from 'lucide-react'
 import { NotificationBell } from '@/components/layout/NotificationBell'
 import { QuickActionsMenu } from '@/components/layout/QuickActionsMenu'
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher'
@@ -36,6 +36,7 @@ interface CompanyOption {
 interface HeaderProps {
   user: SessionUser
   companies: CompanyOption[]
+  onMenuClick?: () => void
 }
 
 // ─── Breadcrumb helper ──────────────────────────────────────
@@ -107,7 +108,7 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 // ─── Component ──────────────────────────────────────────────
 
-export function Header({ user, companies }: HeaderProps) {
+export function Header({ user, companies, onMenuClick }: HeaderProps) {
   const pathname = usePathname()
   const router = useRouter()
   const t = useTranslations('menu')
@@ -133,25 +134,42 @@ export function Header({ user, companies }: HeaderProps) {
   }, [])
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between border-b border-[#F0F0F3] bg-white px-6">
-      {/* ─── Left: Breadcrumb ─── */}
-      <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
-        <span className="font-medium text-foreground">{t('home')}</span>
-        {breadcrumbs.map((crumb, idx) => (
-          <span key={idx} className="flex items-center gap-1.5">
-            <span className="text-muted-foreground/50">/</span>
-            <span
-              className={
-                idx === breadcrumbs.length - 1
-                  ? 'font-medium text-foreground'
-                  : ''
-              }
-            >
-              {crumb}
+    <header className="flex h-14 shrink-0 items-center justify-between border-b border-[#F0F0F3] bg-white px-4 md:px-6">
+      {/* ─── Left: Hamburger (mobile) + Breadcrumb ─── */}
+      <div className="flex items-center gap-2">
+        {/* Hamburger — mobile only */}
+        {onMenuClick && (
+          <button
+            onClick={onMenuClick}
+            className="p-2 -ml-1 rounded-lg text-[#8181A5] hover:bg-[#F5F5FA] transition-colors md:hidden"
+            aria-label="Open menu"
+          >
+            <Menu size={22} />
+          </button>
+        )}
+
+        {/* App title — mobile only */}
+        <span className="text-sm font-bold text-[#1C1D21] md:hidden">CTR HR Hub</span>
+
+        {/* Breadcrumb — desktop only */}
+        <nav className="hidden md:flex items-center gap-1.5 text-sm text-muted-foreground">
+          <span className="font-medium text-foreground">{t('home')}</span>
+          {breadcrumbs.map((crumb, idx) => (
+            <span key={idx} className="flex items-center gap-1.5">
+              <span className="text-muted-foreground/50">/</span>
+              <span
+                className={
+                  idx === breadcrumbs.length - 1
+                    ? 'font-medium text-foreground'
+                    : ''
+                }
+              >
+                {crumb}
+              </span>
             </span>
-          </span>
-        ))}
-      </nav>
+          ))}
+        </nav>
+      </div>
 
       {/* ─── Right: Actions ─── */}
       <div className="flex items-center gap-3">

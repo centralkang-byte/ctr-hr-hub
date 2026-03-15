@@ -62,16 +62,22 @@ function BadgePill({ count, color }: { count: number; color: string }) {
 
 // ─── Types ──────────────────────────────────────────────────
 
+export type SidebarMode = 'desktop' | 'drawer'
+
 interface SidebarProps {
   user: SessionUser
   onSignOut: () => void
   countryCode?: string
+  mode?: SidebarMode
+  onItemClick?: () => void
 }
 
 // ─── Component ──────────────────────────────────────────────
 
-export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
+export function Sidebar({ user, onSignOut, countryCode, mode = 'desktop', onItemClick }: SidebarProps) {
   const [collapsed, setCollapsed]     = useState(false)
+  const isDrawer = mode === 'drawer'
+  const isCollapsed = isDrawer ? false : collapsed
   const [openSection, setOpenSection] = useState<string | null>('my-space')
   const pathname  = usePathname()
   const t         = useTranslations('nav')
@@ -81,7 +87,7 @@ export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
   const { favorites, isFavorite, toggleFavorite } = useFavorites()
   const { counts }                                = useSidebarCounts()
 
-  const toggleCollapsed = useCallback(() => setCollapsed((p) => !p), [])
+  const toggleCollapsed = useCallback(() => { if (!isDrawer) setCollapsed((p) => !p) }, [isDrawer])
   const toggleSection   = useCallback(
     (key: string) => setOpenSection((p) => (p === key ? null : key)),
     [],
@@ -106,16 +112,19 @@ export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
     <TooltipProvider delayDuration={0}>
       <aside
         className={cn(
-          'flex h-screen flex-col bg-white text-[#1C1D21] border-r border-[#F0F0F3] transition-all duration-300',
-          collapsed ? 'w-16' : 'w-64',
+          'flex flex-col bg-white text-[#1C1D21] transition-all duration-300',
+          isDrawer
+            ? 'h-full w-full'
+            : 'h-screen border-r border-[#F0F0F3]',
+          !isDrawer && (isCollapsed ? 'w-16' : 'w-64'),
         )}
       >
         {/* ─── Logo ─── */}
-        <div className={cn('flex items-center gap-3 px-4 py-5', collapsed && 'justify-center px-2')}>
+        <div className={cn('flex items-center gap-3 px-4 py-5', isCollapsed && 'justify-center px-2')}>
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-ctr-primary font-bold text-white">
             C
           </div>
-          {!collapsed && (
+          {!isCollapsed && (
             <div className="min-w-0 flex-1">
               <h1 className="truncate text-sm font-bold tracking-tight text-[#1C1D21]">CTR HR Hub</h1>
             </div>
@@ -127,7 +136,7 @@ export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
           <nav className="pb-4">
 
             {/* ── Favorites section (always expanded, hidden when empty) ── */}
-            {!collapsed && favoriteItems.length > 0 && (
+            {!isCollapsed && favoriteItems.length > 0 && (
               <div className="mb-1">
                 <div className="flex items-center gap-2 px-4 py-2">
                   <Star className="h-[18px] w-[18px] text-[#F59E0B] fill-[#F59E0B]" />
@@ -165,7 +174,7 @@ export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
                 key={section.key}
                 section={section}
                 pathname={pathname}
-                collapsed={collapsed}
+                collapsed={isCollapsed}
                 expanded={section.key === openSection}
                 onToggle={() => toggleSection(section.key)}
                 showDivider={idx > 0 && favoriteItems.length === 0}
@@ -174,31 +183,34 @@ export function Sidebar({ user, onSignOut, countryCode }: SidebarProps) {
                 isFavorite={isFavorite}
                 onToggleFavorite={toggleFavorite}
                 getLabel={getLabel}
+                onItemClick={onItemClick}
               />
             ))}
           </nav>
         </ScrollArea>
 
-        {/* ─── Collapse Toggle ─── */}
-        <button
-          type="button"
-          onClick={toggleCollapsed}
-          className="flex items-center justify-center border-t border-[#F0F0F3] py-2 hover:bg-[#F5F5FA]"
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {collapsed
-            ? <ChevronRight className="h-4 w-4 text-[#8181A5]" />
-            : <ChevronLeft  className="h-4 w-4 text-[#8181A5]" />}
-        </button>
+        {/* ─── Collapse Toggle (desktop only) ─── */}
+        {!isDrawer && (
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            className="flex items-center justify-center border-t border-[#F0F0F3] py-2 hover:bg-[#F5F5FA]"
+            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {isCollapsed
+              ? <ChevronRight className="h-4 w-4 text-[#8181A5]" />
+              : <ChevronLeft  className="h-4 w-4 text-[#8181A5]" />}
+          </button>
+        )}
 
         {/* ─── User Profile ─── */}
-        <div className={cn('flex items-center gap-3 border-t border-[#F0F0F3] px-3 py-3', collapsed && 'flex-col gap-1 px-1')}>
+        <div className={cn('flex items-center gap-3 border-t border-[#F0F0F3] px-3 py-3', isCollapsed && 'flex-col gap-1 px-1')}>
           <Avatar className="h-8 w-8 shrink-0 border border-[#F0F0F3]">
             <AvatarFallback className="bg-ctr-primary text-xs text-white">
               {userInitial}
             </AvatarFallback>
           </Avatar>
-          {!collapsed && (
+          {!isCollapsed && (
             <div className="min-w-0 flex-1">
               <p className="truncate text-xs font-medium text-[#1C1D21]">{user.name}</p>
               <p className="truncate text-[10px] text-[#8181A5]">{user.role}</p>
@@ -237,11 +249,12 @@ interface SidebarSectionProps {
   isFavorite: (key: string) => boolean
   onToggleFavorite: (key: string) => void
   getLabel: (labelKey: string, fallback: string) => string
+  onItemClick?: () => void
 }
 
 function SidebarSection({
   section, pathname, collapsed, expanded, onToggle,
-  showDivider, counts, isFavorite, onToggleFavorite, getLabel,
+  showDivider, counts, isFavorite, onToggleFavorite, getLabel, onItemClick,
 }: SidebarSectionProps) {
   const isHome = section.key === 'home'
 
@@ -299,6 +312,7 @@ function SidebarSection({
                 onToggleFavorite={onToggleFavorite}
                 badgeCount={count}
                 badgeColor={badgeInfo?.color}
+                onItemClick={onItemClick}
               />
             )
           })}
@@ -318,10 +332,11 @@ interface NavItemProps {
   onToggleFavorite: (key: string) => void
   badgeCount?: number
   badgeColor?: string
+  onItemClick?: () => void
 }
 
 function ExpandedNavItem({
-  item, pathname, getLabel, isFavorite, onToggleFavorite, badgeCount = 0, badgeColor,
+  item, pathname, getLabel, isFavorite, onToggleFavorite, badgeCount = 0, badgeColor, onItemClick,
 }: NavItemProps) {
   const isActive =
     pathname === item.href ||
@@ -347,6 +362,7 @@ function ExpandedNavItem({
     <div className="group relative mx-2 flex items-center rounded-lg">
       <Link
         href={item.href}
+        onClick={onItemClick}
         className={cn(
           'flex flex-1 items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
           isActive
