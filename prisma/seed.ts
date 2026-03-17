@@ -48,6 +48,9 @@ import { seedLeaveEnhancement } from './seeds/25-leave-enhancement'
 import { seedProcessSettings } from './seeds/26-process-settings'
 import { seedQASkillsTrainingPulse } from './seeds/30-qa-skills-training-pulse'
 import { seedDiscipline } from './seeds/31-discipline'
+import { seedPerformanceGaps } from './seeds/32-performance-gaps'
+import { seedComplianceGaps } from './seeds/33-compliance-gaps'
+import { seedPayrollOtherGaps } from './seeds/34-payroll-other-gaps'
 
 // Load DATABASE_URL from .env.local or .env
 const DATABASE_URL = process.env.DATABASE_URL
@@ -3648,6 +3651,15 @@ async function main() {
 
   // Discipline & Rewards
   await seedDiscipline(prisma)
+
+  // Gap fills: Performance (skills 2026-H1, cycles FINALIZED/COMP_REVIEW, enrollments)
+  await seedPerformanceGaps(prisma)
+
+  // Gap fills: Compliance (GDPR DSAR/retention/DPIA, CN social insurance, KR severance)
+  await seedComplianceGaps(prisma)
+
+  // Gap fills: Payroll & Other (bank transfers, HR docs, recruitment costs, approval flows)
+  await seedPayrollOtherGaps(prisma)
 }
 
 main()
