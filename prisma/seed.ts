@@ -47,6 +47,7 @@ import { seedDelegation } from './seeds/24-delegation'
 import { seedLeaveEnhancement } from './seeds/25-leave-enhancement'
 import { seedProcessSettings } from './seeds/26-process-settings'
 import { seedQASkillsTrainingPulse } from './seeds/30-qa-skills-training-pulse'
+import { seedDiscipline } from './seeds/31-discipline'
 
 // Load DATABASE_URL from .env.local or .env
 const DATABASE_URL = process.env.DATABASE_URL
@@ -746,7 +747,7 @@ async function main() {
     'admin@ctr.co.kr': { deptCode: 'MGMT', gradeCode: 'G1', catCode: 'OFFICE' },
     'hr@ctr.co.kr': { deptCode: 'HR', gradeCode: 'G4', catCode: 'OFFICE' },
     'manager@ctr.co.kr': { deptCode: 'DEV', gradeCode: 'G3', catCode: 'OFFICE' },
-    'employee@ctr.co.kr': { deptCode: 'SALES', gradeCode: 'G6', catCode: 'OFFICE' },
+    'employee@ctr.co.kr': { deptCode: 'DEV', gradeCode: 'G6', catCode: 'OFFICE' },
   }
 
   const employeeMap: Record<string, string> = {} // email -> id
@@ -1808,10 +1809,14 @@ async function main() {
   })
 
   // employee@ctr.co.kr → 개발파트장A (CTR-KR-DEV-002, G4 - reports to CTR-KR-DEV-001)
+  // departmentId도 DEV로 맞춤 (empConfig에서 이미 DEV 설정됨, position과 동일 부서 보장)
   const empEmpId = deterministicUUID('employee', 'employee@ctr.co.kr')
   await prisma.employeeAssignment.updateMany({
     where: { employeeId: empEmpId, isPrimary: true, endDate: null },
-    data: { positionId: posMap['CTR-KR-DEV-002'] },
+    data: {
+      positionId: posMap['CTR-KR-DEV-002'],
+      departmentId: deptMap['CTR-KR:DEV'],
+    },
   })
 
   console.log('  ✅ 3 CTR-KR employee position assignments')
@@ -3640,6 +3645,9 @@ async function main() {
 
   // QF-Final: Skills + Training + Pulse Survey + Cross-module test states
   await seedQASkillsTrainingPulse(prisma)
+
+  // Discipline & Rewards
+  await seedDiscipline(prisma)
 }
 
 main()
