@@ -116,7 +116,11 @@ export default function PlansTab() {
   }
 
   const columns: DataTableColumn<PlanRow>[] = [
-    { key: 'positionTitle', header: '직책명' },
+    {
+      key: 'positionTitle',
+      header: '직책명',
+      render: (row) => <span className="font-medium text-[#1A1A1A]">{row.positionTitle || '-'}</span>,
+    },
     {
       key: 'department',
       header: '부서',
@@ -125,10 +129,7 @@ export default function PlansTab() {
     {
       key: 'currentHolder',
       header: '현 직책자',
-      render: (row) =>
-        row.currentHolder
-          ? row.currentHolder.name
-          : '-',
+      render: (row) => row.currentHolder?.name ?? '-',
     },
     {
       key: 'criticality',

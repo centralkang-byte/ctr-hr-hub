@@ -101,6 +101,59 @@ const BREADCRUMB_KEYS: Record<string, string> = {
   edit: 'edit',
   review: 'review',
   me: 'me',
+  // Approvals
+  approvals: 'approvals',
+  inbox: 'inbox',
+  // Goals & Organization
+  goals: 'goals',
+  organization: 'organization',
+  succession: 'succession',
+  // Skill / Training sub-routes
+  'skill-matrix': 'skill-matrix',
+  enrollments: 'enrollments',
+  skills: 'skills',
+  // Recruitment sub-routes
+  'cost-analysis': 'cost-analysis',
+  applicants: 'applicants',
+  'talent-pool': 'talent-pool',
+  pipeline: 'pipeline',
+  interviews: 'interviews',
+  board: 'board',
+  requisitions: 'requisitions',
+  // Compliance sub-routes
+  'data-retention': 'data-retention',
+  dpia: 'dpia',
+  'pii-audit': 'pii-audit',
+  gdpr: 'gdpr',
+  cn: 'cn',
+  ru: 'ru',
+  kr: 'kr',
+  // Attendance sub-routes
+  'shift-calendar': 'shift-calendar',
+  'shift-roster': 'shift-roster',
+  // Offboarding sub-routes
+  'exit-interviews': 'exit-interviews',
+  // Delegation
+  delegation: 'delegation',
+  // Manager hub
+  'manager-hub': 'manager-hub',
+  // My sub-routes
+  'internal-jobs': 'internal-jobs',
+  'my-goals': 'my-goals',
+  'my-evaluation': 'my-evaluation',
+  'my-peer-review': 'my-peer-review',
+  'my-checkins': 'my-checkins',
+  'my-result': 'my-result',
+  // Performance sub-routes (additional)
+  'manager-eval': 'manager-eval',
+  'manager-evaluation': 'manager-evaluation',
+  'team-goals': 'team-goals',
+  'team-results': 'team-results',
+  results: 'results',
+  calibration: 'calibration',
+  // Analytics sub-routes (additional)
+  'ai-report': 'ai-report',
+  attrition: 'attrition',
 }
 
 // UUID pattern: detects 8-4-4-4-12 hex or any 32+ char hex string

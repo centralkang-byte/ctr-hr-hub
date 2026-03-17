@@ -294,31 +294,29 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
 
       {/* ─── Table ─── */}
       {loading ? (
-        <div className="bg-white rounded-xl border border-[#F0F0F3]">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-[#F0F0F3]">
-                  {[t('employeeName'), t('hireDate'), t('buddy'), t('templateLabel'), t('progress'), t('statusLabel'), t('delayed'), '감정', ''].map(
-                    (h) => (
-                      <th key={h} className={TABLE_STYLES.headerCell}>{h}</th>
-                    ),
-                  )}
+        <div className={TABLE_STYLES.wrapper}>
+          <table className={TABLE_STYLES.table}>
+            <thead>
+              <tr className={TABLE_STYLES.header}>
+                {[t('employeeName'), t('hireDate'), t('buddy'), t('templateLabel'), t('progress'), t('statusLabel'), t('delayed'), '감정', ''].map(
+                  (h) => (
+                    <th key={h} className={TABLE_STYLES.headerCell + " whitespace-nowrap"}>{h}</th>
+                  ),
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <tr key={`sk-${i}`} className={TABLE_STYLES.row}>
+                  {Array.from({ length: 8 }).map((_, j) => (
+                    <td key={`sk-${i}-${j}`} className={TABLE_STYLES.cell}>
+                      <TableSkeleton />
+                    </td>
+                  ))}
                 </tr>
-              </thead>
-              <tbody>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <tr key={`sk-${i}`} className="border-b border-[#F0F0F3]">
-                    {Array.from({ length: 8 }).map((_, j) => (
-                      <td key={`sk-${i}-${j}`} className="px-4 py-3">
-                        <div className="h-5 bg-[#F5F5FA] rounded animate-pulse" />
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
       ) : data.length === 0 ? (
         <div className="bg-white rounded-xl border border-[#F0F0F3] p-8">
@@ -329,107 +327,108 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-[#F0F0F3]">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-[#F0F0F3]">
-                    <th className={TABLE_STYLES.headerCell}>{t('employeeName')}</th>
-                    <th className={TABLE_STYLES.headerCell}>{t('hireDate')}</th>
-                    <th className={TABLE_STYLES.headerCell}>{t('buddy')}</th>
-                    <th className={TABLE_STYLES.headerCell}>{t('templateLabel')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5] w-48">{t('progress')}</th>
-                    <th className={TABLE_STYLES.headerCell}>{t('statusLabel')}</th>
-                    <th className={TABLE_STYLES.headerCell}>{t('delayed')}</th>
-                    <th className={TABLE_STYLES.headerCell}>감정</th>
-                    {isHrAdmin && <th className="px-4 py-3 text-left text-xs font-semibold text-[#8181A5] w-24" />}
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.map((row) => (
-                    <tr
-                      key={row.id}
-                      className={`border-b border-[#F0F0F3] hover:bg-[#F5F5FA] transition-colors cursor-pointer ${row.isDelayed ? 'bg-[#FEF2F2]/30' : ''}`}
-                      onClick={() => router.push(`/onboarding/${row.id}`)}
-                    >
-                      <td className={TABLE_STYLES.cell}>
-                        {row.employee.name}
-                      </td>
-                      <td className={TABLE_STYLES.cellMuted}>
-                        {row.employee.hireDate
-                          ? new Date(row.employee.hireDate).toLocaleDateString(
-                            'ko-KR',
-                          )
-                          : '-'}
-                      </td>
-                      <td className={TABLE_STYLES.cellMuted}>{row.buddy?.name ?? '-'}</td>
-                      <td className={TABLE_STYLES.cellMuted}>{row.template.name}</td>
-                      <td className="px-4 py-3">
-                        <ProgressBar
-                          completed={row.progress.completed}
-                          total={row.progress.total}
-                        />
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_BADGE_STYLES[row.status] ?? 'bg-[#F5F5FA] text-[#8181A5]'}`}
-                        >
-                          {row.status === 'IN_PROGRESS' && (
-                            <Clock className="mr-1 h-3 w-3" />
-                          )}
-                          {row.status === 'COMPLETED' && (
-                            <CheckCircle2 className="mr-1 h-3 w-3" />
-                          )}
-                          {STATUS_LABELS[row.status] ?? row.status}
+          <div className={TABLE_STYLES.wrapper}>
+            <table className={TABLE_STYLES.table}>
+              <thead>
+                <tr className={TABLE_STYLES.header}>
+                  <th className={TABLE_STYLES.headerCell + " whitespace-nowrap"}>{t('employeeName')}</th>
+                  <th className={TABLE_STYLES.headerCell + " whitespace-nowrap"}>{t('hireDate')}</th>
+                  <th className={TABLE_STYLES.headerCell + " whitespace-nowrap"}>{t('buddy')}</th>
+                  <th className={TABLE_STYLES.headerCell + " whitespace-nowrap"}>{t('templateLabel')}</th>
+                  <th className={TABLE_STYLES.headerCell + " whitespace-nowrap w-48"}>{t('progress')}</th>
+                  <th className={TABLE_STYLES.headerCell + " whitespace-nowrap"}>{t('statusLabel')}</th>
+                  <th className={TABLE_STYLES.headerCell + " whitespace-nowrap"}>{t('delayed')}</th>
+                  <th className={TABLE_STYLES.headerCell + " whitespace-nowrap"}>감정</th>
+                  {isHrAdmin && <th className={TABLE_STYLES.headerCell + " whitespace-nowrap w-24"} />}
+                </tr>
+              </thead>
+              <tbody>
+                {data.map((row) => (
+                  <tr
+                    key={row.id}
+                    className={`${TABLE_STYLES.rowClickable} ${row.isDelayed ? 'bg-[#FEF2F2]/30' : ''}`}
+                    onClick={() => router.push(`/onboarding/${row.id}`)}
+                  >
+                    <td className={TABLE_STYLES.cell}>
+                      {row.employee.name}
+                    </td>
+                    <td className={TABLE_STYLES.cellMuted}>
+                      {row.employee.hireDate
+                        ? new Date(row.employee.hireDate).toLocaleDateString(
+                          'ko-KR',
+                        )
+                        : '-'}
+                    </td>
+                    <td className={TABLE_STYLES.cellMuted}>{row.buddy?.name ?? '-'}</td>
+                    <td className={TABLE_STYLES.cellMuted}>{row.template.name}</td>
+                    <td className={TABLE_STYLES.cell}>
+                      <ProgressBar
+                        completed={row.progress.completed}
+                        total={row.progress.total}
+                      />
+                    </td>
+                    <td className={TABLE_STYLES.cell}>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_BADGE_STYLES[row.status] ?? 'bg-[#F5F5FA] text-[#8181A5]'}`}
+                      >
+                        {row.status === 'IN_PROGRESS' && (
+                          <Clock className="mr-1 h-3 w-3" />
+                        )}
+                        {row.status === 'COMPLETED' && (
+                          <CheckCircle2 className="mr-1 h-3 w-3" />
+                        )}
+                        {STATUS_LABELS[row.status] ?? row.status}
+                      </span>
+                    </td>
+                    <td className={TABLE_STYLES.cell}>
+                      {row.isDelayed ? (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-[#FEF2F2] text-[#EF4444]">
+                          <AlertTriangle className="mr-1 h-3 w-3" />
+                          {t('delayed')}
                         </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        {row.isDelayed ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-[#FEF2F2] text-[#EF4444]">
-                            <AlertTriangle className="mr-1 h-3 w-3" />
-                            {t('delayed')}
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-[#DCFCE7] text-[#16A34A]">
-                            {t('normal')}
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        {row.emotionPulse ? (() => {
-                          const cfg = MOOD_CONFIG[row.emotionPulse.mood]
-                          if (!cfg) return <span className="text-xs text-[#8181A5]">-</span>
-                          const Icon = cfg.icon
-                          return (
-                            <span
-                              className={`inline-flex items-center gap-1 text-xs font-medium ${cfg.color}`}
-                              title={cfg.label}
-                            >
-                              <Icon className="h-4 w-4" />
-                              {cfg.label}
-                            </span>
-                          )
-                        })() : (
-                          <span className="text-xs text-[#8181A5]">-</span>
-                        )}
-                      </td>
-                      {isHrAdmin && (
-                        <td className="px-4 py-3">
-                          {row.status !== 'COMPLETED' && (
-                            <button
-                              className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#F0F0F3] text-[#8181A5] hover:bg-[#F5F5FA] transition-colors"
-                              onClick={() => setForceTarget(row)}
-                            >
-                              {t('forceComplete')}
-                            </button>
-                          )}
-                        </td>
+                      ) : (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-[#DCFCE7] text-[#16A34A]">
+                          {t('normal')}
+                        </span>
                       )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                    </td>
+                    <td className={TABLE_STYLES.cell}>
+                      {row.emotionPulse ? (() => {
+                        const cfg = MOOD_CONFIG[row.emotionPulse.mood]
+                        if (!cfg) return <span className="text-xs text-[#8181A5]">-</span>
+                        const Icon = cfg.icon
+                        return (
+                          <span
+                            className={`inline-flex items-center gap-1 text-xs font-medium ${cfg.color}`}
+                            title={cfg.label}
+                          >
+                            <Icon className="h-4 w-4" />
+                            {cfg.label}
+                          </span>
+                        )
+                      })() : (
+                        <span className="text-xs text-[#8181A5]">-</span>
+                      )}
+                    </td>
+                    {isHrAdmin && (
+                      <td className={TABLE_STYLES.cell}>
+                        {row.status !== 'COMPLETED' && (
+                          <button
+                            className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#F0F0F3] text-[#8181A5] hover:bg-[#F5F5FA] transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setForceTarget(row);
+                            }}
+                          >
+                            {t('forceComplete')}
+                          </button>
+                        )}
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
           {/* ─── Pagination ─── */}
