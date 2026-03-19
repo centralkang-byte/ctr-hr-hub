@@ -7,7 +7,7 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound, handlePrismaError } from '@/lib/errors'
+import { badRequest, conflict, notFound, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
@@ -112,11 +112,20 @@ export const DELETE = withPermission(
     const existing = await prisma.requisition.findFirst({
       where: { id, ...companyFilter },
       include: {
-        jobPostings: { select: { id: true }, take: 1 },
+        jobPostings: {
+          select: {
+            id: true,
+            _count: { select: { applications: true } },
+          },
+        },
       },
     })
 
     if (!existing) throw notFound('채용 요청을 찾을 수 없습니다.')
+
+    if (['filled', 'approved'].includes(existing.status)) {
+      throw conflict('이미 진행 중인 요청은 삭제할 수 없습니다.')
+    }
 
     if (!['draft', 'cancelled', 'rejected'].includes(existing.status)) {
       throw badRequest(
@@ -124,12 +133,22 @@ export const DELETE = withPermission(
       )
     }
 
-    if (existing.jobPostings.length > 0) {
-      throw badRequest('연결된 채용 공고가 있어 삭제할 수 없습니다. 먼저 공고를 삭제해주세요.')
+    // 연결된 공고에 지원자가 있으면 삭제 불가
+    const postingsWithApps = existing.jobPostings.filter(
+      (p) => p._count.applications > 0,
+    )
+    if (postingsWithApps.length > 0) {
+      throw conflict('지원자가 있어 삭제할 수 없습니다. 먼저 지원 내역을 처리해주세요.')
     }
 
     try {
+      // 공고가 있지만 지원자 없으면 함께 삭제
+      const postingIds = existing.jobPostings.map((p) => p.id)
+
       await prisma.$transaction([
+        ...(postingIds.length > 0
+          ? [prisma.jobPosting.deleteMany({ where: { id: { in: postingIds } } })]
+          : []),
         prisma.requisitionApproval.deleteMany({ where: { requisitionId: id } }),
         prisma.requisition.delete({ where: { id } }),
       ])
