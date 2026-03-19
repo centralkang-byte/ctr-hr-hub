@@ -49,7 +49,10 @@ export const PUT = withPermission(
 
         try {
             const cycle = await prisma.performanceCycle.findFirst({
-                where: { id: cycleId, companyId: user.companyId },
+                where: {
+                    id: cycleId,
+                    ...(user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }),
+                },
                 select: { id: true, status: true, companyId: true },
             })
 

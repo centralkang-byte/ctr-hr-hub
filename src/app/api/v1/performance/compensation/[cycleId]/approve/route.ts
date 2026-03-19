@@ -38,7 +38,10 @@ export const POST = withPermission(
 
         try {
             const cycle = await prisma.performanceCycle.findFirst({
-                where: { id: cycleId, companyId: user.companyId },
+                where: {
+                    id: cycleId,
+                    ...(user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }),
+                },
                 select: { id: true, status: true, companyId: true, name: true },
             })
 
@@ -53,17 +56,17 @@ export const POST = withPermission(
                 throw badRequest('COMP_REVIEW → 다음 단계 전환이 불가합니다.')
             }
 
-            // Check all employees are processed
-            const totalReviews = await prisma.performanceReview.count({
-                where: { cycleId, companyId: cycle.companyId },
+            // Check all employees with grades are processed
+            const totalWithGrade = await prisma.performanceReview.count({
+                where: { cycleId, companyId: cycle.companyId, finalGrade: { not: null } },
             })
             const processedCount = await prisma.compensationHistory.count({
                 where: { cycleId, companyId: cycle.companyId },
             })
 
-            if (processedCount < totalReviews) {
+            if (processedCount < totalWithGrade) {
                 throw badRequest(
-                    `${totalReviews - processedCount}명의 보상이 미처리 상태입니다. 전체 처리 후 승인해주세요.`,
+                    `${totalWithGrade - processedCount}명의 보상이 미처리 상태입니다. 전체 처리 후 승인해주세요.`,
                 )
             }
 

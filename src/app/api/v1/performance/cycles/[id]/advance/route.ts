@@ -228,28 +228,40 @@ export const PUT = withPermission(
           // Copy manager grades to PerformanceReview
           const reviews = await tx.performanceReview.findMany({
             where: { cycleId: id },
-            select: { id: true, employeeId: true },
+            select: { id: true, employeeId: true, finalGrade: true },
           })
 
           for (const review of reviews) {
+            // Skip reviews that already have finalGrade (set during calibration adjust)
+            if (review.finalGrade) continue
+
             const managerEval = await tx.performanceEvaluation.findFirst({
               where: { cycleId: id, employeeId: review.employeeId, evalType: 'MANAGER' },
-              select: { originalGradeEnum: true, finalGradeEnum: true },
+              select: { originalGradeEnum: true, finalGradeEnum: true, performanceGrade: true },
             })
 
             if (managerEval) {
-              const original = managerEval.originalGradeEnum ?? managerEval.finalGradeEnum
-              const final = managerEval.finalGradeEnum ?? managerEval.originalGradeEnum
+              // Resolve grade: enum fields take priority, fall back to performanceGrade string
+              const validGrades = ['E', 'M_PLUS', 'M', 'B'] as const
+              type PGrade = typeof validGrades[number]
+              const pgAsEnum = validGrades.includes(managerEval.performanceGrade as PGrade)
+                ? (managerEval.performanceGrade as PGrade)
+                : null
 
-              await tx.performanceReview.update({
-                where: { id: review.id },
-                data: {
-                  originalGrade: original,
-                  finalGrade: final,
-                  status: 'CALIBRATED',
-                  calibrationNote: original !== final ? 'Calibration adjusted' : null,
-                },
-              })
+              const original = managerEval.originalGradeEnum ?? managerEval.finalGradeEnum ?? pgAsEnum
+              const final = managerEval.finalGradeEnum ?? managerEval.originalGradeEnum ?? pgAsEnum
+
+              if (original || final) {
+                await tx.performanceReview.update({
+                  where: { id: review.id },
+                  data: {
+                    originalGrade: original,
+                    finalGrade: final,
+                    status: 'CALIBRATED',
+                    calibrationNote: original !== final ? 'Calibration adjusted' : null,
+                  },
+                })
+              }
             }
           }
         }
