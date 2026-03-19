@@ -13,6 +13,29 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { notificationTriggerUpdateSchema } from '@/lib/schemas/notification'
 import type { SessionUser } from '@/types'
 
+// ─── GET — 트리거 개별 조회 ──────────────────────────────
+
+export const GET = withPermission(
+  async (
+    _req: NextRequest,
+    context: { params: Promise<Record<string, string>> },
+    user: SessionUser,
+  ) => {
+    const { id } = await context.params
+
+    const trigger = await prisma.notificationTrigger.findFirst({
+      where: {
+        id,
+        OR: [{ companyId: user.companyId }, { companyId: null }],
+      },
+    })
+    if (!trigger) throw notFound('알림 트리거를 찾을 수 없습니다.')
+
+    return apiSuccess(trigger)
+  },
+  perm(MODULE.SETTINGS, ACTION.VIEW),
+)
+
 // ─── PUT — 트리거 수정 ───────────────────────────────────
 
 export const PUT = withPermission(

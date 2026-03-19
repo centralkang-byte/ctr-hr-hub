@@ -32,10 +32,14 @@ export const GET = withPermission(
       dateTo,
     } = parsed.data
 
+    // SUPER_ADMIN은 전체 법인 감사 로그 조회 가능
+    const companyFilter =
+      user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }
+
     const where: Prisma.AuditLogWhereInput = {
-      companyId: user.companyId,
-      ...(action ? { action: { contains: action } } : {}),
-      ...(resourceType ? { resourceType } : {}),
+      ...companyFilter,
+      ...(action ? { action: { contains: action, mode: 'insensitive' as const } } : {}),
+      ...(resourceType ? { resourceType: { equals: resourceType, mode: 'insensitive' as const } } : {}),
       ...(actorId ? { actorId } : {}),
       ...(sensitivityLevel ? { sensitivityLevel } : {}),
       ...(dateFrom || dateTo
