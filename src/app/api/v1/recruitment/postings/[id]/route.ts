@@ -6,10 +6,11 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound, handlePrismaError } from '@/lib/errors'
+import { badRequest, notFound, conflict, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { getSettingValue } from '@/lib/settings/get-setting'
 import type { SessionUser } from '@/types'
 
 // ─── Update Schema ────────────────────────────────────────
@@ -58,10 +59,16 @@ export const GET = withPermission(
       throw notFound('채용 공고를 찾을 수 없습니다.')
     }
 
+    // Settings-connected: pipeline stages UI 표시 설정
+    const pipelineStages = await getSettingValue('RECRUITMENT', 'pipeline-stages', record.companyId)
+
     return apiSuccess({
       ...record,
       salaryRangeMin: record.salaryRangeMin ? Number(record.salaryRangeMin) : null,
       salaryRangeMax: record.salaryRangeMax ? Number(record.salaryRangeMax) : null,
+      settings: {
+        pipelineStages: pipelineStages ?? null,
+      },
     })
   },
   perm(MODULE.RECRUITMENT, ACTION.VIEW),
@@ -165,6 +172,12 @@ export const DELETE = withPermission(
 
     if (!existing) {
       throw notFound('채용 공고를 찾을 수 없습니다.')
+    }
+
+    // 지원자가 있는 공고는 삭제 불가
+    const appCount = await prisma.application.count({ where: { postingId: id } })
+    if (appCount > 0) {
+      throw conflict(`${appCount}건의 지원이 존재하여 삭제할 수 없습니다.`)
     }
 
     await prisma.jobPosting.update({

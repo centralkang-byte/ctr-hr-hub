@@ -10,6 +10,7 @@ import { badRequest, notFound, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
+import { getPerformanceSetting } from '@/lib/settings/get-setting'
 import type { SessionUser } from '@/types'
 import type { CycleStatus } from '@/generated/prisma/client'
 
@@ -50,7 +51,19 @@ export const GET = withPermission(
       throw notFound('해당 성과 주기를 찾을 수 없습니다.')
     }
 
-    return apiSuccess(cycle)
+    // Settings-connected: grade scale 및 evaluation methodology
+    const [gradeScale, evalMethodology] = await Promise.all([
+      getPerformanceSetting('grade-scale', user.companyId),
+      getPerformanceSetting('evaluation-methodology', user.companyId),
+    ])
+
+    return apiSuccess({
+      ...cycle,
+      settings: {
+        gradeScale: gradeScale ?? null,
+        evaluationMethodology: evalMethodology ?? null,
+      },
+    })
   },
   perm(MODULE.PERFORMANCE, ACTION.VIEW),
 )
