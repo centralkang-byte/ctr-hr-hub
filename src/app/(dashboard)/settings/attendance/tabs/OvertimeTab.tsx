@@ -44,12 +44,12 @@ const DEFAULT_SETTINGS: OvertimeSettings = {
 
 // Country reference rates (from laborConfig, read-only)
 const COUNTRY_RATES = [
-  { flag: '🇰🇷', code: 'CTR-KR', weekday: 1.5, night: 0.5, holiday: 1.5 },
+  { flag: '🇰🇷', code: 'CTR', weekday: 1.5, night: 0.5, holiday: 1.5 },
   { flag: '🇨🇳', code: 'CTR-CN', weekday: 1.5, night: 0, holiday: 3.0 },
   { flag: '🇺🇸', code: 'CTR-US', weekday: 1.5, night: 0, holiday: 1.5 },
   { flag: '🇻🇳', code: 'CTR-VN', weekday: 2.0, night: 0.3, holiday: 3.0 },
   { flag: '🇷🇺', code: 'CTR-RU', weekday: 1.5, night: 0.2, holiday: 2.0 },
-  { flag: '🇲🇽', code: 'CTR-MX', weekday: 2.0, night: 0, holiday: 3.0 },
+  // CTR-MX removed (→ CTR-US Location)
   { flag: '🇪🇺', code: 'CTR-EU', weekday: 1.5, night: 0, holiday: 2.0 },
 ] as const
 

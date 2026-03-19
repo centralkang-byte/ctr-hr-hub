@@ -3,7 +3,7 @@
 // prisma/seeds/02-employees.ts
 //
 // 목표:
-//   CTR-KR: 70명 신규 (CTR-KR-3001 ~ CTR-KR-3070)
+//   CTR: 70명 신규 (CTR-KR-3001 ~ CTR-KR-3070)
 //   CTR-CN: 18명 신규 (CTR-CN-1001 ~ CTR-CN-1018) + ADMIN/ENG 부서 + 포지션
 //
 // 페르소나:
@@ -251,7 +251,7 @@ export async function seedNewEmployees(prisma: PrismaClient): Promise<void> {
   console.log('\n🧑‍💼 Session 1: Seeding new employees (KR +70, CN +18)...\n')
 
   // ── 컨텍스트 조회 ──────────────────────────────────────────
-  const ctrKrId   = deterministicUUID('company', 'CTR-KR')
+  const ctrKrId   = deterministicUUID('company', 'CTR')
   const ctrCnId   = deterministicUUID('company', 'CTR-CN')
   const employeeRole = await prisma.role.findFirst({ where: { code: 'EMPLOYEE' } })
   const managerRole  = await prisma.role.findFirst({ where: { code: 'MANAGER' } })
@@ -261,10 +261,10 @@ export async function seedNewEmployees(prisma: PrismaClient): Promise<void> {
   const employeeRoleId = employeeRole.id
   const managerRoleId  = managerRole.id
 
-  // 그레이드 맵 (CTR-KR)
+  // 그레이드 맵 (CTR)
   const krGrade = (code: string) => deterministicUUID('grade', `CTR-KR:${code}`)
 
-  // CTR-KR 직무 카테고리
+  // CTR 직무 카테고리
   const krProductionCatId = deterministicUUID('jobcat', 'CTR-KR:PRODUCTION')
   const krOfficeCatId     = deterministicUUID('jobcat', 'CTR-KR:OFFICE')
   const krRndCatId        = deterministicUUID('jobcat', 'CTR-KR:R_AND_D')
@@ -352,7 +352,7 @@ export async function seedNewEmployees(prisma: PrismaClient): Promise<void> {
 
   console.log(`  ✅ ${cnNewDeptPositions.length} new CTR-CN positions`)
 
-  // ── STEP 3: CTR-KR 신규 직원 70명 ────────────────────────
+  // ── STEP 3: CTR 신규 직원 70명 ────────────────────────
   console.log('📌 Seeding CTR-KR new employees (70)...')
   let krCount = 0
   let krRoleCount = 0

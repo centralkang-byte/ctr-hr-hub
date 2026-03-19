@@ -3,7 +3,7 @@
 // prisma/seeds/14-succession.ts
 //
 // Creates:
-//   5 SuccessionPlans (CTR-KR 3, CTR-CN 2)
+//   5 SuccessionPlans (CTR 3, CTR-CN 2)
 //   ~10 SuccessionCandidates
 // ================================================================
 
@@ -39,7 +39,7 @@ const PLANS: PlanDef[] = [
     {
         key: 'KR-PROD-HEAD',
         positionTitle: '생산본부장',
-        companyCode: 'CTR-KR',
+        companyCode: 'CTR',
         deptCode: 'MFG',
         criticality: 'CRITICAL',
         status: 'PLAN_ACTIVE',
@@ -54,7 +54,7 @@ const PLANS: PlanDef[] = [
     {
         key: 'KR-QA-LEAD',
         positionTitle: '품질관리팀장',
-        companyCode: 'CTR-KR',
+        companyCode: 'CTR',
         deptCode: 'QA',
         criticality: 'HIGH',
         status: 'PLAN_ACTIVE',
@@ -68,7 +68,7 @@ const PLANS: PlanDef[] = [
     {
         key: 'KR-RND-CENTER',
         positionTitle: 'R&D센터장',
-        companyCode: 'CTR-KR',
+        companyCode: 'CTR',
         deptCode: 'RANDD',
         criticality: 'HIGH',
         status: 'PLAN_DRAFT',
@@ -112,7 +112,7 @@ const PLANS: PlanDef[] = [
 export async function seedSuccession(prisma: PrismaClient): Promise<void> {
     console.log('\n🏆 Session B.2: Seeding succession planning data...\n')
 
-    const krCo = await prisma.company.findFirst({ where: { code: 'CTR-KR' } })
+    const krCo = await prisma.company.findFirst({ where: { code: 'CTR' } })
     const cnCo = await prisma.company.findFirst({ where: { code: 'CTR-CN' } })
     if (!krCo) { console.error('  ❌ CTR-KR not found'); return }
     const krId = krCo.id

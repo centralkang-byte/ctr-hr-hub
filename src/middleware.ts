@@ -145,6 +145,37 @@ function applySecurityHeaders(response: NextResponse): NextResponse {
   return response
 }
 
+// ─── Login Rate Limit (in-memory sliding window) ────────────
+// Applied at middleware level so it returns 429 BEFORE NextAuth handles the request.
+// NextAuth's own callbacks cannot return custom HTTP status codes.
+const loginAttemptsByIp = new Map<string, number[]>()
+const LOGIN_RATE_WINDOW_MS = 60_000 // 1 minute
+const LOGIN_RATE_MAX = 10
+
+function checkLoginRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const windowStart = now - LOGIN_RATE_WINDOW_MS
+  let timestamps = loginAttemptsByIp.get(ip)
+  if (!timestamps) {
+    timestamps = []
+    loginAttemptsByIp.set(ip, timestamps)
+  }
+  // Remove expired entries
+  const filtered = timestamps.filter((t) => t > windowStart)
+  filtered.push(now)
+  loginAttemptsByIp.set(ip, filtered)
+
+  // Probabilistic cleanup (1% chance)
+  if (Math.random() < 0.01) {
+    const cutoff = now - LOGIN_RATE_WINDOW_MS * 2
+    for (const [k, v] of loginAttemptsByIp) {
+      if (v.every((t) => t < cutoff)) loginAttemptsByIp.delete(k)
+    }
+  }
+
+  return filtered.length > LOGIN_RATE_MAX
+}
+
 // ─── Middleware ──────────────────────────────────────────────
 
 export async function middleware(request: NextRequest) {
@@ -163,6 +194,29 @@ export async function middleware(request: NextRequest) {
           ),
         )
       }
+    }
+  }
+
+  // 0b. Login rate limit — POST to credentials callback only
+  if (
+    pathname === '/api/auth/callback/credentials' &&
+    request.method === 'POST'
+  ) {
+    const ip =
+      request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+      'unknown'
+    if (checkLoginRateLimit(ip)) {
+      return applySecurityHeaders(
+        NextResponse.json(
+          {
+            error: {
+              code: 'RATE_LIMITED',
+              message: '로그인 시도가 너무 많습니다. 1분 후 다시 시도해주세요.',
+            },
+          },
+          { status: 429, headers: { 'Retry-After': '60' } },
+        ),
+      )
     }
   }
 

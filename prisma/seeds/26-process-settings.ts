@@ -218,12 +218,12 @@ const SETTINGS: SettingDef[] = [
     description: '법인별 급여 승인 체계',
     settingValue: {
       chains: {
-        'CTR-KR': ['HR_MANAGER', 'CFO'],
+        'CTR': ['HR_MANAGER', 'CFO'],
         'CTR-CN': ['GENERAL_MANAGER'],
         'CTR-US': ['CONTROLLER'],
         'CTR-RU': ['COUNTRY_HEAD'],
         'CTR-VN': ['COUNTRY_HEAD'],
-        'CTR-MX': ['COUNTRY_HEAD'],
+        'CTR-EU': ['COUNTRY_HEAD'],
         DEFAULT: ['HR_ADMIN'],
       },
     },
@@ -657,7 +657,7 @@ interface CompanyLaborSetting {
 const COMPANY_LABOR_SETTINGS: CompanyLaborSetting[] = [
   // ── Work Hour Limits ────────────────────────────────────
   {
-    companyCode: 'CTR-KR',
+    companyCode: 'CTR',
     settingType: 'ATTENDANCE',
     settingKey: 'work-hour-limits',
     settingValue: {
@@ -701,17 +701,6 @@ const COMPANY_LABOR_SETTINGS: CompanyLaborSetting[] = [
     description: 'Vietnam: 48h standard, 12h OT/week cap',
   },
   {
-    companyCode: 'CTR-MX',
-    settingType: 'ATTENDANCE',
-    settingKey: 'work-hour-limits',
-    settingValue: {
-      maxWeeklyHours: 48,
-      standardWeeklyHours: 48,
-      maxOvertimeHours: 9,
-    },
-    description: 'Mexico: 48h standard, 9h OT/week cap per LFT',
-  },
-  {
     companyCode: 'CTR-RU',
     settingType: 'ATTENDANCE',
     settingKey: 'work-hour-limits',
@@ -735,7 +724,7 @@ const COMPANY_LABOR_SETTINGS: CompanyLaborSetting[] = [
   },
   // ── Minimum Wage ────────────────────────────────────────
   {
-    companyCode: 'CTR-KR',
+    companyCode: 'CTR',
     settingType: 'ATTENDANCE',
     settingKey: 'min-wage',
     settingValue: {
@@ -782,17 +771,6 @@ const COMPANY_LABOR_SETTINGS: CompanyLaborSetting[] = [
     description: 'Vietnam minimum wage 2024 Region I (22,500 VND/hr)',
   },
   {
-    companyCode: 'CTR-MX',
-    settingType: 'ATTENDANCE',
-    settingKey: 'min-wage',
-    settingValue: {
-      hourlyWage: 33.24,
-      currency: 'MXN',
-      effectiveYear: 2025,
-    },
-    description: 'Mexico minimum wage 2025 (33.24 MXN/hr)',
-  },
-  {
     companyCode: 'CTR-RU',
     settingType: 'ATTENDANCE',
     settingKey: 'min-wage',
@@ -818,7 +796,7 @@ const COMPANY_LABOR_SETTINGS: CompanyLaborSetting[] = [
   },
   // ── Probation Rules (S-Fix-4) ─────────────────────────
   {
-    companyCode: 'CTR-KR',
+    companyCode: 'CTR',
     settingType: 'ORGANIZATION',
     settingKey: 'probation-rules',
     settingValue: {
@@ -867,18 +845,6 @@ const COMPANY_LABOR_SETTINGS: CompanyLaborSetting[] = [
     description: 'Vietnam: 6개월 수습 (Bộ luật Lao động Art. 25)',
   },
   {
-    companyCode: 'CTR-MX',
-    settingType: 'ORGANIZATION',
-    settingKey: 'probation-rules',
-    settingValue: {
-      defaultMonths: 3,
-      maxMonths: 3,
-      leaveEligibleAfterMonths: 3,
-      terminationNoticeDays: 15,
-    },
-    description: 'Mexico: 3개월 수습 (LFT Art. 39-A)',
-  },
-  {
     companyCode: 'CTR-RU',
     settingType: 'ORGANIZATION',
     settingKey: 'probation-rules',
@@ -921,22 +887,9 @@ const COMPANY_LABOR_SETTINGS: CompanyLaborSetting[] = [
     },
     description: 'Poland: ZUS + Zdrowotna + PIT + PPK (2025)',
   },
-  // ── MX Aguinaldo (S-Fix-6) ──────────────────────────
-  {
-    companyCode: 'CTR-MX',
-    settingType: 'PAYROLL',
-    settingKey: 'aguinaldo-config',
-    settingValue: {
-      daysEntitled: 15,
-      proportionalForPartialYear: true,
-      taxExemptDays: 30,
-      umaDaily: 113.14,
-    },
-    description: 'Mexico: Aguinaldo LFT Art. 87 — 15 day year-end bonus',
-  },
   // ── Overtime Rules (S-Fix-3) ──────────────────────────
   {
-    companyCode: 'CTR-KR',
+    companyCode: 'CTR',
     settingType: 'ATTENDANCE',
     settingKey: 'overtime-rules',
     settingValue: {
@@ -982,18 +935,6 @@ const COMPANY_LABOR_SETTINGS: CompanyLaborSetting[] = [
       nightEndHour: 6,
     },
     description: 'Vietnam: weekday2.0x, weekend2.0x, holiday3.0x, night+0.3x',
-  },
-  {
-    companyCode: 'CTR-MX',
-    settingType: 'ATTENDANCE',
-    settingKey: 'overtime-rules',
-    settingValue: {
-      requiresApproval: true,
-      multipliers: { weekdayOt: 2.0, weekend: 2.0, holiday: 3.0, night: 0 },
-      nightStartHour: 22,
-      nightEndHour: 6,
-    },
-    description: 'Mexico: LFT first 9h 2.0x, after 3.0x, weekend 2.0x',
   },
   {
     companyCode: 'CTR-RU',

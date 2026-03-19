@@ -41,11 +41,11 @@ interface Props {
 }
 
 const COMPANY_LIST = [
-    { id: 'CTR-KR', name: 'CTR-KR (한국)' },
+    { id: 'CTR', name: 'CTR (한국)' },
     { id: 'CTR-CN', name: 'CTR-CN (중국)' },
     { id: 'CTR-US', name: 'CTR-US (미국)' },
     { id: 'CTR-VN', name: 'CTR-VN (베트남)' },
-    { id: 'CTR-MX', name: 'CTR-MX (멕시코)' },
+    { id: 'CTR-EU', name: 'CTR-EU (폴란드)' },
     { id: 'CTR-RU', name: 'CTR-RU (러시아)' },
 ]
 

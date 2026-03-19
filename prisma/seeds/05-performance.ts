@@ -178,7 +178,7 @@ export async function seedPerformance(prisma: PrismaClient): Promise<void> {
   console.log('\n🎯 Session 3: Seeding performance cycles, goals, evaluations...\n')
 
   // Company IDs
-  const krCo = await prisma.company.findFirst({ where: { code: 'CTR-KR' } })
+  const krCo = await prisma.company.findFirst({ where: { code: 'CTR' } })
   const cnCo = await prisma.company.findFirst({ where: { code: 'CTR-CN' } })
   if (!krCo) { console.error('  ❌ CTR-KR not found'); return }
   const krId = krCo.id

@@ -334,7 +334,7 @@ export async function seedAttendance(prisma: PrismaClient): Promise<void> {
   })
 
   // Separate KR and CN (only process these two companies)
-  const krEmps = assignments.filter(a => a.company.code === 'CTR-KR' && a.status !== 'TERMINATED')
+  const krEmps = assignments.filter(a => a.company.code === 'CTR' && a.status !== 'TERMINATED')
   const cnEmps = assignments.filter(a => a.company.code === 'CTR-CN' && a.status !== 'TERMINATED')
 
   console.log(`  KR employees to process: ${krEmps.length}`)
@@ -344,7 +344,7 @@ export async function seedAttendance(prisma: PrismaClient): Promise<void> {
   const records: AttRec[] = []
   let empIdx = 0
 
-  // ── CTR-KR attendance ────────────────────────────────────
+  // ── CTR attendance ────────────────────────────────────
   for (const emp of krEmps) {
     const empNo  = emp.employee.employeeNo
     const persona = KR_PERSONA_MAP[empNo] ?? 'P1' // default to P1

@@ -2,7 +2,7 @@
 // CTR HR Hub — Seed Data: Session B.1 — Year-End Settlement (Korea)
 // prisma/seeds/13-year-end.ts
 //
-// Creates (2025 tax year, CTR-KR only):
+// Creates (2025 tax year, CTR only):
 //   ~30 YearEndSettlement (COMPLETED 70%, IN_PROGRESS 20%, NOT_STARTED 10%)
 //   ~90 YearEndDeduction (2~4 per settlement)
 //   ~30 YearEndDependent (0~3 per settlement)
@@ -68,7 +68,7 @@ function calcIncomeTax(taxableBase: bigint): bigint {
 export async function seedYearEnd(prisma: PrismaClient): Promise<void> {
     console.log('\n📋 Session B.1: Seeding year-end settlement data (2025 tax year)...\n')
 
-    const krCo = await prisma.company.findFirst({ where: { code: 'CTR-KR' } })
+    const krCo = await prisma.company.findFirst({ where: { code: 'CTR' } })
     if (!krCo) { console.error('  ❌ CTR-KR not found'); return }
     const krId = krCo.id
 

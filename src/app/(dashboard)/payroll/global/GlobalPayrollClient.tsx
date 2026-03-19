@@ -53,7 +53,7 @@ interface GlobalData {
 }
 
 const CHART_COLORS = ['#5E81F4', '#059669', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
-const FLAG: Record<string, string> = { 'CTR-KR': '🇰🇷', 'CTR-CN': '🇨🇳', 'CTR-US': '🇺🇸', 'CTR-VN': '🇻🇳', 'CTR-MX': '🇲🇽', 'CTR-RU': '🇷🇺' }
+const FLAG: Record<string, string> = { 'CTR': '🇰🇷', 'CTR-CN': '🇨🇳', 'CTR-US': '🇺🇸', 'CTR-VN': '🇻🇳', 'CTR-EU': '🇵🇱', 'CTR-RU': '🇷🇺' }
 
 const fmt = (n: number) => n.toLocaleString('ko-KR', { maximumFractionDigits: 0 })
 const fmtBillion = (n: number) => {

@@ -3,7 +3,7 @@
 // prisma/seeds/04-leave.ts
 //
 // Creates:
-//   1. LeavePolicy (CTR-KR: annual/sick/special; CTR-CN: annual/sick)
+//   1. LeavePolicy (CTR: annual/sick/special; CTR-CN: annual/sick)
 //   2. EmployeeLeaveBalance (2025 + 2026 per employee per policy)
 //   3. LeaveRequest (페르소나별 패턴, mixed statuses)
 // ================================================================
@@ -165,7 +165,7 @@ export async function seedLeave(prisma: PrismaClient): Promise<void> {
   console.log('\n🏖  Session 2: Seeding leave policies, balances, requests...\n')
 
   // ── 1. Company IDs ────────────────────────────────────────
-  const krCompany = await prisma.company.findFirst({ where: { code: 'CTR-KR' } })
+  const krCompany = await prisma.company.findFirst({ where: { code: 'CTR' } })
   const cnCompany = await prisma.company.findFirst({ where: { code: 'CTR-CN' } })
   if (!krCompany || !cnCompany) {
     console.error('  ❌ CTR-KR or CTR-CN company not found')

@@ -193,7 +193,7 @@ export async function seedQASkillsTrainingPulse(prisma: PrismaClient) {
   // ──────────────────────────────────────────────────────────────────
   console.log('\n📌 PART B: Training Courses + Enrollments...')
 
-  const ctrKr = await prisma.company.findFirst({ where: { code: 'CTR-KR' }, select: { id: true } })
+  const ctrKr = await prisma.company.findFirst({ where: { code: 'CTR' }, select: { id: true } })
   const ctrKrId = ctrKr?.id ?? null
 
   const courses = [
@@ -387,7 +387,7 @@ export async function seedQASkillsTrainingPulse(prisma: PrismaClient) {
     console.log('  ⚠️  CTR-KR not found, skipping pulse surveys')
   } else {
     const hrAdmin = await prisma.employee.findFirst({
-      where: { assignments: { some: { isPrimary: true, endDate: null, company: { code: 'CTR-KR' } } } },
+      where: { assignments: { some: { isPrimary: true, endDate: null, company: { code: 'CTR' } } } },
       select: { id: true },
     })
 

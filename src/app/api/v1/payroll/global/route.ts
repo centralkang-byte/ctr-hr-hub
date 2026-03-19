@@ -15,7 +15,7 @@ const querySchema = z.object({
   month: z.coerce.number().int().min(1).max(12),
 })
 
-const COMPANY_ORDER = ['CTR-KR', 'CTR-CN', 'CTR-US', 'CTR-VN', 'CTR-MX', 'CTR-RU']
+const COMPANY_ORDER = ['CTR', 'CTR-CN', 'CTR-US', 'CTR-VN', 'CTR-EU', 'CTR-RU']
 
 export const GET = withPermission(
   async (req: NextRequest) => {

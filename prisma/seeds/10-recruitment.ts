@@ -3,7 +3,7 @@
 // prisma/seeds/10-recruitment.ts
 //
 // Creates:
-//   STEP A: 6 JobPostings (CTR-KR 4, CTR-CN 2)
+//   STEP A: 6 JobPostings (CTR 4, CTR-CN 2)
 //   STEP B: ~31 Applicants
 //   STEP C: ~31 Applications spread across pipeline stages
 // ================================================================
@@ -69,7 +69,7 @@ const POSTINGS: PostingDef[] = [
         title: '생산기술 엔지니어',
         description: '생산공정 최적화 및 품질 향상을 위한 생산기술 엔지니어를 모집합니다.',
         requirements: '기계공학 또는 관련 학과 학사 이상, 생산설비 경험 3년 이상 우대',
-        companyCode: 'CTR-KR',
+        companyCode: 'CTR',
         deptCode: 'MFG',
         status: 'OPEN',
         employmentType: 'FULL_TIME',
@@ -84,7 +84,7 @@ const POSTINGS: PostingDef[] = [
         title: '품질관리 담당자',
         description: '제품 품질 검사 및 품질 관리 시스템 운영을 담당할 인재를 모집합니다.',
         requirements: 'ISO 9001 관련 경험, 품질검사 실무 2년 이상',
-        companyCode: 'CTR-KR',
+        companyCode: 'CTR',
         deptCode: 'QA',
         status: 'OPEN',
         employmentType: 'FULL_TIME',
@@ -99,7 +99,7 @@ const POSTINGS: PostingDef[] = [
         title: '경영지원 사원',
         description: '경영지원본부 업무를 지원할 신입/경력 사원을 모집합니다.',
         requirements: '경영학 관련 학과 졸업, MS Office 활용 능숙',
-        companyCode: 'CTR-KR',
+        companyCode: 'CTR',
         deptCode: 'HR',
         status: 'OPEN',
         employmentType: 'FULL_TIME',
@@ -114,7 +114,7 @@ const POSTINGS: PostingDef[] = [
         title: 'R&D 연구원',
         description: '신소재 및 공정 연구개발 담당 연구원을 모집합니다.',
         requirements: '이공계 석사 이상, 연구개발 경험 2년 이상 우대',
-        companyCode: 'CTR-KR',
+        companyCode: 'CTR',
         deptCode: 'RANDD',
         status: 'CLOSED',
         employmentType: 'FULL_TIME',
@@ -179,7 +179,7 @@ export async function seedRecruitment(prisma: PrismaClient): Promise<void> {
     console.log('\n🎯 Session A: Seeding recruitment data...\n')
 
     // ── Company IDs ──────────────────────────────────────────
-    const krCo = await prisma.company.findFirst({ where: { code: 'CTR-KR' } })
+    const krCo = await prisma.company.findFirst({ where: { code: 'CTR' } })
     const cnCo = await prisma.company.findFirst({ where: { code: 'CTR-CN' } })
     if (!krCo) { console.error('  ❌ CTR-KR not found'); return }
     const krId = krCo.id

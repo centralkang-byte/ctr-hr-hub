@@ -3,7 +3,7 @@
 // prisma/seeds/06-payroll.ts
 //
 // Creates:
-//   CTR-KR: 6 PayrollRuns × ~80 employees = ~480 PayrollItems
+//   CTR: 6 PayrollRuns × ~80 employees = ~480 PayrollItems
 //   Period: 2025-09 ~ 2026-02
 //   Uses createMany + skipDuplicates for idempotency
 // ================================================================
@@ -143,7 +143,7 @@ export async function seedPayroll(prisma: PrismaClient): Promise<void> {
   console.log('\n💰 Session 3: Seeding payroll (KR 6 months + CN extension)...\n')
 
   // Company IDs
-  const krCo = await prisma.company.findFirst({ where: { code: 'CTR-KR' } })
+  const krCo = await prisma.company.findFirst({ where: { code: 'CTR' } })
   const cnCo = await prisma.company.findFirst({ where: { code: 'CTR-CN' } })
   if (!krCo) { console.error('  ❌ CTR-KR not found'); return }
   const krId = krCo.id
@@ -173,7 +173,7 @@ export async function seedPayroll(prisma: PrismaClient): Promise<void> {
   let krRunCount = 0
   let krItemCount = 0
 
-  // ── CTR-KR Payroll ───────────────────────────────────────
+  // ── CTR Payroll ───────────────────────────────────────
   for (const mo of KR_MONTHS) {
     const periodStart = new Date(`${mo.yearMonth}-01`)
     const periodEnd   = new Date(mo.year, mo.month, 0) // last day of month

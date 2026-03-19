@@ -112,12 +112,7 @@ export const DELETE = withPermission(
     const existing = await prisma.requisition.findFirst({
       where: { id, ...companyFilter },
       include: {
-        jobPostings: {
-          select: {
-            id: true,
-            _count: { select: { applications: true } },
-          },
-        },
+        jobPostings: { select: { id: true } },
       },
     })
 
@@ -133,12 +128,17 @@ export const DELETE = withPermission(
       )
     }
 
-    // 연결된 공고에 지원자가 있으면 삭제 불가
-    const postingsWithApps = existing.jobPostings.filter(
-      (p) => p._count.applications > 0,
-    )
-    if (postingsWithApps.length > 0) {
-      throw conflict('지원자가 있어 삭제할 수 없습니다. 먼저 지원 내역을 처리해주세요.')
+    // 연결된 공고에 지원자가 있으면 삭제 불가 (explicit count query for reliability)
+    if (existing.jobPostings.length > 0) {
+      const postingIds = existing.jobPostings.map((p) => p.id)
+      const applicationCount = await prisma.application.count({
+        where: { postingId: { in: postingIds } },
+      })
+      if (applicationCount > 0) {
+        throw conflict(
+          `지원자(${applicationCount}명)가 있어 삭제할 수 없습니다. 먼저 지원 내역을 처리해주세요.`,
+        )
+      }
     }
 
     try {

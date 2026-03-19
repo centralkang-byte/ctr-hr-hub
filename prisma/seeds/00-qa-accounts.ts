@@ -3,14 +3,14 @@
 // prisma/seeds/00-qa-accounts.ts
 //
 // Accounts:
-//   1. super@ctr.co.kr      SUPER_ADMIN  CTR-HQ
-//   2. hr@ctr.co.kr         HR_ADMIN     CTR-KR  (existing — upsert)
+//   1. super@ctr.co.kr      SUPER_ADMIN  CTR-HOLD
+//   2. hr@ctr.co.kr         HR_ADMIN     CTR  (existing — upsert)
 //   3. hr@ctr-cn.com        HR_ADMIN     CTR-CN
-//   4. manager@ctr.co.kr    MANAGER      CTR-KR  QA Team A (existing — upsert)
-//   5. manager2@ctr.co.kr   MANAGER      CTR-KR  QA Team B
-//   6. employee-a@ctr.co.kr EMPLOYEE     CTR-KR  QA Team A → reports to M1
-//   7. employee-b@ctr.co.kr EMPLOYEE     CTR-KR  QA Team A → reports to M1
-//   8. employee-c@ctr.co.kr EMPLOYEE     CTR-KR  QA Team B → reports to M2
+//   4. manager@ctr.co.kr    MANAGER      CTR  QA Team A (existing — upsert)
+//   5. manager2@ctr.co.kr   MANAGER      CTR  QA Team B
+//   6. employee-a@ctr.co.kr EMPLOYEE     CTR  QA Team A → reports to M1
+//   7. employee-b@ctr.co.kr EMPLOYEE     CTR  QA Team A → reports to M1
+//   8. employee-c@ctr.co.kr EMPLOYEE     CTR  QA Team B → reports to M2
 //
 // Idempotent: uses upsert throughout. Safe to re-run.
 // ================================================================
@@ -47,14 +47,14 @@ interface QAAccount {
 }
 
 const QA_ACCOUNTS: QAAccount[] = [
-  { email: 'super@ctr.co.kr',      name: '최상우',   nameEn: 'Sangwoo Choi',   employeeNo: 'CTR-QA-0001', roleCode: 'SUPER_ADMIN', companyCode: 'CTR-HQ', deptCode: null,      gradeCode: 'G1', positionCode: null },
-  { email: 'hr@ctr.co.kr',         name: '한지영',   nameEn: 'Jiyoung Han',    employeeNo: 'CTR-KR-0001', roleCode: 'HR_ADMIN',    companyCode: 'CTR-KR', deptCode: null,      gradeCode: 'G4', positionCode: null },
+  { email: 'super@ctr.co.kr',      name: '최상우',   nameEn: 'Sangwoo Choi',   employeeNo: 'CTR-QA-0001', roleCode: 'SUPER_ADMIN', companyCode: 'CTR-HOLD', deptCode: null,      gradeCode: 'G1', positionCode: null },
+  { email: 'hr@ctr.co.kr',         name: '한지영',   nameEn: 'Jiyoung Han',    employeeNo: 'CTR-KR-0001', roleCode: 'HR_ADMIN',    companyCode: 'CTR', deptCode: null,      gradeCode: 'G4', positionCode: null },
   { email: 'hr@ctr-cn.com',        name: '陈美玲',   nameEn: 'Meiling Chen',   employeeNo: 'CTR-QA-0003', roleCode: 'HR_ADMIN',    companyCode: 'CTR-CN', deptCode: 'ADMIN',   gradeCode: 'G4', positionCode: null },
-  { email: 'manager@ctr.co.kr',    name: '박준혁',   nameEn: 'Junhyuk Park',   employeeNo: 'CTR-KR-0002', roleCode: 'MANAGER',     companyCode: 'CTR-KR', deptCode: 'QA-TEAM-A', gradeCode: 'G3', positionCode: 'CTR-KR-QA-TEAM-A-MGR' },
-  { email: 'manager2@ctr.co.kr',   name: '김서연',   nameEn: 'Seoyeon Kim',    employeeNo: 'CTR-QA-0005', roleCode: 'MANAGER',     companyCode: 'CTR-KR', deptCode: 'QA-TEAM-B', gradeCode: 'G3', positionCode: 'CTR-KR-QA-TEAM-B-MGR' },
-  { email: 'employee-a@ctr.co.kr', name: '이민준',   nameEn: 'Minjun Lee',     employeeNo: 'CTR-QA-0006', roleCode: 'EMPLOYEE',    companyCode: 'CTR-KR', deptCode: 'QA-TEAM-A', gradeCode: 'G6', positionCode: 'CTR-KR-QA-TEAM-A-01' },
-  { email: 'employee-b@ctr.co.kr', name: '정다은',   nameEn: 'Daeun Jung',     employeeNo: 'CTR-QA-0007', roleCode: 'EMPLOYEE',    companyCode: 'CTR-KR', deptCode: 'QA-TEAM-A', gradeCode: 'G6', positionCode: 'CTR-KR-QA-TEAM-A-02' },
-  { email: 'employee-c@ctr.co.kr', name: '송현우',   nameEn: 'Hyunwoo Song',   employeeNo: 'CTR-QA-0008', roleCode: 'EMPLOYEE',    companyCode: 'CTR-KR', deptCode: 'QA-TEAM-B', gradeCode: 'G6', positionCode: 'CTR-KR-QA-TEAM-B-01' },
+  { email: 'manager@ctr.co.kr',    name: '박준혁',   nameEn: 'Junhyuk Park',   employeeNo: 'CTR-KR-0002', roleCode: 'MANAGER',     companyCode: 'CTR', deptCode: 'QA-TEAM-A', gradeCode: 'G3', positionCode: 'CTR-KR-QA-TEAM-A-MGR' },
+  { email: 'manager2@ctr.co.kr',   name: '김서연',   nameEn: 'Seoyeon Kim',    employeeNo: 'CTR-QA-0005', roleCode: 'MANAGER',     companyCode: 'CTR', deptCode: 'QA-TEAM-B', gradeCode: 'G3', positionCode: 'CTR-KR-QA-TEAM-B-MGR' },
+  { email: 'employee-a@ctr.co.kr', name: '이민준',   nameEn: 'Minjun Lee',     employeeNo: 'CTR-QA-0006', roleCode: 'EMPLOYEE',    companyCode: 'CTR', deptCode: 'QA-TEAM-A', gradeCode: 'G6', positionCode: 'CTR-KR-QA-TEAM-A-01' },
+  { email: 'employee-b@ctr.co.kr', name: '정다은',   nameEn: 'Daeun Jung',     employeeNo: 'CTR-QA-0007', roleCode: 'EMPLOYEE',    companyCode: 'CTR', deptCode: 'QA-TEAM-A', gradeCode: 'G6', positionCode: 'CTR-KR-QA-TEAM-A-02' },
+  { email: 'employee-c@ctr.co.kr', name: '송현우',   nameEn: 'Hyunwoo Song',   employeeNo: 'CTR-QA-0008', roleCode: 'EMPLOYEE',    companyCode: 'CTR', deptCode: 'QA-TEAM-B', gradeCode: 'G6', positionCode: 'CTR-KR-QA-TEAM-B-01' },
 ]
 
 export async function seedQAAccounts(prisma: PrismaClient) {
@@ -65,8 +65,8 @@ export async function seedQAAccounts(prisma: PrismaClient) {
   const companyMap: Record<string, string> = {}
   for (const c of companies) companyMap[c.code] = c.id
 
-  const krId = companyMap['CTR-KR']
-  const hqId = companyMap['CTR-HQ']
+  const krId = companyMap['CTR']
+  const hqId = companyMap['CTR-HOLD']
   const cnId = companyMap['CTR-CN']
   if (!krId || !hqId || !cnId) {
     throw new Error(`Missing company: CTR-KR=${krId}, CTR-HQ=${hqId}, CTR-CN=${cnId}`)
@@ -98,7 +98,7 @@ export async function seedQAAccounts(prisma: PrismaClient) {
   const officeCatMap: Record<string, string> = {} // companyId -> catId
   for (const c of cats) officeCatMap[c.companyId] = c.id
 
-  // ── Create QA Team A & QA Team B departments under CTR-KR ──
+  // ── Create QA Team A & QA Team B departments under CTR ──
   const qaTeamAId = deterministicUUID('qa-dept', 'QA-TEAM-A')
   const qaTeamBId = deterministicUUID('qa-dept', 'QA-TEAM-B')
 
@@ -181,12 +181,12 @@ export async function seedQAAccounts(prisma: PrismaClient) {
       deptId = deptMap[`${acc.companyCode}:${acc.deptCode}`]
     }
 
-    // Resolve grade — use company-specific, fallback to CTR-KR
+    // Resolve grade — use company-specific, fallback to CTR
     const gradeId = gradeMap[`${acc.companyCode}:${acc.gradeCode}`] ?? gradeMap[`CTR-KR:${acc.gradeCode}`]
     const catId = officeCatMap[compId] ?? officeCatMap[krId]
 
     // For HQ, get HQ dept
-    if (acc.companyCode === 'CTR-HQ' && !deptId) {
+    if (acc.companyCode === 'CTR-HOLD' && !deptId) {
       const hqDept = await prisma.department.findFirst({ where: { companyId: hqId } })
       if (hqDept) deptId = hqDept.id
     }

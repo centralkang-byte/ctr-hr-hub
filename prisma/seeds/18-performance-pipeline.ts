@@ -26,7 +26,7 @@ export async function seedPerformancePipeline(prisma: PrismaClient) {
     console.log('\n🎯 GP#4: Seeding performance pipeline foundation...\n')
 
     // ─── Find companies ────────────────────────────────────
-    const krCo = await prisma.company.findFirst({ where: { code: 'CTR-KR' } })
+    const krCo = await prisma.company.findFirst({ where: { code: 'CTR' } })
     const usCo = await prisma.company.findFirst({ where: { code: 'CTR-US' } })
     if (!krCo) {
         console.log('  ⚠️  CTR-KR not found, skipping GP#4 seed')

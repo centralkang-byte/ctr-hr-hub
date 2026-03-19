@@ -39,17 +39,7 @@ const COMPANY_LEAVE_TYPES: CompanyLeaveTypes[] = [
       { code: 'unpaid', name: 'Nghỉ không lương', nameEn: 'Unpaid Leave', isPaid: false, allowHalfDay: true, requiresProof: false, displayOrder: 7 },
     ],
   },
-  // ── CTR-MX: Mexico statutory leave types ──────────────────
-  {
-    companyCode: 'CTR-MX',
-    types: [
-      { code: 'annual', name: 'Vacaciones', nameEn: 'Annual Leave', isPaid: true, allowHalfDay: true, requiresProof: false, displayOrder: 1 },
-      { code: 'maternity', name: 'Licencia de maternidad', nameEn: 'Maternity Leave', isPaid: true, allowHalfDay: false, requiresProof: true, maxConsecutiveDays: 84, displayOrder: 2 },
-      { code: 'paternity', name: 'Licencia de paternidad', nameEn: 'Paternity Leave', isPaid: true, allowHalfDay: false, requiresProof: true, maxConsecutiveDays: 5, displayOrder: 3 },
-      { code: 'bereavement', name: 'Licencia por duelo', nameEn: 'Bereavement Leave', isPaid: true, allowHalfDay: false, requiresProof: true, maxConsecutiveDays: 3, displayOrder: 4 },
-      { code: 'unpaid', name: 'Licencia sin goce', nameEn: 'Unpaid Leave', isPaid: false, allowHalfDay: true, requiresProof: false, displayOrder: 5 },
-    ],
-  },
+  // CTR-MX removed (→ CTR-US Location). Mexico leave types removed.
   // ── CTR-RU: Russia statutory leave types ──────────────────
   {
     companyCode: 'CTR-RU',
@@ -77,9 +67,9 @@ const COMPANY_LEAVE_TYPES: CompanyLeaveTypes[] = [
       { code: 'unpaid', name: 'Urlop bezpłatny', nameEn: 'Unpaid Leave', isPaid: false, allowHalfDay: false, requiresProof: false, displayOrder: 9 },
     ],
   },
-  // ── CTR-KR: Add missing menstrual leave (생리휴가) ────────
+  // ── CTR: Add missing menstrual leave (생리휴가) ────────
   {
-    companyCode: 'CTR-KR',
+    companyCode: 'CTR',
     types: [
       { code: 'menstrual', name: '생리휴가', nameEn: 'Menstrual Leave', isPaid: false, allowHalfDay: false, requiresProof: false, displayOrder: 9 },
       { code: 'marriage', name: '결혼휴가', nameEn: 'Marriage Leave', isPaid: true, allowHalfDay: false, requiresProof: true, maxConsecutiveDays: 5, displayOrder: 10 },

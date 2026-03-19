@@ -120,6 +120,7 @@ export const authOptions: NextAuthOptions = {
       credentials: { email: { label: 'Email', type: 'email' } },
       async authorize(credentials) {
         // Fix 4-6: Unified error message to prevent user enumeration
+        // Note: Rate limiting is handled in middleware (returns 429 before reaching here)
         if (!credentials?.email) return null
         const sso = await prisma.ssoIdentity.findFirst({
           where: { email: credentials.email },

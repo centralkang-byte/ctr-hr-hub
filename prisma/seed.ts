@@ -83,20 +83,25 @@ function deterministicUUID(namespace: string, key: string): string {
 // ================================================================
 // 1. COMPANIES (13)
 // ================================================================
+// Track B v4.4: 13 companies (7 domestic KR + 6 overseas). CTR-MX removed (→ CTR-US Location).
+// Hierarchy: CTR-HOLD (지주) → CTR (자동차 본업) → 해외법인, CTR-HOLD → CTR-ROB/CTR-ENR/CTR-FML
 const companyData = [
-  { code: 'CTR-HQ', name: 'CTR Holdings', nameEn: 'CTR Holdings', countryCode: 'KR', timezone: 'Asia/Seoul', locale: 'ko', currency: 'KRW', parentCode: null, payrollFrequencies: ['MONTHLY'], payrollMode: 'IMPORT' as const },
-  { code: 'CTR-KR', name: 'CTR', nameEn: 'CTR', countryCode: 'KR', timezone: 'Asia/Seoul', locale: 'ko', currency: 'KRW', parentCode: 'CTR-HQ', payrollFrequencies: ['MONTHLY'], payrollMode: 'IMPORT' as const },
-  { code: 'CTR-MOB', name: 'CTR Mobility', nameEn: 'CTR Mobility', countryCode: 'KR', timezone: 'Asia/Seoul', locale: 'ko', currency: 'KRW', parentCode: 'CTR-HQ', payrollFrequencies: ['MONTHLY'], payrollMode: 'IMPORT' as const },
-  { code: 'CTR-ECO', name: 'CTR Ecoforging', nameEn: 'CTR Ecoforging', countryCode: 'KR', timezone: 'Asia/Seoul', locale: 'ko', currency: 'KRW', parentCode: 'CTR-HQ', payrollFrequencies: ['MONTHLY'], payrollMode: 'IMPORT' as const },
-  { code: 'CTR-ROB', name: 'CTR Robotics', nameEn: 'CTR Robotics', countryCode: 'KR', timezone: 'Asia/Seoul', locale: 'ko', currency: 'KRW', parentCode: 'CTR-HQ', payrollFrequencies: ['MONTHLY'], payrollMode: 'IMPORT' as const },
-  { code: 'CTR-ENG', name: 'CTR Energy', nameEn: 'CTR Energy', countryCode: 'KR', timezone: 'Asia/Seoul', locale: 'ko', currency: 'KRW', parentCode: 'CTR-HQ', payrollFrequencies: ['MONTHLY'], payrollMode: 'IMPORT' as const },
-  { code: 'FML', name: 'Formationlabs', nameEn: 'Formationlabs', countryCode: 'KR', timezone: 'Asia/Seoul', locale: 'ko', currency: 'KRW', parentCode: 'CTR-HQ', payrollFrequencies: ['MONTHLY'], payrollMode: 'IMPORT' as const },
-  { code: 'CTR-US', name: 'CTR America', nameEn: 'CTR America', countryCode: 'US', timezone: 'America/Chicago', locale: 'en', currency: 'USD', parentCode: 'CTR-KR', payrollFrequencies: ['BIWEEKLY'], payrollMode: 'IMPORT' as const },
-  { code: 'CTR-CN', name: 'CTR China', nameEn: 'CTR China', countryCode: 'CN', timezone: 'Asia/Shanghai', locale: 'zh', currency: 'CNY', parentCode: 'CTR-KR', payrollFrequencies: ['MONTHLY'], payrollMode: 'IMPORT' as const },
-  { code: 'CTR-RU', name: 'CTR Russia', nameEn: 'CTR Russia', countryCode: 'RU', timezone: 'Europe/Moscow', locale: 'ru', currency: 'RUB', parentCode: 'CTR-KR', payrollFrequencies: ['BIWEEKLY'], payrollMode: 'IMPORT' as const },
-  { code: 'CTR-VN', name: 'CTR Vietnam', nameEn: 'CTR Vietnam', countryCode: 'VN', timezone: 'Asia/Ho_Chi_Minh', locale: 'vi', currency: 'VND', parentCode: 'CTR-KR', payrollFrequencies: ['MONTHLY'], payrollMode: 'IMPORT' as const },
-  { code: 'CTR-EU', name: 'CTR Europe', nameEn: 'CTR Europe Sp. z o.o.', countryCode: 'PL', timezone: 'Europe/Warsaw', locale: 'en', currency: 'PLN', parentCode: 'CTR-KR', payrollFrequencies: ['MONTHLY'], payrollMode: 'IMPORT' as const },
-  { code: 'CTR-MX', name: 'CTR Mexico', nameEn: 'CTR Mexico', countryCode: 'MX', timezone: 'America/Mexico_City', locale: 'es', currency: 'MXN', parentCode: 'CTR-KR', payrollFrequencies: ['WEEKLY', 'BIWEEKLY', 'MONTHLY'], payrollMode: 'IMPORT' as const },
+  // ── 최상위: 지주회사 ──
+  { code: 'CTR-HOLD', name: 'CTR홀딩스', nameEn: 'CTR Holdings', countryCode: 'KR', timezone: 'Asia/Seoul', locale: 'ko', currency: 'KRW', parentCode: null, payrollFrequencies: ['MONTHLY'], payrollMode: 'IMPORT' as const },
+  // ── 국내법인 (CTR-HOLD 산하) ──
+  { code: 'CTR', name: 'CTR (주)', nameEn: 'CTR Co., Ltd.', countryCode: 'KR', timezone: 'Asia/Seoul', locale: 'ko', currency: 'KRW', parentCode: 'CTR-HOLD', payrollFrequencies: ['MONTHLY'], payrollMode: 'IMPORT' as const },
+  { code: 'CTR-MOB', name: 'CTR모빌리티', nameEn: 'CTR Mobility', countryCode: 'KR', timezone: 'Asia/Seoul', locale: 'ko', currency: 'KRW', parentCode: 'CTR', payrollFrequencies: ['MONTHLY'], payrollMode: 'IMPORT' as const },
+  { code: 'CTR-ECO', name: 'CTR에코포징', nameEn: 'CTR Ecoforging', countryCode: 'KR', timezone: 'Asia/Seoul', locale: 'ko', currency: 'KRW', parentCode: 'CTR', payrollFrequencies: ['MONTHLY'], payrollMode: 'IMPORT' as const },
+  { code: 'CTR-ROB', name: 'CTR Robotics', nameEn: 'CTR Robotics', countryCode: 'KR', timezone: 'Asia/Seoul', locale: 'ko', currency: 'KRW', parentCode: 'CTR-HOLD', payrollFrequencies: ['MONTHLY'], payrollMode: 'IMPORT' as const },
+  { code: 'CTR-ENR', name: 'CTR에너지', nameEn: 'CTR Energy', countryCode: 'KR', timezone: 'Asia/Seoul', locale: 'ko', currency: 'KRW', parentCode: 'CTR-HOLD', payrollFrequencies: ['MONTHLY'], payrollMode: 'IMPORT' as const },
+  { code: 'CTR-FML', name: '포메이션랩스', nameEn: 'Formationlabs', countryCode: 'KR', timezone: 'Asia/Seoul', locale: 'ko', currency: 'KRW', parentCode: 'CTR-HOLD', payrollFrequencies: ['MONTHLY'], payrollMode: 'IMPORT' as const },
+  // ── 해외법인 (CTR 산하) ──
+  { code: 'CTR-US', name: 'CTR America', nameEn: 'CTR America', countryCode: 'US', timezone: 'America/Chicago', locale: 'en', currency: 'USD', parentCode: 'CTR', payrollFrequencies: ['BIWEEKLY'], payrollMode: 'IMPORT' as const },
+  { code: 'CTR-CN', name: 'CTR China', nameEn: 'CTR China', countryCode: 'CN', timezone: 'Asia/Shanghai', locale: 'zh', currency: 'CNY', parentCode: 'CTR', payrollFrequencies: ['MONTHLY'], payrollMode: 'IMPORT' as const },
+  { code: 'CTR-RU', name: 'CTR Russia', nameEn: 'CTR Russia', countryCode: 'RU', timezone: 'Europe/Moscow', locale: 'ru', currency: 'RUB', parentCode: 'CTR', payrollFrequencies: ['BIWEEKLY'], payrollMode: 'IMPORT' as const },
+  { code: 'CTR-VN', name: 'CTR Vietnam', nameEn: 'CTR Vietnam', countryCode: 'VN', timezone: 'Asia/Ho_Chi_Minh', locale: 'vi', currency: 'VND', parentCode: 'CTR', payrollFrequencies: ['MONTHLY'], payrollMode: 'IMPORT' as const },
+  { code: 'CTR-EU', name: 'CTR Europe', nameEn: 'CTR Europe Sp. z o.o.', countryCode: 'PL', timezone: 'Europe/Warsaw', locale: 'en', currency: 'PLN', parentCode: 'CTR', payrollFrequencies: ['MONTHLY'], payrollMode: 'IMPORT' as const },
+  // CTR-MX removed — merged into CTR-US as Location (Monterrey)
 ]
 
 // ================================================================
@@ -571,25 +576,15 @@ async function main() {
   console.log('📌 Seeding companies...')
   const companyMap: Record<string, string> = {} // code -> id
 
-  // First pass: create parent company
-  for (const c of companyData.filter(c => c.parentCode === null)) {
+  // Iterative pass: process companies in order (parents before children)
+  // companyData is already ordered: roots first, then L2, then L3
+  for (const c of companyData) {
     const id = deterministicUUID('company', c.code)
+    const parentId = c.parentCode ? companyMap[c.parentCode] : undefined
     const company = await prisma.company.upsert({
       where: { code: c.code },
-      update: { name: c.name, nameEn: c.nameEn, countryCode: c.countryCode, timezone: c.timezone, locale: c.locale, currency: c.currency, payrollMode: c.payrollMode, payrollFrequencies: c.payrollFrequencies },
-      create: { id, code: c.code, name: c.name, nameEn: c.nameEn, countryCode: c.countryCode, timezone: c.timezone, locale: c.locale, currency: c.currency, payrollMode: c.payrollMode, payrollFrequencies: c.payrollFrequencies },
-    })
-    companyMap[c.code] = company.id
-  }
-
-  // Second pass: children
-  for (const c of companyData.filter(c => c.parentCode !== null)) {
-    const id = deterministicUUID('company', c.code)
-    const parentId = companyMap[c.parentCode!]
-    const company = await prisma.company.upsert({
-      where: { code: c.code },
-      update: { name: c.name, nameEn: c.nameEn, countryCode: c.countryCode, timezone: c.timezone, locale: c.locale, currency: c.currency, parentCompanyId: parentId, payrollMode: c.payrollMode, payrollFrequencies: c.payrollFrequencies },
-      create: { id, code: c.code, name: c.name, nameEn: c.nameEn, countryCode: c.countryCode, timezone: c.timezone, locale: c.locale, currency: c.currency, parentCompanyId: parentId, payrollMode: c.payrollMode, payrollFrequencies: c.payrollFrequencies },
+      update: { name: c.name, nameEn: c.nameEn, countryCode: c.countryCode, timezone: c.timezone, locale: c.locale, currency: c.currency, parentCompanyId: parentId ?? null, payrollMode: c.payrollMode, payrollFrequencies: c.payrollFrequencies },
+      create: { id, code: c.code, name: c.name, nameEn: c.nameEn, countryCode: c.countryCode, timezone: c.timezone, locale: c.locale, currency: c.currency, parentCompanyId: parentId ?? null, payrollMode: c.payrollMode, payrollFrequencies: c.payrollFrequencies },
     })
     companyMap[c.code] = company.id
   }

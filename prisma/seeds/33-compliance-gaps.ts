@@ -21,7 +21,7 @@ function deterministicUUID(ns: string, key: string): string {
 export async function seedComplianceGaps(prisma: PrismaClient) {
   console.log('📌 Seeding compliance module gaps...')
 
-  const ctrKr = await prisma.company.findFirst({ where: { code: 'CTR-KR' } })
+  const ctrKr = await prisma.company.findFirst({ where: { code: 'CTR' } })
   const ctrCn = await prisma.company.findFirst({ where: { code: 'CTR-CN' } })
   if (!ctrKr) { console.log('  ⚠️ CTR-KR not found'); return }
 

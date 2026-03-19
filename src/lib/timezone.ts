@@ -3,12 +3,12 @@
  *
  * All timezone-aware date operations must use these helpers.
  * Supported timezones per company:
- *   CTR-KR  → Asia/Seoul
+ *   CTR (+ CTR-HOLD, CTR-MOB, CTR-ECO, CTR-ROB, CTR-ENR, CTR-FML) → Asia/Seoul
  *   CTR-CN  → Asia/Shanghai
  *   CTR-RU  → Europe/Moscow
  *   CTR-US  → America/Chicago
  *   CTR-VN  → Asia/Ho_Chi_Minh
- *   CTR-MX  → America/Mexico_City
+ *   CTR-EU  → Europe/Warsaw
  */
 
 import { parseISO } from 'date-fns'

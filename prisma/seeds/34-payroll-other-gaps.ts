@@ -22,7 +22,7 @@ function deterministicUUID(ns: string, key: string): string {
 export async function seedPayrollOtherGaps(prisma: PrismaClient) {
   console.log('📌 Seeding payroll & other module gaps...')
 
-  const ctrKr = await prisma.company.findFirst({ where: { code: 'CTR-KR' } })
+  const ctrKr = await prisma.company.findFirst({ where: { code: 'CTR' } })
   if (!ctrKr) { console.log('  ⚠️ CTR-KR not found'); return }
 
   const hrEmp = await prisma.employee.findFirst({ where: { email: 'hr@ctr.co.kr' } })

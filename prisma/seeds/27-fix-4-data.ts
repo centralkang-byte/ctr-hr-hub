@@ -93,9 +93,9 @@ async function main() {
   })
 
   if (eaSso?.employeeId) {
-    // Find a leave policy for CTR-KR
+    // Find a leave policy for CTR
     const krCompany = await prisma.company.findFirst({
-      where: { code: 'CTR-KR' },
+      where: { code: 'CTR' },
       select: { id: true },
     })
 

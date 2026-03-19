@@ -24,7 +24,7 @@ export async function seedOnboardingInstances(prisma: PrismaClient) {
         return
     }
 
-    const ctrKr = await prisma.company.findFirst({ where: { code: 'CTR-KR' } })
+    const ctrKr = await prisma.company.findFirst({ where: { code: 'CTR' } })
     const ctrUs = await prisma.company.findFirst({ where: { code: 'CTR-US' } })
     const ctrVn = await prisma.company.findFirst({ where: { code: 'CTR-VN' } })
 

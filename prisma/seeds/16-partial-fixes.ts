@@ -66,7 +66,7 @@ const PII_ACCESS_TYPES = ['VIEW', 'EXPORT', 'VIEW', 'VIEW', 'MODIFY', 'VIEW']
 export async function seedPartialFixes(prisma: PrismaClient): Promise<void> {
     console.log('\n🔧 Session B.4: Seeding partial menu fixes...\n')
 
-    const krCo = await prisma.company.findFirst({ where: { code: 'CTR-KR' } })
+    const krCo = await prisma.company.findFirst({ where: { code: 'CTR' } })
     if (!krCo) { console.error('  ❌ CTR-KR not found'); return }
     const krId = krCo.id
 

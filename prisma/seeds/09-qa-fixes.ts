@@ -20,7 +20,7 @@ function deterministicUUID(namespace: string, key: string): string {
 export async function seedQAFixes(prisma: PrismaClient): Promise<void> {
   console.log('\n🔧 QA Fixes: Filling missing seed data...\n')
 
-  const ctrKr = await prisma.company.findFirst({ where: { code: 'CTR-KR' } })
+  const ctrKr = await prisma.company.findFirst({ where: { code: 'CTR' } })
   if (!ctrKr) { console.error('  ❌ CTR-KR not found'); return }
   const krId = ctrKr.id
 

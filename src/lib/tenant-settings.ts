@@ -1,6 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Tenant Settings Helper (v3.2)
 // 설정 참조 우선순위: tenant_settings → DB ENUM → 하드코딩 금지
+// TODO(Track B): 프로덕션 배포 시 Redis FLUSHALL 필요 (법인 코드 변경으로 캐시 키 불일치)
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'

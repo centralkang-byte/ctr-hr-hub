@@ -20,8 +20,8 @@ function deterministicUUID(ns: string, key: string): string {
 export async function seedDiscipline(prisma: PrismaClient) {
   console.log('📌 Seeding discipline & reward records...')
 
-  // Get CTR-KR company
-  const company = await prisma.company.findFirst({ where: { code: 'CTR-KR' } })
+  // Get CTR company
+  const company = await prisma.company.findFirst({ where: { code: 'CTR' } })
   if (!company) { console.log('  ⚠️ CTR-KR not found, skipping'); return }
 
   // Get some employees for discipline data
