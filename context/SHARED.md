@@ -84,6 +84,7 @@
 | **QF-C2c** (Perf-to-Pay pipeline: 34 E2E tests, goal→evaluation→calibration→comp review→merit, 4 P0 fixes) | ✅ Complete |
 | **QF-C2d** (Exit pipeline + cross-cuts: 40 E2E tests, offboarding→exit interview→severance + notifications/manager hub/dashboard/search) | ✅ Complete |
 | **Track B Phase 1 Session 1** (법인 코드 + Auth + enum: B-1a, B-1a+, B-1h) | ✅ Complete |
+| **Track B Phase 1 Session 2** (Dept + Grade + Position: B-1b, B-1c, B-1d) | ✅ Complete |
 | **Track B Phase 1** (조직도 반영 — 안전 작업) | 🔄 In Progress |
 
 ---
@@ -813,6 +814,41 @@ New `*FromSettings` async variants added alongside. Callers migrate incrementall
 - src/lib/ats/employment-type-mapper.ts 신규
 - ATS convert-to-employee 진입점에 매핑 적용 (posting.employmentType → Prisma enum)
 - 기존 ATS DB 데이터 미변경
+
+---
+
+## Track B Phase 1 Session 2 — ✅ COMPLETE
+
+### B-1b: Department seed overhaul
+- 244 departments across 13 companies (real CTR org chart)
+- 6-level hierarchy: Root(0) → BU(1) → Division/Plant(2) → Section(3) → Team(4) → Part(5)
+- Code convention: BU-/DIV-/PLT-/SEC-/TM-/PT- prefixes
+- Upsert on @@unique([companyId, code]) — no deleteMany
+
+### B-1c: JobGrade seed
+- 7 Korean grades × 7 domestic companies = 49 (companyId required, not nullable)
+- 5 placeholder grades × 5 overseas companies = 25
+- Total: 74 grades. findFirst + create/update pattern (no @@unique)
+
+### B-1d: Position tree with reporting lines
+- 253 explicit positions + auto-generated member pools per team
+- Full reportsToPositionId chain from Chairman down
+- Cross-company dottedLinePositionId: ~11 matrix relationships
+  - CTR-MOB Purchase/Quality → CTR Purchase/Quality (그룹주무)
+  - CTR-ECO Sales/Purchase/Quality → CTR counterparts
+  - CTR-CN R&D/Purchase/Quality → CTR counterparts
+  - CTR-US SCM → CTR SCM
+  - CTR-VN teams → CTR AM BU Head
+- Two-pass creation: all positions first, then reporting lines
+- Runner: `npx tsx scripts/run-org-seed.ts`
+
+### Seed Data Status
+| Entity | Count | Source |
+|--------|-------|--------|
+| Companies | 13 | B-1a |
+| Departments | ~244 | B-1b |
+| JobGrades | 74 (49 KR + 25 overseas) | B-1c |
+| Positions | ~300+ (253 explicit + member pools) | B-1d |
 
 ---
 
