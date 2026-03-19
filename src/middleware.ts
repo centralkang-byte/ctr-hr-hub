@@ -150,6 +150,22 @@ function applySecurityHeaders(response: NextResponse): NextResponse {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
+  // 0. Body size limit (Fix 4-7) — reject oversized API payloads before processing
+  if (pathname.startsWith('/api/') && request.method !== 'GET' && request.method !== 'HEAD') {
+    const contentLength = request.headers.get('content-length')
+    if (contentLength) {
+      const size = parseInt(contentLength, 10)
+      if (size > 1_000_000) { // 1MB limit
+        return applySecurityHeaders(
+          NextResponse.json(
+            { error: { code: 'PAYLOAD_TOO_LARGE', message: '요청 본문이 너무 큽니다. 최대 1MB까지 허용됩니다.' } },
+            { status: 413 },
+          ),
+        )
+      }
+    }
+  }
+
   // 1. Public routes — apply headers only, no auth check
   if (isPublicPath(pathname)) {
     return applySecurityHeaders(NextResponse.next())

@@ -59,7 +59,9 @@ const SSO_ERROR_MESSAGES: Record<string, string> = {
   OAuthCallback: 'M365 인증 콜백 처리 중 오류가 발생했습니다.',
   OAuthCreateAccount: '계정 생성 중 오류가 발생했습니다.',
   Callback: '인증 콜백 오류가 발생했습니다.',
-  AccessDenied: '접근이 거부되었습니다. 등록된 직원인지 확인하세요.',
+  AccessDenied: '이메일 또는 비밀번호가 올바르지 않습니다.',
+  CredentialsSignin: '이메일 또는 비밀번호가 올바르지 않습니다.',
+  TooManyAttempts: '로그인 시도가 너무 많습니다. 1분 후 다시 시도하세요.',
   Configuration: '서버 설정 오류입니다. 관리자에게 문의하세요.',
 }
 
