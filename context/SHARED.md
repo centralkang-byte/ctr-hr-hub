@@ -85,6 +85,7 @@
 | **QF-C2d** (Exit pipeline + cross-cuts: 40 E2E tests, offboarding→exit interview→severance + notifications/manager hub/dashboard/search) | ✅ Complete |
 | **Track B Phase 1 Session 1** (법인 코드 + Auth + enum: B-1a, B-1a+, B-1h) | ✅ Complete |
 | **Track B Phase 1 Session 2** (Dept + Grade + Position: B-1b, B-1c, B-1d) | ✅ Complete |
+| **Track B Phase 1 Session 3** (Employees + Settings: B-1e, B-1f) | ✅ Complete |
 | **Track B Phase 1** (조직도 반영 — 안전 작업) | 🔄 In Progress |
 
 ---
@@ -842,13 +843,51 @@ New `*FromSettings` async variants added alongside. Callers migrate incrementall
 - Two-pass creation: all positions first, then reporting lines
 - Runner: `npx tsx scripts/run-org-seed.ts`
 
-### Seed Data Status
+### Seed Data Status (Session 2)
 | Entity | Count | Source |
 |--------|-------|--------|
 | Companies | 13 | B-1a |
 | Departments | ~244 | B-1b |
 | JobGrades | 74 (49 KR + 25 overseas) | B-1c |
 | Positions | ~300+ (253 explicit + member pools) | B-1d |
+
+---
+
+## Track B Phase 1 Session 3 — ✅ COMPLETE
+
+### Step 0.5: Chairman → Vice Chairman fix
+- POS-HOLD-CHAIR → POS-HOLD-VCHAIR (부회장/Vice Chairman)
+- All reportsTo references updated across position tree
+
+### B-1e: Employee redistribution (446 employees)
+- ~199 named leadership from real CTR org chart with exact positions/grades/roles
+- ~247 auto-generated with realistic names distributed across departments
+- 4 worker types: FULL_TIME/OFFICE, FULL_TIME/PRODUCTION, DISPATCH, CONTRACT
+- All single-assignment (isPrimary). Concurrent assignments → Phase 3 B-3e
+- Protected QA accounts (8) preserved
+- RBAC: SUPER_ADMIN (강상우, 최연식), HR_ADMIN (정향모, 이경수, 구용환, 김동준, 류지훈, 김대일, 김영규)
+- SKIP list for Phase 3 겸직: 김영규(VN↔AM), 김민준(EU↔AM), 허종서(CTR↔US), 신동규(CTR↔US), 김길홍(AM↔VN), 마랏(RU↔VN), 스베틀라나(RU↔VN)
+
+### B-1f: Worker Type Settings + resolveWorkerType()
+- New: `src/lib/employee/worker-type-resolver.ts` (SSOT)
+- 9 WORKER_TYPE settings (global defaults): DISPATCH features mostly OFF
+- Policy check results:
+  - ✅ Leave accrual: global default exists (per-company override → Phase 2)
+  - ❌ groupHireDate/companyHireDate: NOT in schema (→ Phase 2)
+  - ✅ Weekly hour limits: per-company EXISTS (KR=52, CN=44, US=40, VN=48, RU=40)
+  - ✅ PerformanceCycle.companyId: EXISTS
+  - ✅ Performance grade scale: global setting EXISTS
+
+### Seed Data Status (Session 3)
+| Entity | Count | Source |
+|--------|-------|--------|
+| Companies | 13 | B-1a |
+| Departments | ~244 | B-1b |
+| JobGrades | 74 (49 KR + 25 overseas) | B-1c |
+| Positions | ~300+ (253 explicit + member pools) | B-1d |
+| Employees | 446 (199 named + 247 auto) | B-1e |
+| EmployeeAssignments | 446 (all isPrimary, no concurrent) | B-1e |
+| Worker Type Settings | 9 keys (global defaults) | B-1f |
 
 ---
 
