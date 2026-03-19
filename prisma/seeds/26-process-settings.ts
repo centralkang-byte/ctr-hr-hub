@@ -642,6 +642,61 @@ const SETTINGS: SettingDef[] = [
       extendOnActivity: true,
     },
   },
+  // ─── WORKER-TYPE: Feature Eligibility (B-1f) ────────
+  {
+    settingType: 'WORKER_TYPE',
+    settingKey: 'FULL_TIME.OFFICE.performance.enabled',
+    description: 'Office workers: performance review enabled',
+    settingValue: true,
+  },
+  {
+    settingType: 'WORKER_TYPE',
+    settingKey: 'FULL_TIME.PRODUCTION.performance.enabled',
+    description: 'Production workers: performance review disabled',
+    settingValue: false,
+  },
+  {
+    settingType: 'WORKER_TYPE',
+    settingKey: 'DISPATCH.performance.enabled',
+    description: 'Dispatch workers: no performance review',
+    settingValue: false,
+  },
+  {
+    settingType: 'WORKER_TYPE',
+    settingKey: 'CONTRACT.performance.enabled',
+    description: 'Contract workers: performance review enabled',
+    settingValue: true,
+  },
+  {
+    settingType: 'WORKER_TYPE',
+    settingKey: 'DISPATCH.leave.enabled',
+    description: 'Dispatch workers: no leave management',
+    settingValue: false,
+  },
+  {
+    settingType: 'WORKER_TYPE',
+    settingKey: 'DISPATCH.payroll.enabled',
+    description: 'Dispatch workers: no payroll',
+    settingValue: false,
+  },
+  {
+    settingType: 'WORKER_TYPE',
+    settingKey: 'DISPATCH.benefits.enabled',
+    description: 'Dispatch workers: no benefits',
+    settingValue: false,
+  },
+  {
+    settingType: 'WORKER_TYPE',
+    settingKey: 'DISPATCH.attendance.enabled',
+    description: 'Dispatch workers: attendance tracking ON',
+    settingValue: true,
+  },
+  {
+    settingType: 'WORKER_TYPE',
+    settingKey: 'DISPATCH.training.enabled',
+    description: 'Dispatch workers: training ON',
+    settingValue: true,
+  },
 ]
 
 // ─── Per-Company Labor Settings (S-Fix-2) ─────────────────
