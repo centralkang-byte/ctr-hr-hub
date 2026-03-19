@@ -133,8 +133,10 @@ function buildRolePermissions(): Record<string, PermKey[]> {
 
   // MANAGER: team scoped
   const manager: PermKey[] = [
-    'employees_read', 'attendance_read', 'leave_read', 'leave_update',
-    'performance_read', 'performance_update', 'discipline_read',
+    'employees_read', 'attendance_read', 'attendance_manage',
+    'leave_read', 'leave_update',
+    'performance_read', 'performance_create', 'performance_update',
+    'discipline_read',
   ]
 
   // EMPLOYEE: self scoped (payroll_read for /payroll/me payslip access)
