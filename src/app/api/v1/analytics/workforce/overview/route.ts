@@ -16,16 +16,16 @@ import type { SessionUser } from '@/types'
 export const GET = withPermission(
   async (req: NextRequest, _ctx, user: SessionUser) => {
     const params = parseAnalyticsParams(new URL(req.url).searchParams)
-    // SUPER_ADMIN can pass ?companyId=xxx; others are locked to their own company
-    const effectiveCompanyId = user.role === 'SUPER_ADMIN' && params.companyId
-      ? params.companyId
+    // SUPER_ADMIN: 전체 법인 조회 (특정 법인 필터 가능), 그 외: 자기 법인만
+    const effectiveCompanyId = user.role === 'SUPER_ADMIN'
+      ? (params.companyId ?? undefined)
       : user.companyId
     const companyFilter = effectiveCompanyId ? { companyId: effectiveCompanyId } : {}
     const now = new Date()
 
     // RLS: DB-level tenant isolation — withRLS sets session vars for all queries in this tx
     const [activeAssignments, hireAssignments, exitAssignments, departments, jobGrades] =
-      await withRLS(buildRLSContext({ ...user, companyId: effectiveCompanyId }), (tx) =>
+      await withRLS(buildRLSContext({ ...user, companyId: effectiveCompanyId ?? user.companyId }), (tx) =>
         Promise.all([
           // Active employees with relations
           tx.employeeAssignment.findMany({
@@ -58,7 +58,7 @@ export const GET = withPermission(
             },
             select: { endDate: true },
           }),
-          tx.department.findMany({ where: { deletedAt: null }, select: { id: true, name: true } }),
+          tx.department.findMany({ where: { deletedAt: null, ...companyFilter }, select: { id: true, name: true } }),
           tx.jobGrade.findMany({ where: { deletedAt: null }, select: { id: true, name: true, rankOrder: true }, orderBy: { rankOrder: 'asc' } }),
         ]),
       )

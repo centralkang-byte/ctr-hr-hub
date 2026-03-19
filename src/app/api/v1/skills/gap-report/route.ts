@@ -6,12 +6,20 @@
 // POST /api/v1/skills/gap-report  리포트 스냅샷 저장
 
 import { type NextRequest } from 'next/server'
+import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { forbidden, handlePrismaError } from '@/lib/errors'
+import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+
+const gapReportCreateSchema = z.object({
+  companyId: z.string().uuid().optional(),
+  departmentId: z.string().uuid().optional(),
+  assessmentPeriod: z.string().min(1, '평가 기간은 필수입니다.'),
+  reportData: z.unknown(),
+})
 
 export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
@@ -152,20 +160,19 @@ export const POST = withPermission(
     const canCreate = ['HR_ADMIN', 'SUPER_ADMIN'].includes(user.role)
     if (!canCreate) throw forbidden('리포트 생성 권한이 없습니다.')
 
-    const body = await req.json() as {
-      companyId?: string
-      departmentId?: string
-      assessmentPeriod: string
-      reportData: unknown
+    const body: unknown = await req.json()
+    const parsed = gapReportCreateSchema.safeParse(body)
+    if (!parsed.success) {
+      throw badRequest('잘못된 요청 데이터입니다.', { issues: parsed.error.issues })
     }
 
     try {
       const report = await prisma.skillGapReport.create({
         data: {
-          companyId: body.companyId ?? user.companyId,
-          departmentId: body.departmentId,
-          assessmentPeriod: body.assessmentPeriod,
-          reportData: body.reportData as never,
+          companyId: parsed.data.companyId ?? user.companyId,
+          departmentId: parsed.data.departmentId,
+          assessmentPeriod: parsed.data.assessmentPeriod,
+          reportData: parsed.data.reportData as never,
           generatedBy: user.employeeId,
         },
       })

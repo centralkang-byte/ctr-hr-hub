@@ -86,14 +86,15 @@ export async function getHeadcountByEmploymentType(companyId?: string) {
 }
 
 export async function getHeadcountByGrade(companyId?: string) {
-  const { clause, params } = companyWhere(companyId, 'e')
+  const { clause, params } = companyWhere(companyId, 'ea')
   return safeMvQuery(() => prisma.$queryRawUnsafe<
     { grade_code: string; grade_name: string; headcount: bigint }[]
   >(
-    `SELECT jg.code AS grade_code, jg.name AS grade_name, COUNT(*)::bigint AS headcount
+    `SELECT jg.code AS grade_code, jg.name AS grade_name, COUNT(DISTINCT e.id)::bigint AS headcount
     FROM employees e
-    JOIN job_grades jg ON jg.id = e.job_grade_id
-    WHERE e.status IN ('ACTIVE', 'ON_LEAVE') AND e.deleted_at IS NULL ${clause}
+    JOIN employee_assignments ea ON ea.employee_id = e.id AND ea.is_primary = true AND ea.end_date IS NULL
+    JOIN job_grades jg ON jg.id = ea.job_grade_id
+    WHERE ea.status = 'ACTIVE' AND e.deleted_at IS NULL ${clause}
     GROUP BY jg.code, jg.name
     ORDER BY jg.code`,
     ...params,
@@ -103,7 +104,7 @@ export async function getHeadcountByGrade(companyId?: string) {
 // ─── Attendance ─────────────────────────────────────────
 
 export async function getAttendanceWeekly(companyId?: string, weeks = 12) {
-  const { clause, params } = companyWhere(companyId, 'e')
+  const { clause, params } = companyWhere(companyId, 'ea')
   return safeMvQuery(() => prisma.$queryRawUnsafe<
     { week_start: Date; avg_total_hours: number; avg_overtime_hours: number }[]
   >(
@@ -111,7 +112,7 @@ export async function getAttendanceWeekly(companyId?: string, weeks = 12) {
       ROUND(AVG(a.total_hours)::numeric, 1) AS avg_total_hours,
       ROUND(AVG(a.overtime_hours)::numeric, 1) AS avg_overtime_hours
     FROM mv_attendance_weekly a
-    JOIN employees e ON e.id = a.employee_id
+    JOIN employee_assignments ea ON ea.employee_id = a.employee_id AND ea.is_primary = true AND ea.end_date IS NULL
     WHERE a.week_start >= CURRENT_DATE - INTERVAL '${weeks} weeks' ${clause}
     GROUP BY a.week_start
     ORDER BY a.week_start`,
@@ -120,15 +121,15 @@ export async function getAttendanceWeekly(companyId?: string, weeks = 12) {
 }
 
 export async function getOvertimeByDepartment(companyId?: string) {
-  const { clause, params } = companyWhere(companyId, 'e')
+  const { clause, params } = companyWhere(companyId, 'ea')
   return safeMvQuery(() => prisma.$queryRawUnsafe<
     { department_name: string; avg_overtime_hours: number }[]
   >(
     `SELECT d.name AS department_name,
       ROUND(AVG(a.overtime_hours)::numeric, 1) AS avg_overtime_hours
     FROM mv_attendance_weekly a
-    JOIN employees e ON e.id = a.employee_id
-    JOIN departments d ON d.id = e.department_id
+    JOIN employee_assignments ea ON ea.employee_id = a.employee_id AND ea.is_primary = true AND ea.end_date IS NULL
+    JOIN departments d ON d.id = ea.department_id
     WHERE a.week_start >= CURRENT_DATE - INTERVAL '4 weeks' ${clause}
     GROUP BY d.name
     ORDER BY avg_overtime_hours DESC
@@ -138,7 +139,7 @@ export async function getOvertimeByDepartment(companyId?: string) {
 }
 
 export async function getAttendanceIssues(companyId?: string, weeks = 12) {
-  const { clause, params } = companyWhere(companyId, 'e')
+  const { clause, params } = companyWhere(companyId, 'ea')
   return safeMvQuery(() => prisma.$queryRawUnsafe<
     { week_start: Date; late_count: bigint; absent_count: bigint; early_out_count: bigint }[]
   >(
@@ -147,7 +148,7 @@ export async function getAttendanceIssues(companyId?: string, weeks = 12) {
       SUM(a.absent_count)::bigint AS absent_count,
       SUM(a.early_out_count)::bigint AS early_out_count
     FROM mv_attendance_weekly a
-    JOIN employees e ON e.id = a.employee_id
+    JOIN employee_assignments ea ON ea.employee_id = a.employee_id AND ea.is_primary = true AND ea.end_date IS NULL
     WHERE a.week_start >= CURRENT_DATE - INTERVAL '${weeks} weeks' ${clause}
     GROUP BY a.week_start
     ORDER BY a.week_start`,
@@ -156,11 +157,11 @@ export async function getAttendanceIssues(companyId?: string, weeks = 12) {
 }
 
 export async function getOver52hCount(companyId?: string) {
-  const { clause, params } = companyWhere(companyId, 'e')
+  const { clause, params } = companyWhere(companyId, 'ea')
   return safeMvQuery(() => prisma.$queryRawUnsafe<{ count: bigint }[]>(
     `SELECT COUNT(DISTINCT a.employee_id)::bigint AS count
     FROM mv_attendance_weekly a
-    JOIN employees e ON e.id = a.employee_id
+    JOIN employee_assignments ea ON ea.employee_id = a.employee_id AND ea.is_primary = true AND ea.end_date IS NULL
     WHERE a.week_start >= CURRENT_DATE - INTERVAL '1 week'
       AND a.total_hours > 52 ${clause}`,
     ...params,
@@ -459,11 +460,11 @@ export async function refreshAllMVs() {
 // ─── Average Overtime (for KPI) ──────────────────────────
 
 export async function getAvgOvertimeHours(companyId?: string) {
-  const { clause, params } = companyWhere(companyId, 'e')
+  const { clause, params } = companyWhere(companyId, 'ea')
   return safeMvQuery(() => prisma.$queryRawUnsafe<{ avg_overtime_hours: number }[]>(
     `SELECT ROUND(AVG(a.overtime_hours)::numeric, 1) AS avg_overtime_hours
     FROM mv_attendance_weekly a
-    JOIN employees e ON e.id = a.employee_id
+    JOIN employee_assignments ea ON ea.employee_id = a.employee_id AND ea.is_primary = true AND ea.end_date IS NULL
     WHERE a.week_start >= CURRENT_DATE - INTERVAL '4 weeks' ${clause}`,
     ...params,
   ))
@@ -472,7 +473,7 @@ export async function getAvgOvertimeHours(companyId?: string) {
 // ─── Turnover Rate by Department ────────────────────────
 
 export async function getTurnoverByDepartment(companyId?: string, months = 12) {
-  const { clause, params } = companyWhere(companyId, 'e')
+  const { clause, params } = companyWhere(companyId, 'ea')
   return safeMvQuery(() => prisma.$queryRawUnsafe<
     { department_name: string; turnover_rate: number; resignations: bigint }[]
   >(
@@ -484,7 +485,8 @@ export async function getTurnoverByDepartment(companyId?: string, months = 12) {
         1
       ) AS turnover_rate
     FROM employees e
-    JOIN departments d ON d.id = e.department_id
+    JOIN employee_assignments ea ON ea.employee_id = e.id AND ea.is_primary = true AND ea.end_date IS NULL
+    JOIN departments d ON d.id = ea.department_id
     LEFT JOIN employee_offboarding eo ON eo.employee_id = e.id
       AND eo.last_working_date >= CURRENT_DATE - INTERVAL '${months} months'
     WHERE e.deleted_at IS NULL ${clause}
