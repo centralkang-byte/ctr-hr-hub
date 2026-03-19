@@ -16,7 +16,7 @@ import type { SessionUser } from '@/types'
 export const GET = withPermission(
   async (req: NextRequest, _ctx, user: SessionUser) => {
     const { searchParams } = new URL(req.url)
-    const employeeId = searchParams.get('employee_id') ?? ''
+    const employeeId = searchParams.get('employeeId') || searchParams.get('employee_id') || ''
     const recalculate = searchParams.get('recalculate') === 'true'
 
     if (!employeeId) throw badRequest('employee_id required')
