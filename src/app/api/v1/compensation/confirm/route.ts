@@ -149,6 +149,7 @@ export const POST = withPermission(
           resourceType: 'compensationHistory',
           resourceId: item.employeeId,
           companyId,
+          sensitivityLevel: 'HIGH',
           changes: {
             cycleId,
             previousSalary: item.previousSalary,

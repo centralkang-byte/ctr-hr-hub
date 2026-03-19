@@ -119,6 +119,7 @@ export const POST = withPermission(
       resourceType: 'employee',
       resourceId: employeeId,
       companyId: user.companyId,
+      sensitivityLevel: 'HIGH',
       changes: { cycleId, employeeId, budgetConstraint, companyAvgRaise },
       ip,
       userAgent,

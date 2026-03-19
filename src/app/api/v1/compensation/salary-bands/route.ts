@@ -99,6 +99,7 @@ export const POST = withPermission(
         resourceType: 'salaryBand',
         resourceId: band.id,
         companyId: band.companyId,
+        sensitivityLevel: 'HIGH',
         changes: { jobGradeId, currency, minSalary, midSalary, maxSalary },
         ip,
         userAgent,

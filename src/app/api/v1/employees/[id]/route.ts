@@ -17,7 +17,7 @@ import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
   async (
-    _req: NextRequest,
+    req: NextRequest,
     context: { params: Promise<Record<string, string>> },
     user: SessionUser,
   ) => {
@@ -72,6 +72,19 @@ export const GET = withPermission(
       employmentType: a?.employmentType ?? null,
       status: a?.status ?? 'ACTIVE',
     }
+
+    // Fire-and-forget PII access audit (logAudit is already async internally)
+    const { ip, userAgent } = extractRequestMeta(req.headers)
+    logAudit({
+      actorId: user.employeeId,
+      action: 'employees.detail.read',
+      resourceType: 'Employee',
+      resourceId: id,
+      companyId: user.companyId,
+      sensitivityLevel: 'HIGH',
+      ip,
+      userAgent,
+    })
 
     return apiSuccess(mappedEmployee)
   },

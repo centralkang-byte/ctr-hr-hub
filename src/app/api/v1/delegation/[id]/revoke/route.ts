@@ -7,6 +7,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
+import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { eventBus } from '@/lib/events/event-bus'
@@ -59,6 +60,20 @@ export const PUT = withPermission(
         revokedAt: new Date(),
         revokedBy: user.employeeId,
       },
+    })
+
+    // Audit log
+    const { ip, userAgent } = extractRequestMeta(req.headers)
+    logAudit({
+      actorId: user.employeeId,
+      action: 'delegation.revoke',
+      resourceType: 'Delegation',
+      resourceId: id,
+      companyId: updated.companyId,
+      sensitivityLevel: 'HIGH',
+      changes: { status: 'REVOKED', revokedBy: user.employeeId },
+      ip,
+      userAgent,
     })
 
     // Publish event

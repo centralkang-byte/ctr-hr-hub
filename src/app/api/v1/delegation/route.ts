@@ -8,6 +8,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
+import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { eventBus } from '@/lib/events/event-bus'
@@ -219,6 +220,20 @@ export const POST = withPermission(
         delegatee: { select: { id: true, name: true } },
         delegator: { select: { id: true, name: true } },
       },
+    })
+
+    // Audit log
+    const { ip, userAgent } = extractRequestMeta(req.headers)
+    logAudit({
+      actorId: user.employeeId,
+      action: 'delegation.create',
+      resourceType: 'Delegation',
+      resourceId: delegation.id,
+      companyId: user.companyId,
+      sensitivityLevel: 'HIGH',
+      changes: { delegateeId, scope, startDate, endDate },
+      ip,
+      userAgent,
     })
 
     // Publish event

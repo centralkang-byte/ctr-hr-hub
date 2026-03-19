@@ -102,6 +102,7 @@ export const PUT = withPermission(
         resourceType: 'salaryBand',
         resourceId: result.id,
         companyId: result.companyId,
+        sensitivityLevel: 'HIGH',
         ip,
         userAgent,
       })
@@ -150,6 +151,7 @@ export const DELETE = withPermission(
         resourceType: 'salaryBand',
         resourceId: result.id,
         companyId: result.companyId,
+        sensitivityLevel: 'HIGH',
         ip,
         userAgent,
       })
