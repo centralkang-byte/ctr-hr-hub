@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════
 // POST /api/v1/payroll/runs/[id]/calculate — 급여 계산 실행
-// DRAFT → CALCULATING → REVIEW
+// DRAFT | ATTENDANCE_CLOSED → CALCULATING → REVIEW
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
@@ -20,8 +20,8 @@ export const POST = withPermission(
     })
 
     if (!run) throw notFound('급여 실행을 찾을 수 없습니다.')
-    if (run.status !== 'DRAFT') {
-      throw badRequest('DRAFT 상태의 급여 실행만 계산할 수 있습니다.')
+    if (!['DRAFT', 'ATTENDANCE_CLOSED'].includes(run.status)) {
+      throw badRequest('DRAFT 또는 ATTENDANCE_CLOSED 상태의 급여 실행만 계산할 수 있습니다.')
     }
 
     await calculatePayrollRun(id)
