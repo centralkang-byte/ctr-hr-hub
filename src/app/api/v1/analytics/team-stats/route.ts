@@ -10,8 +10,8 @@ import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, forbidden } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { withAuth } from '@/lib/permissions'
+import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 
 interface SubordinateRow {
@@ -31,10 +31,12 @@ interface DepartmentBreakdownRow {
 
 // ─── GET /api/v1/analytics/team-stats ─────────────────────
 
-export const GET = withPermission(
+const ALLOWED_ROLES = [ROLE.MANAGER, ROLE.EXECUTIVE, ROLE.SUPER_ADMIN, ROLE.HR_ADMIN]
+
+export const GET = withAuth(
   async (req: NextRequest, _ctx, user: SessionUser) => {
-    // EMPLOYEE 차단 — MANAGER, EXECUTIVE, SUPER_ADMIN만 접근
-    if (user.role === ROLE.EMPLOYEE) {
+    // MANAGER, EXECUTIVE, HR_ADMIN, SUPER_ADMIN만 접근
+    if (!(ALLOWED_ROLES as readonly string[]).includes(user.role)) {
       throw forbidden('매니저 이상 권한이 필요합니다.')
     }
 
@@ -155,5 +157,4 @@ export const GET = withPermission(
       queryTimeMs: queryTime,
     })
   },
-  perm(MODULE.ANALYTICS, ACTION.VIEW),
 )
