@@ -1,9 +1,9 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { isAppError, handlePrismaError } from '@/lib/errors'
+import { isAppError, handlePrismaError, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
@@ -13,6 +13,7 @@ export const GET = withPermission(
     user: SessionUser,
   ) => {
     try {
+      if (user.role === ROLE.EMPLOYEE) throw forbidden('매니저 이상만 접근 가능합니다.')
       const companyId = user.companyId
       const managerId = user.employeeId
 

@@ -143,7 +143,7 @@ export const GET = withPermission(
       departmentMatrix,
     })
   },
-  perm(MODULE.EMPLOYEES, ACTION.VIEW),
+  perm(MODULE.EMPLOYEES, ACTION.APPROVE),
 )
 
 // POST: 리포트 스냅샷 저장

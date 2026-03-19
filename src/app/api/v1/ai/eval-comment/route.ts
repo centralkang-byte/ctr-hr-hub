@@ -47,5 +47,5 @@ export const POST = withRateLimit(withPermission(
 
     return apiSuccess(result)
   },
-  perm(MODULE.PERFORMANCE, ACTION.APPROVE),
+  perm(MODULE.PERFORMANCE, ACTION.UPDATE),
 ), RATE_LIMITS.AI)

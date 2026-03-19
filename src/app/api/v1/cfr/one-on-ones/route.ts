@@ -40,29 +40,17 @@ export const GET = withPermission(
 
     const { status, employeeId, page, limit } = parsed.data
 
-    // Manager sees team meetings, employee sees own meetings
-    // TODO: implement proper manager hierarchy via position reportsTo
-    const isManager = await prisma.employee.count({
-      where: {
-        assignments: {
-          some: {
-            companyId: user.companyId,
-            isPrimary: true,
-            endDate: null,
-            status: 'ACTIVE',
-          },
-        },
-      },
-    })
+    // Manager/HR/Admin sees team meetings; EMPLOYEE sees own only
+    const isManagerOrAbove = ['SUPER_ADMIN', 'HR_ADMIN', 'EXECUTIVE', 'MANAGER'].includes(user.role)
 
     const where = {
       companyId: user.companyId,
       ...(status !== 'ALL' ? { status: status as OneOnOneStatus } : {}),
-      ...(isManager > 0
+      ...(isManagerOrAbove
         ? {
             ...(employeeId
               ? { employeeId, managerId: user.employeeId }
-              : { managerId: user.employeeId }),
+              : { OR: [{ managerId: user.employeeId }, { employeeId: user.employeeId }] }),
           }
         : {
             employeeId: user.employeeId,
