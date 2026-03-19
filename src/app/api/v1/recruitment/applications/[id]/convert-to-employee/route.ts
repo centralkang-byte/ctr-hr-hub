@@ -19,6 +19,7 @@ import { createAssignment } from '@/lib/assignments'
 import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
 import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
+import { mapRequisitionTypeToEmploymentType } from '@/lib/ats/employment-type-mapper'
 import type { SessionUser } from '@/types'
 
 bootstrapEventHandlers()
@@ -73,7 +74,7 @@ export const POST = withPermission(
       },
       include: {
         applicant: { select: { name: true, email: true } },
-        posting: { select: { companyId: true, departmentId: true, jobGradeId: true, jobCategoryId: true } },
+        posting: { select: { companyId: true, departmentId: true, jobGradeId: true, jobCategoryId: true, employmentType: true } },
       },
     })
     if (!application) throw notFound('지원서를 찾을 수 없거나 이미 전환된 지원서입니다.')
@@ -94,7 +95,7 @@ export const POST = withPermission(
       throw badRequest('잘못된 요청 데이터입니다.', { issues: parsed.error.issues })
     }
 
-    const { employeeNo, startDate, companyId, departmentId, jobGradeId, jobCategoryId, buddyId } = parsed.data
+    const { employeeNo, startDate, companyId, departmentId, jobGradeId, jobCategoryId, buddyId, employmentType } = parsed.data
 
     const targetCompanyId = companyId ?? postingCompanyId ?? user.companyId
 
@@ -145,6 +146,8 @@ export const POST = withPermission(
       })
 
       // Create initial assignment (handles its own transaction internally)
+      // Track B B-1h: Map ATS posting employmentType (lowercase) to Prisma enum
+      const resolvedEmploymentType = employmentType ?? mapRequisitionTypeToEmploymentType(application.posting?.employmentType)
       await createAssignment({
         employeeId: emp.id,
         effectiveDate: new Date(startDate),
@@ -153,7 +156,7 @@ export const POST = withPermission(
         departmentId: resolvedDepartmentId,
         jobGradeId: resolvedJobGradeId,
         jobCategoryId: resolvedJobCategoryId,
-        employmentType: 'FULL_TIME',
+        employmentType: resolvedEmploymentType,
         status: 'ACTIVE',
         isPrimary: true,
       })
