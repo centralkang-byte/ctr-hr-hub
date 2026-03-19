@@ -108,6 +108,16 @@ prisma/
 - **Active records**: `endDate: null` convention
 - **RLS**: `withRLS()` wrapper sets Postgres session variables
 
+### Assignment 규칙 (Track B)
+- **Primary 조회**: `assignments[0]` 직접 접근 금지 → 반드시 헬퍼 사용
+  - DB 조회: `fetchPrimaryAssignment(employeeId)`
+  - 메모리 필터: `extractPrimaryAssignment(assignments)`
+- **Append-Only**: assignment 수정 시 기존 row에 endDate → 신규 row 생성. UPDATE 금지
+- **isPrimary 필터 필수**: Payroll, Leave, 결재 등에서 반드시 `isPrimary: true` 조건
+- **겸직자 연차/결재**: Primary Assignment 법인 기준으로만 처리
+- **급여 스코프**: 국내 7개 법인 = HR Hub 직접 처리. 해외 6개 = 로컬 시스템 + 데이터 연동만
+- **employmentType 매핑**: ATS 소문자 → Employee 대문자는 `mapRequisitionTypeToEmploymentType()` 사용
+
 ### i18n
 - Use `useTranslations()` hook from `next-intl` in Client components
 - `src/lib/i18n/ko.ts` is **@deprecated** — use `messages/ko.json` instead
@@ -156,6 +166,11 @@ DO NOT modify (unless explicitly in scope):
 - prisma/schema.prisma        (Schema changes require migration plan)
 - src/middleware.ts            (Auth middleware)
 - Any module not explicitly listed in the prompt's scope
+
+# Track B 보호 파일 (v4.4)
+- src/lib/api/companyFilter.ts    (resolveCompanyId — 보안 필터 SSOT)
+- src/lib/prisma-rls.ts           (RLS wrapper — Phase 3에서 우회 API만 별도 처리)
+- src/lib/api/withRLS.ts          (withRLS transaction wrapper)
 ```
 
 **Lesson learned**: Session A (GP#3 QA) modified sidebar while adding seed data → lost entire 인사이트 section. Always declare boundaries.

@@ -83,6 +83,7 @@
 | **QF-C2b** (Time-to-Pay pipeline + concurrency: 33 E2E tests, shift→attendance→leave→payroll→bank transfer, 2 P0 fixes) | ✅ Complete |
 | **QF-C2c** (Perf-to-Pay pipeline: 34 E2E tests, goal→evaluation→calibration→comp review→merit, 4 P0 fixes) | ✅ Complete |
 | **QF-C2d** (Exit pipeline + cross-cuts: 40 E2E tests, offboarding→exit interview→severance + notifications/manager hub/dashboard/search) | ✅ Complete |
+| **Track B Phase 1** (조직도 반영 — 안전 작업) | 🔄 In Progress |
 
 ---
 
@@ -408,7 +409,12 @@ All modules below are fully coded (UI + API + DB):
 - Employee → EmployeeAssignment (1:N)
 - 8 fields moved from Employee to EmployeeAssignment: companyId, departmentId, jobGradeId, jobCategoryId, positionId, employmentType, contractType, status
 - Query pattern: `assignments: { some: { companyId, isPrimary: true, endDate: null } }`
-- Property access: `employee.assignments?.[0]?.companyId`
+- Property access: 반드시 헬퍼 사용 (Track B)
+  - DB 조회: `fetchPrimaryAssignment(employeeId)` — `isPrimary: true, endDate: null, effectiveDate <= now`
+  - 메모리 필터: `extractPrimaryAssignment(assignments)` — include로 이미 로드된 배열에서 추출
+  - `assignments[0]` 직접 접근 금지 (겸직 시 순서 보장 없음)
+- Auth session: companyId = Primary Assignment의 companyId (가장 최근 역할 기준 아님)
+- Append-Only: assignment 변경 시 기존 row endDate 찍고 신규 생성. 직접 UPDATE 금지
 
 ### Position-Based Reporting
 - Position.reportsTo → parent Position
@@ -775,6 +781,12 @@ New `*FromSettings` async variants added alongside. Callers migrate incrementall
   - AssetReturn 전용 CRUD 미구현 (오프보딩 인라인으로 관리 중)
   - Tab labels 577개 → i18n 상수 변환 (deferred)
   - EmptyState complex 58개 → 수동 확인 필요
+- **Track B: 실제 조직도 반영** — 13개 법인 + ~195개 부서 + 446명 + 겸직/매트릭스. 계획서: `docs/contexts/TRACK-B-PLAN-v4.4.md`
+  - Phase 1: 법인 코드 + Auth + seed (19h) — 🔄 진행 중
+  - Phase 2: Location 모델 + 스키마 (7h) — ⏳ 대기
+  - Phase 3: 겸직 패치 56파일 + 운영 UI (21.5h) — ⏳ 대기
+  - Phase 3.5: CSV Import UI (5h) — ⏳ 대기
+  - Phase 4: 시뮬레이션 검증 (4.5h) — ⏳ 대기
 
 
 ---
