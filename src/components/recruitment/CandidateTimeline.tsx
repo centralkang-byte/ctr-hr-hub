@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from 'react'
 import {
-  CheckCircle2, XCircle, Clock, Briefcase,
+  CheckCircle2, Clock, Briefcase,
   Building2, MessageSquare, Star,
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
@@ -104,7 +104,7 @@ export default function CandidateTimeline({ applicantId }: Props) {
           {data.events.map((event, idx) => {
             const colorClass =
               EVENT_COLORS[event.label] ?? EVENT_COLORS[event.type] ?? EVENT_COLORS.default
-            const isLast = idx === data.events.length - 1
+//             const isLast = idx === data.events.length - 1
 
             return (
               <div key={event.id} className="relative pl-9 pb-1">

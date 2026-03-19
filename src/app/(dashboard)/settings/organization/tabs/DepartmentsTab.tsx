@@ -46,10 +46,10 @@ export function DepartmentsTab({
       </div>
 
       {depts.length > 0 ? (
-        <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-          <table className="w-full">
-            <thead>
-              <tr className={TABLE_STYLES.header}>
+        <div className={TABLE_STYLES.wrapper}>
+          <table className={TABLE_STYLES.table}>
+            <thead className={TABLE_STYLES.header}>
+              <tr>
                 <th className={TABLE_STYLES.headerCell}>{t('kr_kecbd94eb')}</th>
                 <th className={TABLE_STYLES.headerCell}>{t('department_persons')}</th>
                 <th className={TABLE_STYLES.headerCell}>{t('kr_kec9881eb')}</th>
@@ -58,20 +58,20 @@ export function DepartmentsTab({
                 <th className={TABLE_STYLES.headerCell}>{t('kr_kec868cec_kec9db8ec')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#F0F0F3]">
+            <tbody>
               {depts.map((d) => (
-                <tr key={d.id} className="hover:bg-[#F5F5FA] transition-colors">
-                  <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{d.code}</td>
+                <tr key={d.id} className={TABLE_STYLES.row}>
+                  <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{d.code}</td>
                   <td className={TABLE_STYLES.cell}>
                     <span style={{ paddingLeft: `${(d.level - 1) * 16}px` }} className="flex items-center gap-1">
                       {d.level > 1 && <ChevronRight className="h-3 w-3 text-[#8181A5]" />}
                       {d.name}
                     </span>
                   </td>
-                  <td className={TABLE_STYLES.cellMuted}>{d.nameEn ?? '—'}</td>
-                  <td className="px-4 py-3 text-center text-sm text-[#8181A5]">L{d.level}</td>
-                  <td className="px-4 py-3 text-center text-sm text-[#8181A5]">{d._count?.children ?? 0}</td>
-                  <td className="px-4 py-3 text-center text-sm text-[#8181A5]">{d._count?.employees ?? 0}</td>
+                  <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>{d.nameEn ?? '—'}</td>
+                  <td className={`${TABLE_STYLES.cell} text-center text-[#8181A5]`}>L{d.level}</td>
+                  <td className={`${TABLE_STYLES.cell} text-center text-[#8181A5]`}>{d._count?.children ?? 0}</td>
+                  <td className={`${TABLE_STYLES.cell} text-center text-[#8181A5]`}>{d._count?.employees ?? 0}</td>
                 </tr>
               ))}
             </tbody>

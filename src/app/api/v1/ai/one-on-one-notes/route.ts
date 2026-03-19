@@ -10,6 +10,7 @@ import { badRequest, notFound, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { generateOneOnOneNotes } from '@/lib/claude'
 import { MODULE, ACTION } from '@/lib/constants'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import type { SessionUser } from '@/types'
 
 const requestSchema = z.object({
@@ -19,7 +20,7 @@ const requestSchema = z.object({
 
 // ─── POST /api/v1/ai/one-on-one-notes ────────────────────
 
-export const POST = withPermission(
+export const POST = withRateLimit(withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
     const body: unknown = await req.json()
     const parsed = requestSchema.safeParse(body)
@@ -89,4 +90,4 @@ export const POST = withPermission(
     return apiSuccess(result)
   },
   perm(MODULE.PERFORMANCE, ACTION.APPROVE),
-)
+), RATE_LIMITS.AI)

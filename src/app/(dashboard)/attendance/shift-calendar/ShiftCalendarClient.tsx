@@ -507,11 +507,11 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
       {viewMode === 'list' && (
         <Card>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-sm">
-                <thead>
-                  <tr className={TABLE_STYLES.header}>
-                    <th className="sticky left-0 z-10 bg-[#FAFAFA] px-4 py-3 text-left text-xs font-medium text-[#999] font-semibold">
+            <div className={TABLE_STYLES.wrapper}>
+              <table className={TABLE_STYLES.table}>
+                <thead className={TABLE_STYLES.header}>
+                  <tr>
+                    <th className={`sticky left-0 z-10 bg-[#FAFAFA] ${TABLE_STYLES.headerCell}`}>
                       직원
                     </th>
                     {days.map(date => {
@@ -524,7 +524,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
                               ? 'text-[#F44336]'
                               : dayOfWeek === 6
                                 ? 'text-[#2196F3]'
-                                : 'text-[#999]'
+                                : 'text-[#8181A5]'
                           }`}
                         >
                           <div>{date.getDate()}</div>
@@ -544,10 +544,10 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
                     }
 
                     return (
-                      <tr key={empId} className="border-t border-[#F0F0F0] hover:bg-[#FAFAFA]">
-                        <td className="sticky left-0 z-10 bg-white px-4 py-2 font-medium whitespace-nowrap">
+                      <tr key={empId} className={TABLE_STYLES.row}>
+                        <td className={`sticky left-0 z-10 bg-white ${TABLE_STYLES.cell} whitespace-nowrap`}>
                           <div className="flex flex-col">
-                            <span className="text-sm">{emp.lastName}{emp.firstName}</span>
+                            <span className="text-sm font-medium text-[#1A1A1A]">{emp.lastName}{emp.firstName}</span>
                             <span className="text-xs text-[#999]">{emp.employeeNumber}</span>
                           </div>
                         </td>
@@ -556,11 +556,11 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
                           const sched = schedMap.get(dateKey)
 
                           if (!sched) {
-                            return <td key={dateKey} className="px-1 py-1 text-center">—</td>
+                            return <td key={dateKey} className="px-1 py-1 text-center border-t border-[#F0F0F3]">—</td>
                           }
 
                           return (
-                            <td key={dateKey} className="px-1 py-1 text-center">
+                            <td key={dateKey} className="px-1 py-1 text-center border-t border-[#F0F0F3]">
                               <span
                                 className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-medium border ${
                                   SLOT_COLORS[sched.slotIndex] ?? SLOT_COLORS[0]

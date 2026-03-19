@@ -5,14 +5,12 @@
 
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { withPermission, perm } from '@/lib/permissions'
-import { apiSuccess } from '@/lib/api'
-import { badRequest } from '@/lib/errors'
+import { apiSuccess, apiError } from '@/lib/api'
+import { badRequest, unauthorized } from '@/lib/errors'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import { z } from 'zod'
-
-const MODULE = { ONBOARDING: 'onboarding' }
-const ACTION = { CREATE: 'create' }
 
 const checkinSchema = z.object({
   checkinWeek: z.number().int().min(1).max(52),
@@ -22,8 +20,12 @@ const checkinSchema = z.object({
   comment: z.string().optional(),
 })
 
-export const POST = withPermission(
-  async (req: NextRequest, _ctx: unknown, user: SessionUser) => {
+export async function POST(req: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user) return apiError(unauthorized())
+    const user = session.user as SessionUser
+
     const body = await req.json()
     const parsed = checkinSchema.safeParse(body)
     if (!parsed.success) throw badRequest('잘못된 요청입니다.', { issues: parsed.error.issues })
@@ -37,6 +39,7 @@ export const POST = withPermission(
       },
     })
     return apiSuccess(checkin, 201)
-  },
-  perm(MODULE.ONBOARDING, ACTION.CREATE),
-)
+  } catch (error) {
+    return apiError(error)
+  }
+}

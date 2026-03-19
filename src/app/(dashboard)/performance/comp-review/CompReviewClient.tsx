@@ -11,6 +11,7 @@ import { apiClient } from '@/lib/api'
 import { getGradeLabel } from '@/lib/performance/data-masking'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ────────────────────────────────────────────────
@@ -49,15 +50,15 @@ const MeritRowComponent = memo(function MeritRowComponent({
     const newSalary = Math.round(row.currentSalary * (1 + localPct / 100))
 
     return (
-        <tr className={`border-b border-[#F0F0F3] ${row.isException || isOutOfRange ? 'bg-[#FEF3C7]/30' : 'hover:bg-[#F5F5FA]'}`}>
+        <tr className={cn(TABLE_STYLES.row, row.isException || isOutOfRange ? 'bg-[#FEF3C7]/30' : '')}>
             <td className={TABLE_STYLES.cell}>{row.name}</td>
             <td className={TABLE_STYLES.cellMuted}>{row.department}</td>
-            <td className="px-4 py-3 text-sm text-center font-medium text-[#1C1D21]">{getGradeLabel(row.gradeEnum)}</td>
-            <td className="px-4 py-3 text-sm text-right text-[#8181A5]">{fmtKRW(row.currentSalary)}</td>
-            <td className="px-4 py-3 text-sm text-center text-[#8181A5]">{row.comparatio.toFixed(2)}</td>
-            <td className="px-4 py-3 text-sm text-center text-[#8181A5]">{fmtPct(row.recommendedPct)}</td>
-            <td className="px-4 py-3">
-                <div className="flex items-center gap-1">
+            <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>{getGradeLabel(row.gradeEnum)}</td>
+            <td className={TABLE_STYLES.cellRight}>{fmtKRW(row.currentSalary)}</td>
+            <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{row.comparatio.toFixed(2)}</td>
+            <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{fmtPct(row.recommendedPct)}</td>
+            <td className={cn(TABLE_STYLES.cell, "text-center")}>
+                <div className="flex items-center gap-1 justify-center">
                     <input type="number" step={0.5} min={0} max={30} value={localPct}
                         onChange={(e) => setLocalPct(Number(e.target.value))}
                         onBlur={() => onUpdate(row.employeeId, localPct, localReason)}
@@ -72,7 +73,7 @@ const MeritRowComponent = memo(function MeritRowComponent({
                         className="mt-1 w-full rounded-lg border border-[#FDE68A] px-2 py-1 text-xs focus:border-[#5E81F4] focus:outline-none" />
                 )}
             </td>
-            <td className="px-4 py-3 text-sm text-right font-medium text-[#1C1D21]">
+            <td className={cn(TABLE_STYLES.cellRight, "font-medium text-[#1C1D21]")}>
                 {isOutOfRange && <span className="mr-1 text-[#EF4444]">🚨</span>}
                 {fmtKRW(newSalary)}
             </td>
@@ -297,18 +298,18 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                         {/* Table Tab */}
                         {tab === 'table' && (
                             <div className="space-y-4">
-                                <div className="rounded-xl border border-[#F0F0F3] bg-white overflow-hidden">
+                                <div className={TABLE_STYLES.wrapper}>
                                     <div className="overflow-x-auto">
-                                        <table className="w-full text-sm">
+                                        <table className={TABLE_STYLES.table}>
                                             <thead>
-                                                <tr className="bg-[#F5F5FA] text-xs text-[#8181A5] font-medium">
+                                                <tr className={TABLE_STYLES.header}>
                                                     <th className={TABLE_STYLES.headerCell}>{t('name')}</th>
                                                     <th className={TABLE_STYLES.headerCell}>{t('department')}</th>
-                                                    <th className={TABLE_STYLES.headerCell}>{t('kr_keb93b1ea')}</th>
+                                                    <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_keb93b1ea')}</th>
                                                     <th className={TABLE_STYLES.headerCellRight}>{t('kr_ked9884ec')}</th>
-                                                    <th className={TABLE_STYLES.headerCell}>Comp.</th>
-                                                    <th className={TABLE_STYLES.headerCell}>{t('kr_kecb694ec')}</th>
-                                                    <th className={TABLE_STYLES.headerCell}>{t('kr_keca081ec')}</th>
+                                                    <th className={cn(TABLE_STYLES.headerCell, "text-center")}>Comp.</th>
+                                                    <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_kecb694ec')}</th>
+                                                    <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_keca081ec')}</th>
                                                     <th className={TABLE_STYLES.headerCellRight}>{t('kr_kec8388ec')}</th>
                                                 </tr>
                                             </thead>
@@ -342,30 +343,30 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
 
                         {/* Exceptions Tab */}
                         {tab === 'exceptions' && (
-                            <div className="rounded-xl border border-[#F0F0F3] bg-white overflow-hidden">
+                            <div className={TABLE_STYLES.wrapper}>
                                 {exceptionRows.length === 0 ? (
                                     <div className="p-12 text-center text-sm text-[#8181A5]">{t('kr_kec9888ec_keab1b4ec_kec9786ec')}</div>
                                 ) : (
-                                    <table className="w-full text-sm">
+                                    <table className={TABLE_STYLES.table}>
                                         <thead>
-                                            <tr className="bg-[#FEF3C7] text-xs text-[#92400E] font-medium">
-                                                <th className={TABLE_STYLES.headerCell}>{t('name')}</th>
-                                                <th className={TABLE_STYLES.headerCell}>{t('department')}</th>
-                                                <th className={TABLE_STYLES.headerCell}>{t('kr_keb93b1ea')}</th>
-                                                <th className={TABLE_STYLES.headerCell}>{t('kr_kecb694ec')}</th>
-                                                <th className={TABLE_STYLES.headerCell}>{t('kr_keca081ec')}</th>
-                                                <th className={TABLE_STYLES.headerCell}>{t('kr_kec82acec')}</th>
+                                            <tr className={cn(TABLE_STYLES.header, "bg-[#FEF3C7]")}>
+                                                <th className={cn(TABLE_STYLES.headerCell, "text-[#92400E]")}>{t('name')}</th>
+                                                <th className={cn(TABLE_STYLES.headerCell, "text-[#92400E]")}>{t('department')}</th>
+                                                <th className={cn(TABLE_STYLES.headerCell, "text-[#92400E] text-center")}>{t('kr_keb93b1ea')}</th>
+                                                <th className={cn(TABLE_STYLES.headerCell, "text-[#92400E] text-center")}>{t('kr_kecb694ec')}</th>
+                                                <th className={cn(TABLE_STYLES.headerCell, "text-[#92400E] text-center")}>{t('kr_keca081ec')}</th>
+                                                <th className={cn(TABLE_STYLES.headerCell, "text-[#92400E]")}>{t('kr_kec82acec')}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {exceptionRows.map((row) => (
-                                                <tr key={row.employeeId} className="border-b border-[#FDE68A] bg-[#FEF3C7]/20">
-                                                    <td className="px-4 py-3 font-medium text-[#1C1D21]">{row.name}</td>
-                                                    <td className="px-4 py-3 text-[#8181A5]">{row.department}</td>
-                                                    <td className="px-4 py-3 text-center font-medium text-[#1C1D21]">{getGradeLabel(row.gradeEnum)}</td>
-                                                    <td className="px-4 py-3 text-center text-[#8181A5]">{fmtPct(row.recommendedPct)}</td>
-                                                    <td className="px-4 py-3 text-center font-medium text-[#EF4444]">{fmtPct(row.appliedPct)}</td>
-                                                    <td className="px-4 py-3 text-[#92400E]">{row.exceptionReason || '사유 미입력'}</td>
+                                                <tr key={row.employeeId} className={cn(TABLE_STYLES.row, "bg-[#FEF3C7]/20")}>
+                                                    <td className={TABLE_STYLES.cell}>{row.name}</td>
+                                                    <td className={TABLE_STYLES.cellMuted}>{row.department}</td>
+                                                    <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>{getGradeLabel(row.gradeEnum)}</td>
+                                                    <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{fmtPct(row.recommendedPct)}</td>
+                                                    <td className={cn(TABLE_STYLES.cell, "text-center font-medium text-[#EF4444]")}>{fmtPct(row.appliedPct)}</td>
+                                                    <td className={cn(TABLE_STYLES.cell, "text-[#92400E]")}>{row.exceptionReason || '사유 미입력'}</td>
                                                 </tr>
                                             ))}
                                         </tbody>

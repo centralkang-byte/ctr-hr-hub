@@ -34,22 +34,25 @@ export function NotificationRulesTab({
         <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />{t('kr_keab79cec_add')}</Button>
       </div>
       {triggers.length > 0 ? (
-        <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-          <table className="w-full"><thead><tr className={TABLE_STYLES.header}>
-            <th className={TABLE_STYLES.headerCell}>{t('kr_kec9db4eb')}</th>
-            <th className={TABLE_STYLES.headerCell}>{t('name')}</th>
-            <th className={TABLE_STYLES.headerCell}>{t('kr_kecb184eb')}</th>
-            <th className={TABLE_STYLES.headerCell}>{t('status')}</th>
-          </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{triggers.map((t) => (
-            <tr key={t.id} className={TABLE_STYLES.row}>
-              <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{t.eventType}</td>
-              <td className={TABLE_STYLES.cell}>{t.name}</td>
-              <td className="px-4 py-3"><div className="flex gap-1">{(t.channels ?? []).map((ch) => (
-                <span key={ch} className="rounded bg-[#F5F5FA] px-2 py-0.5 text-xs text-[#8181A5]">{ch}</span>
-              ))}</div></td>
-              <td className="px-4 py-3 text-center"><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${t.isActive ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'}`}>{t.isActive ? '활성' : '비활성'}</span></td>
-            </tr>
-          ))}</tbody></table>
+        <div className={TABLE_STYLES.wrapper}>
+          <table className={TABLE_STYLES.table}>
+            <thead className={TABLE_STYLES.header}><tr>
+              <th className={TABLE_STYLES.headerCell}>{t('kr_kec9db4eb')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('name')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('kr_kecb184eb')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('status')}</th>
+            </tr></thead>
+            <tbody>{triggers.map((trig) => (
+              <tr key={trig.id} className={TABLE_STYLES.row}>
+                <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{trig.eventType}</td>
+                <td className={TABLE_STYLES.cell}>{trig.name}</td>
+                <td className={TABLE_STYLES.cell}><div className="flex gap-1">{(trig.channels ?? []).map((ch) => (
+                  <span key={ch} className="rounded bg-[#F5F5FA] px-2 py-0.5 text-xs text-[#8181A5]">{ch}</span>
+                ))}</div></td>
+                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${trig.isActive ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'}`}>{trig.isActive ? '활성' : '비활성'}</span></td>
+              </tr>
+            ))}</tbody>
+          </table>
         </div>
       ) : (
         <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">

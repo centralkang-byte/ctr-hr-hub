@@ -18,6 +18,12 @@ export const GET = withPermission(
     user: SessionUser,
   ) => {
     const { id } = await context.params
+
+    // IDOR guard: EMPLOYEE can only view their own insights
+    if (user.role === 'EMPLOYEE' && id !== user.employeeId) {
+      throw notFound('직원을 찾을 수 없습니다.')
+    }
+
     const companyId = resolveCompanyId(user)
 
     const employee = await prisma.employee.findFirst({

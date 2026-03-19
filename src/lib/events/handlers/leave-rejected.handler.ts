@@ -14,7 +14,6 @@
 //   2. [ASYNC] Notification to employee
 // ═══════════════════════════════════════════════════════════
 
-import { prisma } from '@/lib/prisma'
 import { sendNotification } from '@/lib/notifications'
 import type { DomainEventHandler, LeaveRejectedPayload, TxClient } from '../types'
 import { DOMAIN_EVENTS } from '../types'
@@ -23,18 +22,16 @@ export const leaveRejectedHandler: DomainEventHandler<'LEAVE_REJECTED'> = {
   eventName: DOMAIN_EVENTS.LEAVE_REJECTED,
 
   async handle(payload: LeaveRejectedPayload, tx?: TxClient): Promise<void> {
-    const db = tx ?? prisma
-
-    // 1. [TX] Restore pendingDays (usedDays 미변경)
-    await db.employeeLeaveBalance.update({
-      where: { id: payload.balanceId },
-      data: {
-        pendingDays: { decrement: payload.days },
-      },
-    })
-
-    // 2. [ASYNC] Employee notification
-    if (!tx) {
+    if (tx) {
+      // 1. [TX] Restore pendingDays (usedDays 미변경) — only inside transaction
+      await tx.employeeLeaveBalance.update({
+        where: { id: payload.balanceId },
+        data: {
+          pendingDays: { decrement: payload.days },
+        },
+      })
+    } else {
+      // 2. [ASYNC] Employee notification (fire-and-forget — outside transaction)
       void sendNotification({
         employeeId:  payload.employeeId,
         triggerType: 'leave_rejected',

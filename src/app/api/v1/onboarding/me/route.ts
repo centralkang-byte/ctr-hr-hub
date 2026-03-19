@@ -5,13 +5,18 @@
 
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { withPermission, perm } from '@/lib/permissions'
-import { apiSuccess } from '@/lib/api'
-import { MODULE, ACTION } from '@/lib/constants'
+import { apiSuccess, apiError } from '@/lib/api'
+import { unauthorized } from '@/lib/errors'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 
-export const GET = withPermission(
-  async (_req: NextRequest, _ctx: { params: Promise<Record<string, string>> }, user: SessionUser) => {
+export async function GET(_req: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user) return apiError(unauthorized())
+    const user = session.user as SessionUser
+
     const onboarding = await prisma.employeeOnboarding.findFirst({
       where: { employeeId: user.employeeId },
       orderBy: { createdAt: 'desc' },
@@ -51,6 +56,7 @@ export const GET = withPermission(
     })
 
     return apiSuccess(onboarding)
-  },
-  perm(MODULE.ONBOARDING, ACTION.VIEW),
-)
+  } catch (error) {
+    return apiError(error)
+  }
+}

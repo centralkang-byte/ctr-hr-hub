@@ -88,5 +88,5 @@ export const PUT = withPermission(
 
     return apiSuccess({ submitted: result.count, totalWeight })
   },
-  perm(MODULE.PERFORMANCE, ACTION.UPDATE),
+  perm(MODULE.PERFORMANCE, ACTION.CREATE), // Employee submits own goals — ownership enforced in handler
 )

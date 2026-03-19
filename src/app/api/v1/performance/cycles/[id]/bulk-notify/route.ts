@@ -16,7 +16,7 @@ import type { SessionUser } from '@/types'
 
 export const POST = withPermission(
     async (req: NextRequest, context: { params: Promise<Record<string, string>> }, user: SessionUser) => {
-        const { cycleId } = await context.params
+        const { id: cycleId } = await context.params
 
         try {
             const cycle = await prisma.performanceCycle.findFirst({

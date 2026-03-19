@@ -14,8 +14,9 @@ import {
     buildExcelFilename,
     type ComparisonExcelRow,
 } from '@/lib/payroll/excel-generators'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 
-export const GET = withPermission(
+export const GET = withRateLimit(withPermission(
     async (_req: NextRequest, context, user) => {
         try {
             const { runId } = await context.params
@@ -115,4 +116,4 @@ export const GET = withPermission(
         }
     },
     perm(MODULE.PAYROLL, ACTION.VIEW),
-)
+), RATE_LIMITS.EXPORT)

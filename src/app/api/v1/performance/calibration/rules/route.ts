@@ -15,7 +15,7 @@ import type { SessionUser } from '@/types'
 // ─── Schemas ──────────────────────────────────────────────
 
 const createSchema = z.object({
-  cycleId: z.string().cuid().optional(),
+  cycleId: z.string().optional(),
   rules: z.array(z.object({
     emsBlock: z.string(),
     recommendedPct: z.number().min(0).max(100),
@@ -45,7 +45,7 @@ export const GET = withPermission(
       maxPct: r.maxPct ? Number(r.maxPct) : null,
     })))
   },
-  perm(MODULE.SETTINGS, ACTION.VIEW),
+  perm(MODULE.PERFORMANCE, ACTION.VIEW),
 )
 
 // ─── POST /api/v1/performance/calibration/rules ──────────
@@ -112,5 +112,5 @@ export const POST = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.SETTINGS, ACTION.UPDATE),
+  perm(MODULE.PERFORMANCE, ACTION.APPROVE),
 )

@@ -5,7 +5,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { AlertTriangle, CheckCircle2, Clock, Calendar } from 'lucide-react'
-import type { PipelineEntry } from './PayrollPipeline'
+import type  from './PayrollPipeline'
 
 // ─── Types ──────────────────────────────────────────────────
 

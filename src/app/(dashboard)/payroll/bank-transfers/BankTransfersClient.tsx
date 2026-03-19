@@ -44,7 +44,8 @@ import {
 } from '@/components/ui/select'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -552,16 +553,16 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
               )}
 
               {/* Items table */}
-              <div className="overflow-x-auto rounded-lg border">
-                <table className="min-w-full text-sm">
+              <div className={TABLE_STYLES.wrapper}>
+                <table className={TABLE_STYLES.table}>
                   <thead>
                     <tr className={TABLE_STYLES.header}>
                       <th className={TABLE_STYLES.headerCell}>{'사번'}</th>
                       <th className={TABLE_STYLES.headerCell}>{'이름'}</th>
                       <th className={TABLE_STYLES.headerCell}>{'계약직'}</th>
                       <th className={TABLE_STYLES.headerCell}>{'예금주'}</th>
-                      <th className={TABLE_STYLES.headerCellRight}>{'금액'}</th>
-                      <th className={TABLE_STYLES.headerCell}>{'상태'}</th>
+                      <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{'금액'}</th>
+                      <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{'상태'}</th>
                       <th className={TABLE_STYLES.headerCell}>{'비고'}</th>
                     </tr>
                   </thead>
@@ -576,16 +577,16 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                       batchItems.map(item => {
                         const ist = ITEM_STATUS_MAP[item.status] ?? ITEM_STATUS_MAP.PENDING
                         return (
-                          <tr key={item.id} className="border-t border-[#F5F5F5] hover:bg-[#FAFAFA]">
-                            <td className="px-4 py-3 font-mono text-xs">{item.employeeNo}</td>
-                            <td className="px-4 py-3 font-medium">{item.employeeName}</td>
-                            <td className="px-4 py-3 font-mono text-xs">{item.accountNumber}</td>
-                            <td className="px-4 py-3">{item.accountHolder}</td>
-                            <td className="px-4 py-3 text-right font-medium">{formatAmount(item.amount)}</td>
-                            <td className="px-4 py-3 text-center">
+                          <tr key={item.id} className={TABLE_STYLES.row}>
+                            <td className={cn(TABLE_STYLES.cell, "font-mono text-xs")}>{item.employeeNo}</td>
+                            <td className={cn(TABLE_STYLES.cell, "font-medium")}>{item.employeeName}</td>
+                            <td className={cn(TABLE_STYLES.cell, "font-mono text-xs")}>{item.accountNumber}</td>
+                            <td className={TABLE_STYLES.cell}>{item.accountHolder}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right font-medium")}>{formatAmount(item.amount)}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-center")}>
                               <Badge className={`${ist.color} border`}>{ist.label}</Badge>
                             </td>
-                            <td className="px-4 py-3 text-xs text-[#EF4444]">{item.errorMessage ?? ''}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-[#EF4444]")}>{item.errorMessage ?? ''}</td>
                           </tr>
                         )
                       })

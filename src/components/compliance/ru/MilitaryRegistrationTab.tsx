@@ -9,7 +9,7 @@ import { Plus, Download, Search, RefreshCw } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import MilitaryRegistrationForm from './MilitaryRegistrationForm'
 import type { PaginationInfo } from '@/types'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
 
 interface MilitaryRegistration {
   id: string
@@ -177,7 +177,7 @@ export default function MilitaryRegistrationTab() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
+      <div className={TABLE_STYLES.wrapper}>
         {loading ? (
           <div className="flex items-center justify-center py-16 text-[#999] text-sm">
             로딩 중...
@@ -187,35 +187,35 @@ export default function MilitaryRegistrationTab() {
             군복무 등록 데이터가 없습니다.
           </div>
         ) : (
-          <table className="w-full">
+          <table className={TABLE_STYLES.table}>
             <thead>
-              <tr className="bg-[#FAFAFA] border-b border-[#E8E8E8]">
-                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
+              <tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>
                   직원
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
+                <th className={TABLE_STYLES.headerCell}>
                   부서
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
+                <th className={TABLE_STYLES.headerCell}>
                   복무 구분
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
+                <th className={TABLE_STYLES.headerCell}>
                   계급
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
+                <th className={TABLE_STYLES.headerCell}>
                   적합도
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
+                <th className={TABLE_STYLES.headerCell}>
                   등록일
                 </th>
-                <th className="px-4 py-3 text-right text-xs text-[#666] font-medium uppercase tracking-wider">
+                <th className={TABLE_STYLES.headerCellRight}>
                   작업
                 </th>
               </tr>
             </thead>
             <tbody>
               {registrations.map((reg) => (
-                <tr key={reg.id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                <tr key={reg.id} className={TABLE_STYLES.row}>
                   <td className="px-4 py-3">
                     <div>
                       <p className="text-sm font-medium text-[#1A1A1A]">{reg.employee.name}</p>

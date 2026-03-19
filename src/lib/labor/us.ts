@@ -4,6 +4,14 @@
 
 import type { LaborModule, WorkHoursValidation } from '@/lib/labor/index'
 import type { LaborConfig } from '@/lib/labor/types'
+import {
+  getWorkHourLimitsFromSettings,
+  getMinWageFromSettings,
+  getOvertimeRatesFromSettings,
+  getProbationRulesFromSettings,
+} from '@/lib/labor/settings'
+import type { ProbationRulesSettings } from '@/lib/labor/settings'
+import type { OvertimeRate, NightShiftRule } from '@/lib/labor/types'
 
 export const laborConfig: LaborConfig = {
   country_code: 'US',
@@ -52,4 +60,35 @@ export const usLaborModule: LaborModule = {
   getAnnualLeaveEntitlement(_yearsOfService: number): number {
     return 10 // Typical US PTO (no legal minimum)
   },
+}
+
+// ─── Settings-aware async config loader ───────────────────
+
+export async function getUsLaborConfigFromSettings(
+  companyId?: string | null,
+): Promise<{
+  maxWeeklyHours: number
+  standardWeeklyHours: number
+  maxOvertimeHours: number
+  minHourlyWage: number
+  overtimeRates: OvertimeRate[]
+  nightShift: NightShiftRule
+  probation: ProbationRulesSettings
+}> {
+  const [workHourLimits, wageConfig, otConfig, probation] = await Promise.all([
+    getWorkHourLimitsFromSettings(companyId, 'US'),
+    getMinWageFromSettings(companyId, 'US'),
+    getOvertimeRatesFromSettings(companyId, 'US'),
+    getProbationRulesFromSettings(companyId, 'US'),
+  ])
+
+  return {
+    maxWeeklyHours: workHourLimits.maxWeeklyHours,
+    standardWeeklyHours: workHourLimits.standardWeeklyHours,
+    maxOvertimeHours: workHourLimits.maxOvertimeHours,
+    minHourlyWage: wageConfig.hourlyWage,
+    overtimeRates: otConfig.rates,
+    nightShift: otConfig.nightShift,
+    probation,
+  }
 }

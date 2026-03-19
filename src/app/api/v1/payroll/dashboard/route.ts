@@ -48,7 +48,7 @@ function computeDDay(targetDate: Date, now: Date): number {
 // ─── Route ─────────────────────────────────────────────────
 
 export const GET = withPermission(
-    async (req: NextRequest, _context, user) => {
+    async (req: NextRequest, _context, _user) => {
         const { searchParams } = req.nextUrl
         const now = new Date()
         const year = parseInt(searchParams.get('year') ?? String(now.getFullYear()), 10)

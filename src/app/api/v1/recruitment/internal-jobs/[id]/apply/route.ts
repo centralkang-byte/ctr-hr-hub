@@ -7,11 +7,10 @@ import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, notFound, handlePrismaError } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { withAuth } from '@/lib/permissions'
 import type { SessionUser } from '@/types'
 
-export const POST = withPermission(
+export const POST = withAuth(
   async (
     _req: NextRequest,
     { params }: { params: Promise<Record<string, string>> },
@@ -71,5 +70,4 @@ export const POST = withPermission(
       throw handlePrismaError(err)
     }
   },
-  perm(MODULE.RECRUITMENT, ACTION.VIEW),
 )

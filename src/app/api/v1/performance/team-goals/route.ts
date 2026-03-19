@@ -111,5 +111,5 @@ export const GET = withPermission(
 
     return apiSuccess(result)
   },
-  perm(MODULE.PERFORMANCE, ACTION.APPROVE),
+  perm(MODULE.PERFORMANCE, ACTION.VIEW),
 )

@@ -19,11 +19,12 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { apiError } from '@/lib/api'
 import { badRequest, notFound } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 
 // Settings-connected: transfer note format (default: YYYY-MM 급여)
 const TRANSFER_NOTE_FORMAT = (yearMonth: string) => `${yearMonth} 급여`
 
-export const GET = withPermission(
+export const GET = withRateLimit(withPermission(
     async (req: NextRequest, context, user) => {
         try {
             const { runId } = await context.params
@@ -148,4 +149,4 @@ export const GET = withPermission(
         }
     },
     perm(MODULE.PAYROLL, ACTION.VIEW),
-)
+), RATE_LIMITS.EXPORT)

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Loader2, Info } from 'lucide-react'
 import { apiClient } from '@/lib/api'
-import { Input } from '@/components/ui/input'
+// import { Input } from '@/components/ui/input'
 import { TABLE_STYLES } from '@/lib/styles'
 import { useTranslations } from 'next-intl'
 
@@ -42,17 +42,17 @@ export function MeritMatrixTab({
         <p className="text-sm text-[#8181A5]">{t('kr_keb93b1ea_kebb0b4eb_keab8b0eb_')}</p>
       </div>
       {matrix.length > 0 ? (
-        <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-          <table className="w-full">
-            <thead><tr className={TABLE_STYLES.header}>
+        <div className={TABLE_STYLES.wrapper}>
+          <table className={TABLE_STYLES.table}>
+            <thead className={TABLE_STYLES.header}><tr>
               <th className={TABLE_STYLES.headerCell}>{t('kr_keb93b1ea')}</th>
-              {bands.map((b) => <th key={b} className="px-4 py-3 text-center text-xs font-medium uppercase text-[#8181A5]">{BAND_LABELS[b]} ({b})</th>)}
+              {bands.map((b) => <th key={b} className={`${TABLE_STYLES.headerCell} text-center`}>{BAND_LABELS[b]} ({b})</th>)}
             </tr></thead>
-            <tbody className="divide-y divide-[#F0F0F3]">{grades.map((g) => (
+            <tbody>{grades.map((g) => (
               <tr key={g} className={TABLE_STYLES.row}>
                 <td className={TABLE_STYLES.cell}>{GRADE_LABELS[g]} ({g})</td>
                 {bands.map((b) => { const c = getCell(g, b); return (
-                  <td key={b} className="px-4 py-3 text-center">
+                  <td key={b} className={`${TABLE_STYLES.cell} text-center`}>
                     <div className="flex items-center justify-center gap-1 text-sm">
                       <span className="text-[#8181A5]">{c?.minPct ?? '—'}</span>
                       <span className="text-[#8181A5]">~</span>

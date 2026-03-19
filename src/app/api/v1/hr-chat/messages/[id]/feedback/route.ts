@@ -7,12 +7,11 @@ import {
   isAppError,
   handlePrismaError,
 } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { withAuth } from '@/lib/permissions'
 import { messageFeedbackSchema } from '@/lib/schemas/hr-chat'
 import type { SessionUser } from '@/types'
 
-export const PUT = withPermission(
+export const PUT = withAuth(
   async (
     req: NextRequest,
     context: { params: Promise<Record<string, string>> },
@@ -56,5 +55,4 @@ export const PUT = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.HR_CHATBOT, ACTION.UPDATE),
 )

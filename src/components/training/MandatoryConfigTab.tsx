@@ -16,6 +16,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { apiClient } from '@/lib/api'
+import { TABLE_STYLES } from '@/lib/styles'
 import { useToast } from '@/hooks/use-toast'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
@@ -303,21 +304,21 @@ export default function MandatoryConfigTab() {
             등록된 의무교육 설정이 없습니다.
           </div>
         ) : (
-          <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
-            <table className="w-full text-sm">
+          <div className={TABLE_STYLES.wrapper}>
+            <table className={TABLE_STYLES.table}>
               <thead>
-                <tr className="bg-[#FAFAFA] border-b border-[#F5F5F5]">
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">교육과정</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">대상</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">주기</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">마감월</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">상태</th>
+                <tr className={TABLE_STYLES.header}>
+                  <th className={TABLE_STYLES.headerCell}>교육과정</th>
+                  <th className={TABLE_STYLES.headerCell}>대상</th>
+                  <th className={TABLE_STYLES.headerCell}>주기</th>
+                  <th className={TABLE_STYLES.headerCell}>마감월</th>
+                  <th className={TABLE_STYLES.headerCell}>상태</th>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
               <tbody>
                 {configs.map((config) => (
-                  <tr key={config.id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                  <tr key={config.id} className={TABLE_STYLES.row}>
                     <td className="px-4 py-3">
                       <div>
                         <span className="font-medium text-[#1A1A1A]">{config.course.title}</span>

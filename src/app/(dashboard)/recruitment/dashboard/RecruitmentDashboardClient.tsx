@@ -446,28 +446,30 @@ export function RecruitmentDashboardClient(_props: {
 
           {/* 법인별 공석 테이블 */}
           {vacancyByCompany.length > 0 && (
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid #E8E8E8' }}>
-                  {['법인', '전체 공석', '채용 진행', '공고 없음'].map((h) => (
-                    <th key={h} style={{ textAlign: h === '법인' ? 'left' : 'right', padding: '8px 12px', fontSize: 12, color: '#999', fontWeight: 600 }}>
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {!vacancyByCompany?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
-              {vacancyByCompany?.map((row) => (
-                  <tr key={row.companyId} style={{ borderBottom: '1px solid #F5F5F5' }}>
-                    <td style={{ padding: '10px 12px', fontSize: 13, color: '#1A1A1A', fontWeight: 500 }}>{row.companyName}</td>
-                    <td style={{ padding: '10px 12px', fontSize: 13, color: '#1A1A1A', textAlign: 'right' }}>{row.total}</td>
-                    <td style={{ padding: '10px 12px', fontSize: 13, color: '#4B6DE0', textAlign: 'right' }}>{row.withActivePosting}</td>
-                    <td style={{ padding: '10px 12px', fontSize: 13, color: '#B45309', textAlign: 'right' }}>{row.withoutPosting}</td>
+            <div className={TABLE_STYLES.wrapper}>
+              <table className={TABLE_STYLES.table}>
+                <thead>
+                  <tr className={TABLE_STYLES.header}>
+                    {['법인', '전체 공석', '채용 진행', '공고 없음'].map((h) => (
+                      <th key={h} className={h === '법인' ? TABLE_STYLES.headerCell : TABLE_STYLES.headerCellRight}>
+                        {h}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-[#F0F0F3]">
+                  {!vacancyByCompany?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+                {vacancyByCompany?.map((row) => (
+                    <tr key={row.companyId} className="hover:bg-[#FAFAFA] transition-colors">
+                      <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">{row.companyName}</td>
+                      <td className="px-4 py-3 text-sm text-[#1A1A1A] text-right">{row.total}</td>
+                      <td className="px-4 py-3 text-sm text-[#4B6DE0] text-right">{row.withActivePosting}</td>
+                      <td className="px-4 py-3 text-sm text-[#B45309] text-right">{row.withoutPosting}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       )}
@@ -492,129 +494,61 @@ export function RecruitmentDashboardClient(_props: {
         >
           {'최근 공고'}
         </h2>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr
-              style={{
-                borderBottom: '1px solid #E8E8E8',
-              }}
-            >
-              <th
-                style={{
-                  textAlign: 'left',
-                  padding: '8px 12px',
-                  fontSize: 12,
-                  color: '#999',
-                  fontWeight: 600,
-                }}
-              >
-                {'공고 제목'}
-              </th>
-              <th
-                style={{
-                  textAlign: 'right',
-                  padding: '8px 12px',
-                  fontSize: 12,
-                  color: '#999',
-                  fontWeight: 600,
-                }}
-              >
-                {'지원자수'}
-              </th>
-              <th
-                style={{
-                  textAlign: 'right',
-                  padding: '8px 12px',
-                  fontSize: 12,
-                  color: '#999',
-                  fontWeight: 600,
-                }}
-              >
-                {'게시일'}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.recentPostings.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={3}
-                  style={{
-                    textAlign: 'center',
-                    padding: 32,
-                    color: '#999',
-                    fontSize: 14,
-                  }}
-                >
-                  {'최근 공고가 없습니다'}
-                </td>
+        <div className={TABLE_STYLES.wrapper}>
+          <table className={TABLE_STYLES.table}>
+            <thead>
+              <tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>{'공고 제목'}</th>
+                <th className={TABLE_STYLES.headerCellRight}>{'지원자수'}</th>
+                <th className={TABLE_STYLES.headerCellRight}>{'게시일'}</th>
               </tr>
-            ) : (
-              data.recentPostings.slice(0, 5).map((posting) => (
-                <tr
-                  key={posting.id}
-                  onClick={() => router.push(`/recruitment/${posting.id}`)}
-                  style={{
-                    borderBottom: '1px solid #F5F5F5',
-                    cursor: 'pointer',
-                    transition: 'background 0.15s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#FAFAFA'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent'
-                  }}
-                >
+            </thead>
+            <tbody className="divide-y divide-[#F0F0F3]">
+              {data.recentPostings.length === 0 ? (
+                <tr>
                   <td
-                    style={{
-                      padding: '12px',
-                      fontSize: 14,
-                      color: '#1A1A1A',
-                      fontWeight: 500,
-                    }}
+                    colSpan={3}
+                    className="px-4 py-12 text-center text-sm text-[#999]"
                   >
-                    {posting.title}
-                  </td>
-                  <td
-                    style={{
-                      padding: '12px',
-                      fontSize: 14,
-                      color: '#1A1A1A',
-                      textAlign: 'right',
-                    }}
-                  >
-                    <span
-                      style={{
-                        display: 'inline-block',
-                        padding: '2px 10px',
-                        borderRadius: 4,
-                        fontSize: 12,
-                        fontWeight: 600,
-                        backgroundColor: '#E3F2FD',
-                        color: '#2196F3',
-                      }}
-                    >
-                      {t('countPeople', { count: posting.applicantCount })}
-                    </span>
-                  </td>
-                  <td
-                    style={{
-                      padding: '12px',
-                      fontSize: 14,
-                      color: '#666',
-                      textAlign: 'right',
-                    }}
-                  >
-                    {posting.publishedAt
-                      ? format(new Date(posting.publishedAt), 'yyyy-MM-dd')
-                      : '-'}
+                    {'최근 공고가 없습니다'}
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                data.recentPostings.slice(0, 5).map((posting) => (
+                  <tr
+                    key={posting.id}
+                    onClick={() => router.push(`/recruitment/${posting.id}`)}
+                    className={TABLE_STYLES.rowClickable}
+                  >
+                    <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">
+                      {posting.title}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-[#1A1A1A] text-right">
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          padding: '2px 10px',
+                          borderRadius: 4,
+                          fontSize: 12,
+                          fontWeight: 600,
+                          backgroundColor: '#E3F2FD',
+                          color: '#2196F3',
+                        }}
+                      >
+                        {t('countPeople', { count: posting.applicantCount })}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-[#666] text-right">
+                      {posting.publishedAt
+                        ? format(new Date(posting.publishedAt), 'yyyy-MM-dd')
+                        : '-'}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Responsive styles via media query */}

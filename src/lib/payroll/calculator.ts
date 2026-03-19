@@ -4,18 +4,18 @@
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
-import { laborConfig } from '@/lib/labor/kr'
+import { getOvertimeRatesFromSettings } from '@/lib/labor/settings'
 import { getStartOfDayTz, getEndOfDayTz, parseDateOnly, formatToTz } from '@/lib/timezone'
 import {
   calculateHourlyWage,
-  calculateTotalDeductions,
+//   calculateTotalDeductions,
   calculateSocialInsurance,
   calculateIncomeTax,
   separateTaxableIncome,
   calculateProrated,
   detectPayrollAnomalies,
   getWeekdaysInMonth,
-  MONTHLY_STANDARD_HOURS,
+//   MONTHLY_STANDARD_HOURS,
 } from './kr-tax'
 import type { AllowanceItem } from './kr-tax'
 import type { PayrollItemDetail, PayrollEarnings, PayrollOvertime } from './types'
@@ -46,8 +46,10 @@ interface OvertimeBreakdown {
 function calculateOvertimePay(
   hourlyWage: number,
   breakdown: OvertimeBreakdown,
+  otRates?: { condition: string; multiplier: number }[],
 ): { pay: number; overtime: PayrollOvertime } {
-  const rates = laborConfig.overtime_rates
+  const findRate = (cond: string, fallback: number) =>
+    otRates?.find((r) => r.condition === cond)?.multiplier ?? fallback
 
   const weekdayOTHours = breakdown.weekdayOTMinutes / 60
   const weekendHours = breakdown.weekendMinutes / 60
@@ -55,10 +57,10 @@ function calculateOvertimePay(
   const nightHours = breakdown.nightMinutes / 60
 
   // 연장근로 1.5x, 휴일 1.5x, 공휴일 2.0x, 야간 0.5x (가산분만)
-  const weekdayOTPay = Math.round(hourlyWage * (rates[0]?.multiplier ?? 1.5) * weekdayOTHours)
-  const weekendPay = Math.round(hourlyWage * (rates[1]?.multiplier ?? 1.5) * weekendHours)
-  const holidayPay = Math.round(hourlyWage * (rates[2]?.multiplier ?? 2.0) * holidayHours)
-  const nightPay = Math.round(hourlyWage * (rates[3]?.multiplier ?? 0.5) * nightHours)
+  const weekdayOTPay = Math.round(hourlyWage * findRate('WEEKDAY_OT', 1.5) * weekdayOTHours)
+  const weekendPay = Math.round(hourlyWage * findRate('WEEKEND', 1.5) * weekendHours)
+  const holidayPay = Math.round(hourlyWage * findRate('HOLIDAY', 2.0) * holidayHours)
+  const nightPay = Math.round(hourlyWage * findRate('NIGHT', 0.5) * nightHours)
 
   const totalOvertimeHours = weekdayOTHours + weekendHours + holidayHours + nightHours
 
@@ -108,7 +110,7 @@ export async function calculatePayrollForEmployee(
 
   const annualSalary = latestComp ? Number(latestComp.newBaseSalary) : 0
   const monthlySalary = Math.round(annualSalary / 12)
-  const hourlyWage = calculateHourlyWage(monthlySalary)
+//   const hourlyWage = calculateHourlyWage(monthlySalary)
 
   // 2. 초과근무: Attendance 기간 내 overtimeMinutes 합산
   // periodStartTz/periodEndTz: 회사 타임존 기준 월 경계 → UTC로 변환된 정확한 경계값
@@ -149,6 +151,9 @@ export async function calculatePayrollForEmployee(
   }
 
   // overtimePay와 overtime은 일할 기준 hourlyWage로 아래에서 재계산됨
+
+  // 2-1. OT rates from Settings (company override → global → hardcoded fallback)
+  const otConfig = await getOvertimeRatesFromSettings(companyId, 'KR')
 
   // 3. 수당: AllowanceRecord (해당 월) — yearMonth는 타임존 기준으로 상단에서 계산됨
   const allowanceRecords = await prisma.allowanceRecord.findMany({
@@ -244,7 +249,7 @@ export async function calculatePayrollForEmployee(
   const effectiveHourlyWage = calculateHourlyWage(effectiveMonthlySalary)
 
   // 초과근무도 일할 적용 시 hourlyWage를 일할 기준으로 재계산
-  const { pay: effectiveOvertimePay, overtime } = calculateOvertimePay(effectiveHourlyWage, overtimeBreakdown)
+  const { pay: effectiveOvertimePay, overtime } = calculateOvertimePay(effectiveHourlyWage, overtimeBreakdown, otConfig.rates)
 
   // ─── GP#2 Gap 1: 무급휴가 공제 ─────────────────────────────
   // 기간 내 승인된 무급 LeaveRequest 합산 (policy.isPaid = false)

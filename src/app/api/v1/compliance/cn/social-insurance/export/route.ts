@@ -10,12 +10,13 @@ import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { socialInsuranceExportSchema } from '@/lib/schemas/compliance'
 import { generateSocialInsuranceReport } from '@/lib/compliance/cn'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/compliance/cn/social-insurance/export ──
 // Export monthly social insurance report as JSON data for client-side Excel
 
-export const GET = withPermission(
+export const GET = withRateLimit(withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
     const params = Object.fromEntries(req.nextUrl.searchParams.entries())
     const parsed = socialInsuranceExportSchema.safeParse(params)
@@ -73,4 +74,4 @@ export const GET = withPermission(
     })
   },
   perm(MODULE.COMPLIANCE, ACTION.VIEW),
-)
+), RATE_LIMITS.EXPORT)

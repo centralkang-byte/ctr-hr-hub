@@ -15,7 +15,6 @@ import { badRequest, notFound, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
-import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
 import type { SessionUser } from '@/types'
 
 // ─── Helper: HR_ADMIN or above ───────────────────────────
@@ -97,18 +96,6 @@ export const PUT = withPermission(
         return cancelled
       })
 
-      // Fire event
-      const ctx = { companyId: request.companyId, actorId: user.employeeId, occurredAt: now }
-      void eventBus.publish(DOMAIN_EVENTS.LEAVE_CANCELLED, {
-        ctx,
-        requestId: request.id,
-        employeeId: request.employeeId,
-        policyId: request.policyId,
-        balanceId: '',
-        days: Number(request.days),
-        previousStatus: 'PENDING' as const,
-      })
-
       await auditCancel(req, user, request, 'PENDING_CANCEL', 0)
 
       return apiSuccess({
@@ -148,17 +135,6 @@ export const PUT = withPermission(
         }
 
         return cancelled
-      })
-
-      const ctx = { companyId: request.companyId, actorId: user.employeeId, occurredAt: now }
-      void eventBus.publish(DOMAIN_EVENTS.LEAVE_CANCELLED, {
-        ctx,
-        requestId: request.id,
-        employeeId: request.employeeId,
-        policyId: request.policyId,
-        balanceId: '',
-        days: Number(request.days),
-        previousStatus: 'APPROVED' as const,
       })
 
       await auditCancel(req, user, request, 'PRE_START_CANCEL', daysToRestore)
@@ -204,17 +180,6 @@ export const PUT = withPermission(
         }
 
         return cancelled
-      })
-
-      const ctx = { companyId: request.companyId, actorId: user.employeeId, occurredAt: now }
-      void eventBus.publish(DOMAIN_EVENTS.LEAVE_CANCELLED, {
-        ctx,
-        requestId: request.id,
-        employeeId: request.employeeId,
-        policyId: request.policyId,
-        balanceId: '',
-        days: Number(request.days),
-        previousStatus: 'APPROVED' as const,
       })
 
       await auditCancel(req, user, request, 'POST_START_CANCEL', unusedDays)

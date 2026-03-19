@@ -28,7 +28,7 @@ export async function GET() {
     // Delegates to the same inbox aggregation endpoint so badge == list count
     let approvals = 0
     try {
-      const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3002'
+//       const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3002'
       // Internal server-side call — reuse the inbox API's aggregation logic
       // to guarantee badge count matches what the inbox page displays.
       // Instead of duplicating complex multi-source logic, we count directly:

@@ -228,7 +228,7 @@ function ListView({ depts, onSelect, selectedId }: ListViewProps) {
 
   return (
     <div className="overflow-auto h-full">
-      <table className="w-full text-sm border-collapse">
+      <table className={TABLE_STYLES.table}>
         <thead className="sticky top-0 z-10">
           <tr className={TABLE_STYLES.header}>
             <th className={TABLE_STYLES.headerCell}>{tOrg('code')}</th>

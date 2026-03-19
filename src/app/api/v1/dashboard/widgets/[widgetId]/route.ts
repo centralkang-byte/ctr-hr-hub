@@ -161,7 +161,7 @@ async function getRecruitTTR(companyId: string | null) {
   })
 }
 
-async function getTalentPool(companyId: string | null) {
+async function getTalentPool(_companyId: string | null) {
   try {
     const now = new Date()
     const thirtyDaysLater = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)

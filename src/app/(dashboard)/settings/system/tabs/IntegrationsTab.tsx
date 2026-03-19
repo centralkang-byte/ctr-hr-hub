@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { Info, Plug, ExternalLink } from 'lucide-react'
+// import { useState } from 'react'
+import { Info, Plug } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 interface Props { companyId: string | null }
@@ -16,8 +16,8 @@ const INTEGRATIONS = [
 ]
 
 export function IntegrationsTab({
-  companyId }: Props) {
-  const t = useTranslations('settings')
+  companyId: _companyId }: Props) {
+//   const t = useTranslations('settings')
   return (
     <div className="space-y-4">
       <div className="mb-4">

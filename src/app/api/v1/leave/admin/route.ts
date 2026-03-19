@@ -23,7 +23,7 @@ export const GET = withPermission(
     const yearParam = searchParams.get('year')
     const year = yearParam ? Number(yearParam) : new Date().getFullYear()
 
-    const companyFilter = user.role === ROLE.SUPER_ADMIN ? {} : { companyId: user.companyId }
+//     const companyFilter = user.role === ROLE.SUPER_ADMIN ? {} : { companyId: user.companyId }
     const effectiveCompanyFilter = { companyId }
 
     // 2. Leave request stats by status for the year

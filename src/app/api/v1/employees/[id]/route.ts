@@ -23,6 +23,11 @@ export const GET = withPermission(
   ) => {
     const { id } = await context.params
 
+    // IDOR guard: EMPLOYEE can only view their own profile
+    if (user.role === 'EMPLOYEE' && id !== user.employeeId) {
+      throw notFound('직원을 찾을 수 없습니다.')
+    }
+
     // App-level filter kept as redundant safety net (belt AND suspenders)
     const assignmentFilter =
       user.role === 'SUPER_ADMIN'
@@ -165,23 +170,40 @@ export const DELETE = withPermission(
   ) => {
     const { id } = await context.params
 
-    try {
-      // For non-SUPER_ADMIN, verify the employee belongs to user's company via assignment
-      if (user.role !== 'SUPER_ADMIN') {
-        const exists = await prisma.employee.findFirst({
-          where: {
-            id,
-            deletedAt: null,
-            assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } },
-          },
-          select: { id: true },
-        })
-        if (!exists) {
-          const { notFound: throwNotFound } = await import('@/lib/errors')
-          throw throwNotFound('직원을 찾을 수 없습니다.')
-        }
+    // For non-SUPER_ADMIN, verify the employee belongs to user's company via assignment
+    if (user.role !== 'SUPER_ADMIN') {
+      const exists = await prisma.employee.findFirst({
+        where: {
+          id,
+          deletedAt: null,
+          assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } },
+        },
+        select: { id: true },
+      })
+      if (!exists) {
+        throw notFound('직원을 찾을 수 없습니다.')
       }
+    }
 
+    // ── Pre-delete dependency check ──────────────────────────
+    const [pendingLeaves, activePayrollItems, activeGoals, pendingOnboarding] = await Promise.all([
+      prisma.leaveRequest.count({ where: { employeeId: id, status: 'PENDING' } }),
+      prisma.payrollItem.count({ where: { employeeId: id, run: { status: { in: ['CALCULATING', 'ADJUSTMENT', 'REVIEW', 'PENDING_APPROVAL'] } } } }),
+      prisma.mboGoal.count({ where: { employeeId: id, status: { in: ['DRAFT', 'PENDING_APPROVAL', 'APPROVED'] } } }),
+      prisma.employeeOnboarding.count({ where: { employeeId: id, completedAt: null } }),
+    ])
+
+    const blockers: string[] = []
+    if (pendingLeaves > 0) blockers.push(`대기 중 휴가 신청 ${pendingLeaves}건`)
+    if (activePayrollItems > 0) blockers.push(`처리 중 급여 항목 ${activePayrollItems}건`)
+    if (activeGoals > 0) blockers.push(`활성 목표 ${activeGoals}건`)
+    if (pendingOnboarding > 0) blockers.push(`진행 중 온보딩 ${pendingOnboarding}건`)
+
+    if (blockers.length > 0) {
+      throw badRequest(`삭제할 수 없습니다: ${blockers.join(', ')}이(가) 존재합니다.`)
+    }
+
+    try {
       const employee = await prisma.employee.update({
         where: { id, deletedAt: null },
         data: { deletedAt: new Date() },

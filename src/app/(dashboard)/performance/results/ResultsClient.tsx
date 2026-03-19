@@ -10,6 +10,7 @@ import { Target, TrendingUp, Award } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -135,36 +136,36 @@ export default function ResultsClient({
           <div className="px-5 py-4 border-b border-[#E8E8E8]">
             <h2 className="text-lg font-semibold text-[#1A1A1A]">{t('evaluation_kebb984ea')}</h2>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
+          <div className={TABLE_STYLES.wrapper}>
+            <table className={TABLE_STYLES.table}>
               <thead>
                 <tr className={TABLE_STYLES.header}>
                   <th className={TABLE_STYLES.headerCell}>{t('kr_keab5aceb')}</th>
-                  <th className={TABLE_STYLES.headerCell}>{t('kr_kec84b1ea_score')}</th>
-                  <th className={TABLE_STYLES.headerCell}>{t('kr_kec97adeb_score')}</th>
-                  <th className={TABLE_STYLES.headerCell}>{t('kr_ems_kebb894eb')}</th>
-                  <th className={TABLE_STYLES.headerCell}>{t('status')}</th>
+                  <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_kec84b1ea_score')}</th>
+                  <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_kec97adeb_score')}</th>
+                  <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_ems_kebb894eb')}</th>
+                  <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('status')}</th>
                 </tr>
               </thead>
               <tbody>
                 {result?.selfEvaluation && (
-                  <tr className="border-b border-[#F5F5F5]">
-                    <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">{t('selfEval')}</td>
-                    <td className="px-4 py-3 text-sm text-center text-[#555]">{result.selfEvaluation.performanceScore?.toFixed(1) ?? '-'}</td>
-                    <td className="px-4 py-3 text-sm text-center text-[#555]">{result.selfEvaluation.competencyScore?.toFixed(1) ?? '-'}</td>
-                    <td className="px-4 py-3 text-sm text-center font-medium text-[#5E81F4]">{result.selfEvaluation.emsBlock ?? '-'}</td>
-                    <td className="px-4 py-3 text-center">
+                  <tr className={TABLE_STYLES.row}>
+                    <td className={cn(TABLE_STYLES.cell, "font-medium")}>{t('selfEval')}</td>
+                    <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{result.selfEvaluation.performanceScore?.toFixed(1) ?? '-'}</td>
+                    <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{result.selfEvaluation.competencyScore?.toFixed(1) ?? '-'}</td>
+                    <td className={cn(TABLE_STYLES.cell, "text-center font-medium text-[#5E81F4]")}>{result.selfEvaluation.emsBlock ?? '-'}</td>
+                    <td className={cn(TABLE_STYLES.cell, "text-center")}>
                       <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#D1FAE5] text-[#047857]">{result.selfEvaluation.status}</span>
                     </td>
                   </tr>
                 )}
                 {result?.managerEvaluation && (
-                  <tr className="border-b border-[#F5F5F5]">
-                    <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">{t('managerEval')}</td>
-                    <td className="px-4 py-3 text-sm text-center text-[#555]">{result.managerEvaluation.performanceScore?.toFixed(1) ?? '-'}</td>
-                    <td className="px-4 py-3 text-sm text-center text-[#555]">{result.managerEvaluation.competencyScore?.toFixed(1) ?? '-'}</td>
-                    <td className="px-4 py-3 text-sm text-center font-medium text-[#5E81F4]">{result.managerEvaluation.emsBlock ?? '-'}</td>
-                    <td className="px-4 py-3 text-center">
+                  <tr className={TABLE_STYLES.row}>
+                    <td className={cn(TABLE_STYLES.cell, "font-medium")}>{t('managerEval')}</td>
+                    <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{result.managerEvaluation.performanceScore?.toFixed(1) ?? '-'}</td>
+                    <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{result.managerEvaluation.competencyScore?.toFixed(1) ?? '-'}</td>
+                    <td className={cn(TABLE_STYLES.cell, "text-center font-medium text-[#5E81F4]")}>{result.managerEvaluation.emsBlock ?? '-'}</td>
+                    <td className={cn(TABLE_STYLES.cell, "text-center")}>
                       <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#D1FAE5] text-[#047857]">{result.managerEvaluation.status}</span>
                     </td>
                   </tr>

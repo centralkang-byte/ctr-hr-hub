@@ -80,23 +80,23 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
 
     return (
       <div className="mt-4 overflow-x-auto">
-        <table className="w-full text-xs">
+        <table className={TABLE_STYLES.table}>
           <thead>
             <tr className={TABLE_STYLES.header}>
               {Object.keys(sample).filter(k => k !== 'employeeId').map(k => (
-                <th key={k} className="px-3 py-2 text-left text-[#666] font-medium capitalize">
+                <th key={k} className={TABLE_STYLES.headerCell + " capitalize"}>
                   {k.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#F5F5F5]">
+          <tbody className="divide-y divide-[#E5E7EB]">
             {details.slice(0, 8).map((row, i) => {
               const r = row as Record<string, unknown>
               return (
                 <tr key={i} className={TABLE_STYLES.row}>
                   {Object.entries(r).filter(([k]) => k !== 'employeeId').map(([k, v]) => (
-                    <td key={k} className="px-3 py-2 text-[#555]">
+                    <td key={k} className={TABLE_STYLES.cell}>
                       {typeof v === 'number' ? v.toLocaleString() : String(v ?? '—')}
                     </td>
                   ))}

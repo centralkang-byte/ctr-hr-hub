@@ -38,20 +38,20 @@ export function CodeManagementTab({
       {Object.keys(grouped).length > 0 ? Object.entries(grouped).sort(([a],[b]) => a.localeCompare(b)).map(([group, items]) => (
         <div key={group}>
           <h4 className="mb-2 text-sm font-semibold text-[#8181A5]">{group} ({items.length})</h4>
-          <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-            <table className="w-full">
-              <thead><tr className={TABLE_STYLES.header}>
+          <div className={TABLE_STYLES.wrapper}>
+            <table className={TABLE_STYLES.table}>
+              <thead className={TABLE_STYLES.header}><tr>
                 <th className={TABLE_STYLES.headerCell}>{t('kr_ked82a4')}</th>
                 <th className={TABLE_STYLES.headerCell}>{t('kr_keb9dbceb')}</th>
                 <th className={TABLE_STYLES.headerCell}>{t('kr_kec8389ec')}</th>
                 <th className={TABLE_STYLES.headerCell}>{t('kr_kec889cec')}</th>
               </tr></thead>
-              <tbody className="divide-y divide-[#F0F0F3]">{items.sort((a,b) => a.sortOrder - b.sortOrder).map((o) => (
+              <tbody>{items.sort((a,b) => a.sortOrder - b.sortOrder).map((o) => (
                 <tr key={o.id} className={TABLE_STYLES.row}>
-                  <td className="px-4 py-2 text-sm font-medium text-[#5E81F4]">{o.optionKey}</td>
-                  <td className="px-4 py-2 text-sm text-[#1C1D21]">{o.label}</td>
-                  <td className="px-4 py-2 text-center">{o.color ? <span className="inline-block h-4 w-4 rounded-full" style={{ backgroundColor: o.color }} /> : '—'}</td>
-                  <td className="px-4 py-2 text-center text-sm text-[#8181A5]">{o.sortOrder}</td>
+                  <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{o.optionKey}</td>
+                  <td className={TABLE_STYLES.cell}>{o.label}</td>
+                  <td className={`${TABLE_STYLES.cell} text-center`}>{o.color ? <span className="inline-block h-4 w-4 rounded-full" style={{ backgroundColor: o.color }} /> : '—'}</td>
+                  <td className={`${TABLE_STYLES.cell} text-center text-[#8181A5]`}>{o.sortOrder}</td>
                 </tr>
               ))}</tbody>
             </table>

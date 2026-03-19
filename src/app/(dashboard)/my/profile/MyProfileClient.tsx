@@ -13,7 +13,7 @@ import {
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 import type { SessionUser } from '@/types'
-import { CARD_STYLES, BUTTON_SIZES, BUTTON_VARIANTS,  MODAL_STYLES } from '@/lib/styles'
+import { CARD_STYLES, BUTTON_SIZES, BUTTON_VARIANTS,  MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -583,25 +583,25 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
             {employee.compensationHistories.length === 0 ? (
                <EmptyState title="기록 없음" description="보상 이력이 존재하지 않습니다." />
             ) : (
-              <div className="border border-[#E8E8E8] rounded-xl overflow-hidden">
-                <table className="w-full text-sm text-left">
-                  <thead className="text-xs text-[#555] bg-[#F5F5F5] uppercase font-semibold">
-                    <tr>
-                      <th className="px-4 py-3">적용일</th>
-                      <th className="px-4 py-3">유형</th>
-                      <th className="px-4 py-3 text-right">금액</th>
+              <div className={TABLE_STYLES.wrapper}>
+                <table className={TABLE_STYLES.table}>
+                  <thead>
+                    <tr className={TABLE_STYLES.header}>
+                      <th className={TABLE_STYLES.headerCell}>적용일</th>
+                      <th className={TABLE_STYLES.headerCell}>유형</th>
+                      <th className={TABLE_STYLES.headerCell + " text-right"}>금액</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-[#F0F0F3]">
                     {employee.compensationHistories.map((comp) => (
-                      <tr key={comp.id} className="border-b border-[#E8E8E8] last:border-0 hover:bg-[#FAFAFA] transition-colors">
-                        <td className="px-4 py-3.5 font-medium text-[#333]">{formatDate(comp.effectiveDate)}</td>
-                        <td className="px-4 py-3.5">
+                      <tr key={comp.id} className={TABLE_STYLES.row}>
+                        <td className={TABLE_STYLES.cell + " font-medium text-[#333]"}>{formatDate(comp.effectiveDate)}</td>
+                        <td className={TABLE_STYLES.cell}>
                           <span className="inline-flex bg-[#E8E8E8] text-[#555] px-2 py-0.5 rounded text-xs">
                             {translateChangeType(comp.changeType)}
                           </span>
                         </td>
-                        <td className="px-4 py-3.5 text-right font-medium text-[#1A1A1A]">
+                        <td className={TABLE_STYLES.cell + " text-right font-medium text-[#1A1A1A]"}>
                            {formatCurrency(comp.newBaseSalary, comp.currency)}
                         </td>
                       </tr>

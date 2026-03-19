@@ -284,10 +284,10 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
               {analysis.bySource.length === 0 ? (
                 <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                <div className={TABLE_STYLES.wrapper}>
+                  <table className={TABLE_STYLES.table}>
                     <thead>
-                      <tr className="border-b border-[#E8E8E8]">
+                      <tr className={TABLE_STYLES.header}>
                         <th className={TABLE_STYLES.headerCell}>{'소스'}</th>
                         <th className={TABLE_STYLES.headerCellRight}>{'총 비용'}</th>
                         <th className={TABLE_STYLES.headerCellRight}>{'채용 수'}</th>
@@ -295,13 +295,13 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                         <th className={TABLE_STYLES.headerCellRight}>{'비중'}</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-[#F0F0F3]">
                       {analysis.bySource.map((s) => {
                         const pct = analysis.totalCost > 0
                           ? ((s.totalCost / analysis.totalCost) * 100).toFixed(1)
                           : '0'
                         return (
-                          <tr key={s.source} className={TABLE_STYLES.header}>
+                          <tr key={s.source} className="hover:bg-[#FAFAFA] transition-colors">
                             <td className="px-4 py-3 font-medium text-[#1A1A1A]">{SOURCE_LABELS[s.source] ?? s.source}</td>
                             <td className="px-4 py-3 text-right text-[#1A1A1A]">{formatCurrency(s.totalCost)}</td>
                             <td className="px-4 py-3 text-right text-[#1A1A1A]">{s.hires}명</td>
@@ -362,10 +362,10 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                 <h2 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em]">{'공고별 채용 비용 (Top 20)'}</h2>
               </div>
               <div className="p-6">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                <div className={TABLE_STYLES.wrapper}>
+                  <table className={TABLE_STYLES.table}>
                     <thead>
-                      <tr className="border-b border-[#E8E8E8]">
+                      <tr className={TABLE_STYLES.header}>
                         <th className={TABLE_STYLES.headerCell}>{'공고명'}</th>
                         <th className={TABLE_STYLES.headerCellRight}>{'총 비용'}</th>
                         <th className={TABLE_STYLES.headerCellRight}>{'모집인원'}</th>
@@ -373,9 +373,9 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                         <th className={TABLE_STYLES.headerCellRight}>{'인당 단가'}</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-[#F0F0F3]">
                       {analysis.byPosting.map((p) => (
-                        <tr key={p.postingId} className={TABLE_STYLES.header}>
+                        <tr key={p.postingId} className="hover:bg-[#FAFAFA] transition-colors">
                           <td className="px-4 py-3 font-medium text-[#1A1A1A] max-w-[200px] truncate">{p.title}</td>
                           <td className="px-4 py-3 text-right text-[#1A1A1A]">{formatCurrency(p.totalCost)}</td>
                           <td className="px-4 py-3 text-right text-[#1A1A1A]">{p.headcount}명</td>
@@ -417,10 +417,10 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
             {costs.length === 0 ? (
               <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+              <div className={TABLE_STYLES.wrapper}>
+                <table className={TABLE_STYLES.table}>
                   <thead>
-                    <tr className="border-b border-[#E8E8E8]">
+                    <tr className={TABLE_STYLES.header}>
                       <th className={TABLE_STYLES.headerCell}>{'비용 유형'}</th>
                       <th className={TABLE_STYLES.headerCell}>{'소스'}</th>
                       <th className={TABLE_STYLES.headerCell}>공고</th>
@@ -430,9 +430,9 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                       <th className={TABLE_STYLES.headerCell}>{'액션'}</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-[#F0F0F3]">
                     {costs.map((c) => (
-                      <tr key={c.id} className={TABLE_STYLES.header}>
+                      <tr key={c.id} className="hover:bg-[#FAFAFA] transition-colors">
                         <td className="px-4 py-3">
                           <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${COST_TYPE_BADGE_STYLES[c.costType] ?? COST_TYPE_BADGE_STYLES.OTHER}`}>
                             {COST_TYPE_LABELS[c.costType] ?? c.costType}

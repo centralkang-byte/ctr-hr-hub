@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Plus, Pencil } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import SocialInsuranceConfigForm from './SocialInsuranceConfigForm'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
 
 interface SocialInsuranceConfig {
   id: string
@@ -95,25 +95,25 @@ export default function SocialInsuranceConfigTab() {
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className={TABLE_STYLES.table}>
             <thead>
-              <tr className="bg-[#FAFAFA] text-xs text-[#666] font-medium uppercase tracking-wider">
-                <th className="px-4 py-3 text-left">보험 유형</th>
-                <th className="px-4 py-3 text-left">도시</th>
-                <th className="px-4 py-3 text-right">회사 부담률</th>
-                <th className="px-4 py-3 text-right">직원 부담률</th>
-                <th className="px-4 py-3 text-right">기수 하한</th>
-                <th className="px-4 py-3 text-right">기수 상한</th>
-                <th className="px-4 py-3 text-left">적용 시작일</th>
-                <th className="px-4 py-3 text-center">상태</th>
-                <th className="px-4 py-3 text-center">작업</th>
+              <tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>보험 유형</th>
+                <th className={TABLE_STYLES.headerCell}>도시</th>
+                <th className={TABLE_STYLES.headerCellRight}>회사 부담률</th>
+                <th className={TABLE_STYLES.headerCellRight}>직원 부담률</th>
+                <th className={TABLE_STYLES.headerCellRight}>기수 하한</th>
+                <th className={TABLE_STYLES.headerCellRight}>기수 상한</th>
+                <th className={TABLE_STYLES.headerCell}>적용 시작일</th>
+                <th className={TABLE_STYLES.headerCell}>상태</th>
+                <th className={TABLE_STYLES.headerCell}>작업</th>
               </tr>
             </thead>
             <tbody>
               {configs.map((config) => (
                 <tr
                   key={config.id}
-                  className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]"
+                  className={TABLE_STYLES.row}
                 >
                   <td className="px-4 py-3 font-medium text-[#1A1A1A]">
                     {INSURANCE_TYPE_LABELS[config.insuranceType] ?? config.insuranceType}

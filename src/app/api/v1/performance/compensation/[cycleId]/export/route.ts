@@ -9,11 +9,12 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/performance/compensation/[cycleId]/export
 
-export const GET = withPermission(
+export const GET = withRateLimit(withPermission(
     async (_req: NextRequest, context: { params: Promise<Record<string, string>> }, user: SessionUser) => {
         const { cycleId } = await context.params
 
@@ -85,5 +86,5 @@ export const GET = withPermission(
             throw handlePrismaError(error)
         }
     },
-    perm(MODULE.PERFORMANCE, ACTION.VIEW),
-)
+    perm(MODULE.PERFORMANCE, ACTION.APPROVE),
+), RATE_LIMITS.EXPORT)

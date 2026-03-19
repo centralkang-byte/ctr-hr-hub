@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useMemo } from 'react'
-import { NAVIGATION, type NavSection, type NavItem } from '@/config/navigation'
+import { NAVIGATION, type NavSection } from '@/config/navigation'
 import { ROLE, MODULE, ACTION } from '@/lib/constants'
 import type { Permission, SessionUser } from '@/types'
 

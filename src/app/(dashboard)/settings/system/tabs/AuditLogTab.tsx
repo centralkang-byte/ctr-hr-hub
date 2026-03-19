@@ -55,8 +55,8 @@ const CATEGORY_LABELS: Record<string, string> = {
 }
 
 export function AuditLogTab({
-  companyId }: Props) {
-  const t = useTranslations('settings')
+  companyId: _companyId }: Props) {
+//   const t = useTranslations('settings')
   const [logs, setLogs] = useState<AuditLogEntry[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -107,10 +107,10 @@ export function AuditLogTab({
 
       {logs.length > 0 ? (
         <>
-          <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-            <table className="w-full">
-              <thead>
-                <tr className={TABLE_STYLES.header}>
+          <div className={TABLE_STYLES.wrapper}>
+            <table className={TABLE_STYLES.table}>
+              <thead className={TABLE_STYLES.header}>
+                <tr>
                   <th className={TABLE_STYLES.headerCell}>{'날짜'}</th>
                   <th className={TABLE_STYLES.headerCell}>{'카테고리'}</th>
                   <th className={TABLE_STYLES.headerCell}>{'설정항목'}</th>
@@ -119,21 +119,21 @@ export function AuditLogTab({
                   <th className={TABLE_STYLES.headerCell}>{'변경'}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#F0F0F3]">
+              <tbody>
                 {logs.map((log) => {
                   const changes = log.changes as AuditLogChanges | null
                   const actionInfo = ACTION_LABELS[log.action] ?? { label: log.action, color: 'text-[#8181A5] bg-[#F5F5FA]' }
                   const categoryLabel = CATEGORY_LABELS[changes?.category ?? ''] ?? changes?.category ?? '—'
 
                   return (
-                    <tr key={log.id} className="hover:bg-[#F5F5FA] transition-colors">
-                      <td className="px-4 py-3 text-sm text-[#8181A5] whitespace-nowrap">
+                    <tr key={log.id} className={TABLE_STYLES.row}>
+                      <td className={`${TABLE_STYLES.cell} text-[#8181A5] whitespace-nowrap`}>
                         {new Date(log.createdAt).toLocaleString('ko-KR', {
                           year: 'numeric', month: '2-digit', day: '2-digit',
                           hour: '2-digit', minute: '2-digit',
                         })}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className={TABLE_STYLES.cell}>
                         <span className="inline-flex items-center rounded-md bg-[#F5F5FA] px-2 py-1 text-xs font-medium text-[#1C1D21]">
                           {categoryLabel}
                         </span>
@@ -141,16 +141,16 @@ export function AuditLogTab({
                       <td className={TABLE_STYLES.cell}>
                         {changes?.key ?? '—'}
                       </td>
-                      <td className={TABLE_STYLES.cellMuted}>
+                      <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>
                         {log.company?.name ??
                           (changes?.companyId === 'global' || !changes?.companyId ? '글로벌' : changes.companyId)}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className={TABLE_STYLES.cell}>
                         <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${actionInfo.color}`}>
                           {actionInfo.label}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-sm text-[#8181A5] max-w-[280px] truncate" title={changes?.description ?? ''}>
+                      <td className={`${TABLE_STYLES.cell} text-[#8181A5] max-w-[280px] truncate`} title={changes?.description ?? ''}>
                         {changes?.description ?? '—'}
                       </td>
                     </tr>

@@ -7,9 +7,10 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, notFound, handlePrismaError } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
+import { withAuth, hasPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { forbidden } from '@/lib/errors'
 import type { SessionUser } from '@/types'
 
 // ─── Evaluation Schema ───────────────────────────────────
@@ -30,7 +31,7 @@ const evaluationSchema = z.object({
 
 // ─── POST /api/v1/recruitment/interviews/[id]/evaluate ───
 
-export const POST = withPermission(
+export const POST = withAuth(
   async (req: NextRequest, context, user: SessionUser) => {
     const { id } = await context.params
 
@@ -53,6 +54,13 @@ export const POST = withPermission(
 
     if (!schedule) {
       throw notFound('면접 일정을 찾을 수 없습니다.')
+    }
+
+    // Authorization: must be the assigned interviewer OR have recruitment:create permission
+    const isInterviewer = schedule.interviewerId === user.employeeId
+    const hasRecruitmentCreate = hasPermission(user, perm(MODULE.RECRUITMENT, ACTION.CREATE))
+    if (!isInterviewer && !hasRecruitmentCreate) {
+      throw forbidden('면접 평가 권한이 없습니다. 배정된 면접관만 평가할 수 있습니다.')
     }
 
     // Parse request body
@@ -130,5 +138,4 @@ export const POST = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.RECRUITMENT, ACTION.CREATE),
 )

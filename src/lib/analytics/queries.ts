@@ -5,8 +5,8 @@
 
 import { prisma } from '@/lib/prisma'
 import type {
-  HeadcountRow,
-  AttendanceWeeklyRow,
+//   HeadcountRow,
+//   AttendanceWeeklyRow,
   PerformanceSummaryRow,
   RecruitmentFunnelRow,
   BurnoutRiskRow,
@@ -14,6 +14,22 @@ import type {
   ExitReasonMonthlyRow,
   CompaRatioRow,
 } from './types'
+
+// ─── Helper: safe MV query (graceful fallback when MV missing) ──
+
+async function safeMvQuery<T>(fn: () => Promise<T[]>): Promise<T[]> {
+  try {
+    return await fn()
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err)
+    // 42P01 = relation does not exist (MV not created)
+    if (msg.includes('42P01') || msg.includes('does not exist')) {
+      console.warn('[analytics] MV not found, returning empty:', msg.slice(0, 100))
+      return []
+    }
+    throw err
+  }
+}
 
 // ─── Helper: company filter clause ──────────────────────
 
@@ -27,7 +43,7 @@ function companyWhere(companyId?: string, alias = ''): { clause: string; params:
 
 export async function getHeadcountSummary(companyId?: string) {
   const { clause, params } = companyWhere(companyId)
-  return prisma.$queryRawUnsafe<
+  return safeMvQuery(() => prisma.$queryRawUnsafe<
     { total_headcount: bigint; new_hires_30d: bigint; resignations_30d: bigint }[]
   >(
     `SELECT
@@ -37,12 +53,12 @@ export async function getHeadcountSummary(companyId?: string) {
     FROM mv_headcount_daily
     WHERE 1=1 ${clause}`,
     ...params,
-  )
+  ))
 }
 
 export async function getHeadcountByDepartment(companyId?: string) {
   const { clause, params } = companyWhere(companyId, 'h')
-  return prisma.$queryRawUnsafe<
+  return safeMvQuery(() => prisma.$queryRawUnsafe<
     { department_id: string; department_name: string; headcount: bigint }[]
   >(
     `SELECT h.department_id, d.name AS department_name, SUM(h.headcount)::bigint AS headcount
@@ -52,12 +68,12 @@ export async function getHeadcountByDepartment(companyId?: string) {
     GROUP BY h.department_id, d.name
     ORDER BY headcount DESC`,
     ...params,
-  )
+  ))
 }
 
 export async function getHeadcountByEmploymentType(companyId?: string) {
   const { clause, params } = companyWhere(companyId)
-  return prisma.$queryRawUnsafe<
+  return safeMvQuery(() => prisma.$queryRawUnsafe<
     { employment_type: string; headcount: bigint }[]
   >(
     `SELECT employment_type, SUM(headcount)::bigint AS headcount
@@ -66,12 +82,12 @@ export async function getHeadcountByEmploymentType(companyId?: string) {
     GROUP BY employment_type
     ORDER BY headcount DESC`,
     ...params,
-  )
+  ))
 }
 
 export async function getHeadcountByGrade(companyId?: string) {
   const { clause, params } = companyWhere(companyId, 'e')
-  return prisma.$queryRawUnsafe<
+  return safeMvQuery(() => prisma.$queryRawUnsafe<
     { grade_code: string; grade_name: string; headcount: bigint }[]
   >(
     `SELECT jg.code AS grade_code, jg.name AS grade_name, COUNT(*)::bigint AS headcount
@@ -81,14 +97,14 @@ export async function getHeadcountByGrade(companyId?: string) {
     GROUP BY jg.code, jg.name
     ORDER BY jg.code`,
     ...params,
-  )
+  ))
 }
 
 // ─── Attendance ─────────────────────────────────────────
 
 export async function getAttendanceWeekly(companyId?: string, weeks = 12) {
   const { clause, params } = companyWhere(companyId, 'e')
-  return prisma.$queryRawUnsafe<
+  return safeMvQuery(() => prisma.$queryRawUnsafe<
     { week_start: Date; avg_total_hours: number; avg_overtime_hours: number }[]
   >(
     `SELECT a.week_start,
@@ -100,12 +116,12 @@ export async function getAttendanceWeekly(companyId?: string, weeks = 12) {
     GROUP BY a.week_start
     ORDER BY a.week_start`,
     ...params,
-  )
+  ))
 }
 
 export async function getOvertimeByDepartment(companyId?: string) {
   const { clause, params } = companyWhere(companyId, 'e')
-  return prisma.$queryRawUnsafe<
+  return safeMvQuery(() => prisma.$queryRawUnsafe<
     { department_name: string; avg_overtime_hours: number }[]
   >(
     `SELECT d.name AS department_name,
@@ -118,12 +134,12 @@ export async function getOvertimeByDepartment(companyId?: string) {
     ORDER BY avg_overtime_hours DESC
     LIMIT 10`,
     ...params,
-  )
+  ))
 }
 
 export async function getAttendanceIssues(companyId?: string, weeks = 12) {
   const { clause, params } = companyWhere(companyId, 'e')
-  return prisma.$queryRawUnsafe<
+  return safeMvQuery(() => prisma.$queryRawUnsafe<
     { week_start: Date; late_count: bigint; absent_count: bigint; early_out_count: bigint }[]
   >(
     `SELECT a.week_start,
@@ -136,19 +152,19 @@ export async function getAttendanceIssues(companyId?: string, weeks = 12) {
     GROUP BY a.week_start
     ORDER BY a.week_start`,
     ...params,
-  )
+  ))
 }
 
 export async function getOver52hCount(companyId?: string) {
   const { clause, params } = companyWhere(companyId, 'e')
-  return prisma.$queryRawUnsafe<{ count: bigint }[]>(
+  return safeMvQuery(() => prisma.$queryRawUnsafe<{ count: bigint }[]>(
     `SELECT COUNT(DISTINCT a.employee_id)::bigint AS count
     FROM mv_attendance_weekly a
     JOIN employees e ON e.id = a.employee_id
     WHERE a.week_start >= CURRENT_DATE - INTERVAL '1 week'
       AND a.total_hours > 52 ${clause}`,
     ...params,
-  )
+  ))
 }
 
 // ─── Performance ────────────────────────────────────────
@@ -170,7 +186,7 @@ export async function getPerformanceSummary(cycleId?: string, companyId?: string
     params.push(companyId)
   }
 
-  return prisma.$queryRawUnsafe<PerformanceSummaryRow[]>(
+  return safeMvQuery(() => prisma.$queryRawUnsafe<PerformanceSummaryRow[]>(
     `SELECT ps.cycle_id, ps.department_id, ps.ems_block,
       ps.employee_count::int, ps.avg_performance_score, ps.avg_competency_score
     FROM mv_performance_summary ps
@@ -178,7 +194,7 @@ export async function getPerformanceSummary(cycleId?: string, companyId?: string
     WHERE 1=1 ${cycleClause} ${companyClause}
     ORDER BY ps.department_id, ps.ems_block`,
     ...params,
-  )
+  ))
 }
 
 export async function getEmsBlockDistribution(cycleId?: string, companyId?: string) {
@@ -198,7 +214,7 @@ export async function getEmsBlockDistribution(cycleId?: string, companyId?: stri
     params.push(companyId)
   }
 
-  return prisma.$queryRawUnsafe<
+  return safeMvQuery(() => prisma.$queryRawUnsafe<
     { ems_block: string; employee_count: bigint }[]
   >(
     `SELECT ps.ems_block, SUM(ps.employee_count)::bigint AS employee_count
@@ -208,7 +224,7 @@ export async function getEmsBlockDistribution(cycleId?: string, companyId?: stri
     GROUP BY ps.ems_block
     ORDER BY ps.ems_block`,
     ...params,
-  )
+  ))
 }
 
 export async function getPerformanceByDepartment(cycleId?: string, companyId?: string) {
@@ -228,7 +244,7 @@ export async function getPerformanceByDepartment(cycleId?: string, companyId?: s
     params.push(companyId)
   }
 
-  return prisma.$queryRawUnsafe<
+  return safeMvQuery(() => prisma.$queryRawUnsafe<
     { department_name: string; avg_score: number }[]
   >(
     `SELECT d.name AS department_name,
@@ -239,14 +255,14 @@ export async function getPerformanceByDepartment(cycleId?: string, companyId?: s
     GROUP BY d.name
     ORDER BY avg_score DESC`,
     ...params,
-  )
+  ))
 }
 
 // ─── Recruitment ────────────────────────────────────────
 
 export async function getRecruitmentFunnel(companyId?: string) {
   const { clause, params } = companyWhere(companyId)
-  return prisma.$queryRawUnsafe<
+  return safeMvQuery(() => prisma.$queryRawUnsafe<
     { stage: string; candidate_count: bigint }[]
   >(
     `SELECT stage, SUM(candidate_count)::bigint AS candidate_count
@@ -255,26 +271,26 @@ export async function getRecruitmentFunnel(companyId?: string) {
     GROUP BY stage
     ORDER BY candidate_count DESC`,
     ...params,
-  )
+  ))
 }
 
 export async function getRecruitmentByPosting(companyId?: string) {
   const { clause, params } = companyWhere(companyId)
-  return prisma.$queryRawUnsafe<RecruitmentFunnelRow[]>(
+  return safeMvQuery(() => prisma.$queryRawUnsafe<RecruitmentFunnelRow[]>(
     `SELECT posting_id, company_id, posting_title, stage,
       candidate_count::int, avg_screening_score
     FROM mv_recruitment_funnel
     WHERE 1=1 ${clause}
     ORDER BY posting_title, stage`,
     ...params,
-  )
+  ))
 }
 
 // ─── Burnout Risk ───────────────────────────────────────
 
 export async function getBurnoutRiskList(companyId?: string) {
   const { clause, params } = companyWhere(companyId)
-  return prisma.$queryRawUnsafe<BurnoutRiskRow[]>(
+  return safeMvQuery(() => prisma.$queryRawUnsafe<BurnoutRiskRow[]>(
     `SELECT employee_id, name, company_id, department, job_category_code,
       consecutive_high_weeks::int, unused_days::int, days_since_last_one_on_one::int,
       is_burnout_warning, is_burnout_critical
@@ -282,24 +298,24 @@ export async function getBurnoutRiskList(companyId?: string) {
     WHERE (is_burnout_warning = true OR is_burnout_critical = true) ${clause}
     ORDER BY is_burnout_critical DESC, consecutive_high_weeks DESC`,
     ...params,
-  )
+  ))
 }
 
 export async function getBurnoutRiskCount(companyId?: string) {
   const { clause, params } = companyWhere(companyId)
-  return prisma.$queryRawUnsafe<{ count: bigint }[]>(
+  return safeMvQuery(() => prisma.$queryRawUnsafe<{ count: bigint }[]>(
     `SELECT COUNT(*)::bigint AS count
     FROM mv_burnout_risk
     WHERE (is_burnout_warning = true OR is_burnout_critical = true) ${clause}`,
     ...params,
-  )
+  ))
 }
 
 // ─── Team Health ────────────────────────────────────────
 
 export async function getTeamHealthList(companyId?: string) {
   const { clause, params } = companyWhere(companyId)
-  return prisma.$queryRawUnsafe<TeamHealthRow[]>(
+  return safeMvQuery(() => prisma.$queryRawUnsafe<TeamHealthRow[]>(
     `SELECT department_id, department_name, company_id,
       team_size::int,
       ROUND(avg_performance_score::numeric, 2) AS avg_performance_score,
@@ -312,25 +328,25 @@ export async function getTeamHealthList(companyId?: string) {
     WHERE 1=1 ${clause}
     ORDER BY department_name`,
     ...params,
-  )
+  ))
 }
 
 // ─── Exit Reasons ───────────────────────────────────────
 
 export async function getExitReasonTrend(companyId?: string, months = 12) {
   const { clause, params } = companyWhere(companyId)
-  return prisma.$queryRawUnsafe<ExitReasonMonthlyRow[]>(
+  return safeMvQuery(() => prisma.$queryRawUnsafe<ExitReasonMonthlyRow[]>(
     `SELECT month, resign_type, primary_reason, company_id, count::int
     FROM mv_exit_reason_monthly
     WHERE month >= DATE_TRUNC('month', CURRENT_DATE - INTERVAL '${months} months') ${clause}
     ORDER BY month DESC`,
     ...params,
-  )
+  ))
 }
 
 export async function getExitReasonSummary(companyId?: string, months = 12) {
   const { clause, params } = companyWhere(companyId)
-  return prisma.$queryRawUnsafe<
+  return safeMvQuery(() => prisma.$queryRawUnsafe<
     { primary_reason: string; count: bigint }[]
   >(
     `SELECT COALESCE(primary_reason, '미분류') AS primary_reason, SUM(count)::bigint AS count
@@ -339,12 +355,12 @@ export async function getExitReasonSummary(companyId?: string, months = 12) {
     GROUP BY primary_reason
     ORDER BY count DESC`,
     ...params,
-  )
+  ))
 }
 
 export async function getExitByResignType(companyId?: string, months = 12) {
   const { clause, params } = companyWhere(companyId)
-  return prisma.$queryRawUnsafe<
+  return safeMvQuery(() => prisma.$queryRawUnsafe<
     { resign_type: string; count: bigint }[]
   >(
     `SELECT resign_type, SUM(count)::bigint AS count
@@ -353,12 +369,12 @@ export async function getExitByResignType(companyId?: string, months = 12) {
     GROUP BY resign_type
     ORDER BY count DESC`,
     ...params,
-  )
+  ))
 }
 
 export async function getMonthlyResignations(companyId?: string, months = 12) {
   const { clause, params } = companyWhere(companyId)
-  return prisma.$queryRawUnsafe<
+  return safeMvQuery(() => prisma.$queryRawUnsafe<
     { month: Date; resignations: bigint }[]
   >(
     `SELECT month, SUM(count)::bigint AS resignations
@@ -367,26 +383,26 @@ export async function getMonthlyResignations(companyId?: string, months = 12) {
     GROUP BY month
     ORDER BY month`,
     ...params,
-  )
+  ))
 }
 
 // ─── Compa Ratio ────────────────────────────────────────
 
 export async function getCompaRatioDistribution(companyId?: string) {
   const { clause, params } = companyWhere(companyId)
-  return prisma.$queryRawUnsafe<CompaRatioRow[]>(
+  return safeMvQuery(() => prisma.$queryRawUnsafe<CompaRatioRow[]>(
     `SELECT company_id, job_category_code, grade_code, grade_name,
       employee_count::int, avg_compa_ratio, p25, median, p75
     FROM mv_compa_ratio_distribution
     WHERE 1=1 ${clause}
     ORDER BY grade_code`,
     ...params,
-  )
+  ))
 }
 
 export async function getCompaRatioByGrade(companyId?: string) {
   const { clause, params } = companyWhere(companyId)
-  return prisma.$queryRawUnsafe<
+  return safeMvQuery(() => prisma.$queryRawUnsafe<
     { grade_code: string; grade_name: string; avg_compa_ratio: number }[]
   >(
     `SELECT grade_code, grade_name,
@@ -396,12 +412,12 @@ export async function getCompaRatioByGrade(companyId?: string) {
     GROUP BY grade_code, grade_name
     ORDER BY grade_code`,
     ...params,
-  )
+  ))
 }
 
 export async function getCompaBandFit(companyId?: string) {
   const { clause, params } = companyWhere(companyId)
-  return prisma.$queryRawUnsafe<
+  return safeMvQuery(() => prisma.$queryRawUnsafe<
     { under: bigint; in_band: bigint; over: bigint }[]
   >(
     `SELECT
@@ -411,7 +427,7 @@ export async function getCompaBandFit(companyId?: string) {
     FROM mv_compa_ratio_distribution
     WHERE avg_compa_ratio IS NOT NULL ${clause}`,
     ...params,
-  )
+  ))
 }
 
 // ─── MV Refresh ─────────────────────────────────────────
@@ -444,20 +460,20 @@ export async function refreshAllMVs() {
 
 export async function getAvgOvertimeHours(companyId?: string) {
   const { clause, params } = companyWhere(companyId, 'e')
-  return prisma.$queryRawUnsafe<{ avg_overtime_hours: number }[]>(
+  return safeMvQuery(() => prisma.$queryRawUnsafe<{ avg_overtime_hours: number }[]>(
     `SELECT ROUND(AVG(a.overtime_hours)::numeric, 1) AS avg_overtime_hours
     FROM mv_attendance_weekly a
     JOIN employees e ON e.id = a.employee_id
     WHERE a.week_start >= CURRENT_DATE - INTERVAL '4 weeks' ${clause}`,
     ...params,
-  )
+  ))
 }
 
 // ─── Turnover Rate by Department ────────────────────────
 
 export async function getTurnoverByDepartment(companyId?: string, months = 12) {
   const { clause, params } = companyWhere(companyId, 'e')
-  return prisma.$queryRawUnsafe<
+  return safeMvQuery(() => prisma.$queryRawUnsafe<
     { department_name: string; turnover_rate: number; resignations: bigint }[]
   >(
     `SELECT d.name AS department_name,
@@ -476,5 +492,5 @@ export async function getTurnoverByDepartment(companyId?: string, months = 12) {
     HAVING COUNT(DISTINCT CASE WHEN eo.status = 'COMPLETED' THEN eo.employee_id END) > 0
     ORDER BY turnover_rate DESC`,
     ...params,
-  )
+  ))
 }

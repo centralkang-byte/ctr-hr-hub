@@ -14,7 +14,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { randomUUID } from 'crypto'
-import { getMilestoneFromDueDays } from './milestone-helpers'
+// import { getMilestoneFromDueDays } from './milestone-helpers'
 
 export interface CreateOnboardingPlanInput {
   employeeId: string

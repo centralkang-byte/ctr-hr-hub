@@ -107,7 +107,7 @@ export const PUT = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.ATTENDANCE, ACTION.UPDATE),
+  perm(MODULE.ATTENDANCE, ACTION.APPROVE),
 )
 
 // ─── DELETE: Soft delete (set isActive=false) ──────────────
@@ -143,5 +143,5 @@ export const DELETE = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.ATTENDANCE, ACTION.DELETE),
+  perm(MODULE.ATTENDANCE, ACTION.APPROVE),
 )

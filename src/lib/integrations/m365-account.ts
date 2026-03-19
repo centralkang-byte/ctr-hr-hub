@@ -39,7 +39,7 @@ function delay(ms: number): Promise<void> {
 
 export async function provisionM365Account(
   email: string,
-  displayName: string,
+  _displayName: string,
 ): Promise<M365ProvisionResult> {
   await delay(500)
 
@@ -97,7 +97,7 @@ export async function convertToSharedMailbox(
 // ─── Check M365 Account Status (Mock) ───────────────────
 
 export async function getM365AccountStatus(
-  email: string,
+  _email: string,
 ): Promise<M365AccountStatus> {
   await delay(500)
 

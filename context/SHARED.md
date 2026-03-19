@@ -1,6 +1,6 @@
 # SHARED.md — Project State (Single Source of Truth)
 
-> **Last Updated:** 2026-03-16 (Q-5f — Sentry + Playwright — Q-5 SERIES COMPLETE)
+> **Last Updated:** 2026-03-19 (QF-C2d — Exit Pipeline + Cross-Module Cross-Cuts — QF-C2 SERIES COMPLETE)
 > **Project Path:** `/Users/sangwoo/VibeCoding/HR_Hub/ctr-hr-hub`
 
 ---
@@ -10,7 +10,7 @@
 - `npx tsc --noEmit` = **0 errors** ✅
 - `npm run build` = pass ✅
 - `export const dynamic = 'force-dynamic'` in `(dashboard)/layout.tsx` — covers all dashboard pages
-- Git: pushed to `main` (latest: `49cd6d1`)
+- Git: pushed to `main` (latest: `c767a5a`)
 - Deployed on Vercel (auto-deploy from `main` branch)
 - **i18n**: 5 locales (ko/en/zh/vi/es) × 14+ namespaces — 146/146 Client files have `useTranslations` ✅
 - **Sentry**: `@sentry/nextjs` configured (client/server/edge) — graceful degradation without DSN
@@ -79,6 +79,10 @@
 | **Q-5d** (E2E gap fixes — PII masking, offboarding dup, crossboarding) | ✅ Complete |
 | **Q-5e** (Row-Level Security P1 proof-of-concept — 68 T1 + 6 T2 + 69 T4 models classified) | ✅ Complete |
 | **Q-5f** (Sentry error monitoring + Playwright E2E smoke tests) | ✅ Complete |
+| **QF-C2a** (Hire-to-Retire pipeline: 35 E2E tests, employee creation → assignment → leave → attendance → payroll → severance) | ✅ Complete |
+| **QF-C2b** (Time-to-Pay pipeline + concurrency: 33 E2E tests, shift→attendance→leave→payroll→bank transfer, 2 P0 fixes) | ✅ Complete |
+| **QF-C2c** (Perf-to-Pay pipeline: 34 E2E tests, goal→evaluation→calibration→comp review→merit, 4 P0 fixes) | ✅ Complete |
+| **QF-C2d** (Exit pipeline + cross-cuts: 40 E2E tests, offboarding→exit interview→severance + notifications/manager hub/dashboard/search) | ✅ Complete |
 
 ---
 
@@ -604,6 +608,10 @@ ACTION.APPROVE === 'manage' // ✅
 | QA2 (Build/Code) | Build + ESLint | PASS, 0 errors / 119 warnings |
 | QA3 (Design) | Pattern consistency | 0 violations, 18 minor |
 | Seed QA | 52 sidebar menus | 39 PASS / 13 EMPTY / 0 FAIL |
+| **QF-C2a** | Hire-to-Retire pipeline (35 tests) | 34 PASS, 1 P1 fix |
+| **QF-C2b** | Time-to-Pay pipeline + concurrency (33 tests) | 31 PASS, 2 P0 fixes |
+| **QF-C2c** | Perf-to-Pay pipeline (34 tests) | 30 PASS, 4 P0 fixes |
+| **QF-C2d** | Exit pipeline + cross-cuts (40 tests) | 36 PASS, 0 P0, 3 P1, 2 P2 |
 
 ---
 
@@ -1672,5 +1680,55 @@ Deferred to Q-6 (Production Hardening):
 - Domain-specific placeholder 45개 → locale 번역
 - Playwright CI integration (GitHub Actions)
 - Performance optimization (bundle size, lazy loading)
+
+---
+
+## QF-C2: Cross-Module E2E Pipeline Tests — ✅ COMPLETE (2026-03-19, 4 sessions)
+
+End-to-end pipeline tests that validate data flows across module boundaries.
+
+### Sessions
+
+| Session | Pipeline | Tests | P0 Fixed | Commit |
+|---------|----------|:-----:|:--------:|--------|
+| QF-C2a | Hire-to-Retire | 35 | 0 | `663e913` |
+| QF-C2b | Time-to-Pay + Concurrency | 33 | 2 | `0b7aa38` |
+| QF-C2c | Perf-to-Pay | 34 | 4 | `590b652` |
+| QF-C2d | Exit + Cross-Cuts | 40 | 0 | `c767a5a` |
+| **Total** | | **142** | **6** | |
+
+### QF-C2d: Exit Pipeline + Cross-Module Cross-Cuts
+
+**Exit Pipeline (15 tests)**:
+- `POST /employees/{id}/offboarding/start` → 201, instance created, 8 tasks from checklist
+- Task completion: PENDING → IN_PROGRESS → DONE state machine (8/8 tasks)
+- Exit interview: 201, manager isolation enforced (403)
+- Severance calculation: KR 퇴직금 (3.17 years, isEligible=true)
+- M365 disable + directory exclusion confirmed
+- Employee assignment status → RESIGNED
+
+**Cross-Module Cross-Cuts (25 tests)**:
+- **Notifications**: 18 notifications for EA, CRUD + unread count + preferences (5/5)
+- **Manager Hub**: summary (headcount/attrition/overtime/1:1), pending approvals (4 items), team performance, team health, alerts (5/5)
+- **Dashboard/Home**: pending actions EA=2 (MBO goals), M1=10 (leave+performance+1:1), HR dashboard with 7 KPIs (5/5)
+- **Unified Tasks**: `/api/v1/my/tasks` has no API route (page-only, P1), approvals inbox 4 items across LEAVE+PERFORMANCE (3/5)
+- **Cross-Module Flow**: 84 offboarding notifications, turnover analytics updated, 1 audit entry (5/5)
+
+### P1 Deferred (QF-C2d)
+
+| Issue | Recommendation |
+|-------|----------------|
+| Duplicate offboarding returns 404 instead of 409 | Add IN_PROGRESS check before ACTIVE assignment check |
+| `/api/v1/my/tasks` has no API route | Add API endpoint mirroring UnifiedTaskHub aggregation |
+| Task state machine requires intermediate step | UI should auto-transition PENDING→IN_PROGRESS→DONE |
+
+### Reports
+
+| Report | Path |
+|--------|------|
+| QF-C2a | `docs/qa-reports/QF-REPORT-C2a-HireToRetire.md` |
+| QF-C2b | `docs/qa-reports/QF-REPORT-C2b-TimeToPayConcurrency.md` |
+| QF-C2c | `docs/qa-reports/QF-REPORT-C2c-PerfToPay.md` |
+| QF-C2d | `docs/qa-reports/QF-REPORT-C2d-ExitCrossCuts.md` |
 
 ---

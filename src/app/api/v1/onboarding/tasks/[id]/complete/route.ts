@@ -3,16 +3,20 @@
 // 온보딩 태스크 완료 처리 (필수 태스크 모두 완료 시 온보딩 종료)
 // ═══════════════════════════════════════════════════════════
 
+import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { apiSuccess } from '@/lib/api'
-import { notFound } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { apiSuccess, apiError } from '@/lib/api'
+import { notFound, unauthorized } from '@/lib/errors'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
 import type { SessionUser } from '@/types'
 
-export const PUT = withPermission(
-  async (_req, ctx, user: SessionUser) => {
+export async function PUT(_req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user) return apiError(unauthorized())
+    const user = session.user as SessionUser
     const { id } = await ctx.params
 
     const task = await prisma.employeeOnboardingTask.findUnique({
@@ -91,6 +95,7 @@ export const PUT = withPermission(
     })
 
     return apiSuccess({ completed: true })
-  },
-  perm(MODULE.ONBOARDING, ACTION.UPDATE),
-)
+  } catch (error) {
+    return apiError(error)
+  }
+}

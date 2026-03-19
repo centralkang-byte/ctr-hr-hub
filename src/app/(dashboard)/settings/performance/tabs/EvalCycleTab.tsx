@@ -22,7 +22,7 @@ const STATUS_MAP: Record<string, { label: string; cls: string }> = {
 
 export function EvalCycleTab({
   companyId }: Props) {
-  const t = useTranslations('settings')
+//   const t = useTranslations('settings')
   const [cycles, setCycles] = useState<Cycle[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -44,8 +44,8 @@ export function EvalCycleTab({
         <p className="text-sm text-[#8181A5]">등록된 평가 사이클 {cycles.length}건</p>
       </div>
       {cycles.length > 0 ? (
-        <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-          <table className="w-full"><thead><tr className={TABLE_STYLES.header}>
+        <div className={TABLE_STYLES.wrapper}>
+          <table className={TABLE_STYLES.table}><thead><tr className={TABLE_STYLES.header}>
             <th className={TABLE_STYLES.headerCell}>{'사이클명'}</th>
             <th className={TABLE_STYLES.headerCell}>{'유형'}</th>
             <th className={TABLE_STYLES.headerCell}>{'상태'}</th>

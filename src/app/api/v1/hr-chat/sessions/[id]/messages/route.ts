@@ -7,8 +7,7 @@ import {
   isAppError,
   handlePrismaError,
 } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { withAuth } from '@/lib/permissions'
 import { messageCreateSchema } from '@/lib/schemas/hr-chat'
 import { generateEmbedding } from '@/lib/embedding'
 import { searchSimilarChunks } from '@/lib/vector-search'
@@ -16,7 +15,7 @@ import { callClaude } from '@/lib/claude'
 import type { SessionUser } from '@/types'
 import type { AiFeature } from '@/generated/prisma/client'
 
-export const GET = withPermission(
+export const GET = withAuth(
   async (
     _req: NextRequest,
     context: { params: Promise<Record<string, string>> },
@@ -52,10 +51,9 @@ export const GET = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.HR_CHATBOT, ACTION.VIEW),
 )
 
-export const POST = withPermission(
+export const POST = withAuth(
   async (
     req: NextRequest,
     context: { params: Promise<Record<string, string>> },
@@ -213,5 +211,4 @@ ${contextText}`
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.HR_CHATBOT, ACTION.CREATE),
 )

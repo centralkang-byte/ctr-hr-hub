@@ -1,10 +1,11 @@
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — Redis-based Sliding Window Rate Limiter
+// CTR HR Hub — Rate Limiter (Redis with In-Memory Fallback)
 // ═══════════════════════════════════════════════════════════
 
 import { redis } from '@/lib/redis'
 import { NextRequest, NextResponse } from 'next/server'
 import { extractRequestMeta } from '@/lib/audit'
+import { getToken } from 'next-auth/jwt'
 
 // ─── Rate Limit Configuration ────────────────────────────
 
@@ -20,17 +21,57 @@ export interface RateLimitConfig {
 export const RATE_LIMITS = {
   /** General API: 60 req/min */
   GENERAL: { maxRequests: 60, windowSeconds: 60 } as RateLimitConfig,
-  /** Authentication: 10 req/min */
+  /** Authentication: 10 req/min per IP */
   AUTH: { maxRequests: 10, windowSeconds: 60 } as RateLimitConfig,
   /** File Upload: 5 req/min */
   FILE_UPLOAD: { maxRequests: 5, windowSeconds: 60 } as RateLimitConfig,
-  /** Export: 5 req/min */
+  /** Export: 5 req/min per user */
   EXPORT: { maxRequests: 5, windowSeconds: 60 } as RateLimitConfig,
-  /** AI Endpoints: 10 req/min (cost-sensitive) */
-  AI: { maxRequests: 10, windowSeconds: 60 } as RateLimitConfig,
+  /** AI Endpoints: 20 req/min per user */
+  AI: { maxRequests: 20, windowSeconds: 60 } as RateLimitConfig,
   /** Bulk Operations: 3 req/min */
   BULK: { maxRequests: 3, windowSeconds: 60 } as RateLimitConfig,
 } as const
+
+// ─── In-Memory Fallback Store ────────────────────────────
+
+const memoryStore = new Map<string, { timestamps: number[] }>()
+
+function checkRateLimitInMemory(
+  key: string,
+  config: RateLimitConfig,
+): RateLimitResult {
+  const now = Date.now()
+  const windowStart = now - config.windowSeconds * 1000
+
+  let entry = memoryStore.get(key)
+  if (!entry) {
+    entry = { timestamps: [] }
+    memoryStore.set(key, entry)
+  }
+
+  // Remove expired entries
+  entry.timestamps = entry.timestamps.filter((t) => t > windowStart)
+  // Add current request
+  entry.timestamps.push(now)
+  const count = entry.timestamps.length
+
+  // Probabilistic cleanup to prevent memory leaks
+  if (Math.random() < 0.01) {
+    const cutoff = now - 120_000
+    for (const [k, v] of memoryStore) {
+      if (v.timestamps.every((t) => t < cutoff)) {
+        memoryStore.delete(k)
+      }
+    }
+  }
+
+  return {
+    allowed: count <= config.maxRequests,
+    remaining: Math.max(0, config.maxRequests - count),
+    resetAt: Math.ceil((now + config.windowSeconds * 1000) / 1000),
+  }
+}
 
 // ─── Rate Limit Check ────────────────────────────────────
 
@@ -49,19 +90,21 @@ async function checkRateLimit(
     const windowStart = now - config.windowSeconds * 1000
     const redisKey = `rl:${config.keyPrefix ?? 'api'}:${key}`
 
-    // Sliding window using sorted set
     const pipeline = redis.pipeline()
-    // Remove expired entries
     pipeline.zremrangebyscore(redisKey, 0, windowStart)
-    // Add current request
     pipeline.zadd(redisKey, now, `${now}:${Math.random()}`)
-    // Count requests in window
     pipeline.zcard(redisKey)
-    // Set TTL
     pipeline.expire(redisKey, config.windowSeconds)
 
     const results = await pipeline.exec()
-    const count = (results?.[2]?.[1] as number) ?? 0
+
+    // pipeline.exec() resolves (not rejects) when Redis is down,
+    // returning [Error, null] per command. Detect this and fallback.
+    if (!results || results[2]?.[0]) {
+      return checkRateLimitInMemory(key, config)
+    }
+
+    const count = (results[2][1] as number) ?? 0
 
     return {
       allowed: count <= config.maxRequests,
@@ -69,8 +112,8 @@ async function checkRateLimit(
       resetAt: Math.ceil((now + config.windowSeconds * 1000) / 1000),
     }
   } catch {
-    // Graceful degradation: allow request if Redis is down
-    return { allowed: true, remaining: -1, resetAt: 0 }
+    // Fallback to in-memory rate limiting when Redis is unavailable
+    return checkRateLimitInMemory(key, config)
   }
 }
 
@@ -101,7 +144,16 @@ export function withRateLimit(
 ): RouteHandler {
   return async (req, context) => {
     const { ip } = extractRequestMeta(req.headers)
-    const key = `${ip}:${req.nextUrl.pathname}`
+
+    // Use userId for per-user rate limiting, fallback to IP
+    let userId: string | undefined
+    try {
+      const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+      userId = (token?.sub as string) ?? (token?.employeeId as string)
+    } catch {
+      // Ignore token extraction errors
+    }
+    const key = `${userId ?? ip}:${req.nextUrl.pathname}`
 
     const result = await checkRateLimit(key, config)
 

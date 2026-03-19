@@ -12,7 +12,7 @@ import { calculateProgress, getCurrentMilestone } from '@/lib/onboarding/milesto
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
-    async (req, _ctx, user: SessionUser) => {
+    async (req, _ctx, _user: SessionUser) => {
         const url = new URL(req.url)
         const page = parseInt(url.searchParams.get('page') ?? '1', 10)
         const limit = parseInt(url.searchParams.get('limit') ?? '20', 10)

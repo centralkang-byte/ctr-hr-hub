@@ -24,7 +24,7 @@ const DEFAULTS: PipelineStageSetting = {
 
 export function PipelineTab({
   companyId }: Props) {
-  const t = useTranslations('settings')
+//   const t = useTranslations('settings')
   const { settings, setSettings, loading, saving, isOverridden, hasChanges, save, revert } = useProcessSetting<PipelineStageSetting>({
     category: 'recruitment',
     key: 'pipeline-stages',

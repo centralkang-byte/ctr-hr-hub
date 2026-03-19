@@ -13,6 +13,7 @@ import { apiClient } from '@/lib/api'
 import { useSession } from 'next-auth/react'
 import { ROLE } from '@/lib/constants'
 import { CARD_STYLES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES, CHART_THEME } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 
@@ -237,10 +238,10 @@ export default function OneOnOneClient() {
               <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-[#059669]" /> {t('complete_keb909c_1_1')}
               </h2>
-              <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-[#FAFAFA]">
-                    <tr>
+              <div className={TABLE_STYLES.wrapper}>
+                <table className={TABLE_STYLES.table}>
+                  <thead>
+                    <tr className={TABLE_STYLES.header}>
                       <th className={TABLE_STYLES.headerCell}>
                         {isManager ? '팀원' : '매니저'}
                       </th>
@@ -257,22 +258,22 @@ export default function OneOnOneClient() {
                       return (
                         <tr
                           key={m.id}
-                          className={TABLE_STYLES.header}
+                          className={cn(TABLE_STYLES.row, "cursor-pointer")}
                           onClick={() => router.push(`/performance/one-on-one/${m.id}`)}
                         >
-                          <td className="px-4 py-3 text-sm text-[#1A1A1A]">
+                          <td className={cn(TABLE_STYLES.cell)}>
                             {isManager ? m.employee.name : m.manager.name}
                           </td>
-                          <td className="px-4 py-3 text-sm text-[#555]">
+                          <td className={cn(TABLE_STYLES.cellMuted)}>
                             {new Date(m.completedAt ?? m.scheduledAt).toLocaleDateString('ko-KR')}
                           </td>
-                          <td className="px-4 py-3">
+                          <td className={TABLE_STYLES.cell}>
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#FAFAFA] text-[#555] border border-[#E8E8E8]">
                               {MEETING_TYPE_LABELS[m.meetingType] ?? m.meetingType}
                             </span>
                           </td>
                           {isManager && (
-                            <td className="px-4 py-3 text-sm">
+                            <td className={TABLE_STYLES.cell}>
                               {pendingActions > 0 ? (
                                 <span className="text-[#EF4444] font-medium">{pendingActions}건</span>
                               ) : (

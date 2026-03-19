@@ -107,5 +107,5 @@ export const GET = withPermission(
       },
     })
   },
-  perm(MODULE.ONBOARDING, ACTION.VIEW),
+  perm(MODULE.OFFBOARDING, ACTION.VIEW),
 )

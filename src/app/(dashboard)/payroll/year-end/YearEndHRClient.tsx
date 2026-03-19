@@ -22,6 +22,7 @@ import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { ROLE } from '@/lib/constants'
 import { BUTTON_SIZES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ─────────────────────────────────────────────────
@@ -576,158 +577,155 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className={TABLE_STYLES.header}>
-                <th className={TABLE_STYLES.headerCell}>
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4]"
-                    checked={
-                      selectedIds.size > 0 &&
-                      filteredSettlements.every((s) => selectedIds.has(s.id))
+      <div className={TABLE_STYLES.wrapper}>
+        <table className={TABLE_STYLES.table}>
+          <thead>
+            <tr className={TABLE_STYLES.header}>
+              <th className={TABLE_STYLES.headerCell}>
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4]"
+                  checked={
+                    selectedIds.size > 0 &&
+                    filteredSettlements.every((s) => selectedIds.has(s.id))
+                  }
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedIds(new Set(filteredSettlements.map((s) => s.id)))
+                    } else {
+                      setSelectedIds(new Set())
                     }
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedIds(new Set(filteredSettlements.map((s) => s.id)))
-                      } else {
-                        setSelectedIds(new Set())
-                      }
-                    }}
-                  />
-                </th>
-                {['이름', '부서', '총급여', '환급/추가납부', '상태', '제출일', ''].map(
-                  (h) => (
-                    <th
-                      key={h}
-                      className={TABLE_STYLES.headerCell}
-                    >
-                      {h}
-                    </th>
-                  ),
-                )}
+                  }}
+                />
+              </th>
+              {['이름', '부서', '총급여', '환급/추가납부', '상태', '제출일', ''].map(
+                (h) => (
+                  <th
+                    key={h}
+                    className={TABLE_STYLES.headerCell}
+                  >
+                    {h}
+                  </th>
+                ),
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan={8} className="px-4 py-8 text-center text-[#666]">
+                  {t('kr_keb8db0ec_kebb688eb_keca491')}
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={8} className="px-4 py-16 text-center text-[#666] text-sm">
-                    {t('kr_keb8db0ec_kebb688eb_keca491')}
-                  </td>
-                </tr>
-              ) : filteredSettlements.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="px-4 py-16 text-center text-[#666] text-sm">
-                    {t('kr_ked95b4eb_keca1b0ea_yearend_ke')}
-                  </td>
-                </tr>
-              ) : (
-                filteredSettlements.map((s) => {
-                  const finalNum = parseInt(s.finalSettlement, 10)
-                  const isRefund = finalNum >= 0
-                  return (
-                    <tr
-                      key={s.id}
-                      className={TABLE_STYLES.header}
-                      onClick={() => setSelectedSettlement(s)}
-                    >
-                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                        <input
-                          type="checkbox"
-                          className="w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4]"
-                          checked={selectedIds.has(s.id)}
-                          onChange={() => toggleSelect(s.id)}
-                        />
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex flex-col">
-                          <span className="text-sm font-medium text-[#1A1A1A]">
-                            {s.employeeName}
-                          </span>
-                          <span className="text-xs text-[#999]">{s.employeeNo}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-[#555]">{s.department}</td>
-                      <td className="px-4 py-3 text-sm text-[#1A1A1A] font-medium">
-                        {formatKRW(s.totalSalary)}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`text-sm font-semibold ${isRefund ? 'text-[#059669]' : 'text-[#D97706]'}`}
-                        >
-                          {isRefund ? '+' : '-'} {formatKRW(Math.abs(finalNum))}
+            ) : filteredSettlements.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="px-4 py-8 text-center text-[#666]">
+                  {t('kr_ked95b4eb_keca1b0ea_yearend_ke')}
+                </td>
+              </tr>
+            ) : (
+              filteredSettlements.map((s) => {
+                const finalNum = parseInt(s.finalSettlement, 10)
+                const isRefund = finalNum >= 0
+                return (
+                  <tr
+                    key={s.id}
+                    className={cn(TABLE_STYLES.row, "cursor-pointer")}
+                    onClick={() => setSelectedSettlement(s)}
+                  >
+                    <td className={TABLE_STYLES.cell} onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4]"
+                        checked={selectedIds.has(s.id)}
+                        onChange={() => toggleSelect(s.id)}
+                      />
+                    </td>
+                    <td className={TABLE_STYLES.cell}>
+                      <div className="flex flex-col">
+                        <span className="font-medium text-[#1A1A1A]">
+                          {s.employeeName}
                         </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <StatusBadge status={s.status} />
-                      </td>
-                      <td className="px-4 py-3 text-sm text-[#666]">
-                        {formatDate(s.submittedAt)}
-                      </td>
-                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center gap-1">
+                        <span className="text-xs text-[#999]">{s.employeeNo}</span>
+                      </div>
+                    </td>
+                    <td className={TABLE_STYLES.cell}>{s.department}</td>
+                    <td className={cn(TABLE_STYLES.cell, "text-[#1A1A1A] font-medium")}>
+                      {formatKRW(s.totalSalary)}
+                    </td>
+                    <td className={TABLE_STYLES.cell}>
+                      <span
+                        className={cn("font-semibold", isRefund ? 'text-[#059669]' : 'text-[#D97706]')}
+                      >
+                        {isRefund ? '+' : '-'} {formatKRW(Math.abs(finalNum))}
+                      </span>
+                    </td>
+                    <td className={TABLE_STYLES.cell}>
+                      <StatusBadge status={s.status} />
+                    </td>
+                    <td className={TABLE_STYLES.cell}>
+                      {formatDate(s.submittedAt)}
+                    </td>
+                    <td className={TABLE_STYLES.cell} onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center gap-1 justify-end">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedSettlement(s)}
+                          className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-[#555] hover:bg-[#F5F5F5] rounded-lg"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          {t('kr_keab280ed')}
+                        </button>
+                        {(s.status === 'submitted' || s.status === 'hr_review') && (
                           <button
                             type="button"
-                            onClick={() => setSelectedSettlement(s)}
-                            className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-[#555] hover:bg-[#F5F5F5] rounded-lg"
+                            onClick={() => handleConfirm(s.id)}
+                            disabled={confirming}
+                            className={`inline-flex items-center gap-1 ${BUTTON_SIZES.sm} ${BUTTON_VARIANTS.primary} disabled:opacity-50`}
                           >
-                            <Eye className="h-3.5 w-3.5" />
-                            {t('kr_keab280ed')}
+                            <CheckCircle2 className="h-3.5 w-3.5" />
+                            {t('confirmed')}
                           </button>
-                          {(s.status === 'submitted' || s.status === 'hr_review') && (
-                            <button
-                              type="button"
-                              onClick={() => handleConfirm(s.id)}
-                              disabled={confirming}
-                              className={`inline-flex items-center gap-1 ${BUTTON_SIZES.sm} ${BUTTON_VARIANTS.primary} disabled:opacity-50`}
-                            >
-                              <CheckCircle2 className="h-3.5 w-3.5" />
-                              {t('confirmed')}
-                            </button>
-                          )}
-                          {s.status === 'confirmed' && (
-                            <button
-                              type="button"
-                              onClick={() => handleIssueReceipt(s.id)}
-                              disabled={issuingReceipt}
-                              className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-[#4B6DE0] bg-[#E0E7FF] hover:bg-[#C7D2FE] rounded-lg disabled:opacity-50"
-                            >
-                              <Download className="h-3.5 w-3.5" />
-                              {t('kr_kec9881ec')}
-                            </button>
-                          )}
-                          <ChevronRight className="h-3.5 w-3.5 text-[#CCC]" />
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Bulk action bar */}
-        {selectedIds.size > 0 && (
-          <div className="px-4 py-3 border-t border-[#E8E8E8] bg-[#F8FAFC] flex items-center justify-between">
-            <span className="text-sm text-[#555]">
-              {selectedIds.size}건 선택됨
-            </span>
-            <button
-              type="button"
-              onClick={handleBulkConfirm}
-              disabled={bulkConfirming}
-              className={`flex items-center gap-2 px-4 py-2 text-sm ${BUTTON_VARIANTS.primary} rounded-lg disabled:opacity-50`}
-            >
-              <CheckCircle2 className="h-4 w-4" />
-              {bulkConfirming ? t('processing') : '선택 항목 확정'}
-            </button>
-          </div>
-        )}
+                        )}
+                        {s.status === 'confirmed' && (
+                          <button
+                            type="button"
+                            onClick={() => handleIssueReceipt(s.id)}
+                            disabled={issuingReceipt}
+                            className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-[#4B6DE0] bg-[#E0E7FF] hover:bg-[#C7D2FE] rounded-lg disabled:opacity-50"
+                          >
+                            <Download className="h-3.5 w-3.5" />
+                            {t('kr_kec9881ec')}
+                          </button>
+                        )}
+                        <ChevronRight className="h-3.5 w-3.5 text-[#CCC]" />
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })
+            )}
+          </tbody>
+        </table>
       </div>
 
+      {/* Bulk action bar */}
+      {selectedIds.size > 0 && (
+        <div className="mt-4 px-4 py-3 border border-[#E8E8E8] rounded-lg bg-[#F8FAFC] flex items-center justify-between">
+          <span className="text-sm text-[#555]">
+            {selectedIds.size}건 선택됨
+          </span>
+          <button
+            type="button"
+            onClick={handleBulkConfirm}
+            disabled={bulkConfirming}
+            className={`flex items-center gap-2 px-4 py-2 text-sm ${BUTTON_VARIANTS.primary} rounded-lg disabled:opacity-50`}
+          >
+            <CheckCircle2 className="h-4 w-4" />
+            {bulkConfirming ? t('processing') : '선택 항목 확정'}
+          </button>
+        </div>
+      )}
       {/* Detail Modal */}
       {selectedSettlement && (
         <SettlementDetailModal

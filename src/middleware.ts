@@ -109,8 +109,13 @@ const ROUTE_ACL: RouteRule[] = [
 
   // ── API routes mirroring page ACL ────────────────────
   { prefix: '/api/v1/settings', allowedRoles: HR_UP },
+  { prefix: '/api/v1/payroll/me', allowedRoles: ALL_ROLES },
   { prefix: '/api/v1/payroll', allowedRoles: HR_UP },
   { prefix: '/api/v1/compliance', allowedRoles: HR_UP },
+  // Recruitment: internal-jobs available to all (self-service internal mobility)
+  { prefix: '/api/v1/recruitment/internal-jobs', allowedRoles: ALL_ROLES },
+  // Recruitment: interview evaluate available to managers (interviewers)
+  { prefix: '/api/v1/recruitment/interviews', allowedRoles: MANAGER_UP },
   { prefix: '/api/v1/recruitment', allowedRoles: HR_UP },
   { prefix: '/api/v1/year-end/hr', allowedRoles: HR_UP },
   { prefix: '/api/v1/analytics', allowedRoles: MANAGER_UP },
@@ -168,7 +173,15 @@ export async function middleware(request: NextRequest) {
   if (rule) {
     const userRole = (token.role as string) || 'EMPLOYEE'
     if (!rule.allowedRoles.includes(userRole)) {
-      // Unauthorized role → redirect to home with error indicator
+      // API routes → JSON 403; pages → redirect to home
+      if (pathname.startsWith('/api/')) {
+        return applySecurityHeaders(
+          NextResponse.json(
+            { error: { code: 'FORBIDDEN', message: '접근 권한이 없습니다.' } },
+            { status: 403 },
+          ),
+        )
+      }
       const homeUrl = new URL('/', request.url)
       homeUrl.searchParams.set('error', 'forbidden')
       return applySecurityHeaders(NextResponse.redirect(homeUrl))

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Plus, Pencil, Play, Trash2 } from 'lucide-react'
 import RetentionPolicyForm from './RetentionPolicyForm'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 interface RetentionPolicy {
@@ -70,27 +70,27 @@ export default function DataRetentionTabContent() {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#E8E8E8]">
+      <div className={TABLE_STYLES.wrapper}>
         {loading ? (
           <div className="p-8 text-center text-[#666]">{tc('loading')}</div>
         ) : policies.length === 0 ? (
           <div className="p-8 text-center text-[#666]">{tc('noData')}</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className={TABLE_STYLES.table}>
               <thead>
-                <tr className="bg-[#FAFAFA] border-b border-[#E8E8E8]">
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tc('category')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.retentionMonths')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.autoDelete')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.anonymize')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.lastRunAt')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tc('actions')}</th>
+                <tr className={TABLE_STYLES.header}>
+                  <th className={TABLE_STYLES.headerCell}>{tc('category')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('gdpr.retentionMonths')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('gdpr.autoDelete')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('gdpr.anonymize')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('gdpr.lastRunAt')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{tc('actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {policies.map((p) => (
-                  <tr key={p.id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                  <tr key={p.id} className={TABLE_STYLES.row}>
                     <td className="px-4 py-3 text-sm">
                       <div className="font-medium text-[#1A1A1A]">{p.category}</div>
                       {p.description && (

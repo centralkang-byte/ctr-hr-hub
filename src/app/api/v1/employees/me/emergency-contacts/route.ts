@@ -45,5 +45,5 @@ export const POST = withPermission(
 
     return apiSuccess(contact, 201)
   },
-  perm(MODULE.EMPLOYEES, ACTION.UPDATE),
+  perm(MODULE.EMPLOYEES, ACTION.VIEW), // Self-service: scoped to user.employeeId
 )

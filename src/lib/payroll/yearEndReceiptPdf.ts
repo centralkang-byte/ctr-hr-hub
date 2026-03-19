@@ -94,8 +94,8 @@ export async function generateWithholdingReceiptPdf(
     )
     .join('')
 
-  const incomeDeductions = settlement.incomeDeductions as Record<string, number> | null
-  const taxCredits = settlement.taxCredits as Record<string, number> | null
+//   const incomeDeductions = settlement.incomeDeductions as Record<string, number> | null
+//   const taxCredits = settlement.taxCredits as Record<string, number> | null
 
   const html = `<!DOCTYPE html>
 <html lang="ko">

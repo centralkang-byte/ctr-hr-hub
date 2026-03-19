@@ -17,6 +17,7 @@ import { CHART_COLORS } from '@/components/analytics/chart-colors'
 import type { TurnoverResponse } from '@/lib/analytics/types'
 import { TABLE_STYLES } from '@/lib/styles'
 import { CHART_THEME } from '@/lib/styles/chart'
+import { cn } from '@/lib/utils'
 
 export default function TurnoverClient() {
   const tCommon = useTranslations('common')
@@ -160,25 +161,25 @@ export default function TurnoverClient() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className={TABLE_STYLES.header}>
-                  <th className="px-3 py-2.5 font-medium text-gray-600 rounded-tl-lg">{t('name')}</th>
-                  <th className="px-3 py-2.5 font-medium text-gray-600">{t('department')}</th>
-                  <th className="px-3 py-2.5 font-medium text-gray-600">{t('grade')}</th>
-                  <th className="px-3 py-2.5 font-medium text-gray-600 text-right">{t('risk_score')}</th>
-                  <th className="px-3 py-2.5 font-medium text-gray-600 text-center">{t('kr_kec8898ec')}</th>
-                  <th className="px-3 py-2.5 font-medium text-gray-600 rounded-tr-lg text-center">{t('kr_kec8381ec')}</th>
+            <table className={TABLE_STYLES.table}>
+              <thead className={TABLE_STYLES.header}>
+                <tr>
+                  <th className={TABLE_STYLES.headerCell}>{t('name')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('department')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('grade')}</th>
+                  <th className={TABLE_STYLES.headerCellRight}>{t('risk_score')}</th>
+                  <th className={cn(TABLE_STYLES.headerCell, 'text-center')}>{t('kr_kec8898ec')}</th>
+                  <th className={cn(TABLE_STYLES.headerCell, 'text-center')}>{t('kr_kec8381ec')}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-[#F0F0F3]">
                 {predictions.data.map((emp: { employeeId: string; name: string; department: string; position: string; score: number; level: string; factors: { factor: string; contribution: number; detail: string }[] }) => (
                   <React.Fragment key={emp.employeeId}>
-                    <tr className="hover:bg-gray-50/50 transition-colors">
-                      <td className="px-3 py-2.5 font-medium text-gray-900">{emp.name}</td>
-                      <td className="px-3 py-2.5 text-gray-600">{emp.department}</td>
-                      <td className="px-3 py-2.5 text-gray-600">{emp.position}</td>
-                      <td className="px-3 py-2.5 text-right">
+                    <tr className={TABLE_STYLES.row}>
+                      <td className={TABLE_STYLES.cell}>{emp.name}</td>
+                      <td className={TABLE_STYLES.cellMuted}>{emp.department}</td>
+                      <td className={TABLE_STYLES.cellMuted}>{emp.position}</td>
+                      <td className={TABLE_STYLES.cellRight}>
                         <div className="flex items-center justify-end gap-2">
                           <div className="w-16 h-2 bg-gray-100 rounded-full overflow-hidden">
                             <div
@@ -189,36 +190,40 @@ export default function TurnoverClient() {
                           <span className="text-xs font-mono text-gray-700 w-6 text-right">{emp.score}</span>
                         </div>
                       </td>
-                      <td className="px-3 py-2.5 text-center">
-                        <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
-                          emp.level === 'HIGH' ? 'bg-red-100 text-red-700' :
-                          emp.level === 'MEDIUM' ? 'bg-amber-100 text-amber-700' :
-                          'bg-emerald-100 text-emerald-700'
-                        }`}>
-                          {emp.level === 'HIGH' ? '고위험' : emp.level === 'MEDIUM' ? t('caution') : '안전'}
-                        </span>
+                      <td className={TABLE_STYLES.cell}>
+                        <div className="flex justify-center">
+                          <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-medium ${
+                            emp.level === 'HIGH' ? 'bg-red-50 text-red-600' :
+                            emp.level === 'MEDIUM' ? 'bg-amber-50 text-amber-600' :
+                            'bg-emerald-50 text-[#047857]'
+                          }`}>
+                            {emp.level === 'HIGH' ? '고위험' : emp.level === 'MEDIUM' ? t('caution') : '안전'}
+                          </span>
+                        </div>
                       </td>
-                      <td className="px-3 py-2.5 text-center">
-                        <button
-                          onClick={() => setExpandedRow(expandedRow === emp.employeeId ? null : emp.employeeId)}
-                          className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600"
-                        >
-                          {expandedRow === emp.employeeId ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                        </button>
+                      <td className={TABLE_STYLES.cell}>
+                        <div className="flex justify-center">
+                          <button
+                            onClick={() => setExpandedRow(expandedRow === emp.employeeId ? null : emp.employeeId)}
+                            className="p-1.5 rounded hover:bg-[#E0E7FF] text-[#8181A5] transition-colors"
+                          >
+                            {expandedRow === emp.employeeId ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                     {expandedRow === emp.employeeId && emp.factors.length > 0 && (
                       <tr>
-                        <td colSpan={6} className="px-3 py-3 bg-gray-50/50">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <td colSpan={6} className="px-5 py-4 bg-[#F8F9FA] border-b border-[#F0F0F3] shadow-inner">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {emp.factors.map((f: { factor: string; contribution: number; detail: string }, i: number) => (
                               <div key={i} className="flex items-start gap-2 text-xs">
-                                <span className="px-1.5 py-0.5 rounded bg-gray-200 text-gray-600 font-medium flex-shrink-0">
+                                <span className="px-1.5 py-0.5 rounded bg-white border border-[#E8E8F0] text-[#1C1D21] font-medium flex-shrink-0">
                                   +{f.contribution}
                                 </span>
                                 <div>
-                                  <span className="font-medium text-gray-700">{f.factor}:</span>{' '}
-                                  <span className="text-gray-500">{f.detail}</span>
+                                  <span className="font-medium text-[#1C1D21]">{f.factor}:</span>{' '}
+                                  <span className="text-[#8181A5]">{f.detail}</span>
                                 </div>
                               </div>
                             ))}

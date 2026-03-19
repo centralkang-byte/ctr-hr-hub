@@ -12,7 +12,7 @@ import { MODULE, ACTION, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants
 import type { SessionUser } from '@/types'
 
 const searchSchema = z.object({
-  cycleId: z.string().cuid(),
+  cycleId: z.string().uuid(),
   departmentId: z.string().optional(),
   emsBlock: z.string().optional(),
   page: z.coerce.number().int().positive().default(DEFAULT_PAGE),

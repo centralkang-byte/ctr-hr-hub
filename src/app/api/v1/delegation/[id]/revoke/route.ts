@@ -3,13 +3,20 @@
 // PUT /api/v1/delegation/[id]/revoke → 대결 해제
 // ═══════════════════════════════════════════════════════════
 
-import { type NextRequest } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { apiSuccess, apiError as apiErr } from '@/lib/api'
+import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { eventBus } from '@/lib/events/event-bus'
+
+function apiErr(opts: { status: number; message: string }) {
+  return NextResponse.json(
+    { error: { code: opts.status === 403 ? 'FORBIDDEN' : opts.status === 404 ? 'NOT_FOUND' : 'BAD_REQUEST', message: opts.message } },
+    { status: opts.status },
+  )
+}
 
 export const PUT = withPermission(
   async (

@@ -33,6 +33,7 @@ interface ManagerSummary {
   teamCount: number
   newHires?: number
   pendingLeaves?: number
+  scheduledOneOnOnes?: number
 }
 
 // ─── Component ────────────────────────────────────────────
@@ -78,16 +79,16 @@ export function ManagerHome({ user }: ManagerHomeProps) {
             <CardContent className="space-y-3 pb-4">
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div>
-                  <p className="text-xl font-bold text-[#5E81F4]">8</p>
-                  <p className="text-xs text-[#8181A5]">출근</p>
+                  <p className="text-xl font-bold text-[#5E81F4]">{summary ? summary.teamCount : '-'}</p>
+                  <p className="text-xs text-[#8181A5]">전체</p>
                 </div>
                 <div>
-                  <p className="text-xl font-bold text-[#F59E0B]">2</p>
-                  <p className="text-xs text-[#8181A5]">휴가</p>
+                  <p className="text-xl font-bold text-[#F59E0B]">{summary ? summary.pendingLeaves ?? 0 : '-'}</p>
+                  <p className="text-xs text-[#8181A5]">휴가 대기</p>
                 </div>
                 <div>
-                  <p className="text-xl font-bold text-[#8181A5]">1</p>
-                  <p className="text-xs text-[#8181A5]">미출근</p>
+                  <p className="text-xl font-bold text-[#8181A5]">{summary ? summary.scheduledOneOnOnes ?? 0 : '-'}</p>
+                  <p className="text-xs text-[#8181A5]">예정 1:1</p>
                 </div>
               </div>
               <p className="text-xs text-[#8181A5]">
@@ -125,7 +126,7 @@ export function ManagerHome({ user }: ManagerHomeProps) {
                   <TrendingUp className="h-3.5 w-3.5" />
                   MBO 목표 승인
                 </div>
-                <Badge variant="secondary" className="text-[10px]">2건</Badge>
+                <Badge variant="secondary" className="text-[10px]">{summary?.scheduledOneOnOnes ?? 0}건</Badge>
               </div>
             </CardContent>
           </Card>
@@ -179,11 +180,11 @@ export function ManagerHome({ user }: ManagerHomeProps) {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-[#8181A5]">신규 입사</span>
-                <span className="text-sm font-medium text-[#5E81F4]">2명</span>
+                <span className="text-sm font-medium text-[#5E81F4]">{summary?.newHires ?? 0}명</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-[#8181A5]">수습 중</span>
-                <span className="text-sm font-medium text-[#F59E0B]">1명</span>
+                <span className="text-sm text-[#8181A5]">승인 대기 휴가</span>
+                <span className="text-sm font-medium text-[#F59E0B]">{summary?.pendingLeaves ?? 0}건</span>
               </div>
               <Link
                 href="/manager-hub"

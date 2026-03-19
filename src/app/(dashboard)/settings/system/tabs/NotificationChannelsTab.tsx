@@ -22,7 +22,7 @@ const DEFAULTS: NotificationChannelsSetting = {
 
 export function NotificationChannelsTab({
   companyId }: Props) {
-  const t = useTranslations('settings')
+//   const t = useTranslations('settings')
   const { settings, setSettings, loading, saving, isOverridden, hasChanges, save, revert } = useProcessSetting<NotificationChannelsSetting>({
     category: 'system',
     key: 'notification-channels',

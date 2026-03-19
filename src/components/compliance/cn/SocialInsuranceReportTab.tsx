@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Calculator, Download } from 'lucide-react'
 import { apiClient } from '@/lib/api'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
 
 interface ReportRow {
   insuranceType: string
@@ -224,22 +224,22 @@ export default function SocialInsuranceReportTab() {
       ) : (
         <>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className={TABLE_STYLES.table}>
               <thead>
-                <tr className="bg-[#FAFAFA] text-xs text-[#666] font-medium uppercase tracking-wider">
-                  <th className="px-4 py-3 text-left">보험 유형</th>
-                  <th className="px-4 py-3 text-right">직원 수</th>
-                  <th className="px-4 py-3 text-right">총 기수</th>
-                  <th className="px-4 py-3 text-right">회사 부담</th>
-                  <th className="px-4 py-3 text-right">직원 부담</th>
-                  <th className="px-4 py-3 text-right">합계</th>
+                <tr className={TABLE_STYLES.header}>
+                  <th className={TABLE_STYLES.headerCell}>보험 유형</th>
+                  <th className={TABLE_STYLES.headerCellRight}>직원 수</th>
+                  <th className={TABLE_STYLES.headerCellRight}>총 기수</th>
+                  <th className={TABLE_STYLES.headerCellRight}>회사 부담</th>
+                  <th className={TABLE_STYLES.headerCellRight}>직원 부담</th>
+                  <th className={TABLE_STYLES.headerCellRight}>합계</th>
                 </tr>
               </thead>
               <tbody>
                 {reportData.rows.map((row) => (
                   <tr
                     key={row.insuranceType}
-                    className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]"
+                    className={TABLE_STYLES.row}
                   >
                     <td className="px-4 py-3 font-medium text-[#1A1A1A]">
                       {INSURANCE_TYPE_LABELS[row.insuranceType] ?? row.insuranceType}

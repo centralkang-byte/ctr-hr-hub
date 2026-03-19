@@ -44,6 +44,7 @@ import {
 import { apiClient } from '@/lib/api'
 import { AnalyticsPageLayout } from '@/components/analytics/AnalyticsPageLayout'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 
 // ─── 타입 ────────────────────────────────────────────────
 
@@ -293,9 +294,9 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
           <h3 className="text-base font-semibold text-[#1A1A1A]">{'kr_kec9db4ec_risk_all_kebaaa9eb'}</h3>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className={TABLE_STYLES.header}>
+          <table className={TABLE_STYLES.table}>
+            <thead className={TABLE_STYLES.header}>
+              <tr className={TABLE_STYLES.row}>
                 <th className={TABLE_STYLES.headerCell}>{'이름'}</th>
                 <th className={TABLE_STYLES.headerCell}>{'부서'}</th>
                 <th className={TABLE_STYLES.headerCell}>{'직급'}</th>
@@ -307,21 +308,21 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
             </thead>
             <tbody>
               {data.map((row) => (
-                <tr key={row.employeeId} className={TABLE_STYLES.header}>
-                  <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">{row.employeeName}</td>
-                  <td className="px-4 py-3 text-sm text-[#555]">{row.departmentName ?? '—'}</td>
-                  <td className="px-4 py-3 text-sm text-[#555]">{row.jobGradeName ?? '—'}</td>
-                  <td className="px-4 py-3">
+                <tr key={row.employeeId} className={TABLE_STYLES.row}>
+                  <td className={cn(TABLE_STYLES.cell, 'font-medium text-[#1A1A1A]')}>{row.employeeName}</td>
+                  <td className={cn(TABLE_STYLES.cell, 'text-[#555]')}>{row.departmentName ?? '—'}</td>
+                  <td className={cn(TABLE_STYLES.cell, 'text-[#555]')}>{row.jobGradeName ?? '—'}</td>
+                  <td className={TABLE_STYLES.cell}>
                     {row.latestScore ? (
                       <ScoreBar score={row.latestScore.overallScore} level={row.latestScore.riskLevel} />
                     ) : (
                       <span className="text-xs text-[#999]">{'kr_kebafb8ea'}</span>
                     )}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className={TABLE_STYLES.cell}>
                     {row.latestScore && <RiskBadge level={row.latestScore.riskLevel} />}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className={TABLE_STYLES.cell}>
                     <div className="flex flex-wrap gap-1">
                       {row.latestScore?.topFactors.slice(0, 2).map((f) => (
                         <span key={f} className="text-xs bg-[#F5F5F5] text-[#555] px-2 py-0.5 rounded">
@@ -330,7 +331,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
                       ))}
                     </div>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className={TABLE_STYLES.cell}>
                     <Link
                       href={`/analytics/predictive/${row.employeeId}`}
                       className="text-sm text-[#5E81F4] hover:text-[#4B6DE0] font-medium"
@@ -407,9 +408,9 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
           <h3 className="text-base font-semibold text-[#1A1A1A]">{'kr_kebb288ec_all_kebaaa9eb'}</h3>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className={TABLE_STYLES.header}>
+          <table className={TABLE_STYLES.table}>
+            <thead className={TABLE_STYLES.header}>
+              <tr className={TABLE_STYLES.row}>
                 <th className={TABLE_STYLES.headerCell}>{'이름'}</th>
                 <th className={TABLE_STYLES.headerCell}>{'부서'}</th>
                 <th className={TABLE_STYLES.headerCell}>{'kr_kebb288ec_score'}</th>
@@ -419,20 +420,20 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
             </thead>
             <tbody>
               {data.map((row) => (
-                <tr key={row.employeeId} className={TABLE_STYLES.header}>
-                  <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">{row.employeeName}</td>
-                  <td className="px-4 py-3 text-sm text-[#555]">{row.departmentName ?? '—'}</td>
-                  <td className="px-4 py-3">
+                <tr key={row.employeeId} className={TABLE_STYLES.row}>
+                  <td className={cn(TABLE_STYLES.cell, 'font-medium text-[#1A1A1A]')}>{row.employeeName}</td>
+                  <td className={cn(TABLE_STYLES.cell, 'text-[#555]')}>{row.departmentName ?? '—'}</td>
+                  <td className={TABLE_STYLES.cell}>
                     {row.latestScore ? (
                       <ScoreBar score={row.latestScore.overallScore} level={row.latestScore.riskLevel} />
                     ) : (
                       <span className="text-xs text-[#999]">{'kr_kebafb8ea'}</span>
                     )}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className={TABLE_STYLES.cell}>
                     {row.latestScore && <RiskBadge level={row.latestScore.riskLevel} />}
                   </td>
-                  <td className="px-4 py-3 text-xs text-[#999]">
+                  <td className={cn(TABLE_STYLES.cell, 'text-[#999]')}>
                     {row.latestScore
                       ? new Date(row.latestScore.calculatedAt).toLocaleDateString('ko-KR')
                       : '—'}
@@ -503,9 +504,9 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
           <h3 className="text-base font-semibold text-[#1A1A1A]">{'kr_ked8c80_keab1b4ea_all_status'}</h3>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className={TABLE_STYLES.header}>
+          <table className={TABLE_STYLES.table}>
+            <thead className={TABLE_STYLES.header}>
+              <tr className={TABLE_STYLES.row}>
                 <th className={TABLE_STYLES.headerCell}>{'kr_ked8c80'}</th>
                 <th className={TABLE_STYLES.headerCell}>{'kr_kec9db8ec'}</th>
                 <th className={TABLE_STYLES.headerCell}>{'kr_keab1b4ea_score'}</th>
@@ -515,20 +516,20 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
             </thead>
             <tbody>
               {data.map((row) => (
-                <tr key={row.departmentId} className={TABLE_STYLES.header}>
-                  <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">{row.departmentName}</td>
-                  <td className="px-4 py-3 text-sm text-[#555]">{row.latestScore?.memberCount ?? '—'}</td>
-                  <td className="px-4 py-3">
+                <tr key={row.departmentId} className={TABLE_STYLES.row}>
+                  <td className={cn(TABLE_STYLES.cell, 'font-medium text-[#1A1A1A]')}>{row.departmentName}</td>
+                  <td className={cn(TABLE_STYLES.cell, 'text-[#555]')}>{row.latestScore?.memberCount ?? '—'}</td>
+                  <td className={TABLE_STYLES.cell}>
                     {row.latestScore ? (
                       <ScoreBar score={row.latestScore.overallScore} level={row.latestScore.riskLevel} />
                     ) : (
                       <span className="text-xs text-[#999]">{'kr_kebafb8ea'}</span>
                     )}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className={TABLE_STYLES.cell}>
                     {row.latestScore && <RiskBadge level={row.latestScore.riskLevel} />}
                   </td>
-                  <td className="px-4 py-3 text-xs text-[#999]">
+                  <td className={cn(TABLE_STYLES.cell, 'text-[#999]')}>
                     {row.latestScore
                       ? new Date(row.latestScore.calculatedAt).toLocaleDateString('ko-KR')
                       : '—'}
@@ -606,9 +607,9 @@ function WorkforceTab({
           <h3 className="text-base font-semibold text-[#1A1A1A]">{'department_kebb384_integrations_status'}</h3>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className={TABLE_STYLES.header}>
+          <table className={TABLE_STYLES.table}>
+            <thead className={TABLE_STYLES.header}>
+              <tr className={TABLE_STYLES.row}>
                 <th className={TABLE_STYLES.headerCell}>{'부서'}</th>
                 <th className={TABLE_STYLES.headerCell}>{'analytics_kec9db8ec'}</th>
                 <th className={TABLE_STYLES.headerCell}>{'kr_kec9db4ec_keab3a0ec'}</th>
@@ -620,12 +621,12 @@ function WorkforceTab({
               {Object.entries(deptMap).map(([dept, stats]) => {
                 const riskRate = stats.total > 0 ? Math.round(((stats.turnoverHigh + stats.burnoutHigh) / (stats.total * 2)) * 100) : 0
                 return (
-                  <tr key={dept} className={TABLE_STYLES.header}>
-                    <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">{dept}</td>
-                    <td className="px-4 py-3 text-sm text-[#555]">{stats.total}</td>
-                    <td className="px-4 py-3 text-sm text-[#B91C1C]">{stats.turnoverHigh}</td>
-                    <td className="px-4 py-3 text-sm text-[#B45309]">{stats.burnoutHigh}</td>
-                    <td className="px-4 py-3">
+                  <tr key={dept} className={TABLE_STYLES.row}>
+                    <td className={cn(TABLE_STYLES.cell, 'font-medium text-[#1A1A1A]')}>{dept}</td>
+                    <td className={cn(TABLE_STYLES.cell, 'text-[#555]')}>{stats.total}</td>
+                    <td className={cn(TABLE_STYLES.cell, 'text-[#B91C1C]')}>{stats.turnoverHigh}</td>
+                    <td className={cn(TABLE_STYLES.cell, 'text-[#B45309]')}>{stats.burnoutHigh}</td>
+                    <td className={TABLE_STYLES.cell}>
                       <div className="flex items-center gap-2">
                         <div className="flex-1 h-1.5 bg-[#F5F5F5] rounded-full overflow-hidden">
                           <div

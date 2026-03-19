@@ -29,7 +29,7 @@ export const GET = withPermission(
 
     return apiSuccess(logs)
   },
-  perm(MODULE.PERFORMANCE, ACTION.VIEW),
+  perm(MODULE.PERFORMANCE, ACTION.APPROVE),
 )
 
 const checkSchema = z.object({

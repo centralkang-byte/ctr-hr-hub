@@ -76,5 +76,5 @@ export const POST = withPermission(
 
     return apiSuccess({ summary: result, aiGenerated: true })
   },
-  perm(MODULE.ONBOARDING, ACTION.APPROVE),
+  perm(MODULE.OFFBOARDING, ACTION.APPROVE),
 )

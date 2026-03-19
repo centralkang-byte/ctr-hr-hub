@@ -5,7 +5,7 @@
 
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { apiSuccess, apiPaginated, apiError, buildPagination } from '@/lib/api'
+import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
 import { badRequest, handlePrismaError, isAppError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'

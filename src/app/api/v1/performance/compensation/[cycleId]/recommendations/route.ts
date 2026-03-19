@@ -144,5 +144,5 @@ export const GET = withPermission(
             throw handlePrismaError(error)
         }
     },
-    perm(MODULE.PERFORMANCE, ACTION.VIEW),
+    perm(MODULE.PERFORMANCE, ACTION.APPROVE),
 )

@@ -89,7 +89,7 @@ export const PUT = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.HR_CHATBOT, ACTION.UPDATE),
+  perm(MODULE.EMPLOYEES, ACTION.UPDATE),
 )
 
 export const DELETE = withPermission(
@@ -132,5 +132,5 @@ export const DELETE = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.HR_CHATBOT, ACTION.DELETE),
+  perm(MODULE.EMPLOYEES, ACTION.DELETE),
 )

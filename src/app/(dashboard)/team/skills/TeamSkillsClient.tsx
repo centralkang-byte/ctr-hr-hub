@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
+// import { toast } from '@/hooks/use-toast'
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — 팀원 역량 평가 Client (매니저용) (B8-3)
 // ═══════════════════════════════════════════════════════════
@@ -12,7 +12,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { apiClient } from '@/lib/api'
 import {
   Users, ChevronLeft, ChevronRight, Save, CheckCircle2,
-  Star, AlertCircle, User as UserIcon,
+  User as UserIcon,
 } from 'lucide-react'
 import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS } from '@/lib/styles'
@@ -57,7 +57,7 @@ function getGapBadge(gap: number | null) {
   return <span className="px-1.5 py-0.5 rounded-full text-xs bg-[#DBEAFE] text-[#1D4ED8]">초과 +{Math.abs(gap)}</span>
 }
 
-export default function TeamSkillsClient({user }: {
+export default function TeamSkillsClient({user: _user }: {
   user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('skills')

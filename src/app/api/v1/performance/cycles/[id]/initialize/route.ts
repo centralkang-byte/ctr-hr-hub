@@ -74,6 +74,8 @@ export const POST = withPermission(
             }
 
             // 2. Bulk create PerformanceReview + update cycle status (transaction)
+            // Note: Uses upsert instead of createMany+skipDuplicates to avoid
+            // PrismaPg adapter issues with ON CONFLICT inside $transaction.
             const result = await prisma.$transaction(async (tx) => {
                 // Skip employees who already have a review (idempotency)
                 const existingReviews = await tx.performanceReview.findMany({
@@ -83,16 +85,18 @@ export const POST = withPermission(
                 const existingSet = new Set(existingReviews.map((r) => r.employeeId))
                 const newEmployees = employees.filter((e) => !existingSet.has(e.id))
 
-                if (newEmployees.length > 0) {
-                    await tx.performanceReview.createMany({
-                        data: newEmployees.map((emp) => ({
+                // Use individual upsert for PrismaPg compatibility
+                for (const emp of newEmployees) {
+                    await tx.performanceReview.upsert({
+                        where: { cycleId_employeeId: { cycleId, employeeId: emp.id } },
+                        create: {
                             cycleId,
                             employeeId: emp.id,
                             companyId: cycle.companyId,
                             status: 'GOAL_SETTING' as const,
                             overdueFlags: [],
-                        })),
-                        skipDuplicates: true,
+                        },
+                        update: {}, // no-op if exists
                     })
                 }
 

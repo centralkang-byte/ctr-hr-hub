@@ -90,5 +90,5 @@ export const PUT = withPermission(
 
     return apiSuccess({ cancelled: true })
   },
-  perm(MODULE.ONBOARDING, ACTION.APPROVE),
+  perm(MODULE.OFFBOARDING, ACTION.APPROVE),
 )

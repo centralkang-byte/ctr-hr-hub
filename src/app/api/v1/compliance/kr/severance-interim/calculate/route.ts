@@ -12,7 +12,7 @@ import { calculateSeveranceInterim } from '@/lib/compliance/kr'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
-  async (req: NextRequest, _context, user: SessionUser) => {
+  async (req: NextRequest, _context, _user: SessionUser) => {
     const params = Object.fromEntries(req.nextUrl.searchParams.entries())
     const parsed = severanceCalculateSchema.safeParse(params)
     if (!parsed.success) throw badRequest('Invalid parameters', { issues: parsed.error.issues })

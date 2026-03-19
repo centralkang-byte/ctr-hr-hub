@@ -8,7 +8,7 @@ import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withPermission } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
-import { apiSuccess, apiError } from '@/lib/api'
+import { apiSuccess } from '@/lib/api'
 import { z } from 'zod'
 
 const querySchema = z.object({

@@ -34,7 +34,7 @@ const competencyScoreSchema = z.object({
 })
 
 const upsertSchema = z.object({
-  cycleId: z.string().cuid(),
+  cycleId: z.string(),
   goalScores: z.array(goalScoreSchema),
   competencyScores: z.array(competencyScoreSchema),
   overallComment: z.string().max(3000).optional(),

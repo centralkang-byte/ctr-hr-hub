@@ -7,7 +7,7 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
 import { badRequest, handlePrismaError } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
+import { withPermission, withAuth, hasPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
@@ -35,7 +35,7 @@ const createSchema = z.object({
 
 // ─── GET /api/v1/recruitment/interviews ──────────────────
 
-export const GET = withPermission(
+export const GET = withAuth(
   async (req: NextRequest, _context, user: SessionUser) => {
     const params = Object.fromEntries(req.nextUrl.searchParams.entries())
     const parsed = searchSchema.safeParse(params)
@@ -45,13 +45,21 @@ export const GET = withPermission(
 
     const { page, limit, applicationId, postingId, status } = parsed.data
 
+    const hasFullAccess = hasPermission(user, perm(MODULE.RECRUITMENT, ACTION.VIEW))
+
+    // MANAGER without recruitment:read → only their own interviews
     const companyFilter =
       user.role === ROLE.SUPER_ADMIN
         ? {}
         : { application: { posting: { companyId: user.companyId } } }
 
+    const interviewerFilter = !hasFullAccess
+      ? { interviewerId: user.employeeId }
+      : {}
+
     const where = {
       ...companyFilter,
+      ...interviewerFilter,
       ...(applicationId ? { applicationId } : {}),
       ...(postingId ? { application: { postingId, ...companyFilter.application } } : {}),
       ...(status ? { status } : {}),
@@ -89,7 +97,6 @@ export const GET = withPermission(
 
     return apiPaginated(items, buildPagination(page, limit, total))
   },
-  perm(MODULE.RECRUITMENT, ACTION.VIEW),
 )
 
 // ─── POST /api/v1/recruitment/interviews ─────────────────

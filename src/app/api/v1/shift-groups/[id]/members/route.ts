@@ -195,5 +195,5 @@ export const PUT = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.ATTENDANCE, ACTION.UPDATE),
+  perm(MODULE.ATTENDANCE, ACTION.APPROVE),
 )

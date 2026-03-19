@@ -15,11 +15,11 @@ import type { ExecutiveSummaryResponse } from '@/lib/analytics/types'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
-  async (req: NextRequest, _ctx, user: SessionUser) => {
+  async (req: NextRequest, _ctx, _user: SessionUser) => {
     const params = parseAnalyticsParams(new URL(req.url).searchParams)
     const companyFilter = params.companyId ? { companyId: params.companyId } : {}
     const now = new Date()
-    const currentYear = now.getFullYear()
+//     const currentYear = now.getFullYear()
 
     // ── Promise.all: 6 domain queries ─────────────────────
     const [

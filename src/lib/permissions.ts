@@ -90,6 +90,32 @@ export function withPermission(
   }
 }
 
+// ─── API Route wrapper — auth only, no permission check ───
+// Use for self-service endpoints (internal-jobs, /me, etc.)
+
+export function withAuth(
+  handler: (
+    req: NextRequest,
+    context: { params: Promise<Record<string, string>> },
+    user: SessionUser,
+  ) => Promise<NextResponse>,
+): RouteHandler {
+  return async (req, context) => {
+    try {
+      const session = await getServerSession(authOptions)
+
+      if (!session?.user) {
+        return apiError(unauthorized())
+      }
+
+      const user = session.user as SessionUser
+      return await handler(req, context, user)
+    } catch (error) {
+      return apiError(error)
+    }
+  }
+}
+
 // ─── Get all permissions for a role from DB ───────────────
 
 export async function getPermissionsForRole(

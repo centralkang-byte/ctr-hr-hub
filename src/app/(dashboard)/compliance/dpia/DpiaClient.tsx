@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl'
 import { FileSearch, Plus, Pencil, Eye, AlertTriangle } from 'lucide-react'
 import DpiaForm from '@/components/compliance/gdpr/DpiaForm'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 
 interface Dpia {
   id: string
@@ -147,9 +148,9 @@ export default function DpiaClient() {
           <div className="p-8 text-center text-[#666]">{tc('noData')}</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className={TABLE_STYLES.header}>
+            <table className={TABLE_STYLES.table}>
+              <thead className={TABLE_STYLES.header}>
+                <tr className={TABLE_STYLES.row}>
                   <th className={TABLE_STYLES.headerCell}>Title</th>
                   <th className={TABLE_STYLES.headerCell}>{t('gdpr.processingScope')}</th>
                   <th className={TABLE_STYLES.headerCell}>{t('gdpr.riskLevel')}</th>
@@ -161,24 +162,24 @@ export default function DpiaClient() {
               <tbody>
                 {!dpias?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
               {dpias?.map((d) => (
-                  <tr key={d.id} className={TABLE_STYLES.header}>
-                    <td className="px-4 py-3 text-sm">
+                  <tr key={d.id} className={TABLE_STYLES.row}>
+                    <td className={TABLE_STYLES.cell}>
                       <div className="font-medium text-[#1A1A1A]">{d.title}</div>
                       {d.description && (
                         <div className="text-xs text-[#999] mt-0.5 max-w-[200px] truncate">{d.description}</div>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-sm text-[#555] max-w-[240px] truncate">{d.processing_scope}</td>
-                    <td className="px-4 py-3 text-sm">
+                    <td className={cn(TABLE_STYLES.cell, 'text-[#555] max-w-[240px] truncate')}>{d.processing_scope}</td>
+                    <td className={TABLE_STYLES.cell}>
                       <RiskBadge level={d.risk_level} />
                     </td>
-                    <td className="px-4 py-3 text-sm">
+                    <td className={TABLE_STYLES.cell}>
                       <StatusBadge status={d.status} />
                     </td>
-                    <td className="px-4 py-3 text-sm text-[#666]">
+                    <td className={cn(TABLE_STYLES.cell, 'text-[#666]')}>
                       {new Date(d.updated_at).toLocaleDateString()}
                     </td>
-                    <td className="px-4 py-3 text-sm">
+                    <td className={TABLE_STYLES.cell}>
                       <button
                         onClick={() => { setSelected(d); setShowForm(true) }}
                         className="inline-flex items-center gap-1.5 text-[#5E81F4] hover:text-[#4B6DE0] text-sm font-medium"

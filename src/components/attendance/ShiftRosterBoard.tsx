@@ -132,7 +132,7 @@ function getInitials(name: string): string {
 
 // ─── Component ──────────────────────────────────────────────
 
-export function ShiftRosterBoard({ user }: { user: SessionUser }) {
+export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
   const [weekStart, setWeekStart] = useState<Date>(() =>
     startOfWeek(new Date(), { weekStartsOn: 1 }),
   )

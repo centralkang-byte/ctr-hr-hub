@@ -166,6 +166,36 @@ const SETTINGS: SettingDef[] = [
       ],
     },
   },
+  // ─── PAYROLL: PL Deductions (ZUS + PIT + PPK) ──────────
+  {
+    settingType: 'PAYROLL',
+    settingKey: 'pl-deductions',
+    description: 'PL ZUS + Zdrowotna + PIT + PPK rates (2025)',
+    settingValue: {
+      pensionRate: 0.0976,
+      disabilityRate: 0.015,
+      sicknessRate: 0.0245,
+      healthInsuranceRate: 0.09,
+      taxBrackets: [
+        { upTo: 120_000, rate: 0.12 },
+        { upTo: null, rate: 0.32 },
+      ],
+      taxFreeAmount: 30_000,
+      ppkRate: 0.02,
+    },
+  },
+  // ─── PAYROLL: MX Aguinaldo Config (LFT Art. 87) ───────
+  {
+    settingType: 'PAYROLL',
+    settingKey: 'aguinaldo-config',
+    description: 'Mexico Aguinaldo (LFT Art. 87) — 15 day year-end bonus',
+    settingValue: {
+      daysEntitled: 15,
+      proportionalForPartialYear: true,
+      taxExemptDays: 30,
+      umaDaily: 113.14,
+    },
+  },
   // ─── PAYROLL: Anomaly Detection Thresholds ──────────────
   {
     settingType: 'PAYROLL',
@@ -251,6 +281,18 @@ const SETTINGS: SettingDef[] = [
       퇴직급여: { code: '5310', name: '퇴직급여 충당' },
       식대: { code: '5410', name: '복리후생비-식대' },
       교통비: { code: '5420', name: '복리후생비-교통비' },
+    },
+  },
+  // ─── ORGANIZATION: Probation Rules (S-Fix-4) ───────────
+  {
+    settingType: 'ORGANIZATION',
+    settingKey: 'probation-rules',
+    description: '수습기간 기본 규칙 (글로벌 기본값)',
+    settingValue: {
+      defaultMonths: 3,
+      maxMonths: 6,
+      leaveEligibleAfterMonths: 3,
+      terminationNoticeDays: 14,
     },
   },
   // ─── ATTENDANCE: Work Hour Thresholds ───────────────────
@@ -389,6 +431,43 @@ const SETTINGS: SettingDef[] = [
       competencyThresholds: [0, 2.33, 3.67, 5.01],
     },
   },
+  // ─── PERFORMANCE: CFR (Continuous Feedback & Recognition) ──
+  {
+    settingType: 'PERFORMANCE',
+    settingKey: 'cfr-config',
+    description: 'CFR(상시 피드백/인정) 기본 설정',
+    settingValue: {
+      enabled: true,
+      recognitionVisibility: 'public',
+      badgeTypes: [
+        { code: 'TEAMWORK', label: '협업왕', icon: '🤝', description: '뛰어난 팀워크를 발휘한 동료' },
+        { code: 'INNOVATION', label: '혁신리더', icon: '💡', description: '창의적 아이디어로 개선에 기여' },
+        { code: 'CUSTOMER', label: '고객감동', icon: '⭐', description: '고객 만족도 향상에 기여' },
+        { code: 'MENTOR', label: '멘토링', icon: '🎓', description: '후배 육성에 헌신' },
+      ],
+      weightInPerformance: 10,
+      maxRecognitionsPerMonth: 5,
+    },
+  },
+  // ─── PERFORMANCE: One-on-One Meeting Config ───────────
+  {
+    settingType: 'PERFORMANCE',
+    settingKey: 'one-on-one-config',
+    description: '1:1 미팅 기본 설정',
+    settingValue: {
+      frequency: 'biweekly',
+      defaultDurationMinutes: 30,
+      reminderDaysBefore: 1,
+      agendaTemplateEnabled: true,
+      agendaItems: [
+        '지난 기간 업무 성과 리뷰',
+        '현재 진행 중인 과제 및 이슈',
+        '경력 개발 및 성장 목표',
+        '피드백 및 지원 요청',
+      ],
+      notesVisibility: 'manager_and_employee',
+    },
+  },
   // ─── SYSTEM: Exchange Rates ─────────────────────────────
   {
     settingType: 'SYSTEM',
@@ -521,6 +600,425 @@ const SETTINGS: SettingDef[] = [
       ],
     },
   },
+  // ─── SYSTEM: Nudge Rule Thresholds (S-Fix-5) ─────────
+  {
+    settingType: 'SYSTEM',
+    settingKey: 'nudge-rules',
+    description: '넛지 규칙 타이밍 임계값',
+    settingValue: {
+      leavePending: { triggerAfterDays: 3, repeatEveryDays: 2, maxNudges: 3 },
+      payrollReview: { triggerAfterDays: 1, repeatEveryDays: 1, maxNudges: 5 },
+    },
+  },
+  // ─── SYSTEM: Alert Thresholds (S-Fix-5) ───────────────
+  {
+    settingType: 'SYSTEM',
+    settingKey: 'alert-thresholds',
+    description: '대기 작업 우선순위 및 만료 경고 임계값',
+    settingValue: {
+      priority: { urgentDays: 1, highPriorityDays: 3 },
+      contractExpiryAlertDays: 30,
+      workPermitExpiryAlertDays: 60,
+    },
+  },
+  // ─── SYSTEM: Analytics Thresholds (S-Fix-5) ───────────
+  {
+    settingType: 'SYSTEM',
+    settingKey: 'analytics-thresholds',
+    description: '예측 분석 점수 경계값',
+    settingValue: {
+      turnoverRisk: { criticalScore: 75, highScore: 55, mediumScore: 35 },
+      teamHealth: { criticalScore: 70, highScore: 50, mediumScore: 30 },
+    },
+  },
+  // ─── SYSTEM: Session Config (S-Fix-6) ────────────────
+  {
+    settingType: 'SYSTEM',
+    settingKey: 'session-config',
+    description: 'Session timeout configuration — requires server restart to apply maxAge change',
+    settingValue: {
+      maxAgeMinutes: 480,
+      idleTimeoutMinutes: 30,
+      extendOnActivity: true,
+    },
+  },
+]
+
+// ─── Per-Company Labor Settings (S-Fix-2) ─────────────────
+
+interface CompanyLaborSetting {
+  companyCode: string
+  settingType: string
+  settingKey: string
+  settingValue: Prisma.InputJsonValue
+  description: string
+}
+
+const COMPANY_LABOR_SETTINGS: CompanyLaborSetting[] = [
+  // ── Work Hour Limits ────────────────────────────────────
+  {
+    companyCode: 'CTR-KR',
+    settingType: 'ATTENDANCE',
+    settingKey: 'work-hour-limits',
+    settingValue: {
+      maxWeeklyHours: 52,
+      standardWeeklyHours: 40,
+      maxOvertimeHours: 12,
+    },
+    description: 'Korea: 52h limit per 근로기준법',
+  },
+  {
+    companyCode: 'CTR-CN',
+    settingType: 'ATTENDANCE',
+    settingKey: 'work-hour-limits',
+    settingValue: {
+      maxWeeklyHours: 44,
+      standardWeeklyHours: 40,
+      maxOvertimeHours: 36,
+    },
+    description: 'China: 44h standard, 36h OT/month cap per 劳动法',
+  },
+  {
+    companyCode: 'CTR-US',
+    settingType: 'ATTENDANCE',
+    settingKey: 'work-hour-limits',
+    settingValue: {
+      maxWeeklyHours: 40,
+      standardWeeklyHours: 40,
+      maxOvertimeHours: 20,
+    },
+    description: 'US: FLSA OT starts at 40h, no federal weekly cap',
+  },
+  {
+    companyCode: 'CTR-VN',
+    settingType: 'ATTENDANCE',
+    settingKey: 'work-hour-limits',
+    settingValue: {
+      maxWeeklyHours: 48,
+      standardWeeklyHours: 48,
+      maxOvertimeHours: 12,
+    },
+    description: 'Vietnam: 48h standard, 12h OT/week cap',
+  },
+  {
+    companyCode: 'CTR-MX',
+    settingType: 'ATTENDANCE',
+    settingKey: 'work-hour-limits',
+    settingValue: {
+      maxWeeklyHours: 48,
+      standardWeeklyHours: 48,
+      maxOvertimeHours: 9,
+    },
+    description: 'Mexico: 48h standard, 9h OT/week cap per LFT',
+  },
+  {
+    companyCode: 'CTR-RU',
+    settingType: 'ATTENDANCE',
+    settingKey: 'work-hour-limits',
+    settingValue: {
+      maxWeeklyHours: 40,
+      standardWeeklyHours: 40,
+      maxOvertimeHours: 4,
+    },
+    description: 'Russia: 40h per Art. 91 ТК РФ, 4h OT/2 days Art. 99',
+  },
+  {
+    companyCode: 'CTR-EU',
+    settingType: 'ATTENDANCE',
+    settingKey: 'work-hour-limits',
+    settingValue: {
+      maxWeeklyHours: 48,
+      standardWeeklyHours: 40,
+      maxOvertimeHours: 8,
+    },
+    description: 'EU/Poland: 48h EU WTD max, 40h standard per Kodeks pracy',
+  },
+  // ── Minimum Wage ────────────────────────────────────────
+  {
+    companyCode: 'CTR-KR',
+    settingType: 'ATTENDANCE',
+    settingKey: 'min-wage',
+    settingValue: {
+      hourlyWage: 10_030,
+      currency: 'KRW',
+      effectiveYear: 2025,
+    },
+    description: 'Korea minimum wage 2025 (10,030 KRW/hr)',
+  },
+  {
+    companyCode: 'CTR-CN',
+    settingType: 'ATTENDANCE',
+    settingKey: 'min-wage',
+    settingValue: {
+      hourlyWage: 25.3,
+      currency: 'CNY',
+      effectiveYear: 2025,
+      note: 'Shanghai region',
+    },
+    description: 'China minimum wage 2025 (Shanghai, 25.3 CNY/hr)',
+  },
+  {
+    companyCode: 'CTR-US',
+    settingType: 'ATTENDANCE',
+    settingKey: 'min-wage',
+    settingValue: {
+      hourlyWage: 7.25,
+      currency: 'USD',
+      effectiveYear: 2024,
+      note: 'Federal minimum',
+    },
+    description: 'US Federal minimum wage (7.25 USD/hr)',
+  },
+  {
+    companyCode: 'CTR-VN',
+    settingType: 'ATTENDANCE',
+    settingKey: 'min-wage',
+    settingValue: {
+      hourlyWage: 22_500,
+      currency: 'VND',
+      effectiveYear: 2024,
+      note: 'Region I',
+    },
+    description: 'Vietnam minimum wage 2024 Region I (22,500 VND/hr)',
+  },
+  {
+    companyCode: 'CTR-MX',
+    settingType: 'ATTENDANCE',
+    settingKey: 'min-wage',
+    settingValue: {
+      hourlyWage: 33.24,
+      currency: 'MXN',
+      effectiveYear: 2025,
+    },
+    description: 'Mexico minimum wage 2025 (33.24 MXN/hr)',
+  },
+  {
+    companyCode: 'CTR-RU',
+    settingType: 'ATTENDANCE',
+    settingKey: 'min-wage',
+    settingValue: {
+      hourlyWage: 134.17,
+      currency: 'RUB',
+      effectiveYear: 2025,
+      note: 'Based on MROT ₽22,440/month',
+    },
+    description: 'Russia minimum wage 2025 (MROT-based, 134.17 RUB/hr)',
+  },
+  {
+    companyCode: 'CTR-EU',
+    settingType: 'ATTENDANCE',
+    settingKey: 'min-wage',
+    settingValue: {
+      hourlyWage: 28.1,
+      currency: 'PLN',
+      effectiveYear: 2025,
+      note: 'Poland',
+    },
+    description: 'Poland minimum wage 2025 (28.1 PLN/hr)',
+  },
+  // ── Probation Rules (S-Fix-4) ─────────────────────────
+  {
+    companyCode: 'CTR-KR',
+    settingType: 'ORGANIZATION',
+    settingKey: 'probation-rules',
+    settingValue: {
+      defaultMonths: 3,
+      maxMonths: 3,
+      leaveEligibleAfterMonths: 3,
+      terminationNoticeDays: 30,
+    },
+    description: 'Korea: 3개월 수습 (근로기준법)',
+  },
+  {
+    companyCode: 'CTR-CN',
+    settingType: 'ORGANIZATION',
+    settingKey: 'probation-rules',
+    settingValue: {
+      defaultMonths: 6,
+      maxMonths: 6,
+      leaveEligibleAfterMonths: 6,
+      terminationNoticeDays: 3,
+      extendable: false,
+    },
+    description: 'China: 6개월 수습 (劳动合同法), 연장 불가',
+  },
+  {
+    companyCode: 'CTR-US',
+    settingType: 'ORGANIZATION',
+    settingKey: 'probation-rules',
+    settingValue: {
+      defaultMonths: 3,
+      maxMonths: 3,
+      leaveEligibleAfterMonths: 0,
+      terminationNoticeDays: 0,
+    },
+    description: 'US: 3개월 수습 (At-will, no notice required)',
+  },
+  {
+    companyCode: 'CTR-VN',
+    settingType: 'ORGANIZATION',
+    settingKey: 'probation-rules',
+    settingValue: {
+      defaultMonths: 6,
+      maxMonths: 6,
+      leaveEligibleAfterMonths: 6,
+      terminationNoticeDays: 3,
+    },
+    description: 'Vietnam: 6개월 수습 (Bộ luật Lao động Art. 25)',
+  },
+  {
+    companyCode: 'CTR-MX',
+    settingType: 'ORGANIZATION',
+    settingKey: 'probation-rules',
+    settingValue: {
+      defaultMonths: 3,
+      maxMonths: 3,
+      leaveEligibleAfterMonths: 3,
+      terminationNoticeDays: 15,
+    },
+    description: 'Mexico: 3개월 수습 (LFT Art. 39-A)',
+  },
+  {
+    companyCode: 'CTR-RU',
+    settingType: 'ORGANIZATION',
+    settingKey: 'probation-rules',
+    settingValue: {
+      defaultMonths: 3,
+      maxMonths: 3,
+      leaveEligibleAfterMonths: 6,
+      terminationNoticeDays: 3,
+    },
+    description: 'Russia: 3개월 수습 (Art. 70 ТК РФ)',
+  },
+  {
+    companyCode: 'CTR-EU',
+    settingType: 'ORGANIZATION',
+    settingKey: 'probation-rules',
+    settingValue: {
+      defaultMonths: 3,
+      maxMonths: 3,
+      leaveEligibleAfterMonths: 3,
+      terminationNoticeDays: 14,
+    },
+    description: 'EU/Poland: 3개월 수습 (Kodeks pracy Art. 25)',
+  },
+  // ── PL Deductions (S-Fix-6) ──────────────────────────
+  {
+    companyCode: 'CTR-EU',
+    settingType: 'PAYROLL',
+    settingKey: 'pl-deductions',
+    settingValue: {
+      pensionRate: 0.0976,
+      disabilityRate: 0.015,
+      sicknessRate: 0.0245,
+      healthInsuranceRate: 0.09,
+      taxBrackets: [
+        { upTo: 120_000, rate: 0.12 },
+        { upTo: null, rate: 0.32 },
+      ],
+      taxFreeAmount: 30_000,
+      ppkRate: 0.02,
+    },
+    description: 'Poland: ZUS + Zdrowotna + PIT + PPK (2025)',
+  },
+  // ── MX Aguinaldo (S-Fix-6) ──────────────────────────
+  {
+    companyCode: 'CTR-MX',
+    settingType: 'PAYROLL',
+    settingKey: 'aguinaldo-config',
+    settingValue: {
+      daysEntitled: 15,
+      proportionalForPartialYear: true,
+      taxExemptDays: 30,
+      umaDaily: 113.14,
+    },
+    description: 'Mexico: Aguinaldo LFT Art. 87 — 15 day year-end bonus',
+  },
+  // ── Overtime Rules (S-Fix-3) ──────────────────────────
+  {
+    companyCode: 'CTR-KR',
+    settingType: 'ATTENDANCE',
+    settingKey: 'overtime-rules',
+    settingValue: {
+      requiresApproval: true,
+      multipliers: { weekdayOt: 1.5, weekend: 1.5, holiday: 2.0, night: 0.5 },
+      nightStartHour: 22,
+      nightEndHour: 6,
+    },
+    description: 'Korea: 근로기준법 연장1.5x, 휴일1.5x, 공휴일2.0x, 야간+0.5x',
+  },
+  {
+    companyCode: 'CTR-CN',
+    settingType: 'ATTENDANCE',
+    settingKey: 'overtime-rules',
+    settingValue: {
+      requiresApproval: true,
+      multipliers: { weekdayOt: 1.5, weekend: 2.0, holiday: 3.0, night: 0 },
+      nightStartHour: 22,
+      nightEndHour: 6,
+    },
+    description: 'China: 劳动法 weekday1.5x, weekend2.0x, holiday3.0x',
+  },
+  {
+    companyCode: 'CTR-US',
+    settingType: 'ATTENDANCE',
+    settingKey: 'overtime-rules',
+    settingValue: {
+      requiresApproval: false,
+      multipliers: { weekdayOt: 1.5, weekend: 1.5, holiday: 1.5, night: 0 },
+      nightStartHour: 22,
+      nightEndHour: 6,
+    },
+    description: 'US: FLSA 1.5x overtime, no night premium mandate',
+  },
+  {
+    companyCode: 'CTR-VN',
+    settingType: 'ATTENDANCE',
+    settingKey: 'overtime-rules',
+    settingValue: {
+      requiresApproval: true,
+      multipliers: { weekdayOt: 2.0, weekend: 2.0, holiday: 3.0, night: 0.3 },
+      nightStartHour: 22,
+      nightEndHour: 6,
+    },
+    description: 'Vietnam: weekday2.0x, weekend2.0x, holiday3.0x, night+0.3x',
+  },
+  {
+    companyCode: 'CTR-MX',
+    settingType: 'ATTENDANCE',
+    settingKey: 'overtime-rules',
+    settingValue: {
+      requiresApproval: true,
+      multipliers: { weekdayOt: 2.0, weekend: 2.0, holiday: 3.0, night: 0 },
+      nightStartHour: 22,
+      nightEndHour: 6,
+    },
+    description: 'Mexico: LFT first 9h 2.0x, after 3.0x, weekend 2.0x',
+  },
+  {
+    companyCode: 'CTR-RU',
+    settingType: 'ATTENDANCE',
+    settingKey: 'overtime-rules',
+    settingValue: {
+      requiresApproval: true,
+      multipliers: { weekdayOt: 1.5, weekend: 2.0, holiday: 2.0, night: 0.2 },
+      nightStartHour: 22,
+      nightEndHour: 6,
+    },
+    description: 'Russia: Art.152 first 2h 1.5x, after 2.0x, night+20% Art.154',
+  },
+  {
+    companyCode: 'CTR-EU',
+    settingType: 'ATTENDANCE',
+    settingKey: 'overtime-rules',
+    settingValue: {
+      requiresApproval: true,
+      multipliers: { weekdayOt: 1.5, weekend: 2.0, holiday: 2.0, night: 0 },
+      nightStartHour: 22,
+      nightEndHour: 6,
+    },
+    description: 'EU/Poland: Kodeks pracy weekday1.5x, weekend/holiday2.0x',
+  },
 ]
 
 export async function seedProcessSettings(p: PrismaClient) {
@@ -529,6 +1027,7 @@ export async function seedProcessSettings(p: PrismaClient) {
   let created = 0
   let updated = 0
 
+  // ── Global defaults (companyId: null) ─────────────────
   for (const def of SETTINGS) {
     const existing = await p.companyProcessSetting.findFirst({
       where: {
@@ -561,5 +1060,51 @@ export async function seedProcessSettings(p: PrismaClient) {
     }
   }
 
-  console.log(`  ✅ Process settings: ${created} created, ${updated} updated (${SETTINGS.length} total)`)
+  // ── Per-company labor settings (S-Fix-2) ──────────────
+  const companies = await p.company.findMany({ select: { id: true, code: true } })
+  const codeToId = new Map(companies.map((c) => [c.code, c.id]))
+
+  let companyCreated = 0
+  let companyUpdated = 0
+
+  for (const def of COMPANY_LABOR_SETTINGS) {
+    const companyId = codeToId.get(def.companyCode)
+    if (!companyId) {
+      console.log(`    ⚠️  Company ${def.companyCode} not found, skipping ${def.settingKey}`)
+      continue
+    }
+
+    const existing = await p.companyProcessSetting.findFirst({
+      where: {
+        settingType: def.settingType,
+        settingKey: def.settingKey,
+        companyId,
+      },
+    })
+
+    if (existing) {
+      await p.companyProcessSetting.update({
+        where: { id: existing.id },
+        data: {
+          settingValue: def.settingValue,
+          description: def.description,
+        },
+      })
+      companyUpdated++
+    } else {
+      await p.companyProcessSetting.create({
+        data: {
+          settingType: def.settingType,
+          settingKey: def.settingKey,
+          settingValue: def.settingValue,
+          description: def.description,
+          companyId,
+        },
+      })
+      companyCreated++
+    }
+  }
+
+  console.log(`  ✅ Process settings: ${created} created, ${updated} updated (${SETTINGS.length} global)`)
+  console.log(`  ✅ Company labor settings: ${companyCreated} created, ${companyUpdated} updated (${COMPANY_LABOR_SETTINGS.length} per-company)`)
 }

@@ -20,6 +20,7 @@ import { CHART_COLORS } from '@/components/analytics/chart-colors'
 import type { ExecutiveSummaryResponse } from '@/lib/analytics/types'
 import { TABLE_STYLES } from '@/lib/styles'
 import { CHART_THEME } from '@/lib/styles/chart'
+import { cn } from '@/lib/utils'
 
 export default function ExecutiveSummaryClient() {
   const tCommon = useTranslations('common')
@@ -184,24 +185,24 @@ export default function ExecutiveSummaryClient() {
       {companyComparison.length > 0 && (
         <ChartCard title="🏢 법인 비교">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="text-left py-2 px-3 font-medium text-gray-500">{t('company')}</th>
-                  <th className="text-right py-2 px-3 font-medium text-gray-500">{t('kr_kec9db8ec')}</th>
-                  <th className="text-right py-2 px-3 font-medium text-gray-500">{t('kr_kec9db4ec')}</th>
-                  <th className="text-right py-2 px-3 font-medium text-gray-500">{t('average_keab7bcec')}</th>
-                  <th className="text-right py-2 px-3 font-medium text-gray-500">{t('kr_kec9db8ea')}</th>
+            <table className={TABLE_STYLES.table}>
+              <thead className={TABLE_STYLES.header}>
+                <tr>
+                  <th className={TABLE_STYLES.headerCell}>{t('company')}</th>
+                  <th className={TABLE_STYLES.headerCellRight}>{t('kr_kec9db8ec')}</th>
+                  <th className={TABLE_STYLES.headerCellRight}>{t('kr_kec9db4ec')}</th>
+                  <th className={TABLE_STYLES.headerCellRight}>{t('average_keab7bcec')}</th>
+                  <th className={TABLE_STYLES.headerCellRight}>{t('kr_kec9db8ea')}</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-[#F0F0F3]">
                 {companyComparison.map((c) => (
-                  <tr key={c.companyId} className="border-b border-gray-50 hover:bg-gray-50/50">
-                    <td className="py-2 px-3 font-medium text-gray-700">{c.companyName}</td>
-                    <td className="text-right py-2 px-3">{c.headcount}명</td>
-                    <td className={`text-right py-2 px-3 ${c.turnoverRate > 5 ? 'text-red-600' : ''}`}>{c.turnoverRate}%</td>
-                    <td className="text-right py-2 px-3">{c.avgTenure}년</td>
-                    <td className="text-right py-2 px-3">{c.laborCost}</td>
+                  <tr key={c.companyId} className={TABLE_STYLES.row}>
+                    <td className={TABLE_STYLES.cell}>{c.companyName}</td>
+                    <td className={TABLE_STYLES.cellRight}>{c.headcount}명</td>
+                    <td className={cn(TABLE_STYLES.cellRight, c.turnoverRate > 5 && 'text-red-600')}>{c.turnoverRate}%</td>
+                    <td className={TABLE_STYLES.cellRight}>{c.avgTenure}년</td>
+                    <td className={TABLE_STYLES.cellRight}>{c.laborCost}</td>
                   </tr>
                 ))}
               </tbody>

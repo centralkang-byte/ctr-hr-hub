@@ -111,12 +111,12 @@ const roleData = [
 ]
 
 // ================================================================
-// 3. PERMISSIONS (11 modules × 6 actions = 66)
+// 3. PERMISSIONS (17 modules × 6 actions = 102)
 // ================================================================
 const modules = [
   'employees', 'org', 'attendance', 'leave', 'recruitment',
   'performance', 'payroll', 'compensation', 'onboarding', 'offboarding', 'discipline', 'benefits',
-  'compliance',
+  'compliance', 'settings', 'training', 'pulse', 'succession',
 ]
 const actions = ['create', 'read', 'update', 'delete', 'export', 'manage']
 
@@ -128,12 +128,8 @@ type PermKey = `${string}_${string}`
 function buildRolePermissions(): Record<string, PermKey[]> {
   const all: PermKey[] = modules.flatMap(m => actions.map(a => `${m}_${a}` as PermKey))
 
-  // HR_ADMIN: everything except payroll update/delete (read/create/export/manage allowed)
-  // payroll_create 추가: 시뮬레이션 API (POST /api/v1/payroll/simulation) 에서 필요
-  const hrAdmin = all.filter(p => {
-    if (p.startsWith('payroll_') && !['payroll_read', 'payroll_create', 'payroll_export', 'payroll_manage'].includes(p)) return false
-    return true
-  })
+  // HR_ADMIN: everything (payroll update/delete now included for attendance close/reopen/notify)
+  const hrAdmin = all.filter(() => true)
 
   // MANAGER: team scoped
   const manager: PermKey[] = [
@@ -141,10 +137,11 @@ function buildRolePermissions(): Record<string, PermKey[]> {
     'performance_read', 'performance_update', 'discipline_read',
   ]
 
-  // EMPLOYEE: self scoped
+  // EMPLOYEE: self scoped (payroll_read for /payroll/me payslip access)
   const employee: PermKey[] = [
     'employees_read', 'attendance_read', 'attendance_create',
     'leave_read', 'leave_create', 'performance_read', 'performance_create',
+    'payroll_read',
   ]
 
   // EXECUTIVE

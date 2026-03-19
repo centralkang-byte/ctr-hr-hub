@@ -39,7 +39,9 @@ let bootstrapped = false
  * 멱등적 — 중복 호출 시 재등록하지 않음.
  */
 export function bootstrapEventHandlers(): void {
-  if (bootstrapped) return
+  // Clear existing handlers to prevent duplication on hot-reload
+  // (globalThis.__eventBus persists but this module's `bootstrapped` flag resets)
+  eventBus.clearAll()
 
   // ── Leave Events ────────────────────────────────────────
   eventBus.subscribe(leaveApprovedHandler)

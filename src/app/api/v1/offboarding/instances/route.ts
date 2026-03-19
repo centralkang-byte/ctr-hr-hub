@@ -96,5 +96,5 @@ export const GET = withPermission(
 
         return apiPaginated(enriched, buildPagination(page, limit, total))
     },
-    perm(MODULE.ONBOARDING, ACTION.VIEW),
+    perm(MODULE.OFFBOARDING, ACTION.VIEW),
 )

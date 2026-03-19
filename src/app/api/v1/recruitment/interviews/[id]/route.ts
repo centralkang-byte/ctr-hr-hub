@@ -7,9 +7,10 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, notFound, handlePrismaError } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
+import { withPermission, withAuth, hasPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { forbidden } from '@/lib/errors'
 import type { SessionUser } from '@/types'
 
 // ─── Update Schema ───────────────────────────────────────
@@ -46,7 +47,7 @@ async function findScheduleWithScope(id: string, user: SessionUser) {
 
 // ─── GET /api/v1/recruitment/interviews/[id] ─────────────
 
-export const GET = withPermission(
+export const GET = withAuth(
   async (_req: NextRequest, context, user: SessionUser) => {
     const { id } = await context.params
 
@@ -113,9 +114,14 @@ export const GET = withPermission(
       throw notFound('면접 일정을 찾을 수 없습니다.')
     }
 
+    // MANAGER without recruitment permission can only see their own interviews
+    const hasFullAccess = hasPermission(user, perm(MODULE.RECRUITMENT, ACTION.VIEW))
+    if (!hasFullAccess && record.interviewerId !== user.employeeId) {
+      throw forbidden('배정된 면접만 조회할 수 있습니다.')
+    }
+
     return apiSuccess(record)
   },
-  perm(MODULE.RECRUITMENT, ACTION.VIEW),
 )
 
 // ─── PUT /api/v1/recruitment/interviews/[id] ─────────────

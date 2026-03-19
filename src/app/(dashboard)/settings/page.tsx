@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { Settings, Search } from 'lucide-react'
+import { Settings } from 'lucide-react'
 import { SETTINGS_CATEGORIES } from '@/components/settings/settings-config'
 import { SettingsHubClient } from './SettingsHubClient'
 

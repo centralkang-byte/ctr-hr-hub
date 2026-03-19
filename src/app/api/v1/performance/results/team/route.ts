@@ -12,7 +12,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 
 const searchSchema = z.object({
-  cycleId: z.string().cuid(),
+  cycleId: z.string(),
 })
 
 // ─── GET /api/v1/performance/results/team ────────────────
@@ -94,5 +94,5 @@ export const GET = withPermission(
 
     return apiSuccess(results)
   },
-  perm(MODULE.PERFORMANCE, ACTION.APPROVE),
+  perm(MODULE.PERFORMANCE, ACTION.UPDATE),
 )

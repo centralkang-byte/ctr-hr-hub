@@ -144,5 +144,5 @@ export const PUT = withPermission(
             completedAt: result.completedAt,
         })
     },
-    perm(MODULE.ONBOARDING, ACTION.APPROVE),
+    perm(MODULE.OFFBOARDING, ACTION.APPROVE),
 )

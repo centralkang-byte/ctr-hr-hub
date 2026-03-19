@@ -10,6 +10,7 @@ import { badRequest, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { generatePeerReviewSummary } from '@/lib/claude'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import type { SessionUser } from '@/types'
 
 const bodySchema = z.object({
@@ -19,7 +20,7 @@ const bodySchema = z.object({
 
 // ─── POST /api/v1/ai/peer-review-summary ────────────────
 
-export const POST = withPermission(
+export const POST = withRateLimit(withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
     const body = await req.json()
     const parsed = bodySchema.safeParse(body)
@@ -100,5 +101,5 @@ export const POST = withPermission(
 
     return apiSuccess(result)
   },
-  perm(MODULE.PERFORMANCE, ACTION.VIEW),
-)
+  perm(MODULE.PERFORMANCE, ACTION.APPROVE),
+), RATE_LIMITS.AI)

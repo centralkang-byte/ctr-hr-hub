@@ -22,7 +22,7 @@ const querySchema = z.object({
 // ─── GET /api/v1/performance/peer-review/candidates ──────
 
 export const GET = withPermission(
-    async (req: NextRequest, _context, user: SessionUser) => {
+    async (req: NextRequest, _context, _user: SessionUser) => {
         const params = Object.fromEntries(req.nextUrl.searchParams.entries())
         const parsed = querySchema.safeParse(params)
         if (!parsed.success) {

@@ -7,7 +7,7 @@
 import { useState } from 'react'
 import { Download, FileBarChart2, BarChart3 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
 
 interface P4Report {
   year: number
@@ -183,16 +183,16 @@ export default function RuReportsTab() {
             {p4Data.departments.length > 0 && (
               <div>
                 <h4 className="text-sm font-medium text-[#333] mb-2">부서별 인원 현황</h4>
-                <table className="w-full">
+                <table className={TABLE_STYLES.table}>
                   <thead>
-                    <tr className="bg-[#FAFAFA] border-b border-[#E8E8E8]">
-                      <th className="px-4 py-2 text-left text-xs text-[#666] font-medium">부서</th>
-                      <th className="px-4 py-2 text-right text-xs text-[#666] font-medium">인원 수</th>
+                    <tr className={TABLE_STYLES.header}>
+                      <th className={TABLE_STYLES.headerCell}>부서</th>
+                      <th className={TABLE_STYLES.headerCellRight}>인원 수</th>
                     </tr>
                   </thead>
                   <tbody>
                     {p4Data.departments.map((dept) => (
-                      <tr key={dept.department} className="border-b border-[#F5F5F5]">
+                      <tr key={dept.department} className={TABLE_STYLES.row}>
                         <td className="px-4 py-2 text-sm text-[#1A1A1A]">{dept.department}</td>
                         <td className="px-4 py-2 text-sm text-[#1A1A1A] text-right font-medium">
                           {dept.headcount}명
@@ -265,17 +265,17 @@ export default function RuReportsTab() {
             {report57tData.jobCategories.length > 0 && (
               <div>
                 <h4 className="text-sm font-medium text-[#333] mb-2">직군별 인원 현황</h4>
-                <table className="w-full">
+                <table className={TABLE_STYLES.table}>
                   <thead>
-                    <tr className="bg-[#FAFAFA] border-b border-[#E8E8E8]">
-                      <th className="px-4 py-2 text-left text-xs text-[#666] font-medium">직군 코드</th>
-                      <th className="px-4 py-2 text-left text-xs text-[#666] font-medium">직군명</th>
-                      <th className="px-4 py-2 text-right text-xs text-[#666] font-medium">인원 수</th>
+                    <tr className={TABLE_STYLES.header}>
+                      <th className={TABLE_STYLES.headerCell}>직군 코드</th>
+                      <th className={TABLE_STYLES.headerCell}>직군명</th>
+                      <th className={TABLE_STYLES.headerCellRight}>인원 수</th>
                     </tr>
                   </thead>
                   <tbody>
                     {report57tData.jobCategories.map((cat) => (
-                      <tr key={cat.categoryCode} className="border-b border-[#F5F5F5]">
+                      <tr key={cat.categoryCode} className={TABLE_STYLES.row}>
                         <td className="px-4 py-2 text-xs text-[#666] font-mono">
                           {cat.categoryCode}
                         </td>

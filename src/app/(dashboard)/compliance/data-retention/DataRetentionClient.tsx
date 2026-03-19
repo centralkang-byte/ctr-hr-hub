@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl'
 import { Database, Plus, Pencil, Play, Trash2 } from 'lucide-react'
 import RetentionPolicyForm from '@/components/compliance/gdpr/RetentionPolicyForm'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 interface RetentionPolicy {
@@ -106,9 +107,9 @@ export default function DataRetentionClient() {
           <div className="p-8 text-center text-[#666]">{tc('noData')}</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className={TABLE_STYLES.header}>
+            <table className={TABLE_STYLES.table}>
+              <thead className={TABLE_STYLES.header}>
+                <tr className={TABLE_STYLES.row}>
                   <th className={TABLE_STYLES.headerCell}>{tc('category')}</th>
                   <th className={TABLE_STYLES.headerCell}>{t('gdpr.retentionMonths')}</th>
                   <th className={TABLE_STYLES.headerCell}>{tc('description')}</th>
@@ -121,16 +122,16 @@ export default function DataRetentionClient() {
               <tbody>
                 {!policies?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
               {policies?.map((p) => (
-                  <tr key={p.id} className={TABLE_STYLES.header}>
-                    <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">{p.category}</td>
-                    <td className="px-4 py-3 text-sm text-[#333]">
+                  <tr key={p.id} className={TABLE_STYLES.row}>
+                    <td className={cn(TABLE_STYLES.cell, 'font-medium text-[#1A1A1A]')}>{p.category}</td>
+                    <td className={cn(TABLE_STYLES.cell, 'text-[#333]')}>
                       {p.retention_months} mo
                       <span className="text-xs text-[#999] ml-1">
                         ({Math.round((p.retention_months / 12) * 10) / 10} yr)
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-[#555] max-w-[200px] truncate">{p.description || '-'}</td>
-                    <td className="px-4 py-3 text-sm">
+                    <td className={cn(TABLE_STYLES.cell, 'text-[#555] max-w-[200px] truncate')}>{p.description || '-'}</td>
+                    <td className={TABLE_STYLES.cell}>
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           p.auto_delete
@@ -141,7 +142,7 @@ export default function DataRetentionClient() {
                         {p.auto_delete ? tc('yes') : tc('no')}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm">
+                    <td className={TABLE_STYLES.cell}>
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           p.anonymize
@@ -152,10 +153,10 @@ export default function DataRetentionClient() {
                         {p.anonymize ? tc('yes') : tc('no')}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-[#666]">
+                    <td className={cn(TABLE_STYLES.cell, 'text-[#666]')}>
                       {p.last_run_at ? new Date(p.last_run_at).toLocaleDateString() : '-'}
                     </td>
-                    <td className="px-4 py-3 text-sm">
+                    <td className={TABLE_STYLES.cell}>
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => { setSelected(p); setShowForm(true) }}

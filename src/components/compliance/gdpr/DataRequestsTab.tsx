@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-import { Plus, Eye, CheckCircle2, Clock } from 'lucide-react'
+import { Plus, Eye, Clock } from 'lucide-react'
 import DataRequestForm from './DataRequestForm'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
 
 interface DataRequest {
   id: string
@@ -84,27 +84,27 @@ export default function DataRequestsTab() {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#E8E8E8]">
+      <div className={TABLE_STYLES.wrapper}>
         {loading ? (
           <div className="p-8 text-center text-[#666]">{tc('loading')}</div>
         ) : requests.length === 0 ? (
           <div className="p-8 text-center text-[#666]">{tc('noData')}</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className={TABLE_STYLES.table}>
               <thead>
-                <tr className="bg-[#FAFAFA] border-b border-[#E8E8E8]">
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tc('name')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.requestType')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tc('status')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.deadline')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tc('createdAt')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tc('actions')}</th>
+                <tr className={TABLE_STYLES.header}>
+                  <th className={TABLE_STYLES.headerCell}>{tc('name')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('gdpr.requestType')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{tc('status')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('gdpr.deadline')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{tc('createdAt')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{tc('actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {requests.map((r) => (
-                  <tr key={r.id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                  <tr key={r.id} className={TABLE_STYLES.row}>
                     <td className="px-4 py-3 text-sm">
                       <div className="font-medium text-[#1A1A1A]">{r.employee_name}</div>
                       <div className="text-xs text-[#999]">{r.employee_no}</div>

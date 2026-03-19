@@ -153,5 +153,5 @@ export const GET = withPermission(
             completedAt: offboarding.completedAt,
         })
     },
-    perm(MODULE.ONBOARDING, ACTION.VIEW),
+    perm(MODULE.OFFBOARDING, ACTION.VIEW),
 )

@@ -19,11 +19,13 @@
 //      d. 조건 충족 시 sendNotification()
 // ═══════════════════════════════════════════════════════════
 
-import { subDays, subHours } from 'date-fns'
+import { subDays } from 'date-fns'
 import { prisma } from '@/lib/prisma'
 import { sendNotification } from '@/lib/notifications'
+import { getNudgeRulesSettings } from '@/lib/settings/get-setting'
 import type {
   NudgeRule,
+  NudgeThresholds,
   NudgeEngineConfig,
   NudgeResult,
   NudgeRunSummary,
@@ -158,15 +160,29 @@ export class NudgeEngine {
     const allResults: NudgeResult[] = []
     let totalChecked = 0
 
+    // Load configurable thresholds from SYSTEM/nudge-rules (S-Fix-5)
+    const nudgeSettings = await getNudgeRulesSettings(companyId)
+    const thresholdOverrides: Record<string, NudgeThresholds> = {
+      'leave-pending-approval': nudgeSettings.leavePending,
+      'payroll-review-pending': nudgeSettings.payrollReview,
+    }
+
     for (const rule of this.rules) {
+      // Use settings-based thresholds if available, fallback to rule defaults
+      const thresholds = thresholdOverrides[rule.ruleId] ?? rule.thresholds
+
       // cutoffDate: 이 시각보다 오래된 항목만 nudge 대상
-      const cutoffDate = subDays(new Date(), rule.thresholds.triggerAfterDays)
+      const cutoffDate = subDays(new Date(), thresholds.triggerAfterDays)
 
       const items = await rule.findOverdueItems(companyId, assigneeId, cutoffDate)
       totalChecked += items.length
 
       for (const item of items) {
+        // Temporarily apply settings thresholds for evaluateItem
+        const originalThresholds = rule.thresholds
+        rule.thresholds = thresholds
         const itemResults = await evaluateItem(rule, item, this.oncePer24h)
+        rule.thresholds = originalThresholds
         allResults.push(...itemResults)
       }
     }

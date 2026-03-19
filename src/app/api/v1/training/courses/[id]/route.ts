@@ -87,7 +87,7 @@ export const PUT = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.TRAINING, ACTION.UPDATE),
+  perm(MODULE.TRAINING, ACTION.APPROVE),
 )
 
 // ─── DELETE /api/v1/training/courses/[id] ───────────────
@@ -124,5 +124,5 @@ export const DELETE = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.TRAINING, ACTION.DELETE),
+  perm(MODULE.TRAINING, ACTION.APPROVE),
 )

@@ -156,7 +156,7 @@ export async function detectAnomalies(
         const employeeId = item.employeeId
         const employee = item.employee
         const currentGross = Number(item.grossPay)
-        const currentNet = Number(item.netPay)
+//         const currentNet = Number(item.netPay)
         const currentBase = Number(item.baseSalary)
         const prevItem = prevItemMap.get(employeeId)
         const assignment = employee.assignments?.[0]

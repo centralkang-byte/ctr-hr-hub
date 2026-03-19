@@ -6,7 +6,7 @@
 import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
-import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
+import { apiPaginated, buildPagination } from '@/lib/api'
 import { badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'

@@ -247,8 +247,8 @@ function AccrualRuleDetail({ rule }: { rule: LeaveAccrualRuleRow }) {
 
       {/* Tier table */}
       {tiers.length > 0 && (
-        <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-          <table className="w-full text-sm">
+        <div className={TABLE_STYLES.wrapper}>
+          <table className={TABLE_STYLES.table}>
             <thead>
               <tr className={TABLE_STYLES.header}>
                 <th className={TABLE_STYLES.headerCell}>{'근속 기간'}</th>

@@ -239,9 +239,9 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
                 <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className={TABLE_STYLES.header}>
+                  <table className={TABLE_STYLES.table}>
+                    <thead className={TABLE_STYLES.header}>
+                      <tr>
                         <th className={TABLE_STYLES.headerCell}>{'그룹'}</th>
                         <th className={TABLE_STYLES.headerCellRight}>{'남성 (명)'}</th>
                         <th className={TABLE_STYLES.headerCellRight}>{'여성 (명)'}</th>
@@ -251,24 +251,24 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
                         <th className={TABLE_STYLES.headerCell}>{'격차 시각화'}</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-[#F0F0F3]">
                       {data.breakdown.map((row) => {
                         const maxSalary = Math.max(row.maleAvgSalary, row.femaleAvgSalary, 1)
                         const maleWidth = (row.maleAvgSalary / maxSalary) * 100
                         const femaleWidth = (row.femaleAvgSalary / maxSalary) * 100
                         return (
-                          <tr key={row.group} className={TABLE_STYLES.header}>
-                            <td className="px-4 py-3 font-medium">{row.group}</td>
-                            <td className="px-4 py-3 text-right">{row.maleCount}</td>
-                            <td className="px-4 py-3 text-right">{row.femaleCount}</td>
-                            <td className="px-4 py-3 text-right">{formatCurrency(row.maleAvgSalary)}</td>
-                            <td className="px-4 py-3 text-right">{formatCurrency(row.femaleAvgSalary)}</td>
-                            <td className="px-4 py-3 text-center">
+                          <tr key={row.group} className={TABLE_STYLES.row}>
+                            <td className={TABLE_STYLES.cell}>{row.group}</td>
+                            <td className={TABLE_STYLES.cellRight}>{row.maleCount}</td>
+                            <td className={TABLE_STYLES.cellRight}>{row.femaleCount}</td>
+                            <td className={TABLE_STYLES.cellRight}>{formatCurrency(row.maleAvgSalary)}</td>
+                            <td className={TABLE_STYLES.cellRight}>{formatCurrency(row.femaleAvgSalary)}</td>
+                            <td className={TABLE_STYLES.cell}>
                               <Badge className={getGapBadge(row.gapPercent)}>
                                 {row.gapPercent > 0 ? '+' : ''}{row.gapPercent.toFixed(1)}%
                               </Badge>
                             </td>
-                            <td className="px-4 py-3">
+                            <td className={TABLE_STYLES.cell}>
                               <div className="space-y-1">
                                 <div className="flex items-center gap-2">
                                   <span className="text-xs text-[#5E81F4] w-4">M</span>
@@ -308,16 +308,16 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className={TABLE_STYLES.header}>
+                  <table className={TABLE_STYLES.table}>
+                    <thead className={TABLE_STYLES.header}>
+                      <tr>
                         <th className={TABLE_STYLES.headerCell}>{'그룹'}</th>
                         <th className={TABLE_STYLES.headerCellRight}>{'남성 Compa-Ratio'}</th>
                         <th className={TABLE_STYLES.headerCellRight}>{'여성 Compa-Ratio'}</th>
                         <th className={TABLE_STYLES.headerCell}>{'차이'}</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-[#F0F0F3]">
                       {data.breakdown
                         .filter((b) => b.maleAvgCompaRatio != null || b.femaleAvgCompaRatio != null)
                         .map((row) => {
@@ -326,19 +326,21 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
                               ? ((row.maleAvgCompaRatio - row.femaleAvgCompaRatio) * 100).toFixed(1)
                               : '-'
                           return (
-                            <tr key={row.group} className={TABLE_STYLES.header}>
-                              <td className="px-4 py-3 font-medium">{row.group}</td>
-                              <td className="px-4 py-3 text-right">
+                            <tr key={row.group} className={TABLE_STYLES.row}>
+                              <td className={TABLE_STYLES.cell}>{row.group}</td>
+                              <td className={TABLE_STYLES.cellRight}>
                                 {row.maleAvgCompaRatio != null ? `${(row.maleAvgCompaRatio * 100).toFixed(1)}%` : '-'}
                               </td>
-                              <td className="px-4 py-3 text-right">
+                              <td className={TABLE_STYLES.cellRight}>
                                 {row.femaleAvgCompaRatio != null ? `${(row.femaleAvgCompaRatio * 100).toFixed(1)}%` : '-'}
                               </td>
-                              <td className="px-4 py-3 text-center">
+                              <td className={TABLE_STYLES.cell}>
                                 {diff !== '-' && (
-                                  <span className={Number(diff) > 0 ? 'text-[#DC2626]' : 'text-[#059669]'}>
-                                    {Number(diff) > 0 ? '+' : ''}{diff}%p
-                                  </span>
+                                  <div className="flex justify-center">
+                                    <span className={Number(diff) > 0 ? 'text-[#DC2626]' : 'text-[#059669]'}>
+                                      {Number(diff) > 0 ? '+' : ''}{diff}%p
+                                    </span>
+                                  </div>
                                 )}
                               </td>
                             </tr>

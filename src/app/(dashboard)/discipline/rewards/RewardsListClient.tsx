@@ -173,10 +173,10 @@ export default function RewardsListClient({ user }: Props) {
       </div>
 
       {/* Table */}
-      <div className="bg-white border border-[#E8E8E8] rounded-xl overflow-hidden">
-        <table className="w-full">
+      <div className={TABLE_STYLES.wrapper}>
+        <table className={TABLE_STYLES.table}>
           <thead>
-            <tr className="border-b border-[#E8E8E8]">
+            <tr className={TABLE_STYLES.header}>
               <th className={TABLE_STYLES.headerCell}>{t('employeeName')}</th>
               <th className={TABLE_STYLES.headerCell}>{t('employeeNo')}</th>
               <th className={TABLE_STYLES.headerCell}>{t('rewardType')}</th>
@@ -185,7 +185,7 @@ export default function RewardsListClient({ user }: Props) {
               <th className={TABLE_STYLES.headerCellRight}>{tCommon('amount')}</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-[#F0F0F3]">
             {loading ? (
               <tr>
                 <td colSpan={6} className="px-4 py-12 text-center text-sm text-[#999]">
@@ -206,7 +206,7 @@ export default function RewardsListClient({ user }: Props) {
                 <tr
                   key={row.id}
                   onClick={() => router.push(`/discipline/rewards/${row.id}`)}
-                  className="border-b border-[#E8E8E8] last:border-b-0 hover:bg-[#FAFAFA] cursor-pointer transition-colors duration-150"
+                  className={TABLE_STYLES.rowClickable}
                 >
                   <td className="px-4 py-3 text-sm text-[#1A1A1A] font-medium">
                     {row.employee.name}

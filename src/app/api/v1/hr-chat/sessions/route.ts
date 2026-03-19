@@ -2,12 +2,11 @@ import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, isAppError, handlePrismaError } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { withAuth } from '@/lib/permissions'
 import { sessionCreateSchema } from '@/lib/schemas/hr-chat'
 import type { SessionUser } from '@/types'
 
-export const GET = withPermission(
+export const GET = withAuth(
   async (
     _req: NextRequest,
     _context: { params: Promise<Record<string, string>> },
@@ -33,10 +32,9 @@ export const GET = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.HR_CHATBOT, ACTION.VIEW),
 )
 
-export const POST = withPermission(
+export const POST = withAuth(
   async (
     req: NextRequest,
     _context: { params: Promise<Record<string, string>> },
@@ -63,5 +61,4 @@ export const POST = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.HR_CHATBOT, ACTION.CREATE),
 )

@@ -10,6 +10,7 @@ import { Heart, Clock, CalendarDays, Target, AlertTriangle, Flame } from 'lucide
 import { ChartCard } from '@/components/analytics/ChartCard'
 import type { TeamHealthResponse } from '@/lib/analytics/types'
 import { TABLE_STYLES } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 
 const SCORE_COLORS: Record<string, string> = {
   HEALTHY: '#10B981', CAUTION: '#F59E0B', WARNING: '#F97316', CRITICAL: '#EF4444',
@@ -122,34 +123,34 @@ export default function TeamHealthClient() {
       {/* Members Table */}
       <ChartCard title="👥 팀원 현황">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-gray-100">
-                <th className="text-left py-2 px-3 font-medium text-gray-500">{t('name')}</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">{t('kr_kecb488ea')}</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">연차사용률</th>
-                <th className="text-center py-2 px-3 font-medium text-gray-500">성과등급</th>
-                <th className="text-center py-2 px-3 font-medium text-gray-500">{t('kr_kec9db4ec')}</th>
-                <th className="text-center py-2 px-3 font-medium text-gray-500">{t('status')}</th>
+          <table className={TABLE_STYLES.table}>
+            <thead className={TABLE_STYLES.header}>
+              <tr>
+                <th className={TABLE_STYLES.headerCell}>{t('name')}</th>
+                <th className={TABLE_STYLES.headerCellRight}>{t('kr_kecb488ea')}</th>
+                <th className={TABLE_STYLES.headerCellRight}>연차사용률</th>
+                <th className={cn(TABLE_STYLES.headerCell, 'text-center')}>성과등급</th>
+                <th className={cn(TABLE_STYLES.headerCell, 'text-center')}>{t('kr_kec9db4ec')}</th>
+                <th className={cn(TABLE_STYLES.headerCell, 'text-center')}>{t('status')}</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-[#F0F0F3]">
               {data.members.map((m) => (
-                <tr key={m.employeeId} className="border-b border-gray-50 hover:bg-gray-50/50">
-                  <td className="py-2 px-3 font-medium text-gray-700">{m.name}</td>
-                  <td className={`text-right py-2 px-3 ${m.weeklyOvertime > 10 ? 'text-red-600 font-medium' : ''}`}>{m.weeklyOvertime}h</td>
-                  <td className={`text-right py-2 px-3 ${m.leaveUsageRate < 30 ? 'text-amber-600' : ''}`}>{m.leaveUsageRate}%</td>
-                  <td className="text-center py-2 px-3">
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${m.lastGrade === 'B' ? 'bg-red-50 text-red-600' : 'bg-gray-100 text-gray-600'}`}>
+                <tr key={m.employeeId} className={TABLE_STYLES.row}>
+                  <td className={TABLE_STYLES.cell}>{m.name}</td>
+                  <td className={cn(TABLE_STYLES.cellRight, m.weeklyOvertime > 10 && 'text-red-600 font-medium')}>{m.weeklyOvertime}h</td>
+                  <td className={cn(TABLE_STYLES.cellRight, m.leaveUsageRate < 30 && 'text-amber-600 font-medium')}>{m.leaveUsageRate}%</td>
+                  <td className={cn(TABLE_STYLES.cell, 'text-center')}>
+                    <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${m.lastGrade === 'B' ? 'bg-red-50 text-red-600' : 'bg-[#F0F0F3] text-[#1C1D21]'}`}>
                       {m.lastGrade}
                     </span>
                   </td>
-                  <td className="text-center py-2 px-3">
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${RISK_COLORS[m.turnoverRisk]}`}>
+                  <td className={cn(TABLE_STYLES.cell, 'text-center')}>
+                    <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${RISK_COLORS[m.turnoverRisk]}`}>
                       {m.turnoverRisk}
                     </span>
                   </td>
-                  <td className="text-center py-2 px-3">{STATUS_LABELS[m.overallStatus]}</td>
+                  <td className={cn(TABLE_STYLES.cell, 'text-center')}>{STATUS_LABELS[m.overallStatus]}</td>
                 </tr>
               ))}
             </tbody>

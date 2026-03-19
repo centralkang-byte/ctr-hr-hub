@@ -4,8 +4,9 @@
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
-import { subWeeks, subMonths, subYears, differenceInMonths } from 'date-fns'
+import { subWeeks, subMonths, differenceInMonths } from 'date-fns'
 import { sendNotification } from '@/lib/notifications'
+import { getAnalyticsThresholdsSettings } from '@/lib/settings/get-setting'
 
 // ─── 타입 정의 ─────────────────────────────────────────────
 
@@ -394,12 +395,16 @@ export async function calculateTurnoverRisk(
     return sum + s.score * normalizedWeight
   }, 0)
 
+  // Load configurable score boundaries from SYSTEM/analytics-thresholds (S-Fix-5)
+  const analyticsSettings = await getAnalyticsThresholdsSettings(companyId)
+  const { criticalScore, highScore, mediumScore } = analyticsSettings.turnoverRisk
+
   const riskLevel =
-    overallScore >= 75
+    overallScore >= criticalScore
       ? 'critical'
-      : overallScore >= 55
+      : overallScore >= highScore
         ? 'high'
-        : overallScore >= 35
+        : overallScore >= mediumScore
           ? 'medium'
           : 'low'
 

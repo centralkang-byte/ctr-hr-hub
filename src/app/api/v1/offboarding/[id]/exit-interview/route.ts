@@ -52,7 +52,7 @@ export const GET = withPermission(
 
     return apiSuccess(interview)
   },
-  perm(MODULE.ONBOARDING, ACTION.VIEW),
+  perm(MODULE.OFFBOARDING, ACTION.VIEW),
 )
 
 // ─── POST: Create exit interview ────────────────────────────
@@ -164,5 +164,5 @@ export const POST = withPermission(
 
     return apiSuccess(interview, 201)
   },
-  perm(MODULE.ONBOARDING, ACTION.CREATE),
+  perm(MODULE.OFFBOARDING, ACTION.CREATE),
 )

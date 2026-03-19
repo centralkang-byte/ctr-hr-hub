@@ -15,6 +15,7 @@ import type { SessionUser } from '@/types'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { TABLE_STYLES } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 
 // ─── 타입 ─────────────────────────────────────────────────
 
@@ -252,43 +253,45 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
             description={t('emptyLeaveHistoryDesc')}
           />
         ) : (
-          <table className="w-full">
-            <thead>
-              <tr className={TABLE_STYLES.header}>
-                {[
-                  t('col.leaveType'), t('col.period'), t('col.days'),
-                  t('col.status'), t('col.requestedAt')
-                ].map((h) => (
-                  <th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-[#666] uppercase tracking-wider">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {requests.slice(0, 20).map((r) => {
-                const st = STATUS_LABELS[r.status] ?? STATUS_LABELS.PENDING
-                return (
-                  <tr key={r.id} className={TABLE_STYLES.header}>
-                    <td className="px-4 py-3 text-sm text-[#1A1A1A]">
-                      {r.policy?.name ?? r.policy?.leaveType ?? '—'}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-[#555]">
-                      {format(new Date(r.startDate), 'yy.M.d')} ~ {format(new Date(r.endDate), 'yy.M.d')}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-[#555]">{r.days}{tCommon('unitDay')}</td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${st.color}`}>
-                        {st.icon}
-                        {st.label}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-xs text-[#999]">
-                      {format(new Date(r.createdAt), 'yy.M.d')}
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+          <div className={TABLE_STYLES.wrapper}>
+            <table className={TABLE_STYLES.table}>
+              <thead>
+                <tr className={TABLE_STYLES.header}>
+                  {[
+                    t('col.leaveType'), t('col.period'), t('col.days'),
+                    t('col.status'), t('col.requestedAt')
+                  ].map((h) => (
+                    <th key={h} className={TABLE_STYLES.headerCell}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {requests.slice(0, 20).map((r) => {
+                  const st = STATUS_LABELS[r.status] ?? STATUS_LABELS.PENDING
+                  return (
+                    <tr key={r.id} className={TABLE_STYLES.row}>
+                      <td className={cn(TABLE_STYLES.cell, "text-[#1A1A1A]")}>
+                        {r.policy?.name ?? r.policy?.leaveType ?? '—'}
+                      </td>
+                      <td className={cn(TABLE_STYLES.cell, "text-[#555]")}>
+                        {format(new Date(r.startDate), 'yy.M.d')} ~ {format(new Date(r.endDate), 'yy.M.d')}
+                      </td>
+                      <td className={cn(TABLE_STYLES.cell, "text-[#555]")}>{r.days}{tCommon('unitDay')}</td>
+                      <td className={TABLE_STYLES.cell}>
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${st.color}`}>
+                          {st.icon}
+                          {st.label}
+                        </span>
+                      </td>
+                      <td className={cn(TABLE_STYLES.cell, "text-[#999]")}>
+                        {format(new Date(r.createdAt), 'yy.M.d')}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

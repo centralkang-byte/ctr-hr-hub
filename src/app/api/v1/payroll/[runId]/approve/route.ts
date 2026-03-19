@@ -78,13 +78,15 @@ export const POST = withPermission(
         }
 
         // 4. 호출자의 역할 확인
+        // HR_ADMIN / SUPER_ADMIN은 모든 승인 단계를 대행할 수 있음
+        const OVERRIDE_ROLES = ['HR_ADMIN', 'SUPER_ADMIN']
         const callerRoles = await prisma.employeeRole.findMany({
             where: {
                 employeeId: user.employeeId,
                 endDate: null,
-                role: { code: currentStep.roleRequired },
+                role: { code: { in: [currentStep.roleRequired, ...OVERRIDE_ROLES] } },
             },
-            select: { id: true },
+            select: { id: true, role: { select: { code: true } } },
         })
         if (callerRoles.length === 0) {
             throw forbidden(

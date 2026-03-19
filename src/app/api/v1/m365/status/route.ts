@@ -19,7 +19,7 @@ const emailQuerySchema = z.object({
 // ─── GET /api/v1/m365/status?email=xxx ──────────────────
 
 export const GET = withPermission(
-  async (req: NextRequest, _context, user: SessionUser) => {
+  async (req: NextRequest, _context, _user: SessionUser) => {
     const params = Object.fromEntries(req.nextUrl.searchParams.entries())
     const parsed = emailQuerySchema.safeParse(params)
     if (!parsed.success) {

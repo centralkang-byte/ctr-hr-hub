@@ -8,7 +8,7 @@ import { useTranslations } from 'next-intl'
 interface Props { companyId: string | null }
 
 export function JobFamiliesTab({
-  companyId }: Props) {
+  companyId: _companyId }: Props) {
   const t = useTranslations('settings')
   const [families] = useState([
     { code: 'MGT', name: t('kr_keab2bdec'), nameEn: 'Management', profiles: 4 },
@@ -33,23 +33,23 @@ export function JobFamiliesTab({
         <p className="text-xs text-[#8181A5]">{t('kr_keca781ec_keca781eb_kebb684eb_')}</p>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-        <table className="w-full">
-          <thead>
-            <tr className={TABLE_STYLES.header}>
+      <div className={TABLE_STYLES.wrapper}>
+        <table className={TABLE_STYLES.table}>
+          <thead className={TABLE_STYLES.header}>
+            <tr>
               <th className={TABLE_STYLES.headerCell}>{t('kr_kecbd94eb')}</th>
               <th className={TABLE_STYLES.headerCell}>{t('kr_keca781ec_kr')}</th>
               <th className={TABLE_STYLES.headerCell}>{t('kr_keca781ec_en')}</th>
               <th className={TABLE_STYLES.headerCell}>Job Profile</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#F0F0F3]">
+          <tbody>
             {families.map((f) => (
-              <tr key={f.code} className="hover:bg-[#F5F5FA] transition-colors">
-                <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{f.code}</td>
+              <tr key={f.code} className={TABLE_STYLES.row}>
+                <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{f.code}</td>
                 <td className={TABLE_STYLES.cell}>{f.name}</td>
-                <td className={TABLE_STYLES.cellMuted}>{f.nameEn}</td>
-                <td className="px-4 py-3 text-center text-sm text-[#8181A5]">{f.profiles}개</td>
+                <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>{f.nameEn}</td>
+                <td className={`${TABLE_STYLES.cell} text-center text-[#8181A5]`}>{f.profiles}개</td>
               </tr>
             ))}
           </tbody>

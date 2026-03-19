@@ -114,7 +114,7 @@ export async function fetchPerformanceTasks(
 
   const myPositionId = myAssignment?.positionId ?? null
   const myDepartment = myAssignment?.department?.name
-  const myJobGrade = myAssignment?.jobGrade?.name
+//   const myJobGrade = myAssignment?.jobGrade?.name
   const myPositionTitle = myAssignment?.position?.titleKo
 
   // ── Step 3: 직속 부하 조회 (포지션 기반) ─────────────────

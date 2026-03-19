@@ -305,10 +305,10 @@ export default function PulseSurveyClient() {
           </div>
 
           {/* Surveys Table */}
-          <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
-            <table className="w-full">
-              <thead>
-                <tr className={TABLE_STYLES.header}>
+          <div className={TABLE_STYLES.wrapper}>
+            <table className={TABLE_STYLES.table}>
+              <thead className={TABLE_STYLES.header}>
+                <tr>
                   <th className={TABLE_STYLES.headerCell}>{t('kr_keca09ceb')}</th>
                   <th className={TABLE_STYLES.headerCell}>{t('kr_keb8c80ec')}</th>
                   <th className={TABLE_STYLES.headerCell}>{t('period')}</th>
@@ -320,20 +320,20 @@ export default function PulseSurveyClient() {
               </thead>
               <tbody>
                 {surveys.map((s) => (
-                  <tr key={s.id} className={TABLE_STYLES.header}>
-                    <td className="px-4 py-3 text-sm text-[#1A1A1A] font-medium">{s.title}</td>
-                    <td className="px-4 py-3 text-sm text-[#555]">{SCOPE_MAP[s.targetScope] ?? s.targetScope}</td>
-                    <td className="px-4 py-3 text-xs text-[#666]">
+                  <tr key={s.id} className={TABLE_STYLES.row}>
+                    <td className={`${TABLE_STYLES.cell} font-medium`}>{s.title}</td>
+                    <td className={TABLE_STYLES.cell}>{SCOPE_MAP[s.targetScope] ?? s.targetScope}</td>
+                    <td className={`${TABLE_STYLES.cell} text-xs text-[#666]`}>
                       {new Date(s.openAt).toLocaleDateString('ko-KR')} ~ {new Date(s.closeAt).toLocaleDateString('ko-KR')}
                     </td>
-                    <td className="px-4 py-3 text-sm text-center text-[#555]">{s._count.questions}</td>
-                    <td className="px-4 py-3 text-sm text-center text-[#555]">{s._count.responses}</td>
-                    <td className="px-4 py-3 text-center">
+                    <td className={`${TABLE_STYLES.cell} text-center`}>{s._count.questions}</td>
+                    <td className={`${TABLE_STYLES.cell} text-center`}>{s._count.responses}</td>
+                    <td className={`${TABLE_STYLES.cell} text-center`}>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${STATUS_MAP[s.status]?.cls ?? ''}`}>
                         {STATUS_MAP[s.status]?.label ?? s.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className={`${TABLE_STYLES.cell} text-center`}>
                       <div className="flex items-center justify-center gap-1">
                         {s.status === 'PULSE_DRAFT' && (
                           <button onClick={() => handleStatusChange(s.id, 'PULSE_ACTIVE')} title={t('start')}
@@ -364,7 +364,7 @@ export default function PulseSurveyClient() {
                   </tr>
                 ))}
                 {surveys.length === 0 && (
-                  <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-[#999]">{t('register_keb909c_kec84a4eb_kec9786ec')}</td></tr>
+                  <tr><td colSpan={7} className={`${TABLE_STYLES.cell} py-10 text-center text-[#999]`}>{t('register_keb909c_kec84a4eb_kec9786ec')}</td></tr>
                 )}
               </tbody>
             </table>

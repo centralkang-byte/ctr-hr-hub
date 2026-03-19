@@ -9,6 +9,7 @@ import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { badRequest, isAppError, handlePrismaError } from '@/lib/errors'
+import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { z } from 'zod'
 import type { SessionUser } from '@/types'
 
@@ -109,6 +110,8 @@ export const PUT = withPermission(
         }
       }
 
+      const existing = await prisma.attendanceSetting.findUnique({ where: { companyId: user.companyId } })
+
       const setting = await prisma.attendanceSetting.upsert({
         where: { companyId: user.companyId },
         create: {
@@ -118,6 +121,16 @@ export const PUT = withPermission(
         update: {
           ...data,
         },
+      })
+
+      logAudit({
+        actorId: user.id,
+        action: existing ? 'SETTINGS_UPDATE' : 'SETTINGS_CREATE',
+        resourceType: 'AttendanceSetting',
+        resourceId: setting.id,
+        companyId: user.companyId,
+        changes: { updatedFields: Object.keys(data) },
+        ...extractRequestMeta(req.headers),
       })
 
       return apiSuccess(setting)

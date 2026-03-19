@@ -153,28 +153,28 @@ export default function CompensationAnalyticsClient() {
         <ChartCard title={t('compaRatioDetail')} className="lg:col-span-2">
           {data.distribution.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className={TABLE_STYLES.header}>
+              <table className={TABLE_STYLES.table}>
+                <thead className={TABLE_STYLES.header}>
+                  <tr>
                     <th className={TABLE_STYLES.headerCell}>{t('grade')}</th>
                     <th className={TABLE_STYLES.headerCell}>{t('jobCategory')}</th>
-                    <th className={TABLE_STYLES.headerCell}>{t('headcount')}</th>
-                    <th className={TABLE_STYLES.headerCell}>{t('average')}</th>
-                    <th className={TABLE_STYLES.headerCell}>P25</th>
-                    <th className={TABLE_STYLES.headerCell}>{t('median')}</th>
-                    <th className={TABLE_STYLES.headerCell}>P75</th>
+                    <th className={TABLE_STYLES.headerCellRight}>{t('headcount')}</th>
+                    <th className={TABLE_STYLES.headerCellRight}>{t('average')}</th>
+                    <th className={TABLE_STYLES.headerCellRight}>P25</th>
+                    <th className={TABLE_STYLES.headerCellRight}>{t('median')}</th>
+                    <th className={TABLE_STYLES.headerCellRight}>P75</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-[#F0F0F3]">
                   {data.distribution.map((r: any, i: number) => (
-                    <tr key={i} className={TABLE_STYLES.header}>
-                      <td className="px-4 py-3 font-medium text-[#333]">{r.grade_name}</td>
-                      <td className="px-4 py-3 text-[#555]">{r.job_category_code}</td>
-                      <td className="px-4 py-3 text-center text-[#555]">{r.employee_count}</td>
-                      <td className="px-4 py-3 text-center text-[#555]">{r.avg_compa_ratio?.toFixed(3) ?? '-'}</td>
-                      <td className="px-4 py-3 text-center text-[#555]">{r.p25?.toFixed(3) ?? '-'}</td>
-                      <td className="px-4 py-3 text-center text-[#555]">{r.median?.toFixed(3) ?? '-'}</td>
-                      <td className="px-4 py-3 text-center text-[#555]">{r.p75?.toFixed(3) ?? '-'}</td>
+                    <tr key={i} className={TABLE_STYLES.row}>
+                      <td className={TABLE_STYLES.cell}>{r.grade_name}</td>
+                      <td className={TABLE_STYLES.cell}>{r.job_category_code}</td>
+                      <td className={TABLE_STYLES.cellRight}>{r.employee_count}</td>
+                      <td className={TABLE_STYLES.cellRight}>{r.avg_compa_ratio?.toFixed(3) ?? '-'}</td>
+                      <td className={TABLE_STYLES.cellRight}>{r.p25?.toFixed(3) ?? '-'}</td>
+                      <td className={TABLE_STYLES.cellRight}>{r.median?.toFixed(3) ?? '-'}</td>
+                      <td className={TABLE_STYLES.cellRight}>{r.p75?.toFixed(3) ?? '-'}</td>
                     </tr>
                   ))}
                 </tbody>

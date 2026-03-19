@@ -10,6 +10,7 @@ import { Users, Target, TrendingUp } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 // ─── Types ────────────────────────────────────────────────
@@ -110,23 +111,23 @@ export default function TeamResultsClient({
       </div>
 
       {/* Results table */}
-      <div className="rounded-xl border border-[#E8E8E8] bg-white overflow-x-auto">
-        <table className="w-full">
+      <div className={TABLE_STYLES.wrapper}>
+        <table className={TABLE_STYLES.table}>
           <thead>
             <tr className={TABLE_STYLES.header}>
               <th className={TABLE_STYLES.headerCell}>{t('kr_keca781ec')}</th>
               <th className={TABLE_STYLES.headerCell}>{t('department')}</th>
-              <th className={TABLE_STYLES.headerCell}>{t('selfEval')}</th>
-              <th className={TABLE_STYLES.headerCell}>{t('managerEval')}</th>
-              <th className={TABLE_STYLES.headerCell}>{t('kr_kecb59cec_kec84b1ea')}</th>
-              <th className={TABLE_STYLES.headerCell}>{t('kr_kecb59cec_kec97adeb')}</th>
-              <th className={TABLE_STYLES.headerCell}>{t('kr_ems_kebb894eb')}</th>
+              <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('selfEval')}</th>
+              <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('managerEval')}</th>
+              <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_kecb59cec_kec84b1ea')}</th>
+              <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_kecb59cec_kec97adeb')}</th>
+              <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_ems_kebb894eb')}</th>
             </tr>
           </thead>
           <tbody>
             {results.map((r) => (
-              <tr key={r.employee.id} className={TABLE_STYLES.header}>
-                <td className="px-4 py-3">
+              <tr key={r.employee.id} className={TABLE_STYLES.row}>
+                <td className={cn(TABLE_STYLES.cell, "px-4")}>
                   <EmployeeCell
                     size="sm"
                     employee={{
@@ -138,28 +139,28 @@ export default function TeamResultsClient({
                     }}
                   />
                 </td>
-                <td className="px-4 py-3 text-sm text-[#555]">{r.employee.department?.name ?? '-'}</td>
-                <td className="px-4 py-3 text-sm text-center">
+                <td className={cn(TABLE_STYLES.cellMuted)}>{r.employee.department?.name ?? '-'}</td>
+                <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>
                   {r.selfEval ? (
                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${r.selfEval.status === 'SUBMITTED' ? 'bg-[#D1FAE5] text-[#047857]' : 'bg-[#F5F5F5] text-[#666]'}`}>
                       {r.selfEval.performanceScore?.toFixed(1) ?? '-'}
                     </span>
                   ) : <span className="text-[#999]">-</span>}
                 </td>
-                <td className="px-4 py-3 text-sm text-center">
+                <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>
                   {r.managerEval ? (
                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${r.managerEval.status === 'SUBMITTED' ? 'bg-[#D1FAE5] text-[#047857]' : 'bg-[#F5F5F5] text-[#666]'}`}>
                       {r.managerEval.performanceScore?.toFixed(1) ?? '-'}
                     </span>
                   ) : <span className="text-[#999]">-</span>}
                 </td>
-                <td className="px-4 py-3 text-sm text-center font-medium text-[#1A1A1A]">
+                <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>
                   {r.finalResult?.performanceScore?.toFixed(1) ?? '-'}
                 </td>
-                <td className="px-4 py-3 text-sm text-center font-medium text-[#1A1A1A]">
+                <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>
                   {r.finalResult?.competencyScore?.toFixed(1) ?? '-'}
                 </td>
-                <td className="px-4 py-3 text-center">
+                <td className={cn(TABLE_STYLES.cell, "text-center")}>
                   {r.finalResult?.emsBlock ? (
                     <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#EDF1FE] text-[#4B6DE0]">
                       {r.finalResult.emsBlock}

@@ -7,7 +7,7 @@
 
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { apiSuccess, apiError, apiPaginated, buildPagination } from '@/lib/api'
+import { apiSuccess, apiError, buildPagination } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
