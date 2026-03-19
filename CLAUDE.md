@@ -139,14 +139,14 @@ prisma/
 
 | Email | Name | Role | Company | Team |
 |-------|------|------|---------|------|
-| `super@ctr.co.kr` | 최상우 | SUPER_ADMIN | CTR-HQ | 전사관리 |
-| `hr@ctr.co.kr` | 한지영 | HR_ADMIN | CTR-KR | 인사팀 |
+| `super@ctr.co.kr` | 최상우 | SUPER_ADMIN | CTR-HOLD | 전사관리 |
+| `hr@ctr.co.kr` | 한지영 | HR_ADMIN | CTR | 인사팀 |
 | `hr@ctr-cn.com` | 陈美玲 | HR_ADMIN | CTR-CN | 人事部 |
-| `manager@ctr.co.kr` | 박준혁 | MANAGER | CTR-KR | 생산기술팀장 |
-| `manager2@ctr.co.kr` | 김서연 | MANAGER | CTR-KR | 품질관리팀장 |
-| `employee-a@ctr.co.kr` | 이민준 | EMPLOYEE | CTR-KR | 생산기술팀 |
-| `employee-b@ctr.co.kr` | 정다은 | EMPLOYEE | CTR-KR | 생산기술팀 |
-| `employee-c@ctr.co.kr` | 송현우 | EMPLOYEE | CTR-KR | 품질관리팀 |
+| `manager@ctr.co.kr` | 박준혁 | MANAGER | CTR | 생산기술팀장 |
+| `manager2@ctr.co.kr` | 김서연 | MANAGER | CTR | 품질관리팀장 |
+| `employee-a@ctr.co.kr` | 이민준 | EMPLOYEE | CTR | 생산기술팀 |
+| `employee-b@ctr.co.kr` | 정다은 | EMPLOYEE | CTR | 생산기술팀 |
+| `employee-c@ctr.co.kr` | 송현우 | EMPLOYEE | CTR | 품질관리팀 |
 
 **Reporting chain**: 이민준/정다은 → 박준혁, 송현우 → 김서연
 **Dev login**: `NEXT_PUBLIC_SHOW_TEST_ACCOUNTS=true` enables Quick Login UI on `/login`

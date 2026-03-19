@@ -83,6 +83,7 @@
 | **QF-C2b** (Time-to-Pay pipeline + concurrency: 33 E2E tests, shift→attendance→leave→payroll→bank transfer, 2 P0 fixes) | ✅ Complete |
 | **QF-C2c** (Perf-to-Pay pipeline: 34 E2E tests, goal→evaluation→calibration→comp review→merit, 4 P0 fixes) | ✅ Complete |
 | **QF-C2d** (Exit pipeline + cross-cuts: 40 E2E tests, offboarding→exit interview→severance + notifications/manager hub/dashboard/search) | ✅ Complete |
+| **Track B Phase 1 Session 1** (법인 코드 + Auth + enum: B-1a, B-1a+, B-1h) | ✅ Complete |
 | **Track B Phase 1** (조직도 반영 — 안전 작업) | 🔄 In Progress |
 
 ---
@@ -324,6 +325,7 @@ DRAFT → ATTENDANCE_CLOSED → CALCULATING → ADJUSTMENT
 
 | Data | Count | Source |
 |------|------:|--------|
+| Companies | 13 (7 국내 + 6 해외) | seed.ts — B-1a 법인 코드 치환 완료 |
 | Employees | 179 | 02-employees.ts |
 | Attendance | 12,369 + 620 recent | 03-attendance.ts + 09-qa-fixes.ts |
 | Leave Requests | 255 | 04-leave.ts |
@@ -788,6 +790,29 @@ New `*FromSettings` async variants added alongside. Callers migrate incrementall
   - Phase 3.5: CSV Import UI (5h) — ⏳ 대기
   - Phase 4: 시뮬레이션 검증 (4.5h) — ⏳ 대기
 
+
+---
+
+## Track B Phase 1 Session 1 — ✅ COMPLETE
+
+### B-1a: 법인 코드/명칭 전수 치환
+- seed 파일 전수 치환: CTR-HQ→CTR-HOLD, CTR-KR→CTR, CTR-ENG→CTR-ENR, FML→CTR-FML, CTR-MX→삭제
+- 신규 법인 7개 추가 (CTR-HOLD, CTR-MOB, CTR-ECO, CTR-ROB, CTR-ENR, CTR-FML, CTR-EU)
+- parentCompanyId 계층 설정 완료 (CTR-HOLD → CTR → 해외법인)
+- E2E 테스트 계정 동기화 완료
+- src/ 파일 내 하드코딩된 법인 코드 동기화 (payroll, settings, timezone 등)
+- CTR-MX → CTR-US 병합으로 인한 중복 키 제거 및 EU 대체
+- ⚠️ 배포 시 Redis flush 필요
+
+### B-1a+: Auth 세션 companyId → Primary Assignment 기준
+- loadEmployeePermissions() 수정: Primary Assignment companyId 우선, fallback은 기존 로직
+- effectiveDate <= now 조건으로 미래 발령자 제외
+- ⏳ 겸직 검증: Phase 3 B-3e seed 후 수행 예정
+
+### B-1h: employmentType enum 매핑 함수
+- src/lib/ats/employment-type-mapper.ts 신규
+- ATS convert-to-employee 진입점에 매핑 적용 (posting.employmentType → Prisma enum)
+- 기존 ATS DB 데이터 미변경
 
 ---
 
