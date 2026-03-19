@@ -65,7 +65,7 @@ async function loadEmployeePermissions(employeeId: string): Promise<{
   companyId: string
   permissions: Permission[]
 }> {
-  // Get first (primary) role for the employee
+  // Get first (primary) role for the employee — used for RBAC permissions
   const employeeRole = await prisma.employeeRole.findFirst({
     where: {
       employeeId,
@@ -97,9 +97,25 @@ async function loadEmployeePermissions(employeeId: string): Promise<{
     }),
   )
 
+  // Track B B-1a+: companyId from Primary Assignment (not from EmployeeRole)
+  // This prevents session companyId pollution when a secondary/dual assignment
+  // has a more recent startDate than the primary assignment's role.
+  const primaryAssignment = await prisma.employeeAssignment.findFirst({
+    where: {
+      employeeId,
+      isPrimary: true,
+      endDate: null,
+      effectiveDate: { lte: new Date() }, // Exclude future assignments (pre-hire)
+    },
+    select: { companyId: true },
+  })
+
+  // Fallback: if no primary assignment found (pre-hire etc.), use role's companyId
+  const companyId = primaryAssignment?.companyId ?? employeeRole.companyId
+
   return {
     role: employeeRole.role.code,
-    companyId: employeeRole.companyId,
+    companyId,
     permissions,
   }
 }
