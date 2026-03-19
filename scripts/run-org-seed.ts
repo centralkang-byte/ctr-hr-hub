@@ -1,10 +1,10 @@
 // ================================================================
-// Track B Phase 1 Session 2: Org Structure Seed Runner
+// Track B Phase 1: Org Structure Seed Runner
 // scripts/run-org-seed.ts
 //
 // Usage: npx tsx scripts/run-org-seed.ts
 //
-// Runs: Departments → JobGrades → Positions (in order)
+// Runs: Departments → JobGrades → Positions → Employees (in order)
 // ================================================================
 
 import dotenv from 'dotenv'
@@ -18,6 +18,7 @@ import { PrismaPg } from '@prisma/adapter-pg'
 import { seedDepartments } from '../prisma/seeds/36-departments'
 import { seedJobGrades } from '../prisma/seeds/37-job-grades'
 import { seedPositions } from '../prisma/seeds/38-positions'
+import { seedEmployees } from '../prisma/seeds/39-employees'
 
 const DATABASE_URL = process.env.DATABASE_URL
 if (!DATABASE_URL) {
@@ -37,9 +38,10 @@ async function main() {
     await seedDepartments(prisma)
     await seedJobGrades(prisma)
     await seedPositions(prisma)
+    await seedEmployees(prisma)
 
     console.log('\n═══════════════════════════════════════════')
-    console.log(' ✅ All org structure seeds complete!')
+    console.log(' ✅ All org structure + employee seeds complete!')
     console.log('═══════════════════════════════════════════\n')
   } catch (error) {
     console.error('\n❌ Org seed failed:', error)
