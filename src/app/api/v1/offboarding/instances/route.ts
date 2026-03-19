@@ -50,8 +50,9 @@ export const GET = withPermission(
                         },
                     },
                     offboardingTasks: {
-                        include: {
-                            task: { select: { isRequired: true, title: true } },
+                        select: {
+                            status: true,
+                            task: { select: { isRequired: true } },
                         },
                     },
                     exitInterviews: { select: { id: true }, take: 1 },

@@ -43,15 +43,22 @@ export const GET = withPermission(
             where: { isPrimary: true, endDate: null },
             take: 1,
             include: {
-              department: true,
-              jobGrade: true,
-              jobCategory: true,
-              company: true,
+              department: { select: { id: true, name: true, code: true } },
+              jobGrade: { select: { id: true, name: true, code: true } },
+              jobCategory: { select: { id: true, name: true } },
+              company: { select: { id: true, name: true, code: true } },
             },
           },
           employeeHistories: {
             orderBy: { createdAt: 'desc' },
             take: 10,
+            select: {
+              id: true,
+              changeType: true,
+              effectiveDate: true,
+              reason: true,
+              createdAt: true,
+            },
           },
         },
       }),
@@ -216,6 +223,14 @@ export const DELETE = withPermission(
       throw badRequest(`삭제할 수 없습니다: ${blockers.join(', ')}이(가) 존재합니다.`)
     }
 
+    // Fix 4-9: Count historical data for warning (non-blocking)
+    const historicalCounts = await Promise.all([
+      prisma.leaveRequest.count({ where: { employeeId: id, status: { not: 'PENDING' } } }),
+      prisma.performanceReview.count({ where: { employeeId: id } }),
+      prisma.payrollItem.count({ where: { employeeId: id } }),
+    ])
+    const totalHistorical = historicalCounts.reduce((a, b) => a + b, 0)
+
     try {
       const employee = await prisma.employee.update({
         where: { id, deletedAt: null },
@@ -242,7 +257,13 @@ export const DELETE = withPermission(
         userAgent,
       })
 
-      return apiSuccess({ id })
+      return apiSuccess({
+        id,
+        message: '직원이 비활성화되었습니다.',
+        warnings: totalHistorical > 0
+          ? [`${totalHistorical}건의 이력 데이터가 보존됩니다 (휴가/평가/급여).`]
+          : [],
+      })
     } catch (error) {
       throw handlePrismaError(error)
     }
