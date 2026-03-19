@@ -4,9 +4,11 @@ import { paginationSchema } from './common'
 // ================================================================
 // Leave Policy CRUD
 // ================================================================
+const LEAVE_TYPES = ['ANNUAL', 'SICK', 'MATERNITY', 'PATERNITY', 'BEREAVEMENT', 'SPECIAL', 'COMPENSATORY'] as const
+
 export const leavePolicyCreateSchema = z.object({
   name: z.string().min(1, '정책명은 필수입니다').max(100),
-  leaveType: z.string().min(1).max(50),
+  leaveType: z.enum(LEAVE_TYPES, { error: `유효한 휴가 유형: ${LEAVE_TYPES.join(', ')}` }),
   defaultDays: z.number().int().min(0).max(365),
   isPaid: z.boolean(),
   carryOverAllowed: z.boolean(),

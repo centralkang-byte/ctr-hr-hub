@@ -26,8 +26,13 @@ export const GET = withPermission(
     const { search, companyId, departmentId, jobGradeId, skill, page, limit } = parsed.data
     const skip = (page - 1) * limit
 
-    const assignmentFilter: Record<string, unknown> = { isPrimary: true, endDate: null, status: 'ACTIVE' }
-    if (companyId) assignmentFilter.companyId = companyId
+    const assignmentFilter: Record<string, unknown> = { isPrimary: true, endDate: null, status: { in: ['ACTIVE', 'ON_LEAVE'] } }
+    // 회사 필터: 명시적 companyId > SA 전체 조회 > 자기 회사만
+    if (companyId) {
+      assignmentFilter.companyId = companyId
+    } else if (user.role !== 'SUPER_ADMIN') {
+      assignmentFilter.companyId = user.companyId
+    }
     if (departmentId) assignmentFilter.departmentId = departmentId
     if (jobGradeId) assignmentFilter.jobGradeId = jobGradeId
 

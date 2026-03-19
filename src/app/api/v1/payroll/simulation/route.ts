@@ -195,6 +195,20 @@ async function fetchEmployeeData(employeeIds: string[]): Promise<EmployeeData[]>
     compensations.map((c) => [c.employeeId, Number(c.newBaseSalary)])
   )
 
+  // Fallback: latest contract salary for employees without compensation history
+  const missingIds = employeeIds.filter((id) => !salaryMap.has(id))
+  if (missingIds.length > 0) {
+    const contracts = await prisma.contractHistory.findMany({
+      where: { employeeId: { in: missingIds }, salaryAmount: { not: null } },
+      orderBy: { startDate: 'desc' },
+      distinct: ['employeeId'],
+      select: { employeeId: true, salaryAmount: true },
+    })
+    for (const c of contracts) {
+      if (c.salaryAmount) salaryMap.set(c.employeeId, Number(c.salaryAmount))
+    }
+  }
+
   // Latest payroll items for current earnings breakdown
   const latestPayrollItems = await prisma.payrollItem.findMany({
     where: { employeeId: { in: employeeIds } },
