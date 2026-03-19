@@ -106,17 +106,17 @@ export const POST = withPermission(
     // 필수 필드 해소 (공고에서 자동 채움, 없으면 요청에 포함 필요)
     const resolvedDepartmentId = departmentId ?? application.posting?.departmentId
     if (!resolvedDepartmentId) {
-      throw badRequest('departmentId가 필요합니다. 공고에 부서가 설정되어 있지 않습니다.')
+      throw badRequest('departmentId(부서)는 필수입니다. 공고에 부서가 설정되어 있지 않으므로 요청에 포함해 주세요.')
     }
 
     const resolvedJobGradeId = jobGradeId ?? application.posting?.jobGradeId
     if (!resolvedJobGradeId) {
-      throw badRequest('jobGradeId가 필요합니다. 공고에 직급이 설정되어 있지 않습니다.')
+      throw badRequest('jobGradeId(직급)는 필수입니다. 공고에 직급이 설정되어 있지 않으므로 요청에 포함해 주세요.')
     }
 
     const resolvedJobCategoryId = jobCategoryId ?? application.posting?.jobCategoryId
     if (!resolvedJobCategoryId) {
-      throw badRequest('jobCategoryId가 필요합니다. 공고에 직무 카테고리가 설정되어 있지 않습니다.')
+      throw badRequest('jobCategoryId(직군)는 필수입니다. 공고에 직무 카테고리가 설정되어 있지 않으므로 요청에 포함해 주세요.')
     }
 
     // 사번 중복 체크

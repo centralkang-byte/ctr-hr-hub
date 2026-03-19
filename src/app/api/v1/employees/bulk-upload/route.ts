@@ -50,10 +50,15 @@ export const POST = withPermission(
     const file = formData.get('file') as File | null
     if (!file) throw badRequest('파일이 필요합니다.')
 
-    const buffer = await file.arrayBuffer()
-    const wb = XLSX.read(buffer, { type: 'array', cellDates: true })
-    const ws = wb.Sheets[wb.SheetNames[0]]
-    const rows = XLSX.utils.sheet_to_json<UploadRow>(ws)
+    let rows: UploadRow[]
+    try {
+      const buffer = await file.arrayBuffer()
+      const wb = XLSX.read(buffer, { type: 'array', cellDates: true })
+      const ws = wb.Sheets[wb.SheetNames[0]]
+      rows = XLSX.utils.sheet_to_json<UploadRow>(ws)
+    } catch {
+      throw badRequest('파일 형식이 올바르지 않습니다. Excel(.xlsx) 파일을 업로드해 주세요.')
+    }
 
     if (rows.length === 0) throw badRequest('데이터가 없습니다.')
     if (rows.length > 500)
