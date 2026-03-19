@@ -26,11 +26,11 @@ const POS_DATA: PosTuple[] = [
   // ════════════════════════════════════════════════════════════
   // CTR-HOLD Leadership
   // ════════════════════════════════════════════════════════════
-  ['POS-HOLD-CHAIR', '회장', 'Chairman', 'CTR-HOLD', 'ROOT-HOLD', null, null],
-  ['POS-HOLD-DIR-MGMT', '경영관리본부장', 'Management Division Director', 'CTR-HOLD', 'DIV-MGMT', 'POS-HOLD-CHAIR', null],
-  ['POS-HOLD-DIR-COMPLIANCE', '컴플라이언스본부장', 'Compliance Division Director', 'CTR-HOLD', 'DIV-COMPLIANCE', 'POS-HOLD-CHAIR', null],
-  ['POS-HOLD-DIR-BTS', 'BTS본부장', 'BTS Division Director', 'CTR-HOLD', 'DIV-BTS', 'POS-HOLD-CHAIR', null],
-  ['POS-HOLD-SL-CTO', 'CTO', 'CTO', 'CTR-HOLD', 'SEC-CTO', 'POS-HOLD-CHAIR', null],
+  ['POS-HOLD-VCHAIR', '부회장', 'Vice Chairman', 'CTR-HOLD', 'ROOT-HOLD', null, null],
+  ['POS-HOLD-DIR-MGMT', '경영관리본부장', 'Management Division Director', 'CTR-HOLD', 'DIV-MGMT', 'POS-HOLD-VCHAIR', null],
+  ['POS-HOLD-DIR-COMPLIANCE', '컴플라이언스본부장', 'Compliance Division Director', 'CTR-HOLD', 'DIV-COMPLIANCE', 'POS-HOLD-VCHAIR', null],
+  ['POS-HOLD-DIR-BTS', 'BTS본부장', 'BTS Division Director', 'CTR-HOLD', 'DIV-BTS', 'POS-HOLD-VCHAIR', null],
+  ['POS-HOLD-SL-CTO', 'CTO', 'CTO', 'CTR-HOLD', 'SEC-CTO', 'POS-HOLD-VCHAIR', null],
 
   // HOLD Team Leaders
   ['POS-HOLD-TL-FINPLAN', '재무기획팀장', 'Financial Planning TL', 'CTR-HOLD', 'TM-FINPLAN', 'POS-HOLD-DIR-MGMT', null],
@@ -59,7 +59,7 @@ const POS_DATA: PosTuple[] = [
   // ════════════════════════════════════════════════════════════
   // CTR — CEO & CFO
   // ════════════════════════════════════════════════════════════
-  ['POS-CTR-CEO', 'CTR 대표이사', 'CTR CEO', 'CTR', 'ROOT-CTR', 'POS-HOLD-CHAIR', null],
+  ['POS-CTR-CEO', 'CTR 대표이사', 'CTR CEO', 'CTR', 'ROOT-CTR', 'POS-HOLD-VCHAIR', null],
   ['POS-CTR-SL-CFO', 'CFO', 'CFO', 'CTR', 'SEC-CFO', 'POS-CTR-CEO', null],
 
   // CFO실 Team Leaders
@@ -258,7 +258,7 @@ const POS_DATA: PosTuple[] = [
   // ════════════════════════════════════════════════════════════
   // CTR-ROB
   // ════════════════════════════════════════════════════════════
-  ['POS-ROB-CEO', 'CTR Robotics 대표', 'CTR Robotics CEO', 'CTR-ROB', 'ROOT-ROB', 'POS-HOLD-CHAIR', null],
+  ['POS-ROB-CEO', 'CTR Robotics 대표', 'CTR Robotics CEO', 'CTR-ROB', 'ROOT-ROB', 'POS-HOLD-VCHAIR', null],
   ['POS-ROB-DIR-MGMT', '경영지원본부장(ROB)', 'Mgmt Support Director (ROB)', 'CTR-ROB', 'DIV-ROB-MGMT', 'POS-ROB-CEO', null],
   ['POS-ROB-DIR-SYSTEM', '시스템사업본부장(ROB)', 'System Biz Director (ROB)', 'CTR-ROB', 'DIV-ROB-SYSTEM', 'POS-ROB-CEO', null],
   ['POS-ROB-DIR-TECH', '기술본부장(ROB)', 'Technology Director (ROB)', 'CTR-ROB', 'DIV-ROB-TECH', 'POS-ROB-CEO', null],
@@ -281,7 +281,7 @@ const POS_DATA: PosTuple[] = [
   // ════════════════════════════════════════════════════════════
   // CTR-ENR
   // ════════════════════════════════════════════════════════════
-  ['POS-ENR-CEO', 'CTR에너지 대표', 'CTR Energy CEO', 'CTR-ENR', 'ROOT-ENR', 'POS-HOLD-CHAIR', null],
+  ['POS-ENR-CEO', 'CTR에너지 대표', 'CTR Energy CEO', 'CTR-ENR', 'ROOT-ENR', 'POS-HOLD-VCHAIR', null],
   ['POS-ENR-DIR-RENEW', '신재생에너지사업본부장', 'Renewable Energy Director', 'CTR-ENR', 'DIV-ENR-RENEW', 'POS-ENR-CEO', null],
   ['POS-ENR-PL-ICT', 'ICT파트장', 'ICT Part Leader', 'CTR-ENR', 'PT-ENR-ICT', 'POS-ENR-DIR-RENEW', null],
   ['POS-ENR-PL-RB1', 'RB1파트장', 'RB1 Part Leader', 'CTR-ENR', 'PT-ENR-RB1', 'POS-ENR-DIR-RENEW', null],
@@ -293,7 +293,7 @@ const POS_DATA: PosTuple[] = [
   // ════════════════════════════════════════════════════════════
   // CTR-FML
   // ════════════════════════════════════════════════════════════
-  ['POS-FML-CEO', '포메이션랩스 CEO', 'Formationlabs CEO', 'CTR-FML', 'ROOT-FML', 'POS-HOLD-CHAIR', null],
+  ['POS-FML-CEO', '포메이션랩스 CEO', 'Formationlabs CEO', 'CTR-FML', 'ROOT-FML', 'POS-HOLD-VCHAIR', null],
   ['POS-FML-TL-INFRA', '인프라운영팀장', 'Infrastructure Ops TL', 'CTR-FML', 'TM-FML-INFRA', 'POS-FML-CEO', null],
   ['POS-FML-TL-SYSOPS', '시스템운영팀장', 'System Ops TL', 'CTR-FML', 'TM-FML-SYSOPS', 'POS-FML-CEO', null],
   ['POS-FML-TL-DEV1', '솔루션개발1팀장', 'Solution Dev 1 TL', 'CTR-FML', 'TM-FML-DEV1', 'POS-FML-CEO', null],
@@ -485,7 +485,7 @@ export async function seedPositions(prisma: PrismaClient): Promise<void> {
   // ── Verification ──
   const dbCount = await prisma.position.count()
   const orphans = await prisma.position.count({
-    where: { reportsToPositionId: null, code: { not: 'POS-HOLD-CHAIR' } },
+    where: { reportsToPositionId: null, code: { not: 'POS-HOLD-VCHAIR' } },
   })
   // Exclude positions from old seeds (QA positions, etc.) that may not have reportsTo
   console.log(`\n  📊 DB total positions: ${dbCount}`)
