@@ -4,7 +4,6 @@ import { apiSuccess } from '@/lib/api'
 import { isAppError, handlePrismaError, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
-import { getCrossCompanyReadFilter } from '@/lib/api/cross-company-access'
 import type { SessionUser } from '@/types'
 
 const assignmentSelect = {
@@ -58,14 +57,7 @@ export const GET = withPermission(
       })
 
       // Step 3: Path B — Secondary assignment direct reports
-      // getCrossCompanyReadFilter()로 보안 검증된 타 법인 직원 ID 세트 확보
-      const crossFilter = await getCrossCompanyReadFilter({
-        callerEmployeeId,
-        callerRole: user.role,
-        callerCompanyId,
-      })
-
-      // 겸직 포지션에 보고하는 직속 부하만 조회
+      // 겸직 포지션의 직속 부하 조회 (매니저 본인의 포지션이므로 별도 보안 게이트 불필요)
       const callerSecondaries = await prisma.employeeAssignment.findMany({
         where: {
           employeeId: callerEmployeeId,
@@ -80,7 +72,7 @@ export const GET = withPermission(
         .filter((id): id is string => id !== null)
 
       let secondaryReportAssignments: typeof dottedLineAssignments = []
-      if (secondaryPositionIds.length > 0 && crossFilter) {
+      if (secondaryPositionIds.length > 0) {
         secondaryReportAssignments = await prisma.employeeAssignment.findMany({
           where: {
             isPrimary: true,
@@ -100,6 +92,7 @@ export const GET = withPermission(
             where: {
               isPrimary: true,
               endDate: null,
+              effectiveDate: { lte: new Date() },
               position: { reportsToPositionId: callerAssignment.positionId },
             },
             select: { employeeId: true },
