@@ -1,11 +1,13 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { X } from 'lucide-react'
+import { Plus, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { AssignmentTimeline, type TimelineEvent } from '@/components/shared/AssignmentTimeline'
 import { EffectiveDatePicker, buildDefaultQuickSelects } from '@/components/shared/EffectiveDatePicker'
+import AddConcurrentDialog from '@/components/employees/dialogs/AddConcurrentDialog'
+import EndConcurrentDialog from '@/components/employees/dialogs/EndConcurrentDialog'
 import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
@@ -28,6 +30,7 @@ interface AssignmentRecord {
   jobGrade: { id: string; name: string; code?: string } | null
   jobCategory: { id: string; name: string } | null
   approver: { id: string; name: string; photoUrl: string | null } | null
+  isPrimary: boolean
 }
 
 interface SnapshotData {
@@ -55,6 +58,7 @@ const CHANGE_TYPE_LABELS: Record<string, string> = {
   STATUS_CHANGE: '상태변경',
   REORGANIZATION: '조직개편',
   TERMINATION: '퇴직',
+  CONCURRENT: '겸직발령',
 }
 
 // ─── assignment → TimelineEvent 변환 ────────────────────────
@@ -69,11 +73,13 @@ function toTimelineEvent(a: AssignmentRecord, highlightDate: Date): TimelineEven
     aDate <= highlightDate &&
     (a.endDate === null || new Date(a.endDate) > highlightDate)
 
+  const prefix = a.isPrimary !== false ? '[주] ' : '[겸직] '
+
   return {
     id: a.id,
     date: a.effectiveDate,
     type: a.changeType,
-    title: CHANGE_TYPE_LABELS[a.changeType] ?? a.changeType,
+    title: prefix + (CHANGE_TYPE_LABELS[a.changeType] ?? a.changeType),
     description,
     details: a as unknown as Record<string, unknown>,
     highlighted: isHighlighted,
@@ -131,6 +137,79 @@ function AssignmentSidePanel({
   )
 }
 
+// ─── ConcurrentAssignment (for EndConcurrentDialog) ──────────
+
+interface ConcurrentAssignment {
+  id: string
+  companyName: string
+  departmentName: string | null
+  positionTitle: string | null
+  effectiveDate: string
+}
+
+// ─── ConcurrentStatusSection (HR_ADMIN only) ─────────────────
+
+function ConcurrentStatusSection({
+  assignments,
+  onAdd,
+  onEnd,
+}: {
+  assignments: AssignmentRecord[]
+  onAdd: () => void
+  onEnd: (a: ConcurrentAssignment) => void
+}) {
+  const activeConcurrents = assignments.filter(
+    (a) => !a.isPrimary && a.endDate === null
+  )
+
+  return (
+    <div className="rounded-xl border border-[#E8E8E8] bg-white p-4 space-y-3">
+      <h3 className="text-sm font-bold text-[#1A1A1A]">현재 겸직 현황</h3>
+
+      {activeConcurrents.length === 0 ? (
+        <p className="text-xs text-[#999]">현재 활성 겸직이 없습니다.</p>
+      ) : (
+        <div className="space-y-2">
+          {activeConcurrents.map((a) => (
+            <div
+              key={a.id}
+              className="flex items-center justify-between rounded-lg border border-[#F0F0F0] px-3 py-2"
+            >
+              <span className="text-sm text-[#333]">
+                {[a.company?.name, a.department?.name].filter(Boolean).join(' · ')}
+                <span className="ml-2 text-xs text-[#999]">
+                  {new Date(a.effectiveDate).toLocaleDateString('ko-KR')} ~
+                </span>
+              </span>
+              <Button
+                variant="destructive"
+                size="sm"
+                className="h-7 text-xs"
+                onClick={() =>
+                  onEnd({
+                    id: a.id,
+                    companyName: a.company?.name ?? '',
+                    departmentName: a.department?.name ?? null,
+                    positionTitle: a.jobGrade?.name ?? null,
+                    effectiveDate: a.effectiveDate,
+                  })
+                }
+              >
+                종료
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <Button variant="outline" size="sm" className="h-8 text-xs" onClick={onAdd}>
+        <Plus className="mr-1 h-3.5 w-3.5" />
+        겸직 추가
+      </Button>
+    </div>
+  )
+}
+
 // ─── Main Component ──────────────────────────────────────────
 
 export function AssignmentHistoryTab({
@@ -147,8 +226,13 @@ export function AssignmentHistoryTab({
   const [selectedEvent, setSelectedEvent] = useState<TimelineEvent | null>(null)
   const [snapshotLoading, setSnapshotLoading] = useState(false)
 
-  // 이력 로드 (최초 1회)
-  useEffect(() => {
+  // Dialog state
+  const [addDialogOpen, setAddDialogOpen] = useState(false)
+  const [endDialogOpen, setEndDialogOpen] = useState(false)
+  const [endTarget, setEndTarget] = useState<ConcurrentAssignment | null>(null)
+
+  // 이력 로드
+  const fetchHistory = useCallback(() => {
     setLoading(true)
     apiClient
       .get<{ assignments: AssignmentRecord[]; hireDate: string | null }>(
@@ -158,6 +242,10 @@ export function AssignmentHistoryTab({
       .catch(() => setAssignments([]))
       .finally(() => setLoading(false))
   }, [employeeId])
+
+  useEffect(() => {
+    fetchHistory()
+  }, [fetchHistory])
 
   // 시점 조회 — 날짜 변경 시 snapshot fetch
   const handleDateChange = useCallback(async (date: Date) => {
@@ -179,9 +267,25 @@ export function AssignmentHistoryTab({
     }
   }, [employeeId, isHrAdmin, onSnapshotChange])
 
-  const events: TimelineEvent[] = assignments.map((a) =>
-    toTimelineEvent(a, viewDate)
-  )
+  // Build events with dual-render for ended concurrent assignments
+  const events: TimelineEvent[] = []
+  for (const a of assignments) {
+    events.push(toTimelineEvent(a, viewDate))
+    // Gemini #2: Dual render for ended concurrent
+    if (a.changeType === 'CONCURRENT' && a.endDate) {
+      events.push({
+        id: `${a.id}-end`,
+        date: a.endDate,
+        type: 'CONCURRENT_END',
+        title: '[겸직] 겸직 종료',
+        description: [a.company?.name, a.department?.name].filter(Boolean).join(' · '),
+        details: a as unknown as Record<string, unknown>,
+        highlighted: false,
+      })
+    }
+  }
+  // Sort by date descending
+  events.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
   return (
     <div className="space-y-4">
@@ -193,6 +297,18 @@ export function AssignmentHistoryTab({
         employeeHireDate={hireDate}
         quickSelects={buildDefaultQuickSelects(hireDate)}
       />
+
+      {/* 겸직 현황 (HR_ADMIN only) */}
+      {isHrAdmin && (
+        <ConcurrentStatusSection
+          assignments={assignments}
+          onAdd={() => setAddDialogOpen(true)}
+          onEnd={(a) => {
+            setEndTarget(a)
+            setEndDialogOpen(true)
+          }}
+        />
+      )}
 
       {/* 타임라인 + 사이드패널 */}
       <div className="flex gap-4">
@@ -215,6 +331,27 @@ export function AssignmentHistoryTab({
 
       {snapshotLoading && (
         <div className="text-xs text-[#999] text-center py-1 animate-pulse">시점 정보 조회 중...</div>
+      )}
+
+      {/* Dialogs */}
+      {isHrAdmin && (
+        <>
+          <AddConcurrentDialog
+            employeeId={employeeId}
+            open={addDialogOpen}
+            onOpenChange={setAddDialogOpen}
+            onSuccess={fetchHistory}
+            userRole={user.role}
+            userCompanyId={user.companyId ?? ''}
+          />
+          <EndConcurrentDialog
+            employeeId={employeeId}
+            assignment={endTarget}
+            open={endDialogOpen}
+            onOpenChange={setEndDialogOpen}
+            onSuccess={fetchHistory}
+          />
+        </>
       )}
     </div>
   )
