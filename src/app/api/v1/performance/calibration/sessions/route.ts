@@ -16,13 +16,13 @@ import type { CalibrationStatus } from '@/generated/prisma/client'
 // ─── Schemas ──────────────────────────────────────────────
 
 const searchSchema = z.object({
-  cycleId: z.string().cuid().optional(),
+  cycleId: z.string().optional(),
   page: z.coerce.number().int().positive().default(DEFAULT_PAGE),
   limit: z.coerce.number().int().positive().max(100).default(DEFAULT_PAGE_SIZE),
 })
 
 const createSchema = z.object({
-  cycleId: z.string().cuid(),
+  cycleId: z.string(),
   departmentId: z.string().optional(),
   name: z.string().min(1).max(200),
 })

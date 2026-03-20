@@ -56,7 +56,7 @@ export const GET = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.HR_CHATBOT, ACTION.VIEW),
+  perm(MODULE.EMPLOYEES, ACTION.VIEW),
 )
 
 export const POST = withPermission(
@@ -128,5 +128,5 @@ export const POST = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.HR_CHATBOT, ACTION.CREATE),
+  perm(MODULE.EMPLOYEES, ACTION.CREATE),
 )

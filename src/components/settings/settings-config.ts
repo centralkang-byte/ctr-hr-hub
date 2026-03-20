@@ -18,7 +18,7 @@ export type SettingsCategoryKey =
   | 'recruitment'
   | 'system'
 
-export type OrganizationTabSlug = 'company-info' | 'departments' | 'job-grades' | 'job-families' | 'assignment-rules' | 'probation' | 'custom-fields' | 'code-management'
+export type OrganizationTabSlug = 'company-info' | 'departments' | 'job-grades' | 'job-families' | 'assignment-rules' | 'probation' | 'custom-fields' | 'code-management' | 'locations'
 export type AttendanceTabSlug = 'work-schedules' | 'weekly-hours' | 'shift-patterns' | 'leave-types' | 'leave-accrual' | 'leave-promotion' | 'holidays' | 'overtime'
 export type PayrollTabSlug = 'earnings' | 'deductions' | 'tax-free' | 'salary-bands' | 'merit-matrix' | 'bonus-rules' | 'pay-schedule' | 'currency'
 export type PerformanceTabSlug = 'cycle' | 'methodology' | 'grade-scale' | 'distribution' | 'calibration' | 'cfr' | 'competency'
@@ -67,6 +67,7 @@ export const SETTINGS_CATEGORIES: SettingsCategoryConfig[] = [
       { slug: 'probation', label: '수습 기간', description: '기간, 평가 기준, 자동 전환' },
       { slug: 'custom-fields', label: '커스텀 필드', description: '사용자 정의 필드 관리' },
       { slug: 'code-management', label: '코드 관리', description: '시스템 코드/열거형' },
+      { slug: 'locations', label: '근무지 관리', description: '공장/사무소 등 근무지 목록' },
     ],
   },
   {

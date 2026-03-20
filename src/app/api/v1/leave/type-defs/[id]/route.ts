@@ -37,7 +37,7 @@ export const GET = withPermission(
     if (!typeDef) throw notFound('휴가 유형을 찾을 수 없습니다.')
     return apiSuccess(typeDef)
   },
-  perm(MODULE.SETTINGS, ACTION.VIEW),
+  perm(MODULE.LEAVE, ACTION.VIEW),
 )
 
 export const PUT = withPermission(
@@ -53,7 +53,7 @@ export const PUT = withPermission(
     })
     return apiSuccess(typeDef)
   },
-  perm(MODULE.SETTINGS, ACTION.UPDATE),
+  perm(MODULE.LEAVE, ACTION.UPDATE),
 )
 
 export const DELETE = withPermission(
@@ -66,5 +66,5 @@ export const DELETE = withPermission(
     })
     return apiSuccess({ id, deleted: true })
   },
-  perm(MODULE.SETTINGS, ACTION.DELETE),
+  perm(MODULE.LEAVE, ACTION.DELETE),
 )

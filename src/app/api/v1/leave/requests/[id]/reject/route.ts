@@ -11,7 +11,7 @@ import { badRequest, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
-import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
+import { sendNotification } from '@/lib/notifications'
 import { checkDelegation } from '@/lib/delegation/resolve-delegatee'
 import type { SessionUser } from '@/types'
 
@@ -75,17 +75,8 @@ export const PUT = withPermission(
       throw badRequest('해당 휴가 유형의 잔여일 정보를 찾을 수 없습니다.')
     }
 
-    // 4. Transaction: reject request + event (pendingDays restore via handler)
-    const ctx = { companyId: user.companyId, actorId: user.employeeId, occurredAt: new Date() }
-    const eventPayload = {
-      ctx,
-      requestId:        request.id,
-      employeeId:       request.employeeId,
-      policyId:         request.policyId,
-      balanceId:        balance.id,
-      days:             Number(request.days),
-      rejectionReason:  parsed.data.rejectionReason,
-    }
+    // 4. Transaction: reject request + restore pendingDays (direct, not via event)
+    const days = Number(request.days)
 
     const updated = await prisma.$transaction(async (tx) => {
       const rejected = await tx.leaveRequest.update({
@@ -99,8 +90,11 @@ export const PUT = withPermission(
         },
       })
 
-      // Side-effect: pendingDays-- (handled by leaveRejectedHandler)
-      await eventBus.publish(DOMAIN_EVENTS.LEAVE_REJECTED, eventPayload, tx)
+      // Restore pendingDays (usedDays unchanged for rejection)
+      await tx.employeeLeaveBalance.update({
+        where: { id: balance.id },
+        data: { pendingDays: { decrement: days } },
+      })
 
       return rejected
     })
@@ -132,8 +126,15 @@ export const PUT = withPermission(
       ...meta,
     })
 
-    // 7. Fire-and-forget notification (tx=undefined → handler sends notification only)
-    void eventBus.publish(DOMAIN_EVENTS.LEAVE_REJECTED, eventPayload)
+    // 7. Fire-and-forget notification (sent directly to avoid double balance update)
+    void sendNotification({
+      employeeId:  request.employeeId,
+      triggerType: 'leave_rejected',
+      title:       '휴가 신청이 반려되었습니다',
+      body:        `반려 사유: ${parsed.data.rejectionReason}`,
+      link:        '/my/leave',
+      priority:    'normal',
+    })
 
     return apiSuccess({
       request: updated,
@@ -145,5 +146,5 @@ export const PUT = withPermission(
       },
     })
   },
-  perm(MODULE.LEAVE, ACTION.APPROVE),
+  perm(MODULE.LEAVE, ACTION.UPDATE),
 )

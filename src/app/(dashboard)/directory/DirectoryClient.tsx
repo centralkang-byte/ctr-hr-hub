@@ -49,7 +49,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
   const t = useTranslations('directory')
 
   const router = useRouter()
-  const [viewMode, setViewMode] = useState<'card' | 'list'>('card')
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list')
   const [search, setSearch] = useState('')
   const [selectedCompany, setSelectedCompany] = useState('all')
   const [selectedDept, setSelectedDept] = useState('all')
@@ -113,18 +113,18 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
           <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('pageTitle')}</h1>
           <p className="text-sm text-[#666] mt-0.5">{t('totalMembers', { count: total.toLocaleString() })}</p>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setViewMode('card')}
-            className={`p-2 rounded-lg ${viewMode === 'card' ? 'bg-primary text-white' : 'text-[#666] hover:bg-[#F5F5F5]'}`}
-          >
-            <LayoutGrid size={18} />
-          </button>
+        <div className="flex items-center gap-1.5 p-1 bg-[#F5F5FA] rounded-lg">
           <button
             onClick={() => setViewMode('list')}
-            className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-primary text-white' : 'text-[#666] hover:bg-[#F5F5F5]'}`}
+            className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-white text-[#1A1A1A] shadow-sm' : 'text-[#8181A5] hover:text-[#1A1A1A]'}`}
           >
             <List size={18} />
+          </button>
+          <button
+            onClick={() => setViewMode('grid')}
+            className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white text-[#1A1A1A] shadow-sm' : 'text-[#8181A5] hover:text-[#1A1A1A]'}`}
+          >
+            <LayoutGrid size={18} />
           </button>
         </div>
       </div>
@@ -188,9 +188,9 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
 
       {/* Content */}
       {loading ? (
-        <div className={viewMode === 'card' ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4' : 'space-y-2'}>
+        <div className={viewMode === 'grid' ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4' : 'space-y-2'}>
           {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} className={viewMode === 'card' ? 'h-48 rounded-xl' : 'h-14 rounded-lg'} />
+            <Skeleton key={i} className={viewMode === 'grid' ? 'h-48 rounded-xl' : 'h-16 rounded-lg'} />
           ))}
         </div>
       ) : employees.length === 0 ? (
@@ -199,15 +199,15 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
           title={tCommon('noResults')}
           description={t('emptyDesc')}
         />
-      ) : viewMode === 'card' ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      ) : viewMode === 'grid' ? (
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
           {employees.map((emp) => (
             <EmployeeCard key={emp.id} emp={emp} onClick={() => setSelectedEmployee(emp)} />
           ))}
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
-          <table className="w-full">
+        <div className={TABLE_STYLES.wrapper}>
+          <table className={TABLE_STYLES.table}>
             <thead>
               <tr className={TABLE_STYLES.header}>
                 <th className={TABLE_STYLES.headerCell}>{tCommon('name')}</th>
@@ -218,14 +218,14 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
                 <th className={TABLE_STYLES.headerCell}>{t('skills')}</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-[#F0F0F3]">
               {employees.map((emp) => (
                 <tr
                   key={emp.id}
-                  className={TABLE_STYLES.header}
+                  className={TABLE_STYLES.rowClickable}
                   onClick={() => setSelectedEmployee(emp)}
                 >
-                  <td className="px-4 py-3">
+                  <td className={TABLE_STYLES.cell}>
                     <EmployeeCell
                       size="sm"
                       employee={{
@@ -240,20 +240,35 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
                         jobGrade: emp.jobGrade?.name,
                         companyName: emp.company?.name,
                       }}
-                      onClick={() => setSelectedEmployee(emp)}
+                      hideDetails
                     />
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#555]">{emp.department?.name ?? '-'}</td>
-                  <td className="px-4 py-3 text-sm text-[#555]">{emp.jobGrade?.name ?? '-'}</td>
-                  <td className="px-4 py-3 text-sm text-[#555]">{emp.company?.code ?? '-'}</td>
-                  <td className="px-4 py-3 text-sm text-[#555]">{emp.email}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-1 flex-wrap">
+                  <td className={TABLE_STYLES.cell + " font-medium"}>{emp.department?.name ?? '-'}</td>
+                  <td className={TABLE_STYLES.cellMuted}>{emp.jobGrade?.name ?? '-'}</td>
+                  <td className={TABLE_STYLES.cell}>
+                    <Badge variant="outline" className="h-6 rounded-md bg-white border-[#E8E8F0] text-xs font-medium text-[#555]">
+                      {emp.company?.code ?? '-'}
+                    </Badge>
+                  </td>
+                  <td className={TABLE_STYLES.cell}>
+                    <div className="flex items-center gap-2">
+                      <a href={`mailto:${emp.email}`} onClick={e => e.stopPropagation()} className="p-1.5 rounded-full text-[#8181A5] hover:bg-[#EDF1FE] hover:text-[#5E81F4] transition-colors">
+                        <Mail size={14} />
+                      </a>
+                      {emp.phone && (
+                        <a href={`tel:${emp.phone}`} onClick={e => e.stopPropagation()} className="p-1.5 rounded-full text-[#8181A5] hover:bg-[#F0FDF4] hover:text-[#10B981] transition-colors">
+                          <Phone size={14} />
+                        </a>
+                      )}
+                    </div>
+                  </td>
+                  <td className={TABLE_STYLES.cell}>
+                    <div className="flex gap-1.5 flex-wrap">
                       {emp.skills.slice(0, 3).map((s) => (
-                        <span key={s} className="text-xs px-2 py-0.5 rounded-full bg-[#E0E7FF] text-[#4B6DE0]">{s}</span>
+                        <span key={s} className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#F5F5FA] text-[#8181A5] group-hover:bg-white border border-transparent group-hover:border-[#E8E8F0]">{s}</span>
                       ))}
                       {emp.skills.length > 3 && (
-                        <span className="text-xs text-[#999]">+{emp.skills.length - 3}</span>
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#F5F5FA] text-[#999]">+{emp.skills.length - 3}</span>
                       )}
                     </div>
                   </td>

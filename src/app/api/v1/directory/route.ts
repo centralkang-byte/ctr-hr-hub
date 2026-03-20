@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { z } from 'zod'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 const querySchema = z.object({
   search: z.string().optional(),
@@ -26,8 +27,13 @@ export const GET = withPermission(
     const { search, companyId, departmentId, jobGradeId, skill, page, limit } = parsed.data
     const skip = (page - 1) * limit
 
-    const assignmentFilter: Record<string, unknown> = { isPrimary: true, endDate: null, status: 'ACTIVE' }
-    if (companyId) assignmentFilter.companyId = companyId
+    const assignmentFilter: Record<string, unknown> = { isPrimary: true, endDate: null, status: { in: ['ACTIVE', 'ON_LEAVE'] } }
+    // 회사 필터: 명시적 companyId > SA 전체 조회 > 자기 회사만
+    if (companyId) {
+      assignmentFilter.companyId = companyId
+    } else if (user.role !== 'SUPER_ADMIN') {
+      assignmentFilter.companyId = user.companyId
+    }
     if (departmentId) assignmentFilter.departmentId = departmentId
     if (jobGradeId) assignmentFilter.jobGradeId = jobGradeId
 
@@ -77,7 +83,7 @@ export const GET = withPermission(
     const isHR = user.role === 'HR_ADMIN' || user.role === 'SUPER_ADMIN'
 
     const result = employees.map((emp) => {
-      const asgn = emp.assignments[0]
+      const asgn = extractPrimaryAssignment(emp.assignments)
       const vis = emp.profileVisibility
       const isSameDept = asgn?.departmentId === viewerDeptId
 

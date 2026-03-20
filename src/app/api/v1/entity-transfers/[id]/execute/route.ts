@@ -10,6 +10,7 @@ import { badRequest, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── PUT /api/v1/entity-transfers/[id]/execute ───────────
 
@@ -59,7 +60,7 @@ export const PUT = withPermission(
         })
 
         const employee = transfer.employee
-        const currentAsgn = employee.assignments[0] as any
+        const currentAsgn = extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>
         const now = new Date()
 
         // 2. Update employeeNo if changed

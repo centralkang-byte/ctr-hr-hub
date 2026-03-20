@@ -10,6 +10,7 @@ import { notFound, badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 // ─── Schemas ──────────────────────────────────────────────
@@ -87,7 +88,8 @@ export const POST = withPermission(
     })
     if (!employee) throw notFound('직원을 찾을 수 없습니다.')
 
-    const companyId = (employee.assignments[0]?.companyId as string | undefined) ?? ''
+    const primary = extractPrimaryAssignment(employee.assignments)
+    const companyId = primary?.companyId ?? ''
 
     const body: unknown = await req.json()
     const parsed = workPermitCreateSchema.safeParse(body)

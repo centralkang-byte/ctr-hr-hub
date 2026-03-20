@@ -73,6 +73,8 @@ export interface EmployeeCellProps {
   enablePeek?: boolean
   /** Show quick action buttons in Peek Card */
   showQuickActions?: boolean
+  /** Hide subline details (department, title, location) under the name */
+  hideDetails?: boolean
 }
 
 // ─── Shared Helpers ─────────────────────────────────────────
@@ -204,7 +206,7 @@ function SublineBlock({ d }: { d: ResolvedData }) {
 // ─── Peek Card Body (internal) ──────────────────────────────
 
 function PeekCardBody({ d }: { d: ResolvedData }) {
-  const t = useTranslations('common')
+//   const t = useTranslations('common')
 
   return (
     <div>
@@ -289,6 +291,7 @@ export function EmployeeCell(props: EmployeeCellProps) {
     linkHref,
     className = '',
     enablePeek,
+    hideDetails = false,
   } = props
 
   const cfg = SIZE_CONFIG[size]
@@ -310,7 +313,7 @@ export function EmployeeCell(props: EmployeeCellProps) {
   }
 
   const displayName = formatDisplayName(d.name, d.nameEn, d.locationCode)
-  const title = d.jobTitle ?? d.jobGrade ?? null
+//   const title = d.jobTitle ?? d.jobGrade ?? null
   const statusInfo = d.status ? STATUS_STYLES[d.status] : null
 
   // Peek Card enabled by default for sm/md, disabled for lg
@@ -346,7 +349,7 @@ export function EmployeeCell(props: EmployeeCellProps) {
         </div>
 
         {/* Line 2: Subline — department · title · location */}
-        <SublineBlock d={d} />
+        {!hideDetails && <SublineBlock d={d} />}
 
         {/* Line 3: Email + Phone (md/lg only) */}
         {(size === 'md' || size === 'lg') && (d.email || d.phone) && (

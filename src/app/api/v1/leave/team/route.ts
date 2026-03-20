@@ -8,6 +8,7 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
@@ -35,7 +36,8 @@ export const GET = withPermission(
       },
     })
 
-    const managerDepartmentId = manager?.assignments?.[0]?.departmentId
+    const managerPrimary = extractPrimaryAssignment(manager?.assignments ?? [])
+    const managerDepartmentId = managerPrimary?.departmentId
     if (!managerDepartmentId) {
       return apiSuccess({ month: targetMonth, members: [] })
     }

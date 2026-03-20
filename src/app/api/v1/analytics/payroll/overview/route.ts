@@ -34,8 +34,8 @@ export const GET = withPermission(
       }),
       prisma.payrollAnomaly.count({
         where: {
-          ...companyFilter,
           status: 'OPEN',
+          ...(params.companyId ? { payrollRun: { companyId: params.companyId } } : {}),
         },
       }),
       prisma.company.findMany({

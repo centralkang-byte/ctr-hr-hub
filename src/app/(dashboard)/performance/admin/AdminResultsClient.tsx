@@ -6,6 +6,7 @@ import { BarChart3, Download, Lock } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 import { toast } from '@/hooks/use-toast'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
@@ -158,24 +159,24 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
       </div>
 
       {/* Results table */}
-      <div className="rounded-xl border border-[#E8E8E8] bg-white overflow-x-auto">
-        <table className="w-full">
+      <div className={TABLE_STYLES.wrapper}>
+        <table className={TABLE_STYLES.table}>
           <thead>
             <tr className={TABLE_STYLES.header}>
               <th className={TABLE_STYLES.headerCell}>{t('kr_keca781ec')}</th>
               <th className={TABLE_STYLES.headerCell}>{t('department')}</th>
               <th className={TABLE_STYLES.headerCell}>{t('grade')}</th>
-              <th className={TABLE_STYLES.headerCell}>{t('kr_kec9e90ea_kec84b1ea')}</th>
-              <th className={TABLE_STYLES.headerCell}>{t('kr_keba7a4eb_kec84b1ea')}</th>
-              <th className={TABLE_STYLES.headerCell}>{t('kr_kecb59cec_kec84b1ea')}</th>
-              <th className={TABLE_STYLES.headerCell}>{t('kr_kecb59cec_kec97adeb')}</th>
-              <th className={TABLE_STYLES.headerCell}>EMS</th>
+              <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_kec9e90ea_kec84b1ea')}</th>
+              <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_keba7a4eb_kec84b1ea')}</th>
+              <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_kecb59cec_kec84b1ea')}</th>
+              <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_kecb59cec_kec97adeb')}</th>
+              <th className={cn(TABLE_STYLES.headerCell, "text-center")}>EMS</th>
             </tr>
           </thead>
           <tbody>
             {results.map((r) => (
-              <tr key={r.employee.id} className={TABLE_STYLES.header}>
-                <td className="px-4 py-3">
+              <tr key={r.employee.id} className={TABLE_STYLES.row}>
+                <td className={cn(TABLE_STYLES.cell, "px-4")}>
                   <EmployeeCell
                     size="sm"
                     employee={{
@@ -187,13 +188,13 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
                     }}
                   />
                 </td>
-                <td className="px-4 py-3 text-sm text-[#555]">{r.employee.department?.name ?? '-'}</td>
-                <td className="px-4 py-3 text-sm text-[#555]">{r.employee.jobGrade?.name ?? '-'}</td>
-                <td className="px-4 py-3 text-sm text-center text-[#666]">{r.selfEval?.performanceScore?.toFixed(1) ?? '-'}</td>
-                <td className="px-4 py-3 text-sm text-center text-[#666]">{r.managerEval.performanceScore?.toFixed(1) ?? '-'}</td>
-                <td className="px-4 py-3 text-sm text-center font-medium text-[#1A1A1A]">{r.finalResult.performanceScore?.toFixed(1) ?? '-'}</td>
-                <td className="px-4 py-3 text-sm text-center font-medium text-[#1A1A1A]">{r.finalResult.competencyScore?.toFixed(1) ?? '-'}</td>
-                <td className="px-4 py-3 text-center">
+                <td className={cn(TABLE_STYLES.cellMuted)}>{r.employee.department?.name ?? '-'}</td>
+                <td className={cn(TABLE_STYLES.cellMuted)}>{r.employee.jobGrade?.name ?? '-'}</td>
+                <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{r.selfEval?.performanceScore?.toFixed(1) ?? '-'}</td>
+                <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{r.managerEval.performanceScore?.toFixed(1) ?? '-'}</td>
+                <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>{r.finalResult.performanceScore?.toFixed(1) ?? '-'}</td>
+                <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>{r.finalResult.competencyScore?.toFixed(1) ?? '-'}</td>
+                <td className={cn(TABLE_STYLES.cell, "text-center")}>
                   <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${r.finalResult.calibrated ? 'bg-[#E0E7FF] text-[#4B6DE0]' : 'bg-[#EDF1FE] text-[#4B6DE0]'}`}>
                     {r.finalResult.emsBlock ?? '-'}
                   </span>

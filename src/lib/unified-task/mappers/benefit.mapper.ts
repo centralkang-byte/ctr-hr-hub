@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import type { Prisma } from '@/generated/prisma/client'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import {
   UnifiedTaskType,
   UnifiedTaskStatus,
@@ -118,7 +119,7 @@ function buildActor(emp: {
   if (!emp) {
     return { employeeId: 'unknown', name: 'Unknown' }
   }
-  const a = emp.assignments?.[0]
+  const a = extractPrimaryAssignment(emp.assignments ?? [])
   return {
     employeeId: emp.id,
     name: emp.name,
@@ -134,7 +135,7 @@ export const benefitClaimMapper: UnifiedTaskMapper<BenefitClaimWithRelations> = 
 
   toUnifiedTask(claim: BenefitClaimWithRelations): UnifiedTask {
     const statusMapped = mapBenefitStatus(claim.status)
-    const companyId = claim.employee.assignments?.[0]?.companyId ?? 'unknown'
+    const companyId = (extractPrimaryAssignment(claim.employee.assignments ?? []) as Record<string, any>)?.companyId ?? 'unknown'
 
     return {
       id: `BenefitClaim:${claim.id}`,

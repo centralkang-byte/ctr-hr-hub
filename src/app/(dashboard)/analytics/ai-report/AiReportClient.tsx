@@ -122,14 +122,14 @@ export default function AiReportClient() {
         if (cells.every((c) => /^[-:]+$/.test(c))) return null // divider row
         const isHeader = i > 0 && lines[i + 1]?.startsWith('|') && lines[i + 1]?.includes('---')
         return (
-          <div key={i} className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div key={i} className="overflow-x-auto rounded-xl border border-[#F0F0F3] mb-4">
+            <table className={TABLE_STYLES.table}>
               <tbody>
-                <tr className={isHeader ? 'bg-gray-50' : ''}>
+                <tr className={isHeader ? TABLE_STYLES.header : TABLE_STYLES.row}>
                   {cells.map((cell, j) => {
                     const Tag = isHeader ? 'th' : 'td'
                     return (
-                      <Tag key={j} className={`px-3 py-2 border border-gray-100 ${isHeader ? 'font-semibold text-gray-700' : 'text-gray-600'}`}>
+                      <Tag key={j} className={isHeader ? TABLE_STYLES.headerCell : TABLE_STYLES.cell}>
                         {renderInlineMarkdown(cell)}
                       </Tag>
                     )

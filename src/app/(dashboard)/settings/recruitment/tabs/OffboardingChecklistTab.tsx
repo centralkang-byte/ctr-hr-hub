@@ -37,8 +37,8 @@ export function OffboardingChecklistTab({
         <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />{t('kr_kecb2b4ed_add')}</Button>
       </div>
       {checklists.length > 0 ? (
-        <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-          <table className="w-full"><thead><tr className={TABLE_STYLES.header}>
+        <div className={TABLE_STYLES.wrapper}>
+          <table className={TABLE_STYLES.table}><thead><tr className={TABLE_STYLES.header}>
             <th className={TABLE_STYLES.headerCell}>{t('kr_kecb2b4ed')}</th>
             <th className={TABLE_STYLES.headerCell}>{t('kr_keb8c80ec_kec9ca0ed')}</th>
             <th className={TABLE_STYLES.headerCell}>{t('kr_ked839cec_kec8898')}</th>

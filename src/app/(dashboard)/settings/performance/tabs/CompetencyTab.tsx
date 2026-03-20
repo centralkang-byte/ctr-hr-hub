@@ -38,8 +38,8 @@ export function CompetencyTab({
         </div>
       </div>
       {items.length > 0 ? (
-        <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-          <table className="w-full"><thead><tr className={TABLE_STYLES.header}>
+        <div className={TABLE_STYLES.wrapper}>
+          <table className={TABLE_STYLES.table}><thead><tr className={TABLE_STYLES.header}>
             <th className={TABLE_STYLES.headerCell}>{t('kr_kec97adeb')}</th>
             <th className={TABLE_STYLES.headerCell}>{t('kr_kec9881eb')}</th>
             <th className={TABLE_STYLES.headerCell}>{t('kr_kecb9b4ed')}</th>

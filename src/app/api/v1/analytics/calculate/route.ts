@@ -7,7 +7,7 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
-import { apiSuccess, apiError } from '@/lib/api'
+import { apiSuccess } from '@/lib/api'
 import { resolveCompanyId } from '@/lib/api/companyFilter'
 import { badRequest } from '@/lib/errors'
 import { MODULE, ACTION } from '@/lib/constants'

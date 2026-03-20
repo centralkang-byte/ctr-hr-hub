@@ -1,7 +1,7 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
-import { badRequest, notFound, handlePrismaError, isAppError } from '@/lib/errors'
+import { badRequest, handlePrismaError, isAppError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { withCache, CACHE_STRATEGY } from '@/lib/cache'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
@@ -25,7 +25,6 @@ export const GET = withCache(withPermission(
 
     const where = {
       companyId,
-      deletedAt: null,
       ...(year ? { year } : {}),
     }
 
@@ -88,5 +87,5 @@ export const POST = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.ATTENDANCE, ACTION.CREATE),
+  perm(MODULE.ATTENDANCE, ACTION.APPROVE),
 )

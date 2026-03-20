@@ -28,7 +28,7 @@ interface Props { companyId: string | null }
 
 export function TaxFreeTab({
   companyId }: Props) {
-  const t = useTranslations('settings')
+//   const t = useTranslations('settings')
   const [limits, setLimits] = useState<NontaxableLimit[]>(() => structuredClone(STATIC_DEFAULTS))
   const [original, setOriginal] = useState<NontaxableLimit[]>(() => structuredClone(STATIC_DEFAULTS))
   const [loading, setLoading] = useState(true)
@@ -117,31 +117,34 @@ export function TaxFreeTab({
         <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
         <p className="text-xs text-[#8181A5]">{'세법 개정 시 관리자가 직접 한도액을 수정할 수 있습니다. 변경 사항은 급여 계산에 즉시 반영됩니다.'}</p>
       </div>
-      <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-        <table className="w-full"><thead><tr className={TABLE_STYLES.header}>
-          <th className={TABLE_STYLES.headerCell}>{'코멘트'}</th>
-          <th className={TABLE_STYLES.headerCell}>{'항목'}</th>
-          <th className={TABLE_STYLES.headerCellRight}>{'한도액 (월)'}</th>
-          <th className={TABLE_STYLES.headerCell}>{'근거'}</th>
-        </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{limits.map((l, i) => (
-          <tr key={l.code} className={TABLE_STYLES.row}>
-            <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{l.code}</td>
-            <td className={TABLE_STYLES.cell}>{l.label}</td>
-            <td className="px-4 py-3 text-right">
-              <Input
-                type="number"
-                value={l.limit}
-                onChange={(e) => {
-                  const next = structuredClone(limits)
-                  next[i].limit = Number(e.target.value)
-                  setLimits(next)
-                }}
-                className="ml-auto w-32 text-right"
-              />
-            </td>
-            <td className={TABLE_STYLES.cellMuted}>{l.note}</td>
-          </tr>
-        ))}</tbody></table>
+      <div className={TABLE_STYLES.wrapper}>
+        <table className={TABLE_STYLES.table}>
+          <thead className={TABLE_STYLES.header}><tr>
+            <th className={TABLE_STYLES.headerCell}>{'코멘트'}</th>
+            <th className={TABLE_STYLES.headerCell}>{'항목'}</th>
+            <th className={TABLE_STYLES.headerCellRight}>{'한도액 (월)'}</th>
+            <th className={TABLE_STYLES.headerCell}>{'근거'}</th>
+          </tr></thead>
+          <tbody>{limits.map((l, i) => (
+            <tr key={l.code} className={TABLE_STYLES.row}>
+              <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{l.code}</td>
+              <td className={TABLE_STYLES.cell}>{l.label}</td>
+              <td className={`${TABLE_STYLES.cell} text-right`}>
+                <Input
+                  type="number"
+                  value={l.limit}
+                  onChange={(e) => {
+                    const next = structuredClone(limits)
+                    next[i].limit = Number(e.target.value)
+                    setLimits(next)
+                  }}
+                  className="ml-auto w-32 text-right"
+                />
+              </td>
+              <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>{l.note}</td>
+            </tr>
+          ))}</tbody>
+        </table>
       </div>
       <div className="flex justify-end gap-2 pt-4">
         <Button variant="outline" onClick={handleRevert} disabled={!hasChanges}>

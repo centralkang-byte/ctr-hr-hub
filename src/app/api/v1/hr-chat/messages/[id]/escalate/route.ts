@@ -2,12 +2,11 @@ import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { notFound, isAppError, handlePrismaError } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { withAuth } from '@/lib/permissions'
 import { sendNotification } from '@/lib/notifications'
 import type { SessionUser } from '@/types'
 
-export const POST = withPermission(
+export const POST = withAuth(
   async (
     _req: NextRequest,
     context: { params: Promise<Record<string, string>> },
@@ -75,5 +74,4 @@ export const POST = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.HR_CHATBOT, ACTION.CREATE),
 )

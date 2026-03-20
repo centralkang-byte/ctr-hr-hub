@@ -14,6 +14,7 @@ import {
   calculateBudgetSummary,
 } from '@/lib/compensation'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── GET /api/v1/compensation/simulation ─────────────────
 // Enriched employee list with salary simulation data
@@ -71,7 +72,7 @@ export const GET = withPermission(
       // 3. For each employee, gather compensation data
       const enrichedItems = await Promise.all(
         employees.map(async (emp) => {
-          const empAssignment = emp.assignments?.[0]
+          const empAssignment = extractPrimaryAssignment(emp.assignments ?? [])
           const empJobGradeId = empAssignment?.jobGradeId
 
           // Latest CompensationHistory to get current salary

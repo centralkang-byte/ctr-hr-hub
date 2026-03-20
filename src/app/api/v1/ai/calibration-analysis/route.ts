@@ -9,6 +9,7 @@ import { badRequest } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { calibrationAnalysis } from '@/lib/claude'
 import { MODULE, ACTION } from '@/lib/constants'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import type { SessionUser } from '@/types'
 
 // ─── Schema ──────────────────────────────────────────────
@@ -29,7 +30,7 @@ const requestSchema = z.object({
 
 // ─── POST /api/v1/ai/calibration-analysis ────────────────
 
-export const POST = withPermission(
+export const POST = withRateLimit(withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
     const body: unknown = await req.json()
     const parsed = requestSchema.safeParse(body)
@@ -46,4 +47,4 @@ export const POST = withPermission(
     return apiSuccess(result)
   },
   perm(MODULE.PERFORMANCE, ACTION.APPROVE),
-)
+), RATE_LIMITS.AI)

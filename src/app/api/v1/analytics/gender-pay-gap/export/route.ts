@@ -10,6 +10,7 @@ import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import { genderPayGapQuerySchema } from '@/lib/schemas/gender-pay-gap'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── Helpers ─────────────────────────────────────────────
 
@@ -116,8 +117,7 @@ export const GET = withRateLimit(withPermission(
       const baseSalary = latestCompMap.get(emp.id)
       if (baseSalary == null) continue
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const a = emp.assignments?.[0] as any
+      const a = extractPrimaryAssignment(emp.assignments ?? []) as Record<string, any>
 
       let groupId: string = ''
       let groupName: string = ''

@@ -11,7 +11,7 @@ export const payrollRunListSchema = z.object({
   page: z.coerce.number().int().positive().default(DEFAULT_PAGE),
   limit: z.coerce.number().int().positive().max(100).default(DEFAULT_PAGE_SIZE),
   status: z
-    .enum(['DRAFT', 'CALCULATING', 'REVIEW', 'APPROVED', 'PAID', 'CANCELLED'])
+    .enum(['DRAFT', 'ATTENDANCE_CLOSED', 'CALCULATING', 'ADJUSTMENT', 'REVIEW', 'PENDING_APPROVAL', 'APPROVED', 'PAID', 'CANCELLED'])
     .optional(),
   runType: z.enum(['MONTHLY', 'BONUS', 'SEVERANCE', 'SPECIAL']).optional(),
   yearMonth: z.string().regex(/^\d{4}-\d{2}$/).optional(),

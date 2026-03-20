@@ -33,7 +33,7 @@ const createSchema = z.object({
 // ─── GET: Talent Pool 목록 ────────────────────────────────
 
 export const GET = withPermission(
-  async (req: NextRequest, _context: { params: Promise<Record<string, string>> }, user: SessionUser) => {
+  async (req: NextRequest, _context: { params: Promise<Record<string, string>> }, _user: SessionUser) => {
     const params = Object.fromEntries(req.nextUrl.searchParams.entries())
     const parsed = searchSchema.safeParse(params)
     if (!parsed.success) throw badRequest('잘못된 파라미터입니다.')

@@ -30,9 +30,19 @@ export const GET = withPermission(
 
     const employee = await prisma.employee.findFirst({
       where: { id, deletedAt: null, ...scopeFilter },
-      select: { id: true, name: true, employeeNo: true, photoUrl: true },
+      select: { id: true, name: true, employeeNo: true, photoUrl: true, hireDate: true },
     })
     if (!employee) throw notFound('직원을 찾을 수 없습니다.')
+
+    // hireDate 이전 날짜는 조회 불가
+    if (employee.hireDate && targetDate < new Date(employee.hireDate)) {
+      return apiSuccess({
+        date: dateParam,
+        employee: { id: employee.id, name: employee.name, employeeNo: employee.employeeNo, photoUrl: employee.photoUrl },
+        assignment: null,
+        message: '입사일 이전의 데이터는 존재하지 않습니다.',
+      })
+    }
 
     // Effective Dating 쿼리: 해당 시점에 유효한 primary assignment
     const assignment = await prisma.employeeAssignment.findFirst({

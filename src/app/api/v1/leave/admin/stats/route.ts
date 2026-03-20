@@ -15,6 +15,7 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
@@ -105,7 +106,7 @@ export const GET = withPermission(
         negativeTotalDays += remaining // negative number
 
         const emp = empMap.get(empId)
-        const assignment = emp?.assignments?.[0] as { departmentId?: string; department?: { name?: string } } | undefined
+        const assignment = extractPrimaryAssignment(emp?.assignments ?? [])
 
         negativeEmployees.push({
           employeeId: empId,
@@ -140,7 +141,7 @@ export const GET = withPermission(
 
     for (const b of balances) {
       const emp = empMap.get(b.employeeId)
-      const assignment = emp?.assignments?.[0] as { departmentId?: string; department?: { name?: string } } | undefined
+      const assignment = extractPrimaryAssignment(emp?.assignments ?? [])
       const deptId = assignment?.departmentId ?? 'unknown'
       const deptName = assignment?.department?.name ?? '미지정'
 
@@ -153,7 +154,7 @@ export const GET = withPermission(
     // Count unique employees per department
     const deptEmployees = new Map<string, Set<string>>()
     for (const emp of employees) {
-      const assignment = emp.assignments?.[0] as { departmentId?: string } | undefined
+      const assignment = extractPrimaryAssignment(emp.assignments)
       const deptId = assignment?.departmentId ?? 'unknown'
       if (!deptEmployees.has(deptId)) deptEmployees.set(deptId, new Set())
       deptEmployees.get(deptId)!.add(emp.id)

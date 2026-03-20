@@ -3,20 +3,23 @@
 // ═══════════════════════════════════════════════════════════
 
 import { type NextRequest } from 'next/server'
+import { z } from 'zod'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
-import { apiSuccess } from '@/lib/api'
+import { apiSuccess, apiError } from '@/lib/api'
 import { badRequest } from '@/lib/errors'
 import type { SessionUser } from '@/types'
+
+const testWebhookSchema = z.object({
+  webhookUrl: z.string().url(),
+}).strict()
 
 export const POST = withPermission(
   async (req: NextRequest, _ctx, _user: SessionUser) => {
     const body = await req.json()
-    const { webhookUrl } = body
-
-    if (!webhookUrl || typeof webhookUrl !== 'string') {
-      throw badRequest('webhookUrl이 필요합니다.')
-    }
+    const parsed = testWebhookSchema.safeParse(body)
+    if (!parsed.success) return apiError(badRequest(parsed.error.issues.map(i => i.message).join(', ')))
+    const { webhookUrl } = parsed.data
 
     const testCard = {
       type: 'message',

@@ -10,6 +10,7 @@ import { notFound, badRequest } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const PUT = withPermission(
   async (_req, ctx, user: SessionUser) => {
@@ -83,12 +84,12 @@ export const PUT = withPermission(
           effectiveDate: new Date(),
           reason: '퇴직 처리 취소',
           approvedBy: user.employeeId,
-          toCompanyId: offboarding.employee.assignments?.[0]?.companyId ?? undefined,
+          toCompanyId: (extractPrimaryAssignment(offboarding.employee.assignments ?? []) as Record<string, any>)?.companyId ?? undefined,
         },
       })
     })
 
     return apiSuccess({ cancelled: true })
   },
-  perm(MODULE.ONBOARDING, ACTION.APPROVE),
+  perm(MODULE.OFFBOARDING, ACTION.APPROVE),
 )

@@ -189,7 +189,7 @@ export const GET = withPermission(
     const sortField = (searchParams.get('sortField') ?? 'createdAt') as 'createdAt' | 'updatedAt' | 'priority'
     const sortDir = (searchParams.get('sortDir') ?? 'desc') as 'asc' | 'desc'
 
-    // SUPER_ADMIN은 모든 법인 데이터를 볼 수 있음 (CTR-HQ에는 파이프라인 데이터가 없음)
+    // SUPER_ADMIN은 모든 법인 데이터를 볼 수 있음 (CTR-HOLD에는 파이프라인 데이터가 없음)
     const isSuperAdmin = user.role === 'SUPER_ADMIN'
     const companyFilter = isSuperAdmin ? {} : { companyId: user.companyId }
 

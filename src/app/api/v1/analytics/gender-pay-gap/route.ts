@@ -10,6 +10,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { genderPayGapQuerySchema } from '@/lib/schemas/gender-pay-gap'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -166,8 +167,7 @@ export const GET = withPermission(
       const comp = latestCompMap.get(emp.id)
       if (!comp) continue // skip employees with no compensation data
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const a = emp.assignments?.[0] as any
+      const a = extractPrimaryAssignment(emp.assignments ?? []) as Record<string, any>
 
       // Determine group
       let groupId: string

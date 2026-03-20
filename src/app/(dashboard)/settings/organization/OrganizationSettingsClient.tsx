@@ -19,6 +19,7 @@ import { AssignmentRulesTab } from './tabs/AssignmentRulesTab'
 import { ProbationTab } from './tabs/ProbationTab'
 import { CustomFieldsTab } from './tabs/CustomFieldsTab'
 import { CodeManagementTab } from './tabs/CodeManagementTab'
+import { LocationsTab } from './tabs/LocationsTab'
 
 const config = getCategoryConfig('organization')
 
@@ -45,6 +46,8 @@ function OrganizationSettingsContent() {
         return <CustomFieldsTab companyId={companyId} />
       case 'code-management':
         return <CodeManagementTab companyId={companyId} />
+      case 'locations':
+        return <LocationsTab companyId={companyId} />
       default:
         return <CompanyInfoTab companyId={companyId} />
     }

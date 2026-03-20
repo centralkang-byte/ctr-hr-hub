@@ -63,6 +63,9 @@ interface PrismaError {
 }
 
 export function handlePrismaError(error: unknown): AppError {
+  // AppError는 이미 적절한 상태 코드를 가지므로 그대로 반환
+  if (error instanceof AppError) return error
+
   const prismaError = error as PrismaError
 
   switch (prismaError.code) {

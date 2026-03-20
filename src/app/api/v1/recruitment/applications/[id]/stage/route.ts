@@ -61,7 +61,7 @@ export const PUT = withPermission(
     })
 
     if (!existing) {
-      throw notFound('지원 정보를 찾을 수 없습니다.')
+      throw notFound('해당 지원 내역을 찾을 수 없습니다. applications/[id]의 id는 Application ID입니다.')
     }
 
     // Cannot change from HIRED (one-way terminal state)

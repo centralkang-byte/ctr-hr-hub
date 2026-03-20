@@ -13,6 +13,7 @@ import { badRequest } from '@/lib/errors'
 import { resolveCompanyId } from '@/lib/api/companyFilter'
 import { z } from 'zod'
 import { calculateDeductionsByCountry } from '@/lib/payroll/globalDeductions'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SimulationDeductions } from '@/lib/payroll/globalDeductions'
 
 // ─── Validation Schemas ──────────────────────────────────
@@ -195,6 +196,20 @@ async function fetchEmployeeData(employeeIds: string[]): Promise<EmployeeData[]>
     compensations.map((c) => [c.employeeId, Number(c.newBaseSalary)])
   )
 
+  // Fallback: latest contract salary for employees without compensation history
+  const missingIds = employeeIds.filter((id) => !salaryMap.has(id))
+  if (missingIds.length > 0) {
+    const contracts = await prisma.contractHistory.findMany({
+      where: { employeeId: { in: missingIds }, salaryAmount: { not: null } },
+      orderBy: { startDate: 'desc' },
+      distinct: ['employeeId'],
+      select: { employeeId: true, salaryAmount: true },
+    })
+    for (const c of contracts) {
+      if (c.salaryAmount) salaryMap.set(c.employeeId, Number(c.salaryAmount))
+    }
+  }
+
   // Latest payroll items for current earnings breakdown
   const latestPayrollItems = await prisma.payrollItem.findMany({
     where: { employeeId: { in: employeeIds } },
@@ -214,7 +229,7 @@ async function fetchEmployeeData(employeeIds: string[]): Promise<EmployeeData[]>
   )
 
   return employees.map((emp) => {
-    const asgn = emp.assignments?.[0]
+    const asgn = extractPrimaryAssignment(emp.assignments)
     const annualSalary = salaryMap.get(emp.id) ?? 0
     const monthlySalary = Math.round(annualSalary / 12)
     const payrollItem = payrollMap.get(emp.id)

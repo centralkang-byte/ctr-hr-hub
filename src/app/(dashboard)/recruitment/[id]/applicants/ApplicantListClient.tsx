@@ -253,7 +253,7 @@ export default function ApplicantListClient({
       </div>
 
       {/* Table */}
-      <div className="bg-white border border-[#E8E8E8] rounded-xl overflow-hidden">
+      <div className={TABLE_STYLES.wrapper}>
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <div className="flex items-center gap-2 text-sm text-[#999]">
@@ -268,36 +268,36 @@ export default function ApplicantListClient({
           </div>
         ) : (
           <>
-            <table className="w-full">
+            <table className={TABLE_STYLES.table}>
               <thead>
-                <tr className="border-b border-[#E8E8E8]">
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-[#999]">
+                <tr className={TABLE_STYLES.header}>
+                  <th className={TABLE_STYLES.headerCell}>
                     {t('nameColumn')}
                   </th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-[#999]">
+                  <th className={TABLE_STYLES.headerCell}>
                     {t('emailColumn')}
                   </th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-[#999]">
+                  <th className={TABLE_STYLES.headerCell}>
                     {t('sourceColumn')}
                   </th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-[#999]">
+                  <th className={TABLE_STYLES.headerCell}>
                     {t('aiScoreColumn')}
                   </th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-[#999]">
+                  <th className={TABLE_STYLES.headerCell}>
                     {t('stageColumn')}
                   </th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-[#999]">
+                  <th className={TABLE_STYLES.headerCell}>
                     {t('appliedDateColumn')}
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-[#F0F0F3]">
                 {!data?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
               {data?.map((app) => (
                   <tr
                     key={app.id}
                     onClick={() => router.push(`/recruitment/${postingId}/applicants/${app.id}`)}
-                    className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA] cursor-pointer transition-colors duration-150"
+                    className={TABLE_STYLES.rowClickable}
                   >
                     <td className="px-6 py-4">
                       <span className="text-sm font-medium text-[#1A1A1A]">

@@ -26,7 +26,7 @@
  */
 
 import { prisma } from '@/lib/prisma'
-import { differenceInMonths, differenceInYears, startOfYear, endOfYear, parseISO } from 'date-fns'
+import { differenceInMonths, differenceInYears, parseISO } from 'date-fns'
 
 // ─── 타입 정의 ─────────────────────────────────────────────────────────────
 

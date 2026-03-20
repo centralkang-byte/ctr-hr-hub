@@ -49,8 +49,8 @@ export function DistributionTab({
         )}
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-        <table className="w-full"><thead><tr className={TABLE_STYLES.header}>
+      <div className={TABLE_STYLES.wrapper}>
+        <table className={TABLE_STYLES.table}><thead><tr className={TABLE_STYLES.header}>
           <th className={TABLE_STYLES.headerCell}>{t('kr_keb93b1ea')}</th>
           <th className={TABLE_STYLES.headerCellRight}>{t('recommended_rate')}</th>
         </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{settings.guidePcts.map((pct, i) => (

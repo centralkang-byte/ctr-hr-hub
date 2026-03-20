@@ -129,5 +129,5 @@ export const POST = withPermission(
             throw handlePrismaError(error)
         }
     },
-    perm(MODULE.PERFORMANCE, ACTION.CREATE),
+    perm(MODULE.PERFORMANCE, ACTION.UPDATE),
 )

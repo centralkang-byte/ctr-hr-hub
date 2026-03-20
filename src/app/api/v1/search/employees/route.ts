@@ -10,6 +10,7 @@ import { badRequest } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 const searchQuerySchema = z.object({
   search: z.string().optional(),
@@ -83,7 +84,7 @@ export const GET = withPermission(
 
     return apiSuccess(
       results.map((e) => {
-        const asgn = e.assignments?.[0]
+        const asgn = extractPrimaryAssignment(e.assignments ?? [])
         return {
           id: e.id,
           name: e.name,

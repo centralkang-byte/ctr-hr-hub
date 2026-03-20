@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+// import { useState } from 'react'
 import { Info, Lock, Shield } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
@@ -16,8 +16,8 @@ const ROLES = [
 ]
 
 export function RolesTab({
-  companyId }: Props) {
-  const t = useTranslations('settings')
+  companyId: _companyId }: Props) {
+//   const t = useTranslations('settings')
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">

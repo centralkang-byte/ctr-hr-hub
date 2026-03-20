@@ -35,7 +35,17 @@ export const GET = withPermission(
     const application = await prisma.application.findFirst({
       where: { id, ...companyFilter },
       include: {
-        applicant: true,
+        applicant: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            resumeKey: true,
+            source: true,
+            createdAt: true,
+          },
+        },
         posting: {
           select: {
             id: true,
@@ -46,12 +56,19 @@ export const GET = withPermission(
         },
         interviewSchedules: {
           orderBy: { scheduledAt: 'asc' },
+          take: 20,
           include: {
             interviewer: {
               select: { id: true, name: true },
             },
             interviewEvaluations: {
-              include: {
+              take: 10,
+              select: {
+                id: true,
+                overallScore: true,
+                comment: true,
+                recommendation: true,
+                submittedAt: true,
                 evaluator: {
                   select: { id: true, name: true },
                 },

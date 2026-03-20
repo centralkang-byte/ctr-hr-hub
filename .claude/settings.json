@@ -1,0 +1,9 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "command": ".claude/hooks/session-start.sh"
+      }
+    ]
+  }
+}

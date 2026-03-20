@@ -23,5 +23,5 @@ export const DELETE = withPermission(
 
     return apiSuccess({ id })
   },
-  perm(MODULE.EMPLOYEES, ACTION.UPDATE),
+  perm(MODULE.EMPLOYEES, ACTION.VIEW), // Self-service: scoped to user.employeeId
 )

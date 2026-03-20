@@ -10,6 +10,7 @@ import { badRequest, notFound, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
+import { getPerformanceSetting } from '@/lib/settings/get-setting'
 import type { SessionUser } from '@/types'
 import type { CycleStatus } from '@/generated/prisma/client'
 
@@ -21,6 +22,7 @@ const updateSchema = z.object({
   goalEnd: z.string().datetime().optional(),
   evalStart: z.string().datetime().optional(),
   evalEnd: z.string().datetime().optional(),
+  excludeProbation: z.boolean().optional(),
 }).refine(
   (data) => Object.keys(data).length > 0,
   { message: '최소 하나의 필드를 입력해야 합니다.' },
@@ -49,7 +51,19 @@ export const GET = withPermission(
       throw notFound('해당 성과 주기를 찾을 수 없습니다.')
     }
 
-    return apiSuccess(cycle)
+    // Settings-connected: grade scale 및 evaluation methodology
+    const [gradeScale, evalMethodology] = await Promise.all([
+      getPerformanceSetting('grade-scale', user.companyId),
+      getPerformanceSetting('evaluation-methodology', user.companyId),
+    ])
+
+    return apiSuccess({
+      ...cycle,
+      settings: {
+        gradeScale: gradeScale ?? null,
+        evaluationMethodology: evalMethodology ?? null,
+      },
+    })
   },
   perm(MODULE.PERFORMANCE, ACTION.VIEW),
 )
@@ -73,7 +87,7 @@ export const PUT = withPermission(
       throw notFound('해당 성과 주기를 찾을 수 없습니다.')
     }
 
-    const { name, goalStart, goalEnd, evalStart, evalEnd } = parsed.data
+    const { name, goalStart, goalEnd, evalStart, evalEnd, excludeProbation } = parsed.data
     const hasDateChange = goalStart || goalEnd || evalStart || evalEnd
 
     // Date changes only allowed in DRAFT status
@@ -88,6 +102,7 @@ export const PUT = withPermission(
     if (goalEnd !== undefined) updateData.goalEnd = new Date(goalEnd)
     if (evalStart !== undefined) updateData.evalStart = new Date(evalStart)
     if (evalEnd !== undefined) updateData.evalEnd = new Date(evalEnd)
+    if (excludeProbation !== undefined) updateData.excludeProbation = excludeProbation
 
     // Validate date ordering with merged values
     const finalGoalStart = updateData.goalStart

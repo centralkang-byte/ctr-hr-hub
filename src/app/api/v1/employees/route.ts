@@ -16,6 +16,7 @@ import {
 import { createAssignment } from '@/lib/assignments'
 import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
 import { maskSensitiveFields } from '@/lib/masking'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/employees ────────────────────────────────
@@ -111,10 +112,10 @@ export const GET = withPermission(
       prisma.employee.count({ where }),
     ])
 
-    // Flatten assignments[0] into top-level fields for frontend compatibility
+    // Flatten primary assignment into top-level fields for frontend compatibility
     // EmployeeRow expects { department, jobGrade, jobCategory } at root level
     const mapped = employees.map((emp) => {
-      const a = emp.assignments?.[0]
+      const a = extractPrimaryAssignment(emp.assignments)
       return {
         ...emp,
         department: a?.department ?? null,

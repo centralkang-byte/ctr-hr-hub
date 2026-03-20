@@ -63,10 +63,13 @@ export async function triggerCrossboarding(
   const transferMs = transferDate.getTime()
 
   // 트랜잭션: 두 플랜 + 태스크 동시 생성, linkedPlanId로 연결
+  // NOTE: Self-referential FK requires 3-step approach:
+  //   1) Create both plans without linkedPlanId
+  //   2) Update both with the cross-reference
   await prisma.$transaction(async (tx) => {
     // TODO: Trigger leave balance settlement for old company (GP#1 integration)
 
-    // 1. 출발 법인 플랜 (departure)
+    // 1. 출발 법인 플랜 (departure) — without linkedPlanId
     await tx.employeeOnboarding.create({
       data: {
         id: departurePlanId,
@@ -74,7 +77,6 @@ export async function triggerCrossboarding(
         templateId: depTemplate.id,
         companyId: fromCompanyId,
         planType: 'CROSSBOARDING_DEPARTURE',
-        linkedPlanId: arrivalPlanId,
         lastWorkingDate: transferDate,
         status: 'IN_PROGRESS',
         startedAt: new Date(),
@@ -112,6 +114,12 @@ export async function triggerCrossboarding(
           })),
         },
       },
+    })
+
+    // 3. Back-link departure plan to arrival plan
+    await tx.employeeOnboarding.update({
+      where: { id: departurePlanId },
+      data: { linkedPlanId: arrivalPlanId },
     })
   })
 

@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { ROLE } from '@/lib/constants'
+import { getAlertThresholdsSettings } from '@/lib/settings/get-setting'
+import type { AlertThresholdsSettings } from '@/lib/settings/get-setting'
 import type { SessionUser } from '@/types'
 
 // ─── Types ──────────────────────────
@@ -35,13 +37,16 @@ export interface PendingAction {
 
 // ─── Priority Calculation ──────────────────────────
 
-function calcPriority(dueDate: Date | null): PendingPriority {
+function calcPriority(
+  dueDate: Date | null,
+  thresholds: AlertThresholdsSettings['priority'] = { urgentDays: 1, highPriorityDays: 3 },
+): PendingPriority {
   if (!dueDate) return 'NORMAL'
   const now = new Date()
   const diffMs = dueDate.getTime() - now.getTime()
   const diffDays = diffMs / (1000 * 60 * 60 * 24)
-  if (diffDays <= 1) return 'URGENT'
-  if (diffDays <= 3) return 'HIGH'
+  if (diffDays <= thresholds.urgentDays) return 'URGENT'
+  if (diffDays <= thresholds.highPriorityDays) return 'HIGH'
   return 'NORMAL'
 }
 
@@ -58,13 +63,14 @@ export async function getPendingActions(
   limit: number = 10,
 ): Promise<PendingAction[]> {
   const actions: PendingAction[] = []
+  const alertThresholds = await getAlertThresholdsSettings(user.companyId)
   const isManager =
     user.role === ROLE.MANAGER ||
     user.role === ROLE.HR_ADMIN ||
     user.role === ROLE.SUPER_ADMIN
   const isHrAdmin =
     user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
-  const isExecutive = user.role === 'EXECUTIVE'
+//   const isExecutive = user.role === 'EXECUTIVE'
 
   // ─── EMPLOYEE actions ──────────────────────────
 
@@ -109,7 +115,7 @@ export async function getPendingActions(
       type: 'EVAL_SUBMIT',
       title: `자기평가 작성`,
       description: `${e.cycle.name} 자기평가를 완료하세요.`,
-      priority: calcPriority(due),
+      priority: calcPriority(due, alertThresholds.priority),
       dueDate: due,
       sourceId: e.id,
       link: `/performance/evaluations`,
@@ -165,7 +171,7 @@ export async function getPendingActions(
       type: 'ONE_ON_ONE_SCHEDULED',
       title: `1:1 미팅 예정`,
       description: `${m.scheduledAt.toLocaleDateString('ko-KR')}에 예정된 미팅`,
-      priority: calcPriority(m.scheduledAt),
+      priority: calcPriority(m.scheduledAt, alertThresholds.priority),
       dueDate: m.scheduledAt,
       sourceId: m.id,
       link: `/performance/one-on-one`,
@@ -193,7 +199,7 @@ export async function getPendingActions(
         type: 'LEAVE_APPROVAL',
         title: `휴가 승인: ${lr.employee.name}`,
         description: `${lr.startDate.toLocaleDateString('ko-KR')} ~ ${lr.endDate.toLocaleDateString('ko-KR')} (${Number(lr.days)}일)`,
-        priority: calcPriority(lr.startDate),
+        priority: calcPriority(lr.startDate, alertThresholds.priority),
         dueDate: lr.startDate,
         sourceId: lr.id,
         link: `/leave/requests`,
@@ -254,7 +260,7 @@ export async function getPendingActions(
         type: 'EVAL_REVIEW',
         title: `평가 작성: ${e.employee.name}`,
         description: `${e.cycle.name} 관리자 평가`,
-        priority: calcPriority(due),
+        priority: calcPriority(due, alertThresholds.priority),
         dueDate: due,
         sourceId: e.id,
         link: `/performance/evaluations`,
@@ -287,9 +293,9 @@ export async function getPendingActions(
       })
     }
 
-    // Contract expiring within 30 days
+    // Contract expiring within configured alert window
     const thirtyDaysLater = new Date()
-    thirtyDaysLater.setDate(thirtyDaysLater.getDate() + 30)
+    thirtyDaysLater.setDate(thirtyDaysLater.getDate() + alertThresholds.contractExpiryAlertDays)
     // TODO: Re-implement manager hierarchy via Position model (managerId removed from Employee)
     const expiringContracts = await prisma.contractHistory.findMany({
       where: {
@@ -309,7 +315,7 @@ export async function getPendingActions(
         type: 'CONTRACT_EXPIRY',
         title: `계약 만료 임박: ${c.employee.name}`,
         description: `${c.endDate!.toLocaleDateString('ko-KR')} 만료`,
-        priority: calcPriority(c.endDate),
+        priority: calcPriority(c.endDate, alertThresholds.priority),
         dueDate: c.endDate,
         sourceId: c.id,
         link: `/employees`,
@@ -317,9 +323,9 @@ export async function getPendingActions(
       })
     }
 
-    // Work permits expiring within 60 days
+    // Work permits expiring within configured alert window
     const sixtyDaysLater = new Date()
-    sixtyDaysLater.setDate(sixtyDaysLater.getDate() + 60)
+    sixtyDaysLater.setDate(sixtyDaysLater.getDate() + alertThresholds.workPermitExpiryAlertDays)
     // TODO: Re-implement manager hierarchy via Position model (managerId removed from Employee)
     const expiringPermits = await prisma.workPermit.findMany({
       where: {
@@ -341,7 +347,7 @@ export async function getPendingActions(
         type: 'WORK_PERMIT_EXPIRY',
         title: `취업허가 만료: ${wp.employee.name}`,
         description: `${wp.expiryDate!.toLocaleDateString('ko-KR')} 만료`,
-        priority: calcPriority(wp.expiryDate),
+        priority: calcPriority(wp.expiryDate, alertThresholds.priority),
         dueDate: wp.expiryDate,
         sourceId: wp.id,
         link: `/employees`,

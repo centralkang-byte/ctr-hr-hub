@@ -116,7 +116,7 @@ export const PUT = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.PERFORMANCE, ACTION.UPDATE),
+  perm(MODULE.PERFORMANCE, ACTION.CREATE), // Employee edits own DRAFT goals — ownership enforced in handler
 )
 
 // ─── DELETE /api/v1/performance/goals/:id ────────────────
@@ -155,5 +155,5 @@ export const DELETE = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.PERFORMANCE, ACTION.DELETE),
+  perm(MODULE.PERFORMANCE, ACTION.CREATE), // Employee deletes own DRAFT goals — ownership enforced in handler
 )

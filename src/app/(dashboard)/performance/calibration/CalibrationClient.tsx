@@ -8,6 +8,7 @@ import type { SessionUser } from '@/types'
 import EmployeeInsightPanel from '@/components/performance/EmployeeInsightPanel'
 import BiasDetectionBanner from '@/components/performance/BiasDetectionBanner'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 import { toast } from '@/hooks/use-toast'
 
@@ -521,23 +522,23 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                   <div className="px-5 py-4 border-b border-[#E8E8E8]">
                     <h3 className="text-base font-semibold text-[#1A1A1A]">{t('kr_keca1b0ec_kec9db4eb')}</h3>
                   </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
+                  <div className={TABLE_STYLES.wrapper}>
+                    <table className={TABLE_STYLES.table}>
                       <thead>
                         <tr className={TABLE_STYLES.header}>
                           <th className={TABLE_STYLES.headerCell}>{t('kr_keca781ec')}</th>
-                          <th className={TABLE_STYLES.headerCell}>{t('krw_keb9e98_kebb894eb')}</th>
-                          <th className={TABLE_STYLES.headerCell}>{t('kr_keca1b0ec_kebb894eb')}</th>
+                          <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('krw_keb9e98_kebb894eb')}</th>
+                          <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_keca1b0ec_kebb894eb')}</th>
                           <th className={TABLE_STYLES.headerCell}>{t('kr_kec82acec')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {selectedSession.adjustments.map((adj) => (
-                          <tr key={adj.id} className={TABLE_STYLES.header}>
-                            <td className="px-4 py-3 text-sm text-[#1A1A1A]">{adj.employee.name}</td>
-                            <td className="px-4 py-3 text-sm text-center text-[#666]">{adj.originalBlock}</td>
-                            <td className="px-4 py-3 text-sm text-center font-medium text-[#5E81F4]">{adj.adjustedBlock}</td>
-                            <td className="px-4 py-3 text-sm text-[#555]">{adj.reason}</td>
+                          <tr key={adj.id} className={TABLE_STYLES.row}>
+                            <td className={cn(TABLE_STYLES.cell)}>{adj.employee.name}</td>
+                            <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{adj.originalBlock}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-center font-medium text-[#5E81F4]")}>{adj.adjustedBlock}</td>
+                            <td className={TABLE_STYLES.cellMuted}>{adj.reason}</td>
                           </tr>
                         ))}
                       </tbody>

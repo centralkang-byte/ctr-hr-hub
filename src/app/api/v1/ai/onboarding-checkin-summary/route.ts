@@ -10,11 +10,9 @@ import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, notFound } from '@/lib/errors'
 import { onboardingCheckinSummary } from '@/lib/claude'
+import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { z } from 'zod'
-
-const MODULE = { ONBOARDING: 'onboarding' }
-const ACTION = { APPROVE: 'manage' }
 
 const schema = z.object({ employeeId: z.string().uuid() })
 
@@ -25,7 +23,12 @@ export const POST = withRateLimit(withPermission(
     if (!parsed.success) throw badRequest('잘못된 요청입니다.', { issues: parsed.error.issues })
 
     const employee = await prisma.employee.findFirst({
-      where: { id: parsed.data.employeeId, ...(user.role !== 'SUPER_ADMIN' ? { companyId: user.companyId } : {}) },
+      where: {
+        id: parsed.data.employeeId,
+        ...(user.role !== 'SUPER_ADMIN'
+          ? { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
+          : {}),
+      },
     })
     if (!employee) throw notFound('직원을 찾을 수 없습니다.')
 

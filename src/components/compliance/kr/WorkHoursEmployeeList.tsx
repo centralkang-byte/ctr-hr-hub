@@ -8,6 +8,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Search, AlertTriangle } from 'lucide-react'
+import { TABLE_STYLES } from '@/lib/styles'
 
 type WorkHoursStatus = 'COMPLIANT' | 'WARNING' | 'VIOLATION'
 
@@ -131,23 +132,23 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full">
+      <div className={TABLE_STYLES.wrapper}>
+        <table className={TABLE_STYLES.table}>
           <thead>
-            <tr className="border-b border-[#E8E8E8]">
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">
+            <tr className={TABLE_STYLES.header}>
+              <th className={TABLE_STYLES.headerCell}>
                 이름
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">
+              <th className={TABLE_STYLES.headerCell}>
                 사번
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#999]">
+              <th className={TABLE_STYLES.headerCell}>
                 부서
               </th>
-              <th className="px-4 py-3 text-right text-xs font-semibold text-[#999]">
+              <th className={TABLE_STYLES.headerCellRight}>
                 주간 근무시간
               </th>
-              <th className="px-4 py-3 text-center text-xs font-semibold text-[#999]">
+              <th className={TABLE_STYLES.headerCell}>
                 상태
               </th>
             </tr>
@@ -179,7 +180,7 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
                 return (
                   <tr
                     key={employee.id}
-                    className="border-b border-[#F0F0F0] hover:bg-[#FAFAFA] transition-colors"
+                    className={TABLE_STYLES.row}
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">

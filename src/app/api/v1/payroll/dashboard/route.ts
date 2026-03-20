@@ -32,9 +32,9 @@ const DEFAULT_STATUS_TO_STEP: Record<string, number> = {
 const DEFAULT_PAYROLL_CALENDAR: Record<string, { closingDay: number; payDay: number; payDayNextMonth?: boolean }> = {
     'CTR-CN': { closingDay: 5, payDay: 10 },
     'CTR-US': { closingDay: 15, payDay: 20 },
-    'CTR-KR': { closingDay: 20, payDay: 25 },
+    'CTR': { closingDay: 20, payDay: 25 },
     'CTR-VN': { closingDay: 25, payDay: 30 },
-    'CTR-MX': { closingDay: 28, payDay: 5, payDayNextMonth: true },
+    'CTR-EU': { closingDay: 28, payDay: 5, payDayNextMonth: true },
     'CTR-RU': { closingDay: 31, payDay: 10, payDayNextMonth: true },
 }
 
@@ -48,7 +48,7 @@ function computeDDay(targetDate: Date, now: Date): number {
 // ─── Route ─────────────────────────────────────────────────
 
 export const GET = withPermission(
-    async (req: NextRequest, _context, user) => {
+    async (req: NextRequest, _context, _user) => {
         const { searchParams } = req.nextUrl
         const now = new Date()
         const year = parseInt(searchParams.get('year') ?? String(now.getFullYear()), 10)

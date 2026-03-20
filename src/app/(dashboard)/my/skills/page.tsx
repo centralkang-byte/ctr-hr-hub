@@ -7,6 +7,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import MySkillsClient from './MySkillsClient'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export default async function MySkillsPage() {
   const session = await getServerSession(authOptions)
@@ -34,7 +35,8 @@ export default async function MySkillsPage() {
     }),
   ])
 
-  const grade = employee?.assignments?.[0]?.jobGrade?.code ?? ''
+  const primary = extractPrimaryAssignment(employee?.assignments ?? [])
+  const grade = (primary as Record<string, any>)?.jobGrade?.code ?? ''
 
   // 역량 요건 (기대 수준)
   const requirements = await prisma.competencyRequirement.findMany({

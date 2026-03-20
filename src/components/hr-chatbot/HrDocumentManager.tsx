@@ -5,7 +5,7 @@ import {
   FileText,
   Plus,
   Trash2,
-  Pencil,
+  
   Upload,
   Loader2,
 } from 'lucide-react'
@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/badge'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-import { MODAL_STYLES } from '@/lib/styles'
+import { MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────
 
@@ -46,7 +46,7 @@ const DOC_TYPE_LABELS: Record<string, string> = {
 
 // ─── Component ──────────────────────────────────────────
 
-export function HrDocumentManager({ user }: HrDocumentManagerProps) {
+export function HrDocumentManager({ user: _user }: HrDocumentManagerProps) {
   const [documents, setDocuments] = useState<HrDocument[]>([])
   const [loading, setLoading] = useState(true)
   const [showUpload, setShowUpload] = useState(false)
@@ -262,26 +262,26 @@ export function HrDocumentManager({ user }: HrDocumentManagerProps) {
           </CardContent>
         </Card>
       ) : (
-        <div className="overflow-hidden rounded-xl border">
-          <table className="w-full">
+        <div className={TABLE_STYLES.wrapper}>
+          <table className={TABLE_STYLES.table}>
             <thead>
-              <tr className="bg-[#FAFAFA]">
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-ctr-gray-500">
+              <tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>
                   제목
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-ctr-gray-500">
+                <th className={TABLE_STYLES.headerCell}>
                   유형
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-ctr-gray-500">
+                <th className={TABLE_STYLES.headerCell}>
                   버전
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-ctr-gray-500">
+                <th className={TABLE_STYLES.headerCell}>
                   청크
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-ctr-gray-500">
+                <th className={TABLE_STYLES.headerCell}>
                   업로더
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-ctr-gray-500">
+                <th className={TABLE_STYLES.headerCell}>
                   상태
                 </th>
                 <th className="px-4 py-3" />
@@ -291,7 +291,7 @@ export function HrDocumentManager({ user }: HrDocumentManagerProps) {
               {documents.map((doc) => (
                 <tr
                   key={doc.id}
-                  className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]"
+                  className={TABLE_STYLES.row}
                 >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">

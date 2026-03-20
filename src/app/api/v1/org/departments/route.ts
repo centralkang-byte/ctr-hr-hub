@@ -84,9 +84,23 @@ export const POST = withPermission(
     const effectiveCompanyId =
       user.role === 'SUPER_ADMIN' ? parsed.data.companyId : user.companyId
 
+    // Auto-calculate level from parent if not provided
+    let resolvedLevel = parsed.data.level
+    if (resolvedLevel === undefined) {
+      if (parsed.data.parentId) {
+        const parent = await prisma.department.findUnique({
+          where: { id: parsed.data.parentId },
+          select: { level: true },
+        })
+        resolvedLevel = parent ? parent.level + 1 : 1
+      } else {
+        resolvedLevel = 1  // top-level department
+      }
+    }
+
     try {
       const department = await prisma.department.create({
-        data: { ...parsed.data, companyId: effectiveCompanyId },
+        data: { ...parsed.data, companyId: effectiveCompanyId, level: resolvedLevel },
       })
 
       const { ip, userAgent } = extractRequestMeta(req.headers)

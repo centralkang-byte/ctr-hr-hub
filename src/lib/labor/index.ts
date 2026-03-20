@@ -9,6 +9,11 @@ import { ruLaborModule, laborConfig as ruConfig } from '@/lib/labor/ru'
 import { vnLaborModule, laborConfig as vnConfig } from '@/lib/labor/vn'
 import { euLaborModule, laborConfig as euConfig } from '@/lib/labor/eu'
 import { mxLaborModule, laborConfig as mxConfig } from '@/lib/labor/mx'
+import {
+  getWorkHourLimitsFromSettings,
+  getMinWageFromSettings,
+  getOvertimeRatesFromSettings,
+} from '@/lib/labor/settings'
 import type {
   LaborConfig,
   OvertimeCalculation,
@@ -144,6 +149,14 @@ export function getMandatoryBreak(config: LaborConfig, workMinutes: number): Bre
 
   return applicable[0] ?? null
 }
+
+// ─── Settings-aware async dispatchers ─────────────────────
+
+/**
+ * Country-agnostic async loader for work-hour limits.
+ * Reads from CompanyProcessSetting with country-specific fallback.
+ */
+export { getWorkHourLimitsFromSettings, getMinWageFromSettings, getOvertimeRatesFromSettings }
 
 export {
   krLaborModule,

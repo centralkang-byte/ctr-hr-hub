@@ -5,6 +5,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { subMonths } from 'date-fns'
+import { getAnalyticsThresholdsSettings } from '@/lib/settings/get-setting'
 
 export interface TeamHealthMetric {
   metric: string
@@ -226,7 +227,7 @@ async function calcTeamExitSatisfaction(departmentId: string): Promise<TeamHealt
 
 export async function calculateTeamHealth(
   departmentId: string,
-  companyId: string
+  _companyId: string
 ): Promise<TeamHealthResult> {
   const memberIds = await getTeamMembers(departmentId)
 
@@ -251,12 +252,16 @@ export async function calculateTeamHealth(
     available.reduce((s, m) => s + m.score, 0) / available.length
   )
 
+  // Load configurable score boundaries from SYSTEM/analytics-thresholds (S-Fix-5)
+  const analyticsSettings = await getAnalyticsThresholdsSettings(_companyId)
+  const { criticalScore, highScore, mediumScore } = analyticsSettings.teamHealth
+
   const riskLevel =
-    overallScore >= 70
+    overallScore >= criticalScore
       ? 'critical'
-      : overallScore >= 50
+      : overallScore >= highScore
       ? 'high'
-      : overallScore >= 30
+      : overallScore >= mediumScore
       ? 'medium'
       : 'low'
 

@@ -13,6 +13,7 @@ import {
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 
 interface Company {
   id: string
@@ -354,8 +355,8 @@ export default function PayrollImportClient({ user, companies }: {
 
           {/* Existing Mappings */}
           {mappings.length > 0 && (
-            <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
-              <table className="w-full text-sm">
+            <div className={TABLE_STYLES.wrapper}>
+              <table className={TABLE_STYLES.table}>
                 <thead>
                   <tr className={TABLE_STYLES.header}>
                     <th className={TABLE_STYLES.headerCell}>{t('kr_keba7a4ed')}</th>
@@ -364,14 +365,20 @@ export default function PayrollImportClient({ user, companies }: {
                     <th className={TABLE_STYLES.headerCell}>기본</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F5F5F5]">
-                  {!mappings?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
-              {mappings?.map(m => (
+                <tbody>
+                  {!mappings?.length && (
+                    <tr>
+                      <td colSpan={4}>
+                        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                      </td>
+                    </tr>
+                  )}
+                  {mappings?.map(m => (
                     <tr key={m.id} className={TABLE_STYLES.row}>
-                      <td className="px-4 py-3 font-medium text-[#1A1A1A]">{m.name}</td>
-                      <td className="px-4 py-3 text-[#555]">{m.fileType.toUpperCase()}</td>
-                      <td className="px-4 py-3 font-mono text-[#555]">{m.currency}</td>
-                      <td className="px-4 py-3">
+                      <td className={cn(TABLE_STYLES.cell, "font-medium")}>{m.name}</td>
+                      <td className={TABLE_STYLES.cellMuted}>{m.fileType.toUpperCase()}</td>
+                      <td className={cn(TABLE_STYLES.cellMuted, "font-mono")}>{m.currency}</td>
+                      <td className={TABLE_STYLES.cell}>
                         {m.isDefault && (
                           <CheckCircle2 className="w-4 h-4 text-[#059669]" />
                         )}
@@ -478,41 +485,45 @@ export default function PayrollImportClient({ user, companies }: {
 
       {/* Tab: History */}
       {tab === 'history' && (
-        <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
-          <div className="bg-[#FAFAFA] border-b border-[#F5F5F5]">
-            <div className="grid grid-cols-7 px-4 py-3 text-xs text-[#666] font-medium uppercase tracking-wider">
-              <div>{t('company')}</div>
-              <div>{t('kr_keab889ec')}</div>
-              <div>{t('kr_ked8c8cec')}</div>
-              <div className="text-right">{t('kr_kec9db8ec')}</div>
-              <div className="text-right">{t('kr_kecb49dec_ked9884ec')}</div>
-              <div>{t('status')}</div>
-              <div>{t('kr_kec9785eb')}</div>
-            </div>
-          </div>
-          {loadingLogs ? (
-            <div className="py-12 text-center text-sm text-[#999]">{tCommon('loading')}</div>
-          ) : logs.length === 0 ? (
-            <div className="py-12 text-center text-sm text-[#999]">{t('kr_kec9785eb_kec9db4eb_kec9786ec')}</div>
-          ) : (
-            <div className="divide-y divide-[#F5F5F5]">
-              {logs.map(log => (
-                <div key={log.id} className="grid grid-cols-7 px-4 py-3 text-sm hover:bg-[#FAFAFA] items-center">
-                  <div className="font-medium text-[#1A1A1A]">{log.company.code}</div>
-                  <div className="text-[#555]">{log.year}년 {log.month}월</div>
-                  <div className="text-[#555] truncate max-w-[180px]" title={log.fileName}>{log.fileName}</div>
-                  <div className="text-right text-[#555]">{log.employeeCount.toLocaleString()}명</div>
-                  <div className="text-right font-mono text-[#555]">
-                    {Number(log.totalGross).toLocaleString()} {log.currency}
-                  </div>
-                  <div>{statusBadge(log.status)}</div>
-                  <div className="text-xs text-[#999]">
-                    {new Date(log.createdAt).toLocaleDateString('ko-KR')}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+        <div className={TABLE_STYLES.wrapper}>
+          <table className={TABLE_STYLES.table}>
+            <thead>
+              <tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>{t('company')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_keab889ec')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_ked8c8cec')}</th>
+                <th className={TABLE_STYLES.headerCellRight}>{t('kr_kec9db8ec')}</th>
+                <th className={TABLE_STYLES.headerCellRight}>{t('kr_kecb49dec_ked9884ec')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('status')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_kec9785eb')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loadingLogs ? (
+                <tr><td colSpan={7} className="py-12 text-center text-sm text-[#999]">{tCommon('loading')}</td></tr>
+              ) : logs.length === 0 ? (
+                <tr><td colSpan={7} className="py-12 text-center text-sm text-[#999]">{t('kr_kec9785eb_kec9db4eb_kec9786ec')}</td></tr>
+              ) : (
+                logs.map(log => (
+                  <tr key={log.id} className={TABLE_STYLES.row}>
+                    <td className={cn(TABLE_STYLES.cell, "font-medium")}>{log.company.code}</td>
+                    <td className={TABLE_STYLES.cellMuted}>{log.year}년 {log.month}월</td>
+                    <td className={TABLE_STYLES.cellMuted}>
+                      <div className="truncate max-w-[180px]" title={log.fileName}>{log.fileName}</div>
+                    </td>
+                    <td className={TABLE_STYLES.cellRight}>{log.employeeCount.toLocaleString()}명</td>
+                    <td className={cn(TABLE_STYLES.cellRight, "font-mono")}>
+                      {Number(log.totalGross).toLocaleString()} {log.currency}
+                    </td>
+                    <td className={TABLE_STYLES.cell}>{statusBadge(log.status)}</td>
+                    <td className={cn(TABLE_STYLES.cellMuted, "text-xs")}>
+                      {new Date(log.createdAt).toLocaleDateString('ko-KR')}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       )}
 

@@ -13,7 +13,7 @@ export async function seedOffboardingInstances(prisma: PrismaClient) {
     console.log('🔴 Seeding offboarding instances...')
 
     // ── Find required references ────────────────────────────
-    const ctrKr = await prisma.company.findFirst({ where: { code: 'CTR-KR' } })
+    const ctrKr = await prisma.company.findFirst({ where: { code: 'CTR' } })
     const ctrUs = await prisma.company.findFirst({ where: { code: 'CTR-US' } })
 
     if (!ctrKr) {

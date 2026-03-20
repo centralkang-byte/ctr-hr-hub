@@ -36,7 +36,6 @@ export const GET = withPermission(
         : { companyId: user.companyId }
 
     const where = {
-      deletedAt: null,
       ...companyFilter,
       ...(scheduleType ? { scheduleType } : {}),
     }
@@ -101,5 +100,5 @@ export const POST = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.ATTENDANCE, ACTION.CREATE),
+  perm(MODULE.ATTENDANCE, ACTION.APPROVE),
 )

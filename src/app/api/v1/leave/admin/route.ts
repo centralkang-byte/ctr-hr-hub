@@ -8,6 +8,7 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
@@ -23,7 +24,7 @@ export const GET = withPermission(
     const yearParam = searchParams.get('year')
     const year = yearParam ? Number(yearParam) : new Date().getFullYear()
 
-    const companyFilter = user.role === ROLE.SUPER_ADMIN ? {} : { companyId: user.companyId }
+//     const companyFilter = user.role === ROLE.SUPER_ADMIN ? {} : { companyId: user.companyId }
     const effectiveCompanyFilter = { companyId }
 
     // 2. Leave request stats by status for the year
@@ -84,7 +85,7 @@ export const GET = withPermission(
     // Build employee → department map
     const empDeptMap = new Map<string, string>()
     for (const emp of employees) {
-      const deptId = (emp.assignments?.[0] as any)?.departmentId as string | undefined // eslint-disable-line @typescript-eslint/no-explicit-any
+      const deptId = extractPrimaryAssignment(emp.assignments)?.departmentId as string | undefined
       if (deptId) empDeptMap.set(emp.id, deptId)
     }
 

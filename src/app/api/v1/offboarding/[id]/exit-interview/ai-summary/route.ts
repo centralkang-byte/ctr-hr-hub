@@ -11,6 +11,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { exitInterviewSummary } from '@/lib/claude'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const POST = withPermission(
   async (_req: NextRequest, ctx, user: SessionUser) => {
@@ -63,7 +64,7 @@ export const POST = withPermission(
       interview.primaryReason,
       interview.satisfactionScore,
       interview.feedbackText,
-      ((offboarding.employee.assignments?.[0] as any)?.companyId as string | undefined) ?? user.companyId, // eslint-disable-line @typescript-eslint/no-explicit-any
+      ((extractPrimaryAssignment(offboarding.employee.assignments ?? []) as Record<string, any>)?.companyId as string | undefined) ?? user.companyId,
       offboarding.employee.id,
     )
 
@@ -76,5 +77,5 @@ export const POST = withPermission(
 
     return apiSuccess({ summary: result, aiGenerated: true })
   },
-  perm(MODULE.ONBOARDING, ACTION.APPROVE),
+  perm(MODULE.OFFBOARDING, ACTION.APPROVE),
 )

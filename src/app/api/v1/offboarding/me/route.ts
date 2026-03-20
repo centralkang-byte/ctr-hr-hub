@@ -6,7 +6,7 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiError } from '@/lib/api'
-import { unauthorized, notFound } from '@/lib/errors'
+import { unauthorized } from '@/lib/errors'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'

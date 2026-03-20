@@ -9,9 +9,11 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { notFound } from '@/lib/errors'
 import { apiError } from '@/lib/api'
 import { generateJournalExcel, buildExcelFilename, type JournalRow } from '@/lib/payroll/excel-generators'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { PayrollItemDetail } from '@/lib/payroll/types'
 
-export const GET = withPermission(
+export const GET = withRateLimit(withPermission(
     async (_req: NextRequest, context, user) => {
         try {
             const { runId } = await context.params
@@ -39,7 +41,7 @@ export const GET = withPermission(
             const deptMap = new Map<string, JournalRow>()
 
             for (const item of items) {
-                const deptName = item.employee.assignments?.[0]?.department?.name ?? '미분류'
+                const deptName = extractPrimaryAssignment(item.employee.assignments)?.department?.name ?? '미분류'
                 const detail = item.detail as unknown as PayrollItemDetail | null
                 const ded = detail?.deductions
 
@@ -85,4 +87,4 @@ export const GET = withPermission(
         }
     },
     perm(MODULE.PAYROLL, ACTION.VIEW),
-)
+), RATE_LIMITS.EXPORT)

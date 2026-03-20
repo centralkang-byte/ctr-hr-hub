@@ -3,43 +3,52 @@
 import { useCallback, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
-import { ChevronRight, Loader2, AlertCircle } from 'lucide-react'
+import { Loader2, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { ko } from '@/lib/i18n/ko'
 
-interface TestAccount {
-  name: string
-  role: string
-  roleBadgeClass: string
+interface QAAccount {
   email: string
+  name: string
+  roleBadge: string
+  color: string
 }
 
-const TEST_ACCOUNTS: TestAccount[] = [
+interface QAGroup {
+  group: string
+  accounts: QAAccount[]
+}
+
+const QA_ACCOUNT_GROUPS: QAGroup[] = [
   {
-    name: '이시스템',
-    role: '시스템 관리자',
-    roleBadgeClass: 'bg-[#F3E8FF] text-[#7E22CE]',
-    email: 'admin@ctr.co.kr',
+    group: '전사관리',
+    accounts: [
+      { email: 'super@ctr.co.kr', name: '최상우 (전사관리)', roleBadge: 'SA', color: 'bg-purple-100 text-purple-700' },
+    ],
   },
   {
-    name: '김인사',
-    role: 'HR 담당자',
-    roleBadgeClass: 'bg-[#EDF1FE] text-[#4B6DE0]',
-    email: 'hr@ctr.co.kr',
+    group: '인사팀',
+    accounts: [
+      { email: 'hr@ctr.co.kr', name: '한지영 (인사팀·KR)', roleBadge: 'HR', color: 'bg-blue-100 text-blue-700' },
+      { email: 'hr@ctr-cn.com', name: '陈美玲 (人事部·CN)', roleBadge: 'HR', color: 'bg-blue-100 text-blue-700' },
+    ],
   },
   {
-    name: '박매니저',
-    role: '팀장',
-    roleBadgeClass: 'bg-[#FEF3C7] text-[#B45309]',
-    email: 'manager@ctr.co.kr',
+    group: '생산기술팀 (KR)',
+    accounts: [
+      { email: 'manager@ctr.co.kr', name: '박준혁 (생산기술팀장)', roleBadge: 'MGR', color: 'bg-green-100 text-green-700' },
+      { email: 'employee-a@ctr.co.kr', name: '이민준 (생산기술팀)', roleBadge: 'EMP', color: 'bg-gray-100 text-gray-700' },
+      { email: 'employee-b@ctr.co.kr', name: '정다은 (생산기술팀)', roleBadge: 'EMP', color: 'bg-gray-100 text-gray-700' },
+    ],
   },
   {
-    name: '최사원',
-    role: '직원',
-    roleBadgeClass: 'bg-[#F5F5F5] text-[#555]',
-    email: 'employee@ctr.co.kr',
+    group: '품질관리팀 (KR)',
+    accounts: [
+      { email: 'manager2@ctr.co.kr', name: '김서연 (품질관리팀장)', roleBadge: 'MGR', color: 'bg-green-100 text-green-700' },
+      { email: 'employee-c@ctr.co.kr', name: '송현우 (품질관리팀)', roleBadge: 'EMP', color: 'bg-gray-100 text-gray-700' },
+    ],
   },
 ]
 
@@ -50,7 +59,9 @@ const SSO_ERROR_MESSAGES: Record<string, string> = {
   OAuthCallback: 'M365 인증 콜백 처리 중 오류가 발생했습니다.',
   OAuthCreateAccount: '계정 생성 중 오류가 발생했습니다.',
   Callback: '인증 콜백 오류가 발생했습니다.',
-  AccessDenied: '접근이 거부되었습니다. 등록된 직원인지 확인하세요.',
+  AccessDenied: '이메일 또는 비밀번호가 올바르지 않습니다.',
+  CredentialsSignin: '이메일 또는 비밀번호가 올바르지 않습니다.',
+  TooManyAttempts: '로그인 시도가 너무 많습니다. 1분 후 다시 시도하세요.',
   Configuration: '서버 설정 오류입니다. 관리자에게 문의하세요.',
 }
 
@@ -133,54 +144,46 @@ export default function LoginPageContent() {
                 {ko.auth.loginWithM365}
               </Button>
 
-              {/* ── Test Accounts (개발/데모 전용) ── */}
+              {/* ── QA Test Accounts (Dev Only) ── */}
               {SHOW_TEST_ACCOUNTS && (
                 <>
                   <div className="relative py-1">
                     <Separator />
                     <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-xs text-muted-foreground whitespace-nowrap">
-                      테스트 계정으로 빠른 로그인
+                      QA Test Accounts (Dev Only)
                     </span>
                   </div>
 
-                  <div className="space-y-2">
-                    {TEST_ACCOUNTS.map((account) => {
-                      const isLoading = loadingId === account.email
-                      return (
-                        <button
-                          key={account.email}
-                          onClick={() => handleDevLogin(account.email)}
-                          disabled={loadingId !== null}
-                          className="group w-full rounded-xl border border-[#E8E8E8] bg-white px-4 py-3 text-left transition-colors hover:border-[#D4D4D4] hover:bg-[#FAFAFA] disabled:cursor-not-allowed disabled:opacity-60"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="space-y-0.5">
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm font-semibold text-[#1A1A1A]">
-                                  {account.name}
-                                </span>
-                                <span
-                                  className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${account.roleBadgeClass}`}
-                                >
-                                  {account.role}
-                                </span>
-                              </div>
-                              <p className="text-[11px] text-muted-foreground">{account.email}</p>
-                            </div>
-                            <div className="flex items-center gap-0.5 text-xs text-muted-foreground transition-colors group-hover:text-[#333]">
-                              {isLoading ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <>
-                                  <span>클릭으로 입력</span>
-                                  <ChevronRight className="h-3.5 w-3.5" />
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        </button>
-                      )
-                    })}
+                  <div className="space-y-3">
+                    {QA_ACCOUNT_GROUPS.map((group) => (
+                      <div key={group.group}>
+                        <p className="mb-1.5 ml-1 text-[11px] font-medium text-[#8181A5]">
+                          {group.group}
+                        </p>
+                        <div className="grid grid-cols-2 gap-1.5">
+                          {group.accounts.map((account) => {
+                            const isLoading = loadingId === account.email
+                            return (
+                              <button
+                                key={account.email}
+                                onClick={() => handleDevLogin(account.email)}
+                                disabled={loadingId !== null}
+                                className="group rounded-xl border border-[#F0F0F3] bg-white p-2.5 text-left transition-colors hover:border-[#5E81F4] hover:bg-[#FAFAFA] disabled:cursor-not-allowed disabled:opacity-60"
+                              >
+                                <div className="flex items-center gap-1.5">
+                                  <span className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${account.color}`}>
+                                    {account.roleBadge}
+                                  </span>
+                                  {isLoading && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
+                                </div>
+                                <div className="mt-1 text-xs font-medium text-[#1A1A1A]">{account.name}</div>
+                                <div className="text-[10px] text-[#8181A5]">{account.email}</div>
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </>
               )}

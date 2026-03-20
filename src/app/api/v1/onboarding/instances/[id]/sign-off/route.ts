@@ -12,6 +12,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { checkSignOffEligibility, executeSignOff } from '@/lib/onboarding/sign-off'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 const signOffSchema = z.object({
     note: z.string().optional(),
@@ -55,7 +56,9 @@ export const POST = withPermission(
 
         if (!onboarding) throw notFound('Onboarding instance not found')
 
-        const managerId = onboarding.employee?.assignments?.[0]?.position?.reportsTo?.assignments?.[0]?.employeeId
+        const empPrimary = extractPrimaryAssignment(onboarding.employee?.assignments ?? [])
+        const mgrPrimary = extractPrimaryAssignment((empPrimary as any)?.position?.reportsTo?.assignments ?? [])
+        const managerId = (mgrPrimary as any)?.employeeId
         const isManager = user.employeeId === managerId
         const isHrAdmin = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
         if (!isManager && !isHrAdmin) throw forbidden('Only the direct manager or HR Admin can sign off')

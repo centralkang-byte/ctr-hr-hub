@@ -19,6 +19,7 @@ import { createAssignment } from '@/lib/assignments'
 import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
 import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
+import { mapRequisitionTypeToEmploymentType } from '@/lib/ats/employment-type-mapper'
 import type { SessionUser } from '@/types'
 
 bootstrapEventHandlers()
@@ -73,7 +74,7 @@ export const POST = withPermission(
       },
       include: {
         applicant: { select: { name: true, email: true } },
-        posting: { select: { companyId: true, departmentId: true, jobGradeId: true, jobCategoryId: true } },
+        posting: { select: { companyId: true, departmentId: true, jobGradeId: true, jobCategoryId: true, employmentType: true } },
       },
     })
     if (!application) throw notFound('지원서를 찾을 수 없거나 이미 전환된 지원서입니다.')
@@ -94,7 +95,7 @@ export const POST = withPermission(
       throw badRequest('잘못된 요청 데이터입니다.', { issues: parsed.error.issues })
     }
 
-    const { employeeNo, startDate, companyId, departmentId, jobGradeId, jobCategoryId, buddyId } = parsed.data
+    const { employeeNo, startDate, companyId, departmentId, jobGradeId, jobCategoryId, buddyId, employmentType } = parsed.data
 
     const targetCompanyId = companyId ?? postingCompanyId ?? user.companyId
 
@@ -106,17 +107,17 @@ export const POST = withPermission(
     // 필수 필드 해소 (공고에서 자동 채움, 없으면 요청에 포함 필요)
     const resolvedDepartmentId = departmentId ?? application.posting?.departmentId
     if (!resolvedDepartmentId) {
-      throw badRequest('departmentId가 필요합니다. 공고에 부서가 설정되어 있지 않습니다.')
+      throw badRequest('departmentId(부서)는 필수입니다. 공고에 부서가 설정되어 있지 않으므로 요청에 포함해 주세요.')
     }
 
     const resolvedJobGradeId = jobGradeId ?? application.posting?.jobGradeId
     if (!resolvedJobGradeId) {
-      throw badRequest('jobGradeId가 필요합니다. 공고에 직급이 설정되어 있지 않습니다.')
+      throw badRequest('jobGradeId(직급)는 필수입니다. 공고에 직급이 설정되어 있지 않으므로 요청에 포함해 주세요.')
     }
 
     const resolvedJobCategoryId = jobCategoryId ?? application.posting?.jobCategoryId
     if (!resolvedJobCategoryId) {
-      throw badRequest('jobCategoryId가 필요합니다. 공고에 직무 카테고리가 설정되어 있지 않습니다.')
+      throw badRequest('jobCategoryId(직군)는 필수입니다. 공고에 직무 카테고리가 설정되어 있지 않으므로 요청에 포함해 주세요.')
     }
 
     // 사번 중복 체크
@@ -145,6 +146,8 @@ export const POST = withPermission(
       })
 
       // Create initial assignment (handles its own transaction internally)
+      // Track B B-1h: Map ATS posting employmentType (lowercase) to Prisma enum
+      const resolvedEmploymentType = employmentType ?? mapRequisitionTypeToEmploymentType(application.posting?.employmentType)
       await createAssignment({
         employeeId: emp.id,
         effectiveDate: new Date(startDate),
@@ -153,7 +156,7 @@ export const POST = withPermission(
         departmentId: resolvedDepartmentId,
         jobGradeId: resolvedJobGradeId,
         jobCategoryId: resolvedJobCategoryId,
-        employmentType: 'FULL_TIME',
+        employmentType: resolvedEmploymentType,
         status: 'ACTIVE',
         isPrimary: true,
       })

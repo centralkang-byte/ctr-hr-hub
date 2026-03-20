@@ -20,7 +20,7 @@ const ALLOWED_FIELDS = [
   'emergencyContactPhone',
   'name',
 ] as const
-type AllowedField = (typeof ALLOWED_FIELDS)[number]
+// type AllowedField = (typeof ALLOWED_FIELDS)[number]
 
 // ─── Zod Schema ─────────────────────────────────────────────
 

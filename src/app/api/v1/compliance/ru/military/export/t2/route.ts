@@ -8,12 +8,13 @@ import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { generateT2Report } from '@/lib/compliance/ru'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/compliance/ru/military/export/t2 ───────
 // Export T-2 military registration form data (JSON; Excel generation client-side)
 
-export const GET = withPermission(
+export const GET = withRateLimit(withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
     const data = await generateT2Report(user.companyId)
 
@@ -38,4 +39,4 @@ export const GET = withPermission(
     })
   },
   perm(MODULE.COMPLIANCE, ACTION.EXPORT),
-)
+), RATE_LIMITS.EXPORT)

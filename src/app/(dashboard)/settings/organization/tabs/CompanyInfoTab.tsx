@@ -1,11 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, Save, Building2 } from 'lucide-react'
+import { Loader2, Building2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
-import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+// import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
+// import { Input } from '@/components/ui/input'
+// import { Button } from '@/components/ui/button'
 import { TABLE_STYLES } from '@/lib/styles'
 import { useTranslations } from 'next-intl'
 
@@ -49,10 +49,10 @@ export function CompanyInfoTab({
       </div>
 
       {companies.length > 0 ? (
-        <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-          <table className="w-full">
-            <thead>
-              <tr className={TABLE_STYLES.header}>
+        <div className={TABLE_STYLES.wrapper}>
+          <table className={TABLE_STYLES.table}>
+            <thead className={TABLE_STYLES.header}>
+              <tr>
                 <th className={TABLE_STYLES.headerCell}>{t('kr_kecbd94eb')}</th>
                 <th className={TABLE_STYLES.headerCell}>{t('company_persons')}</th>
                 <th className={TABLE_STYLES.headerCell}>{t('kr_keab5adea')}</th>
@@ -60,14 +60,14 @@ export function CompanyInfoTab({
                 <th className={TABLE_STYLES.headerCell}>{t('kr_ked8380ec')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#F0F0F3]">
+            <tbody>
               {companies.map((c) => (
-                <tr key={c.id} className="hover:bg-[#F5F5FA] transition-colors">
-                  <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{c.code}</td>
+                <tr key={c.id} className={TABLE_STYLES.row}>
+                  <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{c.code}</td>
                   <td className={TABLE_STYLES.cell}>{c.name}</td>
                   <td className={TABLE_STYLES.cell}>{c.country}</td>
-                  <td className={TABLE_STYLES.cellMuted}>{c.currency}</td>
-                  <td className={TABLE_STYLES.cellMuted}>{c.timezone ?? '—'}</td>
+                  <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>{c.currency}</td>
+                  <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>{c.timezone ?? '—'}</td>
                 </tr>
               ))}
             </tbody>

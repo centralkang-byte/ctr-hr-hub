@@ -8,6 +8,7 @@ import { withPermission } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiError } from '@/lib/api'
 import { badRequest } from '@/lib/errors'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import * as XLSX from 'xlsx'
 import { format } from 'date-fns'
 
@@ -19,12 +20,12 @@ function toArrayBuffer(wb: XLSX.WorkBook): ArrayBuffer {
     return uint8.buffer.slice(uint8.byteOffset, uint8.byteOffset + uint8.byteLength)
 }
 
-function fmtKRW(n: number): string {
+function fmtNum(n: number): string {
     if (n === 0) return '0'
     return n.toLocaleString('ko-KR')
 }
 
-function signedKRW(n: number): string {
+function fmtDiff(n: number): string {
     if (n === 0) return '0'
     return (n > 0 ? '+' : '') + n.toLocaleString('ko-KR')
 }
@@ -293,7 +294,7 @@ function buildSimulationExcel(
 
 // ─── Route Handler ───────────────────────────────────────
 
-export const POST = withPermission(
+export const POST = withRateLimit(withPermission(
     async (req: NextRequest) => {
         const body = await req.json()
 
@@ -335,4 +336,4 @@ export const POST = withPermission(
         })
     },
     { module: MODULE.PAYROLL, action: ACTION.EXPORT },
-)
+), RATE_LIMITS.EXPORT)

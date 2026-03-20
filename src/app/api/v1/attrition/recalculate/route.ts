@@ -15,6 +15,7 @@ import {
   calculateAttritionRiskBatch,
 } from '@/lib/attrition'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const POST = withPermission(
   async (req: NextRequest, _ctx, user: SessionUser) => {
@@ -47,8 +48,7 @@ export const POST = withPermission(
         throw notFound('직원을 찾을 수 없습니다.')
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const employeeCompanyId = ((employee.assignments?.[0] as any)?.companyId as string | undefined) ?? companyId
+      const employeeCompanyId = ((extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>)?.companyId as string | undefined) ?? companyId
 
       const result = await calculateAttritionRisk(employeeId)
 

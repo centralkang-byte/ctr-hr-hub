@@ -10,6 +10,7 @@ import { apiPaginated, buildPagination } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const GET = withPermission(
     async (req: NextRequest, _ctx, user: SessionUser) => {
@@ -50,8 +51,9 @@ export const GET = withPermission(
                         },
                     },
                     offboardingTasks: {
-                        include: {
-                            task: { select: { isRequired: true, title: true } },
+                        select: {
+                            status: true,
+                            task: { select: { isRequired: true } },
                         },
                     },
                     exitInterviews: { select: { id: true }, take: 1 },
@@ -72,7 +74,7 @@ export const GET = withPermission(
                 (new Date(ob.lastWorkingDate).getTime() - now) / 86_400_000,
             )
 
-            const assignment = ob.employee?.assignments?.[0]
+            const assignment = extractPrimaryAssignment(ob.employee?.assignments ?? [])
 
             return {
                 id: ob.id,
@@ -96,5 +98,5 @@ export const GET = withPermission(
 
         return apiPaginated(enriched, buildPagination(page, limit, total))
     },
-    perm(MODULE.ONBOARDING, ACTION.VIEW),
+    perm(MODULE.OFFBOARDING, ACTION.VIEW),
 )

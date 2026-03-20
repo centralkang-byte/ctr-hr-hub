@@ -25,7 +25,7 @@ function sr(seed: number): number {
 export async function seedPeerReview(prisma: PrismaClient): Promise<void> {
     console.log('\n👥 Session B.3: Seeding peer review nominations...\n')
 
-    const krCo = await prisma.company.findFirst({ where: { code: 'CTR-KR' } })
+    const krCo = await prisma.company.findFirst({ where: { code: 'CTR' } })
     if (!krCo) { console.error('  ❌ CTR-KR not found'); return }
     const krId = krCo.id
 

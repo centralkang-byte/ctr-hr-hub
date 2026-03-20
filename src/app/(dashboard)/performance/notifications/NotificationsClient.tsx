@@ -11,6 +11,7 @@ import { apiClient } from '@/lib/api'
 import { getGradeLabel } from '@/lib/performance/data-masking'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ────────────────────────────────────────────────
@@ -183,26 +184,19 @@ export default function NotificationsClient({user }: {
                 )}
 
                 {loading ? (
-                    <div className="space-y-3">
-                        {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className="animate-pulse rounded-xl border border-[#F0F0F3] bg-white p-4">
-                                <div className="mb-2 h-4 w-1/4 rounded bg-[#F0F0F3]" />
-                                <div className="h-3 w-1/3 rounded bg-[#F0F0F3]" />
-                            </div>
-                        ))}
-                    </div>
+                    <TableSkeleton rows={4} cols={7} />
                 ) : (
-                    <div className="rounded-xl border border-[#F0F0F3] bg-white overflow-hidden">
-                        <table className="w-full text-sm">
+                    <div className={TABLE_STYLES.wrapper}>
+                        <table className={TABLE_STYLES.table}>
                             <thead>
-                                <tr className="bg-[#F5F5FA] text-xs text-[#8181A5] font-medium">
+                                <tr className={TABLE_STYLES.header}>
                                     <th className={TABLE_STYLES.headerCell}>{t('name')}</th>
                                     <th className={TABLE_STYLES.headerCell}>{t('kr_keb93b1ea')}</th>
                                     <th className={TABLE_STYLES.headerCell}>{t('kr_ked86b5eb')}</th>
-                                    <th className={TABLE_STYLES.headerCell}>{t('confirm_kec9dbc')}</th>
-                                    <th className={TABLE_STYLES.headerCell}>D-day</th>
-                                    <th className={TABLE_STYLES.headerCell}>{t('status')}</th>
-                                    <th className={TABLE_STYLES.headerCell}>{t('kr_kec95a1ec')}</th>
+                                    <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('confirm_kec9dbc')}</th>
+                                    <th className={cn(TABLE_STYLES.headerCell, "text-center")}>D-day</th>
+                                    <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('status')}</th>
+                                    <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_kec95a1ec')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -210,25 +204,25 @@ export default function NotificationsClient({user }: {
                                     const status = getStatus(item)
                                     const dDay = getDDay(item.notifiedAt)
                                     return (
-                                        <tr key={item.reviewId} className={TABLE_STYLES.header}>
-                                            <td className="px-4 py-3">
+                                        <tr key={item.reviewId} className={TABLE_STYLES.row}>
+                                            <td className={cn(TABLE_STYLES.cell, "px-4")}>
                                                 <p className="font-medium text-[#1C1D21]">{item.employeeName}</p>
                                                 <p className="text-xs text-[#8181A5]">{item.department}</p>
                                             </td>
-                                            <td className="px-4 py-3 text-center font-medium text-[#1C1D21]">{getGradeLabel(item.finalGradeEnum)}</td>
-                                            <td className="px-4 py-3 text-center text-[#8181A5]">{item.notifiedAt?.slice(0, 10) ?? '-'}</td>
-                                            <td className="px-4 py-3 text-center text-[#8181A5]">
+                                            <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>{getGradeLabel(item.finalGradeEnum)}</td>
+                                            <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{item.notifiedAt?.slice(0, 10) ?? '-'}</td>
+                                            <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>
                                                 {item.acknowledgedAt ? (
                                                     <span>{item.acknowledgedAt.slice(0, 10)}{item.isAutoAcknowledged ? ' (자동)' : ''}</span>
                                                 ) : '-'}
                                             </td>
-                                            <td className="px-4 py-3 text-center">
+                                            <td className={cn(TABLE_STYLES.cell, "text-center")}>
                                                 {dDay !== null && !item.acknowledgedAt ? (
                                                     <span className={`text-xs font-medium ${dDay <= 2 ? 'text-[#EF4444]' : 'text-[#F59E0B]'}`}>D-{Math.max(dDay, 0)}</span>
                                                 ) : '-'}
                                             </td>
-                                            <td className={`px-4 py-3 text-center text-xs font-medium ${status.cls}`}>{status.label}</td>
-                                            <td className="px-4 py-3 text-center">
+                                            <td className={cn(TABLE_STYLES.cell, "text-center font-medium text-xs", status.cls)}>{status.label}</td>
+                                            <td className={cn(TABLE_STYLES.cell, "text-center")}>
                                                 {!item.notifiedAt && (
                                                     <button onClick={() => handleNotify(item.reviewId)} disabled={notifying === item.reviewId}
                                                         className="rounded-lg bg-[#5E81F4] px-3 py-1 text-xs font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40">

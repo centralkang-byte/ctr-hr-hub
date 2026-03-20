@@ -12,6 +12,7 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 const querySchema = z.object({
@@ -22,7 +23,7 @@ const querySchema = z.object({
 // ─── GET /api/v1/performance/peer-review/candidates ──────
 
 export const GET = withPermission(
-    async (req: NextRequest, _context, user: SessionUser) => {
+    async (req: NextRequest, _context, _user: SessionUser) => {
         const params = Object.fromEntries(req.nextUrl.searchParams.entries())
         const parsed = querySchema.safeParse(params)
         if (!parsed.success) {
@@ -87,9 +88,9 @@ export const GET = withPermission(
             const sixMonthsAgo = new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000)
 
             const scored = candidates
-                .filter((c) => c.assignments[0])
+                .filter((c) => extractPrimaryAssignment(c.assignments))
                 .map((c) => {
-                    const ca = c.assignments[0]
+                    const ca = extractPrimaryAssignment(c.assignments)!
                     const sameDept = ca.departmentId === employeeAssignment.departmentId
                     const siblingDept = !sameDept && ca.department?.parentId === employeeAssignment.department?.parentId && employeeAssignment.department?.parentId != null
                     const gradeDiff = Math.abs((ca.jobGrade?.rankOrder ?? 0) - (employeeAssignment.jobGrade?.rankOrder ?? 0))

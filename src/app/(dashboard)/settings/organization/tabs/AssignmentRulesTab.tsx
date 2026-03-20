@@ -24,7 +24,7 @@ const DEFAULTS: AssignmentRulesSetting = {
 
 export function AssignmentRulesTab({
   companyId }: Props) {
-  const t = useTranslations('settings')
+//   const t = useTranslations('settings')
   const { settings, setSettings, loading, saving, isOverridden, hasChanges, save, revert } = useProcessSetting<AssignmentRulesSetting>({
     category: 'organization',
     key: 'assignment-rules',
@@ -56,23 +56,23 @@ export function AssignmentRulesTab({
         )}
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-        <table className="w-full">
-          <thead>
-            <tr className={TABLE_STYLES.header}>
+      <div className={TABLE_STYLES.wrapper}>
+        <table className={TABLE_STYLES.table}>
+          <thead className={TABLE_STYLES.header}>
+            <tr>
               <th className={TABLE_STYLES.headerCell}>{'코멘트'}</th>
               <th className={TABLE_STYLES.headerCell}>{'유형'}</th>
               <th className={TABLE_STYLES.headerCell}>{'설명'}</th>
               <th className={TABLE_STYLES.headerCell}>{'승인 필요'}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#F0F0F3]">
+          <tbody>
             {settings.rules.map((t, i) => (
-              <tr key={t.code} className="hover:bg-[#F5F5FA] transition-colors">
-                <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{t.code}</td>
+              <tr key={t.code} className={TABLE_STYLES.row}>
+                <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{t.code}</td>
                 <td className={TABLE_STYLES.cell}>{t.label}</td>
-                <td className={TABLE_STYLES.cellMuted}>{t.desc}</td>
-                <td className="px-4 py-3 text-center">
+                <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>{t.desc}</td>
+                <td className={`${TABLE_STYLES.cell} text-center`}>
                   <button
                     onClick={() => toggleApproval(i)}
                     className={`rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${t.requiresApproval ? 'bg-primary/5 text-primary hover:bg-primary/10' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}

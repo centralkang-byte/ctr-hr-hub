@@ -3,7 +3,7 @@
 // 단건 읽음 처리
 // ═══════════════════════════════════════════════════════════
 
-import { type NextRequest, NextResponse } from 'next/server'
+import { type NextRequest } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'

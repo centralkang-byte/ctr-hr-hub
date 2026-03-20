@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import type { Prisma } from '@/generated/prisma/client'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import {
   UnifiedTaskType,
   UnifiedTaskStatus,
@@ -68,7 +69,7 @@ function buildApproverActor(
   if (!approver) {
     return { employeeId: 'unassigned', name: 'HR / 재무팀' }
   }
-  const assignment = approver.assignments?.[0]
+  const assignment = extractPrimaryAssignment(approver.assignments ?? [])
   return {
     employeeId: approver.id,
     name: approver.name,

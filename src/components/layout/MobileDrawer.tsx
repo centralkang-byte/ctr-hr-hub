@@ -5,7 +5,7 @@
 // Slide-from-left overlay navigation drawer for mobile
 // ═══════════════════════════════════════════════════════════
 
-import { useEffect, useCallback } from 'react'
+import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { X } from 'lucide-react'
 

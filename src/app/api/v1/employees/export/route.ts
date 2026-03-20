@@ -9,9 +9,12 @@ import { badRequest } from '@/lib/errors'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { employeeSearchSchema } from '@/lib/schemas/employee'
 import { maskPhone } from '@/lib/masking'
+import { logAudit, extractRequestMeta } from '@/lib/audit'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
-export const GET = withPermission(
+export const GET = withRateLimit(withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
     const params = Object.fromEntries(req.nextUrl.searchParams.entries())
     // omit page and limit for full export
@@ -70,7 +73,7 @@ export const GET = withPermission(
 
     // residentId is never included in export (not selected from DB)
     const rows = employees.map((e) => {
-      const a = e.assignments[0]
+      const a = extractPrimaryAssignment(e.assignments)
       return {
         사번: e.employeeNo,
         이름: e.name,
@@ -91,6 +94,18 @@ export const GET = withPermission(
     XLSX.utils.book_append_sheet(wb, ws, '직원목록')
     const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' })
 
+    const { ip, userAgent } = extractRequestMeta(req.headers)
+    logAudit({
+      actorId: user.employeeId,
+      action: 'employee.export',
+      resourceType: 'employee',
+      resourceId: user.companyId,
+      companyId: user.companyId,
+      changes: { count: employees.length, filters: exportParams },
+      ip,
+      userAgent,
+    })
+
     return new NextResponse(buf, {
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -99,4 +114,4 @@ export const GET = withPermission(
     })
   },
   perm(MODULE.EMPLOYEES, ACTION.EXPORT),
-)
+), RATE_LIMITS.EXPORT)

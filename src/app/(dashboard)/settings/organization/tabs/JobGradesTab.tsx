@@ -1,17 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import { Save, AlertTriangle } from 'lucide-react'
-import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import { AlertTriangle } from 'lucide-react'
+// import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
+// import { Input } from '@/components/ui/input'
+// import { Button } from '@/components/ui/button'
 import { TABLE_STYLES } from '@/lib/styles'
 import { useTranslations } from 'next-intl'
 
 interface Props { companyId: string | null }
 
-export function JobGradesTab({
-  companyId }: Props) {
+export function JobGradesTab({}: Props) {
   const t = useTranslations('settings')
   const [grades] = useState([
     { code: 'S1', name: t('kr_kec82acec'), nameEn: 'Staff', minYears: 0, promoYears: 3 },
@@ -38,10 +37,10 @@ export function JobGradesTab({
         <p className="text-xs text-[#8181A5]">{t('grade_kecb2b4ea_ked9884ec_kec8b9cec_keab480eb_api_kec97b0ea_ked9b84_ked8eb8ec_keab080eb')}</p>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-        <table className="w-full">
-          <thead>
-            <tr className={TABLE_STYLES.header}>
+      <div className={TABLE_STYLES.wrapper}>
+        <table className={TABLE_STYLES.table}>
+          <thead className={TABLE_STYLES.header}>
+            <tr>
               <th className={TABLE_STYLES.headerCell}>{t('kr_kecbd94eb')}</th>
               <th className={TABLE_STYLES.headerCell}>{t('grade_persons')}</th>
               <th className={TABLE_STYLES.headerCell}>{t('kr_kec9881eb')}</th>
@@ -49,14 +48,14 @@ export function JobGradesTab({
               <th className={TABLE_STYLES.headerCell}>{t('kr_kec8ab9ec_kec868cec')}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#F0F0F3]">
+          <tbody>
             {grades.map((g) => (
-              <tr key={g.code} className="hover:bg-[#F5F5FA] transition-colors">
-                <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{g.code}</td>
+              <tr key={g.code} className={TABLE_STYLES.row}>
+                <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{g.code}</td>
                 <td className={TABLE_STYLES.cell}>{g.name}</td>
-                <td className={TABLE_STYLES.cellMuted}>{g.nameEn}</td>
-                <td className="px-4 py-3 text-center text-sm text-[#8181A5]">{g.minYears != null ? `${g.minYears}년` : '—'}</td>
-                <td className="px-4 py-3 text-center text-sm text-[#8181A5]">{g.promoYears != null ? `${g.promoYears}년` : '—'}</td>
+                <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>{g.nameEn}</td>
+                <td className={`${TABLE_STYLES.cell} text-center text-[#8181A5]`}>{g.minYears != null ? `${g.minYears}년` : '—'}</td>
+                <td className={`${TABLE_STYLES.cell} text-center text-[#8181A5]`}>{g.promoYears != null ? `${g.promoYears}년` : '—'}</td>
               </tr>
             ))}
           </tbody>

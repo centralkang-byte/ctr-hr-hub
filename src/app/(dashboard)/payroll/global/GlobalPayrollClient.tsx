@@ -18,6 +18,7 @@ import Link from 'next/link'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES, CHART_THEME } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 
 interface CompanyStat {
   companyId: string
@@ -52,7 +53,7 @@ interface GlobalData {
 }
 
 const CHART_COLORS = ['#5E81F4', '#059669', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
-const FLAG: Record<string, string> = { 'CTR-KR': '🇰🇷', 'CTR-CN': '🇨🇳', 'CTR-US': '🇺🇸', 'CTR-VN': '🇻🇳', 'CTR-MX': '🇲🇽', 'CTR-RU': '🇷🇺' }
+const FLAG: Record<string, string> = { 'CTR': '🇰🇷', 'CTR-CN': '🇨🇳', 'CTR-US': '🇺🇸', 'CTR-VN': '🇻🇳', 'CTR-EU': '🇵🇱', 'CTR-RU': '🇷🇺' }
 
 const fmt = (n: number) => n.toLocaleString('ko-KR', { maximumFractionDigits: 0 })
 const fmtBillion = (n: number) => {
@@ -214,7 +215,7 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
                     <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                     <XAxis dataKey="name" tick={{ fontSize: 11 }} />
                     <YAxis tick={{ fontSize: 11 }} tickFormatter={v => `${v.toLocaleString()}만`} />
-                    <Tooltip formatter={(v: number | undefined) => [`${(v ?? 0).toLocaleString()}만원`, ''] as [string, string]} />
+                    <Tooltip formatter={(v) => [`${(Number(v) || 0).toLocaleString()}만원`, ''] as [string, string]} />
                     <Legend />
                     <Bar dataKey="gross" name="총지급" fill={CHART_THEME.colors[3]} radius={[4, 4, 0, 0]} />
                     <Bar dataKey="net" name="실지급" fill="#059669" radius={[4, 4, 0, 0]} />
@@ -244,7 +245,7 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
                         <Cell key={i} fill={d.color} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(v: number | undefined) => [`${(v ?? 0).toLocaleString()}만원`, ''] as [string, string]} />
+                    <Tooltip formatter={(v) => [`${(Number(v) || 0).toLocaleString()}만원`, ''] as [string, string]} />
                   </PieChart>
                 </ResponsiveContainer>
               )}
@@ -261,7 +262,7 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
                   <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                   <XAxis dataKey="label" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} tickFormatter={v => `${v.toLocaleString()}만`} />
-                  <Tooltip formatter={(v: number | undefined) => [`${(v ?? 0).toLocaleString()}만원`, ''] as [string, string]} />
+                  <Tooltip formatter={(v) => [`${(Number(v) || 0).toLocaleString()}만원`, ''] as [string, string]} />
                   <Legend />
                   <Line type="monotone" dataKey="totalKRW" name="총급여(만원)" stroke={CHART_THEME.colors[3]} strokeWidth={2} dot={{ r: 4 }} />
                 </LineChart>
@@ -279,7 +280,7 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
                     <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} horizontal={false} />
                     <XAxis type="number" tick={{ fontSize: 11 }} tickFormatter={v => `${v}만`} />
                     <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={40} />
-                    <Tooltip formatter={(v: number | undefined) => [`${(v ?? 0).toLocaleString()}만원`, '인당 평균'] as [string, string]} />
+                    <Tooltip formatter={(v) => [`${(Number(v) || 0).toLocaleString()}만원`, '인당 평균'] as [string, string]} />
                     <Bar dataKey="avg" name="인당 평균(만원)" radius={[0, 4, 4, 0]}>
                       {headcountData.map((d, i) => (
                         <Cell key={i} fill={d.color} />
@@ -292,12 +293,12 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
           </div>
 
           {/* Company Detail Table */}
-          <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
+          <div className={TABLE_STYLES.wrapper}>
             <div className="px-5 py-4 border-b border-[#F5F5F5]">
               <h3 className="text-sm font-semibold text-[#1A1A1A]">{'법인별 상세 현황'}</h3>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className={TABLE_STYLES.table}>
                 <thead>
                   <tr className={TABLE_STYLES.header}>
                     <th className={TABLE_STYLES.headerCell}>{'법인'}</th>
@@ -307,13 +308,13 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
                     <th className={TABLE_STYLES.headerCellRight}>{'총지급 (KRW)'}</th>
                     <th className={TABLE_STYLES.headerCellRight}>{'인원'}</th>
                     <th className={TABLE_STYLES.headerCellRight}>{'인당 평균 (KRW)'}</th>
-                    <th className={TABLE_STYLES.headerCell}>{'데이터'}</th>
+                    <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{'데이터'}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#F5F5F5]">
                   {data.companies.map(co => (
                     <tr key={co.companyId} className={TABLE_STYLES.row}>
-                      <td className="px-4 py-3">
+                      <td className={TABLE_STYLES.cell}>
                         <div className="flex items-center gap-2">
                           <span className="text-lg">{FLAG[co.companyCode] ?? '🏢'}</span>
                           <div>
@@ -322,23 +323,23 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 font-mono text-[#555]">{co.currency}</td>
-                      <td className="px-4 py-3 text-right font-mono text-[#555]">
+                      <td className={cn(TABLE_STYLES.cell, "font-mono text-[#555]")}>{co.currency}</td>
+                      <td className={cn(TABLE_STYLES.cellRight, "font-mono text-[#555]")}>
                         {co.currency === 'KRW' ? '—' : `${Number(co.exchangeRate).toLocaleString('ko-KR', { maximumFractionDigits: 4 })}`}
                       </td>
-                      <td className="px-4 py-3 text-right font-mono text-[#555]">
+                      <td className={cn(TABLE_STYLES.cellRight, "font-mono text-[#555]")}>
                         {co.hasData ? `${fmt(Math.round(co.totalGrossLocal))} ${co.currency}` : '—'}
                       </td>
-                      <td className="px-4 py-3 text-right font-mono font-semibold text-[#1A1A1A]">
+                      <td className={cn(TABLE_STYLES.cellRight, "font-mono font-semibold text-[#1A1A1A]")}>
                         {co.hasData ? `₩${fmtBillion(co.totalGrossKRW)}` : '—'}
                       </td>
-                      <td className="px-4 py-3 text-right text-[#555]">
+                      <td className={cn(TABLE_STYLES.cellRight, "text-[#555]")}>
                         {co.headcount > 0 ? `${co.headcount}명` : '—'}
                       </td>
-                      <td className="px-4 py-3 text-right font-mono text-[#555]">
+                      <td className={cn(TABLE_STYLES.cellRight, "font-mono text-[#555]")}>
                         {co.avgPerHeadKRW > 0 ? `₩${fmtBillion(co.avgPerHeadKRW)}` : '—'}
                       </td>
-                      <td className="px-4 py-3 text-center">
+                      <td className={cn(TABLE_STYLES.cell, "text-center")}>
                         {co.hasData ? (
                           <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-[#D1FAE5] text-[#047857]">{'집계됨'}</span>
                         ) : (

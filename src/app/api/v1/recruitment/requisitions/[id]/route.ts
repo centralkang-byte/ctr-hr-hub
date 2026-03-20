@@ -1,15 +1,16 @@
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — GET/PATCH /api/v1/recruitment/requisitions/[id]
-// B4: 채용 요청 상세 조회 + 수정
+// CTR HR Hub — GET/PATCH/DELETE /api/v1/recruitment/requisitions/[id]
+// B4: 채용 요청 상세 조회 + 수정 + 삭제(취소)
 // ═══════════════════════════════════════════════════════════
 
 import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound, handlePrismaError } from '@/lib/errors'
+import { badRequest, conflict, notFound, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { logAudit, extractRequestMeta } from '@/lib/audit'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 
 const updateSchema = z.object({
@@ -95,4 +96,78 @@ export const PATCH = withPermission(
     }
   },
   perm(MODULE.RECRUITMENT, ACTION.UPDATE),
+)
+
+// ─── DELETE ───────────────────────────────────────────────
+// draft 또는 cancelled 상태만 삭제 가능. 연결된 공고가 있으면 삭제 불가.
+export const DELETE = withPermission(
+  async (req: NextRequest, { params }: { params: Promise<Record<string, string>> }, user: SessionUser) => {
+    const { id } = await params
+
+    const companyFilter =
+      user.role === ROLE.SUPER_ADMIN
+        ? {}
+        : { companyId: user.companyId }
+
+    const existing = await prisma.requisition.findFirst({
+      where: { id, ...companyFilter },
+      include: {
+        jobPostings: { select: { id: true } },
+      },
+    })
+
+    if (!existing) throw notFound('채용 요청을 찾을 수 없습니다.')
+
+    if (['filled', 'approved'].includes(existing.status)) {
+      throw conflict('이미 진행 중인 요청은 삭제할 수 없습니다.')
+    }
+
+    if (!['draft', 'cancelled', 'rejected'].includes(existing.status)) {
+      throw badRequest(
+        `현재 상태(${existing.status})에서는 삭제할 수 없습니다. draft/cancelled/rejected 상태만 삭제 가능합니다.`,
+      )
+    }
+
+    // 연결된 공고에 지원자가 있으면 삭제 불가 (explicit count query for reliability)
+    if (existing.jobPostings.length > 0) {
+      const postingIds = existing.jobPostings.map((p) => p.id)
+      const applicationCount = await prisma.application.count({
+        where: { postingId: { in: postingIds } },
+      })
+      if (applicationCount > 0) {
+        throw conflict(
+          `지원자(${applicationCount}명)가 있어 삭제할 수 없습니다. 먼저 지원 내역을 처리해주세요.`,
+        )
+      }
+    }
+
+    try {
+      // 공고가 있지만 지원자 없으면 함께 삭제
+      const postingIds = existing.jobPostings.map((p) => p.id)
+
+      await prisma.$transaction([
+        ...(postingIds.length > 0
+          ? [prisma.jobPosting.deleteMany({ where: { id: { in: postingIds } } })]
+          : []),
+        prisma.requisitionApproval.deleteMany({ where: { requisitionId: id } }),
+        prisma.requisition.delete({ where: { id } }),
+      ])
+
+      const { ip, userAgent } = extractRequestMeta(req.headers)
+      logAudit({
+        actorId: user.employeeId,
+        action: 'recruitment.requisition.delete',
+        resourceType: 'requisition',
+        resourceId: id,
+        companyId: existing.companyId,
+        ip,
+        userAgent,
+      })
+
+      return apiSuccess({ message: '채용 요청이 삭제되었습니다.' })
+    } catch (err) {
+      throw handlePrismaError(err)
+    }
+  },
+  perm(MODULE.RECRUITMENT, ACTION.DELETE),
 )

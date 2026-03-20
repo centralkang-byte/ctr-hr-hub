@@ -8,12 +8,13 @@ import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { generateEmployeeRegistry } from '@/lib/compliance/cn'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/compliance/cn/employee-registry/export ─
 // Export employee registry (花名册) data for client-side Excel
 
-export const GET = withPermission(
+export const GET = withRateLimit(withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
     const companyId = user.companyId
 
@@ -58,4 +59,4 @@ export const GET = withPermission(
     })
   },
   perm(MODULE.COMPLIANCE, ACTION.VIEW),
-)
+), RATE_LIMITS.EXPORT)

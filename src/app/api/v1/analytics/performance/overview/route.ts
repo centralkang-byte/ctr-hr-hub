@@ -11,6 +11,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { parseAnalyticsParams } from '@/lib/analytics/parse-params'
 import type { PerformanceResponse } from '@/lib/analytics/types'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 const GRADE_GUIDELINES: Record<string, number> = { E: 10, M_PLUS: 30, M: 50, B: 10 }
 const GRADE_LABELS: Record<string, string> = { E: '탁월(E)', M_PLUS: '우수(M+)', M: '보통(M)', B: '미흡(B)' }
@@ -98,7 +99,7 @@ export const GET = withPermission(
     const deptGrades = new Map<string, Record<string, number>>()
     for (const r of cycleReviews) {
       if (!r.finalGrade) continue
-      const dept = r.employee?.assignments?.[0]?.department?.name || '미지정'
+      const dept = extractPrimaryAssignment(r.employee?.assignments ?? [])?.department?.name || '미지정'
       if (!deptGrades.has(dept)) deptGrades.set(dept, { E: 0, M_PLUS: 0, M: 0, B: 0 })
       const dg = deptGrades.get(dept)!
       if (dg[r.finalGrade] !== undefined) dg[r.finalGrade]++

@@ -20,10 +20,16 @@ import type { SessionUser } from '@/types'
 import type { PerformanceGrade } from '@/generated/prisma/client'
 
 const adjustSchema = z.object({
-    reviewId: z.string().uuid(),
-    newGrade: z.enum(['E', 'M_PLUS', 'M', 'B']),
+    reviewId: z.string().uuid().optional(),
+    employeeId: z.string().uuid().optional(),  // alias — resolved to reviewId via DB lookup
+    newGrade: z.enum(['E', 'M_PLUS', 'M', 'B']).optional(),
+    adjustedGrade: z.enum(['E', 'M_PLUS', 'M', 'B']).optional(),  // alias for newGrade
     reason: z.string().min(10, '조정 사유는 최소 10자 이상이어야 합니다.'),
-})
+}).transform(({ employeeId: _employeeId, adjustedGrade, ...rest }) => ({
+    ...rest,
+    _employeeId,  // preserve for later lookup
+    newGrade: rest.newGrade || adjustedGrade,
+}))
 
 // ─── PUT /api/v1/performance/calibration/:sessionId/adjust
 
@@ -36,7 +42,14 @@ export const PUT = withPermission(
             throw badRequest('잘못된 요청 데이터입니다.', { issues: parsed.error.issues })
         }
 
-        const { reviewId, newGrade, reason } = parsed.data
+        const { reviewId: rawReviewId, _employeeId, newGrade, reason } = parsed.data
+
+        if (!newGrade) {
+            throw badRequest('newGrade 또는 adjustedGrade가 필요합니다.')
+        }
+        if (!rawReviewId && !_employeeId) {
+            throw badRequest('reviewId 또는 employeeId가 필요합니다.')
+        }
 
         try {
             // 1. Validate session
@@ -55,6 +68,18 @@ export const PUT = withPermission(
             if (session.status === 'CALIBRATION_COMPLETED') {
                 throw badRequest('이미 완료된 세션입니다.')
             }
+
+            // Resolve reviewId from employeeId if needed
+            let reviewId = rawReviewId
+            if (!reviewId && _employeeId) {
+                const found = await prisma.performanceReview.findFirst({
+                    where: { employeeId: _employeeId, cycleId: session.cycleId },
+                    select: { id: true },
+                })
+                if (!found) throw notFound('해당 직원의 성과 리뷰를 찾을 수 없습니다.')
+                reviewId = found.id
+            }
+            if (!reviewId) throw badRequest('reviewId 또는 employeeId가 필요합니다.')
 
             // 2. Find review
             const review = await prisma.performanceReview.findUnique({

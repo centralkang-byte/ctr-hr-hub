@@ -30,6 +30,7 @@ const createSchema = z.object({
   goalEnd: z.string().datetime(),
   evalStart: z.string().datetime(),
   evalEnd: z.string().datetime(),
+  excludeProbation: z.boolean().optional(),
 })
 
 // ─── GET /api/v1/performance/cycles ──────────────────────
@@ -86,7 +87,7 @@ export const POST = withPermission(
       throw badRequest('잘못된 요청 데이터입니다.', { issues: parsed.error.issues })
     }
 
-    const { name, year, half, goalStart, goalEnd, evalStart, evalEnd } = parsed.data
+    const { name, year, half, goalStart, goalEnd, evalStart, evalEnd, excludeProbation } = parsed.data
 
     // Validate date ordering
     if (new Date(goalStart) >= new Date(goalEnd)) {
@@ -108,6 +109,7 @@ export const POST = withPermission(
           evalStart: new Date(evalStart),
           evalEnd: new Date(evalEnd),
           status: 'DRAFT' as CycleStatus,
+          ...(excludeProbation !== undefined ? { excludeProbation } : {}),
         },
       })
 
@@ -128,5 +130,5 @@ export const POST = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.PERFORMANCE, ACTION.CREATE),
+  perm(MODULE.PERFORMANCE, ACTION.APPROVE), // HR-admin only — cycle creation requires manage permission
 )

@@ -43,3 +43,9 @@ next-env.d.ts
 /playwright-report/
 /blob-report/
 /test-results/
+
+# Production data (PII — never commit)
+data/*.csv
+data/*.xlsx
+data/*.json
+!data/README.md

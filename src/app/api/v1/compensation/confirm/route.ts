@@ -12,6 +12,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { compensationConfirmSchema } from '@/lib/schemas/compensation'
 import { calculateCompaRatio } from '@/lib/compensation'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── POST /api/v1/compensation/confirm ───────────────────
 // Batch-confirm compensation adjustments in a transaction
@@ -69,7 +70,7 @@ export const POST = withPermission(
       // 직급 Map
       const jobGradeMap = new Map<string, string>()
       for (const emp of employees) {
-        const jgId = emp.assignments?.[0]?.jobGradeId
+        const jgId = (extractPrimaryAssignment(emp.assignments ?? []) as Record<string, any>)?.jobGradeId
         if (jgId) jobGradeMap.set(emp.id, jgId)
       }
 
@@ -149,6 +150,7 @@ export const POST = withPermission(
           resourceType: 'compensationHistory',
           resourceId: item.employeeId,
           companyId,
+          sensitivityLevel: 'HIGH',
           changes: {
             cycleId,
             previousSalary: item.previousSalary,

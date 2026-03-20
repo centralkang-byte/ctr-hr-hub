@@ -14,7 +14,8 @@
 
 import { prisma } from '@/lib/prisma'
 import { randomUUID } from 'crypto'
-import { getMilestoneFromDueDays } from './milestone-helpers'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+// import { getMilestoneFromDueDays } from './milestone-helpers'
 
 export interface CreateOnboardingPlanInput {
   employeeId: string
@@ -71,7 +72,8 @@ async function resolveAssigneeId(
             },
           },
         })
-        const managerId = empWithPos?.assignments?.[0]?.position?.reportsTo?.employees?.[0]?.id
+        const empPrimary = extractPrimaryAssignment(empWithPos?.assignments ?? [])
+        const managerId = (empPrimary as any)?.position?.reportsTo?.employees?.[0]?.id
         if (!managerId) console.warn(`[resolveAssigneeId] No manager found for employee ${employeeId}`)
         return managerId ?? null
       }

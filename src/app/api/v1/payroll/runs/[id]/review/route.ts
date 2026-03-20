@@ -8,7 +8,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { notFound } from '@/lib/errors'
-import type { PayrollAnomaly, PayrollItemDetail, AnomalySeverity } from '@/lib/payroll/types'
+import type { PayrollAnomaly, PayrollItemDetail } from '@/lib/payroll/types'
 
 export const GET = withPermission(
   async (_req, context, user) => {

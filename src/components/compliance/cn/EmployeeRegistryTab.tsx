@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Download, Users } from 'lucide-react'
 import { apiClient } from '@/lib/api'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
 
 interface RegistryRow {
   employeeNo: string
@@ -193,26 +193,26 @@ export default function EmployeeRegistryTab() {
       ) : (
         <>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className={TABLE_STYLES.table}>
               <thead>
-                <tr className="bg-[#FAFAFA] text-xs text-[#666] font-medium uppercase tracking-wider">
-                  <th className="px-4 py-3 text-left">사번</th>
-                  <th className="px-4 py-3 text-left">이름</th>
-                  <th className="px-4 py-3 text-left">성별</th>
-                  <th className="px-4 py-3 text-left">생년월일</th>
-                  <th className="px-4 py-3 text-left">부서</th>
-                  <th className="px-4 py-3 text-left">직급</th>
-                  <th className="px-4 py-3 text-left">고용 형태</th>
-                  <th className="px-4 py-3 text-left">입사일</th>
-                  <th className="px-4 py-3 text-center">재직 상태</th>
-                  <th className="px-4 py-3 text-left">이메일</th>
+                <tr className={TABLE_STYLES.header}>
+                  <th className={TABLE_STYLES.headerCell}>사번</th>
+                  <th className={TABLE_STYLES.headerCell}>이름</th>
+                  <th className={TABLE_STYLES.headerCell}>성별</th>
+                  <th className={TABLE_STYLES.headerCell}>생년월일</th>
+                  <th className={TABLE_STYLES.headerCell}>부서</th>
+                  <th className={TABLE_STYLES.headerCell}>직급</th>
+                  <th className={TABLE_STYLES.headerCell}>고용 형태</th>
+                  <th className={TABLE_STYLES.headerCell}>입사일</th>
+                  <th className={TABLE_STYLES.headerCell}>재직 상태</th>
+                  <th className={TABLE_STYLES.headerCell}>이메일</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredRows.map((row) => (
                   <tr
                     key={row.employeeNo}
-                    className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]"
+                    className={TABLE_STYLES.row}
                   >
                     <td className="px-4 py-3 font-mono text-[#555] text-xs">
                       {row.employeeNo}

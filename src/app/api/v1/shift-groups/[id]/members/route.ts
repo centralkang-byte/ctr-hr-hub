@@ -12,6 +12,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { shiftGroupMemberSchema } from '@/lib/schemas/shift'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── GET: List members of a shift group ─────────────────────
 
@@ -67,8 +68,8 @@ export const GET = withPermission(
           employeeId: m.employeeId,
           employeeName: m.employee?.name,
           employeeNo: m.employee?.employeeNo,
-          departmentId: m.employee?.assignments?.[0]?.departmentId,
-          jobGradeId: m.employee?.assignments?.[0]?.jobGradeId,
+          departmentId: (extractPrimaryAssignment(m.employee?.assignments ?? []) as Record<string, any>)?.departmentId,
+          jobGradeId: (extractPrimaryAssignment(m.employee?.assignments ?? []) as Record<string, any>)?.jobGradeId,
           assignedAt: m.assignedAt,
         })),
       })
@@ -195,5 +196,5 @@ export const PUT = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.ATTENDANCE, ACTION.UPDATE),
+  perm(MODULE.ATTENDANCE, ACTION.APPROVE),
 )

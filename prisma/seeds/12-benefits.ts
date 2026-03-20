@@ -71,7 +71,7 @@ const BENEFIT_PLANS: PlanDef[] = [
         frequency: 'annual',
         requiresApproval: true,
         requiresProof: true,
-        companyCode: 'CTR-KR',
+        companyCode: 'CTR',
         displayOrder: 1,
         // TODO: Move to Settings (Benefits > Eligibility Rules) — eligibility criteria per plan
         eligibility: { minTenureMonths: 0, employmentTypes: ['FULL_TIME', 'CONTRACT'] },
@@ -89,7 +89,7 @@ const BENEFIT_PLANS: PlanDef[] = [
         frequency: 'quarterly',
         requiresApproval: true,
         requiresProof: true,
-        companyCode: 'CTR-KR',
+        companyCode: 'CTR',
         displayOrder: 2,
         eligibility: { minTenureMonths: 12, hasChildren: true, employmentTypes: ['FULL_TIME'] },
     },
@@ -106,7 +106,7 @@ const BENEFIT_PLANS: PlanDef[] = [
         frequency: 'once',
         requiresApproval: false,
         requiresProof: true,
-        companyCode: 'CTR-KR',
+        companyCode: 'CTR',
         displayOrder: 3,
         eligibility: { employmentTypes: ['FULL_TIME', 'CONTRACT'] },
     },
@@ -123,7 +123,7 @@ const BENEFIT_PLANS: PlanDef[] = [
         frequency: 'annual',
         requiresApproval: true,
         requiresProof: true,
-        companyCode: 'CTR-KR',
+        companyCode: 'CTR',
         displayOrder: 4,
         eligibility: { minTenureMonths: 3, employmentTypes: ['FULL_TIME', 'CONTRACT'] },
     },
@@ -140,7 +140,7 @@ const BENEFIT_PLANS: PlanDef[] = [
         frequency: 'monthly',
         requiresApproval: false,
         requiresProof: false,
-        companyCode: 'CTR-KR',
+        companyCode: 'CTR',
         displayOrder: 5,
         eligibility: { employmentTypes: ['FULL_TIME', 'CONTRACT', 'INTERN'] },
     },
@@ -236,7 +236,7 @@ const CN_CLAIM_DETAILS = [
 export async function seedBenefits(prisma: PrismaClient): Promise<void> {
     console.log('\n🎁 Session A: Seeding benefits data...\n')
 
-    const krCo = await prisma.company.findFirst({ where: { code: 'CTR-KR' } })
+    const krCo = await prisma.company.findFirst({ where: { code: 'CTR' } })
     const cnCo = await prisma.company.findFirst({ where: { code: 'CTR-CN' } })
     if (!krCo) { console.error('  ❌ CTR-KR not found'); return }
     const krId = krCo.id

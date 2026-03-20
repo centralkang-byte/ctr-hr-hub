@@ -23,7 +23,7 @@ const DEFAULTS: AiScreeningSetting = {
 
 export function AiScreeningTab({
   companyId }: Props) {
-  const t = useTranslations('settings')
+//   const t = useTranslations('settings')
   const { settings, setSettings, loading, saving, isOverridden, hasChanges, save, revert } = useProcessSetting<AiScreeningSetting>({
     category: 'recruitment',
     key: 'ai-screening',

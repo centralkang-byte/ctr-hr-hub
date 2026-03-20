@@ -6,10 +6,10 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound, handlePrismaError } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
+import { badRequest, notFound, forbidden, handlePrismaError } from '@/lib/errors'
+import { withAuth } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
-import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 
 // ─── Appeal Schema ────────────────────────────────────────
@@ -19,8 +19,9 @@ const appealSchema = z.object({
 })
 
 // ─── PUT /api/v1/disciplinary/[id]/appeal ─────────────────
+// Self-service: employees can appeal their own disciplinary actions
 
-export const PUT = withPermission(
+export const PUT = withAuth(
   async (req: NextRequest, context, user: SessionUser) => {
     const { id } = await context.params
 
@@ -29,6 +30,10 @@ export const PUT = withPermission(
     const existing = await prisma.disciplinaryAction.findFirst({
       where: { id, deletedAt: null, ...companyFilter },
     })
+
+    if (existing && existing.employeeId !== user.employeeId && user.role !== ROLE.SUPER_ADMIN && user.role !== ROLE.HR_ADMIN) {
+      throw forbidden('본인의 징계 기록만 이의신청할 수 있습니다.')
+    }
 
     if (!existing) {
       throw notFound('징계 기록을 찾을 수 없습니다.')
@@ -74,5 +79,4 @@ export const PUT = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.DISCIPLINE, ACTION.UPDATE),
 )

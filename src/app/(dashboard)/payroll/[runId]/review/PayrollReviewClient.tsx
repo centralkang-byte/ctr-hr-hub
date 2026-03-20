@@ -21,6 +21,8 @@ import {
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { CARD_STYLES, TABLE_STYLES, MODAL_STYLES } from '@/lib/styles'
+import { cn } from '@/lib/utils'
+import { extractPrimaryAssignment } from '@/lib/employee/extract-primary-assignment'
 
 // ─── Types ──────────────────────────────────────────────
 
@@ -167,8 +169,9 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
     }
   }
 
-  const dept = anomaly.employee.assignments?.[0]?.department?.name ?? '—'
-  const pos = (anomaly.employee.assignments?.[0]?.position as unknown as { titleKo?: string } | undefined)?.titleKo ?? ''
+  const primary = extractPrimaryAssignment(anomaly.employee.assignments ?? [])
+  const dept = (primary as Record<string, any>)?.department?.name ?? '—'
+  const pos = (primary as Record<string, any>)?.position?.titleKo ?? ''
 
   if (anomaly.status !== 'OPEN') return null
 
@@ -814,27 +817,31 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
           </div>
 
           {/* Comparison Table */}
-          <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
-            <table className="w-full">
+          <div className={TABLE_STYLES.wrapper}>
+            <table className={TABLE_STYLES.table}>
               <thead>
-                <tr className="border-b border-[#E8E8E8]">
+                <tr className={TABLE_STYLES.header}>
                   {[
-                    { label: t('name'), key: 'name' },
-                    { label: t('department'), key: null },
-                    { label: t('kr_kec8ba4ec'), key: 'currentNet' },
-                    { label: t('kr_keca084ec'), key: null },
-                    { label: t('kr_kebb380eb'), key: 'diffPercent' },
-                    { label: t('kr_kec82acec'), key: null },
-                  ].map(({ label, key }) => (
+                    { label: t('name'), key: 'name', align: 'left' },
+                    { label: t('department'), key: null, align: 'left' },
+                    { label: t('kr_kec8ba4ec'), key: 'currentNet', align: 'right' },
+                    { label: t('kr_keca084ec'), key: null, align: 'right' },
+                    { label: t('kr_kebb380eb'), key: 'diffPercent', align: 'right' },
+                    { label: t('kr_kec82acec'), key: null, align: 'left' },
+                  ].map(({ label, key, align }) => (
                     <th
                       key={label}
                       onClick={key ? () => {
                         if (sortBy === key) setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
                         else { setSortBy(key as typeof sortBy); setSortOrder('asc') }
                       } : undefined}
-                      className={`px-4 py-3 text-left text-[13px] text-[#999] font-semibold whitespace-nowrap ${key ? 'cursor-pointer hover:text-[#333]' : ''}`}
+                      className={cn(
+                        align === 'right' ? TABLE_STYLES.headerCellRight : TABLE_STYLES.headerCell,
+                        key ? 'cursor-pointer hover:text-[#1C1D21]' : '',
+                        align === 'right' && 'justify-end'
+                      )}
                     >
-                      <span className="inline-flex items-center gap-1">
+                      <span className={cn("inline-flex items-center gap-1", align === 'right' && "justify-end w-full")}>
                         {label}
                         {key && sortBy === key && (sortOrder === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
                       </span>
@@ -843,77 +850,84 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                 </tr>
               </thead>
               <tbody>
-                {filteredRows.map((row) => (
-                  <tr
-                    key={row.employeeId}
-                    onClick={() => setSelectedRow(row)}
-                    className={`border-b border-[#F5F5F5] hover:bg-[#FAFAFA] cursor-pointer transition-colors ${row.hasAnomaly ? 'bg-[#FFF8F8]' : ''}`}
-                  >
-                    <td className="px-4 py-3.5">
-                      <div className="flex items-center gap-2">
-                        {row.hasAnomaly && <AlertTriangle className="h-3.5 w-3.5 text-[#F59E0B] flex-shrink-0" />}
-                        <p className="text-sm font-medium text-[#1A1A1A]">{row.employeeName}</p>
-                      </div>
-                      <p className="text-xs text-[#999]">{row.employeeNo}</p>
-                    </td>
-                    <td className="px-4 py-3.5 text-sm text-[#555]">{row.department}</td>
-                    <td className="px-4 py-3.5 text-sm font-semibold text-[#1A1A1A] tabular-nums">
-                      {row.currentNet.toLocaleString()}
-                    </td>
-                    <td className="px-4 py-3.5 text-sm text-[#999] tabular-nums">
-                      {row.previousNet != null ? row.previousNet.toLocaleString() : '신규'}
-                    </td>
-                    <td className="px-4 py-3.5">
-                      {row.previousNet != null ? (
-                        <span className={`text-sm font-medium tabular-nums ${row.diffNet > 0 ? 'text-[#059669]' : row.diffNet < 0 ? 'text-[#DC2626]' : 'text-[#999]'}`}>
-                          {row.diffNet > 0 && '+'}
-                          {row.diffNet.toLocaleString()} ({fmtPct(row.diffPercent)})
-                        </span>
-                      ) : (
-                        <span className="text-xs text-[#999]">—</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3.5 text-xs text-[#999] max-w-32 truncate">
-                      {row.changeReason ?? '—'}
-                    </td>
+                {filteredRows.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-10 text-center text-sm text-[#8181A5]">{t('search_keab2b0ea_kec9786ec')}</td>
                   </tr>
-                ))}
+                ) : (
+                  filteredRows.map((row) => (
+                    <tr
+                      key={row.employeeId}
+                      onClick={() => setSelectedRow(row)}
+                      className={cn(TABLE_STYLES.rowClickable, row.hasAnomaly ? 'bg-[#FFF8F8] hover:bg-[#FFF0F0]' : '')}
+                    >
+                      <td className={TABLE_STYLES.cell}>
+                        <div className="flex items-center gap-2">
+                          {row.hasAnomaly && <AlertTriangle className="h-3.5 w-3.5 text-[#F59E0B] flex-shrink-0" />}
+                          <p className="font-medium">{row.employeeName}</p>
+                        </div>
+                        <p className="text-xs text-[#8181A5]">{row.employeeNo}</p>
+                      </td>
+                      <td className={TABLE_STYLES.cellMuted}>{row.department}</td>
+                      <td className={cn(TABLE_STYLES.cellRight, "font-semibold")}>
+                        {row.currentNet.toLocaleString()}
+                      </td>
+                      <td className={cn(TABLE_STYLES.cellRight, "text-[#8181A5]")}>
+                        {row.previousNet != null ? row.previousNet.toLocaleString() : '신규'}
+                      </td>
+                      <td className={TABLE_STYLES.cellRight}>
+                        {row.previousNet != null ? (
+                          <span className={cn("font-medium", row.diffNet > 0 ? 'text-[#059669]' : row.diffNet < 0 ? 'text-[#DC2626]' : 'text-[#8181A5]')}>
+                            {row.diffNet > 0 && '+'}
+                            {row.diffNet.toLocaleString()} ({fmtPct(row.diffPercent)})
+                          </span>
+                        ) : (
+                          <span className="text-xs text-[#8181A5]">—</span>
+                        )}
+                      </td>
+                      <td className={cn(TABLE_STYLES.cellMuted, "text-xs max-w-32 truncate")}>
+                        {row.changeReason ?? '—'}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
-            {filteredRows.length === 0 && (
-              <div className="py-10 text-center text-sm text-[#999]">{t('search_keab2b0ea_kec9786ec')}</div>
-            )}
           </div>
         </div>
       )}
 
       {/* ── Tab: 예외목록 ────────────────────────────────────────── */}
       {activeTab === 'whitelist' && (
-        <div className="bg-white rounded-xl border border-[#E8E8E8]">
-          {whitelistEntries.length === 0 ? (
-            <div className="py-16 text-center">
-              <ShieldCheck className="h-10 w-10 text-[#E8E8E8] mx-auto mb-3" />
-              <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
-            </div>
-          ) : (
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-[#E8E8E8]">
-                  <th className={TABLE_STYLES.headerCell}>{t('kr_keca781ec')}</th>
-                  <th className={TABLE_STYLES.headerCell}>{t('kr_keab79cec')}</th>
-                  <th className={TABLE_STYLES.headerCell}>{t('register_kec82acec')}</th>
-                  <th className={TABLE_STYLES.headerCell}>{t('register_month')}</th>
-                  <th className="px-4 py-3" />
+        <div className={TABLE_STYLES.wrapper}>
+          <table className={TABLE_STYLES.table}>
+            <thead>
+              <tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_keca781ec')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('kr_keab79cec')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('register_kec82acec')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('register_month')}</th>
+                <th className={TABLE_STYLES.headerCell} />
+              </tr>
+            </thead>
+            <tbody>
+              {whitelistEntries.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-16 text-center">
+                    <ShieldCheck className="h-10 w-10 text-[#E8E8E8] mx-auto mb-3" />
+                    <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {whitelistEntries.map((entry) => (
-                  <tr key={entry.id} className={TABLE_STYLES.header}>
-                    <td className="px-4 py-3.5 text-sm font-medium text-[#1A1A1A]">{entry.employee.name}</td>
-                    <td className="px-4 py-3.5 text-xs font-mono text-[#555] bg-[#F5F5F5] rounded">{entry.ruleCode}</td>
-                    <td className="px-4 py-3.5 text-sm text-[#555]">{entry.whitelistReason ?? '—'}</td>
-                    <td className="px-4 py-3.5 text-xs text-[#999]">{entry.payrollRun?.yearMonth}</td>
-                    <td className="px-4 py-3.5">
+              ) : (
+                whitelistEntries.map((entry) => (
+                  <tr key={entry.id} className={TABLE_STYLES.row}>
+                    <td className={cn(TABLE_STYLES.cell, "font-medium")}>{entry.employee.name}</td>
+                    <td className={TABLE_STYLES.cell}>
+                      <span className="px-2 py-1 bg-[#F5F5F5] rounded text-xs font-mono text-[#555]">{entry.ruleCode}</span>
+                    </td>
+                    <td className={TABLE_STYLES.cellMuted}>{entry.whitelistReason ?? '—'}</td>
+                    <td className={cn(TABLE_STYLES.cellMuted, "text-xs")}>{entry.payrollRun?.yearMonth}</td>
+                    <td className={cn(TABLE_STYLES.cellRight, "w-20")}>
                       <button
                         onClick={() => handleRemoveWhitelist(entry.id)}
                         className="text-xs text-[#DC2626] hover:underline"
@@ -922,10 +936,10 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                       </button>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       )}
 

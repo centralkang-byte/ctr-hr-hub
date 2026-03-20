@@ -22,6 +22,7 @@ import {
     calculateComparatio,
     checkMeritException,
 } from '@/lib/performance/merit-matrix'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 const adjustmentSchema = z.object({
@@ -49,7 +50,10 @@ export const PUT = withPermission(
 
         try {
             const cycle = await prisma.performanceCycle.findFirst({
-                where: { id: cycleId, companyId: user.companyId },
+                where: {
+                    id: cycleId,
+                    ...(user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }),
+                },
                 select: { id: true, status: true, companyId: true },
             })
 
@@ -95,7 +99,7 @@ export const PUT = withPermission(
 
                         // Get merit range for exception check
                         const midpoint = await getSalaryBandMidpoint(
-                            review.employee.assignments[0]?.jobGradeId ?? null, cycle.companyId, tx as typeof prisma,
+                            extractPrimaryAssignment(review.employee.assignments)?.jobGradeId ?? null, cycle.companyId, tx as typeof prisma,
                         )
                         const comparatio = calculateComparatio(currentSalary, midpoint)
                         const merit = await getMeritRecommendation(

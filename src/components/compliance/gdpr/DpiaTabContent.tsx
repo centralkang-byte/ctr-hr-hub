@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Plus, Pencil, Eye } from 'lucide-react'
 import DpiaForm from './DpiaForm'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
 
 interface Dpia {
   id: string
@@ -83,26 +83,26 @@ export default function DpiaTabContent() {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#E8E8E8]">
+      <div className={TABLE_STYLES.wrapper}>
         {loading ? (
           <div className="p-8 text-center text-[#666]">{tc('loading')}</div>
         ) : dpias.length === 0 ? (
           <div className="p-8 text-center text-[#666]">{tc('noData')}</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className={TABLE_STYLES.table}>
               <thead>
-                <tr className="bg-[#FAFAFA] border-b border-[#E8E8E8]">
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">Title</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.riskLevel')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tc('status')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tc('updatedAt')}</th>
-                  <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tc('actions')}</th>
+                <tr className={TABLE_STYLES.header}>
+                  <th className={TABLE_STYLES.headerCell}>Title</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('gdpr.riskLevel')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{tc('status')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{tc('updatedAt')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{tc('actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {dpias.map((d) => (
-                  <tr key={d.id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                  <tr key={d.id} className={TABLE_STYLES.row}>
                     <td className="px-4 py-3 text-sm">
                       <div className="font-medium text-[#1A1A1A]">{d.title}</div>
                       {d.description && (

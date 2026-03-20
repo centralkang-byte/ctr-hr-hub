@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import { differenceInDays, subMonths, format, startOfMonth, endOfMonth } from 'date-fns'
 import { calculateIncomeTax } from './kr-tax'
 import type { SeveranceDetail } from './types'
@@ -25,7 +26,7 @@ export async function calculateSeverance(
       },
     },
   })
-  const companyId = employee.assignments?.[0]?.companyId ?? ''
+  const companyId = extractPrimaryAssignment(employee.assignments)?.companyId ?? ''
 
   const tenureDays = differenceInDays(terminationDate, employee.hireDate)
   const tenureYears = tenureDays / 365

@@ -4,6 +4,14 @@
 
 import type { LaborModule, WorkHoursValidation } from '@/lib/labor/index'
 import type { LaborConfig } from '@/lib/labor/types'
+import {
+  getWorkHourLimitsFromSettings,
+  getMinWageFromSettings,
+  getOvertimeRatesFromSettings,
+  getProbationRulesFromSettings,
+} from '@/lib/labor/settings'
+import type { ProbationRulesSettings } from '@/lib/labor/settings'
+import type { OvertimeRate, NightShiftRule } from '@/lib/labor/types'
 
 export const mxLaborModule: LaborModule = {
   countryCode: 'MX',
@@ -58,4 +66,35 @@ export const laborConfig: LaborConfig = {
     calculate: (tenureYears: number, monthlyAvgSalary: number) =>
       (3 * monthlyAvgSalary) + (tenureYears * monthlyAvgSalary * 20 / 30),
   },
+}
+
+// ─── Settings-aware async config loader ───────────────────
+
+export async function getMxLaborConfigFromSettings(
+  companyId?: string | null,
+): Promise<{
+  maxWeeklyHours: number
+  standardWeeklyHours: number
+  maxOvertimeHours: number
+  minHourlyWage: number
+  overtimeRates: OvertimeRate[]
+  nightShift: NightShiftRule
+  probation: ProbationRulesSettings
+}> {
+  const [workHourLimits, wageConfig, otConfig, probation] = await Promise.all([
+    getWorkHourLimitsFromSettings(companyId, 'MX'),
+    getMinWageFromSettings(companyId, 'MX'),
+    getOvertimeRatesFromSettings(companyId, 'MX'),
+    getProbationRulesFromSettings(companyId, 'MX'),
+  ])
+
+  return {
+    maxWeeklyHours: workHourLimits.maxWeeklyHours,
+    standardWeeklyHours: workHourLimits.standardWeeklyHours,
+    maxOvertimeHours: workHourLimits.maxOvertimeHours,
+    minHourlyWage: wageConfig.hourlyWage,
+    overtimeRates: otConfig.rates,
+    nightShift: otConfig.nightShift,
+    probation,
+  }
 }

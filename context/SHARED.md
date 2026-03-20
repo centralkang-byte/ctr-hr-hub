@@ -1,6 +1,6 @@
 # SHARED.md — Project State (Single Source of Truth)
 
-> **Last Updated:** 2026-03-16 (Q-5f — Sentry + Playwright — Q-5 SERIES COMPLETE)
+> **Last Updated:** 2026-03-20 (Track B Phase 3 Session 7 — Assignment pattern patch complete)
 > **Project Path:** `/Users/sangwoo/VibeCoding/HR_Hub/ctr-hr-hub`
 
 ---
@@ -10,7 +10,7 @@
 - `npx tsc --noEmit` = **0 errors** ✅
 - `npm run build` = pass ✅
 - `export const dynamic = 'force-dynamic'` in `(dashboard)/layout.tsx` — covers all dashboard pages
-- Git: pushed to `main` (latest: `49cd6d1`)
+- Git: pushed to `main` (latest: `c767a5a`)
 - Deployed on Vercel (auto-deploy from `main` branch)
 - **i18n**: 5 locales (ko/en/zh/vi/es) × 14+ namespaces — 146/146 Client files have `useTranslations` ✅
 - **Sentry**: `@sentry/nextjs` configured (client/server/edge) — graceful degradation without DSN
@@ -79,6 +79,19 @@
 | **Q-5d** (E2E gap fixes — PII masking, offboarding dup, crossboarding) | ✅ Complete |
 | **Q-5e** (Row-Level Security P1 proof-of-concept — 68 T1 + 6 T2 + 69 T4 models classified) | ✅ Complete |
 | **Q-5f** (Sentry error monitoring + Playwright E2E smoke tests) | ✅ Complete |
+| **QF-C2a** (Hire-to-Retire pipeline: 35 E2E tests, employee creation → assignment → leave → attendance → payroll → severance) | ✅ Complete |
+| **QF-C2b** (Time-to-Pay pipeline + concurrency: 33 E2E tests, shift→attendance→leave→payroll→bank transfer, 2 P0 fixes) | ✅ Complete |
+| **QF-C2c** (Perf-to-Pay pipeline: 34 E2E tests, goal→evaluation→calibration→comp review→merit, 4 P0 fixes) | ✅ Complete |
+| **QF-C2d** (Exit pipeline + cross-cuts: 40 E2E tests, offboarding→exit interview→severance + notifications/manager hub/dashboard/search) | ✅ Complete |
+| **Track B Phase 1 Session 1** (법인 코드 + Auth + enum: B-1a, B-1a+, B-1h) | ✅ Complete |
+| **Track B Phase 1 Session 2** (Dept + Grade + Position: B-1b, B-1c, B-1d) | ✅ Complete |
+| **Track B Phase 1 Session 3** (Employees + Settings: B-1e, B-1f) | ✅ Complete |
+| **Track B Phase 1 Session 4** (Import + Org Studio + Transfer + Regression: B-1g, B-1i, B-1j) | ✅ Complete |
+| **Track B Phase 1 COMPLETE** (조직도 반영 — 안전 작업, 11 items) | ✅ Complete |
+| **Track B Phase 2 Session 5** (Schema: B-2a WorkLocation, B-2b locationId+locale, B-2e costCenterCode) | ✅ Complete |
+| **Track B Phase 2 Session 6** (Location seed + API + UI: B-2c, B-2d) | ✅ Complete |
+| **Track B Phase 2 COMPLETE** | ✅ All 5 items done |
+| **Track B Phase 3 Session 7** (Assignment patch: B-3a~d — 115 files, 131 patch points → extractPrimaryAssignment helper, critical isPrimary fix in employee-utils.ts) | ✅ Complete |
 
 ---
 
@@ -319,6 +332,7 @@ DRAFT → ATTENDANCE_CLOSED → CALCULATING → ADJUSTMENT
 
 | Data | Count | Source |
 |------|------:|--------|
+| Companies | 13 (7 국내 + 6 해외) | seed.ts — B-1a 법인 코드 치환 완료 |
 | Employees | 179 | 02-employees.ts |
 | Attendance | 12,369 + 620 recent | 03-attendance.ts + 09-qa-fixes.ts |
 | Leave Requests | 255 | 04-leave.ts |
@@ -404,7 +418,12 @@ All modules below are fully coded (UI + API + DB):
 - Employee → EmployeeAssignment (1:N)
 - 8 fields moved from Employee to EmployeeAssignment: companyId, departmentId, jobGradeId, jobCategoryId, positionId, employmentType, contractType, status
 - Query pattern: `assignments: { some: { companyId, isPrimary: true, endDate: null } }`
-- Property access: `employee.assignments?.[0]?.companyId`
+- Property access: 반드시 헬퍼 사용 (Track B)
+  - DB 조회: `fetchPrimaryAssignment(employeeId)` — `isPrimary: true, endDate: null, effectiveDate <= now`
+  - 메모리 필터: `extractPrimaryAssignment(assignments)` — include로 이미 로드된 배열에서 추출
+  - `assignments[0]` 직접 접근 금지 (겸직 시 순서 보장 없음)
+- Auth session: companyId = Primary Assignment의 companyId (가장 최근 역할 기준 아님)
+- Append-Only: assignment 변경 시 기존 row endDate 찍고 신규 생성. 직접 UPDATE 금지
 
 ### Position-Based Reporting
 - Position.reportsTo → parent Position
@@ -604,6 +623,10 @@ ACTION.APPROVE === 'manage' // ✅
 | QA2 (Build/Code) | Build + ESLint | PASS, 0 errors / 119 warnings |
 | QA3 (Design) | Pattern consistency | 0 violations, 18 minor |
 | Seed QA | 52 sidebar menus | 39 PASS / 13 EMPTY / 0 FAIL |
+| **QF-C2a** | Hire-to-Retire pipeline (35 tests) | 34 PASS, 1 P1 fix |
+| **QF-C2b** | Time-to-Pay pipeline + concurrency (33 tests) | 31 PASS, 2 P0 fixes |
+| **QF-C2c** | Perf-to-Pay pipeline (34 tests) | 30 PASS, 4 P0 fixes |
+| **QF-C2d** | Exit pipeline + cross-cuts (40 tests) | 36 PASS, 0 P0, 3 P1, 2 P2 |
 
 ---
 
@@ -767,7 +790,187 @@ New `*FromSettings` async variants added alongside. Callers migrate incrementall
   - AssetReturn 전용 CRUD 미구현 (오프보딩 인라인으로 관리 중)
   - Tab labels 577개 → i18n 상수 변환 (deferred)
   - EmptyState complex 58개 → 수동 확인 필요
+- **Track B: 실제 조직도 반영** — 13개 법인 + ~195개 부서 + 446명 + 겸직/매트릭스. 계획서: `docs/contexts/TRACK-B-PLAN-v4.4.md`
+  - Phase 1: 법인 코드 + Auth + seed (19h) — 🔄 진행 중
+  - Phase 2: Location 모델 + 스키마 (7h) — ⏳ 대기
+  - Phase 3: 겸직 패치 56파일 + 운영 UI (21.5h) — ⏳ 대기
+  - Phase 3.5: CSV Import UI (5h) — ⏳ 대기
+  - Phase 4: 시뮬레이션 검증 (4.5h) — ⏳ 대기
 
+
+---
+
+## Track B Phase 1 Session 1 — ✅ COMPLETE
+
+### B-1a: 법인 코드/명칭 전수 치환
+- seed 파일 전수 치환: CTR-HQ→CTR-HOLD, CTR-KR→CTR, CTR-ENG→CTR-ENR, FML→CTR-FML, CTR-MX→삭제
+- 신규 법인 7개 추가 (CTR-HOLD, CTR-MOB, CTR-ECO, CTR-ROB, CTR-ENR, CTR-FML, CTR-EU)
+- parentCompanyId 계층 설정 완료 (CTR-HOLD → CTR → 해외법인)
+- E2E 테스트 계정 동기화 완료
+- src/ 파일 내 하드코딩된 법인 코드 동기화 (payroll, settings, timezone 등)
+- CTR-MX → CTR-US 병합으로 인한 중복 키 제거 및 EU 대체
+- ⚠️ 배포 시 Redis flush 필요
+
+### B-1a+: Auth 세션 companyId → Primary Assignment 기준
+- loadEmployeePermissions() 수정: Primary Assignment companyId 우선, fallback은 기존 로직
+- effectiveDate <= now 조건으로 미래 발령자 제외
+- ⏳ 겸직 검증: Phase 3 B-3e seed 후 수행 예정
+
+### B-1h: employmentType enum 매핑 함수
+- src/lib/ats/employment-type-mapper.ts 신규
+- ATS convert-to-employee 진입점에 매핑 적용 (posting.employmentType → Prisma enum)
+- 기존 ATS DB 데이터 미변경
+
+---
+
+## Track B Phase 1 Session 2 — ✅ COMPLETE
+
+### B-1b: Department seed overhaul
+- 244 departments across 13 companies (real CTR org chart)
+- 6-level hierarchy: Root(0) → BU(1) → Division/Plant(2) → Section(3) → Team(4) → Part(5)
+- Code convention: BU-/DIV-/PLT-/SEC-/TM-/PT- prefixes
+- Upsert on @@unique([companyId, code]) — no deleteMany
+
+### B-1c: JobGrade seed
+- 7 Korean grades × 7 domestic companies = 49 (companyId required, not nullable)
+- 5 placeholder grades × 5 overseas companies = 25
+- Total: 74 grades. findFirst + create/update pattern (no @@unique)
+
+### B-1d: Position tree with reporting lines
+- 253 explicit positions + auto-generated member pools per team
+- Full reportsToPositionId chain from Chairman down
+- Cross-company dottedLinePositionId: ~11 matrix relationships
+  - CTR-MOB Purchase/Quality → CTR Purchase/Quality (그룹주무)
+  - CTR-ECO Sales/Purchase/Quality → CTR counterparts
+  - CTR-CN R&D/Purchase/Quality → CTR counterparts
+  - CTR-US SCM → CTR SCM
+  - CTR-VN teams → CTR AM BU Head
+- Two-pass creation: all positions first, then reporting lines
+- Runner: `npx tsx scripts/run-org-seed.ts`
+
+### Seed Data Status (Session 2)
+| Entity | Count | Source |
+|--------|-------|--------|
+| Companies | 13 | B-1a |
+| Departments | ~244 | B-1b |
+| JobGrades | 74 (49 KR + 25 overseas) | B-1c |
+| Positions | ~300+ (253 explicit + member pools) | B-1d |
+
+---
+
+## Track B Phase 1 Session 3 — ✅ COMPLETE
+
+### Step 0.5: Chairman → Vice Chairman fix
+- POS-HOLD-CHAIR → POS-HOLD-VCHAIR (부회장/Vice Chairman)
+- All reportsTo references updated across position tree
+
+### B-1e: Employee redistribution (446 employees)
+- ~199 named leadership from real CTR org chart with exact positions/grades/roles
+- ~247 auto-generated with realistic names distributed across departments
+- 4 worker types: FULL_TIME/OFFICE, FULL_TIME/PRODUCTION, DISPATCH, CONTRACT
+- All single-assignment (isPrimary). Concurrent assignments → Phase 3 B-3e
+- Protected QA accounts (8) preserved
+- RBAC: SUPER_ADMIN (강상우, 최연식), HR_ADMIN (정향모, 이경수, 구용환, 김동준, 류지훈, 김대일, 김영규)
+- SKIP list for Phase 3 겸직: 김영규(VN↔AM), 김민준(EU↔AM), 허종서(CTR↔US), 신동규(CTR↔US), 김길홍(AM↔VN), 마랏(RU↔VN), 스베틀라나(RU↔VN)
+
+### B-1f: Worker Type Settings + resolveWorkerType()
+- New: `src/lib/employee/worker-type-resolver.ts` (SSOT)
+- 9 WORKER_TYPE settings (global defaults): DISPATCH features mostly OFF
+- Policy check results:
+  - ✅ Leave accrual: global default exists (per-company override → Phase 2)
+  - ❌ groupHireDate/companyHireDate: NOT in schema (→ Phase 2)
+  - ✅ Weekly hour limits: per-company EXISTS (KR=52, CN=44, US=40, VN=48, RU=40)
+  - ✅ PerformanceCycle.companyId: EXISTS
+  - ✅ Performance grade scale: global setting EXISTS
+
+### Seed Data Status (Session 3)
+| Entity | Count | Source |
+|--------|-------|--------|
+| Companies | 13 | B-1a |
+| Departments | ~244 | B-1b |
+| JobGrades | 74 (49 KR + 25 overseas) | B-1c |
+| Positions | ~300+ (253 explicit + member pools) | B-1d |
+| Employees | 446 (199 named + 247 auto) | B-1e |
+| EmployeeAssignments | 446 (all isPrimary, no concurrent) | B-1e |
+| Worker Type Settings | 9 keys (global defaults) | B-1f |
+
+---
+
+## Track B Phase 1 Session 4 — ✅ COMPLETE
+
+### B-1g: Production import script skeleton
+- `scripts/import-prod-migration.ts`: CLI with `--dry-run`, `--company`, `--skip-existing`
+- `data/` directory .gitignore'd for PII protection
+- `data/README.md` with CSV column spec
+
+### B-1i: Org Studio hard-coding removal
+- OrgStudioClient: fetches `/api/v1/org/tree` on mount, transforms to OrgNode[]
+- SUPER_ADMIN sees all companies (API already handles scope via companyId filter)
+- ImpactAnalysisPanel: baseline computed from real tree data (not hard-coded 109/12)
+- Loading skeleton + error/empty states added
+
+### B-1j: Entity Transfer policy
+- `context/POLICY-ENTITY-TRANSFER.md` created
+- 3 items pending 부회장 confirmation (leave balance, payroll history, tenure)
+- Default assumptions documented — code impact minimal
+
+### Phase 1 Mini Regression
+- `scripts/track-b-phase1-regression.ts`: 13 check categories, read-only
+- Run: `npx tsx scripts/track-b-phase1-regression.ts`
+
+### Phase 1 Final Seed Data Status
+| Entity | Count | Source |
+|--------|-------|--------|
+| Companies | 13 | B-1a |
+| Departments | ~244 | B-1b |
+| JobGrades | 74 (49 KR + 25 overseas) | B-1c |
+| Positions | ~300+ (253 explicit + member pools) | B-1d |
+| Employees | 446 (199 named + 247 auto) | B-1e |
+| EmployeeAssignments | 446 (all isPrimary, no concurrent) | B-1e |
+| Worker Type Settings | 9 keys (global defaults) | B-1f |
+
+---
+
+## Track B Phase 2 Session 5 — ✅ COMPLETE
+
+### B-2a: WorkLocation model
+- New model with companyId, code, name, nameEn, country, city, timezone, address, locationType
+- `@@unique([companyId, code])`, `@@map("work_locations")`
+- Relations: `Company.workLocations[]`, `EmployeeAssignment.workLocation`
+
+### B-2b: Assignment locationId + Employee preferredLocale
+- `EmployeeAssignment.workLocationId` (nullable, `onDelete: SetNull`) added
+- `Employee.locale` already existed (line 1176) — serves as preferredLocale, no duplicate added
+- Server-side locale usage: No notification/email code currently references employee locale
+
+### B-2e: Department.costCenterCode
+- Nullable String field added (`cost_center_code`) — reserved for ERP integration
+- No data populated
+
+### Migration note
+- `prisma migrate dev` blocked by pre-existing shadow DB issue (exchange_rates migration drift)
+- Workaround: manual SQL migration + `prisma migrate resolve --applied`
+- All changes additive (1 new table + 2 nullable columns), zero data loss
+
+---
+
+## Track B Phase 2 Session 6 — ✅ COMPLETE
+
+### B-2c: Location seed + Settings
+- 22 WorkLocations across 13 companies (plants, offices, branch offices)
+- EmployeeAssignment.workLocationId populated via PLT-* dept ancestor mapping + company defaults
+- Employee.locale set by company (ko/en/zh/vi)
+- holiday_calendar_basis Setting added (default: COMPANY)
+- Per-company work-hour-limits already seeded in 26-process-settings.ts (KR=52, CN=44, US=40, VN=48, RU=40, EU=48)
+
+### B-2d: Location API + UI + RBAC
+- CRUD API: GET/POST/PUT/DELETE /api/v1/locations
+- RBAC: MODULE.ORG + ACTION.APPROVE (org_manage permission already seeded for HR_ADMIN+SUPER_ADMIN)
+- GET: withAuth (all authenticated users), company-scoped; SUPER_ADMIN sees all + company filter
+- POST/PUT/DELETE: withPermission perm(MODULE.ORG, ACTION.APPROVE)
+- Settings → Organization → 근무지 관리 tab with table + create/edit modal
+- Timezone field: IANA dropdown (no free-text — Gemini Cross-Review #4)
+- Soft delete via isActive toggle
 
 ---
 
@@ -1672,5 +1875,55 @@ Deferred to Q-6 (Production Hardening):
 - Domain-specific placeholder 45개 → locale 번역
 - Playwright CI integration (GitHub Actions)
 - Performance optimization (bundle size, lazy loading)
+
+---
+
+## QF-C2: Cross-Module E2E Pipeline Tests — ✅ COMPLETE (2026-03-19, 4 sessions)
+
+End-to-end pipeline tests that validate data flows across module boundaries.
+
+### Sessions
+
+| Session | Pipeline | Tests | P0 Fixed | Commit |
+|---------|----------|:-----:|:--------:|--------|
+| QF-C2a | Hire-to-Retire | 35 | 0 | `663e913` |
+| QF-C2b | Time-to-Pay + Concurrency | 33 | 2 | `0b7aa38` |
+| QF-C2c | Perf-to-Pay | 34 | 4 | `590b652` |
+| QF-C2d | Exit + Cross-Cuts | 40 | 0 | `c767a5a` |
+| **Total** | | **142** | **6** | |
+
+### QF-C2d: Exit Pipeline + Cross-Module Cross-Cuts
+
+**Exit Pipeline (15 tests)**:
+- `POST /employees/{id}/offboarding/start` → 201, instance created, 8 tasks from checklist
+- Task completion: PENDING → IN_PROGRESS → DONE state machine (8/8 tasks)
+- Exit interview: 201, manager isolation enforced (403)
+- Severance calculation: KR 퇴직금 (3.17 years, isEligible=true)
+- M365 disable + directory exclusion confirmed
+- Employee assignment status → RESIGNED
+
+**Cross-Module Cross-Cuts (25 tests)**:
+- **Notifications**: 18 notifications for EA, CRUD + unread count + preferences (5/5)
+- **Manager Hub**: summary (headcount/attrition/overtime/1:1), pending approvals (4 items), team performance, team health, alerts (5/5)
+- **Dashboard/Home**: pending actions EA=2 (MBO goals), M1=10 (leave+performance+1:1), HR dashboard with 7 KPIs (5/5)
+- **Unified Tasks**: `/api/v1/my/tasks` has no API route (page-only, P1), approvals inbox 4 items across LEAVE+PERFORMANCE (3/5)
+- **Cross-Module Flow**: 84 offboarding notifications, turnover analytics updated, 1 audit entry (5/5)
+
+### P1 Deferred (QF-C2d)
+
+| Issue | Recommendation |
+|-------|----------------|
+| Duplicate offboarding returns 404 instead of 409 | Add IN_PROGRESS check before ACTIVE assignment check |
+| `/api/v1/my/tasks` has no API route | Add API endpoint mirroring UnifiedTaskHub aggregation |
+| Task state machine requires intermediate step | UI should auto-transition PENDING→IN_PROGRESS→DONE |
+
+### Reports
+
+| Report | Path |
+|--------|------|
+| QF-C2a | `docs/qa-reports/QF-REPORT-C2a-HireToRetire.md` |
+| QF-C2b | `docs/qa-reports/QF-REPORT-C2b-TimeToPayConcurrency.md` |
+| QF-C2c | `docs/qa-reports/QF-REPORT-C2c-PerfToPay.md` |
+| QF-C2d | `docs/qa-reports/QF-REPORT-C2d-ExitCrossCuts.md` |
 
 ---

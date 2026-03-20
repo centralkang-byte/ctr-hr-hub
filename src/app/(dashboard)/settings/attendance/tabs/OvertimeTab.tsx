@@ -2,66 +2,94 @@
 
 // ═══════════════════════════════════════════════════════════
 // Tab 6: Overtime — 초과근무 수당 배율 설정
-// API: No OvertimeRule model exists → form layout + TODO
-// Uses AttendanceSetting for basic overtime toggles
+// Connected to: ATTENDANCE/overtime-rules via useProcessSetting
+// S-Fix-3: Full CRUD implementation
 // ═══════════════════════════════════════════════════════════
 
-import { useEffect, useState } from 'react'
-import { Loader2, Save, AlertTriangle } from 'lucide-react'
-import { apiClient } from '@/lib/api'
+import { Loader2, Save, AlertTriangle, RotateCcw } from 'lucide-react'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
 import { useTranslations } from 'next-intl'
+import { useProcessSetting } from '@/hooks/useProcessSetting'
 
 interface OvertimeTabProps {
   companyId: string | null
 }
 
-// Settings-connected: overtime pre-approval requirement (ATTENDANCE/overtime)
-// Settings-connected: overtime pay multipliers (regular/night/holiday)
-// Settings-connected: country-level overtime rate overrides
-
-// Reference rates by country (GP#3 design spec section 11):
-// KR: 연장 1.5x, 야간 +0.5x, 휴일 1.5x
-// RU: 연장 2.0x
-// VN: 야간 +0.3x
-// MX: 연장 2.0x, 야간 +0.25x
-
-interface OvertimeRate {
-  label: string
-  description: string
-  rate: number
-  unit: string
+interface OvertimeSettings {
+  requiresApproval: boolean
+  multipliers: {
+    weekdayOt: number
+    weekend: number
+    holiday: number
+    night: number
+  }
+  nightStartHour: number
+  nightEndHour: number
 }
 
-export function OvertimeTab({
-  companyId }: OvertimeTabProps) {
-  const t = useTranslations('settings')
-  const [loading, setLoading] = useState(true)
-  const [settings, setSettings] = useState({
-    requirePreApproval: true,
-    nightStart: '22:00',
-    nightEnd: '06:00',
-  })
-  const [rates, setRates] = useState<OvertimeRate[]>([
-    { label: t('overtime_keca3bcea'), description: t('kr_kebb295ec_kecb488ea_kec8b9c'), rate: 1.5, unit: t('kr_kebb0b0') },
-    { label: t('kr_kec95bcea'), description: t('kr_22_00_06_00_keab7bceb_kec8b9c'), rate: 0.5, unit: t('kr_kebb0b0_keab080ec') },
-    { label: t('kr_ked9cb4ec'), description: t('kr_kebb295ec_holidays_kebb08f_kec'), rate: 1.5, unit: t('kr_kebb0b0') },
-  ])
+const DEFAULT_SETTINGS: OvertimeSettings = {
+  requiresApproval: true,
+  multipliers: {
+    weekdayOt: 1.5,
+    weekend: 1.5,
+    holiday: 2.0,
+    night: 0.5,
+  },
+  nightStartHour: 22,
+  nightEndHour: 6,
+}
 
-  useEffect(() => {
-    // Try loading from AttendanceSetting 
-    setLoading(true)
-    apiClient.get('/api/v1/settings/attendance')
-      .then(() => {
-        // AttendanceSetting doesn't have overtime fields yet
-        // Keep defaults
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false))
-  }, [companyId])
+// Country reference rates (from laborConfig, read-only)
+const COUNTRY_RATES = [
+  { flag: '🇰🇷', code: 'CTR', weekday: 1.5, night: 0.5, holiday: 1.5 },
+  { flag: '🇨🇳', code: 'CTR-CN', weekday: 1.5, night: 0, holiday: 3.0 },
+  { flag: '🇺🇸', code: 'CTR-US', weekday: 1.5, night: 0, holiday: 1.5 },
+  { flag: '🇻🇳', code: 'CTR-VN', weekday: 2.0, night: 0.3, holiday: 3.0 },
+  { flag: '🇷🇺', code: 'CTR-RU', weekday: 1.5, night: 0.2, holiday: 2.0 },
+  // CTR-MX removed (→ CTR-US Location)
+  { flag: '🇪🇺', code: 'CTR-EU', weekday: 1.5, night: 0, holiday: 2.0 },
+] as const
+
+export function OvertimeTab({ companyId }: OvertimeTabProps) {
+  const t = useTranslations('settings')
+
+  const {
+    settings,
+    setSettings,
+    loading,
+    saving,
+    isOverridden,
+    hasChanges,
+    save,
+    revert,
+  } = useProcessSetting<OvertimeSettings>({
+    category: 'attendance',
+    key: 'overtime-rules',
+    companyId,
+    defaults: DEFAULT_SETTINGS,
+    description: '초과근무 관리 규칙',
+    merge: (raw, defaults) => ({
+      requiresApproval: (raw.requiresApproval as boolean) ?? defaults.requiresApproval,
+      multipliers: {
+        weekdayOt: ((raw.multipliers as Record<string, number>)?.weekdayOt as number) ?? defaults.multipliers.weekdayOt,
+        weekend: ((raw.multipliers as Record<string, number>)?.weekend as number) ?? defaults.multipliers.weekend,
+        holiday: ((raw.multipliers as Record<string, number>)?.holiday as number) ?? defaults.multipliers.holiday,
+        night: ((raw.multipliers as Record<string, number>)?.night as number) ?? defaults.multipliers.night,
+      },
+      nightStartHour: (raw.nightStartHour as number) ?? defaults.nightStartHour,
+      nightEndHour: (raw.nightEndHour as number) ?? defaults.nightEndHour,
+    }),
+  })
+
+  const updateMultiplier = (key: keyof OvertimeSettings['multipliers'], value: number) => {
+    setSettings((prev) => ({
+      ...prev,
+      multipliers: { ...prev.multipliers, [key]: value },
+    }))
+  }
 
   if (loading) {
     return (
@@ -70,6 +98,13 @@ export function OvertimeTab({
       </div>
     )
   }
+
+  const rateRows: { key: keyof OvertimeSettings['multipliers']; label: string; desc: string }[] = [
+    { key: 'weekdayOt', label: t('overtime_keca3bcea'), desc: '평일 법정근로시간 초과 시' },
+    { key: 'weekend', label: '휴일근로', desc: '주말/휴일 근무 시' },
+    { key: 'holiday', label: '공휴일근로', desc: '법정 공휴일 근무 시' },
+    { key: 'night', label: '야간 할증', desc: '야간근무 시간대 가산' },
+  ]
 
   return (
     <div className="space-y-6">
@@ -95,14 +130,14 @@ export function OvertimeTab({
       <SettingFieldWithOverride
         label="사전 승인 필수"
         description="초과근무 전 관리자 승인을 필수로 요구합니다"
-        status={companyId ? 'custom' : 'global'}
+        status={isOverridden ? 'custom' : 'global'}
         companySelected={!!companyId}
       >
         <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
-            checked={settings.requirePreApproval}
-            onChange={(e) => setSettings((p) => ({ ...p, requirePreApproval: e.target.checked }))}
+            checked={settings.requiresApproval}
+            onChange={(e) => setSettings((p) => ({ ...p, requiresApproval: e.target.checked }))}
             className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]"
           />
           <span className="text-[#1C1D21]">{t('kr_kec82acec_approve_ked999cec')}</span>
@@ -113,59 +148,59 @@ export function OvertimeTab({
       <SettingFieldWithOverride
         label="야간근무 시간대"
         description="야간근무 수당이 적용되는 시간대"
-        status="global"
+        status={isOverridden ? 'custom' : 'global'}
         companySelected={!!companyId}
       >
         <div className="flex items-center gap-2">
           <Input
-            type="time"
-            value={settings.nightStart}
-            onChange={(e) => setSettings((p) => ({ ...p, nightStart: e.target.value }))}
-            className="w-32"
+            type="number"
+            min={0}
+            max={23}
+            value={settings.nightStartHour}
+            onChange={(e) => setSettings((p) => ({ ...p, nightStartHour: Number(e.target.value) }))}
+            className="w-20 text-center"
           />
-          <span className="text-sm text-[#8181A5]">~</span>
+          <span className="text-sm text-[#8181A5]">시 ~</span>
           <Input
-            type="time"
-            value={settings.nightEnd}
-            onChange={(e) => setSettings((p) => ({ ...p, nightEnd: e.target.value }))}
-            className="w-32"
+            type="number"
+            min={0}
+            max={23}
+            value={settings.nightEndHour}
+            onChange={(e) => setSettings((p) => ({ ...p, nightEndHour: Number(e.target.value) }))}
+            className="w-20 text-center"
           />
+          <span className="text-sm text-[#8181A5]">시</span>
         </div>
       </SettingFieldWithOverride>
 
       {/* 수당 배율 테이블 */}
       <div>
         <h4 className="mb-3 text-sm font-semibold text-[#1C1D21]">{t('kr_kec8898eb_keab384ec_kebb0b0ec')}</h4>
-        <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-          <table className="w-full">
+        <div className={TABLE_STYLES.wrapper}>
+          <table className={TABLE_STYLES.table}>
             <thead>
               <tr className={TABLE_STYLES.header}>
                 <th className={TABLE_STYLES.headerCell}>{t('kr_keab7bceb_kec9ca0ed')}</th>
                 <th className={TABLE_STYLES.headerCell}>{t('description')}</th>
-                <th className={TABLE_STYLES.headerCell}>{t('kr_kebb0b0ec')}</th>
-                <th className={TABLE_STYLES.headerCell}>{t('kr_keb8ba8ec')}</th>
+                <th className={TABLE_STYLES.headerCell}>배율</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F0F0F3]">
-              {rates.map((rate, idx) => (
-                <tr key={idx} className={TABLE_STYLES.row}>
-                  <td className={TABLE_STYLES.cell}>{rate.label}</td>
-                  <td className={TABLE_STYLES.cellMuted}>{rate.description}</td>
+              {rateRows.map((row) => (
+                <tr key={row.key} className={TABLE_STYLES.row}>
+                  <td className={TABLE_STYLES.cell}>{row.label}</td>
+                  <td className={TABLE_STYLES.cellMuted}>{row.desc}</td>
                   <td className="px-4 py-3 text-center">
                     <Input
                       type="number"
                       step="0.1"
                       min="0"
-                      value={rate.rate}
-                      onChange={(e) => {
-                        const newRates = [...rates]
-                        newRates[idx] = { ...rate, rate: Number(e.target.value) }
-                        setRates(newRates)
-                      }}
+                      max="10"
+                      value={settings.multipliers[row.key]}
+                      onChange={(e) => updateMultiplier(row.key, Number(e.target.value))}
                       className="mx-auto w-20 text-center"
                     />
                   </td>
-                  <td className="px-4 py-3 text-center text-sm text-[#8181A5]">{rate.unit}</td>
                 </tr>
               ))}
             </tbody>
@@ -176,47 +211,27 @@ export function OvertimeTab({
       {/* 법인별 참고 배율 */}
       <div>
         <h4 className="mb-3 text-sm font-semibold text-[#1C1D21]">{t('company_kebb384_kecb0b8ea_kebb0b0ec')}</h4>
-        <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-          <table className="w-full text-sm">
+        <div className={TABLE_STYLES.wrapper}>
+          <table className={TABLE_STYLES.table}>
             <thead>
               <tr className={TABLE_STYLES.header}>
                 <th className={TABLE_STYLES.headerCell}>{t('company')}</th>
-                <th className={TABLE_STYLES.headerCell}>{t('kr_kec97b0ec')}</th>
-                <th className={TABLE_STYLES.headerCell}>{t('kr_kec95bcea_keab080ec')}</th>
+                <th className={TABLE_STYLES.headerCell}>연장</th>
+                <th className={TABLE_STYLES.headerCell}>야간 가산</th>
                 <th className={TABLE_STYLES.headerCell}>휴일</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F0F0F3]">
-              <tr className="bg-primary/5">
-                <td className={TABLE_STYLES.cell}>🇰🇷 CTR-KR</td>
-                <td className={TABLE_STYLES.cell}>{t('kr_1_5kebb0b0')}</td>
-                <td className={TABLE_STYLES.cell}>{t('kr_0_5kebb0b0')}</td>
-                <td className={TABLE_STYLES.cell}>{t('kr_1_5kebb0b0')}</td>
-              </tr>
-              <tr>
-                <td className={TABLE_STYLES.cell}>🇺🇸 CTR-US</td>
-                <td className={TABLE_STYLES.cell}>{t('kr_1_5kebb0b0')}</td>
-                <td className="px-4 py-2 text-center text-[#8181A5]">—</td>
-                <td className={TABLE_STYLES.cell}>{t('kr_1_5kebb0b0')}</td>
-              </tr>
-              <tr>
-                <td className={TABLE_STYLES.cell}>🇷🇺 CTR-RU</td>
-                <td className="px-4 py-2 text-center text-orange-600 font-medium">{t('kr_2_0kebb0b0')}</td>
-                <td className={TABLE_STYLES.cell}>{t('kr_0_5kebb0b0')}</td>
-                <td className={TABLE_STYLES.cell}>{t('kr_2_0kebb0b0')}</td>
-              </tr>
-              <tr>
-                <td className={TABLE_STYLES.cell}>🇻🇳 CTR-VN</td>
-                <td className={TABLE_STYLES.cell}>{t('kr_1_5kebb0b0')}</td>
-                <td className="px-4 py-2 text-center text-orange-600 font-medium">{t('kr_0_3kebb0b0')}</td>
-                <td className={TABLE_STYLES.cell}>{t('kr_2_0kebb0b0')}</td>
-              </tr>
-              <tr>
-                <td className={TABLE_STYLES.cell}>🇲🇽 CTR-MX</td>
-                <td className="px-4 py-2 text-center text-orange-600 font-medium">{t('kr_2_0kebb0b0')}</td>
-                <td className="px-4 py-2 text-center text-orange-600 font-medium">{t('kr_0_25kebb0b0')}</td>
-                <td className={TABLE_STYLES.cell}>{t('kr_2_0kebb0b0')}</td>
-              </tr>
+              {COUNTRY_RATES.map((cr) => (
+                <tr key={cr.code} className={TABLE_STYLES.row}>
+                  <td className={TABLE_STYLES.cell}>{cr.flag} {cr.code}</td>
+                  <td className={TABLE_STYLES.cell}>{cr.weekday}x</td>
+                  <td className={cr.night > 0 ? TABLE_STYLES.cell : 'px-4 py-2 text-center text-[#8181A5]'}>
+                    {cr.night > 0 ? `+${cr.night}x` : '—'}
+                  </td>
+                  <td className={TABLE_STYLES.cell}>{cr.holiday}x</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -225,9 +240,19 @@ export function OvertimeTab({
         </p>
       </div>
 
-      <div className="flex justify-end pt-4">
-        <Button className={BUTTON_VARIANTS.primary}>
-          <Save className="mr-2 h-4 w-4" />
+      <div className="flex items-center justify-end gap-2 pt-4">
+        {hasChanges && (
+          <Button variant="outline" onClick={revert} disabled={saving}>
+            <RotateCcw className="mr-2 h-4 w-4" />
+            되돌리기
+          </Button>
+        )}
+        <Button
+          className={BUTTON_VARIANTS.primary}
+          onClick={save}
+          disabled={!hasChanges || saving}
+        >
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           {t('save')}
         </Button>
       </div>

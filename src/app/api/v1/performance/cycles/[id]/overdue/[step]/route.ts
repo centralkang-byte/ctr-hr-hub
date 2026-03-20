@@ -10,6 +10,7 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 const stepEnum = z.enum(['goal', 'checkin', 'self-eval'])
@@ -102,7 +103,7 @@ export const GET = withPermission(
                     name: r.employee.name,
                     nameEn: r.employee.nameEn,
                     employeeNo: r.employee.employeeNo,
-                    department: r.employee.assignments[0]?.department ?? null,
+                    department: extractPrimaryAssignment(r.employee.assignments)?.department ?? null,
                     reviewStatus: r.status,
                     daysSinceDeadline,
                     overdueFlags: flags.filter((f: string) => f.startsWith(overdueFlagPrefix)),

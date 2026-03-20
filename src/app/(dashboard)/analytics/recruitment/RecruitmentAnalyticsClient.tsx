@@ -23,6 +23,7 @@ import { ChartCard } from '@/components/analytics/ChartCard'
 import { EmptyChart } from '@/components/analytics/EmptyChart'
 import type { RecruitmentData } from '@/lib/analytics/types'
 import { TABLE_STYLES, CHART_THEME } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 
 const STAGE_ORDER = ['APPLIED', 'SCREENING', 'INTERVIEW', 'OFFER', 'HIRED']
 
@@ -121,23 +122,23 @@ export default function RecruitmentAnalyticsClient() {
         <ChartCard title={t('conversionByPosting')} className="lg:col-span-2">
           {postingMap.size > 0 ? (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className={TABLE_STYLES.header}>
+              <table className={TABLE_STYLES.table}>
+                <thead className={TABLE_STYLES.header}>
+                  <tr>
                     <th className={TABLE_STYLES.headerCell}>{t('posting')}</th>
                     {STAGE_ORDER.map((s) => (
-                      <th key={s} className={TABLE_STYLES.headerCell}>
+                      <th key={s} className={TABLE_STYLES.headerCellRight}>
                         {STAGE_LABELS[s] ?? s}
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-[#F0F0F3]">
                   {[...postingMap.entries()].map(([id, { title, stages }]) => (
-                    <tr key={id} className={TABLE_STYLES.header}>
-                      <td className="px-4 py-3 font-medium text-[#333]">{title}</td>
+                    <tr key={id} className={TABLE_STYLES.row}>
+                      <td className={TABLE_STYLES.cell}>{title}</td>
                       {STAGE_ORDER.map((s) => (
-                        <td key={s} className="px-4 py-3 text-center text-[#555]">
+                        <td key={s} className={TABLE_STYLES.cellRight}>
                           {stages[s] ?? 0}
                         </td>
                       ))}

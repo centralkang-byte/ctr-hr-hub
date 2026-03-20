@@ -9,6 +9,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { notFound } from '@/lib/errors'
 import { getApprovalChain } from '@/lib/payroll/approval-chains'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const GET = withPermission(
     async (_req: NextRequest, context, user) => {
@@ -83,7 +84,7 @@ export const GET = withPermission(
                 roleRequired: step.roleRequired,
                 status: step.status,
                 approverName: step.approver?.name ?? null,
-                approverDept: step.approver?.assignments?.[0]?.department?.name ?? null,
+                approverDept: extractPrimaryAssignment(step.approver?.assignments ?? [])?.department?.name ?? null,
                 comment: step.comment,
                 decidedAt: step.decidedAt,
             })),

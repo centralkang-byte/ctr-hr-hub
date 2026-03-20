@@ -38,22 +38,22 @@ export function CustomFieldsTab({
       {fields.length > 0 ? Object.entries(grouped).map(([entity, items]) => (
         <div key={entity}>
           <h4 className="mb-2 text-sm font-semibold text-[#8181A5]">{entity}</h4>
-          <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-            <table className="w-full">
-              <thead><tr className={TABLE_STYLES.header}>
+          <div className={TABLE_STYLES.wrapper}>
+            <table className={TABLE_STYLES.table}>
+              <thead className={TABLE_STYLES.header}><tr>
                 <th className={TABLE_STYLES.headerCell}>{t('kr_ked9584eb_ked82a4')}</th>
                 <th className={TABLE_STYLES.headerCell}>{t('kr_keb9dbceb')}</th>
                 <th className={TABLE_STYLES.headerCell}>{t('kr_ked8380ec')}</th>
                 <th className={TABLE_STYLES.headerCell}>{t('required')}</th>
                 <th className={TABLE_STYLES.headerCell}>{t('search')}</th>
               </tr></thead>
-              <tbody className="divide-y divide-[#F0F0F3]">{items.map((f) => (
+              <tbody>{items.map((f) => (
                 <tr key={f.id} className={TABLE_STYLES.row}>
-                  <td className="px-4 py-2 text-sm font-medium text-[#5E81F4]">{f.fieldKey}</td>
-                  <td className="px-4 py-2 text-sm text-[#1C1D21]">{f.fieldLabel}</td>
-                  <td className="px-4 py-2 text-sm text-[#8181A5]">{f.fieldType}</td>
-                  <td className="px-4 py-2 text-center text-sm">{f.isRequired ? '✓' : '—'}</td>
-                  <td className="px-4 py-2 text-center text-sm">{f.isSearchable ? '✓' : '—'}</td>
+                  <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{f.fieldKey}</td>
+                  <td className={TABLE_STYLES.cell}>{f.fieldLabel}</td>
+                  <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>{f.fieldType}</td>
+                  <td className={`${TABLE_STYLES.cell} text-center`}>{f.isRequired ? '✓' : '—'}</td>
+                  <td className={`${TABLE_STYLES.cell} text-center`}>{f.isSearchable ? '✓' : '—'}</td>
                 </tr>
               ))}</tbody>
             </table>

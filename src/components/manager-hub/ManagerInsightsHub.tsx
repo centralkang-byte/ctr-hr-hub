@@ -66,7 +66,7 @@ interface Performance {
 
 // ─── Component ──────────────────────────────────────────
 
-export function ManagerInsightsHub({ user }: ManagerInsightsHubProps) {
+export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
   const [summary, setSummary] = useState<Summary | null>(null)
   const [health, setHealth] = useState<HealthDimension[]>([])
   const [alerts, setAlerts] = useState<Alert[]>([])

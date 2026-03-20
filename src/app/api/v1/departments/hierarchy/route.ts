@@ -6,7 +6,8 @@
 
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { withPermission } from '@/lib/permissions'
+import { withPermission, perm } from '@/lib/permissions'
+import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { resolveCompanyId } from '@/lib/api/companyFilter'
 
@@ -57,5 +58,5 @@ export const GET = withPermission(
       return NextResponse.json({ data: [] })
     }
   },
-  { module: 'EMPLOYEE', action: 'read' },
+  perm(MODULE.ORG, ACTION.VIEW),
 )

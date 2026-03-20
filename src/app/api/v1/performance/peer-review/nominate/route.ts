@@ -17,8 +17,12 @@ import type { SessionUser } from '@/types'
 const nominateSchema = z.object({
     cycleId: z.string().uuid(),
     employeeId: z.string().uuid(),
-    nomineeIds: z.array(z.string().uuid()).min(1),
-})
+    nomineeIds: z.array(z.string().uuid()).min(1).optional(),
+    reviewerIds: z.array(z.string().uuid()).min(1).optional(),  // alias for nomineeIds
+}).transform(({ reviewerIds, ...rest }) => ({
+    ...rest,
+    nomineeIds: rest.nomineeIds || reviewerIds || [],
+}))
 
 // ─── POST /api/v1/performance/peer-review/nominate ───────
 // Manager-driven nomination (Design Decision #10)
@@ -32,6 +36,10 @@ export const POST = withPermission(
         }
 
         const { cycleId, employeeId, nomineeIds } = parsed.data
+
+        if (!nomineeIds || nomineeIds.length === 0) {
+            throw badRequest('nomineeIds 또는 reviewerIds가 필요합니다.')
+        }
 
         try {
             // 1. Validate cycle
@@ -151,5 +159,5 @@ export const POST = withPermission(
             throw handlePrismaError(error)
         }
     },
-    perm(MODULE.PERFORMANCE, ACTION.APPROVE),
+    perm(MODULE.PERFORMANCE, ACTION.UPDATE),
 )

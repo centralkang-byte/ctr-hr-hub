@@ -8,6 +8,7 @@ import { Users, Settings, ClipboardList, BarChart3 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 import { CARD_STYLES, BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
@@ -205,23 +206,22 @@ export default function PeerReviewClient() {
               </div>
             </div>
 
-            {/* Employee Table */}
-            <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
-              <table className="w-full">
+            <div className={TABLE_STYLES.wrapper}>
+              <table className={TABLE_STYLES.table}>
                 <thead>
                   <tr className={TABLE_STYLES.header}>
                     <th className={TABLE_STYLES.headerCell}>{tCommon('employee')}</th>
                     <th className={TABLE_STYLES.headerCell}>{tCommon('department')}</th>
-                    <th className={TABLE_STYLES.headerCell}>{t('nominationCount')}</th>
-                    <th className={TABLE_STYLES.headerCell}>{tCommon('completed')}</th>
-                    <th className={TABLE_STYLES.headerCell}>{t('avgScore')}</th>
-                    <th className={TABLE_STYLES.headerCell}>{tCommon('detail')}</th>
+                    <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('nominationCount')}</th>
+                    <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{tCommon('completed')}</th>
+                    <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('avgScore')}</th>
+                    <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{tCommon('detail')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {teamResults.employees.map((e) => (
                     <tr key={e.employee.id} className={TABLE_STYLES.row}>
-                      <td className="px-4 py-3">
+                      <td className={cn(TABLE_STYLES.cell, "px-4")}>
                         <EmployeeCell
                           size="sm"
                           employee={{
@@ -231,13 +231,13 @@ export default function PeerReviewClient() {
                           }}
                         />
                       </td>
-                      <td className="px-4 py-3 text-sm text-[#555]">{e.employee.department}</td>
-                      <td className="px-4 py-3 text-sm text-center text-[#555]">{e.nominationCount}</td>
-                      <td className="px-4 py-3 text-sm text-center text-[#555]">{e.completedCount}</td>
-                      <td className="px-4 py-3 text-sm text-center font-medium text-[#1A1A1A]">
+                      <td className={cn(TABLE_STYLES.cellMuted)}>{e.employee.department}</td>
+                      <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{e.nominationCount}</td>
+                      <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{e.completedCount}</td>
+                      <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>
                         {e.avgScore != null ? `${e.avgScore}/5` : '-'}
                       </td>
-                      <td className="px-4 py-3 text-center">
+                      <td className={cn(TABLE_STYLES.cell, "text-center")}>
                         <button onClick={() => router.push(`/performance/peer-review/results/${selectedCycleId}?employeeId=${e.employee.id}`)}
                           className="text-sm text-[#5E81F4] hover:text-[#4B6DE0] font-medium">{tCommon('view')}</button>
                       </td>

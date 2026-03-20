@@ -30,7 +30,7 @@ export const leavePendingRule: NudgeRule = {
 
   triggerType: 'nudge_leave_pending',
 
-  buildTitle(item: OverdueItem): string {
+  buildTitle(_item: OverdueItem): string {
     return '⏰ 휴가 승인 대기 중'
   },
 

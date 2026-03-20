@@ -15,7 +15,7 @@ import {
   FileText,
 } from 'lucide-react'
 import SeveranceInterimForm from './SeveranceInterimForm'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
 
 type SipStatus = 'SIP_PENDING' | 'SIP_APPROVED' | 'SIP_REJECTED' | 'SIP_PAID'
 
@@ -221,30 +221,30 @@ export default function SeveranceInterimTab() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
+      <div className={TABLE_STYLES.wrapper}>
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className={TABLE_STYLES.table}>
             <thead>
-              <tr className="bg-[#FAFAFA] border-b border-[#F5F5F5]">
-                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
+              <tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>
                   직원
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
+                <th className={TABLE_STYLES.headerCell}>
                   사유
                 </th>
-                <th className="px-4 py-3 text-right text-xs text-[#666] font-medium uppercase tracking-wider">
+                <th className={TABLE_STYLES.headerCellRight}>
                   예상 지급액
                 </th>
-                <th className="px-4 py-3 text-center text-xs text-[#666] font-medium uppercase tracking-wider">
+                <th className={TABLE_STYLES.headerCell}>
                   신청일
                 </th>
-                <th className="px-4 py-3 text-center text-xs text-[#666] font-medium uppercase tracking-wider">
+                <th className={TABLE_STYLES.headerCell}>
                   상태
                 </th>
-                <th className="px-4 py-3 text-center text-xs text-[#666] font-medium uppercase tracking-wider">
+                <th className={TABLE_STYLES.headerCell}>
                   처리일
                 </th>
-                <th className="px-4 py-3 text-center text-xs text-[#666] font-medium uppercase tracking-wider">
+                <th className={TABLE_STYLES.headerCell}>
                   액션
                 </th>
               </tr>
@@ -276,7 +276,7 @@ export default function SeveranceInterimTab() {
                   return (
                     <tr
                       key={req.id}
-                      className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA] transition-colors"
+                      className={TABLE_STYLES.row}
                     >
                       {/* Employee */}
                       <td className="px-4 py-3">

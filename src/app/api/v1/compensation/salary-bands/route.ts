@@ -8,7 +8,7 @@ import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
 import { badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
-import { MODULE, ACTION, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
+import { MODULE, ACTION } from '@/lib/constants'
 import { salaryBandSearchSchema, salaryBandCreateSchema } from '@/lib/schemas/compensation'
 import type { SessionUser } from '@/types'
 
@@ -99,6 +99,7 @@ export const POST = withPermission(
         resourceType: 'salaryBand',
         resourceId: band.id,
         companyId: band.companyId,
+        sensitivityLevel: 'HIGH',
         changes: { jobGradeId, currency, minSalary, midSalary, maxSalary },
         ip,
         userAgent,

@@ -31,6 +31,7 @@ export const GET = withPermission(
 
     const where = {
       ...(companyId ? { companyId } : {}),
+      isActive: true,
     }
 
     const [total, checklists] = await Promise.all([

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { Search, SlidersHorizontal, RefreshCw } from 'lucide-react'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
 
 interface PiiAccessLog {
   id: string
@@ -145,7 +145,7 @@ export default function PiiAccessLogTable() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8]">
+      <div className={TABLE_STYLES.wrapper}>
         {loading ? (
           <div className="p-8 text-center text-[#666]">{tc('loading')}</div>
         ) : logs.length === 0 ? (
@@ -153,20 +153,20 @@ export default function PiiAccessLogTable() {
         ) : (
           <>
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className={TABLE_STYLES.table}>
                 <thead>
-                  <tr className="bg-[#FAFAFA] border-b border-[#E8E8E8]">
-                    <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.actor')}</th>
-                    <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.target')}</th>
-                    <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.accessType')}</th>
-                    <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{t('gdpr.fieldName')}</th>
-                    <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">IP</th>
-                    <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">{tc('date')}</th>
+                  <tr className={TABLE_STYLES.header}>
+                    <th className={TABLE_STYLES.headerCell}>{t('gdpr.actor')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('gdpr.target')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('gdpr.accessType')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('gdpr.fieldName')}</th>
+                    <th className={TABLE_STYLES.headerCell}>IP</th>
+                    <th className={TABLE_STYLES.headerCell}>{tc('date')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {logs.map((log) => (
-                    <tr key={log.id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                    <tr key={log.id} className={TABLE_STYLES.row}>
                       <td className="px-4 py-3 text-sm">
                         <div className="font-medium text-[#1A1A1A]">{log.actor_name}</div>
                         <div className="text-xs text-[#999]">{log.actor_role}</div>

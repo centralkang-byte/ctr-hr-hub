@@ -28,7 +28,7 @@ const createSchema = z.object({
 // ─── GET ─────────────────────────────────────────────────
 
 export const GET = withPermission(
-  async (req: NextRequest, _context, user: SessionUser) => {
+  async (req: NextRequest, _context, _user: SessionUser) => {
     const { searchParams } = new URL(req.url)
     const companyId = searchParams.get('companyId')
 
@@ -47,13 +47,13 @@ export const GET = withPermission(
 
     return apiSuccess(typeDefs)
   },
-  perm(MODULE.SETTINGS, ACTION.VIEW),
+  perm(MODULE.LEAVE, ACTION.VIEW),
 )
 
 // ─── POST ────────────────────────────────────────────────
 
 export const POST = withPermission(
-  async (req: NextRequest, _context, user: SessionUser) => {
+  async (req: NextRequest, _context, _user: SessionUser) => {
     const body = await req.json()
     const parsed = createSchema.safeParse(body)
     if (!parsed.success) throw badRequest(parsed.error.message)
@@ -82,5 +82,5 @@ export const POST = withPermission(
 
     return apiSuccess(typeDef, 201)
   },
-  perm(MODULE.SETTINGS, ACTION.CREATE),
+  perm(MODULE.LEAVE, ACTION.CREATE),
 )

@@ -9,6 +9,7 @@ import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const GET = withPermission(
   async (req: NextRequest, _ctx, user: SessionUser) => {
@@ -66,8 +67,7 @@ export const GET = withPermission(
     // ── Build a map: departmentId → employeeIds ────────────
     const deptEmployeeMap = new Map<string, string[]>()
     for (const emp of activeEmployees) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const deptId: string | null | undefined = (emp.assignments?.[0] as any)?.departmentId
+      const deptId: string | null | undefined = (extractPrimaryAssignment(emp.assignments ?? []) as Record<string, any>)?.departmentId
       if (!deptId) continue
       const list = deptEmployeeMap.get(deptId) ?? []
       list.push(emp.id)

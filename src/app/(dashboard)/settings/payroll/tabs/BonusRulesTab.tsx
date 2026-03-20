@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { Save, Info, RotateCcw, Loader2 } from 'lucide-react'
+import { Save, RotateCcw, Loader2 } from 'lucide-react'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -31,7 +31,7 @@ const DEFAULTS: BonusSettings = {
 
 export function BonusRulesTab({
   companyId }: Props) {
-  const t = useTranslations('settings')
+//   const t = useTranslations('settings')
   const [settings, setSettings] = useState<BonusSettings>(() => structuredClone(DEFAULTS))
   const [original, setOriginal] = useState<BonusSettings>(() => structuredClone(DEFAULTS))
   const [loading, setLoading] = useState(true)
@@ -119,18 +119,21 @@ export function BonusRulesTab({
         </select>
       </SettingFieldWithOverride>
 
-      <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-        <table className="w-full"><thead><tr className={TABLE_STYLES.header}>
-          <th className={TABLE_STYLES.headerCell}>{'등급'}</th>
-          <th className={TABLE_STYLES.headerCell}>{'라벨'}</th>
-          <th className={TABLE_STYLES.headerCellRight}>{'배율 (%)'}</th>
-        </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{settings.gradeMultipliers.map((g, i) => (
-          <tr key={g.grade} className={TABLE_STYLES.row}>
-            <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{g.grade}</td>
-            <td className={TABLE_STYLES.cell}>{g.label}</td>
-            <td className="px-4 py-3 text-right"><Input type="number" value={g.multiplier} onChange={(e) => { const next = structuredClone(settings); next.gradeMultipliers[i].multiplier = Number(e.target.value); setSettings(next) }} className="ml-auto w-24 text-right" /></td>
-          </tr>
-        ))}</tbody></table>
+      <div className={TABLE_STYLES.wrapper}>
+        <table className={TABLE_STYLES.table}>
+          <thead className={TABLE_STYLES.header}><tr>
+            <th className={TABLE_STYLES.headerCell}>{'등급'}</th>
+            <th className={TABLE_STYLES.headerCell}>{'라벨'}</th>
+            <th className={TABLE_STYLES.headerCellRight}>{'배율 (%)'}</th>
+          </tr></thead>
+          <tbody>{settings.gradeMultipliers.map((g, i) => (
+            <tr key={g.grade} className={TABLE_STYLES.row}>
+              <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{g.grade}</td>
+              <td className={TABLE_STYLES.cell}>{g.label}</td>
+              <td className={`${TABLE_STYLES.cell} text-right`}><Input type="number" value={g.multiplier} onChange={(e) => { const next = structuredClone(settings); next.gradeMultipliers[i].multiplier = Number(e.target.value); setSettings(next) }} className="ml-auto w-24 text-right" /></td>
+            </tr>
+          ))}</tbody>
+        </table>
       </div>
 
       <div className="flex justify-end gap-2 pt-4">

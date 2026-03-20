@@ -36,6 +36,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 import { TABLE_STYLES, CHART_THEME } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 import type { SessionUser } from '@/types'
 import {
   CalendarDays,
@@ -248,6 +249,15 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
   const negativeEmps = data?.negativeBalanceEmployees ?? []
   const yearEndProjection = data?.yearEndProjection
 
+  // Determine if there is any meaningful data to display
+  const hasData = data !== null && (
+    kpi.employeeCount > 0 ||
+    deptUsage.length > 0 ||
+    distribution.length > 0 ||
+    forecast.length > 0 ||
+    negativeEmps.length > 0
+  )
+
   return (
     <div className="space-y-6 p-6">
       <PageHeader
@@ -273,8 +283,19 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
         }
       />
 
+      {/* ═══ Empty state — only show when no data at all ═══ */}
+      {!hasData && (
+        <Card className="bg-white">
+          <CardContent className="py-16 text-center">
+            <Users className="mx-auto h-10 w-10 text-[#8181A5] mb-3" />
+            <p className="text-sm font-medium text-[#1C1D21]">데이터 없음</p>
+            <p className="text-xs text-[#8181A5] mt-1">해당 연도에 휴가 데이터가 없습니다.</p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* ═══ KPI Cards ═══ */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+      {hasData && <><div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {/* Usage Rate */}
         <Card className="border-l-4 border-l-[#5E81F4] bg-white">
           <CardContent className="pt-5 pb-4 px-5">
@@ -477,31 +498,31 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+            <div className={TABLE_STYLES.wrapper}>
+              <table className={TABLE_STYLES.table}>
                 <thead>
-                  <tr className="border-b border-[#F0F0F3]">
-                    <th className="text-left py-2 px-3 text-xs font-semibold text-[#8181A5]">직원명</th>
-                    <th className="text-left py-2 px-3 text-xs font-semibold text-[#8181A5]">부서</th>
-                    <th className="text-right py-2 px-3 text-xs font-semibold text-[#8181A5]">마이너스</th>
-                    <th className="text-right py-2 px-3 text-xs font-semibold text-[#8181A5]">한도</th>
-                    <th className="text-center py-2 px-3 text-xs font-semibold text-[#8181A5]">상태</th>
+                  <tr className={TABLE_STYLES.header}>
+                    <th className={TABLE_STYLES.headerCell}>직원명</th>
+                    <th className={TABLE_STYLES.headerCell}>부서</th>
+                    <th className={cn(TABLE_STYLES.headerCell, "text-right")}>마이너스</th>
+                    <th className={cn(TABLE_STYLES.headerCell, "text-right")}>한도</th>
+                    <th className={cn(TABLE_STYLES.headerCell, "text-center")}>상태</th>
                   </tr>
                 </thead>
                 <tbody>
                   {negativeEmps.map((emp) => {
                     const atLimit = Math.abs(emp.negativeDays) >= Math.abs(emp.limit)
                     return (
-                      <tr key={emp.employeeId} className="border-b border-[#F5F5FA] hover:bg-[#FAFBFF]">
-                        <td className="py-2.5 px-3 font-medium text-[#1C1D21]">{emp.name}</td>
-                        <td className="py-2.5 px-3 text-[#8181A5]">{emp.department}</td>
-                        <td className="py-2.5 px-3 text-right font-semibold text-[#EF4444]">
+                      <tr key={emp.employeeId} className={TABLE_STYLES.row}>
+                        <td className={cn(TABLE_STYLES.cell, "font-medium text-[#1C1D21]")}>{emp.name}</td>
+                        <td className={cn(TABLE_STYLES.cell, "text-[#8181A5]")}>{emp.department}</td>
+                        <td className={cn(TABLE_STYLES.cell, "text-right font-semibold text-[#EF4444]")}>
                           {emp.negativeDays.toFixed(1)}일
                         </td>
-                        <td className="py-2.5 px-3 text-right text-[#8181A5]">
+                        <td className={cn(TABLE_STYLES.cell, "text-right text-[#8181A5]")}>
                           {emp.limit.toFixed(1)}일
                         </td>
-                        <td className="py-2.5 px-3 text-center">
+                        <td className={cn(TABLE_STYLES.cell, "text-center")}>
                           <Badge
                             variant="outline"
                             className={`text-[10px] ${
@@ -522,6 +543,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
           </CardContent>
         </Card>
       )}
+      </>}
 
       {/* ═══ Bulk Grant Dialog ═══ */}
       <Dialog open={bulkDialogOpen} onOpenChange={setBulkDialogOpen}>

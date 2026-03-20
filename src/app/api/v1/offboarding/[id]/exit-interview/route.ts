@@ -12,6 +12,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { z } from 'zod'
 import { isDirectManager } from '@/lib/auth/manager-check'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── GET: Fetch exit interview for an offboarding record ────
 
@@ -52,7 +53,7 @@ export const GET = withPermission(
 
     return apiSuccess(interview)
   },
-  perm(MODULE.ONBOARDING, ACTION.VIEW),
+  perm(MODULE.OFFBOARDING, ACTION.VIEW),
 )
 
 // ─── POST: Create exit interview ────────────────────────────
@@ -149,7 +150,7 @@ export const POST = withPermission(
           feedbackText: data.feedbackText,
           suggestions: data.suggestions ?? null,
           isConfidential: data.isConfidential ?? true,
-          companyId: ((offboarding.employee.assignments?.[0] as any)?.companyId as string | undefined) ?? user.companyId, // eslint-disable-line @typescript-eslint/no-explicit-any
+          companyId: ((extractPrimaryAssignment(offboarding.employee.assignments ?? []) as Record<string, any>)?.companyId as string | undefined) ?? user.companyId,
         },
         include: { interviewer: { select: { id: true, name: true } } },
       })
@@ -164,5 +165,5 @@ export const POST = withPermission(
 
     return apiSuccess(interview, 201)
   },
-  perm(MODULE.ONBOARDING, ACTION.CREATE),
+  perm(MODULE.OFFBOARDING, ACTION.CREATE),
 )

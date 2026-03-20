@@ -2,7 +2,8 @@
 // CTR HR Hub — GP#4 Calibration Distribution
 // GET /api/v1/performance/calibration/:sessionId/distribution
 //
-// Design Decision #3: Guideline distribution E=10%, M+=30%, M=50%, B=10%
+// Settings-connected: reads from CompanyProcessSetting (PERFORMANCE/calibration-distribution)
+// Fallback: E=10%, M+=30%, M=50%, B=10%
 // ═══════════════════════════════════════════════════════════
 
 import { type NextRequest } from 'next/server'
@@ -11,14 +12,55 @@ import { apiSuccess } from '@/lib/api'
 import { notFound, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
-// Settings-connected: guideline percentages per company (seed: PERFORMANCE/calibration-distribution)
-const GRADE_GUIDELINES: Record<string, number> = {
+// Fallback guideline percentages (overridden by CompanyProcessSetting if present)
+const DEFAULT_GRADE_GUIDELINES: Record<string, number> = {
     E: 10,
     M_PLUS: 30,
     M: 50,
     B: 10,
+}
+const DEFAULT_DEVIATION_THRESHOLD = 5
+
+async function getCalibrationDistributionSettings(companyId: string): Promise<{
+    guidelines: Record<string, number>
+    deviationThreshold: number
+    forced: boolean
+}> {
+    const setting = await prisma.companyProcessSetting.findFirst({
+        where: {
+            settingType: 'PERFORMANCE',
+            settingKey: 'calibration-distribution',
+            companyId,
+        },
+    }) ?? await prisma.companyProcessSetting.findFirst({
+        where: {
+            settingType: 'PERFORMANCE',
+            settingKey: 'calibration-distribution',
+            companyId: null,
+        },
+    })
+
+    if (!setting?.settingValue) {
+        return { guidelines: DEFAULT_GRADE_GUIDELINES, deviationThreshold: DEFAULT_DEVIATION_THRESHOLD, forced: false }
+    }
+
+    const val = setting.settingValue as Record<string, unknown>
+    const guidePcts = val.guidePcts as number[] | undefined
+    const forced = val.forced === true
+    const deviationThreshold = typeof val.deviationThreshold === 'number' ? val.deviationThreshold : DEFAULT_DEVIATION_THRESHOLD
+
+    if (guidePcts && guidePcts.length === 4) {
+        return {
+            guidelines: { E: guidePcts[0], M_PLUS: guidePcts[1], M: guidePcts[2], B: guidePcts[3] },
+            deviationThreshold,
+            forced,
+        }
+    }
+
+    return { guidelines: DEFAULT_GRADE_GUIDELINES, deviationThreshold, forced }
 }
 
 // ─── GET /api/v1/performance/calibration/:sessionId/distribution
@@ -37,6 +79,10 @@ export const GET = withPermission(
             })
 
             if (!session) throw notFound('캘리브레이션 세션을 찾을 수 없습니다.')
+
+            // Load calibration distribution from settings (company → global → fallback)
+            const { guidelines: GRADE_GUIDELINES, deviationThreshold: DEVIATION_THRESHOLD, forced } =
+                await getCalibrationDistributionSettings(session.companyId)
 
             // Get all reviews for cycle (optionally filtered by department)
             const reviewWhere: Record<string, unknown> = { cycleId: session.cycleId }
@@ -80,9 +126,6 @@ export const GET = withPermission(
                 }
             }
 
-            // Settings-connected: deviation threshold (default: 5pp)
-            const DEVIATION_THRESHOLD = 5
-
             const distribution = Object.entries(gradeCount).map(([grade, count]) => {
                 const percentage = total > 0 ? Math.round((count / total) * 1000) / 10 : 0
                 const guidelinePercentage = GRADE_GUIDELINES[grade] ?? 0
@@ -101,7 +144,7 @@ export const GET = withPermission(
             // Department breakdown
             const deptMap = new Map<string, { name: string; grades: Record<string, number>; total: number }>()
             for (const review of reviews) {
-                const dept = review.employee?.assignments[0]?.department
+                const dept = extractPrimaryAssignment(review.employee?.assignments ?? [])?.department
                 if (!dept) continue
                 if (!deptMap.has(dept.id)) {
                     deptMap.set(dept.id, { name: dept.name, grades: { E: 0, M_PLUS: 0, M: 0, B: 0 }, total: 0 })
@@ -133,6 +176,7 @@ export const GET = withPermission(
                 cycleName: session.cycle.name,
                 distribution,
                 departmentBreakdown,
+                forcedDistribution: forced,
             })
         } catch (error) {
             throw handlePrismaError(error)

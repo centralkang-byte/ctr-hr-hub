@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { apiClient } from '@/lib/api'
+import { TABLE_STYLES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────────
 // Note: AllowanceRecord schema does NOT have isTaxable or startDate/endDate.
@@ -170,24 +171,24 @@ export function CompensationTab({ employeeId }: CompensationTabProps) {
       </div>
 
       {/* 급여 테이블 */}
-      <div className="rounded-xl border border-[#E8E8E8] overflow-hidden">
-        <table className="w-full">
+      <div className={TABLE_STYLES.wrapper}>
+        <table className={TABLE_STYLES.table}>
           <thead>
-            <tr className="bg-[#FAFAFA]">
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#666]">
+            <tr className={TABLE_STYLES.header}>
+              <th className={TABLE_STYLES.headerCell}>
                 항목
               </th>
-              <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-[#666]">
+              <th className={TABLE_STYLES.headerCellRight}>
                 금액
               </th>
-              <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-[#666]">
+              <th className={TABLE_STYLES.headerCell}>
                 지급 월
               </th>
             </tr>
           </thead>
           <tbody>
             {/* 기본급 */}
-            <tr className="border-t border-[#F5F5F5]">
+            <tr className={TABLE_STYLES.row}>
               <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">기본급</td>
               <td className="px-4 py-3 text-right text-sm font-mono text-[#1A1A1A]">
                 {formatCurrency(latestComp.newBaseSalary, currency)}

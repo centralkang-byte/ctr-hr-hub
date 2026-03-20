@@ -64,6 +64,7 @@ export const POST = withPermission(
         resourceType: 'salaryAdjustmentMatrix',
         resourceId: targetCycleId,
         companyId,
+        sensitivityLevel: 'HIGH',
         changes: { sourceCycleId, targetCycleId, entryCount: sourceEntries.length },
         ip,
         userAgent,

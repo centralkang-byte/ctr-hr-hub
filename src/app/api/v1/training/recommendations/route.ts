@@ -12,6 +12,7 @@ import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
@@ -45,8 +46,9 @@ export const GET = withPermission(
       },
     })
 
-    const jobLevelCode = employee?.assignments?.[0]?.jobGrade?.code ?? null
-    const companyId = employee?.assignments?.[0]?.company?.id ?? user.companyId
+    const empPrimary = extractPrimaryAssignment(employee?.assignments ?? [])
+    const jobLevelCode = (empPrimary as Record<string, any>)?.jobGrade?.code ?? null
+    const companyId = (empPrimary as Record<string, any>)?.company?.id ?? user.companyId
 
     // 3. 역량 요건 조회 (직급별 기대 레벨)
     const requirements = await prisma.competencyRequirement.findMany({

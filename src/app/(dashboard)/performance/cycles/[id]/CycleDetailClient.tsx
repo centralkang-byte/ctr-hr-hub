@@ -11,6 +11,7 @@ import { ArrowLeft, ChevronRight, AlertTriangle, CheckCircle2, Clock, Users, Shi
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
 
@@ -245,7 +246,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                     </div>
                 ) : (
                     /* Participants Table */
-                    <div className="rounded-xl border border-[#F0F0F3] bg-white overflow-hidden">
+                    <div className={TABLE_STYLES.wrapper}>
                         {/* Department filter */}
                         <div className="border-b border-[#F0F0F3] px-5 py-3 flex items-center gap-3">
                             <Users className="h-4 w-4 text-[#8181A5]" />
@@ -256,24 +257,23 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                             </select>
                         </div>
                         <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
+                            <table className={TABLE_STYLES.table}>
                                 <thead>
-                                    <tr className="bg-[#F5F5FA] text-xs text-[#8181A5] font-medium">
+                                    <tr className={TABLE_STYLES.header}>
                                         <th className={TABLE_STYLES.headerCell}>{t('name')}</th>
-                                        <th className={TABLE_STYLES.headerCell}>{t('department')}</th>
-                                        <th className={TABLE_STYLES.headerCell}>{t('goals')}</th>
-                                        <th className={TABLE_STYLES.headerCell}>{t('kr_kecb2b4ed')}</th>
-                                        <th className={TABLE_STYLES.headerCell}>{t('selfEval')}</th>
-                                        <th className={TABLE_STYLES.headerCell}>동료평가</th>
-                                        <th className={TABLE_STYLES.headerCell}>{t('status')}</th>
+                                        <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('goals')}</th>
+                                        <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_kecb2b4ed')}</th>
+                                        <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('selfEval')}</th>
+                                        <th className={cn(TABLE_STYLES.headerCell, "text-center")}>동료평가</th>
+                                        <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('status')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredParticipants.map((p) => {
                                         const hasOverdue = p.overdueFlags && p.overdueFlags.length > 0
                                         return (
-                                            <tr key={p.employee.id} className={`border-b border-[#F0F0F3] ${hasOverdue ? 'bg-[#FEF3C7]/30' : 'hover:bg-[#F5F5FA]'}`}>
-                                                <td className="px-4 py-3">
+                                            <tr key={p.employee.id} className={cn(TABLE_STYLES.row, hasOverdue && 'bg-[#FEF3C7]/30 hover:bg-[#FEF3C7]/50')}>
+                                                <td className={TABLE_STYLES.cell}>
                                                   <EmployeeCell
                                                     size="sm"
                                                     employee={{
@@ -283,11 +283,11 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                                                     }}
                                                   />
                                                 </td>
-                                                <td className="px-4 py-3 text-center">{p.goalsStatus === 'DONE' ? <CheckCircle2 className="mx-auto h-4 w-4 text-[#22C55E]" /> : <Clock className="mx-auto h-4 w-4 text-[#F59E0B]" />}</td>
-                                                <td className="px-4 py-3 text-center">{p.checkinStatus === 'DONE' ? <CheckCircle2 className="mx-auto h-4 w-4 text-[#22C55E]" /> : <Clock className="mx-auto h-4 w-4 text-[#F59E0B]" />}</td>
-                                                <td className="px-4 py-3 text-center">{p.selfEvalStatus === 'SUBMITTED' ? <CheckCircle2 className="mx-auto h-4 w-4 text-[#22C55E]" /> : <Clock className="mx-auto h-4 w-4 text-[#F59E0B]" />}</td>
-                                                <td className="px-4 py-3 text-center text-xs text-[#8181A5]">{p.peerReviewProgress ?? '-'}</td>
-                                                <td className="px-4 py-3 text-center">
+                                                <td className={cn(TABLE_STYLES.cell, "text-center")}>{p.goalsStatus === 'DONE' ? <CheckCircle2 className="mx-auto h-4 w-4 text-[#22C55E]" /> : <Clock className="mx-auto h-4 w-4 text-[#F59E0B]" />}</td>
+                                                <td className={cn(TABLE_STYLES.cell, "text-center")}>{p.checkinStatus === 'DONE' ? <CheckCircle2 className="mx-auto h-4 w-4 text-[#22C55E]" /> : <Clock className="mx-auto h-4 w-4 text-[#F59E0B]" />}</td>
+                                                <td className={cn(TABLE_STYLES.cell, "text-center")}>{p.selfEvalStatus === 'SUBMITTED' ? <CheckCircle2 className="mx-auto h-4 w-4 text-[#22C55E]" /> : <Clock className="mx-auto h-4 w-4 text-[#F59E0B]" />}</td>
+                                                <td className={cn(TABLE_STYLES.cell, "text-center text-[#8181A5]")}>{p.peerReviewProgress ?? '-'}</td>
+                                                <td className={cn(TABLE_STYLES.cell, "text-center")}>
                                                     {hasOverdue ? (
                                                         <span className="inline-flex items-center gap-1 rounded-full bg-[#FFEBEE] px-2 py-0.5 text-xs font-medium text-[#C62828]">
                                                             <AlertTriangle className="h-3 w-3" /> {t('kr_keca780ec')}

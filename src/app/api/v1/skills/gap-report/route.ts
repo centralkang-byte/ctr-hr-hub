@@ -6,12 +6,21 @@
 // POST /api/v1/skills/gap-report  리포트 스냅샷 저장
 
 import { type NextRequest } from 'next/server'
+import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { forbidden, handlePrismaError } from '@/lib/errors'
+import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+
+const gapReportCreateSchema = z.object({
+  companyId: z.string().uuid().optional(),
+  departmentId: z.string().uuid().optional(),
+  assessmentPeriod: z.string().min(1, '평가 기간은 필수입니다.'),
+  reportData: z.unknown(),
+})
 
 export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
@@ -69,7 +78,8 @@ export const GET = withPermission(
       let assessed = 0
 
       for (const emp of employees) {
-        const grade = emp.assignments?.[0]?.jobGrade?.code ?? ''
+        const empPrimary = extractPrimaryAssignment(emp.assignments ?? [])
+        const grade = (empPrimary as Record<string, any>)?.jobGrade?.code ?? ''
         const expectedLevel = reqMap.get(`${c.id}_${grade}`) ?? null
         const assessment = emp.skillAssessments.find((a) => a.competencyId === c.id)
         const finalLevel = assessment?.finalLevel ?? assessment?.selfLevel ?? null
@@ -95,18 +105,19 @@ export const GET = withPermission(
 
     // 부서별 스킬 갭 히트맵
     const departments = [...new Set(
-      employees.map((e) => e.assignments?.[0]?.department).filter(Boolean),
+      employees.map((e) => extractPrimaryAssignment(e.assignments ?? [])?.department).filter(Boolean),
     )] as { id: string; name: string }[]
 
     const departmentMatrix = departments.map((dept) => {
       const deptEmployees = employees.filter(
-        (e) => e.assignments?.[0]?.department?.id === dept.id,
+        (e) => (extractPrimaryAssignment(e.assignments ?? []) as Record<string, any>)?.department?.id === dept.id,
       )
 
       const scores = competencies.map((c) => {
         const deptGaps: number[] = []
         for (const emp of deptEmployees) {
-          const grade = emp.assignments?.[0]?.jobGrade?.code ?? ''
+          const deptEmpPrimary = extractPrimaryAssignment(emp.assignments ?? [])
+          const grade = (deptEmpPrimary as Record<string, any>)?.jobGrade?.code ?? ''
           const expectedLevel = reqMap.get(`${c.id}_${grade}`) ?? null
           const assessment = emp.skillAssessments.find((a) => a.competencyId === c.id)
           const finalLevel = assessment?.finalLevel ?? assessment?.selfLevel ?? null
@@ -143,7 +154,7 @@ export const GET = withPermission(
       departmentMatrix,
     })
   },
-  perm(MODULE.EMPLOYEES, ACTION.VIEW),
+  perm(MODULE.EMPLOYEES, ACTION.APPROVE),
 )
 
 // POST: 리포트 스냅샷 저장
@@ -152,20 +163,19 @@ export const POST = withPermission(
     const canCreate = ['HR_ADMIN', 'SUPER_ADMIN'].includes(user.role)
     if (!canCreate) throw forbidden('리포트 생성 권한이 없습니다.')
 
-    const body = await req.json() as {
-      companyId?: string
-      departmentId?: string
-      assessmentPeriod: string
-      reportData: unknown
+    const body: unknown = await req.json()
+    const parsed = gapReportCreateSchema.safeParse(body)
+    if (!parsed.success) {
+      throw badRequest('잘못된 요청 데이터입니다.', { issues: parsed.error.issues })
     }
 
     try {
       const report = await prisma.skillGapReport.create({
         data: {
-          companyId: body.companyId ?? user.companyId,
-          departmentId: body.departmentId,
-          assessmentPeriod: body.assessmentPeriod,
-          reportData: body.reportData as never,
+          companyId: parsed.data.companyId ?? user.companyId,
+          departmentId: parsed.data.departmentId,
+          assessmentPeriod: parsed.data.assessmentPeriod,
+          reportData: parsed.data.reportData as never,
           generatedBy: user.employeeId,
         },
       })

@@ -6,10 +6,11 @@
 import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
-import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
+import { apiPaginated, buildPagination } from '@/lib/api'
 import { badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 const querySchema = z.object({
@@ -115,15 +116,18 @@ export const GET = withPermission(
                 prisma.employee.count({ where: employeeWhere }),
             ])
 
-            const result = employees.map((emp) => ({
-                id: emp.id,
-                name: emp.name,
-                nameEn: emp.nameEn,
-                employeeNo: emp.employeeNo,
-                department: emp.assignments[0]?.department ?? null,
-                jobGrade: emp.assignments[0]?.jobGrade ?? null,
-                review: emp.performanceReviews[0] ?? null,
-            }))
+            const result = employees.map((emp) => {
+                const primary = extractPrimaryAssignment(emp.assignments)
+                return {
+                    id: emp.id,
+                    name: emp.name,
+                    nameEn: emp.nameEn,
+                    employeeNo: emp.employeeNo,
+                    department: primary?.department ?? null,
+                    jobGrade: primary?.jobGrade ?? null,
+                    review: emp.performanceReviews[0] ?? null,
+                }
+            })
 
             return apiPaginated(result, buildPagination(page, limit, total))
         } catch (error) {

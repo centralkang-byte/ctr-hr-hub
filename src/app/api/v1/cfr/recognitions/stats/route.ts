@@ -8,6 +8,7 @@ import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── GET /api/v1/cfr/recognitions/stats ──────────────────
 
@@ -70,8 +71,8 @@ export const GET = withPermission(
 
     const deptActivity: Record<string, { name: string; sent: number; received: number }> = {}
     for (const r of deptRecognitions) {
-      const senderDept = r.sender.assignments?.[0]?.department
-      const receiverDept = r.receiver.assignments?.[0]?.department
+      const senderDept = extractPrimaryAssignment(r.sender.assignments ?? [])?.department
+      const receiverDept = extractPrimaryAssignment(r.receiver.assignments ?? [])?.department
       const senderDeptId = senderDept?.id
       const receiverDeptId = receiverDept?.id
       if (senderDeptId) {

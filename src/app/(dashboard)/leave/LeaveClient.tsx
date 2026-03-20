@@ -128,6 +128,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
   const [endDateOpen, setEndDateOpen] = useState(false)
   const [saving, setSaving] = useState(false)
   const [cancellingId, setCancellingId] = useState<string | null>(null)
+  const [presetType, setPresetType] = useState<'FULL' | 'AM' | 'PM' | 'QUARTER' | 'CUSTOM'>('FULL')
 
   // ─── Form ───
   const {
@@ -170,10 +171,52 @@ export function LeaveClient({ user }: { user: SessionUser }) {
     return Math.max(count, 1)
   }
 
+  // Handle Preset Changes
+  const handlePresetChange = (preset: 'FULL' | 'AM' | 'PM' | 'QUARTER' | 'CUSTOM') => {
+    setPresetType(preset)
+    
+    // Auto-update values when switching presets (if dates are set)
+    if (preset !== 'CUSTOM') {
+      if (watchedStart) {
+        setValue('endDate', watchedStart) // Make end date match start date for single days
+      }
+      
+      switch (preset) {
+        case 'FULL':
+          setValue('days', 1)
+          setValue('halfDayType', undefined)
+          break
+        case 'AM':
+          setValue('days', 0.5)
+          setValue('halfDayType', 'AM')
+          break
+        case 'PM':
+          setValue('days', 0.5)
+          setValue('halfDayType', 'PM')
+          break
+        case 'QUARTER':
+          setValue('days', 0.25)
+          setValue('halfDayType', undefined) // Quarter might not need AM/PM, adjust if needed
+          break
+      }
+    } else {
+      // Switched to Custom: recalculate business days if we have both dates
+      if (watchedStart && watchedEnd) {
+        setValue('days', calculateBusinessDays(watchedStart, watchedEnd))
+      }
+      setValue('halfDayType', undefined)
+    }
+  }
+
   useEffect(() => {
     if (watchedStart && watchedEnd) {
-      const calc = calculateBusinessDays(watchedStart, watchedEnd)
-      setValue('days', calc)
+      if (presetType === 'CUSTOM') {
+        const calc = calculateBusinessDays(watchedStart, watchedEnd)
+        setValue('days', calc)
+      } else if (watchedStart !== watchedEnd) {
+        // Enforce start = end for presets if they somehow get out of sync
+        setValue('endDate', watchedStart)
+      }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchedStart, watchedEnd])
@@ -206,7 +249,27 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       const res = await apiClient.getList<LeavePolicyLocal>('/api/v1/leave/policies', {
         limit: 100,
       })
-      setPolicies(res.data)
+      
+      // Deduplicate by name
+      const uniquePolicies = res.data.reduce((acc, current) => {
+        const x = acc.find((item) => item.name === current.name)
+        if (!x) return acc.concat([current])
+        return acc
+      }, [] as LeavePolicyLocal[])
+
+      // Filter out "특별휴가" as requested
+      const filteredPolicies = uniquePolicies.filter(p => !p.name.includes("특별휴가"))
+
+      // Sort: "연차" containing policies to the top
+      const sortedPolicies = filteredPolicies.sort((a, b) => {
+        const aIsAnnual = a.name.includes('연차')
+        const bIsAnnual = b.name.includes('연차')
+        if (aIsAnnual && !bIsAnnual) return -1
+        if (!aIsAnnual && bIsAnnual) return 1
+        return a.name.localeCompare(b.name)
+      })
+
+      setPolicies(sortedPolicies)
     } catch {
       setPolicies([])
     }
@@ -240,6 +303,23 @@ export function LeaveClient({ user }: { user: SessionUser }) {
     void fetchPolicies()
   }, [fetchBalances, fetchPolicies])
 
+  // Handle Preset Reset on Policy Change
+  useEffect(() => {
+    if (!watchedPolicyId || policies.length === 0) return
+    const selected = policies.find(p => p.id === watchedPolicyId)
+    if (selected) {
+      if (!selected.name.includes('연차')) {
+        setPresetType('CUSTOM')
+      } else {
+        // default back to FULL when an annual leave is selected
+        setPresetType('FULL')
+        setValue('days', 1)
+        setValue('halfDayType', undefined)
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchedPolicyId, policies])
+
   useEffect(() => {
     void fetchRequests()
   }, [fetchRequests])
@@ -251,6 +331,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
 
   // ─── Open request dialog ───
   const openRequestDialog = () => {
+    setPresetType('FULL')
     reset({
       policyId: '',
       startDate: '',
@@ -302,7 +383,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
 
   // ─── Balance remaining calculation ───
   const getRemainingDays = (b: LeaveBalanceLocal) =>
-    b.grantedDays + b.carryOverDays - b.usedDays - b.pendingDays
+    Number(b.grantedDays) + Number(b.carryOverDays) - Number(b.usedDays) - Number(b.pendingDays)
 
   // ─── Date formatting ───
   const formatDate = (date: string) =>
@@ -330,7 +411,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
     {
       key: 'days',
       header: t('days'),
-      render: (row: LeaveRequestLocal) => `${row.days}${t('dayUnit')}`,
+      render: (row: LeaveRequestLocal) => `${parseFloat(Number(row.days).toFixed(2))}${t('dayUnit')}`,
     },
     {
       key: 'status',
@@ -391,7 +472,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
         {!balances?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
               {balances?.map((b) => {
           const remaining = getRemainingDays(b)
-          const total = b.grantedDays + b.carryOverDays
+          const total = Number(b.grantedDays) + Number(b.carryOverDays)
           const usagePct = total > 0 ? Math.round(((total - remaining) / total) * 100) : 0
           return (
             <div
@@ -405,7 +486,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                 <p className={`text-3xl font-bold tracking-[-0.02em] ${remaining > 0 ? 'text-[#5E81F4]' : 'text-[#999]'}`}>
                   {remaining}
                 </p>
-                <p className="text-sm text-[#999] mb-1">/ {total}{t('fullDay')}</p>
+                <p className="text-sm text-[#999] mb-1">/ {total} {t('fullDay')}</p>
               </div>
               {/* Progress bar */}
               <div className="mt-3 h-2 rounded-full bg-[#E8E8E8] overflow-hidden">
@@ -524,9 +605,38 @@ export function LeaveClient({ user }: { user: SessionUser }) {
               </div>
             )}
 
+            {/* ─── Preset Toggle ─── */}
+            {policies.find(p => p.id === watchedPolicyId)?.name.includes('연차') && (
+              <div className="space-y-2">
+                <Label>휴가 유형 선택</Label>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { id: 'FULL', label: '연차' },
+                    { id: 'AM', label: '오전 반차' },
+                    { id: 'PM', label: '오후 반차' },
+                    { id: 'QUARTER', label: '반반차' },
+                    { id: 'CUSTOM', label: '직접 입력' },
+                  ].map((preset) => (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => handlePresetChange(preset.id as any)}
+                      className={`px-3 py-2 text-sm font-medium rounded-md border transition-colors ${
+                        presetType === preset.id
+                          ? 'bg-[#1A1A1A] text-white border-[#1A1A1A]'
+                          : 'bg-white text-[#666] border-[#E0E0E0] hover:bg-[#F5F5F5]'
+                      }`}
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* startDate */}
             <div className="space-y-2">
-              <Label htmlFor="leave-start">{t('startDate')}</Label>
+              <Label htmlFor="leave-start">{presetType === 'CUSTOM' ? t('startDate') : '휴가 일자'}</Label>
               <Controller
                 control={control}
                 name="startDate"
@@ -549,7 +659,18 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                       <Calendar
                         mode="single"
                         selected={field.value ? new Date(field.value) : undefined}
-                        onSelect={(date) => { field.onChange(date ? format(date, "yyyy-MM-dd") : ''); setStartDateOpen(false) }}
+                        onSelect={(date) => { 
+                          if (date) {
+                            const dateStr = format(date, "yyyy-MM-dd")
+                            field.onChange(dateStr)
+                            if (presetType !== 'CUSTOM') {
+                              setValue('endDate', dateStr)
+                            }
+                          } else {
+                            field.onChange('')
+                          }
+                          setStartDateOpen(false) 
+                        }}
                         initialFocus
                       />
                     </PopoverContent>
@@ -561,50 +682,53 @@ export function LeaveClient({ user }: { user: SessionUser }) {
               )}
             </div>
 
-            {/* endDate */}
-            <div className="space-y-2">
-              <Label htmlFor="leave-end">{t('endDate')}</Label>
-              <Controller
-                control={control}
-                name="endDate"
-                render={({ field }) => (
-                  <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        id="leave-end"
-                        variant={"outline"}
-                        className={cn(
-                          "w-full justify-start text-left font-normal border-input bg-white",
-                          !field.value && "text-[#8181A5]"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {field.value ? field.value : <span>{tc('selectPlaceholder') ?? '날짜 선택'}</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 z-[100]" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value ? new Date(field.value) : undefined}
-                        onSelect={(date) => { field.onChange(date ? format(date, "yyyy-MM-dd") : ''); setEndDateOpen(false) }}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
+            {/* endDate - ONLY SHOW IF CUSTOM */}
+            {presetType === 'CUSTOM' && (
+              <div className="space-y-2">
+                <Label htmlFor="leave-end">{t('endDate')}</Label>
+                <Controller
+                  control={control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          id="leave-end"
+                          variant={"outline"}
+                          className={cn(
+                            "w-full justify-start text-left font-normal border-input bg-white",
+                            !field.value && "text-[#8181A5]"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {field.value ? field.value : <span>{tc('selectPlaceholder') ?? '날짜 선택'}</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 z-[100]" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value ? new Date(field.value) : undefined}
+                          onSelect={(date) => { field.onChange(date ? format(date, "yyyy-MM-dd") : ''); setEndDateOpen(false) }}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  )}
+                />
+                {errors.endDate && (
+                  <p className="text-sm text-destructive">{errors.endDate.message}</p>
                 )}
-              />
-              {errors.endDate && (
-                <p className="text-sm text-destructive">{errors.endDate.message}</p>
-              )}
-            </div>
+              </div>
+            )}
 
-            {/* days */}
-            <div className="space-y-2">
-              <Label htmlFor="leave-days">{t('days')}</Label>
+            {/* days - ONLY SHOW IF CUSTOM */}
+            {presetType === 'CUSTOM' && (
+              <div className="space-y-2">
+                <Label htmlFor="leave-days">{t('days')}</Label>
               <Input
                 id="leave-days"
                 type="number"
-                step="0.5"
+                step="0.25"
                 min="0.25"
                 {...register('days')}
               />
@@ -612,9 +736,10 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                 <p className="text-sm text-destructive">{errors.days.message}</p>
               )}
             </div>
+            )}
 
-            {/* halfDayType — only when days is 0.5 */}
-            {watchedDays === 0.5 && (
+            {/* halfDayType — only show when Custom and days is 0.5. (Presets handle this implicitly via state) */}
+            {presetType === 'CUSTOM' && watchedDays === 0.5 && (
               <div className="space-y-2">
                 <Label htmlFor="leave-half">{t('halfDay')}</Label>
                 <Controller

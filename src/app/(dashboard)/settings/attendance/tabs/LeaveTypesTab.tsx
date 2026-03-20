@@ -81,8 +81,8 @@ export function LeaveTypesTab({
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-        <table className="w-full">
+      <div className={TABLE_STYLES.wrapper}>
+        <table className={TABLE_STYLES.table}>
           <thead>
             <tr className={TABLE_STYLES.header}>
               <th className={TABLE_STYLES.headerCell}>{'코멘트'}</th>

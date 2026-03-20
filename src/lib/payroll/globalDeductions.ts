@@ -309,6 +309,106 @@ export async function calculateDeductionsRUFromSettings(
     return { nationalPension: 0, healthInsurance: 0, longTermCare: 0, employmentInsurance: 0, incomeTax, localIncomeTax: 0, totalDeductions: incomeTax }
 }
 
+// ─── PL: ZUS + Zdrowotna + PIT + PPK ────────────────────
+
+const PL_DEFAULTS = {
+    pensionRate: 0.0976,
+    disabilityRate: 0.015,
+    sicknessRate: 0.0245,
+    healthInsuranceRate: 0.09,
+    taxFreeAmount: 30_000,
+    ppkRate: 0.02,
+}
+const PL_DEFAULT_BRACKETS = [
+    { upTo: 120_000, rate: 0.12 },
+    { upTo: Infinity, rate: 0.32 },
+]
+
+interface PlSettings {
+    pensionRate: number
+    disabilityRate: number
+    sicknessRate: number
+    healthInsuranceRate: number
+    taxBrackets: Array<{ upTo: number | null; rate: number }>
+    taxFreeAmount: number
+    ppkRate: number
+}
+
+function calculateIncomeTaxPL(
+    annualTaxable: number,
+    taxFreeAmount: number = PL_DEFAULTS.taxFreeAmount,
+    brackets: Array<{ upTo: number; rate: number }> = PL_DEFAULT_BRACKETS,
+): number {
+    const taxable = Math.max(0, annualTaxable - taxFreeAmount)
+    let tax = 0
+    let prev = 0
+    for (const b of brackets) {
+        if (taxable <= prev) break
+        const chunk = Math.min(taxable, b.upTo) - prev
+        tax += chunk * b.rate
+        prev = b.upTo
+    }
+    return Math.round(tax)
+}
+
+export function calculateDeductionsPL(monthlyGross: number): SimulationDeductions {
+    const pension = Math.round(monthlyGross * PL_DEFAULTS.pensionRate)
+    const disability = Math.round(monthlyGross * PL_DEFAULTS.disabilityRate)
+    const sickness = Math.round(monthlyGross * PL_DEFAULTS.sicknessRate)
+    const zusBasis = monthlyGross - pension - disability - sickness
+    const healthInsurance = Math.round(zusBasis * PL_DEFAULTS.healthInsuranceRate)
+    const ppk = Math.round(monthlyGross * PL_DEFAULTS.ppkRate)
+    const totalSocial = pension + disability + sickness + healthInsurance + ppk
+    const annualGross = monthlyGross * 12
+    const annualZus = (pension + disability + sickness) * 12
+    const incomeTax = Math.round(calculateIncomeTaxPL(annualGross - annualZus) / 12)
+
+    return {
+        nationalPension: pension,
+        healthInsurance: healthInsurance,
+        longTermCare: ppk,
+        employmentInsurance: disability + sickness,
+        incomeTax,
+        localIncomeTax: 0,
+        totalDeductions: totalSocial + incomeTax,
+    }
+}
+
+export async function calculateDeductionsPLFromSettings(
+    monthlyGross: number,
+    companyId?: string | null,
+): Promise<SimulationDeductions> {
+    const s = await getPayrollSetting<PlSettings>('pl-deductions', companyId)
+    const pensionRate = s?.pensionRate ?? PL_DEFAULTS.pensionRate
+    const disabilityRate = s?.disabilityRate ?? PL_DEFAULTS.disabilityRate
+    const sicknessRate = s?.sicknessRate ?? PL_DEFAULTS.sicknessRate
+    const healthRate = s?.healthInsuranceRate ?? PL_DEFAULTS.healthInsuranceRate
+    const ppkRate = s?.ppkRate ?? PL_DEFAULTS.ppkRate
+    const taxFree = s?.taxFreeAmount ?? PL_DEFAULTS.taxFreeAmount
+    const brackets = (s?.taxBrackets ?? PL_DEFAULT_BRACKETS).map(b => ({ ...b, upTo: b.upTo ?? Infinity }))
+
+    const pension = Math.round(monthlyGross * pensionRate)
+    const disability = Math.round(monthlyGross * disabilityRate)
+    const sickness = Math.round(monthlyGross * sicknessRate)
+    const zusBasis = monthlyGross - pension - disability - sickness
+    const healthInsurance = Math.round(zusBasis * healthRate)
+    const ppk = Math.round(monthlyGross * ppkRate)
+    const totalSocial = pension + disability + sickness + healthInsurance + ppk
+    const annualGross = monthlyGross * 12
+    const annualZus = (pension + disability + sickness) * 12
+    const incomeTax = Math.round(calculateIncomeTaxPL(annualGross - annualZus, taxFree, brackets) / 12)
+
+    return {
+        nationalPension: pension,
+        healthInsurance: healthInsurance,
+        longTermCare: ppk,
+        employmentInsurance: disability + sickness,
+        incomeTax,
+        localIncomeTax: 0,
+        totalDeductions: totalSocial + incomeTax,
+    }
+}
+
 // ─── MX: IMSS + ISR ──────────────────────────────────────
 
 const MX_IMSS_RATE = 0.025
@@ -378,6 +478,7 @@ export function calculateDeductionsByCountry(
     if (code.includes('VN')) return calculateDeductionsVN(monthlyGross)
     if (code.includes('RU')) return calculateDeductionsRU(monthlyGross)
     if (code.includes('MX')) return calculateDeductionsMX(monthlyGross)
+    if (code.includes('PL') || code.includes('EU')) return calculateDeductionsPL(monthlyGross)
     return calculateDeductionsKR(monthlyGross) // Fallback
 }
 
@@ -394,5 +495,6 @@ export async function calculateDeductionsByCountryFromSettings(
     if (code.includes('VN')) return calculateDeductionsVNFromSettings(monthlyGross, companyId)
     if (code.includes('RU')) return calculateDeductionsRUFromSettings(monthlyGross, companyId)
     if (code.includes('MX')) return calculateDeductionsMXFromSettings(monthlyGross, companyId)
+    if (code.includes('PL') || code.includes('EU')) return calculateDeductionsPLFromSettings(monthlyGross, companyId)
     return calculateDeductionsKRFromSettings(monthlyGross, companyId) // Fallback
 }

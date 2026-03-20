@@ -8,8 +8,8 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiPaginated, buildPagination } from '@/lib/api'
 import { badRequest } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
+import { withAuth } from '@/lib/permissions'
+import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 
 const searchSchema = z.object({
@@ -20,7 +20,7 @@ const searchSchema = z.object({
   search: z.string().optional(),
 })
 
-export const GET = withPermission(
+export const GET = withAuth(
   async (req: NextRequest, _context: { params: Promise<Record<string, string>> }, user: SessionUser) => {
     const params = Object.fromEntries(req.nextUrl.searchParams.entries())
     const parsed = searchSchema.safeParse(params)
@@ -100,5 +100,4 @@ export const GET = withPermission(
 
     return apiPaginated(items, buildPagination(page, limit, total))
   },
-  perm(MODULE.RECRUITMENT, ACTION.VIEW),
 )

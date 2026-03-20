@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { apiClient } from '@/lib/api'
 import { formatCurrency } from '@/lib/compensation'
 import type { SeveranceDetail } from '@/lib/payroll/types'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
 
 interface SeveranceCalculatorProps {
   employeeId: string
@@ -93,19 +93,19 @@ export default function SeveranceCalculator({
           {result.recentThreeMonths.length > 0 && (
             <div>
               <p className="text-xs font-medium text-[#666] mb-2">최근 3개월 급여</p>
-              <table className="w-full text-sm">
+              <table className={TABLE_STYLES.table}>
                 <thead>
-                  <tr className="bg-[#FAFAFA] text-xs text-[#666]">
-                    <th className="text-left px-3 py-2">월</th>
-                    <th className="text-right px-3 py-2">기본급</th>
-                    <th className="text-right px-3 py-2">초과근무</th>
-                    <th className="text-right px-3 py-2">수당</th>
-                    <th className="text-right px-3 py-2">합계</th>
+                  <tr className={TABLE_STYLES.header}>
+                    <th className={TABLE_STYLES.headerCell}>월</th>
+                    <th className={TABLE_STYLES.headerCellRight}>기본급</th>
+                    <th className={TABLE_STYLES.headerCellRight}>초과근무</th>
+                    <th className={TABLE_STYLES.headerCellRight}>수당</th>
+                    <th className={TABLE_STYLES.headerCellRight}>합계</th>
                   </tr>
                 </thead>
                 <tbody>
                   {result.recentThreeMonths.map((m) => (
-                    <tr key={m.yearMonth} className="border-b border-[#F5F5F5]">
+                    <tr key={m.yearMonth} className={TABLE_STYLES.row}>
                       <td className="px-3 py-2">{m.yearMonth}</td>
                       <td className="text-right px-3 py-2">{formatCurrency(m.baseSalary)}</td>
                       <td className="text-right px-3 py-2">{formatCurrency(m.overtimePay)}</td>

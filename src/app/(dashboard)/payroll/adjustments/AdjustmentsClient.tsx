@@ -22,6 +22,7 @@ import {
 } from 'lucide-react'
 import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 interface Employee {
@@ -371,66 +372,68 @@ export default function AdjustmentsClient({user }: Props) {
                                         <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
                                     </div>
                                 ) : (
-                                    <table className="w-full text-sm">
-                                        <thead className="bg-[#FAFAFA] border-b border-[#E8E8E8]">
-                                            <tr>
-                                                <th className="text-left px-4 py-3 text-xs font-semibold text-[#666] uppercase tracking-wider">{t('kr_keca781ec')}</th>
-                                                <th className="text-left px-4 py-3 text-xs font-semibold text-[#666] uppercase tracking-wider">{t('kr_kec9ca0ed')}</th>
-                                                <th className="text-left px-4 py-3 text-xs font-semibold text-[#666] uppercase tracking-wider">{t('kr_kecb9b4ed')}</th>
-                                                <th className="text-left px-4 py-3 text-xs font-semibold text-[#666] uppercase tracking-wider">{t('description')}</th>
-                                                <th className="text-right px-4 py-3 text-xs font-semibold text-[#666] uppercase tracking-wider">{t('amount')}</th>
-                                                <th className="text-right px-4 py-3 text-xs font-semibold text-[#666] uppercase tracking-wider">{t('kr_keca69deb')}</th>
-                                                <th className="px-4 py-3" />
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-[#F5F5F5]">
-                                            {filteredAdj.map((adj) => (
-                                                <tr key={adj.id} className="hover:bg-[#FAFAFA] group transition-colors">
-                                                    <td className="px-4 py-3">
-                                                        <p className="font-medium text-[#1A1A1A]">{adj.employee.name}</p>
-                                                        <p className="text-xs text-[#999]">{adj.employee.email}</p>
-                                                    </td>
-                                                    <td className="px-4 py-3">
-                                                        <TypeBadge type={adj.type} />
-                                                    </td>
-                                                    <td className="px-4 py-3">
-                                                        <span className="text-[#555]">{adj.category}</span>
-                                                    </td>
-                                                    <td className="px-4 py-3">
-                                                        <span className="text-[#333] line-clamp-1">{adj.description}</span>
-                                                    </td>
-                                                    <td className="px-4 py-3 text-right">
-                                                        <span className={`font-semibold tabular-nums ${adj.amount >= 0 ? 'text-[#059669]' : 'text-[#EF4444]'}`}>
-                                                            {formatKRW(adj.amount)}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-4 py-3 text-right">
-                                                        {adj.evidenceUrl ? (
-                                                            <a
-                                                                href={adj.evidenceUrl}
-                                                                target="_blank"
-                                                                rel="noreferrer"
-                                                                className="inline-flex items-center gap-1 text-xs text-[#1D4ED8] hover:underline"
-                                                            >
-                                                                <Upload size={11} />
-                                                                {t('kr_ked8c8cec')}
-                                                            </a>
-                                                        ) : (
-                                                            <span className="text-xs text-[#D4D4D4]">—</span>
-                                                        )}
-                                                    </td>
-                                                    <td className="px-4 py-3 text-right">
-                                                        <button
-                                                            onClick={() => handleDelete(adj.id)}
-                                                            className="p-1.5 hover:bg-[#FEE2E2] hover:text-[#DC2626] text-[#D4D4D4] rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                                                        >
-                                                            <Trash2 size={14} />
-                                                        </button>
-                                                    </td>
+                                    <div className={TABLE_STYLES.wrapper}>
+                                        <table className={TABLE_STYLES.table}>
+                                            <thead>
+                                                <tr className={TABLE_STYLES.header}>
+                                                    <th className={TABLE_STYLES.headerCell}>{t('kr_keca781ec')}</th>
+                                                    <th className={TABLE_STYLES.headerCell}>{t('kr_kec9ca0ed')}</th>
+                                                    <th className={TABLE_STYLES.headerCell}>{t('kr_kecb9b4ed')}</th>
+                                                    <th className={TABLE_STYLES.headerCell}>{t('description')}</th>
+                                                    <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('amount')}</th>
+                                                    <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('kr_keca69deb')}</th>
+                                                    <th className={TABLE_STYLES.headerCell} />
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                {filteredAdj.map((adj) => (
+                                                    <tr key={adj.id} className={cn(TABLE_STYLES.row, "group")}>
+                                                        <td className={TABLE_STYLES.cell}>
+                                                            <p className="font-medium text-[#1A1A1A]">{adj.employee.name}</p>
+                                                            <p className="text-xs text-[#999]">{adj.employee.email}</p>
+                                                        </td>
+                                                        <td className={TABLE_STYLES.cell}>
+                                                            <TypeBadge type={adj.type} />
+                                                        </td>
+                                                        <td className={TABLE_STYLES.cell}>
+                                                            <span className="text-[#555]">{adj.category}</span>
+                                                        </td>
+                                                        <td className={TABLE_STYLES.cell}>
+                                                            <span className="text-[#333] line-clamp-1">{adj.description}</span>
+                                                        </td>
+                                                        <td className={cn(TABLE_STYLES.cell, "text-right")}>
+                                                            <span className={`font-semibold tabular-nums ${adj.amount >= 0 ? 'text-[#059669]' : 'text-[#EF4444]'}`}>
+                                                                {formatKRW(adj.amount)}
+                                                            </span>
+                                                        </td>
+                                                        <td className={cn(TABLE_STYLES.cell, "text-right")}>
+                                                            {adj.evidenceUrl ? (
+                                                                <a
+                                                                    href={adj.evidenceUrl}
+                                                                    target="_blank"
+                                                                    rel="noreferrer"
+                                                                    className="inline-flex items-center gap-1 text-xs text-[#1D4ED8] hover:underline"
+                                                                >
+                                                                    <Upload size={11} />
+                                                                    {t('kr_ked8c8cec')}
+                                                                </a>
+                                                            ) : (
+                                                                <span className="text-xs text-[#D4D4D4]">—</span>
+                                                            )}
+                                                        </td>
+                                                        <td className={cn(TABLE_STYLES.cell, "text-right")}>
+                                                            <button
+                                                                onClick={() => handleDelete(adj.id)}
+                                                                className="p-1.5 hover:bg-[#FEE2E2] hover:text-[#DC2626] text-[#D4D4D4] rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                                                            >
+                                                                <Trash2 size={14} />
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 )}
                             </div>
                         </>

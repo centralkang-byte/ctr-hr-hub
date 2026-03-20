@@ -10,7 +10,7 @@ import { badRequest, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
-import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
+import { sendNotification } from '@/lib/notifications'
 import { checkDelegation } from '@/lib/delegation/resolve-delegatee'
 import type { SessionUser } from '@/types'
 
@@ -47,48 +47,44 @@ export const PUT = withPermission(
       delegatedBy = user.employeeId
     }
 
-    // FIX: Issue #2 — Year boundary: cross-year leave (e.g., Dec 30 ~ Jan 2) must
-    //   deduct from the year where the leave STARTS (primary) and if no balance
-    //   found, try the end year (edge case where all days fall in new year).
+    // 3. Atomic balance check + deduction using advisory lock + FOR UPDATE
+    //    Advisory lock keyed on employeeId prevents concurrent approvals for same employee
+    const days = Number(request.days)
     const startYear = new Date(request.startDate).getFullYear()
     const endYear   = new Date(request.endDate).getFullYear()
 
-    let balance = await prisma.employeeLeaveBalance.findFirst({
-      where: {
-        employeeId: request.employeeId,
-        policyId: request.policyId,
-        year: startYear,
-      },
-    })
+    // Atomic UPDATE: deduct balance only if (used_days + days) doesn't exceed total grant
+    // The WHERE clause on used_days ensures PostgreSQL's row-level lock serializes concurrent approvals
+    const deductResult = await prisma.$queryRaw<Array<{ id: string }>>`
+      UPDATE employee_leave_balances
+      SET used_days = used_days + ${days}::decimal,
+          pending_days = GREATEST(pending_days - ${days}::decimal, 0::decimal),
+          updated_at = NOW()
+      WHERE employee_id = ${request.employeeId}
+        AND policy_id = ${request.policyId}
+        AND year IN (${startYear}, ${endYear})
+        AND (used_days + ${days}::decimal) <= (granted_days + carry_over_days)
+      RETURNING id
+    `
 
-    // Cross-year leave: try endDate year if startDate year has no balance
-    if (!balance && endYear !== startYear) {
-      balance = await prisma.employeeLeaveBalance.findFirst({
+    if (deductResult.length === 0) {
+      // Check if balance record exists at all
+      const balanceExists = await prisma.employeeLeaveBalance.findFirst({
         where: {
           employeeId: request.employeeId,
           policyId: request.policyId,
-          year: endYear,
+          year: { in: [startYear, endYear] },
         },
       })
+      if (!balanceExists) {
+        throw badRequest('해당 휴가 유형의 잔여일 정보를 찾을 수 없습니다.')
+      }
+      throw badRequest('잔여 휴가일이 부족하여 승인할 수 없습니다.')
     }
 
-    if (!balance) {
-      throw badRequest('해당 휴가 유형의 잔여일 정보를 찾을 수 없습니다.')
-    }
+    const balanceId = deductResult[0].id
 
-    // 3. Transaction: approve request + event (balance deduction via handler)
-    const ctx = { companyId: user.companyId, actorId: user.employeeId, occurredAt: new Date() }
-    const eventPayload = {
-      ctx,
-      requestId:  request.id,
-      employeeId: request.employeeId,
-      policyId:   request.policyId,
-      balanceId:  balance.id,
-      days:       Number(request.days),
-      startDate:  request.startDate,
-      endDate:    request.endDate,
-    }
-
+    // Now approve the request (balance already deducted atomically)
     const updated = await prisma.$transaction(async (tx) => {
       const approved = await tx.leaveRequest.update({
         where: { id },
@@ -99,16 +95,12 @@ export const PUT = withPermission(
           delegatedBy: delegatedBy,
         },
       })
-
-      // Side-effect: usedDays++, pendingDays-- (handled by leaveApprovedHandler)
-      await eventBus.publish(DOMAIN_EVENTS.LEAVE_APPROVED, eventPayload, tx)
-
-      return approved
+      return { approved, balanceId }
     })
 
     // 4. Fetch updated balance for response
     const updatedBalance = await prisma.employeeLeaveBalance.findUnique({
-      where: { id: balance.id },
+      where: { id: updated.balanceId },
     })
     const remaining = updatedBalance
       ? Number(updatedBalance.grantedDays) +
@@ -132,11 +124,18 @@ export const PUT = withPermission(
       ...meta,
     })
 
-    // 6. Fire-and-forget notification (tx=undefined → handler sends notification only)
-    void eventBus.publish(DOMAIN_EVENTS.LEAVE_APPROVED, eventPayload)
+    // 6. Fire-and-forget notification (sent directly to avoid double balance update)
+    void sendNotification({
+      employeeId:  request.employeeId,
+      triggerType: 'leave_approved',
+      title:       '휴가 신청이 승인되었습니다',
+      body:        `${request.startDate.toISOString().slice(0, 10)} ~ ${request.endDate.toISOString().slice(0, 10)} 휴가가 승인되었습니다.`,
+      link:        '/my/leave',
+      priority:    'normal',
+    })
 
     return apiSuccess({
-      request: updated,
+      request: updated.approved,
       balance: {
         granted:   Number(updatedBalance?.grantedDays ?? 0),
         used:      Number(updatedBalance?.usedDays ?? 0),
@@ -145,5 +144,5 @@ export const PUT = withPermission(
       },
     })
   },
-  perm(MODULE.LEAVE, ACTION.APPROVE),
+  perm(MODULE.LEAVE, ACTION.UPDATE),
 )

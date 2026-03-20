@@ -21,11 +21,11 @@ export const GET = withPermission(
   async (req, _context, user) => {
     const { searchParams } = new URL(req.url)
     const params = querySchema.parse({
-      year: searchParams.get('year'),
-      month: searchParams.get('month'),
-      employeeId: searchParams.get('employeeId'),
-      page: searchParams.get('page'),
-      limit: searchParams.get('limit'),
+      year: searchParams.get('year') ?? undefined,
+      month: searchParams.get('month') ?? undefined,
+      employeeId: searchParams.get('employeeId') ?? undefined,
+      page: searchParams.get('page') ?? undefined,
+      limit: searchParams.get('limit') ?? undefined,
     })
 
     const isHR = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN

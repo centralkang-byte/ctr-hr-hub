@@ -12,6 +12,7 @@ import { apiClient } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
 import type { SessionUser } from '@/types'
 import { CARD_STYLES, TABLE_STYLES } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -372,8 +373,8 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
             이수 이력이 없습니다.
           </div>
         ) : (
-          <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
-            <table className="w-full text-sm">
+          <div className={TABLE_STYLES.wrapper}>
+            <table className={TABLE_STYLES.table}>
               <thead>
                 <tr className={TABLE_STYLES.header}>
                   <th className={TABLE_STYLES.headerCell}>과정명</th>
@@ -385,8 +386,8 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
               </thead>
               <tbody>
                 {history.map((item) => (
-                  <tr key={item.enrollmentId} className={TABLE_STYLES.header}>
-                    <td className="px-4 py-3">
+                  <tr key={item.enrollmentId} className={TABLE_STYLES.row}>
+                    <td className={TABLE_STYLES.cell}>
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-[#1A1A1A]">{item.course.title}</span>
                         {item.course.isMandatory && (
@@ -394,12 +395,12 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-[#666]">
+                    <td className={cn(TABLE_STYLES.cell, "text-[#666]")}>
                       {CATEGORY_LABELS[item.course.category] ?? item.course.category}
                     </td>
-                    <td className="px-4 py-3 text-[#666]">{formatDate(item.completedAt)}</td>
-                    <td className="px-4 py-3 text-[#666]">{formatDate(item.expiresAt)}</td>
-                    <td className="px-4 py-3 text-[#666]">
+                    <td className={cn(TABLE_STYLES.cell, "text-[#666]")}>{formatDate(item.completedAt)}</td>
+                    <td className={cn(TABLE_STYLES.cell, "text-[#666]")}>{formatDate(item.expiresAt)}</td>
+                    <td className={cn(TABLE_STYLES.cell, "text-[#666]")}>
                       {item.score !== null && item.score !== undefined ? `${item.score}점` : '-'}
                     </td>
                   </tr>

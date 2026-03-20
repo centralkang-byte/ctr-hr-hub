@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { formatCurrency, calculateBudgetSummary } from '@/lib/compensation'
 import { apiClient } from '@/lib/api'
+import { TABLE_STYLES } from '@/lib/styles'
 
 interface ConfirmTabProps {
   cycleId: string
@@ -103,20 +104,20 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
       </div>
 
       {/* ─── 조정 목록 ─── */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-[#FAFAFA]">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs text-[#666] font-medium">직원명</th>
-              <th className="px-4 py-3 text-left text-xs text-[#666] font-medium">부서</th>
-              <th className="px-4 py-3 text-right text-xs text-[#666] font-medium">현재 연봉</th>
-              <th className="px-4 py-3 text-right text-xs text-[#666] font-medium">인상률</th>
-              <th className="px-4 py-3 text-right text-xs text-[#666] font-medium">신규 연봉</th>
+      <div className={TABLE_STYLES.wrapper}>
+        <table className={TABLE_STYLES.table}>
+          <thead>
+            <tr className={TABLE_STYLES.header}>
+              <th className={TABLE_STYLES.headerCell}>직원명</th>
+              <th className={TABLE_STYLES.headerCell}>부서</th>
+              <th className={TABLE_STYLES.headerCellRight}>현재 연봉</th>
+              <th className={TABLE_STYLES.headerCellRight}>인상률</th>
+              <th className={TABLE_STYLES.headerCellRight}>신규 연봉</th>
             </tr>
           </thead>
           <tbody>
             {adjustments.map((a) => (
-              <tr key={a.employeeId} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+              <tr key={a.employeeId} className={TABLE_STYLES.row}>
                 <td className="px-4 py-3 text-sm font-medium">{a.employeeName}</td>
                 <td className="px-4 py-3 text-sm text-[#555]">{a.department}</td>
                 <td className="px-4 py-3 text-sm text-right">

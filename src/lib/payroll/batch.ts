@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Payroll Batch Calculation
-// PayrollRun 일괄 계산 (DRAFT → CALCULATING → REVIEW)
+// PayrollRun 일괄 계산 (DRAFT | ATTENDANCE_CLOSED → CALCULATING → REVIEW)
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
@@ -33,8 +33,8 @@ export async function calculatePayrollRun(runId: string): Promise<void> {
     where: { id: runId },
   })
 
-  if (run.status !== 'DRAFT') {
-    throw new Error(`급여 실행 상태가 DRAFT가 아닙니다: ${run.status}`)
+  if (!['DRAFT', 'ATTENDANCE_CLOSED'].includes(run.status)) {
+    throw new Error(`급여 실행 상태가 DRAFT 또는 ATTENDANCE_CLOSED가 아닙니다: ${run.status}`)
   }
 
   // 2. status → CALCULATING

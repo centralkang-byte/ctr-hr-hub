@@ -10,6 +10,7 @@ import { prisma } from '@/lib/prisma'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser, DeptOption, RefOption } from '@/types'
 import { EmployeeDetailClient } from './EmployeeDetailClient'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export default async function EmployeeDetailPage({
   params,
@@ -74,7 +75,7 @@ export default async function EmployeeDetailPage({
   // Shape the raw query result into the EmployeeDetail type expected by EmployeeDetailClient.
   // Fields that moved to EmployeeAssignment are lifted from the primary assignment.
   // manager is now derived from position hierarchy (A2-2); set to null for now.
-  const primaryAssignment = rawEmployee.assignments[0]
+  const primaryAssignment = extractPrimaryAssignment(rawEmployee.assignments)
 
   const employee = {
     ...rawEmployee,

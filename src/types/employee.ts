@@ -26,5 +26,5 @@ export interface MinimalEmployee {
   status?: EmployeeStatus | null        // ACTIVE, ON_LEAVE, RESIGNED, TERMINATED
   locationCode?: string | null          // 국가 코드: KR, US, CN, RU, VN, MX (Company.countryCode)
   locationCity?: string | null          // 도시명: 창원, Michigan, 장춘 (Company.locationCity)
-  companyName?: string | null           // 법인명: CTR-KR
+  companyName?: string | null           // 법인명: CTR
 }

@@ -36,22 +36,25 @@ export function SalaryBandsTab({
         <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />{t('kr_kebb0b4eb_add')}</Button>
       </div>
       {bands.length > 0 ? (
-        <div className="overflow-hidden rounded-xl border border-[#F0F0F3]">
-          <table className="w-full"><thead><tr className={TABLE_STYLES.header}>
-            <th className={TABLE_STYLES.headerCell}>{t('grade')}</th>
-            <th className={TABLE_STYLES.headerCell}>{t('kr_keca781ec')}</th>
-            <th className={TABLE_STYLES.headerCellRight}>{t('kr_kecb59cec')}</th>
-            <th className={TABLE_STYLES.headerCellRight}>{t('kr_keca491ea')}</th>
-            <th className={TABLE_STYLES.headerCellRight}>{t('kr_kecb59ceb')}</th>
-          </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{bands.map((b) => (
-            <tr key={b.id} className={TABLE_STYLES.row}>
-              <td className="px-4 py-3 text-sm font-medium text-[#5E81F4]">{b.jobGrade?.code ?? '—'} <span className="text-[#8181A5]">{b.jobGrade?.name ?? ''}</span></td>
-              <td className={TABLE_STYLES.cellMuted}>{b.jobCategory?.name ?? '—'}</td>
-              <td className="px-4 py-3 text-right text-sm text-[#1C1D21]">{fmt(b.minSalary)}</td>
-              <td className="px-4 py-3 text-right text-sm font-medium text-[#1C1D21]">{fmt(b.midSalary)}</td>
-              <td className="px-4 py-3 text-right text-sm text-[#1C1D21]">{fmt(b.maxSalary)}</td>
-            </tr>
-          ))}</tbody></table>
+        <div className={TABLE_STYLES.wrapper}>
+          <table className={TABLE_STYLES.table}>
+            <thead className={TABLE_STYLES.header}><tr>
+              <th className={TABLE_STYLES.headerCell}>{t('grade')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('kr_keca781ec')}</th>
+              <th className={TABLE_STYLES.headerCellRight}>{t('kr_kecb59cec')}</th>
+              <th className={TABLE_STYLES.headerCellRight}>{t('kr_keca491ea')}</th>
+              <th className={TABLE_STYLES.headerCellRight}>{t('kr_kecb59ceb')}</th>
+            </tr></thead>
+            <tbody>{bands.map((b) => (
+              <tr key={b.id} className={TABLE_STYLES.row}>
+                <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{b.jobGrade?.code ?? '—'} <span className="text-[#8181A5]">{b.jobGrade?.name ?? ''}</span></td>
+                <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>{b.jobCategory?.name ?? '—'}</td>
+                <td className={`${TABLE_STYLES.cell} text-right`}>{fmt(b.minSalary)}</td>
+                <td className={`${TABLE_STYLES.cell} text-right font-medium`}>{fmt(b.midSalary)}</td>
+                <td className={`${TABLE_STYLES.cell} text-right`}>{fmt(b.maxSalary)}</td>
+              </tr>
+            ))}</tbody>
+          </table>
         </div>
       ) : (
         <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">

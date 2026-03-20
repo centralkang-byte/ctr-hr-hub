@@ -304,6 +304,7 @@ export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
   const [loading, setLoading] = useState(true)
   const [activeFilter, setFilter] = useState<FilterKey>('all')
   const [processing, setProcessing] = useState<string | null>(null)
+  const [totalCount, setTotalCount] = useState(0)
 
   // ── Fetch ───────────────────────────────────────────────
 
@@ -314,6 +315,7 @@ export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
       )
       setTasks(res.data.items)
       setCountByType(res.data.countByType)
+      setTotalCount(res.data.total)
     } catch {
       // silent
     } finally {
@@ -385,9 +387,9 @@ export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
           <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1C1D21]">
             <ListChecks className="h-4 w-4 text-[#5E81F4]" />
             나의 할 일
-            {pendingCount > 0 && (
+            {totalCount > 0 && (
               <span className="rounded-full bg-[#5E81F4] px-2 py-0.5 text-[10px] font-bold text-white">
-                {pendingCount}
+                {totalCount}
               </span>
             )}
           </CardTitle>
@@ -403,7 +405,7 @@ export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
         <div className="mt-3 flex flex-wrap gap-1.5">
           {FILTER_TABS.map((tab) => {
             const count = tab.key === 'all'
-              ? tasks.filter(t => classifyTask(t) !== 'done').length
+              ? totalCount
               : (countByType[tab.key as UnifiedTaskType] ?? 0)
 
             return (

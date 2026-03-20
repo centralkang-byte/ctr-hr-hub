@@ -80,7 +80,7 @@ export const PUT = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.ATTENDANCE, ACTION.UPDATE),
+  perm(MODULE.ATTENDANCE, ACTION.APPROVE),
 )
 
 // ─── DELETE /api/v1/work-schedules/[id] ─────────────────
@@ -118,5 +118,5 @@ export const DELETE = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.ATTENDANCE, ACTION.DELETE),
+  perm(MODULE.ATTENDANCE, ACTION.APPROVE),
 )

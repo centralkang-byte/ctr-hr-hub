@@ -15,6 +15,7 @@ import { badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { determineViewerRole, maskPeerReviews } from '@/lib/performance/data-masking'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 const querySchema = z.object({
@@ -120,7 +121,7 @@ export const GET = withPermission(
                 .filter((n) => n.answer)
                 .map((n) => ({
                     reviewerName: n.nominee.name,
-                    reviewerDepartment: n.nominee.assignments[0]?.department?.name ?? '',
+                    reviewerDepartment: extractPrimaryAssignment(n.nominee.assignments)?.department?.name ?? '',
                     scoreChallenge: n.answer!.scoreChallenge,
                     scoreTrust: n.answer!.scoreTrust,
                     scoreResponsibility: n.answer!.scoreResponsibility,

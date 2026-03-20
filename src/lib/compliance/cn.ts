@@ -5,6 +5,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { Prisma } from '@/generated/prisma/client'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 type Decimal = Prisma.Decimal
 const { Decimal } = Prisma
 
@@ -226,7 +227,8 @@ export async function generateEmployeeRegistry(
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const rows: EmployeeRegistryRow[] = (employees as any).map((emp: any) => {
-    const assignment = emp.assignments?.[0]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const assignment = extractPrimaryAssignment(emp.assignments ?? []) as any
     return {
       employeeNo: emp.employeeNo,
       name: emp.name,

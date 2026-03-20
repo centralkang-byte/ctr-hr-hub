@@ -17,7 +17,6 @@ import {
   LogOut,
   Lock,
   Star,
-  type LucideIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useNavigation } from '@/hooks/useNavigation'

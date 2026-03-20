@@ -149,7 +149,7 @@ function UnifiedTaskCard({
                                 variant="outline"
                                 className="h-5 rounded-md border-[#C7D2FE] bg-[#EDF1FE] px-1.5 text-[10px] font-medium text-[#8B5CF6]"
                             >
-                                {'delegated'}
+                                {t('delegated')}
                             </Badge>
                         )}
                     </div>
@@ -190,7 +190,7 @@ function UnifiedTaskCard({
                                     onClick={(e) => { e.stopPropagation(); onAction(task.id, 'approve', task.sourceId) }}
                                 >
                                     {isBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
-                                    <span className="hidden sm:inline">{'actionApprove'}</span>
+                                    <span className="hidden sm:inline">{t('actionApprove')}</span>
                                 </Button>
                                 <Button
                                     size="sm"
@@ -200,14 +200,14 @@ function UnifiedTaskCard({
                                     onClick={(e) => { e.stopPropagation(); onAction(task.id, 'reject', task.sourceId) }}
                                 >
                                     <XCircle className="h-3.5 w-3.5" />
-                                    <span className="hidden sm:inline">{'actionReject'}</span>
+                                    <span className="hidden sm:inline">{t('actionReject')}</span>
                                 </Button>
                             </>
                         ) : isPending && task.actionUrl ? (
                             <Link href={task.actionUrl}>
                                 <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-[11px] text-[#8181A5] hover:bg-[#F5F5FA]">
                                     <ExternalLink className="h-3.5 w-3.5" />
-                                    <span className="hidden sm:inline">{'actionView'}</span>
+                                    <span className="hidden sm:inline">{t('actionView')}</span>
                                 </Button>
                             </Link>
                         ) : task.actionUrl ? (
@@ -239,30 +239,30 @@ function MyTasksInner({ user }: { user: SessionUser }) {
 
     // Config arrays defined here for t() access
     const TYPE_CONFIG: Record<string, { label: string; color: string; icon: React.ElementType }> = {
-        [UnifiedTaskType.LEAVE_APPROVAL]: { label: 'typeLeave', color: '#818CF8', icon: CalendarDays },
-        [UnifiedTaskType.PAYROLL_REVIEW]: { label: 'typePayroll', color: '#F59E0B', icon: Clock },
-        [UnifiedTaskType.ONBOARDING_TASK]: { label: 'typeOnboarding', color: '#10B981', icon: ClipboardCheck },
-        [UnifiedTaskType.OFFBOARDING_TASK]: { label: 'typeOffboarding', color: '#EF4444', icon: DoorOpen },
-        [UnifiedTaskType.PERFORMANCE_REVIEW]: { label: 'typePerformance', color: '#8B5CF6', icon: Target },
+        [UnifiedTaskType.LEAVE_APPROVAL]: { label: t('typeLeave'), color: '#818CF8', icon: CalendarDays },
+        [UnifiedTaskType.PAYROLL_REVIEW]: { label: t('typePayroll'), color: '#F59E0B', icon: Clock },
+        [UnifiedTaskType.ONBOARDING_TASK]: { label: t('typeOnboarding'), color: '#10B981', icon: ClipboardCheck },
+        [UnifiedTaskType.OFFBOARDING_TASK]: { label: t('typeOffboarding'), color: '#EF4444', icon: DoorOpen },
+        [UnifiedTaskType.PERFORMANCE_REVIEW]: { label: t('typePerformance'), color: '#8B5CF6', icon: Target },
     }
     const PRIORITY_CONFIG: Record<string, { color: string; bg: string; label: string }> = {
-        [UnifiedTaskPriority.URGENT]: { color: '#EF4444', bg: '#FEF2F2', label: 'priorityUrgent' },
-        [UnifiedTaskPriority.HIGH]: { color: '#F59E0B', bg: '#FFFBEB', label: 'priorityHigh' },
-        [UnifiedTaskPriority.MEDIUM]: { color: '#10B981', bg: '#F0FDF4', label: 'priorityMedium' },
-        [UnifiedTaskPriority.LOW]: { color: '#5E81F4', bg: '#EDF1FE', label: 'priorityLow' },
+        [UnifiedTaskPriority.URGENT]: { color: '#EF4444', bg: '#FEF2F2', label: t('priorityUrgent') },
+        [UnifiedTaskPriority.HIGH]: { color: '#F59E0B', bg: '#FFFBEB', label: t('priorityHigh') },
+        [UnifiedTaskPriority.MEDIUM]: { color: '#10B981', bg: '#F0FDF4', label: t('priorityMedium') },
+        [UnifiedTaskPriority.LOW]: { color: '#5E81F4', bg: '#EDF1FE', label: t('priorityLow') },
     }
     const FILTER_TABS = [
-        { key: 'all', label: 'filterAll', type: null },
-        { key: 'LEAVE_APPROVAL', label: 'typeLeave', type: UnifiedTaskType.LEAVE_APPROVAL },
-        { key: 'PAYROLL_REVIEW', label: 'typePayroll', type: UnifiedTaskType.PAYROLL_REVIEW },
-        { key: 'ONBOARDING_TASK', label: 'typeOnboarding', type: UnifiedTaskType.ONBOARDING_TASK },
-        { key: 'OFFBOARDING_TASK', label: 'typeOffboarding', type: UnifiedTaskType.OFFBOARDING_TASK },
-        { key: 'PERFORMANCE_REVIEW', label: 'typePerformance', type: UnifiedTaskType.PERFORMANCE_REVIEW },
+        { key: 'all', label: t('filterAll'), type: null },
+        { key: 'LEAVE_APPROVAL', label: t('filterLeave'), type: UnifiedTaskType.LEAVE_APPROVAL },
+        { key: 'PAYROLL_REVIEW', label: t('filterPayroll'), type: UnifiedTaskType.PAYROLL_REVIEW },
+        { key: 'ONBOARDING_TASK', label: t('filterOnboarding'), type: UnifiedTaskType.ONBOARDING_TASK },
+        { key: 'OFFBOARDING_TASK', label: t('filterOffboarding'), type: UnifiedTaskType.OFFBOARDING_TASK },
+        { key: 'PERFORMANCE_REVIEW', label: t('filterPerformance'), type: UnifiedTaskType.PERFORMANCE_REVIEW },
     ]
     const SORT_OPTIONS = [
-        { value: 'priority', label: 'sortPriority' },
-        { value: 'dueDate', label: 'sortDueDate' },
-        { value: 'createdAt', label: 'sortCreatedAt' },
+        { value: 'priority', label: t('sortPriority') },
+        { value: 'dueDate', label: t('sortDueDate') },
+        { value: 'createdAt', label: t('sortCreatedAt') },
     ]
 
     const [tasks, setTasks] = useState<UnifiedTask[]>([])
@@ -354,8 +354,8 @@ function MyTasksInner({ user }: { user: SessionUser }) {
     return (
         <div className="space-y-6 p-6">
             <PageHeader
-                title={'title'}
-                description={'description'}
+                title={t('title')}
+                description={t('description')}
             />
 
             {/* ── Status Tabs ── */}
@@ -368,7 +368,7 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                         : 'text-[#8181A5] hover:text-[#1C1D21]'
                         }`}
                 >
-                    {'tabInProgress'}
+                    {t('tabInProgress')}
                     {statusTab === 'PENDING' && totalAllTypes > 0 && (
                         <span className="ml-1.5 rounded-full bg-[#5E81F4] px-2 py-0.5 text-[10px] font-bold text-white">
                             {totalAllTypes}
@@ -383,7 +383,7 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                         : 'text-[#8181A5] hover:text-[#1C1D21]'
                         }`}
                 >
-                    {'tabCompleted'}
+                    {t('tabCompleted')}
                 </button>
             </div>
 
@@ -467,14 +467,14 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                                 : <Info className="h-12 w-12" />
                             }
                             title={
-                                typeFilter !== 'all' ? 'emptyNoType' :
-                                    statusTab === 'COMPLETED' ? 'emptyCompleted' :
-                                        'emptyNoTasks'
+                                typeFilter !== 'all' ? t('emptyNoType') :
+                                    statusTab === 'COMPLETED' ? t('emptyCompleted') :
+                                        t('emptyNoTasks')
                             }
                             description={
                                 statusTab === 'PENDING'
-                                    ? 'emptyNoTasksDesc'
-                                    : 'emptyCompletedDesc'
+                                    ? t('emptyNoTasksDesc')
+                                    : t('emptyCompletedDesc')
                             }
                         />
                     </CardContent>
@@ -500,13 +500,13 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                 <div className="flex items-start gap-3 rounded-xl border border-[#C7D2FE] bg-[#EDF1FE] p-4">
                     <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
                     <div className="text-xs text-[#5E81F4]">
-                        <p className="font-medium">{'completedNotice'}</p>
+                        <p className="font-medium">{t('completedNotice')}</p>
                         <p className="mt-1 text-[#8181A5]">
-                            {'completedLinks'}
+                            {t('completedLinks')}
                             <span className="ml-1 space-x-2">
-                                <Link href="/leave" className="underline hover:text-[#5E81F4]">{'linkLeave'}</Link>
-                                <Link href="/payroll/me" className="underline hover:text-[#5E81F4]">{'linkPayslip'}</Link>
-                                <Link href="/performance" className="underline hover:text-[#5E81F4]">{'linkPerformance'}</Link>
+                                <Link href="/leave" className="underline hover:text-[#5E81F4]">{t('linkLeave')}</Link>
+                                <Link href="/payroll/me" className="underline hover:text-[#5E81F4]">{t('linkPayslip')}</Link>
+                                <Link href="/performance" className="underline hover:text-[#5E81F4]">{t('linkPerformance')}</Link>
                             </span>
                         </p>
                     </div>

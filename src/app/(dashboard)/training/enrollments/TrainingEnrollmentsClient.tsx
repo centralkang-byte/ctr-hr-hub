@@ -1,7 +1,7 @@
 'use client'
 
-import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+// import { EmptyState } from '@/components/ui/EmptyState'
+// import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 
 import { useState, useCallback, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
@@ -29,7 +29,7 @@ type EnrollmentRow = {
 // ─── Component ───────────────────────────────────────────
 
 export default function TrainingEnrollmentsClient() {
-  const tCommon = useTranslations('common')
+//   const tCommon = useTranslations('common')
 
   const t = useTranslations('training')
   const tc = useTranslations('common')

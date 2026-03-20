@@ -32,7 +32,7 @@ export const payrollReviewRule: NudgeRule = {
 
   triggerType: 'nudge_payroll_review',
 
-  buildTitle(item: OverdueItem): string {
+  buildTitle(_item: OverdueItem): string {
     return '💰 급여 검토 대기 중'
   },
 

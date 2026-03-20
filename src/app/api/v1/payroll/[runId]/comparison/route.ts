@@ -9,6 +9,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { notFound } from '@/lib/errors'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 const querySchema = z.object({
     sortBy: z.enum(['name', 'department', 'currentNet', 'diffNet', 'diffPercent']).default('name'),
@@ -130,7 +131,7 @@ export const GET = withPermission(
 
         for (const item of items) {
             const emp = item.employee
-            const assignment = emp.assignments?.[0]
+            const assignment = extractPrimaryAssignment(emp.assignments)
             const deptName = assignment?.department?.name ?? '—'
             const posName = (assignment?.position as { titleKo?: string } | null)?.titleKo ?? '—'
 

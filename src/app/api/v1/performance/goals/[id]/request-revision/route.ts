@@ -94,5 +94,5 @@ export const PUT = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.PERFORMANCE, ACTION.APPROVE),
+  perm(MODULE.PERFORMANCE, ACTION.UPDATE), // Manager requests revision on subordinate goals
 )

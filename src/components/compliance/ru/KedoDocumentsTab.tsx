@@ -10,7 +10,7 @@ import { apiClient } from '@/lib/api'
 import KedoDocumentForm from './KedoDocumentForm'
 import KedoSignDialog from './KedoSignDialog'
 import type { PaginationInfo } from '@/types'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
 
 interface KedoDocument {
   id: string
@@ -152,7 +152,7 @@ export default function KedoDocumentsTab() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
+      <div className={TABLE_STYLES.wrapper}>
         {loading ? (
           <div className="flex items-center justify-center py-16 text-[#999] text-sm">
             로딩 중...
@@ -162,35 +162,35 @@ export default function KedoDocumentsTab() {
             KEDO 문서가 없습니다.
           </div>
         ) : (
-          <table className="w-full">
+          <table className={TABLE_STYLES.table}>
             <thead>
-              <tr className="bg-[#FAFAFA] border-b border-[#E8E8E8]">
-                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
+              <tr className={TABLE_STYLES.header}>
+                <th className={TABLE_STYLES.headerCell}>
                   제목
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
+                <th className={TABLE_STYLES.headerCell}>
                   직원
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
+                <th className={TABLE_STYLES.headerCell}>
                   문서 유형
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
+                <th className={TABLE_STYLES.headerCell}>
                   상태
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
+                <th className={TABLE_STYLES.headerCell}>
                   서명 수준
                 </th>
-                <th className="px-4 py-3 text-left text-xs text-[#666] font-medium uppercase tracking-wider">
+                <th className={TABLE_STYLES.headerCell}>
                   생성일
                 </th>
-                <th className="px-4 py-3 text-right text-xs text-[#666] font-medium uppercase tracking-wider">
+                <th className={TABLE_STYLES.headerCellRight}>
                   작업
                 </th>
               </tr>
             </thead>
             <tbody>
               {documents.map((doc) => (
-                <tr key={doc.id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA]">
+                <tr key={doc.id} className={TABLE_STYLES.row}>
                   <td className="px-4 py-3">
                     <p className="text-sm font-medium text-[#1A1A1A] max-w-xs truncate">
                       {doc.title}

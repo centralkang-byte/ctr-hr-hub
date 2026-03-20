@@ -28,7 +28,8 @@ export const GET = withPermission(
     const where = {
       ...companyFilter,
       ...(category ? { category } : {}),
-      ...(isActive !== undefined ? { isActive } : {}),
+      // Default to active-only when isActive is not explicitly provided
+      isActive: isActive !== undefined ? isActive : true,
     }
 
     const [items, total] = await Promise.all([

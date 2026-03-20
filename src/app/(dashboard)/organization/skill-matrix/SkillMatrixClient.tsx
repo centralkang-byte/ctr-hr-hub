@@ -387,19 +387,19 @@ export default function SkillMatrixClient({user,
                       <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
                     </div>
                   ) : (
-                    <div className="overflow-x-auto">
-                      <table className="text-xs border-collapse w-full min-w-[600px]">
-                        <thead>
+                    <div className={`${TABLE_STYLES.wrapper} overflow-x-auto overflow-y-visible`}>
+                      <table className={`${TABLE_STYLES.table} text-xs border-collapse min-w-[600px]`}>
+                        <thead className={TABLE_STYLES.header}>
                           {/* 카테고리 헤더 */}
                           <tr>
-                            <th className="text-left px-3 py-2 bg-[#FAFAFA] border border-[#E8E8E8] text-[#666] font-medium w-36" rowSpan={2}>
+                            <th className={`${TABLE_STYLES.headerCell} border-r border-[#F0F0F3] w-36`} rowSpan={2}>
                               직원
                             </th>
                             {Object.values(catGroups).map((cat) => (
                               <th
                                 key={cat.name}
                                 colSpan={cat.ids.length}
-                                className="px-2 py-1.5 bg-[#F5F5F5] border border-[#E8E8E8] text-[#444] font-semibold text-center"
+                                className={`${TABLE_STYLES.headerCell} border-l border-[#F0F0F3] text-center font-semibold bg-[#FAFAFA]`}
                               >
                                 {cat.name}
                               </th>
@@ -410,7 +410,7 @@ export default function SkillMatrixClient({user,
                             {competencies.map((c) => (
                               <th
                                 key={c.id}
-                                className="px-2 py-1.5 bg-[#FAFAFA] border border-[#E8E8E8] text-[#666] font-medium text-center whitespace-nowrap"
+                                className={`${TABLE_STYLES.headerCell} border-t border-l border-[#F0F0F3] text-center`}
                                 title={c.name}
                               >
                                 {c.name.length > 6 ? `${c.name.slice(0, 6)}…` : c.name}
@@ -466,17 +466,17 @@ export default function SkillMatrixClient({user,
                   {gapReport.departmentMatrix.length === 0 ? (
                     <div className="text-center py-12 text-[#666]">데이터가 없습니다.</div>
                   ) : (
-                    <div className="overflow-x-auto">
-                      <table className="text-xs border-collapse w-full min-w-[600px]">
-                        <thead>
+                    <div className={`${TABLE_STYLES.wrapper} overflow-x-auto overflow-y-visible`}>
+                      <table className={`${TABLE_STYLES.table} text-xs border-collapse min-w-[600px]`}>
+                        <thead className={TABLE_STYLES.header}>
                           <tr>
-                            <th className="text-left px-3 py-2 bg-[#FAFAFA] border border-[#E8E8E8] text-[#666] font-medium w-36">
+                            <th className={`${TABLE_STYLES.headerCell} border-r border-[#F0F0F3] w-36`}>
                               부서
                             </th>
                             {gapReport.allCompetencyGaps.map((c) => (
                               <th
                                 key={c.competencyId}
-                                className="px-2 py-1.5 bg-[#FAFAFA] border border-[#E8E8E8] text-[#666] font-medium text-center whitespace-nowrap"
+                                className={`${TABLE_STYLES.headerCell} border-l border-[#F0F0F3] text-center whitespace-nowrap bg-[#FAFAFA]`}
                                 title={c.competencyName}
                               >
                                 {c.competencyName.length > 6 ? `${c.competencyName.slice(0, 6)}…` : c.competencyName}

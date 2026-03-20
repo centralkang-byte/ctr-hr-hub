@@ -209,7 +209,7 @@ export const piiAccessSearchSchema = paginationSchema.extend({
 })
 
 // ═══════════════════════════════════════════════════════════
-// Korea (CTR-KR)
+// Korea (CTR)
 // ═══════════════════════════════════════════════════════════
 
 export const workHoursQuerySchema = z.object({

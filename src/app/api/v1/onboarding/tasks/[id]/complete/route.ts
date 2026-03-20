@@ -3,16 +3,20 @@
 // 온보딩 태스크 완료 처리 (필수 태스크 모두 완료 시 온보딩 종료)
 // ═══════════════════════════════════════════════════════════
 
+import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { apiSuccess } from '@/lib/api'
-import { notFound } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { apiSuccess, apiError } from '@/lib/api'
+import { badRequest, notFound, unauthorized } from '@/lib/errors'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
 import type { SessionUser } from '@/types'
 
-export const PUT = withPermission(
-  async (_req, ctx, user: SessionUser) => {
+export async function PUT(_req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user) return apiError(unauthorized())
+    const user = session.user as SessionUser
     const { id } = await ctx.params
 
     const task = await prisma.employeeOnboardingTask.findUnique({
@@ -25,6 +29,23 @@ export const PUT = withPermission(
       },
     })
     if (!task) throw notFound('태스크를 찾을 수 없습니다.')
+
+    // ── State transition validation ──
+    const ALLOWED_TRANSITIONS: Record<string, string[]> = {
+      PENDING: ['IN_PROGRESS'],
+      IN_PROGRESS: ['DONE'],
+      DONE: [],  // terminal state
+    }
+    const currentStatus = task.status
+    const targetStatus = 'DONE'
+    const allowed = ALLOWED_TRANSITIONS[currentStatus] ?? []
+
+    if (currentStatus === targetStatus) {
+      return apiSuccess({ completed: true, message: '이미 완료된 태스크입니다.' })
+    }
+    if (!allowed.includes(targetStatus)) {
+      throw badRequest(`현재 상태 '${currentStatus}'에서 '${targetStatus}'로 변경할 수 없습니다. 허용: ${allowed.length > 0 ? allowed.join(', ') : '없음 (최종 상태)'}`)
+    }
 
     const onboarding  = task.employeeOnboarding
     const companyId   = onboarding.companyId ?? ''
@@ -91,6 +112,7 @@ export const PUT = withPermission(
     })
 
     return apiSuccess({ completed: true })
-  },
-  perm(MODULE.ONBOARDING, ACTION.UPDATE),
-)
+  } catch (error) {
+    return apiError(error)
+  }
+}

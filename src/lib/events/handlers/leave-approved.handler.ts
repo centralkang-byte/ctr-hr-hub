@@ -17,7 +17,6 @@
 // (실제 route 교체는 별도 세션에서 진행 — 이 파일은 핸들러 stub)
 // ═══════════════════════════════════════════════════════════
 
-import { prisma } from '@/lib/prisma'
 import { sendNotification } from '@/lib/notifications'
 import type { DomainEventHandler, LeaveApprovedPayload, TxClient } from '../types'
 import { DOMAIN_EVENTS } from '../types'
@@ -26,19 +25,17 @@ export const leaveApprovedHandler: DomainEventHandler<'LEAVE_APPROVED'> = {
   eventName: DOMAIN_EVENTS.LEAVE_APPROVED,
 
   async handle(payload: LeaveApprovedPayload, tx?: TxClient): Promise<void> {
-    const db = tx ?? prisma
-
-    // 1. [TX] Balance deduction: pending → used
-    await db.employeeLeaveBalance.update({
-      where: { id: payload.balanceId },
-      data: {
-        usedDays:    { increment: payload.days },
-        pendingDays: { decrement: payload.days },
-      },
-    })
-
-    // 2. [ASYNC] Employee notification (fire-and-forget — tx 외부에서 실행)
-    if (!tx) {
+    if (tx) {
+      // 1. [TX] Balance deduction: pending → used (only inside transaction)
+      await tx.employeeLeaveBalance.update({
+        where: { id: payload.balanceId },
+        data: {
+          usedDays:    { increment: payload.days },
+          pendingDays: { decrement: payload.days },
+        },
+      })
+    } else {
+      // 2. [ASYNC] Employee notification (fire-and-forget — outside transaction)
       void sendNotification({
         employeeId:  payload.employeeId,
         triggerType: 'leave_approved',

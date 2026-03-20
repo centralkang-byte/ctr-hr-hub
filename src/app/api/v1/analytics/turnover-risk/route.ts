@@ -10,6 +10,7 @@ import { apiSuccess } from '@/lib/api'
 import { resolveCompanyId } from '@/lib/api/companyFilter'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const GET = withPermission(
   async (req: NextRequest, _ctx, user: SessionUser) => {
@@ -52,8 +53,8 @@ export const GET = withPermission(
       .map((e) => ({
         employeeId: e.id,
         employeeName: e.name,
-        departmentName: e.assignments[0]?.department?.name ?? null,
-        jobGradeName: e.assignments[0]?.jobGrade?.name ?? null,
+        departmentName: extractPrimaryAssignment(e.assignments)?.department?.name ?? null,
+        jobGradeName: extractPrimaryAssignment(e.assignments)?.jobGrade?.name ?? null,
         latestScore: e.turnoverRiskScores[0] ?? null,
       }))
       .filter((d) => {

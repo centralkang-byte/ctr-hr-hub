@@ -70,7 +70,7 @@ function timeStringToMinutes(time: string): number {
  */
 function calcNightMinutes(clockIn: Date, clockOut: Date): number {
   const NIGHT_START = 22 * 60  // 22:00
-  const NIGHT_END_NEXT = 30 * 60  // 다음날 06:00 = 30 * 60
+//   const NIGHT_END_NEXT = 30 * 60  // 다음날 06:00 = 30 * 60
 
   const totalMs = clockOut.getTime() - clockIn.getTime()
   if (totalMs <= 0) return 0

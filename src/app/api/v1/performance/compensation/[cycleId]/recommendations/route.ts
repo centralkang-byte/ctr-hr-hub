@@ -20,6 +20,7 @@ import {
     getSalaryBandMidpoint,
     calculateComparatio,
 } from '@/lib/performance/merit-matrix'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/performance/compensation/[cycleId]/recommendations
@@ -81,7 +82,7 @@ export const GET = withPermission(
                     continue
                 }
 
-                const assignment = review.employee.assignments[0]
+                const assignment = extractPrimaryAssignment(review.employee.assignments)
                 const { salary: currentSalary } = await getCurrentSalary(
                     review.employeeId, cycle.companyId, prisma,
                 )
@@ -144,5 +145,5 @@ export const GET = withPermission(
             throw handlePrismaError(error)
         }
     },
-    perm(MODULE.PERFORMANCE, ACTION.VIEW),
+    perm(MODULE.PERFORMANCE, ACTION.APPROVE),
 )

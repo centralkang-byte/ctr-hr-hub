@@ -78,5 +78,5 @@ export const PUT = withPermission(
             })),
         })
     },
-    perm(MODULE.ONBOARDING, ACTION.APPROVE),
+    perm(MODULE.OFFBOARDING, ACTION.APPROVE),
 )

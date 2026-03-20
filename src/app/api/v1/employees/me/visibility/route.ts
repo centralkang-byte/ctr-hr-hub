@@ -43,5 +43,5 @@ export const PUT = withPermission(
 
     return apiSuccess(vis)
   },
-  perm(MODULE.EMPLOYEES, ACTION.UPDATE),
+  perm(MODULE.EMPLOYEES, ACTION.VIEW), // Self-service: scoped to user.employeeId
 )

@@ -10,6 +10,7 @@ import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
@@ -83,7 +84,8 @@ export const GET = withPermission(
 
     // 매트릭스 구성
     const matrix = employees.map((emp) => {
-      const grade = emp.assignments?.[0]?.jobGrade?.code ?? ''
+      const empPrimary = extractPrimaryAssignment(emp.assignments ?? [])
+      const grade = (empPrimary as Record<string, any>)?.jobGrade?.code ?? ''
       const assessmentMap = new Map(emp.skillAssessments.map((a) => [a.competencyId, a]))
 
       return {
@@ -92,8 +94,8 @@ export const GET = withPermission(
           name: emp.name,
           nameEn: emp.nameEn,
           grade,
-          gradeLabel: emp.assignments?.[0]?.jobGrade?.name ?? '',
-          department: emp.assignments?.[0]?.department,
+          gradeLabel: (empPrimary as Record<string, any>)?.jobGrade?.name ?? '',
+          department: (empPrimary as Record<string, any>)?.department,
         },
         scores: competencies.map((c) => {
           const assessment = assessmentMap.get(c.id)

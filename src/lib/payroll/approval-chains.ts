@@ -10,12 +10,12 @@ import { getPayrollSetting } from '@/lib/settings/get-setting'
 // ─── Default approval chains (fallback) ──────────────────
 
 export const PAYROLL_APPROVAL_CHAINS: Record<string, string[]> = {
-    'CTR-KR': ['HR_MANAGER', 'CFO'],
+    'CTR': ['HR_MANAGER', 'CFO'],
     'CTR-CN': ['GENERAL_MANAGER'],
     'CTR-US': ['CONTROLLER'],
     'CTR-RU': ['COUNTRY_HEAD'],
     'CTR-VN': ['COUNTRY_HEAD'],
-    'CTR-MX': ['COUNTRY_HEAD'],
+    'CTR-EU': ['COUNTRY_HEAD'],
     'DEFAULT': ['HR_ADMIN'],
 }
 

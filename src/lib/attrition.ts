@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── Interfaces ──────────────────────────────────────────
 
@@ -68,7 +69,7 @@ async function calculateCompensationFactor(employeeId: string): Promise<number> 
 
   if (!employee) return 50
 
-  const assignment = employee.assignments?.[0]
+  const assignment = extractPrimaryAssignment(employee.assignments ?? [])
 
   // Get latest compensation history for current salary
   const latestComp = await prisma.compensationHistory.findFirst({
@@ -178,7 +179,7 @@ async function calculateManagerFactor(employeeId: string): Promise<number> {
 
   if (!employee) return 50
 
-  const hasReportsTo = !!employee.assignments?.[0]?.position?.reportsToPositionId
+  const hasReportsTo = !!(extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>)?.position?.reportsToPositionId
 
   // No manager position assigned — higher uncertainty
   if (!hasReportsTo) return 50

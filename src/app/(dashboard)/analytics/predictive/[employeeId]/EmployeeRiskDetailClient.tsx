@@ -32,6 +32,7 @@ import {
 } from 'recharts'
 import { apiClient } from '@/lib/api'
 import { BUTTON_VARIANTS,  TABLE_STYLES, CHART_THEME } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 
 // ─── 타입 ────────────────────────────────────────────────
 
@@ -384,9 +385,9 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
             <h3 className="text-base font-semibold text-[#1A1A1A]">{t('kr_kec9db4ec_risk_kec8ba0ed_kec83')}</h3>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className={TABLE_STYLES.header}>
+            <table className={TABLE_STYLES.table}>
+              <thead className={TABLE_STYLES.header}>
+                <tr className={TABLE_STYLES.row}>
                   <th className={TABLE_STYLES.headerCell}>{t('kr_kec8ba0ed')}</th>
                   <th className={TABLE_STYLES.headerCell}>{t('kr_keab080ec')}</th>
                   <th className={TABLE_STYLES.headerCell}>{t('score')}</th>
@@ -396,12 +397,12 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
               </thead>
               <tbody>
                 {(data.turnover.signals as unknown as Signal[]).map((signal) => (
-                  <tr key={signal.signal} className={TABLE_STYLES.header}>
-                    <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">
+                  <tr key={signal.signal} className={TABLE_STYLES.row}>
+                    <td className={cn(TABLE_STYLES.cell, 'font-medium text-[#1A1A1A]')}>
                       {SIGNAL_LABELS[signal.signal] ?? signal.signal}
                     </td>
-                    <td className="px-4 py-3 text-sm text-[#555]">{Math.round(signal.weight * 100)}%</td>
-                    <td className="px-4 py-3">
+                    <td className={cn(TABLE_STYLES.cell, 'text-[#555]')}>{Math.round(signal.weight * 100)}%</td>
+                    <td className={TABLE_STYLES.cell}>
                       {signal.available ? (
                         <div className="flex items-center gap-2">
                           <div className="w-20 h-1.5 bg-[#F5F5F5] rounded-full overflow-hidden">
@@ -419,7 +420,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
                         <span className="text-xs text-[#999]">—</span>
                       )}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className={TABLE_STYLES.cell}>
                       <span className={`text-xs px-2 py-0.5 rounded-full ${
                         signal.available
                           ? 'bg-[#D1FAE5] text-[#047857]'
@@ -428,7 +429,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
                         {signal.available ? '계산됨' : '데이터 없음'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-xs text-[#666]">
+                    <td className={cn(TABLE_STYLES.cell, 'text-[#666]')}>
                       {signal.rawData
                         ? Object.entries(signal.rawData)
                             .map(([k, v]) => `${k}: ${v}`)

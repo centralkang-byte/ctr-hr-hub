@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Seed 17: Payroll Pipeline GP#3 QA (Expanded)
 // ═══════════════════════════════════════════════════════════
-// Runs: KR×12 + US×6 + CN×6 + VN×6 + RU×3 + MX×3 = 36 total
+// Runs: KR×12 + US×6 + CN×6 + VN×6 + RU×3 + EU×3 = 36 total
 // Items: ~1,200+  Adjustments: ~40  Anomalies: ~60  Approvals: ~35
 //
 // IMPORTANT: This seed truncates ALL payroll data and recreates.
@@ -144,18 +144,7 @@ function calcRU(base: number, bonus: number = 0) {
     }
 }
 
-// ─── MX salary (MXN) ─────────────────────────────────────────
-function calcMX(base: number, bonus: number = 0) {
-    // TODO: Move to Settings (Payroll) — MX: IMSS ~2.5%, ISR ~12%
-    const imss = Math.round(base * 0.025), isr = Math.round((base + bonus) * 0.12)
-    const total = imss + isr
-    const gross = base + bonus
-    return {
-        baseSalary: base, overtimePay: 0, bonus, allowances: 0, grossPay: gross,
-        deductions: total, netPay: gross - total,
-        detail: { earnings: { baseSalary: base, bonuses: bonus }, tax: { imss, isr } }
-    }
-}
+// calcMX removed — CTR-MX merged into CTR-US Location. EU calc is inline.
 
 // ─── Month helpers ───────────────────────────────────────────
 function periodOf(ym: string) {
@@ -183,7 +172,7 @@ export async function seedPayrollPipeline(prisma: PrismaClient): Promise<void> {
 
     // ── Companies ──────────────────────────────────────────────
     const coList = await prisma.company.findMany({
-        where: { code: { in: ['CTR-KR', 'CTR-US', 'CTR-CN', 'CTR-VN', 'CTR-RU', 'CTR-MX'] } },
+        where: { code: { in: ['CTR', 'CTR-US', 'CTR-CN', 'CTR-VN', 'CTR-RU', 'CTR-EU'] } },
         select: { id: true, code: true, currency: true },
     })
     const co = Object.fromEntries(coList.map(c => [c.code!, c]))
@@ -198,18 +187,18 @@ export async function seedPayrollPipeline(prisma: PrismaClient): Promise<void> {
         })
         return e?.id ?? ''
     }
-    const actorKR = await getActor(coId('CTR-KR'))
+    const actorKR = await getActor(coId('CTR'))
     const actorUS = await getActor(coId('CTR-US'))
     const actorCN = await getActor(coId('CTR-CN'))
     const actorVN = await getActor(coId('CTR-VN'))
     const actorRU = await getActor(coId('CTR-RU'))
-    const actorMX = await getActor(coId('CTR-MX'))
+    const actorEU = await getActor(coId('CTR-EU'))
 
     if (!actorKR) { console.warn('  ⚠️  No KR employee — aborting'); return }
 
     // ── KR Employees ───────────────────────────────────────────
     const krEmps = await prisma.employee.findMany({
-        where: { assignments: { some: { companyId: coId('CTR-KR'), endDate: null, status: { in: ['ACTIVE', 'ON_LEAVE'] } } } },
+        where: { assignments: { some: { companyId: coId('CTR'), endDate: null, status: { in: ['ACTIVE', 'ON_LEAVE'] } } } },
         select: { id: true, employeeNo: true },
         orderBy: { employeeNo: 'asc' },
         take: 80,
@@ -241,9 +230,9 @@ export async function seedPayrollPipeline(prisma: PrismaClient): Promise<void> {
     const cnEmps = await getEmps('CTR-CN', 12)
     const vnEmps = await getEmps('CTR-VN', 10)
     const ruEmps = await getEmps('CTR-RU', 8)
-    const mxEmps = await getEmps('CTR-MX', 8)
+    const euEmps = await getEmps('CTR-EU', 8)
 
-    console.log(`  KR:${krEmps.length} US:${usEmps.length} CN:${cnEmps.length} VN:${vnEmps.length} RU:${ruEmps.length} MX:${mxEmps.length}`)
+    console.log(`  KR:${krEmps.length} US:${usEmps.length} CN:${cnEmps.length} VN:${vnEmps.length} RU:${ruEmps.length} EU:${euEmps.length}`)
 
     // Shared calc result shape (all country calcs must conform)
     interface CalcResult {
@@ -366,7 +355,7 @@ export async function seedPayrollPipeline(prisma: PrismaClient): Promise<void> {
     }
 
     // ══════════════════════════════════════════════════════════════
-    // CTR-KR: 12 runs (2025-03 ~ 2026-02)
+    // CTR: 12 runs (2025-03 ~ 2026-02)
     // ══════════════════════════════════════════════════════════════
     const KR_RUNS = [
         { ym: '2025-03', status: 'PAID' }, { ym: '2025-04', status: 'PAID' },
@@ -382,7 +371,7 @@ export async function seedPayrollPipeline(prisma: PrismaClient): Promise<void> {
         const { year, month } = periodOf(r.ym)
         const isDraft = r.status === 'DRAFT'
         const res = await createRun({
-            code: 'CTR-KR', ym: r.ym, status: r.status, actor: actorKR,
+            code: 'CTR', ym: r.ym, status: r.status, actor: actorKR,
             name: `CTR-KR ${r.ym} 월급`, currency: 'KRW',
             emps: isDraft ? [] : krEmps, calcFn: krCalc,
             paidAt: r.status === 'PAID' ? new Date(`${r.ym}-25T00:00:00Z`) : undefined,
@@ -393,7 +382,7 @@ export async function seedPayrollPipeline(prisma: PrismaClient): Promise<void> {
 
         // Payslips for PAID runs
         if (r.status === 'PAID') {
-            await createPayslips(res.run.id, coId('CTR-KR'), year, month, new Date(`${r.ym}-26T08:00:00Z`))
+            await createPayslips(res.run.id, coId('CTR'), year, month, new Date(`${r.ym}-26T08:00:00Z`))
         }
 
         // Approval chains for PAID/APPROVED runs
@@ -670,40 +659,43 @@ export async function seedPayrollPipeline(prisma: PrismaClient): Promise<void> {
     console.log('  ✓ RU:', RU_RUNS.length, 'runs')
 
     // ══════════════════════════════════════════════════════════════
-    // CTR-MX: 3 runs
+    // CTR-EU: 3 runs (replaced CTR-MX — merged into CTR-US Location)
     // ══════════════════════════════════════════════════════════════
-    const MX_BASES = [45_000, 38_000, 32_000, 28_000, 24_000, 20_000, 16_000, 14_000]
-    const mxCalc = (e: { id: string }, ym: string) => {
-        const idx = mxEmps.findIndex(u => u.id === e.id)
-        const base = MX_BASES[idx % MX_BASES.length] ?? 20_000
-        const [, m] = ym.split('-').map(Number)
-        // Aguinaldo: 15 days minimum in December
-        // TODO: Move to Settings (Payroll) — MX 아기날도: 최소 15일분 (노동법 §87)
-        const bonus = m === 12 ? Math.round(base / 2) : 0
-        return calcMX(base, bonus)
+    const EU_BASES = [18_000, 15_000, 12_000, 10_000, 9_000, 8_000, 7_000, 6_500]
+    const euCalc = (e: { id: string }) => {
+        const idx = euEmps.findIndex(u => u.id === e.id)
+        const base = EU_BASES[idx % EU_BASES.length] ?? 10_000
+        // Poland: ZUS ~13.7%, PIT ~17%
+        const zus = Math.round(base * 0.137), pit = Math.round(base * 0.17)
+        const total = zus + pit
+        return {
+            baseSalary: base, overtimePay: 0, bonus: 0, allowances: 0, grossPay: base,
+            deductions: total, netPay: base - total,
+            detail: { earnings: { baseSalary: base }, tax: { zus, pit } }
+        }
     }
-    const MX_RUNS = [
+    const EU_RUNS = [
         { ym: '2025-12', status: 'PAID' },
         { ym: '2026-01', status: 'PAID' },
         { ym: '2026-02', status: 'DRAFT' },
     ]
-    for (const r of MX_RUNS) {
+    for (const r of EU_RUNS) {
         const { year, month } = periodOf(r.ym)
         const res = await createRun({
-            code: 'CTR-MX', ym: r.ym, status: r.status, actor: actorMX || actorKR,
-            name: `CTR-MX ${r.ym} Nómina`, currency: 'MXN',
-            emps: r.status === 'DRAFT' ? [] : mxEmps,
-            calcFn: mxCalc,
+            code: 'CTR-EU', ym: r.ym, status: r.status, actor: actorEU || actorKR,
+            name: `CTR-EU ${r.ym} Payroll`, currency: 'PLN',
+            emps: r.status === 'DRAFT' ? [] : euEmps,
+            calcFn: euCalc,
             paidAt: r.status === 'PAID' ? new Date(`${r.ym}-05T00:00:00Z`) : undefined,
         })
         if (r.status === 'PAID') {
-            await createPayslips(res.run.id, coId('CTR-MX'), year, month, new Date(`${r.ym}-06T08:00:00Z`))
-            await createApproval(res.run.id, actorMX || actorKR, new Date(year, month - 1, 3, 10, 0, 0), [
-                { role: 'LOCAL_HR', approverId: actorMX || actorKR, status: 'APPROVED', decidedAt: new Date(year, month - 1, 4, 10, 0, 0) },
+            await createPayslips(res.run.id, coId('CTR-EU'), year, month, new Date(`${r.ym}-06T08:00:00Z`))
+            await createApproval(res.run.id, actorEU || actorKR, new Date(year, month - 1, 3, 10, 0, 0), [
+                { role: 'LOCAL_HR', approverId: actorEU || actorKR, status: 'APPROVED', decidedAt: new Date(year, month - 1, 4, 10, 0, 0) },
             ], new Date(year, month - 1, 4, 10, 0, 0))
         }
     }
-    console.log('  ✓ MX:', MX_RUNS.length, 'runs')
+    console.log('  ✓ EU:', EU_RUNS.length, 'runs')
 
     // ── Summary ─────────────────────────────────────────────────
     const [runCnt, itemCnt, adjCnt, anomCnt, apprCnt, stepCnt, slipCnt] = await Promise.all([

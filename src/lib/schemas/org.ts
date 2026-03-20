@@ -10,7 +10,7 @@ export const departmentCreateSchema = z.object({
   companyId: z.string().uuid('Invalid company ID'),
   code: z.string().min(1, 'Department code is required').max(20),
   name: z.string().min(1, 'Department name is required').max(100),
-  level: z.number().int().min(0),
+  level: z.number().int().min(0).optional(),  // auto-calculated from parent if omitted
 
   // Optional fields
   parentId: z.string().uuid().optional().nullable(),
@@ -39,7 +39,10 @@ export type DepartmentUpdateInput = z.infer<typeof departmentUpdateSchema>
 export const departmentSearchSchema = searchSchema.extend({
   companyId: z.string().uuid().optional(),
   parentId: z.string().uuid().optional().nullable(),
-  isActive: z.boolean().optional(),
+  isActive: z.preprocess(
+    (val) => (val === 'true' ? true : val === 'false' ? false : val),
+    z.boolean().optional(),
+  ),
 })
 
 export type DepartmentSearchInput = z.infer<typeof departmentSearchSchema>

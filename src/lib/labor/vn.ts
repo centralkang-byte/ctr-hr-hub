@@ -4,6 +4,14 @@
 
 import type { LaborModule, WorkHoursValidation } from '@/lib/labor/index'
 import type { LaborConfig } from '@/lib/labor/types'
+import {
+  getWorkHourLimitsFromSettings,
+  getMinWageFromSettings,
+  getOvertimeRatesFromSettings,
+  getProbationRulesFromSettings,
+} from '@/lib/labor/settings'
+import type { ProbationRulesSettings } from '@/lib/labor/settings'
+import type { OvertimeRate, NightShiftRule } from '@/lib/labor/types'
 
 export const vnLaborModule: LaborModule = {
   countryCode: 'VN',
@@ -41,7 +49,7 @@ export const laborConfig: LaborConfig = {
   overtime_threshold_weekly: 48,
   max_overtime_weekly: 12,
   overtime_rates: [
-    { label: 'India OT', multiplier: 2.0, condition: 'WEEKDAY_OT' },
+    { label: 'Vietnam OT', multiplier: 2.0, condition: 'WEEKDAY_OT' },
   ],
   leave_types: [
     { type: 'CASUAL', days_per_year: 12, accrual_rule: 'FRONT_LOADED', paid: true },
@@ -54,4 +62,35 @@ export const laborConfig: LaborConfig = {
   night_shift: { start_hour: 22, end_hour: 6 },
   probation_months: 6,
   severance: null,
+}
+
+// ─── Settings-aware async config loader ───────────────────
+
+export async function getVnLaborConfigFromSettings(
+  companyId?: string | null,
+): Promise<{
+  maxWeeklyHours: number
+  standardWeeklyHours: number
+  maxOvertimeHours: number
+  minHourlyWage: number
+  overtimeRates: OvertimeRate[]
+  nightShift: NightShiftRule
+  probation: ProbationRulesSettings
+}> {
+  const [workHourLimits, wageConfig, otConfig, probation] = await Promise.all([
+    getWorkHourLimitsFromSettings(companyId, 'VN'),
+    getMinWageFromSettings(companyId, 'VN'),
+    getOvertimeRatesFromSettings(companyId, 'VN'),
+    getProbationRulesFromSettings(companyId, 'VN'),
+  ])
+
+  return {
+    maxWeeklyHours: workHourLimits.maxWeeklyHours,
+    standardWeeklyHours: workHourLimits.standardWeeklyHours,
+    maxOvertimeHours: workHourLimits.maxOvertimeHours,
+    minHourlyWage: wageConfig.hourlyWage,
+    overtimeRates: otConfig.rates,
+    nightShift: otConfig.nightShift,
+    probation,
+  }
 }

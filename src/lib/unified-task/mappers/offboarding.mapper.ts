@@ -12,6 +12,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import type { Prisma } from '@/generated/prisma/client'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import {
   UnifiedTaskType,
   UnifiedTaskStatus,
@@ -123,8 +124,8 @@ function resolveOffboardingAssignee(
       return {
         employeeId: employee.id,
         name: employee.name,
-        position: employee.assignments?.[0]?.jobGrade?.name,
-        department: employee.assignments?.[0]?.department?.name,
+        position: extractPrimaryAssignment(employee.assignments ?? [])?.jobGrade?.name,
+        department: extractPrimaryAssignment(employee.assignments ?? [])?.department?.name,
       }
 
     case 'MANAGER':
@@ -163,7 +164,7 @@ class OffboardingTaskMapper
     const assignee = resolveOffboardingAssignee(task.assigneeType, offboarding)
     const status = mapOffboardingStatus(source.status)
     const priority = mapOffboardingPriority(source.status, dueDate)
-    const companyId = employee.assignments?.[0]?.companyId ?? ''
+    const companyId = (extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>)?.companyId ?? ''
     const isBlocked = source.status === 'BLOCKED'
 
     // 남은 일수 계산 (마감 기준)
@@ -188,8 +189,8 @@ class OffboardingTaskMapper
       requester: {
         employeeId: employee.id,
         name: employee.name,
-        position: employee.assignments?.[0]?.jobGrade?.name,
-        department: employee.assignments?.[0]?.department?.name,
+        position: extractPrimaryAssignment(employee.assignments ?? [])?.jobGrade?.name,
+        department: extractPrimaryAssignment(employee.assignments ?? [])?.department?.name,
       },
       assignee,
 

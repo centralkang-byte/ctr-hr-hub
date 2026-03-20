@@ -5,7 +5,14 @@
 
 import type { LaborModule, WorkHoursValidation } from '@/lib/labor/index'
 import type { LaborConfig } from '@/lib/labor/types'
-import { getAttendanceSetting } from '@/lib/settings/get-setting'
+import {
+  getWorkHourLimitsFromSettings,
+  getMinWageFromSettings,
+  getOvertimeRatesFromSettings,
+  getProbationRulesFromSettings,
+} from '@/lib/labor/settings'
+import type { ProbationRulesSettings } from '@/lib/labor/settings'
+import type { OvertimeRate, NightShiftRule } from '@/lib/labor/types'
 
 // ─── Default constants (preserved as fallback) ─────────────
 
@@ -124,20 +131,10 @@ export const KR_LEAVE_PROMOTION_EVENTS = [
 
 // ─── Settings-aware async config loader ───────────────────
 
-interface WorkHourLimitsSettings {
-  maxWeeklyHours: number
-  standardWeeklyHours: number
-  maxOvertimeHours: number
-}
-
-interface MinWageSettings {
-  hourlyWage: number
-  effectiveYear: number
-}
-
 /**
  * Async function that reads labor config from Settings API.
  * Falls back to hardcoded constants if not configured.
+ * Uses generalized getWorkHourLimitsFromSettings / getMinWageFromSettings.
  */
 export async function getKrLaborConfigFromSettings(
   companyId?: string | null,
@@ -146,16 +143,24 @@ export async function getKrLaborConfigFromSettings(
   standardWeeklyHours: number
   maxOvertimeHours: number
   minHourlyWage: number
+  overtimeRates: OvertimeRate[]
+  nightShift: NightShiftRule
+  probation: ProbationRulesSettings
 }> {
-  const [workHourSettings, wageSettings] = await Promise.all([
-    getAttendanceSetting<WorkHourLimitsSettings>('work-hour-limits', companyId),
-    getAttendanceSetting<MinWageSettings>('min-wage', companyId),
+  const [workHourLimits, wageConfig, otConfig, probation] = await Promise.all([
+    getWorkHourLimitsFromSettings(companyId, 'KR'),
+    getMinWageFromSettings(companyId, 'KR'),
+    getOvertimeRatesFromSettings(companyId, 'KR'),
+    getProbationRulesFromSettings(companyId, 'KR'),
   ])
 
   return {
-    maxWeeklyHours: workHourSettings?.maxWeeklyHours ?? MAX_WEEKLY_HOURS,
-    standardWeeklyHours: workHourSettings?.standardWeeklyHours ?? STANDARD_WEEKLY_HOURS,
-    maxOvertimeHours: workHourSettings?.maxOvertimeHours ?? MAX_OVERTIME_HOURS,
-    minHourlyWage: wageSettings?.hourlyWage ?? MIN_HOURLY_WAGE,
+    maxWeeklyHours: workHourLimits.maxWeeklyHours,
+    standardWeeklyHours: workHourLimits.standardWeeklyHours,
+    maxOvertimeHours: workHourLimits.maxOvertimeHours,
+    minHourlyWage: wageConfig.hourlyWage,
+    overtimeRates: otConfig.rates,
+    nightShift: otConfig.nightShift,
+    probation,
   }
 }

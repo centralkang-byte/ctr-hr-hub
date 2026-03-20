@@ -7,6 +7,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Cart
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { CARD_STYLES, TABLE_STYLES, CHART_THEME } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
 import type {
@@ -60,11 +61,11 @@ function KPICard({ label, value, diff, rate, variant }: {
 function DetailRow({ label, c, s }: { label: string; c: number; s: number }) {
   const d = s - c
   return (
-    <tr className="border-b border-[#F0F0F3] text-[13px]">
-      <td className="py-1.5 pl-8 text-[#8181A5]">{label}</td>
-      <td className="py-1.5 text-right font-mono">{fmtKRW(c)}</td>
-      <td className="py-1.5 text-right font-mono">{fmtKRW(s)}</td>
-      <td className={`py-1.5 text-right font-mono ${diffColor(d)}`}>{signedKRW(d)}</td>
+    <tr className={TABLE_STYLES.row}>
+      <td className={TABLE_STYLES.cell}>{label}</td>
+      <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(c)}</td>
+      <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(s)}</td>
+      <td className={cn(TABLE_STYLES.cell, "text-right font-mono", diffColor(d))}>{signedKRW(d)}</td>
     </tr>
   )
 }
@@ -74,49 +75,51 @@ function EmployeeExpandedDetail({ emp }: { emp: EmployeeSimResult }) {
   const s = emp.simulated
   return (
     <tr>
-      <td colSpan={7} className="p-0">
-        <div className="bg-[#FAFAFA] px-6 py-3">
-          <table className="w-full">
-            <thead>
-              <tr className="text-xs text-[#8181A5] border-b border-[#F0F0F3]">
-                <th className="text-left py-1.5 pl-8 font-medium">{'항목'}</th>
-                <th className="text-right py-1.5 font-medium">{'현재연봉'}</th>
-                <th className="text-right py-1.5 font-medium">{'시뮬레이션'}</th>
-                <th className="text-right py-1.5 font-medium">{'차이'}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <DetailRow label="기본급" c={c.baseSalary} s={s.baseSalary} />
-              <DetailRow label="시간외수당" c={c.overtimePay} s={s.overtimePay} />
-              <DetailRow label="야간수당" c={c.nightPay} s={s.nightPay} />
-              <DetailRow label="식대" c={c.mealAllowance} s={s.mealAllowance} />
-              <DetailRow label="교통비" c={c.transportAllowance} s={s.transportAllowance} />
-              <tr className="border-b-2 border-[#E0E0E0] text-[13px] font-semibold">
-                <td className="py-1.5 pl-8">{'총 지급액'}</td>
-                <td className="py-1.5 text-right font-mono">{fmtKRW(c.grossPay)}</td>
-                <td className="py-1.5 text-right font-mono">{fmtKRW(s.grossPay)}</td>
-                <td className={`py-1.5 text-right font-mono ${diffColor(s.grossPay - c.grossPay)}`}>{signedKRW(s.grossPay - c.grossPay)}</td>
-              </tr>
-              <DetailRow label="국민연금" c={c.nationalPension} s={s.nationalPension} />
-              <DetailRow label="건강보험" c={c.healthInsurance} s={s.healthInsurance} />
-              <DetailRow label="장기요양" c={c.longTermCare} s={s.longTermCare} />
-              <DetailRow label="고용보험" c={c.employmentInsurance} s={s.employmentInsurance} />
-              <DetailRow label="소득세" c={c.incomeTax} s={s.incomeTax} />
-              <DetailRow label="지방소득세" c={c.localIncomeTax} s={s.localIncomeTax} />
-              <tr className="border-b-2 border-[#E0E0E0] text-[13px] font-semibold">
-                <td className="py-1.5 pl-8">{'총 공제액'}</td>
-                <td className="py-1.5 text-right font-mono">{fmtKRW(c.totalDeductions)}</td>
-                <td className="py-1.5 text-right font-mono">{fmtKRW(s.totalDeductions)}</td>
-                <td className={`py-1.5 text-right font-mono ${diffColor(s.totalDeductions - c.totalDeductions)}`}>{signedKRW(s.totalDeductions - c.totalDeductions)}</td>
-              </tr>
-              <tr className="text-sm font-bold">
-                <td className="py-2 pl-8">{'실수령액'}</td>
-                <td className="py-2 text-right font-mono">{fmtKRW(c.netPay)}</td>
-                <td className="py-2 text-right font-mono">{fmtKRW(s.netPay)}</td>
-                <td className={`py-2 text-right font-mono ${diffColor(s.netPay - c.netPay)}`}>{signedKRW(s.netPay - c.netPay)}</td>
-              </tr>
-            </tbody>
-          </table>
+      <td colSpan={7} className="p-0 border-b border-[#F0F0F3] bg-[#FAFBFF]">
+        <div className="px-6 py-4">
+          <div className={TABLE_STYLES.wrapper}>
+            <table className={TABLE_STYLES.table}>
+              <thead>
+                <tr className={TABLE_STYLES.header}>
+                  <th className={TABLE_STYLES.headerCell}>항목</th>
+                  <th className={cn(TABLE_STYLES.headerCell, "text-right")}>현재연봉</th>
+                  <th className={cn(TABLE_STYLES.headerCell, "text-right")}>시뮬레이션</th>
+                  <th className={cn(TABLE_STYLES.headerCell, "text-right")}>차이</th>
+                </tr>
+              </thead>
+              <tbody>
+                <DetailRow label="기본급" c={c.baseSalary} s={s.baseSalary} />
+                <DetailRow label="시간외수당" c={c.overtimePay} s={s.overtimePay} />
+                <DetailRow label="야간수당" c={c.nightPay} s={s.nightPay} />
+                <DetailRow label="식대" c={c.mealAllowance} s={s.mealAllowance} />
+                <DetailRow label="교통비" c={c.transportAllowance} s={s.transportAllowance} />
+                <tr className={cn(TABLE_STYLES.row, "bg-[#FAFAFA] font-semibold")}>
+                  <td className={TABLE_STYLES.cell}>{'총 지급액'}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(c.grossPay)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(s.grossPay)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono", diffColor(s.grossPay - c.grossPay))}>{signedKRW(s.grossPay - c.grossPay)}</td>
+                </tr>
+                <DetailRow label="국민연금" c={c.nationalPension} s={s.nationalPension} />
+                <DetailRow label="건강보험" c={c.healthInsurance} s={s.healthInsurance} />
+                <DetailRow label="장기요양" c={c.longTermCare} s={s.longTermCare} />
+                <DetailRow label="고용보험" c={c.employmentInsurance} s={s.employmentInsurance} />
+                <DetailRow label="소득세" c={c.incomeTax} s={s.incomeTax} />
+                <DetailRow label="지방소득세" c={c.localIncomeTax} s={s.localIncomeTax} />
+                <tr className={cn(TABLE_STYLES.row, "bg-[#FAFAFA] font-semibold")}>
+                  <td className={TABLE_STYLES.cell}>{'총 공제액'}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(c.totalDeductions)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(s.totalDeductions)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono", diffColor(s.totalDeductions - c.totalDeductions))}>{signedKRW(s.totalDeductions - c.totalDeductions)}</td>
+                </tr>
+                <tr className={cn(TABLE_STYLES.row, "bg-[#EFF6FF] font-bold")}>
+                  <td className={TABLE_STYLES.cell}>{'실수령액'}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono text-[#1D4ED8]")}>{fmtKRW(c.netPay)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono text-[#1D4ED8]")}>{fmtKRW(s.netPay)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono", diffColor(s.netPay - c.netPay))}>{signedKRW(s.netPay - c.netPay)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </td>
     </tr>
@@ -543,7 +546,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
                       <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                       <XAxis type="number" tickFormatter={v => `₩${(v / 10000).toFixed(0)}만`} />
                       <YAxis type="category" dataKey="name" width={40} />
-                      <Tooltip formatter={(v: number | undefined) => v !== undefined ? fmtKRW(v) : ''} />
+                      <Tooltip formatter={(v) => v != null ? fmtKRW(Number(v)) : ''} />
                       <Legend />
                       <Bar dataKey="기본급" fill={CHART_THEME.colors[0]} stackId="a" />
                       <Bar dataKey="수당" fill={CHART_THEME.colors[3]} stackId="a" />
@@ -557,85 +560,89 @@ export default function PayrollSimulationClient({ user, companies, departments }
               {sm.byDepartment && sm.byDepartment.length > 0 && (
                 <div className={CARD_STYLES.padded}>
                   <h3 className="text-sm font-semibold text-[#1C1D21] mb-3">{t('deptSummary')}</h3>
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="text-xs text-[#8181A5] border-b border-[#F0F0F3]">
-                        <th className="text-left py-2 font-medium">{t('department')}</th>
-                        <th className="text-right py-2 font-medium">{t('kr_kec9db8ec')}</th>
-                        <th className="text-right py-2 font-medium">{t('kr_ked9884ec_ked95a9ea')}</th>
-                        <th className="text-right py-2 font-medium">{t('kr_kec8b9ceb_ked95a9ea')}</th>
-                        <th className="text-right py-2 font-medium">{t('kr_kecb0a8ec')}</th>
-                        <th className="text-right py-2 font-medium">{t('kr_kebb380eb')}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sm.byDepartment.map(dept => (
-                        <tr key={dept.department} className={TABLE_STYLES.header}>
-                          <td className="py-2.5">{dept.department}</td>
-                          <td className="py-2.5 text-right">{dept.employeeCount}명</td>
-                          <td className="py-2.5 text-right font-mono">{fmtKRW(dept.currentGross)}</td>
-                          <td className="py-2.5 text-right font-mono">{fmtKRW(dept.simulatedGross)}</td>
-                          <td className={`py-2.5 text-right font-mono ${diffColor(dept.difference)}`}>{signedKRW(dept.difference)}</td>
-                          <td className={`py-2.5 text-right ${diffColor(dept.difference)}`}>
-                            {dept.currentGross > 0 ? pctStr(dept.difference / dept.currentGross) : '—'}
-                          </td>
+                  <div className={TABLE_STYLES.wrapper}>
+                    <table className={TABLE_STYLES.table}>
+                      <thead>
+                        <tr className={TABLE_STYLES.header}>
+                          <th className={TABLE_STYLES.headerCell}>{t('department')}</th>
+                          <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('kr_kec9db8ec')}</th>
+                          <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('kr_ked9884ec_ked95a9ea')}</th>
+                          <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('kr_kec8b9ceb_ked95a9ea')}</th>
+                          <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('kr_kecb0a8ec')}</th>
+                          <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('kr_kebb380eb')}</th>
                         </tr>
-                      ))}
-                      <tr className="font-semibold border-t-2 border-[#1C1D21]">
-                        <td className="py-2.5">{tCommon('total')}</td>
-                        <td className="py-2.5 text-right">{sm.employeeCount}{tCommon('unit.person')}</td>
-                        <td className="py-2.5 text-right font-mono">{fmtKRW(totals.currentGross)}</td>
-                        <td className="py-2.5 text-right font-mono">{fmtKRW(totals.simulatedGross)}</td>
-                        <td className={`py-2.5 text-right font-mono ${diffColor(totals.grossDifference)}`}>{signedKRW(totals.grossDifference)}</td>
-                        <td className={`py-2.5 text-right ${diffColor(totals.grossDifference)}`}>{pctStr(totals.grossChangeRate)}</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {sm.byDepartment.map(dept => (
+                          <tr key={dept.department} className={TABLE_STYLES.row}>
+                            <td className={TABLE_STYLES.cell}>{dept.department}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right")}>{dept.employeeCount}명</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(dept.currentGross)}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(dept.simulatedGross)}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono", diffColor(dept.difference))}>{signedKRW(dept.difference)}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right", diffColor(dept.difference))}>
+                              {dept.currentGross > 0 ? pctStr(dept.difference / dept.currentGross) : '—'}
+                            </td>
+                          </tr>
+                        ))}
+                        <tr className={cn(TABLE_STYLES.row, "bg-[#FAFAFA] font-semibold")}>
+                          <td className={TABLE_STYLES.cell}>{tCommon('total')}</td>
+                          <td className={cn(TABLE_STYLES.cell, "text-right")}>{sm.employeeCount}{tCommon('unit.person')}</td>
+                          <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(totals.currentGross)}</td>
+                          <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(totals.simulatedGross)}</td>
+                          <td className={cn(TABLE_STYLES.cell, "text-right font-mono", diffColor(totals.grossDifference))}>{signedKRW(totals.grossDifference)}</td>
+                          <td className={cn(TABLE_STYLES.cell, "text-right", diffColor(totals.grossDifference))}>{pctStr(totals.grossChangeRate)}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
 
               {/* Employee Detail Table */}
               <div className={CARD_STYLES.padded}>
                 <h3 className="text-sm font-semibold text-[#1C1D21] mb-3">직원별 상세 ({result.employees.length}명)</h3>
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="text-xs text-[#8181A5] border-b border-[#F0F0F3]">
-                      <th className="text-left py-2 font-medium">{t('kr_keca781ec')}</th>
-                      <th className="text-left py-2 font-medium">{t('department')}</th>
-                      <th className="text-left py-2 font-medium">직위</th>
-                      <th className="text-right py-2 font-medium">{t('kr_ked9884ec_kec8ba4ec')}</th>
-                      <th className="text-right py-2 font-medium">{t('kr_kec8b9ceb_kec8ba4ec')}</th>
-                      <th className="text-right py-2 font-medium">{t('kr_kecb0a8ec')}</th>
-                      <th className="text-right py-2 font-medium">{t('kr_kebb380eb')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {result.employees.map(emp => {
-                      const isExp = expandedRow === emp.id
-                      const netDiff = emp.difference.netPay
-                      const netRate = emp.current.netPay > 0 ? netDiff / emp.current.netPay : 0
-                      return (
-                        <><tr key={emp.id} onClick={() => setExpandedRow(isExp ? null : emp.id)}
-                          className="border-b border-[#F0F0F3] hover:bg-[#FAFAFA] cursor-pointer">
-                          <td className="py-2.5 flex items-center gap-1">
-                            {isExp ? <ChevronDown className="w-3.5 h-3.5 text-[#8181A5]" /> : <ChevronRight className="w-3.5 h-3.5 text-[#8181A5]" />}
-                            {emp.name}
-                          </td>
-                          <td className="py-2.5">{emp.department}</td>
-                          <td className="py-2.5">{emp.position}</td>
-                          <td className="py-2.5 text-right font-mono">{fmtKRW(emp.current.netPay)}</td>
-                          <td className="py-2.5 text-right font-mono">{fmtKRW(emp.simulated.netPay)}</td>
-                          <td className={`py-2.5 text-right font-mono ${diffColor(netDiff)}`}>
-                            {diffArrow(netDiff)}{fmtKRW(Math.abs(netDiff))}
-                          </td>
-                          <td className={`py-2.5 text-right ${diffColor(netDiff)}`}>{pctStr(netRate)}</td>
-                        </tr>
-                          {isExp && <EmployeeExpandedDetail key={`${emp.id}-detail`} emp={emp} />}
-                        </>
-                      )
-                    })}
-                  </tbody>
-                </table>
+                <div className={TABLE_STYLES.wrapper}>
+                  <table className={TABLE_STYLES.table}>
+                    <thead>
+                      <tr className={TABLE_STYLES.header}>
+                        <th className={TABLE_STYLES.headerCell}>{t('kr_keca781ec')}</th>
+                        <th className={TABLE_STYLES.headerCell}>{t('department')}</th>
+                        <th className={TABLE_STYLES.headerCell}>직위</th>
+                        <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('kr_ked9884ec_kec8ba4ec')}</th>
+                        <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('kr_kec8b9ceb_kec8ba4ec')}</th>
+                        <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('kr_kecb0a8ec')}</th>
+                        <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('kr_kebb380eb')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {result.employees.map(emp => {
+                        const isExp = expandedRow === emp.id
+                        const netDiff = emp.difference.netPay
+                        const netRate = emp.current.netPay > 0 ? netDiff / emp.current.netPay : 0
+                        return (
+                          <><tr key={emp.id} onClick={() => setExpandedRow(isExp ? null : emp.id)}
+                            className={cn(TABLE_STYLES.row, isExp ? "bg-[#FAFBFF]" : "hover:bg-[#FAFAFA]", "cursor-pointer")}>
+                            <td className={cn(TABLE_STYLES.cell, "flex items-center gap-1")}>
+                              {isExp ? <ChevronDown className="w-3.5 h-3.5 text-[#8181A5]" /> : <ChevronRight className="w-3.5 h-3.5 text-[#8181A5]" />}
+                              <span className="font-medium text-[#1A1A1A]">{emp.name}</span>
+                            </td>
+                            <td className={TABLE_STYLES.cell}>{emp.department}</td>
+                            <td className={TABLE_STYLES.cell}>{emp.position}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(emp.current.netPay)}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(emp.simulated.netPay)}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono", diffColor(netDiff))}>
+                              {diffArrow(netDiff)}{fmtKRW(Math.abs(netDiff))}
+                            </td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right", diffColor(netDiff))}>{pctStr(netRate)}</td>
+                          </tr>
+                            {isExp && <EmployeeExpandedDetail key={`${emp.id}-detail`} emp={emp} />}
+                          </>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}

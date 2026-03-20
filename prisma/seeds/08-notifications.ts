@@ -94,7 +94,7 @@ export async function seedNotifications(prisma: PrismaClient): Promise<void> {
   const TWO_WEEKS_AGO = addDays(TODAY, -14)
 
   // Fetch KR employees
-  const krCo = await prisma.company.findFirst({ where: { code: 'CTR-KR' } })
+  const krCo = await prisma.company.findFirst({ where: { code: 'CTR' } })
   if (!krCo) { console.error('  ❌ CTR-KR not found'); return }
   const krId = krCo.id
 
