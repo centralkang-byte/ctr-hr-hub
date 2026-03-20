@@ -8,7 +8,7 @@
 //   - Priority: lastWorkingDate까지 남은 일수 기준
 //   - Title: "[Offboarding] {taskTitle}"
 //   - assigneeType: EMPLOYEE/MANAGER/HR/IT/FINANCE
-//   - MANAGER → skip (Position 계층 미구현, TODO)
+//   - MANAGER → UNASSIGNED (sync mapper 제약, nudge rule에서 정상 라우팅)
 // ═══════════════════════════════════════════════════════════
 
 import type { Prisma } from '@/generated/prisma/client'
@@ -129,8 +129,8 @@ function resolveOffboardingAssignee(
       }
 
     case 'MANAGER':
-      // TODO: Position 계층 기반 매니저 ID 조회 미구현
-      // Onboarding mapper와 동일한 패턴 — Position hierarchy 구현 후 활성화
+      // Mapper는 동기(sync) 인터페이스 — Position hierarchy DB 조회 불가.
+      // 매니저 알림은 nudge rule에서 getManagerByPosition()으로 정상 라우팅됨.
       return UNASSIGNED_ACTOR
 
     case 'HR':
