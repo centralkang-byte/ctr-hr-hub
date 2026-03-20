@@ -4,6 +4,7 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest, isAppError, handlePrismaError, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { getCrossCompanyReadFilter } from '@/lib/api/cross-company-access'
 import { managerAlertsSchema } from '@/lib/schemas/manager-hub'
 import type { SessionUser } from '@/types'
 
@@ -52,11 +53,25 @@ export const GET = withPermission(
         : []
       const reportIds = directReportAsgnList.map((a: any) => a.employeeId) // eslint-disable-line @typescript-eslint/no-explicit-any
 
+      // Cross-company: include employees from secondary/dotted-line relationships
+      const crossCompanyFilter = await getCrossCompanyReadFilter({
+        callerEmployeeId: managerId,
+        callerRole: user.role,
+        callerCompanyId: companyId,
+      })
+      const crossCompanyIds: string[] = crossCompanyFilter
+        ? await prisma.employee.findMany({
+            where: crossCompanyFilter,
+            select: { id: true },
+          }).then((rows) => rows.map((r) => r.id))
+        : []
+      const allReportIds = [...new Set([...reportIds, ...crossCompanyIds])]
+
       const teamMembers = await prisma.employee.findMany({
         where: {
-          id: { in: reportIds },
+          id: { in: allReportIds },
           assignments: {
-            some: { companyId, status: 'ACTIVE', isPrimary: true, endDate: null },
+            some: { status: 'ACTIVE', isPrimary: true, endDate: null },
           },
         },
         select: { id: true, name: true },
