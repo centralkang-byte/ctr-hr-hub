@@ -17,6 +17,7 @@ import { DOMAIN_EVENTS } from '@/lib/events/types'
 import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
 import { withRLS, buildRLSContext } from '@/lib/api/withRLS'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { getManagerIdByPosition } from '@/lib/employee/direct-reports'
 import type { SessionUser } from '@/types'
 import type { OffboardingTargetType } from '@/generated/prisma/enums'
 
@@ -215,9 +216,8 @@ export const POST = withPermission(
     // 8. Fire-and-forget notifications
     const notifications = []
 
-    // TODO: Manager lookup should use position-based lookup via getManagerByPosition()
-    // employee.managerId has been removed; manager is derived from the position hierarchy
-    const managerId: string | null = null
+    // Position-based manager lookup for notification
+    const managerId = await getManagerIdByPosition(employeeId)
 
     // Notify manager (position-based lookup not yet implemented)
     if (managerId) {
