@@ -11,6 +11,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
 import { EMPLOYEE_MINIMAL_SELECT, toMinimalEmployee } from '@/lib/employee-utils'
+import { getDirectReportIds } from '@/lib/employee/direct-reports'
 import type { SessionUser } from '@/types'
 import type { OneOnOneStatus, OneOnOneType } from '@/generated/prisma/client'
 
@@ -89,16 +90,20 @@ export const POST = withPermission(
 
     const { employeeId, scheduledAt, meetingType, agenda } = parsed.data
 
-    // Verify the target employee is in the same company
-    // TODO: implement proper manager hierarchy via position reportsTo
-    const employee = await prisma.employee.findFirst({
-      where: {
-        id: employeeId,
-        assignments: {
-          some: { companyId: user.companyId, isPrimary: true, endDate: null },
-        },
-      },
-    })
+    // Verify the target employee is a direct report
+    const reportIds = await getDirectReportIds(user.employeeId)
+    const employee = reportIds.length > 0
+      ? (reportIds.includes(employeeId)
+          ? await prisma.employee.findUnique({ where: { id: employeeId } })
+          : null)
+      : await prisma.employee.findFirst({
+          where: {
+            id: employeeId,
+            assignments: {
+              some: { companyId: user.companyId, isPrimary: true, endDate: null },
+            },
+          },
+        })
     if (!employee) throw notFound('해당 팀원을 찾을 수 없습니다.')
 
     try {
