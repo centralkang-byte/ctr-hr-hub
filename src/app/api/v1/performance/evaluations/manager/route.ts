@@ -67,8 +67,8 @@ export const GET = withPermission(
 
     const { cycleId, page, limit } = parsed.data
 
-    // RLS: DB-level isolation + app-level companyId filter as redundant safety net
-    // const { teamMembers, evaluations, total } = await withRLS(buildRLSContext(user), async (tx) => { ... })
+    // RLS bypass: Manager routes use getDirectReportIds() for security instead of withRLS.
+    // withRLS company isolation conflicts with cross-company READ (Session 11, B-3n).
 
     // Get team members (direct reports via position hierarchy)
     const reportIds = await getDirectReportIds(user.employeeId)
