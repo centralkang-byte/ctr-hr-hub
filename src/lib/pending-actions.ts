@@ -3,6 +3,7 @@ import { ROLE } from '@/lib/constants'
 import { getAlertThresholdsSettings } from '@/lib/settings/get-setting'
 import type { AlertThresholdsSettings } from '@/lib/settings/get-setting'
 import type { SessionUser } from '@/types'
+import { getDirectReportIds } from '@/lib/employee/direct-reports'
 
 // ─── Types ──────────────────────────
 
@@ -182,64 +183,154 @@ export async function getPendingActions(
   // ─── MANAGER actions ──────────────────────────
 
   if (isManager) {
-    // Leave requests pending approval (team)
-    // TODO: Re-implement manager hierarchy via Position model (managerId removed from Employee)
-    const pendingLeaves = await prisma.leaveRequest.findMany({
-      where: {
-        companyId: user.companyId,
-        status: 'PENDING',
-        employee: { assignments: { some: { isPrimary: true, endDate: null } } },
-      },
-      include: { employee: { select: { name: true } } },
-      take: 5,
-    })
-    for (const lr of pendingLeaves) {
-      actions.push({
-        id: `leave-${lr.id}`,
-        type: 'LEAVE_APPROVAL',
-        title: `휴가 승인: ${lr.employee.name}`,
-        description: `${lr.startDate.toLocaleDateString('ko-KR')} ~ ${lr.endDate.toLocaleDateString('ko-KR')} (${Number(lr.days)}일)`,
-        priority: calcPriority(lr.startDate, alertThresholds.priority),
-        dueDate: lr.startDate,
-        sourceId: lr.id,
-        link: `/leave/requests`,
-        actionable: true,
-      })
-    }
+    // Pre-fetch direct report IDs once for all manager queries
+    const directReportIds = await getDirectReportIds(user.employeeId)
 
-    // Profile change requests pending
-    // TODO: Re-implement manager hierarchy via Position model (managerId removed from Employee)
-    const pendingProfileChanges = await prisma.profileChangeRequest.findMany({
-      where: {
-        employee: {
-          assignments: {
-            some: {
-              companyId: user.companyId,
-              isPrimary: true,
-              endDate: null,
-            },
+    // Date thresholds for contract/permit expiry queries
+    const thirtyDaysLater = new Date()
+    thirtyDaysLater.setDate(thirtyDaysLater.getDate() + alertThresholds.contractExpiryAlertDays)
+    const sixtyDaysLater = new Date()
+    sixtyDaysLater.setDate(sixtyDaysLater.getDate() + alertThresholds.workPermitExpiryAlertDays)
+
+    if (directReportIds.length > 0) {
+      const [
+        pendingLeaves,
+        pendingProfileChanges,
+        pendingGoalApprovals,
+        expiringContracts,
+        expiringPermits,
+      ] = await Promise.all([
+        // Leave requests pending approval (team)
+        prisma.leaveRequest.findMany({
+          where: {
+            companyId: user.companyId,
+            status: 'PENDING',
+            employeeId: { in: directReportIds },
           },
-        },
-        status: 'CHANGE_PENDING',
-      },
-      include: { employee: { select: { name: true } } },
-      take: 5,
-    })
-    for (const pc of pendingProfileChanges) {
-      actions.push({
-        id: `profile-${pc.id}`,
-        type: 'PROFILE_CHANGE_APPROVAL',
-        title: `정보 변경 승인: ${pc.employee.name}`,
-        description: `${pc.fieldName} 변경 요청`,
-        priority: 'NORMAL',
-        dueDate: null,
-        sourceId: pc.id,
-        link: `/employees`,
-        actionable: true,
-      })
+          include: { employee: { select: { name: true } } },
+          take: 5,
+        }),
+        // Profile change requests pending
+        prisma.profileChangeRequest.findMany({
+          where: {
+            employeeId: { in: directReportIds },
+            status: 'CHANGE_PENDING',
+          },
+          include: { employee: { select: { name: true } } },
+          take: 5,
+        }),
+        // MBO Goals pending approval
+        prisma.mboGoal.findMany({
+          where: {
+            companyId: user.companyId,
+            status: 'PENDING_APPROVAL',
+            employeeId: { in: directReportIds },
+          },
+          include: { employee: { select: { name: true } } },
+          take: 5,
+        }),
+        // Contract expiring within configured alert window
+        prisma.contractHistory.findMany({
+          where: {
+            companyId: user.companyId,
+            endDate: {
+              gte: new Date(),
+              lte: thirtyDaysLater,
+            },
+            employeeId: { in: directReportIds },
+          },
+          include: { employee: { select: { name: true } } },
+          take: 3,
+        }),
+        // Work permits expiring within configured alert window
+        prisma.workPermit.findMany({
+          where: {
+            companyId: user.companyId,
+            expiryDate: {
+              gte: new Date(),
+              lte: sixtyDaysLater,
+            },
+            status: 'ACTIVE',
+            deletedAt: null,
+            employeeId: { in: directReportIds },
+          },
+          include: { employee: { select: { name: true } } },
+          take: 3,
+        }),
+      ])
+
+      for (const lr of pendingLeaves) {
+        actions.push({
+          id: `leave-${lr.id}`,
+          type: 'LEAVE_APPROVAL',
+          title: `휴가 승인: ${lr.employee.name}`,
+          description: `${lr.startDate.toLocaleDateString('ko-KR')} ~ ${lr.endDate.toLocaleDateString('ko-KR')} (${Number(lr.days)}일)`,
+          priority: calcPriority(lr.startDate, alertThresholds.priority),
+          dueDate: lr.startDate,
+          sourceId: lr.id,
+          link: `/leave/requests`,
+          actionable: true,
+        })
+      }
+
+      for (const pc of pendingProfileChanges) {
+        actions.push({
+          id: `profile-${pc.id}`,
+          type: 'PROFILE_CHANGE_APPROVAL',
+          title: `정보 변경 승인: ${pc.employee.name}`,
+          description: `${pc.fieldName} 변경 요청`,
+          priority: 'NORMAL',
+          dueDate: null,
+          sourceId: pc.id,
+          link: `/employees`,
+          actionable: true,
+        })
+      }
+
+      for (const g of pendingGoalApprovals) {
+        actions.push({
+          id: `mbo-approve-${g.id}`,
+          type: 'MBO_GOAL_APPROVAL',
+          title: `MBO 승인: ${g.employee.name}`,
+          description: g.title,
+          priority: 'NORMAL',
+          dueDate: null,
+          sourceId: g.id,
+          link: `/performance/mbo`,
+          actionable: true,
+        })
+      }
+
+      for (const c of expiringContracts) {
+        actions.push({
+          id: `contract-${c.id}`,
+          type: 'CONTRACT_EXPIRY',
+          title: `계약 만료 임박: ${c.employee.name}`,
+          description: `${c.endDate!.toLocaleDateString('ko-KR')} 만료`,
+          priority: calcPriority(c.endDate, alertThresholds.priority),
+          dueDate: c.endDate,
+          sourceId: c.id,
+          link: `/employees`,
+          actionable: false,
+        })
+      }
+
+      for (const wp of expiringPermits) {
+        actions.push({
+          id: `workpermit-${wp.id}`,
+          type: 'WORK_PERMIT_EXPIRY',
+          title: `취업허가 만료: ${wp.employee.name}`,
+          description: `${wp.expiryDate!.toLocaleDateString('ko-KR')} 만료`,
+          priority: calcPriority(wp.expiryDate, alertThresholds.priority),
+          dueDate: wp.expiryDate,
+          sourceId: wp.id,
+          link: `/employees`,
+          actionable: false,
+        })
+      }
     }
 
-    // Evaluations pending manager review
+    // Evaluations pending manager review (uses evaluatorId, not directReportIds)
     const pendingManagerEvals = await prisma.performanceEvaluation.findMany({
       where: {
         evaluatorId: user.employeeId,
@@ -265,93 +356,6 @@ export async function getPendingActions(
         sourceId: e.id,
         link: `/performance/evaluations`,
         actionable: true,
-      })
-    }
-
-    // MBO Goals pending approval
-    // TODO: Re-implement manager hierarchy via Position model (managerId removed from Employee)
-    const pendingGoalApprovals = await prisma.mboGoal.findMany({
-      where: {
-        companyId: user.companyId,
-        status: 'PENDING_APPROVAL',
-        employee: { assignments: { some: { isPrimary: true, endDate: null } } },
-      },
-      include: { employee: { select: { name: true } } },
-      take: 5,
-    })
-    for (const g of pendingGoalApprovals) {
-      actions.push({
-        id: `mbo-approve-${g.id}`,
-        type: 'MBO_GOAL_APPROVAL',
-        title: `MBO 승인: ${g.employee.name}`,
-        description: g.title,
-        priority: 'NORMAL',
-        dueDate: null,
-        sourceId: g.id,
-        link: `/performance/mbo`,
-        actionable: true,
-      })
-    }
-
-    // Contract expiring within configured alert window
-    const thirtyDaysLater = new Date()
-    thirtyDaysLater.setDate(thirtyDaysLater.getDate() + alertThresholds.contractExpiryAlertDays)
-    // TODO: Re-implement manager hierarchy via Position model (managerId removed from Employee)
-    const expiringContracts = await prisma.contractHistory.findMany({
-      where: {
-        companyId: user.companyId,
-        endDate: {
-          gte: new Date(),
-          lte: thirtyDaysLater,
-        },
-        employee: { assignments: { some: { isPrimary: true, endDate: null } } },
-      },
-      include: { employee: { select: { name: true } } },
-      take: 3,
-    })
-    for (const c of expiringContracts) {
-      actions.push({
-        id: `contract-${c.id}`,
-        type: 'CONTRACT_EXPIRY',
-        title: `계약 만료 임박: ${c.employee.name}`,
-        description: `${c.endDate!.toLocaleDateString('ko-KR')} 만료`,
-        priority: calcPriority(c.endDate, alertThresholds.priority),
-        dueDate: c.endDate,
-        sourceId: c.id,
-        link: `/employees`,
-        actionable: false,
-      })
-    }
-
-    // Work permits expiring within configured alert window
-    const sixtyDaysLater = new Date()
-    sixtyDaysLater.setDate(sixtyDaysLater.getDate() + alertThresholds.workPermitExpiryAlertDays)
-    // TODO: Re-implement manager hierarchy via Position model (managerId removed from Employee)
-    const expiringPermits = await prisma.workPermit.findMany({
-      where: {
-        companyId: user.companyId,
-        expiryDate: {
-          gte: new Date(),
-          lte: sixtyDaysLater,
-        },
-        status: 'ACTIVE',
-        deletedAt: null,
-        employee: { assignments: { some: { isPrimary: true, endDate: null } } },
-      },
-      include: { employee: { select: { name: true } } },
-      take: 3,
-    })
-    for (const wp of expiringPermits) {
-      actions.push({
-        id: `workpermit-${wp.id}`,
-        type: 'WORK_PERMIT_EXPIRY',
-        title: `취업허가 만료: ${wp.employee.name}`,
-        description: `${wp.expiryDate!.toLocaleDateString('ko-KR')} 만료`,
-        priority: calcPriority(wp.expiryDate, alertThresholds.priority),
-        dueDate: wp.expiryDate,
-        sourceId: wp.id,
-        link: `/employees`,
-        actionable: false,
       })
     }
   }
