@@ -1,6 +1,6 @@
 # SHARED.md — Project State (Single Source of Truth)
 
-> **Last Updated:** 2026-03-19 (QF-C2d — Exit Pipeline + Cross-Module Cross-Cuts — QF-C2 SERIES COMPLETE)
+> **Last Updated:** 2026-03-20 (Track B Phase 3 Session 7 — Assignment pattern patch complete)
 > **Project Path:** `/Users/sangwoo/VibeCoding/HR_Hub/ctr-hr-hub`
 
 ---
@@ -91,6 +91,7 @@
 | **Track B Phase 2 Session 5** (Schema: B-2a WorkLocation, B-2b locationId+locale, B-2e costCenterCode) | ✅ Complete |
 | **Track B Phase 2 Session 6** (Location seed + API + UI: B-2c, B-2d) | ✅ Complete |
 | **Track B Phase 2 COMPLETE** | ✅ All 5 items done |
+| **Track B Phase 3 Session 7** (Assignment patch: B-3a~d — 115 files, 131 patch points → extractPrimaryAssignment helper, critical isPrimary fix in employee-utils.ts) | ✅ Complete |
 
 ---
 
