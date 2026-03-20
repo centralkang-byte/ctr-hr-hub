@@ -52,6 +52,7 @@ import { seedPerformanceGaps } from './seeds/32-performance-gaps'
 import { seedComplianceGaps } from './seeds/33-compliance-gaps'
 import { seedPayrollOtherGaps } from './seeds/34-payroll-other-gaps'
 import { seedWorkLocations } from './seeds/40-work-locations'
+import { seedConcurrentAssignments } from './seeds/41-concurrent-assignments'
 
 // Load DATABASE_URL from .env.local or .env
 const DATABASE_URL = process.env.DATABASE_URL
@@ -3658,6 +3659,9 @@ async function main() {
 
   // Track B B-2c: WorkLocations + assignment linking + locale + settings
   await seedWorkLocations(prisma)
+
+  // Track B B-3e: Concurrent (겸직) secondary assignments for 6 employees
+  await seedConcurrentAssignments(prisma)
 }
 
 main()
