@@ -38,8 +38,8 @@ type SecondaryDef = {
 
 const SECONDARY_ASSIGNMENTS: SecondaryDef[] = [
   // 이동옥: CEO of CTR, concurrently CTR CFO + CTR-ECO CFO
-  { email: 'dongok.lee@ctr.co.kr', name: '이동옥', positionCode: 'POS-CTR-TL-FINANCE', description: 'CTR 재무회계팀장(겸)' },
-  { email: 'dongok.lee@ctr.co.kr', name: '이동옥', positionCode: 'POS-ECO-HEAD', description: 'CTR-ECO 대표(겸)' },
+  { email: 'dongok.lee@ctr.co.kr', name: '이동옥', positionCode: 'POS-CTR-SL-CFO', description: 'CTR CFO(겸)' },
+  { email: 'dongok.lee@ctr.co.kr', name: '이동옥', positionCode: 'POS-ECO-SL-CFO', description: 'CTR-ECO CFO(겸)' },
 
   // 정병주: CTR 품질경영팀장, concurrently CTR-MOB 품질경영팀장
   { email: 'byungju.jeong@ctr.co.kr', name: '정병주', positionCode: 'POS-MOB-TL-QM', description: 'CTR-MOB 품질경영팀장(겸)' },
