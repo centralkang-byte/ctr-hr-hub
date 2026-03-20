@@ -14,6 +14,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { fetchPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Header } from '@/components/layout/Header'
 import { BrandProvider } from '@/components/shared/BrandProvider'
@@ -46,6 +47,12 @@ export default async function DashboardLayout({
   }
 
   const user = session.user as SessionUser
+
+  // B-3k: Pre-hire check — redirect if no active assignment
+  const primaryAssignment = await fetchPrimaryAssignment(user.employeeId)
+  if (!primaryAssignment) {
+    redirect('/pre-hire')
+  }
 
   // Load companies for CompanySelector
   let companies: CompanyOption[] = []
