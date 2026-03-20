@@ -130,9 +130,8 @@ function resolveAssignee(
       }
 
     case 'MANAGER':
-      // EmployeeAssignment에 managerId 필드 없음, EmployeeOnboarding에 manager relation 없음.
-      // Position.reportsToPositionId 기반 매니저 조회는 performance.mapper에서만 지원.
-      // 현재 레이어에서는 UNASSIGNED로 처리 (TODO: 별도 쿼리로 보강 가능)
+      // Mapper는 동기(sync) 인터페이스 — Position hierarchy DB 조회 불가.
+      // 매니저 알림은 nudge rule에서 getManagerByPosition()으로 정상 라우팅됨.
       return UNASSIGNED_ACTOR
 
     case 'BUDDY':
