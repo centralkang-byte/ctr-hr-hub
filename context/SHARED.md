@@ -86,7 +86,8 @@
 | **Track B Phase 1 Session 1** (법인 코드 + Auth + enum: B-1a, B-1a+, B-1h) | ✅ Complete |
 | **Track B Phase 1 Session 2** (Dept + Grade + Position: B-1b, B-1c, B-1d) | ✅ Complete |
 | **Track B Phase 1 Session 3** (Employees + Settings: B-1e, B-1f) | ✅ Complete |
-| **Track B Phase 1** (조직도 반영 — 안전 작업) | 🔄 In Progress |
+| **Track B Phase 1 Session 4** (Import + Org Studio + Transfer + Regression: B-1g, B-1i, B-1j) | ✅ Complete |
+| **Track B Phase 1 COMPLETE** (조직도 반영 — 안전 작업, 11 items) | ✅ Complete |
 
 ---
 
@@ -879,6 +880,41 @@ New `*FromSettings` async variants added alongside. Callers migrate incrementall
   - ✅ Performance grade scale: global setting EXISTS
 
 ### Seed Data Status (Session 3)
+| Entity | Count | Source |
+|--------|-------|--------|
+| Companies | 13 | B-1a |
+| Departments | ~244 | B-1b |
+| JobGrades | 74 (49 KR + 25 overseas) | B-1c |
+| Positions | ~300+ (253 explicit + member pools) | B-1d |
+| Employees | 446 (199 named + 247 auto) | B-1e |
+| EmployeeAssignments | 446 (all isPrimary, no concurrent) | B-1e |
+| Worker Type Settings | 9 keys (global defaults) | B-1f |
+
+---
+
+## Track B Phase 1 Session 4 — ✅ COMPLETE
+
+### B-1g: Production import script skeleton
+- `scripts/import-prod-migration.ts`: CLI with `--dry-run`, `--company`, `--skip-existing`
+- `data/` directory .gitignore'd for PII protection
+- `data/README.md` with CSV column spec
+
+### B-1i: Org Studio hard-coding removal
+- OrgStudioClient: fetches `/api/v1/org/tree` on mount, transforms to OrgNode[]
+- SUPER_ADMIN sees all companies (API already handles scope via companyId filter)
+- ImpactAnalysisPanel: baseline computed from real tree data (not hard-coded 109/12)
+- Loading skeleton + error/empty states added
+
+### B-1j: Entity Transfer policy
+- `context/POLICY-ENTITY-TRANSFER.md` created
+- 3 items pending 부회장 confirmation (leave balance, payroll history, tenure)
+- Default assumptions documented — code impact minimal
+
+### Phase 1 Mini Regression
+- `scripts/track-b-phase1-regression.ts`: 13 check categories, read-only
+- Run: `npx tsx scripts/track-b-phase1-regression.ts`
+
+### Phase 1 Final Seed Data Status
 | Entity | Count | Source |
 |--------|-------|--------|
 | Companies | 13 | B-1a |
