@@ -8,17 +8,16 @@
 import { Users, DollarSign, Building2, TrendingUp, ArrowRight, Minus, Info } from 'lucide-react'
 import type { OrgNode, SimulationDiff } from './DraggableOrgTree'
 
+interface Baseline {
+  totalHeadcount: number
+  totalMonthlyCost: number
+  departmentCount: number
+}
+
 interface ImpactAnalysisPanelProps {
   diff: SimulationDiff
   selectedNode: OrgNode | null
-}
-
-// ─── Baseline snapshot (mock) ────────────────────────────────
-
-const BASELINE = {
-  totalHeadcount: 109,
-  totalMonthlyCost: 872_000_000, // KRW
-  departmentCount: 12,
+  baseline?: Baseline
 }
 
 function formatKRW(amount: number): string {
@@ -52,10 +51,12 @@ function MetricCard({ icon, label, value, sub, accent = '#5E81F4' }: MetricCardP
 
 // ─── ImpactAnalysisPanel ─────────────────────────────────────
 
-export function ImpactAnalysisPanel({ diff, selectedNode }: ImpactAnalysisPanelProps) {
-  const currentHeadcount = BASELINE.totalHeadcount + diff.headcountChange
-  const currentCost = BASELINE.totalMonthlyCost + diff.costChange
-  const currentDepts = BASELINE.departmentCount + diff.deptCountChange
+const DEFAULT_BASELINE: Baseline = { totalHeadcount: 0, totalMonthlyCost: 0, departmentCount: 0 }
+
+export function ImpactAnalysisPanel({ diff, selectedNode, baseline = DEFAULT_BASELINE }: ImpactAnalysisPanelProps) {
+  const currentHeadcount = baseline.totalHeadcount + diff.headcountChange
+  const currentCost = baseline.totalMonthlyCost + diff.costChange
+  const currentDepts = baseline.departmentCount + diff.deptCountChange
   const hasMoves = diff.moves.length > 0
 
   return (

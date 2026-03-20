@@ -10,10 +10,10 @@ import { toast } from '@/hooks/use-toast'
 // Organizational Restructure Simulator — Split-View Canvas
 // ═══════════════════════════════════════════════════════════
 
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { GitBranch, Info, Save, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
 import type { SessionUser } from '@/types'
-import { DraggableOrgTree, INITIAL_MOCK_TREE } from '@/components/org-studio/DraggableOrgTree'
+import { DraggableOrgTree } from '@/components/org-studio/DraggableOrgTree'
 import { ImpactAnalysisPanel } from '@/components/org-studio/ImpactAnalysisPanel'
 import type { OrgNode, SimulationDiff } from '@/components/org-studio/DraggableOrgTree'
 
@@ -23,8 +23,34 @@ interface OrgStudioClientProps {
 
 type SaveState = 'idle' | 'saving' | 'success' | 'error'
 
+// Transform API tree nodes to OrgNode format
+interface ApiTreeNode {
+  id: string
+  name: string
+  nameEn: string | null
+  code: string
+  level: number
+  employeeCount: number
+  children: ApiTreeNode[]
+}
+
+function apiNodeToOrgNode(node: ApiTreeNode): OrgNode {
+  const headcount = node.employeeCount
+  return {
+    id: node.id,
+    name: node.nameEn ? `${node.name} (${node.nameEn})` : node.name,
+    manager: '', // Position manager data not in tree API — blank for now
+    headcount,
+    estSalaryCost: headcount * 5_500_000, // Rough estimate: 5.5M KRW avg monthly per employee
+    level: node.level,
+    children: node.children?.map(apiNodeToOrgNode),
+  }
+}
+
 export function OrgStudioClient({ user }: OrgStudioClientProps) {
-  const [tree, setTree] = useState<OrgNode[]>(INITIAL_MOCK_TREE)
+  const [tree, setTree] = useState<OrgNode[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [diff, setDiff] = useState<SimulationDiff>({
     headcountChange: 0,
     costChange: 0,
@@ -34,6 +60,49 @@ export function OrgStudioClient({ user }: OrgStudioClientProps) {
   const [selectedNode, setSelectedNode] = useState<OrgNode | null>(null)
   const [saveState, setSaveState] = useState<SaveState>('idle')
   const [saveError, setSaveError] = useState<string | null>(null)
+
+  // Compute baseline from tree
+  const baseline = useMemo(() => {
+    function count(nodes: OrgNode[]): { headcount: number; cost: number; depts: number } {
+      let headcount = 0, cost = 0, depts = 0
+      for (const n of nodes) {
+        headcount += n.headcount
+        cost += n.estSalaryCost
+        depts++
+        if (n.children) {
+          const sub = count(n.children)
+          headcount += sub.headcount
+          cost += sub.cost
+          depts += sub.depts
+        }
+      }
+      return { headcount, cost, depts }
+    }
+    const totals = count(tree)
+    return { totalHeadcount: totals.headcount, totalMonthlyCost: totals.cost, departmentCount: totals.depts }
+  }, [tree])
+
+  // Fetch real org tree from API
+  useEffect(() => {
+    async function fetchTree() {
+      try {
+        setLoading(true)
+        // SUPER_ADMIN sees all companies; others see their own
+        const res = await fetch('/api/v1/org/tree')
+        if (!res.ok) throw new Error('조직 트리를 불러올 수 없습니다.')
+        const data = await res.json() as { data: { tree: ApiTreeNode[] } }
+        const orgNodes = data.data.tree.map(apiNodeToOrgNode)
+        setTree(orgNodes)
+        setError(null)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '알 수 없는 오류')
+        setTree([])
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchTree()
+  }, [])
 
   const hasMoves = diff.moves.length > 0
 
@@ -153,18 +222,26 @@ export function OrgStudioClient({ user }: OrgStudioClientProps) {
       <div className="flex flex-1 overflow-hidden">
         {/* Left: Tree Canvas (70%) */}
         <div className="flex-[7] overflow-y-auto p-6">
-          <DraggableOrgTree
-            selectedNode={selectedNode}
-            onSelectNode={setSelectedNode}
-            onDiffChange={setDiff}
-            tree={tree}
-            onTreeChange={setTree}
-          />
+          {loading ? (
+            <TableSkeleton rows={8} />
+          ) : error ? (
+            <EmptyState title="조직 트리 로딩 실패" description={error} />
+          ) : tree.length === 0 ? (
+            <EmptyState title="조직 데이터 없음" description="부서 데이터가 아직 생성되지 않았습니다." />
+          ) : (
+            <DraggableOrgTree
+              selectedNode={selectedNode}
+              onSelectNode={setSelectedNode}
+              onDiffChange={setDiff}
+              tree={tree}
+              onTreeChange={setTree}
+            />
+          )}
         </div>
 
         {/* Right: Impact Analysis Panel (30%) */}
         <div className="flex-[3] overflow-y-auto border-l border-[#F0F0F3] bg-white">
-          <ImpactAnalysisPanel diff={diff} selectedNode={selectedNode} />
+          <ImpactAnalysisPanel diff={diff} selectedNode={selectedNode} baseline={baseline} />
         </div>
       </div>
     </div>
