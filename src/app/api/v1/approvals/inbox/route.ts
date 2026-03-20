@@ -133,7 +133,8 @@ export async function GET(req: NextRequest) {
         })
 
         for (const lr of leaves) {
-          const dept = (extractPrimaryAssignment(lr.employee.assignments ?? []) as Record<string, any>)?.department?.name ?? '-'
+          const primary = extractPrimaryAssignment(lr.employee.assignments ?? [])
+          const dept = (primary as { department?: { name?: string } } | undefined)?.department?.name ?? '-'
           const start = new Date(lr.startDate).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
           const end = new Date(lr.endDate).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
           const days = Number(lr.days)
@@ -206,7 +207,8 @@ export async function GET(req: NextRequest) {
         })
 
         for (const g of goals) {
-          const dept = (extractPrimaryAssignment(g.employee.assignments ?? []) as Record<string, any>)?.department?.name ?? '-'
+          const primaryG = extractPrimaryAssignment(g.employee.assignments ?? [])
+          const dept = (primaryG as { department?: { name?: string } } | undefined)?.department?.name ?? '-'
           const rawStatus = g.status as string
           const mappedStatus: 'PENDING' | 'APPROVED' | 'REJECTED' =
             rawStatus === 'PENDING_APPROVAL' ? 'PENDING'
