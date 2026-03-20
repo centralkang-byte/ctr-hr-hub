@@ -919,6 +919,9 @@ model Company {
   // G-2: AI Reports
   aiReports              AiReport[]
 
+  // B-2a: Work Locations
+  workLocations          WorkLocation[]
+
   @@map("companies")
 }
 
@@ -931,8 +934,9 @@ model Department {
   nameEn    String?   @map("name_en")
   level     Int
   sortOrder Int       @map("sort_order")
-  isActive  Boolean   @default(true) @map("is_active")
-  deletedAt DateTime? @map("deleted_at")
+  isActive       Boolean   @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
+  costCenterCode String?   @map("cost_center_code") // B-2e: ERP cost center code, e.g., "CC-1001"
 
   company             Company              @relation(fields: [companyId], references: [id])
   parent              Department?          @relation("DepartmentParent", fields: [parentId], references: [id])
@@ -1441,6 +1445,7 @@ model EmployeeAssignment {
   status         String    @map("status") // EmployeeStatus enum 값 (TEXT)
   positionId     String?   @map("position_id")
   isPrimary      Boolean   @default(true) @map("is_primary")
+  workLocationId String?   @map("work_location_id") // B-2b: nullable FK to WorkLocation
   reason         String?
   orderNumber    String?   @map("order_number")
   approvedBy     String?   @map("approved_by")
@@ -1452,8 +1457,9 @@ model EmployeeAssignment {
   department  Department?  @relation(fields: [departmentId], references: [id])
   jobGrade    JobGrade?    @relation(fields: [jobGradeId], references: [id])
   jobCategory JobCategory? @relation(fields: [jobCategoryId], references: [id])
-  position    Position?    @relation(fields: [positionId], references: [id])
-  approver    Employee?    @relation("AssignmentApprover", fields: [approvedBy], references: [id])
+  position     Position?     @relation(fields: [positionId], references: [id])
+  approver     Employee?     @relation("AssignmentApprover", fields: [approvedBy], references: [id])
+  workLocation WorkLocation? @relation(fields: [workLocationId], references: [id], onDelete: SetNull)
 
   @@index([employeeId])
   @@index([effectiveDate])
@@ -6017,4 +6023,27 @@ model AiReport {
   @@unique([companyId, period])
   @@index([period])
   @@map("ai_reports")
+}
+
+// B-2a: Work Location model
+model WorkLocation {
+  id           String   @id @default(cuid())
+  companyId    String   @map("company_id")
+  code         String
+  name         String
+  nameEn       String?  @map("name_en")
+  country      String   // ISO 3166-1 alpha-2: "KR", "CN", "US", "MX", "VN", "RU", "PL", "CL", "TH", "ID"
+  city         String?
+  timezone     String?  // e.g., "Asia/Seoul", "America/Detroit", "America/Monterrey"
+  address      String?
+  locationType String?  @map("location_type") // "OFFICE", "PLANT", "WAREHOUSE", "BRANCH_OFFICE"
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  company     Company              @relation(fields: [companyId], references: [id])
+  assignments EmployeeAssignment[]
+
+  @@unique([companyId, code])
+  @@map("work_locations")
 }
