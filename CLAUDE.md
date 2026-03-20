@@ -16,6 +16,16 @@
 
 - **SessionStart**: Runs `.claude/hooks/session-start.sh` → loads STATUS.md automatically
 
+## Design Review Flow
+
+For non-trivial features or architecture changes:
+1. Write design doc → `~/Documents/Obsidian Vault/projects/hr-hub/decisions/YYYY-MM-DD-<topic>.md`
+2. Request Gemini review: paste the design doc and ask for critique (architecture trade-offs, edge cases, scalability)
+3. Incorporate feedback → update the design doc with decisions and rationale
+4. Proceed with implementation
+
+Use `/plan-eng-review` for internal architecture review, Gemini for external second opinion.
+
 ## Session End Routine
 
 When the user says "STATUS.md 업데이트해줘" or ends a session:
