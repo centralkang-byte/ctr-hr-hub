@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { GitBranch, ExternalLink, Info } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -95,13 +96,14 @@ export function DottedLineReportsCard() {
                         </p>
                       </div>
                     </div>
-                    <a
+                    <Link
                       href={`/employees/${emp.id}`}
                       className="flex items-center gap-1 text-xs text-ctr-primary hover:underline"
+                      aria-label={`${emp.name} 프로필 조회`}
                     >
                       조회
                       <ExternalLink className="h-3 w-3" />
-                    </a>
+                    </Link>
                   </div>
                 )
               })}
