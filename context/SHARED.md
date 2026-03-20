@@ -88,6 +88,7 @@
 | **Track B Phase 1 Session 3** (Employees + Settings: B-1e, B-1f) | ✅ Complete |
 | **Track B Phase 1 Session 4** (Import + Org Studio + Transfer + Regression: B-1g, B-1i, B-1j) | ✅ Complete |
 | **Track B Phase 1 COMPLETE** (조직도 반영 — 안전 작업, 11 items) | ✅ Complete |
+| **Track B Phase 2 Session 5** (Schema: B-2a WorkLocation, B-2b locationId+locale, B-2e costCenterCode) | ✅ Complete |
 
 ---
 
@@ -924,6 +925,29 @@ New `*FromSettings` async variants added alongside. Callers migrate incrementall
 | Employees | 446 (199 named + 247 auto) | B-1e |
 | EmployeeAssignments | 446 (all isPrimary, no concurrent) | B-1e |
 | Worker Type Settings | 9 keys (global defaults) | B-1f |
+
+---
+
+## Track B Phase 2 Session 5 — ✅ COMPLETE
+
+### B-2a: WorkLocation model
+- New model with companyId, code, name, nameEn, country, city, timezone, address, locationType
+- `@@unique([companyId, code])`, `@@map("work_locations")`
+- Relations: `Company.workLocations[]`, `EmployeeAssignment.workLocation`
+
+### B-2b: Assignment locationId + Employee preferredLocale
+- `EmployeeAssignment.workLocationId` (nullable, `onDelete: SetNull`) added
+- `Employee.locale` already existed (line 1176) — serves as preferredLocale, no duplicate added
+- Server-side locale usage: No notification/email code currently references employee locale
+
+### B-2e: Department.costCenterCode
+- Nullable String field added (`cost_center_code`) — reserved for ERP integration
+- No data populated
+
+### Migration note
+- `prisma migrate dev` blocked by pre-existing shadow DB issue (exchange_rates migration drift)
+- Workaround: manual SQL migration + `prisma migrate resolve --applied`
+- All changes additive (1 new table + 2 nullable columns), zero data loss
 
 ---
 
