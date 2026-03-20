@@ -73,8 +73,8 @@ export const POST = withPermission(
       where: {
         employeeId,
         companyId,
-        departmentId: departmentId ?? undefined,
-        positionId: positionId ?? undefined,
+        departmentId: departmentId ?? null,
+        positionId: positionId ?? null,
         isPrimary: false,
         endDate: null,
       },
@@ -97,7 +97,7 @@ export const POST = withPermission(
         isPrimary: false,
         changeType: 'CONCURRENT',
         status: 'ACTIVE',
-        approvedBy: user.id,
+        approvedBy: user.employeeId,
       },
       include: {
         company: { select: { id: true, name: true } },
