@@ -11,6 +11,7 @@ import { ROLE } from '@/lib/constants'
 import type { SessionUser, DeptOption, RefOption } from '@/types'
 import { EmployeeDetailClient } from './EmployeeDetailClient'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { getManagerIdByPosition } from '@/lib/employee/direct-reports'
 
 export default async function EmployeeDetailPage({
   params,
@@ -80,6 +81,15 @@ export default async function EmployeeDetailPage({
   // manager is now derived from position hierarchy (A2-2); set to null for now.
   const primaryAssignment = extractPrimaryAssignment(rawEmployee.assignments)
 
+  // Position-based manager lookup
+  const managerId = await getManagerIdByPosition(id)
+  const managerData = managerId
+    ? await prisma.employee.findUnique({
+        where: { id: managerId },
+        select: { id: true, name: true },
+      })
+    : null
+
   const employee = {
     ...rawEmployee,
     companyId: primaryAssignment?.companyId ?? '',
@@ -89,8 +99,7 @@ export default async function EmployeeDetailPage({
     jobCategory: primaryAssignment?.jobCategory ?? null,
     employmentType: primaryAssignment?.employmentType ?? '',
     status: primaryAssignment?.status ?? '',
-    // TODO: Populate manager via position-based hierarchy lookup (A2-2)
-    manager: null,
+    manager: managerData,
   }
 
   return (
