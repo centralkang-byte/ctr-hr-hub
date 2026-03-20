@@ -23,8 +23,11 @@ export default async function EmployeeDetailPage({
 
   const user = session.user as SessionUser
 
-  const companyFilter =
+  const deptFilter =
     user.role === ROLE.SUPER_ADMIN ? {} : { companyId: user.companyId }
+
+  const companyFilter =
+    user.role === ROLE.SUPER_ADMIN ? {} : { id: user.companyId }
 
   const assignmentFilter =
     user.role === ROLE.SUPER_ADMIN
@@ -53,7 +56,7 @@ export default async function EmployeeDetailPage({
       orderBy: { name: 'asc' },
     }),
     prisma.department.findMany({
-      where: { deletedAt: null, isActive: true, ...companyFilter },
+      where: { deletedAt: null, isActive: true, ...deptFilter },
       select: { id: true, name: true, companyId: true },
       orderBy: { name: 'asc' },
     }),
