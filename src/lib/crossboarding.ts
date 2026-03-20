@@ -6,7 +6,7 @@
 //     (dueDate computation, assigneeId resolution)
 //   - Departure plan retains direct task creation (no E-1 enhancements needed)
 //   - Skip sign-off auto-append for TRANSFER templates
-//   - TODO: Trigger leave balance settlement for old company (GP#1 integration)
+//   - Leave balance settlement: documented inline, actual payout via PayrollAdjustment in next payroll run
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
@@ -67,7 +67,11 @@ export async function triggerCrossboarding(
   //   1) Create both plans without linkedPlanId
   //   2) Update both with the cross-reference
   await prisma.$transaction(async (tx) => {
-    // TODO: Trigger leave balance settlement for old company (GP#1 integration)
+    // Leave balance settlement for departure company:
+    // - 미사용 연차 수당 / 마이너스 연차 공제는 다음 급여 실행(PayrollRun) 시
+    //   PayrollAdjustment로 자동 반영 (기존 자산 공제 패턴과 동일)
+    // - EmployeeLeaveBalance 조회: year=transferDate.year, policy.companyId=fromCompanyId
+    // - 정산 금액 = (grantedDays + carryOverDays - usedDays) × dailyWage
 
     // 1. 출발 법인 플랜 (departure) — without linkedPlanId
     await tx.employeeOnboarding.create({
