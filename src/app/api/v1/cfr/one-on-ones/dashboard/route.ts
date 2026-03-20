@@ -7,16 +7,18 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { getDirectReportIds } from '@/lib/employee/direct-reports'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/cfr/one-on-ones/dashboard ───────────────
 
 export const GET = withPermission(
   async (_req: NextRequest, _context, user: SessionUser) => {
-    // Get direct reports
-    // TODO: implement proper manager hierarchy via position reportsTo
+    // Get direct reports via position hierarchy
+    const reportIds = await getDirectReportIds(user.employeeId)
     const teamMembers = await prisma.employee.findMany({
       where: {
+        id: { in: reportIds },
         assignments: {
           some: {
             companyId: user.companyId,
