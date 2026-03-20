@@ -9,13 +9,18 @@
 ## Project Memory (Obsidian)
 
 - **Status file**: `~/Documents/Obsidian Vault/projects/hr-hub/STATUS.md` — single source of truth for completion history, current phase, and next steps
-- **On task completion**: Always update `~/Documents/Obsidian Vault/projects/hr-hub/STATUS.md` (completed / in-progress / next items)
 - **Decisions log**: `~/Documents/Obsidian Vault/projects/hr-hub/decisions/`
 - **Session notes**: `~/Documents/Obsidian Vault/projects/hr-hub/sessions/`
 
 ## Hooks
 
-- **SessionStart**: Automatically loads `~/Documents/Obsidian Vault/projects/hr-hub/STATUS.md` at the beginning of every Claude Code session (configured in `.claude/settings.json`)
+- **SessionStart**: Runs `.claude/hooks/session-start.sh` → loads STATUS.md automatically
+
+## Session End Routine
+
+When the user says "STATUS.md 업데이트해줘" or ends a session:
+1. Update `~/Documents/Obsidian Vault/projects/hr-hub/STATUS.md` — move completed items, update in-progress, add new remaining work
+2. Create `~/Documents/Obsidian Vault/projects/hr-hub/sessions/YYYY-MM-DD.md` — session summary with what was done, decisions made, and blockers encountered
 
 ---
 
