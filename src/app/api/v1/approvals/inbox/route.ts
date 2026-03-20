@@ -44,10 +44,12 @@ export interface ApprovalItem {
 }
 
 // ─── Helper: get direct report employeeIds ────────────────
+// B-3h: 겸직자도 Primary Assignment 기준으로만 직속 부하 조회
 
 async function getDirectReportIds(employeeId: string): Promise<string[]> {
+  const now = new Date()
   const asgn = await prisma.employeeAssignment.findFirst({
-    where: { employeeId, isPrimary: true, endDate: null },
+    where: { employeeId, isPrimary: true, endDate: null, effectiveDate: { lte: now } },
     select: { positionId: true },
   })
   if (!asgn?.positionId) return []
@@ -57,6 +59,7 @@ async function getDirectReportIds(employeeId: string): Promise<string[]> {
       position: { reportsToPositionId: asgn.positionId },
       isPrimary: true,
       endDate: null,
+      effectiveDate: { lte: now },
     },
     select: { employeeId: true },
   })
@@ -117,7 +120,7 @@ export async function GET(req: NextRequest) {
               select: {
                 name: true,
                 assignments: {
-                  where: { isPrimary: true, endDate: null },
+                  where: { isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
                   select: { department: { select: { name: true } } },
                   take: 1,
                 },
@@ -190,7 +193,7 @@ export async function GET(req: NextRequest) {
               select: {
                 name: true,
                 assignments: {
-                  where: { isPrimary: true, endDate: null },
+                  where: { isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
                   select: { department: { select: { name: true } } },
                   take: 1,
                 },

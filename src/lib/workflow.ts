@@ -68,6 +68,7 @@ export async function getNextApprover(
 }
 
 // ─── Resolve Approver by Type ────────────────────────────
+// B-3h: 겸직자도 Primary Assignment 기준으로만 결재라인 결정
 
 async function resolveApprover(
   approverType: ApproverType,
@@ -83,7 +84,7 @@ async function resolveApprover(
         where: { id: employeeId },
         include: {
           assignments: {
-            where: { isPrimary: true, endDate: null },
+            where: { isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
             take: 1,
             include: {
               position: {
@@ -91,7 +92,7 @@ async function resolveApprover(
                   reportsTo: {
                     include: {
                       assignments: {
-                        where: { isPrimary: true, endDate: null },
+                        where: { isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
                         take: 1,
                         include: { employee: { select: { id: true, name: true } } },
                       },
@@ -121,7 +122,7 @@ async function resolveApprover(
         where: { id: employeeId },
         include: {
           assignments: {
-            where: { isPrimary: true, endDate: null },
+            where: { isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
             take: 1,
             include: { department: true },
           },
@@ -138,6 +139,7 @@ async function resolveApprover(
               departmentId: assignment.departmentId,
               isPrimary: true,
               endDate: null,
+              effectiveDate: { lte: new Date() },
             },
           },
           employeeRoles: {
@@ -162,7 +164,7 @@ async function resolveApprover(
         where: { id: employeeId },
         include: {
           assignments: {
-            where: { isPrimary: true, endDate: null },
+            where: { isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
             take: 1,
             select: { companyId: true },
           },
@@ -178,6 +180,7 @@ async function resolveApprover(
               companyId: empCompanyId,
               isPrimary: true,
               endDate: null,
+              effectiveDate: { lte: new Date() },
             },
           },
           employeeRoles: {
@@ -218,7 +221,7 @@ async function resolveApprover(
         where: { id: employeeId },
         include: {
           assignments: {
-            where: { isPrimary: true, endDate: null },
+            where: { isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
             take: 1,
             select: { companyId: true },
           },
@@ -235,6 +238,7 @@ async function resolveApprover(
               companyId: roleEmpCompanyId,
               isPrimary: true,
               endDate: null,
+              effectiveDate: { lte: new Date() },
             },
           },
           employeeRoles: {

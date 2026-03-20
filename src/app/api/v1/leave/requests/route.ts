@@ -18,6 +18,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { leaveRequestCreateSchema } from '@/lib/schemas/leave'
+import { fetchPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 // ─── GET: My leave requests ──────────────────────────────
@@ -83,6 +84,10 @@ export const POST = withPermission(
     const endDate = new Date(parsed.data.endDate)
     const now = new Date()
     const warnings: string[] = []
+
+    // B-3h: 겸직자도 Primary Assignment의 법인 기준으로만 휴가 차감
+    const primaryAssignment = await fetchPrimaryAssignment(user.employeeId)
+    const primaryCompanyId = primaryAssignment?.companyId ?? user.companyId
 
     // ── F-3: LeaveTypeDef validation (minAdvanceDays, maxConsecutiveDays) ───
 
@@ -170,9 +175,9 @@ export const POST = withPermission(
 
       // 2. Check if request exceeds available
       if (parsed.data.days > totalAvailable) {
-        // 3. Check negative balance policy
+        // 3. Check negative balance policy (B-3h: Primary 법인 기준)
         const leaveSetting = await tx.leaveSetting.findFirst({
-          where: { companyId: user.companyId },
+          where: { companyId: primaryCompanyId },
         })
 
         const allowNegative = leaveSetting?.allowNegativeBalance ?? false
@@ -199,11 +204,11 @@ export const POST = withPermission(
         )
       }
 
-      // 6. Create request
+      // 6. Create request (B-3h: Primary 법인 기준으로 생성)
       const request = await tx.leaveRequest.create({
         data: {
           employeeId: user.employeeId,
-          companyId: user.companyId,
+          companyId: primaryCompanyId,
           policyId: parsed.data.policyId,
           startDate,
           endDate,
@@ -229,7 +234,7 @@ export const POST = withPermission(
       // Count team members on leave during the same period
       const teamAbsences = await prisma.leaveRequest.count({
         where: {
-          companyId: user.companyId,
+          companyId: primaryCompanyId,
           employeeId: { not: user.employeeId },
           status: { in: ['PENDING', 'APPROVED'] },
           startDate: { lte: endDate },
@@ -258,7 +263,7 @@ export const POST = withPermission(
       action: 'leave.request.create',
       resourceType: 'LeaveRequest',
       resourceId: result.id,
-      companyId: user.companyId,
+      companyId: primaryCompanyId,
       changes: {
         policyId: parsed.data.policyId,
         startDate: parsed.data.startDate,

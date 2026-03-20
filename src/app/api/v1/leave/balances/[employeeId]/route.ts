@@ -9,6 +9,7 @@ import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/leave/balances/[employeeId] ─────────────
 // Employee's leave balances (HR view)
+// B-3h: 겸직자도 Primary Assignment의 법인 기준으로만 잔여일 조회
 
 export const GET = withPermission(
   async (
@@ -24,7 +25,7 @@ export const GET = withPermission(
       select: {
         id: true,
         assignments: {
-          where: { isPrimary: true, endDate: null },
+          where: { isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
           take: 1,
           select: { companyId: true },
         },
