@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 function formatKRW(amount: bigint | number | string): string {
   const num = typeof amount === 'string' ? parseInt(amount, 10) : Number(amount)
@@ -57,7 +58,7 @@ export async function generateWithholdingReceiptPdf(
   }
 
   const employee = settlement.employee
-  const assignment = employee.assignments?.[0]
+  const assignment = extractPrimaryAssignment(employee.assignments ?? [])
   const companyName = assignment?.company?.name ?? '-'
   const departmentName = assignment?.department?.name ?? '-'
   const jobGradeName = assignment?.jobGrade?.name ?? '-'

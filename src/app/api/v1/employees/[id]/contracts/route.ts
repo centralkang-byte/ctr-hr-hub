@@ -14,6 +14,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { paginationSchema } from '@/lib/schemas/common'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 // PrismaClient type not used directly — models accessed via cast
 
@@ -170,9 +171,10 @@ export const POST = withPermission(
     })
     if (!employeeRaw) throw notFound('직원을 찾을 수 없습니다.')
 
+    const primaryAssignment = extractPrimaryAssignment(employeeRaw.assignments)
     const employee = {
       id: employeeRaw.id,
-      companyId: (employeeRaw.assignments[0]?.companyId as string | undefined) ?? '',
+      companyId: primaryAssignment?.companyId ?? '',
       contractNumber: employeeRaw.contractNumber,
     }
 

@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { z } from 'zod'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 const querySchema = z.object({
   search: z.string().optional(),
@@ -82,7 +83,7 @@ export const GET = withPermission(
     const isHR = user.role === 'HR_ADMIN' || user.role === 'SUPER_ADMIN'
 
     const result = employees.map((emp) => {
-      const asgn = emp.assignments[0]
+      const asgn = extractPrimaryAssignment(emp.assignments)
       const vis = emp.profileVisibility
       const isSameDept = asgn?.departmentId === viewerDeptId
 

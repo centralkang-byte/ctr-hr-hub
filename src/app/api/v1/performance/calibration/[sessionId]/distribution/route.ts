@@ -12,6 +12,7 @@ import { apiSuccess } from '@/lib/api'
 import { notFound, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 // Fallback guideline percentages (overridden by CompanyProcessSetting if present)
@@ -143,7 +144,7 @@ export const GET = withPermission(
             // Department breakdown
             const deptMap = new Map<string, { name: string; grades: Record<string, number>; total: number }>()
             for (const review of reviews) {
-                const dept = review.employee?.assignments[0]?.department
+                const dept = extractPrimaryAssignment(review.employee?.assignments ?? [])?.department
                 if (!dept) continue
                 if (!deptMap.has(dept.id)) {
                     deptMap.set(dept.id, { name: dept.name, grades: { E: 0, M_PLUS: 0, M: 0, B: 0 }, total: 0 })

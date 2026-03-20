@@ -11,6 +11,7 @@ import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { employeeUpdateSchema } from '@/lib/schemas/employee'
 import { withRLS, buildRLSContext } from '@/lib/api/withRLS'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/employees/[id] ───────────────────────────
@@ -68,9 +69,9 @@ export const GET = withPermission(
       throw notFound('직원을 찾을 수 없습니다.')
     }
 
-    // Flatten assignments[0] into top-level fields for frontend compatibility
+    // Flatten primary assignment into top-level fields for frontend compatibility
     // EmployeeDetail expects { department, jobGrade, jobCategory, status, employmentType } at root level
-    const a = employee.assignments?.[0]
+    const a = extractPrimaryAssignment(employee.assignments)
     const mappedEmployee = {
       ...employee,
       department: a?.department ?? null,
@@ -159,7 +160,8 @@ export const PUT = withPermission(
         },
       })
 
-      const employeeCompanyId = (employee.assignments[0]?.companyId as string | undefined) ?? ''
+      const primary = extractPrimaryAssignment(employee.assignments)
+      const employeeCompanyId = primary?.companyId ?? ''
 
       const { ip, userAgent } = extractRequestMeta(req.headers)
       logAudit({
@@ -244,7 +246,8 @@ export const DELETE = withPermission(
         },
       })
 
-      const employeeCompanyId = (employee.assignments[0]?.companyId as string | undefined) ?? ''
+      const primaryDel = extractPrimaryAssignment(employee.assignments)
+      const employeeCompanyId = primaryDel?.companyId ?? ''
 
       const { ip, userAgent } = extractRequestMeta(req.headers)
       logAudit({

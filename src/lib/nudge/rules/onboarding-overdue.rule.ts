@@ -32,6 +32,7 @@ import { prisma } from '@/lib/prisma'
 import type { NudgeRule, NudgeThresholds, OverdueItem } from '../types'
 // FIX: Issue #4 — Import getManagerByPosition to resolve MANAGER assignee
 import { getManagerByPosition } from '@/lib/assignments'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── 동적 임계값 선택 ──────────────────────────────────────
 
@@ -206,7 +207,7 @@ export const onboardingOverdueRule: NudgeRule = {
       if (now < taskCutoff) continue
 
       // FIX: Issue #4 — await async resolveRecipientId, pass positionId for MANAGER
-      const positionId = onboarding.employee.assignments?.[0]?.positionId
+      const positionId = (extractPrimaryAssignment(onboarding.employee.assignments ?? []) as Record<string, any>)?.positionId
       const recipientId = await resolveRecipientId(
         task.assigneeType,
         onboarding.employeeId,

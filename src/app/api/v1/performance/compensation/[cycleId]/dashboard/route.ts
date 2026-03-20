@@ -13,6 +13,7 @@ import { badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { getGradeLabel } from '@/lib/performance/data-masking'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/performance/compensation/[cycleId]/dashboard
@@ -103,7 +104,7 @@ export const GET = withPermission(
             // By department
             const deptMap = new Map<string, { count: number; totalPct: number; exceptionCount: number }>()
             for (const r of records) {
-                const dept = r.employee.assignments[0]?.department?.name ?? '미배정'
+                const dept = extractPrimaryAssignment(r.employee.assignments)?.department?.name ?? '미배정'
                 const entry = deptMap.get(dept) ?? { count: 0, totalPct: 0, exceptionCount: 0 }
                 entry.count++
                 entry.totalPct += Number(r.changePct)
@@ -125,7 +126,7 @@ export const GET = withPermission(
                     employeeId: r.employeeId,
                     employeeName: r.employee.name,
                     employeeNo: r.employee.employeeNo,
-                    department: r.employee.assignments[0]?.department?.name ?? '',
+                    department: extractPrimaryAssignment(r.employee.assignments)?.department?.name ?? '',
                     grade: r.performanceGradeAtTime ?? '',
                     appliedPct: Number(r.changePct),
                     exceptionReason: r.exceptionReason ?? '',

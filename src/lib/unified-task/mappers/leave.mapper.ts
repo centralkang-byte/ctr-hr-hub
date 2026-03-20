@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import type { Prisma } from '@/generated/prisma/client'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import {
   UnifiedTaskType,
   UnifiedTaskStatus,
@@ -85,7 +86,7 @@ function buildActor(
   if (!employee) {
     return { employeeId: 'unknown', name: '알 수 없음' }
   }
-  const assignment = employee.assignments?.[0]
+  const assignment = extractPrimaryAssignment(employee.assignments ?? [])
   return {
     employeeId: employee.id,
     name: employee.name,

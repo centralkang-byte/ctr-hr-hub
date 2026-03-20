@@ -9,6 +9,7 @@ import {
   employeePayItemListSchema,
   employeePayItemCreateSchema,
 } from '@/lib/schemas/payroll'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/payroll/employees/[id]/pay-items ────────
@@ -105,7 +106,7 @@ export const POST = withPermission(
       },
     })
     if (!employee) throw notFound('직원을 찾을 수 없습니다.')
-    const empCompanyId = ((employee.assignments?.[0] as any)?.companyId as string | undefined) ?? user.companyId // eslint-disable-line @typescript-eslint/no-explicit-any
+    const empCompanyId = extractPrimaryAssignment(employee.assignments ?? [])?.companyId ?? user.companyId
 
     try {
       const result = await prisma.employeePayItem.create({

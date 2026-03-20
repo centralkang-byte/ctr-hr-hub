@@ -18,6 +18,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── Unified item shape ────────────────────────────────────
 
@@ -129,7 +130,7 @@ export async function GET(req: NextRequest) {
         })
 
         for (const lr of leaves) {
-          const dept = lr.employee.assignments?.[0]?.department?.name ?? '-'
+          const dept = (extractPrimaryAssignment(lr.employee.assignments ?? []) as Record<string, any>)?.department?.name ?? '-'
           const start = new Date(lr.startDate).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
           const end = new Date(lr.endDate).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
           const days = Number(lr.days)
@@ -202,7 +203,7 @@ export async function GET(req: NextRequest) {
         })
 
         for (const g of goals) {
-          const dept = g.employee.assignments?.[0]?.department?.name ?? '-'
+          const dept = (extractPrimaryAssignment(g.employee.assignments ?? []) as Record<string, any>)?.department?.name ?? '-'
           const rawStatus = g.status as string
           const mappedStatus: 'PENDING' | 'APPROVED' | 'REJECTED' =
             rawStatus === 'PENDING_APPROVAL' ? 'PENDING'

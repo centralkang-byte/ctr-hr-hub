@@ -13,6 +13,7 @@ import { badRequest } from '@/lib/errors'
 import { resolveCompanyId } from '@/lib/api/companyFilter'
 import { z } from 'zod'
 import { calculateDeductionsByCountry } from '@/lib/payroll/globalDeductions'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SimulationDeductions } from '@/lib/payroll/globalDeductions'
 
 // ─── Validation Schemas ──────────────────────────────────
@@ -228,7 +229,7 @@ async function fetchEmployeeData(employeeIds: string[]): Promise<EmployeeData[]>
   )
 
   return employees.map((emp) => {
-    const asgn = emp.assignments?.[0]
+    const asgn = extractPrimaryAssignment(emp.assignments)
     const annualSalary = salaryMap.get(emp.id) ?? 0
     const monthlySalary = Math.round(annualSalary / 12)
     const payrollItem = payrollMap.get(emp.id)

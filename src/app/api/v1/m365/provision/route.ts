@@ -13,6 +13,7 @@ import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { m365ProvisionSchema } from '@/lib/schemas/m365'
 import { provisionM365Account } from '@/lib/integrations/m365-account'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── POST /api/v1/m365/provision ────────────────────────
 
@@ -44,7 +45,7 @@ export const POST = withPermission(
       throw badRequest('해당 구성원을 찾을 수 없습니다.')
     }
 
-    const employeeCompanyId = ((employee.assignments[0] as any)?.companyId as string | undefined) ?? user.companyId // eslint-disable-line @typescript-eslint/no-explicit-any
+    const employeeCompanyId = ((extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>)?.companyId as string | undefined) ?? user.companyId
 
     // Non-super-admin must belong to same company
     if (user.role !== ROLE.SUPER_ADMIN && user.companyId !== employeeCompanyId) {

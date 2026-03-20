@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import type { MinimalEmployee } from '@/types/employee'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 /**
  * Standard Prisma select for minimal employee data.
@@ -19,7 +20,7 @@ export const EMPLOYEE_MINIMAL_SELECT = {
   phone: true,
   hireDate: true,
   assignments: {
-    where: { endDate: null },
+    where: { isPrimary: true, endDate: null },
     orderBy: { effectiveDate: 'desc' as const },
     take: 1,
     select: {
@@ -40,7 +41,8 @@ export function toMinimalEmployee(raw: any): MinimalEmployee | null {
   try {
     if (!raw || !raw.id || !raw.name) return null
 
-    const assignment = raw.assignments?.[0]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const assignment = extractPrimaryAssignment(raw.assignments ?? []) as any
     const countryCode = assignment?.company?.countryCode ?? null
     // For KR/CN show Korean title, others show English title
     const jobTitle = countryCode && ['KR', 'CN'].includes(countryCode)

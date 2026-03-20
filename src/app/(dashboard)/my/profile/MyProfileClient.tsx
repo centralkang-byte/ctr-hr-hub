@@ -14,6 +14,7 @@ import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 import type { SessionUser } from '@/types'
 import { CARD_STYLES, BUTTON_SIZES, BUTTON_VARIANTS,  MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
+import { extractPrimaryAssignment } from '@/lib/employee/extract-primary-assignment'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -204,7 +205,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
   const [changeReqReason, setChangeReqReason] = useState('')
   const [savingChangeReq, setSavingChangeReq] = useState(false)
 
-  const asgn = employee.assignments[0]
+  const asgn = extractPrimaryAssignment(employee.assignments as unknown as Record<string, unknown>[]) as Assignment | undefined
 
   // ── Bio save ──
   const saveBio = useCallback(async () => {
@@ -522,7 +523,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                       {hist.toDept?.name ?? '부서 미지정'} · {hist.toGrade?.name ?? '직급 미지정'}
                     </h3>
                     <p className="text-xs text-[#666]">
-                      {hist.toCompany?.name ?? employee.assignments[0]?.company?.name ?? 'CTR Group'}
+                      {hist.toCompany?.name ?? (extractPrimaryAssignment(employee.assignments as unknown as Record<string, unknown>[]) as Assignment | undefined)?.company?.name ?? 'CTR Group'}
                     </p>
                   </div>
                 </div>

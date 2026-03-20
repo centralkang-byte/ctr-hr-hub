@@ -10,6 +10,7 @@ import { notFound, badRequest } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import {
   getNextBusinessDays,
   getFreeBusy,
@@ -57,7 +58,7 @@ export const GET = withPermission(
     }
 
     const durationMinutes = schedule.durationMinutes || 60
-    const companyId = ((schedule.interviewer.assignments?.[0] as any)?.companyId as string | undefined) ?? user.companyId // eslint-disable-line @typescript-eslint/no-explicit-any
+    const companyId = ((extractPrimaryAssignment(schedule.interviewer.assignments ?? []) as Record<string, any>)?.companyId as string | undefined) ?? user.companyId
 
     // 다음 5 영업일 계산
     const businessDays = await getNextBusinessDays(companyId, 5)

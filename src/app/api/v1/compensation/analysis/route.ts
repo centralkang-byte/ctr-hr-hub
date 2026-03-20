@@ -15,6 +15,7 @@ import {
   type CompaRatioBand,
 } from '@/lib/compensation'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── GET /api/v1/compensation/analysis ───────────────────
 // Returns compa-ratio distribution data for active employees
@@ -73,7 +74,7 @@ export const GET = withPermission(
       }> = []
 
       for (const emp of employees) {
-        const assignment = emp.assignments?.[0]
+        const assignment = extractPrimaryAssignment(emp.assignments ?? [])
         const empJobGradeId = assignment?.jobGradeId
 
         // Latest CompensationHistory

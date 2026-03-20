@@ -10,6 +10,7 @@ import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
@@ -44,7 +45,8 @@ export const GET = withPermission(
       },
     })
 
-    const grade = employee?.assignments?.[0]?.jobGrade?.code ?? ''
+    const primary = extractPrimaryAssignment(employee?.assignments ?? [])
+    const grade = (primary as Record<string, any>)?.jobGrade?.code ?? ''
 
     // 역량 요건
     const requirements = await prisma.competencyRequirement.findMany({

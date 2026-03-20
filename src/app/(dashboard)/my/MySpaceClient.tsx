@@ -13,6 +13,7 @@ import {
 import type { SessionUser } from '@/types'
 import { CARD_STYLES } from '@/lib/styles'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
+import { extractPrimaryAssignment } from '@/lib/employee/extract-primary-assignment'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -62,7 +63,7 @@ function getYearsOfService(hireDate: Date): string {
 
 export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }: MySpaceClientProps) {
   const t = useTranslations('mySpace')
-  const asgn = employee.assignments[0]
+  const asgn = extractPrimaryAssignment(employee.assignments as unknown as Record<string, unknown>[]) as Assignment | undefined
   const annualLeave = leaveBalances.find((l) => l.policy.leaveType === 'ANNUAL')
 
   const QUICK_LINKS = [

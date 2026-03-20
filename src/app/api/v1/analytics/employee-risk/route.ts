@@ -12,6 +12,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { calculateTurnoverRisk } from '@/lib/analytics/predictive/turnoverRisk'
 import { calculateBurnoutScore } from '@/lib/analytics/predictive/burnout'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const GET = withPermission(
   async (req: NextRequest, _ctx, user: SessionUser) => {
@@ -41,7 +42,8 @@ export const GET = withPermission(
     })
     if (!employee) throw notFound('Employee not found')
 
-    const effectiveCompanyId = employee.assignments[0]?.company?.id ?? user.companyId
+    const primaryAsgn = extractPrimaryAssignment(employee.assignments)
+    const effectiveCompanyId = primaryAsgn?.company?.id ?? user.companyId
 
     // M-1: 법인 간 IDOR 차단 — SUPER_ADMIN만 타 법인 직원 조회 가능
     if (user.role !== 'SUPER_ADMIN' && effectiveCompanyId !== user.companyId) {
@@ -91,9 +93,9 @@ export const GET = withPermission(
         id: employee.id,
         name: employee.name,
         hireDate: employee.hireDate,
-        department: employee.assignments[0]?.department ?? null,
-        jobGrade: employee.assignments[0]?.jobGrade ?? null,
-        company: employee.assignments[0]?.company ?? null,
+        department: primaryAsgn?.department ?? null,
+        jobGrade: primaryAsgn?.jobGrade ?? null,
+        company: primaryAsgn?.company ?? null,
       },
       turnover: turnoverScore,
       burnout: burnoutScore,

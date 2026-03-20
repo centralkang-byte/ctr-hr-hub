@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export interface PeerCandidate {
   employeeId: string
@@ -80,7 +81,7 @@ export async function recommendPeers(
     if (!peerMap.has(peerId)) {
       peerMap.set(peerId, {
         name: s.peer.name,
-        department: s.peer.assignments?.[0]?.department?.name ?? '-',
+        department: extractPrimaryAssignment(s.peer.assignments ?? [])?.department?.name ?? '-',
         scores: [],
         totalScore: 0,
       })
@@ -129,7 +130,7 @@ export async function recommendPeers(
       },
     })
 
-    const departmentId = employee?.assignments?.[0]?.departmentId
+    const departmentId = (extractPrimaryAssignment(employee?.assignments ?? []) as Record<string, any>)?.departmentId
 
     if (departmentId) {
       const existingIds = new Set([
@@ -167,7 +168,7 @@ export async function recommendPeers(
         candidates.push({
           employeeId: p.id,
           name: p.name,
-          department: p.assignments?.[0]?.department?.name ?? '-',
+          department: extractPrimaryAssignment(p.assignments ?? [])?.department?.name ?? '-',
           totalScore: 0,
           scores: [{ type: 'SAME_DEPARTMENT', rawCount: 1, weightedScore: 0 }],
         })

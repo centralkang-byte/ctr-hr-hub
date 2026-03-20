@@ -9,6 +9,7 @@ import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const GET = withPermission(
   async (req: NextRequest, _ctx, user: SessionUser) => {
@@ -66,8 +67,8 @@ export const GET = withPermission(
       id: e.id,
       name: e.name,
       email: e.email,
-      department: e.assignments[0]?.department?.name ?? null,
-      jobGrade: e.assignments[0]?.jobGrade?.name ?? null,
+      department: extractPrimaryAssignment(e.assignments)?.department?.name ?? null,
+      jobGrade: extractPrimaryAssignment(e.assignments)?.jobGrade?.name ?? null,
     }))
 
     return apiSuccess(result)

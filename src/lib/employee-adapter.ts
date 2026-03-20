@@ -5,6 +5,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import type { MinimalEmployee } from '@/types/employee'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 /**
  * Frontend adapter: Convert typical Prisma employee with nested assignments
@@ -16,7 +17,7 @@ import type { MinimalEmployee } from '@/types/employee'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function adaptEmployeeForCell(emp: any): MinimalEmployee | null {
   if (!emp) return null
-  const a = emp.assignments?.[0] ?? emp.currentAssignment ?? null
+  const a = extractPrimaryAssignment(emp.assignments ?? []) ?? emp.currentAssignment ?? null
   return {
     id: emp.id ?? '',
     name: emp.name ?? '',

@@ -14,6 +14,7 @@ import { AppError } from '@/lib/errors'
 import { generateWithholdingReceiptPdf } from '@/lib/payroll/yearEndReceiptPdf'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const POST = withPermission(
   async (req: NextRequest, context, user: SessionUser) => {
@@ -42,7 +43,7 @@ export const POST = withPermission(
       }
 
       // Company scope check
-      const employeeCompanyId = (settlement.employee.assignments?.[0] as { companyId?: string })?.companyId
+      const employeeCompanyId = (extractPrimaryAssignment(settlement.employee.assignments ?? []) as Record<string, any>)?.companyId as string | undefined
       if (user.role !== ROLE.SUPER_ADMIN && employeeCompanyId && employeeCompanyId !== user.companyId) {
         throw new AppError(403, 'FORBIDDEN', '해당 직원의 영수증을 발행할 권한이 없습니다.')
       }

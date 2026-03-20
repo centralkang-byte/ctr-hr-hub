@@ -11,6 +11,7 @@ import { badRequest, forbidden, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { generateEvaluationDraft } from '@/lib/claude'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/performance/evaluations/[id]/ai-draft ───
@@ -78,9 +79,9 @@ export const POST = withPermission(
     }
 
     const emp = evaluation.employee
-    const assignment = emp.assignments?.[0]
-    const departmentName = (assignment as { department?: { name: string } | null } | undefined)?.department?.name ?? null
-    const jobGradeName = (assignment as { jobGrade?: { name: string } | null } | undefined)?.jobGrade?.name ?? null
+    const assignment = extractPrimaryAssignment(emp.assignments ?? [])
+    const departmentName = assignment?.department?.name ?? null
+    const jobGradeName = assignment?.jobGrade?.name ?? null
 
     // Calculate tenure months
     let tenureMonths: number | undefined

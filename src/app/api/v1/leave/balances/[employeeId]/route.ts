@@ -4,6 +4,7 @@ import { apiSuccess } from '@/lib/api'
 import { notFound, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/leave/balances/[employeeId] ─────────────
@@ -32,7 +33,8 @@ export const GET = withPermission(
 
     if (!employee) throw notFound('직원을 찾을 수 없습니다.')
 
-    const employeeCompanyId = employee.assignments?.[0]?.companyId
+    const primary = extractPrimaryAssignment(employee.assignments)
+    const employeeCompanyId = primary?.companyId
     if (user.role !== 'SUPER_ADMIN' && employeeCompanyId !== user.companyId) {
       throw forbidden('다른 회사의 직원 정보에 접근할 수 없습니다.')
     }

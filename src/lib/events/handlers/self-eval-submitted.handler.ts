@@ -21,6 +21,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import { sendNotification } from '@/lib/notifications'
 import { getManagerByPosition } from '@/lib/assignments'
 import type {
@@ -57,7 +58,7 @@ export const selfEvalSubmittedHandler: DomainEventHandler<'PERFORMANCE_SELF_EVAL
       }
 
       const employeeName = employee.name
-      const positionId   = employee.assignments[0]?.positionId
+      const positionId   = extractPrimaryAssignment(employee.assignments)?.positionId
 
       // ── 2. 포지션 기반 매니저 조회 ─────────────────────────────
       if (!positionId) {

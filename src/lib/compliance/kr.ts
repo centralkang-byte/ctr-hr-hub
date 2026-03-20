@@ -5,6 +5,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { krLaborModule } from '@/lib/labor/kr'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 /**
  * Get weekly work hours summary for all employees in a company
@@ -142,7 +143,7 @@ export async function getEmployeeWorkHours(companyId: string, weekStart: Date, p
       id: e.id,
       name: e.name,
       employeeNo: e.employeeNo,
-      departmentId: e.assignments?.[0]?.departmentId ?? null,
+      departmentId: (extractPrimaryAssignment(e.assignments ?? []) as Record<string, any>)?.departmentId ?? null,
       weeklyHours: hours,
       status: classifyWorkHoursStatus(hours),
     }

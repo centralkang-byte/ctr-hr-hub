@@ -10,6 +10,7 @@ import { notFound, badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 // ─── Temporary types until prisma generate ────────────────
@@ -79,7 +80,8 @@ async function findContract(id: string, contractId: string, user: SessionUser) {
   const contract = await db.contractHistory.findFirst({
     where: { id: contractId, employeeId: id },
   })
-  const companyId = (employee.assignments[0]?.companyId as string | undefined) ?? ''
+  const primary = extractPrimaryAssignment(employee.assignments)
+  const companyId = primary?.companyId ?? ''
   return contract ? { contract, companyId } : null
 }
 

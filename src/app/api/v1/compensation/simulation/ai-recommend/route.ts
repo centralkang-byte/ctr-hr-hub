@@ -12,6 +12,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { aiRecommendSchema } from '@/lib/schemas/compensation'
 import { compensationRecommendation } from '@/lib/claude'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── POST /api/v1/compensation/simulation/ai-recommend ───
 
@@ -51,7 +52,7 @@ export const POST = withPermission(
       throw notFound('직원을 찾을 수 없습니다.')
     }
 
-    const empAssignment = employee.assignments?.[0]
+    const empAssignment = extractPrimaryAssignment(employee.assignments ?? [])
     const empJobGradeId = empAssignment?.jobGradeId
     const empJobCategoryId = empAssignment?.jobCategoryId
 

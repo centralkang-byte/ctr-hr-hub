@@ -16,6 +16,7 @@ import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
 import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
 import { withRLS, buildRLSContext } from '@/lib/api/withRLS'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 import type { OffboardingTargetType } from '@/generated/prisma/enums'
 
@@ -101,7 +102,7 @@ export const POST = withPermission(
     //    ResignType and OffboardingTargetType share the same 4 values
     const targetType = resignType as OffboardingTargetType
 
-    const currentAssignment = employee.assignments[0]
+    const currentAssignment = extractPrimaryAssignment(employee.assignments)
     const employeeCompanyId = currentAssignment?.companyId ?? ''
 
     // 5. Find matching active checklist

@@ -10,6 +10,7 @@ import { notFound } from '@/lib/errors'
 import { apiError } from '@/lib/api'
 import { generateLedgerExcel, buildExcelFilename, type LedgerRow } from '@/lib/payroll/excel-generators'
 import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { PayrollItemDetail } from '@/lib/payroll/types'
 
 export const GET = withRateLimit(withPermission(
@@ -43,7 +44,7 @@ export const GET = withRateLimit(withPermission(
 
             const rows: LedgerRow[] = items.map((item) => {
                 const emp = item.employee
-                const assignment = emp.assignments?.[0]
+                const assignment = extractPrimaryAssignment(emp.assignments)
                 const detail = item.detail as unknown as PayrollItemDetail | null
 
                 const ded = detail?.deductions

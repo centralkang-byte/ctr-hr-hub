@@ -10,6 +10,7 @@ import { badRequest, notFound, handlePrismaError, isAppError } from '@/lib/error
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 const transferSchema = z.object({
@@ -80,7 +81,8 @@ export const POST = withPermission(
     })
     if (!employee) throw notFound('직원을 찾을 수 없습니다.')
 
-    const employeeCompanyId = (employee.assignments[0]?.companyId as string | undefined) ?? ''
+    const primary = extractPrimaryAssignment(employee.assignments)
+    const employeeCompanyId = primary?.companyId ?? ''
 
     try {
       // Build assignment update payload based on provided fields

@@ -11,6 +11,7 @@ import { apiSuccess, apiError, buildPagination } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 function serializeBigInt(obj: unknown): unknown {
   return JSON.parse(
@@ -83,7 +84,7 @@ export const GET = withPermission(
       ])
 
       const data = settlements.map((s) => {
-        const assignment = s.employee.assignments?.[0]
+        const assignment = extractPrimaryAssignment(s.employee.assignments ?? [])
         return {
           id: s.id,
           employeeId: s.employeeId,
@@ -91,7 +92,7 @@ export const GET = withPermission(
           employeeNo: s.employee.employeeNo,
           department: assignment?.department?.name ?? '-',
           company: assignment?.company?.name ?? '-',
-          companyId: (assignment as { companyId?: string })?.companyId ?? user.companyId,
+          companyId: (assignment as Record<string, any>)?.companyId ?? user.companyId,
           year: s.year,
           status: s.status,
           totalSalary: s.totalSalary.toString(),

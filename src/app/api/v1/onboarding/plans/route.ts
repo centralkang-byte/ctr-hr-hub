@@ -12,6 +12,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 const createPlanSchema = z.object({
   employeeId: z.string().uuid({ message: 'employeeId(UUID)는 필수입니다.' }),
@@ -48,7 +49,7 @@ export const POST = withPermission(
       })
       if (!employee) throw notFound('직원을 찾을 수 없습니다.')
 
-      const empCompanyId = employee.assignments[0]?.companyId ?? user.companyId
+      const empCompanyId = (extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>)?.companyId ?? user.companyId
 
       // 2. 이미 진행 중인 온보딩 확인
       const existing = await prisma.employeeOnboarding.findFirst({

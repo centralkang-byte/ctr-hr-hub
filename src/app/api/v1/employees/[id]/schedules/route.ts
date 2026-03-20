@@ -6,6 +6,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { employeeScheduleAssignSchema } from '@/lib/schemas/shift'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 // GET /api/v1/employees/[id]/schedules — Get employee's schedule assignments
@@ -104,7 +105,7 @@ export const POST = withPermission(
         action: 'attendance.employee-schedule.assign',
         resourceType: 'employee_schedule',
         resourceId: assignment.id,
-        companyId: (employee.assignments[0]?.companyId as string | undefined) ?? '',
+        companyId: extractPrimaryAssignment(employee.assignments)?.companyId ?? '',
         ip,
         userAgent,
       })

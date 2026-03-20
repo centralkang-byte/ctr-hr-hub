@@ -12,6 +12,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { validateTaskTransition } from '@/lib/shared/task-state-machine'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 const statusSchema = z.object({
     status: z.enum(['PENDING', 'IN_PROGRESS', 'DONE', 'BLOCKED', 'SKIPPED']),
@@ -57,7 +58,7 @@ export const PUT = withPermission(
         if (!task) throw notFound('태스크를 찾을 수 없습니다.')
 
         // Company scoping
-        const taskCompanyId = task.employeeOffboarding.employee?.assignments?.[0]?.companyId
+        const taskCompanyId = (extractPrimaryAssignment(task.employeeOffboarding.employee?.assignments ?? []) as Record<string, any>)?.companyId
         if (user.role !== ROLE.SUPER_ADMIN && taskCompanyId && taskCompanyId !== user.companyId) {
             throw forbidden('다른 법인의 태스크에 접근할 수 없습니다.')
         }

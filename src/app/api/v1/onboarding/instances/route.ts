@@ -10,6 +10,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { calculateProgress, getCurrentMilestone } from '@/lib/onboarding/milestone-helpers'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const GET = withPermission(
     async (req, _ctx, _user: SessionUser) => {
@@ -67,8 +68,8 @@ export const GET = withPermission(
                 id: inst.id,
                 employeeId: inst.employeeId,
                 employeeName: inst.employee?.name ?? '',
-                department: inst.employee?.assignments?.[0]?.department?.name ?? '',
-                company: inst.employee?.assignments?.[0]?.company?.name ?? '',
+                department: (extractPrimaryAssignment(inst.employee?.assignments ?? []) as any)?.department?.name ?? '',
+                company: (extractPrimaryAssignment(inst.employee?.assignments ?? []) as any)?.company?.name ?? '',
                 hireDate,
                 buddy: inst.buddy ? { id: inst.buddy.id, name: inst.buddy.name } : null,
                 status: inst.status,

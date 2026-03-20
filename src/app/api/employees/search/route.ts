@@ -12,6 +12,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { resolveCompanyId } from '@/lib/api/companyFilter'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 const searchQuerySchema = z.object({
     q: z.string().min(1),
@@ -109,7 +110,7 @@ export const GET = withPermission(
 
         // 정확 매치 → startsWith → contains 순서 정렬
         const scored = results.map((emp) => {
-            const asgn = emp.assignments?.[0]
+            const asgn = extractPrimaryAssignment(emp.assignments ?? [])
             const salaryInfo = salaryMap.get(emp.id)
 
             let score = 0

@@ -8,6 +8,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { canDeductUnreturnedAsset, calculateDeductionAmount } from '@/lib/labor/asset-deduction'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export interface SettlementItem {
     type: string
@@ -65,7 +66,7 @@ export async function executeOffboardingCompletion(offboardingId: string): Promi
         }
 
         // 3. Handle unreturned assets
-        const countryCode = offboarding.employee?.assignments?.[0]?.company?.countryCode ?? 'KR'
+        const countryCode = (extractPrimaryAssignment(offboarding.employee?.assignments ?? []) as Record<string, any>)?.company?.countryCode ?? 'KR'
         const unreturnedAssets = offboarding.assetReturns.filter((a) => a.status === 'PENDING' || a.status === 'UNRETURNED')
 
         for (const asset of unreturnedAssets) {

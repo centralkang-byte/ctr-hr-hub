@@ -10,6 +10,7 @@ import { badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/performance/compensation/[cycleId]/export
@@ -59,12 +60,14 @@ export const GET = withRateLimit(withPermission(
                 ],
             })
 
-            const data = records.map((r) => ({
+            const data = records.map((r) => {
+                const primary = extractPrimaryAssignment(r.employee.assignments)
+                return {
                 employeeNumber: r.employee.employeeNo,
                 employeeName: r.employee.name,
                 employeeNameEn: r.employee.nameEn,
-                department: r.employee.assignments[0]?.department?.name ?? '',
-                position: r.employee.assignments[0]?.jobGrade?.name ?? '',
+                department: primary?.department?.name ?? '',
+                position: primary?.jobGrade?.name ?? '',
                 grade: r.performanceGradeAtTime ?? '',
                 currentSalary: Number(r.previousBaseSalary),
                 comparatio: r.compaRatio ? Number(r.compaRatio) : null,
@@ -74,7 +77,7 @@ export const GET = withRateLimit(withPermission(
                 effectiveDate: r.effectiveDate,
                 isException: r.isException,
                 exceptionReason: r.exceptionReason ?? null,
-            }))
+            }})
 
             return apiSuccess({
                 exportDate: new Date().toISOString(),

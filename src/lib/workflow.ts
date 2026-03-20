@@ -6,6 +6,7 @@
 import { prisma } from '@/lib/prisma'
 import { notFound } from '@/lib/errors'
 import type { ApproverType } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -102,8 +103,10 @@ async function resolveApprover(
           },
         },
       })
-      const managerEmployee =
-        employee?.assignments?.[0]?.position?.reportsTo?.assignments?.[0]?.employee
+      const empPrimary = extractPrimaryAssignment(employee?.assignments ?? [])
+      const mgrAssignments = (empPrimary as any)?.position?.reportsTo?.assignments ?? []
+      const mgrPrimary = extractPrimaryAssignment(mgrAssignments)
+      const managerEmployee = (mgrPrimary as any)?.employee
       if (!managerEmployee) return null
       return {
         employeeId: managerEmployee.id,
@@ -124,7 +127,7 @@ async function resolveApprover(
           },
         },
       })
-      const assignment = employee?.assignments?.[0]
+      const assignment = extractPrimaryAssignment(employee?.assignments ?? [])
       if (!assignment?.department) return null
 
       // Find department head (manager of the department's top-level)
@@ -166,7 +169,7 @@ async function resolveApprover(
         },
       })
       if (!employee) return null
-      const empCompanyId = employee.assignments?.[0]?.companyId
+      const empCompanyId = (extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>)?.companyId
 
       const hrAdmin = await prisma.employee.findFirst({
         where: {
@@ -222,7 +225,7 @@ async function resolveApprover(
         },
       })
       if (!employee) return null
-      const roleEmpCompanyId = employee.assignments?.[0]?.companyId
+      const roleEmpCompanyId = (extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>)?.companyId
 
       // Find the role by ID, then find an employee with that role
       const roleHolder = await prisma.employee.findFirst({

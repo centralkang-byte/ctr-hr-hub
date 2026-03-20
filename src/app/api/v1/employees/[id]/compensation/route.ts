@@ -15,6 +15,7 @@ import { apiSuccess } from '@/lib/api'
 import { notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
@@ -57,7 +58,7 @@ export const GET = withPermission(
     })
     if (!employee) throw notFound('직원을 찾을 수 없습니다.')
 
-    const assignment = employee.assignments[0]
+    const assignment = extractPrimaryAssignment(employee.assignments)
     // compensationHistories is a named relation ("CompensationEmployee") — Prisma resolves it as compensationHistories
     const latestComp = employee.compensationHistories?.[0] ?? null
 

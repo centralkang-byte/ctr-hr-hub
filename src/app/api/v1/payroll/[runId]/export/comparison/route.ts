@@ -15,6 +15,7 @@ import {
     type ComparisonExcelRow,
 } from '@/lib/payroll/excel-generators'
 import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const GET = withRateLimit(withPermission(
     async (_req: NextRequest, context, user) => {
@@ -76,7 +77,7 @@ export const GET = withRateLimit(withPermission(
                 return {
                     employeeNo: emp.employeeNo ?? '',
                     employeeName: emp.name,
-                    department: emp.assignments?.[0]?.department?.name ?? '—',
+                    department: extractPrimaryAssignment(emp.assignments)?.department?.name ?? '—',
                     currentNet,
                     previousNet: prev?.netPay ?? null,
                     diffNet,

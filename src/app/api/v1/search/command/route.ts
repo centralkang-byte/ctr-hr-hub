@@ -6,6 +6,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { commandSearchSchema } from '@/lib/schemas/command-search'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const GET = withPermission(
   async (
@@ -70,14 +71,14 @@ export const GET = withPermission(
 
       return apiSuccess({
         employees: employees.map((e) => {
-          const asgn = e.assignments?.[0]
+          const asgn = extractPrimaryAssignment(e.assignments ?? [])
           return {
             id: e.id,
             name: e.name,
             employeeNo: e.employeeNo,
             email: e.email,
-            department: (asgn as any)?.department?.name ?? null, // eslint-disable-line @typescript-eslint/no-explicit-any
-            position: (asgn as any)?.jobGrade?.name ?? null, // eslint-disable-line @typescript-eslint/no-explicit-any
+            department: (asgn as Record<string, any>)?.department?.name ?? null,
+            position: (asgn as Record<string, any>)?.jobGrade?.name ?? null,
           }
         }),
         documents: documents.map((d) => ({

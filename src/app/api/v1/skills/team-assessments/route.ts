@@ -13,6 +13,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { z } from 'zod'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 const managerAssessmentSchema = z.object({
   employeeId: z.string().uuid(),
@@ -107,14 +108,15 @@ export const GET = withPermission(
     return apiSuccess({
       period,
       teamMembers: teamMembers.map((m) => {
-        const grade = m.assignments?.[0]?.jobGrade?.code ?? ''
+        const mPrimary = extractPrimaryAssignment(m.assignments ?? [])
+          const grade = (mPrimary as Record<string, any>)?.jobGrade?.code ?? ''
         const assessmentMap = new Map(m.skillAssessments.map((a) => [a.competencyId, a]))
         return {
           id: m.id,
           name: m.name,
           nameEn: m.nameEn,
           grade,
-          department: m.assignments?.[0]?.department,
+          department: (mPrimary as Record<string, any>)?.department,
           assessments: competencies.map((c) => {
             const assessment = assessmentMap.get(c.id)
             const expectedLevel = requirementMap.get(`${c.id}_${grade}`) ?? null

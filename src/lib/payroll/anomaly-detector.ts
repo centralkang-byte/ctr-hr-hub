@@ -10,6 +10,7 @@
 import { prisma } from '@/lib/prisma'
 import type { PayrollAnomaly, Prisma } from '@/generated/prisma/client'
 import { getPayrollSetting, getAttendanceSetting } from '@/lib/settings/get-setting'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── 탐지 규칙 코드 ─────────────────────────────────────────
 
@@ -159,7 +160,7 @@ export async function detectAnomalies(
 //         const currentNet = Number(item.netPay)
         const currentBase = Number(item.baseSalary)
         const prevItem = prevItemMap.get(employeeId)
-        const assignment = employee.assignments?.[0]
+        const assignment = extractPrimaryAssignment(employee.assignments ?? [])
 
         // ── Rule 1: 전월 대비 총지급액 ±30% 초과 ─────────────────
         const ruleCode1 = ANOMALY_RULES.MOM_CHANGE_30PCT

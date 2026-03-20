@@ -11,6 +11,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { attritionRiskAssessment } from '@/lib/claude'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const GET = withPermission(
   async (
@@ -100,8 +101,7 @@ export const GET = withPermission(
     let aiAssessment = null
 
     if (includeAi && (riskLevel === 'HIGH' || riskLevel === 'CRITICAL') && latestRisk) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const a = employee.assignments?.[0] as any
+      const a = extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>
 
       const factors = latestRisk.scoreFactors as Array<{
         factor: string
@@ -170,8 +170,7 @@ export const GET = withPermission(
       }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const primaryAssignment = employee.assignments?.[0] as any
+    const primaryAssignment = extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>
 
     return apiSuccess({
       employee: {

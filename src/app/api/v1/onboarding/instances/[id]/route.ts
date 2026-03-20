@@ -15,6 +15,7 @@ import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { groupTasksByMilestone, calculateProgress, getCurrentMilestone } from '@/lib/onboarding/milestone-helpers'
 import { checkSignOffEligibility } from '@/lib/onboarding/sign-off'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const GET = withPermission(
     async (_req, ctx, user: SessionUser) => {
@@ -85,7 +86,10 @@ export const GET = withPermission(
 
         // 🚨 IDOR check: employee themselves, their manager, or HR_ADMIN
         const isEmployee = user.employeeId === onboarding.employeeId
-        const managerEmp = onboarding.employee?.assignments?.[0]?.position?.reportsTo?.assignments?.[0]?.employee
+        const empPrimary = extractPrimaryAssignment(onboarding.employee?.assignments ?? [])
+        const managerAssignments = (empPrimary as any)?.position?.reportsTo?.assignments ?? []
+        const mgrPrimary = extractPrimaryAssignment(managerAssignments)
+        const managerEmp = (mgrPrimary as any)?.employee
         const managerId = managerEmp?.id
         const isManager = user.employeeId === managerId
         const isHrAdmin = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
@@ -143,9 +147,9 @@ export const GET = withPermission(
                 name: onboarding.employee?.name,
                 email: onboarding.employee?.email,
                 hireDate: onboarding.employee?.hireDate,
-                department: onboarding.employee?.assignments?.[0]?.department?.name,
-                company: onboarding.employee?.assignments?.[0]?.company?.name,
-                position: onboarding.employee?.assignments?.[0]?.position?.titleKo,
+                department: (empPrimary as any)?.department?.name,
+                company: (empPrimary as any)?.company?.name,
+                position: (empPrimary as any)?.position?.titleKo,
                 manager: managerId
                     ? { id: managerId, name: managerEmp?.name }
                     : null,

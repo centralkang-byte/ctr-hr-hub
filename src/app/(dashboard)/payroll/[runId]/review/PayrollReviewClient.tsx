@@ -22,6 +22,7 @@ import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { CARD_STYLES, TABLE_STYLES, MODAL_STYLES } from '@/lib/styles'
 import { cn } from '@/lib/utils'
+import { extractPrimaryAssignment } from '@/lib/employee/extract-primary-assignment'
 
 // ─── Types ──────────────────────────────────────────────
 
@@ -168,8 +169,9 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
     }
   }
 
-  const dept = anomaly.employee.assignments?.[0]?.department?.name ?? '—'
-  const pos = (anomaly.employee.assignments?.[0]?.position as unknown as { titleKo?: string } | undefined)?.titleKo ?? ''
+  const primary = extractPrimaryAssignment(anomaly.employee.assignments ?? [])
+  const dept = (primary as Record<string, any>)?.department?.name ?? '—'
+  const pos = (primary as Record<string, any>)?.position?.titleKo ?? ''
 
   if (anomaly.status !== 'OPEN') return null
 

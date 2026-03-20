@@ -12,6 +12,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { parseAnalyticsParams, generateMonthRange, toYearMonth } from '@/lib/analytics/parse-params'
 import type { TurnoverResponse } from '@/lib/analytics/types'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 const BENCHMARK_RATE = 4.5 // Settings-connected: industry average benchmark rate (SYSTEM/benchmark-rates)
 
@@ -198,7 +199,7 @@ export const GET = withPermission(
     // Check departments with insufficient data
     const deptInterviewCounts = new Map<string, number>()
     for (const i of exitInterviews) {
-      const dept = i.employeeOffboarding?.employee?.assignments?.[0]?.department?.name || '미지정'
+      const dept = extractPrimaryAssignment(i.employeeOffboarding?.employee?.assignments ?? [])?.department?.name || '미지정'
       deptInterviewCounts.set(dept, (deptInterviewCounts.get(dept) || 0) + 1)
     }
     const insufficientDepartments = Array.from(deptInterviewCounts.entries())

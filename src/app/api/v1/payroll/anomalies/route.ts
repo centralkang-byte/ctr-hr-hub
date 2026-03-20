@@ -15,6 +15,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { resolveCompanyId } from '@/lib/api/companyFilter'
 import { z } from 'zod'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 const querySchema = z.object({
@@ -75,7 +76,7 @@ export const GET = withPermission(
 
     const bandBreaches: Record<string, unknown>[] = []
     for (const item of payrollItems) {
-      const assignment = item.employee.assignments[0]
+      const assignment = extractPrimaryAssignment(item.employee.assignments)
       if (!assignment?.jobGradeId) continue
       const band = bandMap.get(assignment.jobGradeId)
       if (!band) continue
@@ -110,7 +111,7 @@ export const GET = withPermission(
     type GroupKey = string
     const groups = new Map<GroupKey, { grossList: number[]; items: typeof payrollItems }>()
     for (const item of payrollItems) {
-      const a = item.employee.assignments[0]
+      const a = extractPrimaryAssignment(item.employee.assignments)
       if (!a?.companyId || !a?.jobGradeId) continue
       const key = `${a.companyId}:${a.jobGradeId}`
       if (!groups.has(key)) groups.set(key, { grossList: [], items: [] })
@@ -126,7 +127,7 @@ export const GET = withPermission(
       const std = Math.sqrt(grossList.reduce((s, v) => s + (v - mean) ** 2, 0) / grossList.length)
       const cv = mean > 0 ? std / mean : 0
       if (cv > 0.30) {
-        const a = items[0].employee.assignments[0]
+        const a = extractPrimaryAssignment(items[0].employee.assignments)
         varianceAnomalies.push({
           companyCode: items[0].run.company?.code,
           jobGrade: (a?.jobGrade as { name?: string } | undefined)?.name,
@@ -159,7 +160,7 @@ export const GET = withPermission(
     for (const [key, { grossList, items }] of groups) {
       const [, gradeId] = key.split(':')
       if (!gradeId) continue
-      const a = items[0].employee.assignments[0]
+      const a = extractPrimaryAssignment(items[0].employee.assignments)
       const currency = items[0].run.currency ?? 'KRW'
       const rate = rateMap[currency] ?? 1
       const avgLocal = grossList.reduce((s, v) => s + v, 0) / grossList.length

@@ -11,6 +11,7 @@ import { employeeSearchSchema } from '@/lib/schemas/employee'
 import { maskPhone } from '@/lib/masking'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 export const GET = withRateLimit(withPermission(
@@ -72,7 +73,7 @@ export const GET = withRateLimit(withPermission(
 
     // residentId is never included in export (not selected from DB)
     const rows = employees.map((e) => {
-      const a = e.assignments[0]
+      const a = extractPrimaryAssignment(e.assignments)
       return {
         사번: e.employeeNo,
         이름: e.name,

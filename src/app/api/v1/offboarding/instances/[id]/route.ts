@@ -11,6 +11,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { isDirectManager } from '@/lib/auth/manager-check'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const GET = withPermission(
     async (_req: NextRequest, ctx, user: SessionUser) => {
@@ -97,7 +98,7 @@ export const GET = withPermission(
         const inProgressTasks = offboarding.offboardingTasks.filter((t) => t.status === 'IN_PROGRESS').length
         const pendingTasks = offboarding.offboardingTasks.filter((t) => t.status === 'PENDING').length
 
-        const assignment = offboarding.employee?.assignments?.[0]
+        const assignment = extractPrimaryAssignment(offboarding.employee?.assignments ?? [])
 
         return apiSuccess({
             id: offboarding.id,

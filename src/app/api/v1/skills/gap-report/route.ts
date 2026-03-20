@@ -13,6 +13,7 @@ import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 const gapReportCreateSchema = z.object({
   companyId: z.string().uuid().optional(),
@@ -77,7 +78,8 @@ export const GET = withPermission(
       let assessed = 0
 
       for (const emp of employees) {
-        const grade = emp.assignments?.[0]?.jobGrade?.code ?? ''
+        const empPrimary = extractPrimaryAssignment(emp.assignments ?? [])
+        const grade = (empPrimary as Record<string, any>)?.jobGrade?.code ?? ''
         const expectedLevel = reqMap.get(`${c.id}_${grade}`) ?? null
         const assessment = emp.skillAssessments.find((a) => a.competencyId === c.id)
         const finalLevel = assessment?.finalLevel ?? assessment?.selfLevel ?? null
@@ -103,18 +105,19 @@ export const GET = withPermission(
 
     // 부서별 스킬 갭 히트맵
     const departments = [...new Set(
-      employees.map((e) => e.assignments?.[0]?.department).filter(Boolean),
+      employees.map((e) => extractPrimaryAssignment(e.assignments ?? [])?.department).filter(Boolean),
     )] as { id: string; name: string }[]
 
     const departmentMatrix = departments.map((dept) => {
       const deptEmployees = employees.filter(
-        (e) => e.assignments?.[0]?.department?.id === dept.id,
+        (e) => (extractPrimaryAssignment(e.assignments ?? []) as Record<string, any>)?.department?.id === dept.id,
       )
 
       const scores = competencies.map((c) => {
         const deptGaps: number[] = []
         for (const emp of deptEmployees) {
-          const grade = emp.assignments?.[0]?.jobGrade?.code ?? ''
+          const deptEmpPrimary = extractPrimaryAssignment(emp.assignments ?? [])
+          const grade = (deptEmpPrimary as Record<string, any>)?.jobGrade?.code ?? ''
           const expectedLevel = reqMap.get(`${c.id}_${grade}`) ?? null
           const assessment = emp.skillAssessments.find((a) => a.competencyId === c.id)
           const finalLevel = assessment?.finalLevel ?? assessment?.selfLevel ?? null

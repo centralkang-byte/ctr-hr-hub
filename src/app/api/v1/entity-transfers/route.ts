@@ -13,6 +13,7 @@ import {
   entityTransferCreateSchema,
 } from '@/lib/schemas/entity-transfer'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── Data log types to create on transfer request ────────
 const INITIAL_DATA_LOG_TYPES = [
@@ -114,7 +115,7 @@ export const POST = withPermission(
       throw notFound('직원을 찾을 수 없습니다.')
     }
 
-    const employeeCompanyId = (employee.assignments[0] as any)?.companyId as string | undefined // eslint-disable-line @typescript-eslint/no-explicit-any
+    const employeeCompanyId = (extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>)?.companyId as string | undefined
 
     if (employeeCompanyId === toCompanyId) {
       throw badRequest('이전 대상 법인이 현재 법인과 동일합니다.')

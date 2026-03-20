@@ -12,6 +12,7 @@ import { badRequest, isAppError, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { format, parseISO, startOfDay } from 'date-fns'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -93,15 +94,18 @@ export const GET = withPermission(
             seen.add(m.employee.id)
             return true
           })
-          .map((m) => ({
-            id: m.employee.id,
-            name: m.employee.name,
-            employeeNo: m.employee.employeeNo,
-            photoUrl: m.employee.photoUrl ?? null,
-            department: m.employee.assignments[0]?.department?.name ?? null,
-            groupName: m.shiftGroup.name,
-            groupColor: m.shiftGroup.color ?? null,
-          }))
+          .map((m) => {
+            const primary = extractPrimaryAssignment(m.employee.assignments)
+            return {
+              id: m.employee.id,
+              name: m.employee.name,
+              employeeNo: m.employee.employeeNo,
+              photoUrl: m.employee.photoUrl ?? null,
+              department: primary?.department?.name ?? null,
+              groupName: m.shiftGroup.name,
+              groupColor: m.shiftGroup.color ?? null,
+            }
+          })
       } else {
         // Fallback: all active employees in the company
         const empRows = await prisma.employee.findMany({
@@ -127,15 +131,18 @@ export const GET = withPermission(
           take: 50,
         })
 
-        employees = empRows.map((e) => ({
-          id: e.id,
-          name: e.name,
-          employeeNo: e.employeeNo,
-          photoUrl: e.photoUrl ?? null,
-          department: e.assignments[0]?.department?.name ?? null,
-          groupName: null,
-          groupColor: null,
-        }))
+        employees = empRows.map((e) => {
+          const primary = extractPrimaryAssignment(e.assignments)
+          return {
+            id: e.id,
+            name: e.name,
+            employeeNo: e.employeeNo,
+            photoUrl: e.photoUrl ?? null,
+            department: primary?.department?.name ?? null,
+            groupName: null,
+            groupColor: null,
+          }
+        })
       }
 
       // 2. Schedules for the date range

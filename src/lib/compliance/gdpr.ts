@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 /**
  * Log PII access (fire-and-forget)
@@ -110,7 +111,7 @@ export async function generateDataExport(employeeId: string) {
   })
   if (!employee) return null
 
-  const assignment = employee.assignments?.[0]
+  const assignment = extractPrimaryAssignment(employee.assignments ?? [])
 
   return {
     exportedAt: new Date().toISOString(),

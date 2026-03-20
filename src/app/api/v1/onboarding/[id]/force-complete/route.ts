@@ -10,6 +10,7 @@ import { badRequest, notFound, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 const forceCompleteSchema = z.object({ reason: z.string().min(1) })
 
@@ -36,7 +37,7 @@ export const PUT = withPermission(
       },
     })
     if (!onboarding) throw notFound('온보딩 기록을 찾을 수 없습니다.')
-    const empCompanyId = onboarding.employee.assignments?.[0]?.companyId
+    const empCompanyId = (extractPrimaryAssignment(onboarding.employee.assignments ?? []) as Record<string, any>)?.companyId
     if (
       user.role !== 'SUPER_ADMIN' &&
       empCompanyId !== user.companyId

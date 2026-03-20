@@ -13,6 +13,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { z } from 'zod'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 const selfAssessmentSchema = z.object({
   competencyId: z.string().uuid(),
@@ -74,7 +75,8 @@ export const GET = withPermission(
         },
       },
     })
-    const gradeCode = employee?.assignments?.[0]?.jobGrade?.code ?? null
+    const primary = extractPrimaryAssignment(employee?.assignments ?? [])
+    const gradeCode = (primary as Record<string, any>)?.jobGrade?.code ?? null
 
     const requirements = await prisma.competencyRequirement.findMany({
       where: {

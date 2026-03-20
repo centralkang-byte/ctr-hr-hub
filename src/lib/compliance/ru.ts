@@ -4,6 +4,7 @@
 
 import { createHash } from 'crypto'
 import { prisma } from '@/lib/prisma'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── T-2 Military Registration Form ──────────────────────
 // Generates data for military registration T-2 form (Форма T-2)
@@ -36,7 +37,7 @@ export async function generateT2Report(companyId: string) {
   })
 
   return registrations.map((reg) => {
-    const assignment = reg.employee.assignments?.[0]
+    const assignment = extractPrimaryAssignment(reg.employee.assignments ?? [])
     return {
       id: reg.id,
       employeeId: reg.employeeId,
@@ -97,7 +98,7 @@ export async function generateP4Report(companyId: string, year: number, quarter:
 
   const byDepartment = employees.reduce(
     (acc, emp) => {
-      const dept = emp.assignments?.[0]?.department?.name ?? '미분류'
+      const dept = (extractPrimaryAssignment(emp.assignments ?? []) as Record<string, any>)?.department?.name ?? '미분류'
       if (!acc[dept]) {
         acc[dept] = { department: dept, headcount: 0, employeeIds: [] }
       }
@@ -157,8 +158,9 @@ export async function generate57TReport(companyId: string, year: number) {
 
   const byJobCategory = employees.reduce(
     (acc, emp) => {
-      const catKey = emp.assignments?.[0]?.jobCategory?.code ?? 'UNKNOWN'
-      const catName = emp.assignments?.[0]?.jobCategory?.name ?? '미분류'
+      const ruPrimary = extractPrimaryAssignment(emp.assignments ?? [])
+      const catKey = (ruPrimary as Record<string, any>)?.jobCategory?.code ?? 'UNKNOWN'
+      const catName = (ruPrimary as Record<string, any>)?.jobCategory?.name ?? '미분류'
       if (!acc[catKey]) {
         acc[catKey] = {
           categoryCode: catKey,

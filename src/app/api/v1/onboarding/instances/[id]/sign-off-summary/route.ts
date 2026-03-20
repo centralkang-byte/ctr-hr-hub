@@ -12,6 +12,7 @@ import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { checkSignOffEligibility } from '@/lib/onboarding/sign-off'
 import { calculateProgress, groupTasksByMilestone } from '@/lib/onboarding/milestone-helpers'
 import type { SessionUser } from '@/types'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const GET = withPermission(
     async (_req, ctx, user: SessionUser) => {
@@ -52,7 +53,9 @@ export const GET = withPermission(
         if (!onboarding) throw notFound('Onboarding not found')
 
         // Permission: manager or HR
-        const managerId = onboarding.employee?.assignments?.[0]?.position?.reportsTo?.assignments?.[0]?.employeeId
+        const empPrimary = extractPrimaryAssignment(onboarding.employee?.assignments ?? [])
+        const mgrPrimary = extractPrimaryAssignment((empPrimary as any)?.position?.reportsTo?.assignments ?? [])
+        const managerId = (mgrPrimary as any)?.employeeId
         const isManager = user.employeeId === managerId
         const isHrAdmin = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
         if (!isManager && !isHrAdmin) throw forbidden('Access denied')

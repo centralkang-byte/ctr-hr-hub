@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import type { Prisma } from '@/generated/prisma/client'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import {
   UnifiedTaskType,
   UnifiedTaskStatus,
@@ -124,8 +125,8 @@ function resolveAssignee(
       return {
         employeeId: employee.id,
         name: employee.name,
-        position: employee.assignments?.[0]?.jobGrade?.name,
-        department: employee.assignments?.[0]?.department?.name,
+        position: extractPrimaryAssignment(employee.assignments ?? [])?.jobGrade?.name,
+        department: extractPrimaryAssignment(employee.assignments ?? [])?.department?.name,
       }
 
     case 'MANAGER':
@@ -187,8 +188,8 @@ class OnboardingTaskMapper
       requester: {
         employeeId: employee.id,
         name: employee.name,
-        position: employee.assignments?.[0]?.jobGrade?.name,
-        department: employee.assignments?.[0]?.department?.name,
+        position: extractPrimaryAssignment(employee.assignments ?? [])?.jobGrade?.name,
+        department: extractPrimaryAssignment(employee.assignments ?? [])?.department?.name,
       },
       assignee,
 
