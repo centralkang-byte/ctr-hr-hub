@@ -1,8 +1,37 @@
 # CTR HR Hub — Project Guide
 
-> **Project**: CTR 통합 인사관리 시스템 (HR SaaS)
+> **Project**: CTR Integrated HR Management System (HR SaaS)
 > **Path**: `/Users/sangwoo/VibeCoding/HR_Hub/ctr-hr-hub`
-> **State Reference**: `context/SHARED.md` (completion history, current state)
+> **State Reference**: `~/Documents/Obsidian Vault/projects/hr-hub/STATUS.md` (Obsidian-managed, auto-loaded on session start via hook)
+
+---
+
+## Project Memory (Obsidian)
+
+- **Status file**: `~/Documents/Obsidian Vault/projects/hr-hub/STATUS.md` — single source of truth for completion history, current phase, and next steps
+- **On task completion**: Always update `~/Documents/Obsidian Vault/projects/hr-hub/STATUS.md` (completed / in-progress / next items)
+- **Decisions log**: `~/Documents/Obsidian Vault/projects/hr-hub/decisions/`
+- **Session notes**: `~/Documents/Obsidian Vault/projects/hr-hub/sessions/`
+
+## Hooks
+
+- **SessionStart**: Automatically loads `~/Documents/Obsidian Vault/projects/hr-hub/STATUS.md` at the beginning of every Claude Code session (configured in `.claude/settings.json`)
+
+---
+
+## Environment Setup
+
+```bash
+node -v  # Must be 20.x (see .nvmrc)
+cp .env.example .env.local
+# Fill in: DATABASE_URL, NEXTAUTH_SECRET, AZURE_AD_*, REDIS_URL, AWS_*, ANTHROPIC_API_KEY
+npm install
+npx prisma generate
+npx prisma migrate dev
+npm run dev  # http://localhost:3002
+```
+
+Required env vars: `DATABASE_URL`, `NEXTAUTH_URL`, `NEXTAUTH_SECRET`, `AZURE_AD_CLIENT_ID`, `AZURE_AD_CLIENT_SECRET`, `AZURE_AD_TENANT_ID`, `REDIS_URL`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET`, `ANTHROPIC_API_KEY`
 
 ---
 
@@ -55,19 +84,32 @@ npx tsx scripts/verify-leave-balance.ts  # Verify leave balances
 src/
 ├── app/
 │   ├── (auth)/login/          # Login page (M365 SSO + dev accounts)
-│   ├── (dashboard)/           # All HR modules (30+ pages)
-│   │   ├── analytics/         # 워크포스 분석, AI 리포트, 예측 분석
-│   │   ├── attendance/        # 근태 관리, 교대 캘린더
-│   │   ├── compliance/        # GDPR, 데이터 보존, DPIA
-│   │   ├── home/              # 대시보드 홈
-│   │   ├── leave/             # 휴가 관리
-│   │   ├── my/                # 내 프로필, 내 휴가, 내 업무
-│   │   ├── payroll/           # 급여, 정산, 시뮬레이션
-│   │   ├── performance/       # 성과 관리, 동료 평가, 보정
-│   │   ├── recruitment/       # 채용, ATS
-│   │   ├── settings/          # 설정 허브 (6개 카테고리, 44개 탭)
-│   │   └── ...                # training, succession, org, etc.
-│   └── api/v1/                # REST API routes (45+ modules)
+│   ├── (dashboard)/           # All HR modules (33 modules)
+│   │   ├── analytics/         # Workforce analytics, AI reports, predictive
+│   │   ├── approvals/         # Approval workflows
+│   │   ├── attendance/        # Attendance mgmt, shift calendar
+│   │   ├── benefits/          # Employee benefits
+│   │   ├── compensation/      # Compensation management
+│   │   ├── compliance/        # GDPR, data retention, DPIA
+│   │   ├── delegation/        # Authority delegation
+│   │   ├── directory/         # Employee directory
+│   │   ├── discipline/        # Disciplinary actions
+│   │   ├── home/              # Dashboard home
+│   │   ├── leave/             # Leave management
+│   │   ├── manager-hub/       # Manager tools hub
+│   │   ├── my/                # My profile, my leave, my tasks
+│   │   ├── offboarding/       # Offboarding workflows
+│   │   ├── onboarding/        # Onboarding workflows
+│   │   ├── org-studio/        # Org chart studio
+│   │   ├── payroll/           # Payroll, settlement, simulation
+│   │   ├── performance/       # Performance mgmt, peer review, calibration
+│   │   ├── recruitment/       # Recruitment, ATS
+│   │   ├── settings/          # Settings hub (6 categories, 44+ tabs)
+│   │   ├── succession/        # Succession planning
+│   │   ├── talent/            # Talent management
+│   │   ├── training/          # Training & development
+│   │   └── ...                # team, org, notifications, employees
+│   └── api/v1/                # REST API routes (73 modules)
 ├── components/
 │   ├── ui/                    # Base components (shadcn/ui)
 │   ├── layout/                # Sidebar, MobileDrawer ⚠️ PROTECTED
@@ -100,6 +142,7 @@ prisma/
 - **Imports**: `import type { ... }` for type-only imports
 - **Styling**: `cn()` from `@/lib/utils` for className merging
 - **Icons**: `lucide-react` exclusively
+- **Binary responses in App Router**: Use `new Response()` directly, not `NextResponse.json()` for file downloads
 
 ### Auth & RBAC
 - **Roles**: `SUPER_ADMIN`, `HR_ADMIN`, `EXECUTIVE`, `MANAGER`, `EMPLOYEE`
@@ -108,15 +151,15 @@ prisma/
 - **Active records**: `endDate: null` convention
 - **RLS**: `withRLS()` wrapper sets Postgres session variables
 
-### Assignment 규칙 (Track B)
-- **Primary 조회**: `assignments[0]` 직접 접근 금지 → 반드시 헬퍼 사용
-  - DB 조회: `fetchPrimaryAssignment(employeeId)`
-  - 메모리 필터: `extractPrimaryAssignment(assignments)`
-- **Append-Only**: assignment 수정 시 기존 row에 endDate → 신규 row 생성. UPDATE 금지
-- **isPrimary 필터 필수**: Payroll, Leave, 결재 등에서 반드시 `isPrimary: true` 조건
-- **겸직자 연차/결재**: Primary Assignment 법인 기준으로만 처리
-- **급여 스코프**: 국내 7개 법인 = HR Hub 직접 처리. 해외 6개 = 로컬 시스템 + 데이터 연동만
-- **employmentType 매핑**: ATS 소문자 → Employee 대문자는 `mapRequisitionTypeToEmploymentType()` 사용
+### Assignment Rules (Track B)
+- **Primary lookup**: NEVER access `assignments[0]` directly — always use helpers:
+  - DB query: `fetchPrimaryAssignment(employeeId)`
+  - In-memory filter: `extractPrimaryAssignment(assignments)`
+- **Append-Only**: To modify assignments, set `endDate` on existing row → create new row. NEVER UPDATE in-place
+- **isPrimary filter required**: Payroll, Leave, Approvals MUST include `isPrimary: true` condition
+- **Concurrent positions**: Leave/Approvals processed under Primary Assignment's company only
+- **Payroll scope**: Domestic 7 entities = HR Hub direct processing. Overseas 6 = local system + data sync only
+- **employmentType mapping**: ATS lowercase → Employee uppercase via `mapRequisitionTypeToEmploymentType()`
 
 ### i18n
 - Use `useTranslations()` hook from `next-intl` in Client components
@@ -135,7 +178,7 @@ prisma/
 
 ---
 
-## QA Test Accounts (8개)
+## QA Test Accounts (8 accounts)
 
 | Email | Name | Role | Company | Team |
 |-------|------|------|---------|------|
@@ -167,9 +210,9 @@ DO NOT modify (unless explicitly in scope):
 - src/middleware.ts            (Auth middleware)
 - Any module not explicitly listed in the prompt's scope
 
-# Track B 보호 파일 (v4.4)
-- src/lib/api/companyFilter.ts    (resolveCompanyId — 보안 필터 SSOT)
-- src/lib/prisma-rls.ts           (RLS wrapper — Phase 3에서 우회 API만 별도 처리)
+# Track B Protected Files (v4.4)
+- src/lib/api/companyFilter.ts    (resolveCompanyId — security filter SSOT)
+- src/lib/prisma-rls.ts           (RLS wrapper — Phase 3 bypass APIs handled separately)
 - src/lib/api/withRLS.ts          (withRLS transaction wrapper)
 ```
 
@@ -177,26 +220,25 @@ DO NOT modify (unless explicitly in scope):
 
 ---
 
-## Prompt & Agent Guidelines
+## Gotchas & Lessons Learned
 
-### Parallel Agent Architecture
-When writing prompts for multi-task work:
-- Identify parallelizable segments and split into Agent 1~N
-- Draw dependency graph (which Agent must finish before another starts)
-- Assign per-Agent: autonomy mode (Agent-driven / Review-driven / Agent-assisted) and model recommendation
-- Example: Backend APIs = parallel → UI depends on both → Export depends on UI
+- **Sidebar destruction incident**: Session A (GP#3 QA) modified sidebar while adding seed data → lost entire Insights section. Always declare DO NOT TOUCH boundaries before starting work.
+- **Pure function extraction**: Business logic tightly coupled to Prisma models must be extracted into pure functions for testability (caught in Session C).
+- **App Router binary responses**: File download endpoints must use `new Response()`, not `NextResponse.json()` (caught in Session C).
+- **UI error states**: Always handle loading/error/empty states in Client components — don't assume API success.
 
-### Cross-Review for Complex Prompts
-Before executing complex prompts (multi-agent, API+UI+Export combined), run a review pass to catch:
-- Edge cases and runtime error traps
-- Tight coupling to Prisma models (need pure function extraction?)
-- Next.js App Router gotchas (binary responses, server/client boundaries)
-- Error state handling gaps in UI
-- **Reference**: Session C caught 3 critical traps: pure function extraction, App Router binary response, UI error state
+## Core Rules
 
-### Verification Checklist
+- Timezone handling: Always use `src/lib/timezone.ts` utilities — never raw `new Date()` for display
+- API dates: ISO 8601 strings only (no Date objects passed directly)
+- Components: Functional components only
+- No `any` type — use proper types or `unknown` with narrowing
+
+## Verification Checklist
+
 After any implementation:
 1. `npx tsc --noEmit` — 0 errors
 2. `npm run lint` — no new warnings
 3. Preview/screenshot for UI changes
 4. DB verification for seed/migration changes
+5. Update `~/Documents/Obsidian Vault/projects/hr-hub/STATUS.md` with completed/in-progress/next items
