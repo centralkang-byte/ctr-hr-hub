@@ -9,6 +9,7 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { getDirectReportIds } from '@/lib/employee/direct-reports'
 import type { SessionUser } from '@/types'
 
 // ─── Schema ──────────────────────────────────────────────
@@ -30,10 +31,11 @@ export const GET = withPermission(
 
     const { cycleId } = parsed.data
 
-    // Find direct reports
-    // TODO: implement proper manager hierarchy via position reportsTo
+    // Find direct reports via position hierarchy
+    const reportIds = await getDirectReportIds(user.employeeId)
     const directReports = await prisma.employee.findMany({
       where: {
+        id: { in: reportIds },
         deletedAt: null,
         assignments: {
           some: { companyId: user.companyId, isPrimary: true, endDate: null },
@@ -59,13 +61,13 @@ export const GET = withPermission(
       return apiSuccess([])
     }
 
-    const reportIds = directReports.map((r) => r.id)
+    const directReportIds = directReports.map((r) => r.id)
 
     // Get goals for all direct reports in this cycle
     const goals = await prisma.mboGoal.findMany({
       where: {
         cycleId,
-        employeeId: { in: reportIds },
+        employeeId: { in: directReportIds },
         companyId: user.companyId,
       },
       orderBy: { createdAt: 'desc' },
