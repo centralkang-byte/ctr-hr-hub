@@ -29,6 +29,7 @@ interface AssignmentRecord {
   department: { id: string; name: string } | null
   jobGrade: { id: string; name: string; code?: string } | null
   jobCategory: { id: string; name: string } | null
+  position: { id: string; titleKo: string; titleEn: string | null } | null
   approver: { id: string; name: string; photoUrl: string | null } | null
   isPrimary: boolean
 }
@@ -190,7 +191,7 @@ function ConcurrentStatusSection({
                     id: a.id,
                     companyName: a.company?.name ?? '',
                     departmentName: a.department?.name ?? null,
-                    positionTitle: a.jobGrade?.name ?? null,
+                    positionTitle: a.position?.titleKo ?? null,
                     effectiveDate: a.effectiveDate,
                   })
                 }
