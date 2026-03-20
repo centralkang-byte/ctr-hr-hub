@@ -89,6 +89,8 @@
 | **Track B Phase 1 Session 4** (Import + Org Studio + Transfer + Regression: B-1g, B-1i, B-1j) | ✅ Complete |
 | **Track B Phase 1 COMPLETE** (조직도 반영 — 안전 작업, 11 items) | ✅ Complete |
 | **Track B Phase 2 Session 5** (Schema: B-2a WorkLocation, B-2b locationId+locale, B-2e costCenterCode) | ✅ Complete |
+| **Track B Phase 2 Session 6** (Location seed + API + UI: B-2c, B-2d) | ✅ Complete |
+| **Track B Phase 2 COMPLETE** | ✅ All 5 items done |
 
 ---
 
@@ -948,6 +950,26 @@ New `*FromSettings` async variants added alongside. Callers migrate incrementall
 - `prisma migrate dev` blocked by pre-existing shadow DB issue (exchange_rates migration drift)
 - Workaround: manual SQL migration + `prisma migrate resolve --applied`
 - All changes additive (1 new table + 2 nullable columns), zero data loss
+
+---
+
+## Track B Phase 2 Session 6 — ✅ COMPLETE
+
+### B-2c: Location seed + Settings
+- 22 WorkLocations across 13 companies (plants, offices, branch offices)
+- EmployeeAssignment.workLocationId populated via PLT-* dept ancestor mapping + company defaults
+- Employee.locale set by company (ko/en/zh/vi)
+- holiday_calendar_basis Setting added (default: COMPANY)
+- Per-company work-hour-limits already seeded in 26-process-settings.ts (KR=52, CN=44, US=40, VN=48, RU=40, EU=48)
+
+### B-2d: Location API + UI + RBAC
+- CRUD API: GET/POST/PUT/DELETE /api/v1/locations
+- RBAC: MODULE.ORG + ACTION.APPROVE (org_manage permission already seeded for HR_ADMIN+SUPER_ADMIN)
+- GET: withAuth (all authenticated users), company-scoped; SUPER_ADMIN sees all + company filter
+- POST/PUT/DELETE: withPermission perm(MODULE.ORG, ACTION.APPROVE)
+- Settings → Organization → 근무지 관리 tab with table + create/edit modal
+- Timezone field: IANA dropdown (no free-text — Gemini Cross-Review #4)
+- Soft delete via isActive toggle
 
 ---
 
