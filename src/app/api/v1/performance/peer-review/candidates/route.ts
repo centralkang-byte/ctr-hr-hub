@@ -35,17 +35,36 @@ export const GET = withPermission(
         try {
             // Get employee's primary assignment for filtering
             const employeeAssignment = await prisma.employeeAssignment.findFirst({
-                where: { employeeId, isPrimary: true, endDate: null },
+                where: { employeeId, isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
                 select: {
                     companyId: true,
                     departmentId: true,
                     department: { select: { id: true, parentId: true } },
                     jobGradeId: true,
                     jobGrade: { select: { id: true, code: true, rankOrder: true } },
+                    positionId: true,
+                    position: { select: { dottedLinePositionId: true } },
                 },
             })
 
             if (!employeeAssignment) throw badRequest('직원의 소속 정보가 없습니다.')
+
+            // B-3f: Include dotted line manager as automatic peer review candidate
+            let dottedLineManagerId: string | null = null
+            if (employeeAssignment.position?.dottedLinePositionId) {
+                const dottedManagerAssignment = await prisma.employeeAssignment.findFirst({
+                    where: {
+                        positionId: employeeAssignment.position.dottedLinePositionId,
+                        isPrimary: true,
+                        endDate: null,
+                        effectiveDate: { lte: new Date() },
+                    },
+                    select: { employeeId: true },
+                })
+                if (dottedManagerAssignment && dottedManagerAssignment.employeeId !== employeeId) {
+                    dottedLineManagerId = dottedManagerAssignment.employeeId
+                }
+            }
 
             // Already nominated peers
             const existingNominations = await prisma.peerReviewNomination.findMany({
@@ -83,6 +102,28 @@ export const GET = withPermission(
                 },
             })
 
+            // B-3f: Ensure dotted line manager is in candidates even if outside company filter or 200 cap
+            if (dottedLineManagerId && !candidates.some((c) => c.id === dottedLineManagerId)) {
+                const dottedManager = await prisma.employee.findUnique({
+                    where: { id: dottedLineManagerId, deletedAt: null },
+                    include: {
+                        assignments: {
+                            where: { isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
+                            take: 1,
+                            select: {
+                                departmentId: true,
+                                department: { select: { id: true, name: true, parentId: true } },
+                                jobGradeId: true,
+                                jobGrade: { select: { id: true, name: true, code: true, rankOrder: true } },
+                            },
+                        },
+                    },
+                })
+                if (dottedManager) {
+                    candidates.push(dottedManager)
+                }
+            }
+
             // In-memory scoring
             const now = new Date()
             const sixMonthsAgo = new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000)
@@ -106,6 +147,9 @@ export const GET = withPermission(
                     const relevanceScore = scoreBreakdown.sameDept + scoreBreakdown.gradeProximity +
                         scoreBreakdown.sameJobFamily + scoreBreakdown.tenure
 
+                    // B-3f: Boost dotted line manager score
+                    const isDottedLineManager = dottedLineManagerId === c.id
+
                     return {
                         employeeId: c.id,
                         name: c.name,
@@ -114,9 +158,15 @@ export const GET = withPermission(
                         position: ca.jobGrade?.name ?? '',
                         relevanceScore,
                         scoreBreakdown,
+                        isDottedLineManager,
                     }
                 })
-                .sort((a, b) => b.relevanceScore - a.relevanceScore)
+                .sort((a, b) => {
+                    // B-3f: Dotted line managers always appear first
+                    if (a.isDottedLineManager && !b.isDottedLineManager) return -1
+                    if (!a.isDottedLineManager && b.isDottedLineManager) return 1
+                    return b.relevanceScore - a.relevanceScore
+                })
                 .slice(0, 20)
 
             return apiSuccess({
