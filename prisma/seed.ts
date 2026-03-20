@@ -51,6 +51,7 @@ import { seedDiscipline } from './seeds/31-discipline'
 import { seedPerformanceGaps } from './seeds/32-performance-gaps'
 import { seedComplianceGaps } from './seeds/33-compliance-gaps'
 import { seedPayrollOtherGaps } from './seeds/34-payroll-other-gaps'
+import { seedWorkLocations } from './seeds/40-work-locations'
 
 // Load DATABASE_URL from .env.local or .env
 const DATABASE_URL = process.env.DATABASE_URL
@@ -3654,6 +3655,9 @@ async function main() {
 
   // Gap fills: Payroll & Other (bank transfers, HR docs, recruitment costs, approval flows)
   await seedPayrollOtherGaps(prisma)
+
+  // Track B B-2c: WorkLocations + assignment linking + locale + settings
+  await seedWorkLocations(prisma)
 }
 
 main()
