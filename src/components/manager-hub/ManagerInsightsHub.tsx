@@ -27,6 +27,7 @@ import { Badge } from '@/components/ui/badge'
 import { AiGeneratedBadge } from '@/components/shared/AiGeneratedBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
+import { DottedLineReportsCard } from '@/components/manager-hub/DottedLineReportsCard'
 import type { SessionUser } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────
@@ -383,6 +384,9 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Row 4: Dotted Line Reports */}
+      <DottedLineReportsCard />
     </div>
   )
 }
