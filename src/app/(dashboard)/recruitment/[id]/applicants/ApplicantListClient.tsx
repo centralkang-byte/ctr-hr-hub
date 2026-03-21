@@ -292,7 +292,7 @@ export default function ApplicantListClient({
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#F0F0F3]">
-                {!data?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+                {!data?.length && <EmptyState />}
               {data?.map((app) => (
                   <tr
                     key={app.id}

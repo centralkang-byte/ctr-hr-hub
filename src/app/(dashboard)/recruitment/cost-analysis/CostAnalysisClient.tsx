@@ -282,7 +282,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
             </div>
             <div className="p-6">
               {analysis.bySource.length === 0 ? (
-                <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                <EmptyState />
               ) : (
                 <div className={TABLE_STYLES.wrapper}>
                   <table className={TABLE_STYLES.table}>
@@ -336,7 +336,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
             </div>
             <div className="p-6">
               {analysis.byCostType.length === 0 ? (
-                <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                <EmptyState />
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {analysis.byCostType.map((ct) => (
@@ -415,7 +415,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
           {/* Cost List */}
           <div className="bg-white border border-[#E8E8E8] rounded-xl overflow-hidden">
             {costs.length === 0 ? (
-              <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+              <EmptyState />
             ) : (
               <div className={TABLE_STYLES.wrapper}>
                 <table className={TABLE_STYLES.table}>

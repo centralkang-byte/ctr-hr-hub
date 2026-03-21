@@ -1233,6 +1233,7 @@
     "pulseSurveyTitle": "펄스 서베이",
     "teamGoalsTitle": "팀 목표",
     "recognitionTitle": "칭찬/인정",
+    "recognitionCount": "칭찬 건수",
     "compReviewTitle": "보상 검토",
     "oneOnOneTitle": "1:1 미팅",
     "notificationsTitle": "알림",
@@ -3049,6 +3050,28 @@
       "report": "AI 보고서",
       "reportDesc": "AI 경영진 보고서 자동 생성"
     },
+    "executive": {
+      "headcountTrend": "인원 추이",
+      "turnoverTrend": "이직률 추이",
+      "companyDistribution": "법인별 인원 분포",
+      "riskAlerts": "위험 신호",
+      "companyComparison": "법인 비교",
+      "hires": "입사",
+      "exits": "퇴사",
+      "netChange": "순증감",
+      "industryAvg": "업계 평균",
+      "turnoverRateLabel": "이직률",
+      "detected": "{count}건 감지됨",
+      "noRiskDetected": "감지된 위험 신호가 없습니다.",
+      "loadFailed": "데이터를 불러올 수 없습니다",
+      "loadFailedDesc": "인사이트 데이터를 불러오는 중 오류가 발생했습니다. 새로고침하거나 잠시 후 다시 시도해주세요.",
+      "tooltipTotalEmp": "현재 ACTIVE 상태인 전체 직원 수",
+      "tooltipTurnover": "당월 퇴사자 ÷ 전월 말 재직자 × 100",
+      "tooltipTenure": "전체 재직자의 입사일 기준 평균 근속 연수",
+      "tooltipLaborCost": "최근 확정된 급여의 법인별 합산 (KRW 변환)",
+      "tooltipRecruitment": "현재 진행 중인 채용 공고 수",
+      "tooltipOnboarding": "완료된 온보딩 ÷ 전체 온보딩 × 100"
+    },
     "turnoverPage": {
       "title": "이직 분석",
       "description": "월별 퇴사 트렌드, 사유 분석, 부서별 이직률",
@@ -3158,7 +3181,12 @@
       "jobCategory": "직군",
       "headcount": "인원",
       "average": "평균",
-      "median": "중간값"
+      "median": "중간값",
+      "underBand": "밴드 하한 미달",
+      "inBand": "밴드 이내",
+      "overBand": "밴드 상한 초과",
+      "compaRatio": "Compa-Ratio",
+      "compaRatioComparison": "Compa-Ratio 비교"
     },
     "attritionPage": {
       "title": "이탈 위험 분석",
@@ -3385,6 +3413,7 @@
       "EMAIL": "이메일",
       "TEAMS": "Teams"
     },
+    "viewAll": "전체 보기",
     "preference": {
       "title": "알림 설정",
       "quietHours": "방해금지 시간",
@@ -4200,7 +4229,9 @@
     "chatbotLowConfidence": "정확한 답변이 어렵습니다. HR 담당자에게 문의를 전달할까요?",
     "chatbotUnavailable": "현재 AI 답변이 불가합니다.",
     "feedbackPositive": "도움이 됐어요",
-    "feedbackNegative": "도움이 안 됐어요"
+    "feedbackNegative": "도움이 안 됐어요",
+    "chatbotWelcome": "안녕하세요! CTR HR 챗봇입니다. 근태, 휴가, 급여, 인사 정책 등에 대해 질문해 주세요.",
+    "chatbotNewSession": "새 대화"
   },
   "error": {
     "notFound": "리소스를 찾을 수 없습니다.",
@@ -4344,6 +4375,9 @@
     "totalNet": "총실지급액",
     "allStatus": "전체 상태",
     "emptyMessage": "급여 실행 내역이 없습니다.",
+    "highOrAbove": "High 이상",
+    "totalAnomalies": "총 이상 건수",
+    "noAnomalies": "이상 없음",
     "runType": {
       "MONTHLY": "월급",
       "BONUS": "상여금",
@@ -4365,7 +4399,10 @@
     "paid": "지급완료",
     "grossPay": "총 지급액",
     "deductions": "공제액",
-    "netPay": "실수령액"
+    "netPay": "실수령액",
+    "unreadCount": "미열람 명세서 {count}건",
+    "momSame": "전월 동일",
+    "newBadge": "NEW"
   },
   "payStubDetail": {
     "titleWithMonth": "{month} 급여명세서",
@@ -4578,6 +4615,9 @@
       "retention": "데이터 보관",
       "dpia": "영향평가 (DPIA)",
       "piiAudit": "개인정보 접근 로그",
+      "piiAuditDesc": "PII 접근 모니터링 및 감사 추적",
+      "retentionDesc": "데이터 보관 정책 및 실행 관리",
+      "dpiaDesc": "데이터 보호 영향 평가 관리",
       "consentForm": "동의 수집",
       "revokeConsent": "동의 철회",
       "newRequest": "새 요청",
@@ -4608,6 +4648,7 @@
     },
     "ru": {
       "title": "러시아 컴플라이언스",
+      "description": "군복무 등록, 전자문서(KEDO), 법정 보고서",
       "military": "군복무 기록",
       "kedo": "전자문서 (КЭДО)",
       "reports": "법정 보고서",
@@ -4629,6 +4670,7 @@
     },
     "cn": {
       "title": "중국 컴플라이언스",
+      "description": "사회보험(五险一金), 직원 등록 관리",
       "socialInsurance": "사회보험 (五险一金)",
       "config": "요율 설정",
       "records": "월별 기록",
@@ -4645,6 +4687,7 @@
     },
     "kr": {
       "title": "한국 컴플라이언스",
+      "description": "52시간 모니터링, 법정 교육, 퇴직금 관리",
       "subtitle": "근로기준법 준수 현황 관리",
       "workHours": "52시간 모니터링",
       "mandatoryTraining": "법정의무교육",

@@ -151,7 +151,7 @@ export default function ManagerEvaluationClient({user }: {
                 ) : teamMembers.length === 0 ? (
                     <div className="rounded-xl border border-[#F0F0F3] bg-white p-16 text-center">
                         <Users className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                        <EmptyState />
                     </div>
                 ) : (
                     <div className="space-y-4">
@@ -346,7 +346,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                     {tab === 'peer' && (
                         <div className="space-y-4">
                             {peerResults.length === 0 ? (
-                                <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                                <EmptyState />
                             ) : peerResults.map((r, i) => (
                                 <div key={i} className="rounded-xl border border-[#F0F0F3] p-4">
                                     <p className="mb-2 text-sm font-medium text-[#1C1D21]">평가자: {r.reviewerName}</p>

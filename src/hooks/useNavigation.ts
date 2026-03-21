@@ -10,6 +10,11 @@ import { NAVIGATION, type NavSection } from '@/config/navigation'
 import { ROLE, MODULE, ACTION } from '@/lib/constants'
 import type { Permission, SessionUser } from '@/types'
 
+// ─── Self-service routes (ALL_ROLES, bypass module permission) ──
+// middleware.ts에서 ALL_ROLES로 허용된 /*/me 라우트들.
+// 모듈 권한 없어도 사이드바에 표시 (예: MANAGER → /payroll/me)
+const SELF_SERVICE_PATHS = ['/payroll/me', '/onboarding/me']
+
 // ─── Permission check (reuse existing logic) ────────────────
 
 function canAccessModule(
@@ -54,8 +59,11 @@ export function useNavigation({
       .map((section) => ({
         ...section,
         items: section.items.filter((item) => {
-          // Module permission check
-          if (!canAccessModule(user, item.module)) return false
+          // Self-service 라우트는 모듈 권한과 무관하게 전 직원 표시
+          const isSelfService = SELF_SERVICE_PATHS.includes(item.href)
+
+          // Module permission check (self-service 제외)
+          if (!isSelfService && !canAccessModule(user, item.module)) return false
 
           // Country filter
           if (item.countryFilter) {

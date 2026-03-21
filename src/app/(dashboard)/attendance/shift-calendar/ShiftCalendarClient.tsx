@@ -344,7 +344,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">전체 교대조</SelectItem>
-              {!groups?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+              {!groups?.length && <EmptyState />}
               {groups?.map(g => (
                 <SelectItem key={g.id} value={g.id}>
                   <span className="flex items-center gap-2">
@@ -386,7 +386,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
 
       {/* ─── Legend ─── */}
       <div className="flex flex-wrap items-center gap-3">
-        {!groups?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+        {!groups?.length && <EmptyState />}
               {groups?.map(g => (
           <div key={g.id} className="flex items-center gap-1.5 text-xs text-[#666]">
             <span

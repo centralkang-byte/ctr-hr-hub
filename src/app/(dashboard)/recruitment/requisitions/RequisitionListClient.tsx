@@ -164,7 +164,7 @@ export default function RequisitionListClient({user }: {
       ) : items.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-48 text-[#999]">
           <FileText size={40} className="mb-3 text-[#E8E8E8]" />
-          <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+          <EmptyState />
         </div>
       ) : (
         <div className="space-y-3">

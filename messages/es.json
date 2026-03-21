@@ -4981,7 +4981,7 @@
       "payroll_cost": "인item(s)비"
     },
     "noData": "No 데이터 available.",
-    "noDataDesc": "Please 변경하거나 new로운 데이터를 additional해 보 조item(s)."
+    "noDataDesc": "Intente cambiar las condiciones o agregue nuevos datos."
   },
   "mySpace": {
     "tasksTitle": "My Tasks",

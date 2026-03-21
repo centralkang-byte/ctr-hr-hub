@@ -71,6 +71,7 @@ const GROUP_BY_LABELS: Record<string, string> = {
 // ─── Component ──────────────────────────────────────────────
 
 export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
+  const tAnalytics = useTranslations('analytics.compensationPage')
   const [loading, setLoading] = useState(true)
   const [groupBy, setGroupBy] = useState<string>('jobGrade')
   const [year, setYear] = useState<string>('')
@@ -236,7 +237,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
             </CardHeader>
             <CardContent>
               {data.breakdown.length === 0 ? (
-                <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                <EmptyState />
               ) : (
                 <div className="overflow-x-auto">
                   <table className={TABLE_STYLES.table}>
@@ -304,7 +305,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
           {data.breakdown.some((b) => b.maleAvgCompaRatio != null || b.femaleAvgCompaRatio != null) && (
             <Card className="">
               <CardHeader>
-                <CardTitle className="text-base font-semibold">{'Compa-Ratio 비교'}</CardTitle>
+                <CardTitle className="text-base font-semibold">{tAnalytics('compaRatioComparison')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">

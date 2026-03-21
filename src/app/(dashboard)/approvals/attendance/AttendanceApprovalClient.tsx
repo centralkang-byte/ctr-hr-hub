@@ -280,7 +280,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
           ) : requests.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-[#8181A5]">
               <Inbox className="w-10 h-10 mb-2 opacity-40" />
-              <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+              <EmptyState />
             </div>
           ) : (
             <div className="overflow-y-auto divide-y divide-[#F5F5FA]">

@@ -256,7 +256,7 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
             {!permits?.length && (
               <TableRow>
                 <TableCell colSpan={7}>
-                  <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                  <EmptyState />
                 </TableCell>
               </TableRow>
             )}

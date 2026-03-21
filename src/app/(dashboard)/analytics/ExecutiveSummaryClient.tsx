@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils'
 export default function ExecutiveSummaryClient() {
   const tCommon = useTranslations('common')
   const t = useTranslations('analytics')
+  const te = useTranslations('analytics.executive')
 
   const [data, setData] = useState<ExecutiveSummaryResponse | null>(null)
   const [loading, setLoading] = useState(true)
@@ -75,8 +76,8 @@ export default function ExecutiveSummaryClient() {
   if (error || !data) {
     return (
       <EmptyState
-        title="데이터를 불러올 수 없습니다"
-        description="인사이트 데이터를 불러오는 중 오류가 발생했습니다. 새로고침하거나 잠시 후 다시 시도해주세요."
+        title={te('loadFailed')}
+        description={te('loadFailedDesc')}
         action={{ label: t('retry'), onClick: () => fetchData() }}
       />
     )
@@ -84,12 +85,12 @@ export default function ExecutiveSummaryClient() {
 
   const { kpis, charts, riskAlerts, companyComparison } = data
   const kpiList = [
-    { ...kpis.totalEmployees, icon: Users, tooltip: '현재 ACTIVE 상태인 전체 직원 수' },
-    { ...kpis.monthlyTurnoverRate, icon: TrendingDown, tooltip: '당월 퇴사자 ÷ 전월 말 재직자 × 100' },
-    { ...kpis.avgTenureYears, icon: Clock, tooltip: '전체 재직자의 입사일 기준 평균 근속 연수' },
-    { ...kpis.monthlyLaborCost, icon: Wallet, tooltip: '최근 확정된 급여의 법인별 합산 (KRW 변환)' },
-    { ...kpis.recruitmentPipeline, icon: UserPlus, tooltip: '현재 진행 중인 채용 공고 수' },
-    { ...kpis.onboardingCompletionRate, icon: CheckCircle2, tooltip: '완료된 온보딩 ÷ 전체 온보딩 × 100' },
+    { ...kpis.totalEmployees, icon: Users, tooltip: te('tooltipTotalEmp') },
+    { ...kpis.monthlyTurnoverRate, icon: TrendingDown, tooltip: te('tooltipTurnover') },
+    { ...kpis.avgTenureYears, icon: Clock, tooltip: te('tooltipTenure') },
+    { ...kpis.monthlyLaborCost, icon: Wallet, tooltip: te('tooltipLaborCost') },
+    { ...kpis.recruitmentPipeline, icon: UserPlus, tooltip: te('tooltipRecruitment') },
+    { ...kpis.onboardingCompletionRate, icon: CheckCircle2, tooltip: te('tooltipOnboarding') },
   ]
 
   return (
@@ -106,7 +107,7 @@ export default function ExecutiveSummaryClient() {
 
       {/* Charts 2×2 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ChartCard title="📈 인원 추이">
+        <ChartCard title={te('headcountTrend')}>
           {charts.headcountTrend.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <AreaChart data={charts.headcountTrend}>
@@ -115,15 +116,15 @@ export default function ExecutiveSummaryClient() {
                 <YAxis fontSize={11} />
                 <Tooltip labelFormatter={(v) => `${String(v).split('-')[1]}월`} contentStyle={{ borderRadius: 8, fontSize: 12 }} />
                 <Legend iconType="circle" iconSize={8} />
-                <Area type="monotone" dataKey="hires" name="입사" stackId="1" fill={CHART_COLORS.success} stroke={CHART_COLORS.success} fillOpacity={0.6} />
-                <Area type="monotone" dataKey="exits" name="퇴사" stackId="2" fill={CHART_COLORS.danger} stroke={CHART_COLORS.danger} fillOpacity={0.4} />
-                <Line type="monotone" dataKey="net" name="순증감" stroke={CHART_COLORS.primary} strokeWidth={2} dot={false} />
+                <Area type="monotone" dataKey="hires" name={te('hires')} stackId="1" fill={CHART_COLORS.success} stroke={CHART_COLORS.success} fillOpacity={0.6} />
+                <Area type="monotone" dataKey="exits" name={te('exits')} stackId="2" fill={CHART_COLORS.danger} stroke={CHART_COLORS.danger} fillOpacity={0.4} />
+                <Line type="monotone" dataKey="net" name={te('netChange')} stroke={CHART_COLORS.primary} strokeWidth={2} dot={false} />
               </AreaChart>
             </ResponsiveContainer>
           )}
         </ChartCard>
 
-        <ChartCard title="📉 이직률 추이">
+        <ChartCard title={te('turnoverTrend')}>
           {charts.turnoverTrend.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <LineChart data={charts.turnoverTrend}>
@@ -131,14 +132,14 @@ export default function ExecutiveSummaryClient() {
                 <XAxis dataKey="month" fontSize={11} tickFormatter={(v) => v.split('-')[1] + '월'} />
                 <YAxis fontSize={11} unit="%" />
                 <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
-                <ReferenceLine y={4.5} label="업계 평균" stroke={CHART_COLORS.danger} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
-                <Line type="monotone" dataKey="rate" name="이직률" stroke={CHART_COLORS.primary} strokeWidth={2} dot={{ r: 3 }} />
+                <ReferenceLine y={4.5} label={te('industryAvg')} stroke={CHART_COLORS.danger} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
+                <Line type="monotone" dataKey="rate" name={te('turnoverRateLabel')} stroke={CHART_COLORS.primary} strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           )}
         </ChartCard>
 
-        <ChartCard title="🏢 법인별 인원 분포">
+        <ChartCard title={te('companyDistribution')}>
           {charts.companyDistribution.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <PieChart>
@@ -155,7 +156,7 @@ export default function ExecutiveSummaryClient() {
           )}
         </ChartCard>
 
-        <ChartCard title="⚠️ 위험 신호">
+        <ChartCard title={te('riskAlerts')}>
           {riskAlerts.length === 0 ? (
             <div className="flex items-center justify-center h-48 text-sm text-gray-400">
               {t('kr_ked9884ec_keab090ec_risk_kec8b')}
@@ -172,7 +173,7 @@ export default function ExecutiveSummaryClient() {
                   <AlertTriangle className={`h-4 w-4 ${alert.severity === 'HIGH' ? 'text-red-500' : 'text-amber-500'}`} />
                   <div>
                     <p className="text-sm font-medium text-gray-700">{alert.type}</p>
-                    <p className="text-xs text-gray-500">{alert.count}건 감지됨</p>
+                    <p className="text-xs text-gray-500">{te('detected', { count: alert.count })}</p>
                   </div>
                 </a>
               ))}
@@ -183,7 +184,7 @@ export default function ExecutiveSummaryClient() {
 
       {/* Company comparison table */}
       {companyComparison.length > 0 && (
-        <ChartCard title="🏢 법인 비교">
+        <ChartCard title={te('companyComparison')}>
           <div className="overflow-x-auto">
             <table className={TABLE_STYLES.table}>
               <thead className={TABLE_STYLES.header}>

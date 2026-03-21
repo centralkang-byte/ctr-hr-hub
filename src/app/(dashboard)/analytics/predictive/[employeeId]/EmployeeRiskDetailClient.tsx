@@ -231,7 +231,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
         <Link href="/analytics/predictive" className="flex items-center gap-2 text-sm text-[#666] hover:text-[#333] mb-6">
           <ArrowLeft className="w-4 h-4" /> {t('kr_kec9888ec_kec95a0eb_keb8f8cec')}
         </Link>
-        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+        <EmptyState />
       </div>
     )
   }

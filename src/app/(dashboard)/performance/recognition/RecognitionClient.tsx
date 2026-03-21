@@ -220,7 +220,7 @@ export default function RecognitionClient() {
           ) : feed.length === 0 ? (
             <div className="text-center py-12 text-[#999]">
               <Heart className="w-12 h-12 mx-auto mb-3 text-[#D4D4D4]" />
-              <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+              <EmptyState />
             </div>
           ) : (
             <>
@@ -334,7 +334,7 @@ export default function RecognitionClient() {
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#666' }} />
                   <YAxis tick={{ fontSize: 12, fill: '#666' }} allowDecimals={false} />
                   <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
-                  <Line type="monotone" dataKey="count" name="Recognition 수" stroke={CHART_THEME.colors[3]} strokeWidth={2} dot={{ fill: '#5E81F4' }} />
+                  <Line type="monotone" dataKey="count" name={t('recognitionCount')} stroke={CHART_THEME.colors[3]} strokeWidth={2} dot={{ fill: '#5E81F4' }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>

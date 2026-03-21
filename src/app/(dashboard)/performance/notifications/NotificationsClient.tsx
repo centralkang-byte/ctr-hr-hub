@@ -161,7 +161,7 @@ export default function NotificationsClient({user }: {
                         )}
                         <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
                             className="rounded-lg border border-[#F0F0F3] bg-white px-3 py-2 text-sm">
-                            {!cycles?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+                            {!cycles?.length && <EmptyState />}
               {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
                     </div>

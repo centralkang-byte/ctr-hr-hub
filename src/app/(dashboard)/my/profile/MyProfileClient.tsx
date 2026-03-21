@@ -283,7 +283,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
             {employee.name.slice(0, 1)}
           </div>
           <button
-            onClick={() => toast({ title: 'Coming soon', description: '아바타 업로드는 곧 지원됩니다.' })}
+            onClick={() => toast({ title: '준비 중', description: '아바타 업로드는 곧 지원됩니다.' })}
             className="absolute -bottom-2 -right-2 w-8 h-8 bg-white border border-[#E8E8E8] rounded-full flex items-center justify-center shadow-sm hover:bg-[#FAFAFA] text-[#555] hover:text-[#5E81F4] transition-colors"
           >
             <Camera className="w-4 h-4" />

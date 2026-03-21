@@ -120,7 +120,7 @@ export default function DataRetentionClient() {
                 </tr>
               </thead>
               <tbody>
-                {!policies?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+                {!policies?.length && <EmptyState />}
               {policies?.map((p) => (
                   <tr key={p.id} className={TABLE_STYLES.row}>
                     <td className={cn(TABLE_STYLES.cell, 'font-medium text-[#1A1A1A]')}>{p.category}</td>
