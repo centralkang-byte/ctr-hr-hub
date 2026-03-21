@@ -1,7 +1,5 @@
 'use client'
 
-import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 
 
@@ -234,7 +232,6 @@ export default function PostingFormClient({
       </div>
 
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       <form onSubmit={handleSubmit(onSubmit as any)}>
         {/* 기본정보 */}
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6 mb-6">
@@ -252,8 +249,7 @@ export default function PostingFormClient({
               <label className={labelClass}>{t('departmentLabel')}</label>
               <select {...register('departmentId')} className={inputClass}>
                 <option value="">{t('noSelect')}</option>
-                {!departments?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
-              {departments?.map((d) => (
+                {departments?.map((d) => (
                   <option key={d.id} value={d.id}>{d.name}</option>
                 ))}
               </select>
