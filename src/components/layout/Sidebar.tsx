@@ -119,7 +119,7 @@ export function Sidebar({ user, onSignOut, countryCode, mode = 'desktop', onItem
         )}
       >
         {/* ─── Logo ─── */}
-        <div className={cn('flex items-center gap-3 px-4 py-5', isCollapsed && 'justify-center px-2')}>
+        <Link href="/home" className={cn('flex items-center gap-3 px-4 py-5 hover:bg-[#F5F5FA] transition-colors rounded-lg mx-1', isCollapsed && 'justify-center px-2')}>
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-ctr-primary font-bold text-white">
             C
           </div>
@@ -128,7 +128,7 @@ export function Sidebar({ user, onSignOut, countryCode, mode = 'desktop', onItem
               <h1 className="truncate text-sm font-bold tracking-tight text-[#1C1D21]">CTR HR Hub</h1>
             </div>
           )}
-        </div>
+        </Link>
 
         {/* ─── Navigation ─── */}
         <ScrollArea className="flex-1">
