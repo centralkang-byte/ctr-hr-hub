@@ -17,6 +17,7 @@ import { ChevronLeft, Briefcase, Sparkles, Loader2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS, BUTTON_SIZES } from '@/lib/styles'
+import StickyActionBar from '@/components/shared/StickyActionBar'
 
 // ─── Reference Types ─────────────────────────────────────
 
@@ -414,8 +415,8 @@ export default function PostingFormClient({
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center justify-end gap-3">
+        {/* Actions — Sticky */}
+        <StickyActionBar>
           <button
             type="button"
             onClick={() => router.back()}
@@ -430,7 +431,7 @@ export default function PostingFormClient({
           >
             {submitting ? t('saving') : t('registerButton')}
           </button>
-        </div>
+        </StickyActionBar>
       </form>
     </div>
   )
