@@ -17,6 +17,8 @@ import {
 } from '@/components/ui/popover'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
+import { useTranslations } from 'next-intl'
+import { cn } from '@/lib/utils'
 import { apiClient } from '@/lib/api'
 import { formatRelativeTime } from '@/lib/date-utils'
 
@@ -35,6 +37,7 @@ interface NotificationItem {
 // ─── Component ──────────────────────────────────────────────
 
 export function NotificationBell() {
+  const t = useTranslations('notification')
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
@@ -116,7 +119,7 @@ export function NotificationBell() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative" aria-label="알림">
+        <Button variant="ghost" size="icon" className="relative" aria-label={t('title')}>
           <Bell className="h-5 w-5 text-ctr-gray-500" />
           {unreadCount > 0 && (
             <span className="absolute -top-1 -right-1 flex min-w-[20px] h-5 px-1 items-center justify-center rounded-full bg-[#EF4444] text-[11px] font-medium leading-none text-white">
@@ -128,7 +131,7 @@ export function NotificationBell() {
       <PopoverContent align="end" className="w-[380px] p-0">
         {/* ─── Header ─── */}
         <div className="flex items-center justify-between px-4 py-3">
-          <h3 className="text-sm font-semibold">알림</h3>
+          <h3 className="text-sm font-semibold">{t('title')}</h3>
           {unreadCount > 0 && (
             <Button
               variant="ghost"
@@ -142,7 +145,7 @@ export function NotificationBell() {
               ) : (
                 <CheckCheck className="h-3 w-3" />
               )}
-              모두 읽기
+              {t('markAllRead')}
             </Button>
           )}
         </div>
@@ -156,7 +159,7 @@ export function NotificationBell() {
             </div>
           ) : notifications.length === 0 ? (
             <div className="py-8 text-center text-sm text-muted-foreground">
-              알림이 없습니다.
+              {t('noNotifications')}
             </div>
           ) : (
             <div>
@@ -164,7 +167,10 @@ export function NotificationBell() {
                 <button
                   key={item.id}
                   type="button"
-                  className="flex w-full items-start gap-3 px-4 py-3 text-left hover:bg-[#FAFAFA] transition-colors"
+                  className={cn(
+                    'flex w-full items-start gap-3 px-4 py-3 text-left hover:bg-[#FAFAFA] transition-colors',
+                    !item.isRead && 'bg-[#F0F4FF]',
+                  )}
                   onClick={() => handleClick(item)}
                 >
                   {/* Unread dot */}
@@ -201,7 +207,7 @@ export function NotificationBell() {
             className="block rounded-md px-3 py-2 text-center text-sm font-medium text-[#5E81F4] hover:bg-[#EDF1FE] transition-colors"
             onClick={() => setOpen(false)}
           >
-            전체 보기
+            {t('viewAll')}
           </Link>
         </div>
       </PopoverContent>

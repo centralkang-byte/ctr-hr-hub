@@ -458,7 +458,7 @@ export function RecruitmentDashboardClient(_props: {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#F0F0F3]">
-                  {!vacancyByCompany?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+                  {!vacancyByCompany?.length && <EmptyState />}
                 {vacancyByCompany?.map((row) => (
                     <tr key={row.companyId} className="hover:bg-[#FAFAFA] transition-colors">
                       <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">{row.companyName}</td>

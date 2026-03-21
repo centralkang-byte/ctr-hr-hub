@@ -96,7 +96,7 @@ export default function ResultsClient({
           onChange={(e) => setSelectedCycleId(e.target.value)}
           className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
         >
-          {!cycles?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+          {!cycles?.length && <EmptyState />}
               {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
       </div>

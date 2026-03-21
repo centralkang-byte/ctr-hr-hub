@@ -324,7 +324,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
             </div>
           </div>
           <div className="divide-y divide-[#F5F5F5]">
-            {!alerts?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+            {!alerts?.length && <EmptyState />}
               {alerts?.map((alert) => (
               <div key={alert.id} className="flex items-center justify-between px-5 py-3">
                 <div className="flex items-center gap-3">

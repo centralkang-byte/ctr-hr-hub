@@ -1233,6 +1233,7 @@
     "pulseSurveyTitle": "Pulse Survey",
     "teamGoalsTitle": "Team Goals",
     "recognitionTitle": "Recognition",
+    "recognitionCount": "Recognition Count",
     "compReviewTitle": "Compensation Review",
     "oneOnOneTitle": "1:1 Meeting",
     "notificationsTitle": "Notifications",
@@ -3049,6 +3050,28 @@
       "report": "AI Report",
       "reportDesc": "Auto-generate AI executive report"
     },
+    "executive": {
+      "headcountTrend": "Headcount Trend",
+      "turnoverTrend": "Turnover Trend",
+      "companyDistribution": "Company Distribution",
+      "riskAlerts": "Risk Alerts",
+      "companyComparison": "Company Comparison",
+      "hires": "Hires",
+      "exits": "Exits",
+      "netChange": "Net Change",
+      "industryAvg": "Industry Avg.",
+      "turnoverRateLabel": "Turnover Rate",
+      "detected": "{count} detected",
+      "noRiskDetected": "No risk alerts detected.",
+      "loadFailed": "Failed to load data",
+      "loadFailedDesc": "An error occurred while loading insights. Please refresh or try again later.",
+      "tooltipTotalEmp": "Total active employees",
+      "tooltipTurnover": "Monthly exits ÷ end-of-month headcount × 100",
+      "tooltipTenure": "Average years of service for all active employees",
+      "tooltipLaborCost": "Sum of confirmed payroll across entities (KRW)",
+      "tooltipRecruitment": "Active job postings",
+      "tooltipOnboarding": "Completed onboardings ÷ total onboardings × 100"
+    },
     "turnoverPage": {
       "title": "Turnover Analysis",
       "description": "Monthly resignation trends, reason analysis, dept. turnover rates",
@@ -3158,7 +3181,12 @@
       "jobCategory": "Job Category",
       "headcount": "Headcount",
       "average": "Average",
-      "median": "Median"
+      "median": "Median",
+      "underBand": "Under Band",
+      "inBand": "In Band",
+      "overBand": "Over Band",
+      "compaRatio": "Compa-Ratio",
+      "compaRatioComparison": "Compa-Ratio Comparison"
     },
     "attritionPage": {
       "title": "Attrition Risk Analysis",
@@ -3385,6 +3413,7 @@
       "EMAIL": "Email",
       "TEAMS": "Teams"
     },
+    "viewAll": "View All",
     "preference": {
       "title": "Notification Settings",
       "quietHours": "Quiet Hours",
@@ -4200,7 +4229,9 @@
     "chatbotLowConfidence": "I'm not confident in this answer. Would you like me to forward this to an HR representative?",
     "chatbotUnavailable": "AI assistant is currently unavailable.",
     "feedbackPositive": "Helpful",
-    "feedbackNegative": "Not Helpful"
+    "feedbackNegative": "Not Helpful",
+    "chatbotWelcome": "Hello! I'm the CTR HR Chatbot. Ask me about attendance, leave, payroll, or HR policies.",
+    "chatbotNewSession": "New Chat"
   },
   "error": {
     "notFound": "Resource not found.",
@@ -4344,6 +4375,9 @@
     "totalNet": "Total Net",
     "allStatus": "All Statuses",
     "emptyMessage": "No payroll runs found.",
+    "highOrAbove": "High or above",
+    "totalAnomalies": "Total anomalies",
+    "noAnomalies": "No anomalies",
     "runType": {
       "MONTHLY": "Monthly",
       "BONUS": "Bonus",
@@ -4365,7 +4399,10 @@
     "paid": "Paid",
     "grossPay": "Gross Pay",
     "deductions": "Deductions",
-    "netPay": "Net Pay"
+    "netPay": "Net Pay",
+    "unreadCount": "{count} unread pay stub(s)",
+    "momSame": "Same as last month",
+    "newBadge": "NEW"
   },
   "payStubDetail": {
     "titleWithMonth": "{month} Pay Stub",
@@ -4578,6 +4615,9 @@
       "retention": "Data Retention",
       "dpia": "DPIA",
       "piiAudit": "PII Access Log",
+      "piiAuditDesc": "PII access monitoring and audit trail",
+      "retentionDesc": "Data retention policies and enforcement",
+      "dpiaDesc": "Data Protection Impact Assessments",
       "consentForm": "Collect Consent",
       "revokeConsent": "Revoke Consent",
       "newRequest": "New Request",
@@ -4608,6 +4648,7 @@
     },
     "ru": {
       "title": "Russia Compliance",
+      "description": "Military registration, KEDO documents, statutory reports",
       "military": "Military Registration",
       "kedo": "Electronic Documents (KEDO)",
       "reports": "Statutory Reports",
@@ -4629,6 +4670,7 @@
     },
     "cn": {
       "title": "China Compliance",
+      "description": "Social insurance, employee registry management",
       "socialInsurance": "Social Insurance",
       "config": "Rate Configuration",
       "records": "Monthly Records",
@@ -4645,6 +4687,7 @@
     },
     "kr": {
       "title": "Korea Compliance",
+      "description": "52-hour monitoring, mandatory training, severance",
       "subtitle": "Korean Labor Standards Act compliance management",
       "workHours": "52-Hour Monitoring",
       "mandatoryTraining": "Mandatory Training",
@@ -4999,7 +5042,7 @@
       "payroll_cost": "인item(s)비"
     },
     "noData": "No 데이터 available.",
-    "noDataDesc": "Please 변경하거나 new로운 데이터를 additional해 보 조item(s)."
+    "noDataDesc": "Try adjusting your filters or add new data."
   },
   "mySpace": {
     "tasksTitle": "My Tasks",

@@ -448,7 +448,7 @@ export function EmployeeNewClient({
                 {managerSearching && (
                   <p className="px-3 py-2 text-sm text-muted-foreground">{t('searching')}</p>
                 )}
-                {!managerResults?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+                {!managerResults?.length && <EmptyState />}
               {managerResults?.map((emp) => (
                   <button
                     key={emp.id}
@@ -576,7 +576,7 @@ export function EmployeeNewClient({
       {/* ─── Step content ─── */}
       <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
         <h2 className="mb-5 text-base font-bold text-[#1A1A1A] tracking-ctr">
-          Step {step + 1}: {STEPS[step]!.label}
+          {step + 1}단계: {STEPS[step]!.label}
         </h2>
         {step === 0 && renderStep1()}
         {step === 1 && renderStep2()}

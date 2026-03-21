@@ -25,6 +25,7 @@ import {
   ChevronDown,
   Loader2,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
@@ -60,6 +61,7 @@ interface ChatSession {
 // ─── Component ──────────────────────────────────────────────
 
 export function HrChatbot() {
+  const t = useTranslations('ai')
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
@@ -73,8 +75,7 @@ export function HrChatbot() {
   const welcomeMessage: ChatMessage = {
     id: 'welcome',
     role: 'assistant',
-    content:
-      '안녕하세요! CTR HR 챗봇입니다. 근태, 휴가, 급여, 인사 정책 등에 대해 질문해 주세요.',
+    content: t('chatbotWelcome'),
     createdAt: new Date(),
   }
 
@@ -110,7 +111,7 @@ export function HrChatbot() {
     try {
       const res = await apiClient.post<ChatSession>(
         '/api/v1/hr-chat/sessions',
-        { title: '새 대화' },
+        { title: t('chatbotNewSession') },
       )
       setCurrentSessionId(res.data.id)
       setMessages([welcomeMessage])
@@ -280,12 +281,12 @@ export function HrChatbot() {
         type="button"
         onClick={toggleOpen}
         className={cn(
-          'fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center',
+          'fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 flex h-14 w-14 items-center justify-center',
           'rounded-full bg-ctr-primary text-white shadow-lg',
           'transition-transform hover:scale-105 active:scale-95',
           isOpen && 'hidden',
         )}
-        aria-label="HR 챗봇 열기"
+        aria-label={t('chatbotTitle')}
       >
         <MessageSquare className="h-6 w-6" />
       </button>

@@ -256,7 +256,7 @@ export function MyOffboardingClient() {
       <Card className="border-[#F0F0F3] shadow-none">
         <CardContent className="flex flex-col items-center py-16 text-center">
           <Info className="mb-3 h-10 w-10 text-[#8181A5] opacity-60" />
-          <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+          <EmptyState />
           <p className="mt-2 max-w-xs text-xs text-[#8181A5]">
             퇴직 관련 문의는 HR팀에 연락해주세요.
           </p>

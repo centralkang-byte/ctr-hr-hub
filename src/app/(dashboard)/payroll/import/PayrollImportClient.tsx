@@ -259,7 +259,7 @@ export default function PayrollImportClient({ user, companies }: {
               </div>
             ) : (
               <div className="flex gap-2 flex-wrap">
-                {!mappings?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+                {!mappings?.length && <EmptyState />}
               {mappings?.map(m => (
                   <button
                     key={m.id}
@@ -369,7 +369,7 @@ export default function PayrollImportClient({ user, companies }: {
                   {!mappings?.length && (
                     <tr>
                       <td colSpan={4}>
-                        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                        <EmptyState />
                       </td>
                     </tr>
                   )}

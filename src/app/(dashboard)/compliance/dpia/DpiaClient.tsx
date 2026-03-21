@@ -160,7 +160,7 @@ export default function DpiaClient() {
                 </tr>
               </thead>
               <tbody>
-                {!dpias?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+                {!dpias?.length && <EmptyState />}
               {dpias?.map((d) => (
                   <tr key={d.id} className={TABLE_STYLES.row}>
                     <td className={TABLE_STYLES.cell}>

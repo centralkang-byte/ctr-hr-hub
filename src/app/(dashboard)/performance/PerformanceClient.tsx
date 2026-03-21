@@ -488,7 +488,7 @@ export default function PerformanceClient({
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-                      {!cycles?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+                      {!cycles?.length && <EmptyState />}
               {cycles?.map((cycle) => (
                         <div
                           key={cycle.id}
