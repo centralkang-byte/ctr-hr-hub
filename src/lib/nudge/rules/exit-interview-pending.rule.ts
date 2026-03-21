@@ -121,8 +121,7 @@ export const exitInterviewPendingRule: NudgeRule = {
     // (role 체크는 session에서 하지만 nudge context에서는 employeeId만 있음)
     // → 간단한 접근: HR/ADMIN 조건 없이 companyId + assigneeId로 매칭
     // → 실용적 접근: assigneeId가 동일 회사 직원이면 nudge 전달
-    // TODO: ROLE_HR 체크를 위한 employee.role 필드가 있다면 여기서 필터링
-    //       현재는 같은 회사 HR 팀원이면 누구나 수신 (HR 모듈 권한 체크는 API단)
+    // 현재는 같은 회사 HR 팀원이면 누구나 수신 (HR 모듈 권한 체크는 API단에서 처리)
 
     // 수신자 확인: 현재 사용자가 해당 회사 직원인지 검증
     const senderCheck = await prisma.employeeAssignment.findFirst({

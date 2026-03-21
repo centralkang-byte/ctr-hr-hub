@@ -69,7 +69,13 @@ export const GET = withPermission(
       },
     })
 
-    // ── 3. KPI calculations ───────────────────────────────
+    // ── 3. Negative balance limit from LeaveSetting ───────
+    const leaveSetting = await prisma.leaveSetting.findFirst({
+      where: { companyId },
+    })
+    const negativeBalanceLimit = leaveSetting?.negativeBalanceLimit ?? 0
+
+    // ── 4. KPI calculations ───────────────────────────────
 
     let totalGranted = 0
     let totalUsed = 0
@@ -113,7 +119,7 @@ export const GET = withPermission(
           name: emp?.name ?? '알 수 없음',
           department: assignment?.department?.name ?? '',
           negativeDays: remaining,
-          limit: -3.0, // TODO: read from LeaveSetting
+          limit: negativeBalanceLimit,
         })
       }
     }
@@ -122,7 +128,7 @@ export const GET = withPermission(
     const usageRate = totalGranted > 0 ? Math.round((totalUsed / totalGranted) * 1000) / 10 : 0
     const avgRemainingDays = employeeCount > 0 ? Math.round((totalRemaining / employeeCount) * 10) / 10 : 0
 
-    // ── 4. Pending leave count ────────────────────────────
+    // ── 5. Pending leave count ────────────────────────────
 
     const pendingCount = await prisma.leaveRequest.count({
       where: {
@@ -135,7 +141,7 @@ export const GET = withPermission(
       },
     })
 
-    // ── 5. Department usage breakdown ─────────────────────
+    // ── 6. Department usage breakdown ─────────────────────
 
     const deptUsageMap = new Map<string, { name: string; granted: number; used: number; headcount: number }>()
 
@@ -170,7 +176,7 @@ export const GET = withPermission(
       }))
       .sort((a, b) => b.usageRate - a.usageRate)
 
-    // ── 6. Remaining days distribution (histogram) ────────
+    // ── 7. Remaining days distribution (histogram) ────────
 
     const ranges = [
       { label: '0일 이하', min: -Infinity, max: 0 },
@@ -188,7 +194,7 @@ export const GET = withPermission(
       ).length,
     }))
 
-    // ── 7. Burn-down forecast (monthly) ───────────────────
+    // ── 8. Burn-down forecast (monthly) ───────────────────
 
     const yearStart = new Date(year, 0, 1)
     const yearEnd = new Date(year, 11, 31, 23, 59, 59, 999)

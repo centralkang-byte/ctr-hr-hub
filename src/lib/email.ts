@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — Email Sending Stub (AWS SES)
-// 실제 SES 연동은 추후 구현 — 현재는 로깅만
+// CTR HR Hub — Email Sending (AWS SES)
+// dev: 콘솔 로깅, prod: SES 발송
 // ═══════════════════════════════════════════════════════════
 
 import { env } from '@/lib/env'
@@ -11,39 +11,62 @@ interface SendEmailInput {
   htmlBody: string
 }
 
-/**
- * AWS SES 이메일 발송 stub
- * 프로덕션에서는 @aws-sdk/client-ses 연동 필요
- */
+function maskEmail(email: string): string {
+  return email.replace(/^(.).*(@.*)$/, '$1***$2')
+}
+
 export async function sendEmail(input: SendEmailInput): Promise<{
   success: boolean
   messageId?: string
 }> {
   if (env.NODE_ENV === 'development') {
-    // Mask email PII: user@domain.com → u***@domain.com
-    const masked = input.to.replace(/^(.).*(@.*)$/, '$1***$2')
     console.info('[EMAIL STUB]', {
-      to: masked,
+      to: maskEmail(input.to),
       subject: input.subject,
       bodyLength: input.htmlBody.length,
     })
     return { success: true, messageId: `stub-${Date.now()}` }
   }
 
-  // TODO: AWS SES 연동
-  // const ses = new SESClient({ region: env.AWS_REGION })
-  // const command = new SendEmailCommand({
-  //   Source: env.SES_FROM_EMAIL,
-  //   Destination: { ToAddresses: [input.to] },
-  //   Message: {
-  //     Subject: { Data: input.subject },
-  //     Body: { Html: { Data: input.htmlBody } },
-  //   },
-  // })
-  // const result = await ses.send(command)
-  // return { success: true, messageId: result.MessageId }
+  // Production: AWS SES
+  const { SESClient, SendEmailCommand } = await import('@aws-sdk/client-ses')
 
-  // eslint-disable-next-line no-console -- email send confirmation (PII masked)
-  console.info('[EMAIL]', { to: input.to.replace(/^(.).*(@.*)$/, '$1***$2'), subject: input.subject })
-  return { success: true, messageId: `placeholder-${Date.now()}` }
+  const ses = new SESClient({
+    region: env.AWS_REGION,
+    ...(env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY
+      ? {
+          credentials: {
+            accessKeyId: env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
+          },
+        }
+      : {}),
+  })
+
+  const command = new SendEmailCommand({
+    Source: env.SES_FROM_EMAIL,
+    Destination: { ToAddresses: [input.to] },
+    Message: {
+      Subject: { Data: input.subject, Charset: 'UTF-8' },
+      Body: { Html: { Data: input.htmlBody, Charset: 'UTF-8' } },
+    },
+  })
+
+  try {
+    const result = await ses.send(command)
+    // eslint-disable-next-line no-console -- email send confirmation (PII masked)
+    console.info('[EMAIL SENT]', {
+      to: maskEmail(input.to),
+      subject: input.subject,
+      messageId: result.MessageId,
+    })
+    return { success: true, messageId: result.MessageId }
+  } catch (error) {
+    console.error('[EMAIL FAILED]', {
+      to: maskEmail(input.to),
+      subject: input.subject,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    })
+    return { success: false }
+  }
 }

@@ -120,7 +120,7 @@ export async function executeOffboardingCompletion(offboardingId: string): Promi
                     deductionAmount: 0,
                     reason: check.reason,
                 })
-                // TODO: Create notification for HR "민사 청구 필요"
+                // Phase 4: sendNotification({ type: 'CIVIL_CLAIM_REQUIRED', ... }) 연동 예정
             }
         }
 
