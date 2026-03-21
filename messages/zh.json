@@ -384,7 +384,7 @@
     "krCompliance": "韩国合规",
     "selfEval": "Self 评估",
     "managerEval": "经理 评估",
-    "calibration": "Calibration",
+    "calibration": "校准",
     "teamResults": "团队 结果s",
     "adminResults": "公司 结果s",
     "pulseSurvey": "Pulse Survey",
@@ -463,8 +463,7 @@
     "gdpr": "GDPR",
     "ai-report": "AI报告",
     "attrition": "流失风险",
-    "results": "结果",
-    "calibration": "校准"
+    "results": "结果"
   },
   "employee": {
     "title": "Employee Management",
@@ -5085,7 +5084,107 @@
   "notifications": {
     "pageTitle": "Notifications",
     "emptyTitle": "No new notifications",
-    "emptyDesc": "Notifications will appear here."
+    "emptyDesc": "Notifications will appear here.",
+    "leaveApproved": {
+      "title": "休假已批准",
+      "body": "休假已批准：{startDate} ~ {endDate}"
+    },
+    "leaveRejected": {
+      "title": "休假被驳回",
+      "body": "驳回原因：{reason}"
+    },
+    "overtimeWarning48h": {
+      "title": "周工时超过48小时",
+      "body": "周工作时间已超过48小时，请注意控制加班时间。"
+    },
+    "overtimeBlocked52h": {
+      "title": "已达法定最高工时",
+      "body": "已达法定最高工作时间（52小时），禁止继续加班。"
+    },
+    "turnoverRiskCritical": {
+      "title": "离职风险严重",
+      "body": "员工离职风险已达严重级别。"
+    },
+    "mboGoalSubmitted": {
+      "title": "MBO目标已提交",
+      "body": "{name}提交了MBO目标。共{goalCount}个目标，总权重{totalWeight}%"
+    },
+    "selfEvalSubmitted": {
+      "title": "自评已提交",
+      "body": "{name}已提交自评，请进行团队成员评估。"
+    },
+    "managerEvalSubmitted": {
+      "title": "主管评估完成",
+      "body": "主管评估已完成，周期确定后可查看结果。"
+    },
+    "mboGoalApproved": {
+      "title": "MBO目标已批准",
+      "body": "MBO目标已获批准。"
+    },
+    "mboGoalRejected": {
+      "title": "MBO目标需修改",
+      "body": "MBO目标需要修改，请查看反馈后重新提交。"
+    },
+    "goalOverdue": {
+      "title": "MBO目标未提交",
+      "body": "{name}未提交{cycleName} MBO目标，已逾期{daysOverdue}天。"
+    },
+    "evalOverdue": {
+      "title": "评估已逾期",
+      "body": "{cycleName}评估期限已逾期{daysOverdue}天，需要跟进处理。"
+    },
+    "payrollAttendanceClosed": {
+      "title": "考勤已截止",
+      "body": "{yearMonth}考勤已截止。{confirmedCount}/{totalEmployees}人已确认，请进行薪资核算。"
+    },
+    "payrollReviewReady": {
+      "title": "薪资异常审核就绪",
+      "body": "{yearMonth}薪资异常审核已准备就绪。"
+    },
+    "payrollPendingApproval": {
+      "title": "薪资待审批",
+      "body": "{yearMonth}薪资（{headcount}人，{totalNet}）已提交审批。"
+    },
+    "payrollApprovalRejected": {
+      "title": "薪资审批被驳回",
+      "body": "驳回原因：{reason}"
+    },
+    "payrollApprovalNeeded": {
+      "title": "需要薪资审批",
+      "body": "请进行{yearMonth}薪资审批。"
+    },
+    "benefitApproved": {
+      "title": "福利申请已批准",
+      "body": "{planName}福利申请已获批准。"
+    },
+    "profileChangeApproved": {
+      "title": "信息变更已批准",
+      "body": "{fieldLabel}变更申请已获批准。"
+    },
+    "profileChangeRejected": {
+      "title": "信息变更被驳回",
+      "body": "{fieldLabel}变更申请被驳回。原因：{reason}"
+    },
+    "recognitionReceived": {
+      "title": "收到表彰",
+      "body": "{senderName}向您发送了表彰。"
+    },
+    "hrChatbotEscalation": {
+      "title": "HR咨询请求",
+      "body": "{userName}请求连接HR专员。"
+    },
+    "evalReminder": {
+      "title": "评估截止提醒",
+      "body": "{name}，{cycleName} {type}截止日期为{label}，请尽快提交。"
+    },
+    "evalEscalation": {
+      "title": "评估逾期升级",
+      "body": "{cycleName} {type}截止日期已过，{count}名员工尚未提交。"
+    },
+    "leavePromotion": {
+      "title": "建议休假",
+      "body": "{name}，您还有{remainingDays}天年假未使用，距入职周年还有{daysUntilAnniversary}天，建议您安排休假。"
+    }
   },
   "header": {
     "directory": "People Directory",

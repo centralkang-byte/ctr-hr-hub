@@ -130,6 +130,9 @@ export const PUT = withPermission(
       triggerType: 'leave_approved',
       title:       '휴가 신청이 승인되었습니다',
       body:        `${request.startDate.toISOString().slice(0, 10)} ~ ${request.endDate.toISOString().slice(0, 10)} 휴가가 승인되었습니다.`,
+      titleKey:    'notifications.leaveApproved.title',
+      bodyKey:     'notifications.leaveApproved.body',
+      bodyParams:  { startDate: request.startDate.toISOString().slice(0, 10), endDate: request.endDate.toISOString().slice(0, 10) },
       link:        '/my/leave',
       priority:    'normal',
     })

@@ -59,6 +59,9 @@ export const POST = withAuth(
           triggerType: 'HR_CHATBOT_ESCALATION',
           title: 'HR 챗봇 에스컬레이션',
           body: `${user.name}님이 HR 담당자 연결을 요청했습니다.`,
+          titleKey: 'notifications.hrChatbotEscalation.title',
+          bodyKey: 'notifications.hrChatbotEscalation.body',
+          bodyParams: { userName: user.name },
           link: '/settings/hr-documents',
         })
       }

@@ -14,6 +14,23 @@
 import { prisma } from '@/lib/prisma'
 
 /**
+ * 법인별 입사일 조회 — 해당 법인의 첫 Primary Assignment effectiveDate
+ * Entity transfer 시 연차 리셋, 수습 기간 계산 등에 사용
+ * 그룹 입사일은 Employee.hireDate (변경 안 함)
+ */
+export async function getCompanyHireDate(
+  employeeId: string,
+  companyId: string,
+): Promise<Date | null> {
+  const first = await prisma.employeeAssignment.findFirst({
+    where: { employeeId, companyId, isPrimary: true },
+    orderBy: { effectiveDate: 'asc' },
+    select: { effectiveDate: true },
+  })
+  return first?.effectiveDate ?? null
+}
+
+/**
  * Helper 1: DB Query — for single employee detail views.
  * Use when you need to fetch the primary assignment from DB (no prior include).
  * Includes common relations — callers can spread additional includes if needed.

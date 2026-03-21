@@ -46,6 +46,8 @@ export const managerEvalSubmittedHandler: DomainEventHandler<'PERFORMANCE_MANAGE
         triggerType: 'performance_manager_eval_submitted',
         title:       '매니저 평가가 완료되었습니다',
         body:        '평가 결과는 사이클 확정 후 확인할 수 있습니다.',
+        titleKey:    'notifications.managerEvalSubmitted.title',
+        bodyKey:     'notifications.managerEvalSubmitted.body',
         link:        '/performance/results',
         priority:    'normal',
         companyId:   payload.companyId,

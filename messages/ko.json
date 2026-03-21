@@ -463,8 +463,7 @@
     "gdpr": "GDPR",
     "ai-report": "AI 보고서",
     "attrition": "이탈 위험",
-    "results": "성과 결과",
-    "calibration": "캘리브레이션"
+    "results": "성과 결과"
   },
   "employee": {
     "title": "직원 관리",
@@ -5103,6 +5102,106 @@
   "notifications": {
     "pageTitle": "알림",
     "emptyTitle": "새로운 알림이 없습니다",
-    "emptyDesc": "알림이 발생하면 여기에 표시됩니다."
+    "emptyDesc": "알림이 발생하면 여기에 표시됩니다.",
+    "leaveApproved": {
+      "title": "휴가 승인 완료",
+      "body": "휴가가 승인되었습니다: {startDate} ~ {endDate}"
+    },
+    "leaveRejected": {
+      "title": "휴가 반려",
+      "body": "반려 사유: {reason}"
+    },
+    "overtimeWarning48h": {
+      "title": "주간 근무시간 48시간 초과",
+      "body": "주간 근무시간이 48시간을 초과했습니다. 추가 연장근무에 유의해 주세요."
+    },
+    "overtimeBlocked52h": {
+      "title": "법정 최대 근무시간 도달",
+      "body": "법정 최대 근무시간(52시간)에 도달했습니다. 추가 근무가 제한됩니다."
+    },
+    "turnoverRiskCritical": {
+      "title": "이직 위험도 심각",
+      "body": "직원 이직 위험도가 심각 수준입니다."
+    },
+    "mboGoalSubmitted": {
+      "title": "MBO 목표 제출",
+      "body": "{name}님이 MBO 목표를 제출했습니다. {goalCount}개 목표, 총 가중치 {totalWeight}%"
+    },
+    "selfEvalSubmitted": {
+      "title": "자기평가 제출",
+      "body": "{name}님이 자기평가를 제출했습니다. 팀원 평가를 진행해 주세요."
+    },
+    "managerEvalSubmitted": {
+      "title": "관리자 평가 완료",
+      "body": "관리자 평가가 완료되었습니다. 사이클 확정 후 결과를 확인할 수 있습니다."
+    },
+    "mboGoalApproved": {
+      "title": "MBO 목표 승인",
+      "body": "MBO 목표가 승인되었습니다."
+    },
+    "mboGoalRejected": {
+      "title": "MBO 목표 수정 요청",
+      "body": "MBO 목표 수정이 필요합니다. 피드백을 확인하고 다시 제출해 주세요."
+    },
+    "goalOverdue": {
+      "title": "MBO 목표 미제출",
+      "body": "{name}님이 {cycleName} MBO 목표를 미제출 상태입니다. {daysOverdue}일 초과."
+    },
+    "evalOverdue": {
+      "title": "평가 기한 초과",
+      "body": "{cycleName} 평가 기간이 {daysOverdue}일 초과되었습니다. 후속 조치가 필요합니다."
+    },
+    "payrollAttendanceClosed": {
+      "title": "근태 마감 완료",
+      "body": "{yearMonth} 근태가 마감되었습니다. {confirmedCount}/{totalEmployees}명 확인 완료. 급여 산정을 진행하세요."
+    },
+    "payrollReviewReady": {
+      "title": "급여 이상항목 검토 준비",
+      "body": "{yearMonth} 급여 이상항목 검토가 준비되었습니다."
+    },
+    "payrollPendingApproval": {
+      "title": "급여 승인 요청",
+      "body": "{yearMonth} 급여({headcount}명, {totalNet}) 승인이 요청되었습니다."
+    },
+    "payrollApprovalRejected": {
+      "title": "급여 승인 반려",
+      "body": "반려 사유: {reason}"
+    },
+    "payrollApprovalNeeded": {
+      "title": "급여 승인 필요",
+      "body": "{yearMonth} 급여 승인을 진행해 주세요."
+    },
+    "benefitApproved": {
+      "title": "복리후생 승인",
+      "body": "{planName} 복리후생 청구가 승인되었습니다."
+    },
+    "profileChangeApproved": {
+      "title": "인사정보 변경 승인",
+      "body": "{fieldLabel} 변경 요청이 승인되었습니다."
+    },
+    "profileChangeRejected": {
+      "title": "인사정보 변경 반려",
+      "body": "{fieldLabel} 변경 요청이 반려되었습니다. 사유: {reason}"
+    },
+    "recognitionReceived": {
+      "title": "칭찬 수신",
+      "body": "{senderName}님이 칭찬을 보냈습니다."
+    },
+    "hrChatbotEscalation": {
+      "title": "HR 상담 요청",
+      "body": "{userName}님이 HR 담당자 연결을 요청했습니다."
+    },
+    "evalReminder": {
+      "title": "평가 마감 임박",
+      "body": "{name}님, {cycleName} {type} 마감이 {label}입니다. 제출해 주세요."
+    },
+    "evalEscalation": {
+      "title": "평가 미제출 에스컬레이션",
+      "body": "{cycleName} {type} 마감이 지났습니다. {count}명이 아직 미제출 상태입니다."
+    },
+    "leavePromotion": {
+      "title": "연차 사용 권장",
+      "body": "{name}님, 잔여 연차가 {remainingDays}일입니다. 입사일까지 {daysUntilAnniversary}일 남았습니다. 연차 사용을 권장드립니다."
+    }
   }
 }

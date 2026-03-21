@@ -88,6 +88,9 @@ export async function POST(req: NextRequest) {
     triggerType: 'recognition.received',
     title: `${sender.employee.name}님이 칭찬을 보냈습니다`,
     body: message,
+    titleKey: 'notifications.recognitionReceived.title',
+    bodyKey: 'notifications.recognitionReceived.body',
+    bodyParams: { senderName: sender.employee.name },
     link: '/performance/recognition',
     adaptiveCard: card,
   })
