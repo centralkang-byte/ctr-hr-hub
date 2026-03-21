@@ -7,7 +7,7 @@ import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 // 퇴직처리 현황: 진행률, D-day 경고, 태스크 완료, 취소
 // ═══════════════════════════════════════════════════════════
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import {
   AlertTriangle,
@@ -403,10 +403,9 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
               </TableHeader>
               <TableBody>
                 {data.map((row) => (
-                  <>
+                  <Fragment key={row.id}>
                     {/* Main row */}
                     <TableRow
-                      key={row.id}
                       className={
                         row.isD3
                           ? 'bg-[#FEE2E2]'
@@ -587,7 +586,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                         </TableCell>
                       </TableRow>
                     )}
-                  </>
+                  </Fragment>
                 ))}
               </TableBody>
             </Table>
