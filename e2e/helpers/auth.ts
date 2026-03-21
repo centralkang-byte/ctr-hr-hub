@@ -14,10 +14,10 @@ import { type Page, expect } from '@playwright/test'
  * The dev login buttons trigger signIn directly — no password field needed.
  */
 const TEST_EMAILS: Record<string, string> = {
-  SUPER_ADMIN: 'admin@ctr.co.kr',
+  SUPER_ADMIN: 'super@ctr.co.kr',
   HR_ADMIN:    'hr@ctr.co.kr',
   MANAGER:     'manager@ctr.co.kr',
-  EMPLOYEE:    'employee@ctr.co.kr',
+  EMPLOYEE:    'employee-a@ctr.co.kr',
 }
 
 /**
