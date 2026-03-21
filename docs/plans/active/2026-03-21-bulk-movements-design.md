@@ -1,7 +1,7 @@
 # B-5a: Bulk HR Movements — CSV Import (유형별 분리)
 
 > **Date**: 2026-03-21
-> **Status**: 설계 완료 → Gemini Review 대기
+> **Status**: Gemini Review 완료 → 4건 패치 반영 → 구현 대기
 > **Estimated Sessions**: 5
 
 ---
@@ -87,6 +87,11 @@ HR Admin이 CSV 파일을 업로드하여 대량 인사이동을 일괄 처리. 
 - companyId가 변경되므로 부서/직위도 새 법인 기준으로 필수 검증
 - 겸직(secondary) assignment가 있으면 경고 표시
 
+**⚠️ 권한 제한 (Gemini Patch 1):**
+- **SUPER_ADMIN 전용** — HR_ADMIN은 법인전환 실행 불가
+- 근거: HR_ADMIN은 출발지 법인 권한만 보유, 목적지 법인에 직원을 삽입할 권한이 없음
+- HR_ADMIN이 ENTITY_TRANSFER 템플릿 선택 시 UI에서 차단 + API에서 403 반환
+
 ### 3.4 TERMINATION (퇴직)
 
 | 컬럼 | 필수 | 설명 | 예시 |
@@ -102,6 +107,12 @@ HR Admin이 CSV 파일을 업로드하여 대량 인사이동을 일괄 처리. 
 - `EmployeeOffboarding` 레코드 자동 생성 (IN_PROGRESS)
 - 퇴직 정산은 별도 프로세스 (자동 트리거하지 않음)
 - VOLUNTARY/RETIREMENT → RESIGN, INVOLUNTARY/CONTRACT_END → TERMINATE
+
+**⚠️ 날짜 계산 규칙 (Gemini Patch 4 — Off-by-one 방지):**
+- 기존 Assignment의 `endDate` = 마지막근무일 (예: 2026-03-31)
+- 새 퇴직 Assignment의 `effectiveDate` = 마지막근무일 + 1일 (예: 2026-04-01)
+- 구현: `addDays(parseDateOnly(lastWorkingDate), 1)` — 반드시 이 공식 사용
+- 근거: 마지막근무일까지는 재직 상태, 다음 날부터 퇴직 상태 → 급여/퇴직금 정산 정합성 보장
 
 ### 3.5 COMPENSATION (급여변경)
 
@@ -180,6 +191,7 @@ EMP001,DEV-01,G3,POS-DEV-LEAD,HQ-SEOUL,2026-04-01,조직개편
 3. 참조 데이터 검증 (사번→Employee, 부서코드→Department 등)
 4. 비즈니스 룰 검증 (상태 전이, 직급 비교 등)
 5. 중복 검증 (같은 사번이 파일 내 중복)
+6. **⚠️ 발효일 역전 검증 (Gemini Patch 2):** 입력된 effectiveDate가 대상 직원의 현재 활성 Assignment effectiveDate보다 같거나 미래인지 검증. 과거 날짜 → error (차단)
 
 ### 4.4 POST /execute
 
@@ -203,9 +215,10 @@ EMP001,DEV-01,G3,POS-DEV-LEAD,HQ-SEOUL,2026-04-01,조직개편
 
 **실행 로직:**
 1. validationToken 검증 (파일 해시 일치 확인)
-2. `prisma.$transaction()` 내에서 전체 row 실행
-3. 1건이라도 실패 → 전체 롤백
-4. `BulkMovementExecution` 감사 레코드 생성
+2. **⚠️ Re-validation (Gemini Patch 3):** 트랜잭션 내에서 비즈니스 룰 재검증 수행. validate→execute 사이에 다른 관리자가 직원 상태를 변경했을 수 있으므로, 각 직원의 현재 상태(활성 Assignment 존재, 상태 전이 가능 여부, 발효일 역전 없음)를 한 번 더 확인. 불일치 발견 시 전체 롤백 + 에러 반환
+3. `prisma.$transaction()` 내에서 전체 row 실행
+4. 1건이라도 실패 → 전체 롤백
+5. `BulkMovementExecution` 감사 레코드 생성 (트랜잭션 외부)
 
 ---
 
@@ -376,6 +389,7 @@ Phase 3: 기존 /api/v1/employees/bulk-upload deprecated 표시
 - RBAC: `HR_ADMIN` + `SUPER_ADMIN` only (module: `EMPLOYEE`, action: `BULK_UPDATE`)
 - Company scope: HR_ADMIN은 자기 법인 직원만 처리 가능
 - SUPER_ADMIN은 전체 법인 처리 가능
+- **ENTITY_TRANSFER는 SUPER_ADMIN 전용** (Gemini Patch 1) — 타법인 쓰기 권한 침범 방지
 - 감사 로그: BulkMovementExecution에 실행자, 파일명, 결과 기록
 - validationToken: 검증 → 실행 사이 파일 변조 방지 (SHA256 해시)
 
