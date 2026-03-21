@@ -8,7 +8,8 @@ import { useTranslations } from 'next-intl'
 import { useState, useCallback } from 'react'
 import {
   User, Briefcase, DollarSign, FileText, Camera, CheckCircle2, XCircle,
-  Edit3, Save, X, Plus, Trash2, Globe, Building, AlertCircle
+  Edit3, Save, X, Plus, Trash2, Globe, Building, AlertCircle,
+  Calendar, Clock, Award
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
@@ -335,6 +336,64 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
 
       {/* ── Tab: Overview ── */}
       {activeTab === 'overview' && (
+        <div className="space-y-6">
+          {/* At a Glance 위젯 */}
+          {(() => {
+            const primary = employee.assignments[0]
+            const hireDateObj = new Date(employee.hireDate)
+            const tenure = Math.floor((Date.now() - hireDateObj.getTime()) / (365.25 * 24 * 60 * 60 * 1000))
+            const certCount = Array.isArray(ext.certifications) ? ext.certifications.length : 0
+            const langCount = Array.isArray(ext.languages) ? ext.languages.length : 0
+
+            return (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className={CARD_STYLES.padded}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                      <Building className="h-4 w-4" />
+                    </div>
+                    <span className="text-xs text-muted-foreground">{t('atGlance.team')}</span>
+                  </div>
+                  <p className="text-sm font-semibold text-foreground truncate">{primary?.department?.name ?? '-'}</p>
+                  <p className="text-xs text-muted-foreground truncate">{primary?.jobGrade?.name ?? '-'}</p>
+                </div>
+
+                <div className={CARD_STYLES.padded}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-50 text-green-600">
+                      <Calendar className="h-4 w-4" />
+                    </div>
+                    <span className="text-xs text-muted-foreground">{t('atGlance.tenure')}</span>
+                  </div>
+                  <p className="text-sm font-semibold text-foreground">{tenure}{t('atGlance.years')}</p>
+                  <p className="text-xs text-muted-foreground">{formatDate(employee.hireDate)} {t('atGlance.joined')}</p>
+                </div>
+
+                <div className={CARD_STYLES.padded}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                      <Award className="h-4 w-4" />
+                    </div>
+                    <span className="text-xs text-muted-foreground">{t('atGlance.certLang')}</span>
+                  </div>
+                  <p className="text-sm font-semibold text-foreground">{t('atGlance.certCount', { count: certCount })}</p>
+                  <p className="text-xs text-muted-foreground">{t('atGlance.langCount', { count: langCount })}</p>
+                </div>
+
+                <div className={CARD_STYLES.padded}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-50 text-purple-600">
+                      <Clock className="h-4 w-4" />
+                    </div>
+                    <span className="text-xs text-muted-foreground">{t('atGlance.skills')}</span>
+                  </div>
+                  <p className="text-sm font-semibold text-foreground">{ext.skills.length}{t('atGlance.skillCount')}</p>
+                  <p className="text-xs text-muted-foreground">{ext.skills.slice(0, 2).join(', ') || '-'}</p>
+                </div>
+              </div>
+            )
+          })()}
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2 space-y-6">
             {/* 기본 정보 / 인사 정보 */}
@@ -495,6 +554,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
               </div>
             </div>
           </div>
+        </div>
         </div>
       )}
 
