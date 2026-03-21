@@ -22,6 +22,7 @@ import { CommandPalette } from '@/components/command-palette/CommandPalette'
 import { HrChatbot } from '@/components/hr-chatbot/HrChatbot'
 import { PwaInstallBanner } from '@/components/shared/PwaInstallBanner'
 import { ServiceWorkerRegistrar } from '@/components/shared/ServiceWorkerRegistrar'
+import { SessionTimeoutWarning } from '@/components/shared/SessionTimeoutWarning'
 import { DashboardShell } from './DashboardShell'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -91,6 +92,7 @@ export default async function DashboardLayout({
       <HrChatbot />
       <PwaInstallBanner />
       <ServiceWorkerRegistrar />
+      <SessionTimeoutWarning />
     </BrandProvider>
   )
 }
