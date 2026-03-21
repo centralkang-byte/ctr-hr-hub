@@ -4234,7 +4234,11 @@
     "feedbackPositive": "도움이 됐어요",
     "feedbackNegative": "도움이 안 됐어요",
     "chatbotWelcome": "안녕하세요! CTR HR 챗봇입니다. 근태, 휴가, 급여, 인사 정책 등에 대해 질문해 주세요.",
-    "chatbotNewSession": "새 대화"
+    "chatbotNewSession": "새 대화",
+    "chatbotError": "죄송합니다. 응답을 생성하는 중 오류가 발생했습니다.",
+    "chatbotDefaultTitle": "대화",
+    "chatbotNoHistory": "대화 내역이 없습니다.",
+    "chatbotEscalated": "HR 담당자에게 전달되었습니다."
   },
   "error": {
     "notFound": "리소스를 찾을 수 없습니다.",

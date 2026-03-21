@@ -4203,7 +4203,13 @@
     "chatbotLowConfidence": "I'm not confident in this answer. Would you like me to forward this to an HR representative?",
     "chatbotUnavailable": "AI assistant is currently unavailable.",
     "feedbackPositive": "Helpful",
-    "feedbackNegative": "Not Helpful"
+    "feedbackNegative": "Not Helpful",
+    "chatbotWelcome": "¡Hola! Soy el chatbot de HR de CTR. Pregúntame sobre asistencia, permisos, nómina o políticas de RRHH.",
+    "chatbotNewSession": "Nueva conversación",
+    "chatbotError": "Lo siento, ocurrió un error al generar la respuesta.",
+    "chatbotDefaultTitle": "Conversación",
+    "chatbotNoHistory": "No hay historial de conversaciones.",
+    "chatbotEscalated": "Enviado al representante de RRHH."
   },
   "error": {
     "notFound": "Resource not found.",

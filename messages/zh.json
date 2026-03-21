@@ -4203,7 +4203,13 @@
     "chatbotLowConfidence": "I'm not confident in this answer. Would you like me to forward this to an HR representative?",
     "chatbotUnavailable": "AI assistant is currently unavailable.",
     "feedbackPositive": "Helpful",
-    "feedbackNegative": "Not Helpful"
+    "feedbackNegative": "Not Helpful",
+    "chatbotWelcome": "你好！我是CTR HR聊天机器人。请向我咨询考勤、休假、薪资或人事政策。",
+    "chatbotNewSession": "新对话",
+    "chatbotError": "抱歉，生成回复时出现错误。",
+    "chatbotDefaultTitle": "对话",
+    "chatbotNoHistory": "没有对话记录。",
+    "chatbotEscalated": "已转交HR负责人。"
   },
   "error": {
     "notFound": "Resource not found.",

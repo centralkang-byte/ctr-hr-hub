@@ -62,6 +62,7 @@ interface ChatSession {
 
 export function HrChatbot() {
   const t = useTranslations('ai')
+  const tCommon = useTranslations('common')
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
@@ -213,7 +214,7 @@ export function HrChatbot() {
           {
             id: `err-${Date.now()}`,
             role: 'assistant',
-            content: '죄송합니다. 응답을 생성하는 중 오류가 발생했습니다.',
+            content: t('chatbotError'),
             createdAt: new Date(),
           },
         ])
@@ -221,7 +222,7 @@ export function HrChatbot() {
         setIsLoading(false)
       }
     },
-    [input, isLoading, currentSessionId],
+    [input, isLoading, currentSessionId, t],
   )
 
   const handleKeyDown = useCallback(
@@ -310,7 +311,7 @@ export function HrChatbot() {
                   onClick={() => setShowSessions((p) => !p)}
                   className="flex items-center gap-1 text-sm font-semibold hover:opacity-80"
                 >
-                  HR 챗봇
+                  {t('chatbotTitle')}
                   <ChevronDown className="h-3 w-3" />
                 </button>
                 {showSessions && (
@@ -326,12 +327,12 @@ export function HrChatbot() {
                             s.id === currentSessionId && 'bg-[#EDF1FE] font-medium',
                           )}
                         >
-                          {s.title ?? '대화'}
+                          {s.title ?? t('chatbotDefaultTitle')}
                         </button>
                       ))}
                       {sessions.length === 0 && (
                         <p className="px-3 py-2 text-xs text-[#666]">
-                          대화 내역이 없습니다.
+                          {t('chatbotNoHistory')}
                         </p>
                       )}
                     </div>
@@ -344,7 +345,7 @@ export function HrChatbot() {
                 type="button"
                 onClick={handleNewChat}
                 className="rounded p-1 hover:bg-white/20"
-                aria-label="새 대화"
+                aria-label={t('chatbotNewSession')}
               >
                 <RotateCcw className="h-4 w-4" />
               </button>
@@ -352,7 +353,7 @@ export function HrChatbot() {
                 type="button"
                 onClick={toggleOpen}
                 className="rounded p-1 hover:bg-white/20"
-                aria-label="닫기"
+                aria-label={tCommon('close')}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -413,21 +414,21 @@ export function HrChatbot() {
                       <div className="rounded bg-[#FEF3C7] px-2 py-1.5">
                         <div className="flex items-center gap-1 text-xs text-[#B45309]">
                           <AlertTriangle className="h-3 w-3" />
-                          정확도가 낮을 수 있습니다.
+                          {t('chatbotLowConfidence')}
                         </div>
                         <button
                           type="button"
                           onClick={() => handleEscalate(msg.id)}
                           className="mt-1 text-xs font-medium text-[#92400E] underline hover:text-[#78350F]"
                         >
-                          담당자에게 문의
+                          {t('chatbotEscalate')}
                         </button>
                       </div>
                     )}
 
                     {msg.escalated && (
                       <div className="rounded bg-green-50 px-2 py-1 text-xs text-green-700">
-                        HR 담당자에게 전달되었습니다.
+                        {t('chatbotEscalated')}
                       </div>
                     )}
 
@@ -441,7 +442,7 @@ export function HrChatbot() {
                             'rounded p-0.5 hover:bg-[#E8E8E8]',
                             msg.feedback === 'POSITIVE' && 'text-green-600',
                           )}
-                          aria-label="도움이 되었어요"
+                          aria-label={t('feedbackPositive')}
                         >
                           <ThumbsUp className="h-3 w-3" />
                         </button>
@@ -452,7 +453,7 @@ export function HrChatbot() {
                             'rounded p-0.5 hover:bg-[#E8E8E8]',
                             msg.feedback === 'NEGATIVE' && 'text-[#DC2626]',
                           )}
-                          aria-label="도움이 안 되었어요"
+                          aria-label={t('feedbackNegative')}
                         >
                           <ThumbsDown className="h-3 w-3" />
                         </button>
@@ -491,7 +492,7 @@ export function HrChatbot() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="질문을 입력하세요..."
+              placeholder={t('chatbotPlaceholder')}
               rows={1}
               className="flex-1 resize-none rounded-md border bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
               disabled={isLoading}

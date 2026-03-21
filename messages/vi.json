@@ -4203,7 +4203,13 @@
     "chatbotLowConfidence": "I'm not confident in this answer. Would you like me to forward this to an HR representative?",
     "chatbotUnavailable": "AI assistant is currently unavailable.",
     "feedbackPositive": "Helpful",
-    "feedbackNegative": "Not Helpful"
+    "feedbackNegative": "Not Helpful",
+    "chatbotWelcome": "Xin chào! Tôi là chatbot HR của CTR. Hãy hỏi tôi về chấm công, nghỉ phép, lương hoặc chính sách nhân sự.",
+    "chatbotNewSession": "Cuộc trò chuyện mới",
+    "chatbotError": "Xin lỗi, đã xảy ra lỗi khi tạo phản hồi.",
+    "chatbotDefaultTitle": "Cuộc trò chuyện",
+    "chatbotNoHistory": "Không có lịch sử trò chuyện.",
+    "chatbotEscalated": "Đã chuyển đến người phụ trách HR."
   },
   "error": {
     "notFound": "Resource not found.",

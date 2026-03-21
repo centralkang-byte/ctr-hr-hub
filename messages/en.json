@@ -4234,7 +4234,11 @@
     "feedbackPositive": "Helpful",
     "feedbackNegative": "Not Helpful",
     "chatbotWelcome": "Hello! I'm the CTR HR Chatbot. Ask me about attendance, leave, payroll, or HR policies.",
-    "chatbotNewSession": "New Chat"
+    "chatbotNewSession": "New Chat",
+    "chatbotError": "Sorry, an error occurred while generating a response.",
+    "chatbotDefaultTitle": "Chat",
+    "chatbotNoHistory": "No chat history.",
+    "chatbotEscalated": "Forwarded to HR representative."
   },
   "error": {
     "notFound": "Resource not found.",
