@@ -5146,7 +5146,18 @@
       "period": "Period",
       "days": "day(s)수",
       "status": "Status",
-      "requestedAt": "신청day(s)"
+      "requestedAt": "Requested"
+    },
+    "atGlance": {
+      "team": "Team",
+      "tenure": "Tenure",
+      "years": " yrs",
+      "joined": "joined",
+      "certLang": "Cert/Lang",
+      "certCount": "{count} certs",
+      "langCount": "{count} langs",
+      "skills": "Skills",
+      "skillCount": " skills"
     }
   },
   "directory": {

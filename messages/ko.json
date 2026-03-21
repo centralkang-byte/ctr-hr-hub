@@ -5147,6 +5147,17 @@
       "days": "일수",
       "status": "상태",
       "requestedAt": "신청일"
+    },
+    "atGlance": {
+      "team": "소속",
+      "tenure": "근속",
+      "years": "년",
+      "joined": "입사",
+      "certLang": "자격/언어",
+      "certCount": "자격증 {count}개",
+      "langCount": "언어 {count}개",
+      "skills": "스킬",
+      "skillCount": "개 보유"
     }
   },
   "directory": {
