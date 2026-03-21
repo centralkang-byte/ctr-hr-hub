@@ -395,6 +395,8 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [processing,  setProcessing]  = useState<string | null>(null)
   const [showHistory, setShowHistory] = useState(false)
+  const [pendingVisible, setPendingVisible] = useState(20)
+  const [historyVisible, setHistoryVisible] = useState(20)
 
   // Modals
   const [rejectTarget,    setRejectTarget]    = useState<ApprovalItem | null>(null)
@@ -522,7 +524,7 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
           <button
             key={t.key}
             type="button"
-            onClick={() => { setTab(t.key); setSelectedIds(new Set()) }}
+            onClick={() => { setTab(t.key); setSelectedIds(new Set()); setPendingVisible(20) }}
             className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
               tab === t.key
                 ? 'bg-[#5E81F4] text-white'
@@ -558,7 +560,7 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
         </Card>
       ) : (
         <div className="space-y-2">
-          {filtered.map(item => (
+          {filtered.slice(0, pendingVisible).map(item => (
             <ApprovalRow
               key={item.id}
               item={item}
@@ -569,6 +571,15 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
               processing={processing}
             />
           ))}
+          {filtered.length > pendingVisible && (
+            <button
+              type="button"
+              onClick={() => setPendingVisible(v => v + 20)}
+              className="w-full py-2 text-sm text-[#5E81F4] hover:underline"
+            >
+              더 보기 ({filtered.length - pendingVisible}건 남음)
+            </button>
+          )}
         </div>
       )}
 
@@ -593,7 +604,7 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
 
           {showHistory && (
             <div className="space-y-2">
-              {historyItems.map(item => (
+              {historyItems.slice(0, historyVisible).map(item => (
                 <ApprovalRow
                   key={item.id}
                   item={item}
@@ -604,6 +615,15 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
                   processing={null}
                 />
               ))}
+              {historyItems.length > historyVisible && (
+                <button
+                  type="button"
+                  onClick={() => setHistoryVisible(v => v + 20)}
+                  className="w-full py-2 text-sm text-[#8181A5] hover:underline"
+                >
+                  더 보기 ({historyItems.length - historyVisible}건 남음)
+                </button>
+              )}
             </div>
           )}
         </div>

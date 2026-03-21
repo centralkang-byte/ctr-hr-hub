@@ -58,6 +58,8 @@ export const GET = withPermission(
         ...(employeeId ? { employeeId } : {}),
       }
 
+      const limit = Math.min(2000, Math.max(1, Number(searchParams.get('limit') ?? 1000)))
+
       const schedules = await prisma.shiftSchedule.findMany({
         where,
         include: {
@@ -75,6 +77,7 @@ export const GET = withPermission(
           { employeeId: 'asc' },
           { workDate: 'asc' },
         ],
+        take: limit,
       })
 
       const formattedSchedules = schedules.map((s) => ({
