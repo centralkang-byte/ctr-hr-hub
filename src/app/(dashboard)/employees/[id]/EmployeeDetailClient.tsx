@@ -149,7 +149,7 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="py-2.5">
       <p className="text-xs text-[#999] font-medium mb-1">{label}</p>
-      <p className="text-sm text-[#1A1A1A]">{value ?? '-'}</p>
+      <div className="text-sm text-[#1A1A1A]">{value ?? '-'}</div>
     </div>
   )
 }
