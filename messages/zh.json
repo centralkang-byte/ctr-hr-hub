@@ -259,7 +259,10 @@
     "forbidden": "Access denied.",
     "notRegistered": "Unregistered user. Please contact HR.",
     "slogan": "Central to your safe mobility",
-    "myProfile": "My Profile"
+    "myProfile": "My Profile",
+    "sessionExpiring": "会话即将过期",
+    "sessionExpiringDesc": "您的会话即将过期，未保存的数据可能会丢失。是否要延长会话？",
+    "extendSession": "延长会话"
   },
   "menu": {
     "home": "Home",
