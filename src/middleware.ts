@@ -80,6 +80,7 @@ const ROUTE_ACL: RouteRule[] = [
   { prefix: '/org', allowedRoles: HR_UP },
   { prefix: '/attendance/admin', allowedRoles: HR_UP },
   { prefix: '/leave/admin', allowedRoles: HR_UP },
+  { prefix: '/onboarding/me', allowedRoles: ALL_ROLES },
   { prefix: '/onboarding', allowedRoles: HR_UP },
   { prefix: '/offboarding/exit-interviews', allowedRoles: HR_UP },
   { prefix: '/discipline', allowedRoles: HR_UP },
@@ -88,10 +89,10 @@ const ROUTE_ACL: RouteRule[] = [
   { prefix: '/talent', allowedRoles: HR_UP },
   // Performance & Compensation admin (section 6)
   { prefix: '/performance/admin', allowedRoles: HR_UP },
-  { prefix: '/performance/goals', allowedRoles: HR_UP },
+  { prefix: '/performance/goals', allowedRoles: MANAGER_UP },
   { prefix: '/performance/calibration', allowedRoles: HR_UP },
   { prefix: '/performance/results', allowedRoles: HR_UP },
-  { prefix: '/performance/peer-review', allowedRoles: HR_UP },
+  { prefix: '/performance/peer-review', allowedRoles: MANAGER_UP },
   { prefix: '/compensation', allowedRoles: HR_UP },
   { prefix: '/benefits', allowedRoles: HR_UP },
 

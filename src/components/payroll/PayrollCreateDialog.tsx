@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -80,6 +81,7 @@ export default function PayrollCreateDialog({ onCreated }: PayrollCreateDialogPr
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>급여 실행 생성</DialogTitle>
+          <DialogDescription>급여 실행의 기간, 유형, 실행명, 지급일을 설정합니다.</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

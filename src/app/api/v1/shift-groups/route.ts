@@ -21,10 +21,6 @@ export const GET = withPermission(
       const { searchParams } = new URL(req.url)
       const shiftPatternId = searchParams.get('shiftPatternId')
 
-      if (!shiftPatternId) {
-        throw badRequest('shiftPatternId는 필수입니다.')
-      }
-
       const page = Math.max(1, Number(searchParams.get('page') ?? 1))
       const limit = Math.min(100, Math.max(1, Number(searchParams.get('limit') ?? 20)))
       const skip = (page - 1) * limit
@@ -33,7 +29,7 @@ export const GET = withPermission(
         user.role === ROLE.SUPER_ADMIN ? {} : { companyId: user.companyId }
 
       const where = {
-        shiftPatternId,
+        ...(shiftPatternId ? { shiftPatternId } : {}),
         isActive: true,
         ...companyFilter,
       }
