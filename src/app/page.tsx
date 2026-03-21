@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 
-// 루트는 항상 /login으로 리디렉션.
-// 로그인 성공 시 NextAuth callbackUrl(=/employees)로 이동.
+// 루트 → /home 리디렉션.
+// 미인증 사용자는 middleware에서 /login으로 리디렉션됨.
 export default function RootPage() {
-  redirect('/login')
+  redirect('/home')
 }
