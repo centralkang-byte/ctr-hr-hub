@@ -4,9 +4,9 @@
 
 **Goal:** 전체 84개 모듈의 기능 검증, Playwright E2E 자동화, UX/UI 폴리싱을 통해 프로덕션 배포 가능 상태 달성
 
-**Architecture:** 4단계 순차 실행 — 수동 QA로 현재 상태 파악 → 버그 수정 → E2E 자동화로 회귀 방지 고정 → UX/UI 리뷰로 시각적 폴리싱
+**Architecture:** 4단계 순차 실행 — `/qa` 스킬로 UI 테스트 + 즉시 수정 → 잔여 버그 정리 → E2E 자동화로 회귀 방지 고정 → UX/UI 리뷰로 시각적 폴리싱
 
-**Tech Stack:** Playwright (E2E), browse/gstack (수동 QA), Next.js 15 + localhost:3002
+**Tech Stack:** Playwright (E2E), gstack `/qa` 스킬 (헤드리스 브라우저 QA), Next.js 15 + localhost:3002
 
 **환경:** localhost:3002, `NEXT_PUBLIC_SHOW_TEST_ACCOUNTS=true`
 
@@ -44,174 +44,172 @@ npm run dev
 
 ---
 
-## Phase 1: Track B — 수동 QA (browse 스킬) (5~7 세션)
+## Phase 1: Track B — `/qa` 스킬 테스트 + 즉시 수정 (5~7 세션)
 
-> **도구:** `/browse` 또는 `/qa` 스킬 (localhost:3002)
-> **방법:** 각 모듈별로 실제 브라우저에서 CRUD 플로우 실행
-> **산출물:** 모듈별 QA 리포트 → `docs/qa-reports/UI-{module}.md`
+> **도구:** `/qa` 스킬 (gstack 헤드리스 브라우저)
+> **대상:** `http://localhost:3002`
+> **방법:** 모듈별 `/qa` 실행 — 버그 발견 → 소스코드 수정 → 재검증 → atomic commit
+> **산출물:** `.gstack/qa-reports/qa-report-localhost-3002-{date}.md` + 스크린샷
+> **Tier:** Standard (critical + high + medium 수정)
 > **역할 순환:** 각 모듈을 SA → HR → Manager → Employee 순으로 테스트
+>
+> ### `/qa` 스킬 동작 방식
+> 1. 헤드리스 브라우저로 페이지 탐색 + 스크린샷 수집
+> 2. 버그 발견 시 심각도 분류 (critical/high/medium/low)
+> 3. 소스코드 위치 파악 → 최소한의 수정 적용
+> 4. `fix(qa): ISSUE-NNN — description` 형식으로 개별 커밋
+> 5. 수정 후 재검증 (before/after 스크린샷)
+> 6. 헬스 스코어 산출 (0~100, 카테고리별 가중 평균)
+>
+> ### 세션별 `/qa` 실행 명령
+> ```
+> /qa http://localhost:3002/{module-path} --scope "Focus on {module} CRUD and workflows"
+> ```
+> 인증이 필요하므로 각 세션 시작 시 테스트 계정 로그인 필요:
+> - 로그인 URL: `http://localhost:3002/login`
+> - 테스트 계정 버튼 클릭으로 자동 로그인
 
 ### Session B-1: Core HR (Employee + Organization + Directory)
 
-#### Task B-1-1: Employee CRUD (HR_ADMIN)
-1. `/directory` 접속 → 직원 목록 렌더링 확인
-2. `/employees/new` → 신규 직원 생성 폼 작성 → 제출 → 성공 확인
-3. `/employees/[id]` → 생성된 직원 상세 → 정보 편집 → 저장
-4. 직원 비활성화/삭제 → 디렉토리에서 제거 확인
-5. `/employees/me` (EMPLOYEE 로그인) → 셀프서비스 프로필 편집
+**`/qa` 실행:**
+```
+/qa http://localhost:3002 --scope "Focus on Employee CRUD (/directory, /employees, /employees/new, /employees/me), Organization (/org, /org-studio), and Directory search. Test with HR_ADMIN first, then EMPLOYEE for self-service."
+```
 
-#### Task B-1-2: Organization (HR_ADMIN)
-1. `/org` → 조직도 렌더링 확인 (React Flow)
-2. 부서 생성/수정/삭제
-3. `/org-studio` → 조직 구조 편집
+**테스트 시나리오 (qa가 자동 탐색 + 아래 항목 중점 검증):**
 
-#### Task B-1-3: Directory 검색 (ALL ROLES)
-1. 검색 필터 동작 확인 (이전 P0: 검색 미작동)
-2. 역할별 조회 범위 차이 확인
+#### HR_ADMIN 역할:
+1. `/directory` → 직원 목록 렌더링 + 검색 필터 동작
+2. `/employees/new` → 신규 직원 생성 폼 → 제출 → 성공
+3. `/employees/[id]` → 상세 → 편집 → 저장
+4. 삭제 → 확인 모달 → 디렉토리 반영
+5. `/org` → 조직도 (React Flow) + 부서 CRUD
+6. `/org-studio` → 조직 구조 편집
 
-#### 검증 포인트:
-- [ ] 직원 생성 폼 모든 필수 필드 동작
-- [ ] 수정 후 즉시 반영 (리스트/상세 모두)
-- [ ] 삭제 시 확인 모달 표시
-- [ ] EMPLOYEE는 자기 정보만 접근 가능
-- [ ] 이전 P0 #32, #33 (IDOR 방어) 재검증
+#### EMPLOYEE 역할 (재로그인):
+7. `/employees/me` → 셀프서비스 프로필 편집
+8. 다른 직원 URL 직접 접근 시도 → 403 확인
+
+#### 이전 P0 재검증:
+- [ ] #32 IDOR: EMPLOYEE → 다른 직원 프로필 접근 차단
+- [ ] #33 IDOR: EMPLOYEE → 다른 직원 insights 접근 차단
+- [ ] 검색 필터 동작 (이전: 미작동)
 
 ---
 
 ### Session B-2: Leave + Attendance
 
-#### Task B-2-1: Leave Pipeline (Employee → Manager)
-1. EMPLOYEE 로그인 → `/leave` → 휴가 신청 폼
-2. 날짜 선택 → 일수 자동 계산 확인 (이전 P0: 자동계산 미작동)
-3. 제출 → MANAGER 로그인 → `/approvals/inbox` → 승인
-4. 승인 확인 모달 존재 확인 (이전 P0: 원클릭 승인)
-5. EMPLOYEE 재로그인 → 잔여일수 변동 확인 (이전 P0: 4일 vs 139일)
+**`/qa` 실행:**
+```
+/qa http://localhost:3002 --scope "Focus on Leave management (/leave, /leave/team, /leave/admin, /approvals/inbox) and Attendance (/attendance, /attendance/admin, /attendance/shift-calendar, /attendance/shift-roster). Test leave request→approval pipeline across EMPLOYEE and MANAGER roles. Test clock-in/clock-out for EMPLOYEE."
+```
 
-#### Task B-2-2: Attendance (Employee + Admin)
-1. EMPLOYEE → `/attendance` → 출퇴근 기록
-2. Clock-in → Clock-out → 기록 확인
-3. HR_ADMIN → `/attendance/admin` → 관리자 뷰
-4. `/attendance/shift-calendar`, `/attendance/shift-roster` 렌더링
+**핵심 플로우:**
+1. EMPLOYEE → `/leave` → 휴가 신청 → 날짜 선택 → 일수 자동 계산 → 제출
+2. MANAGER → `/approvals/inbox` → 승인 확인 모달 → 승인
+3. EMPLOYEE → 잔여일수 차감 확인
+4. EMPLOYEE → `/attendance` → Clock-in → Clock-out
+5. HR_ADMIN → `/attendance/admin` → 관리자 뷰 확인
 
-#### 검증 포인트:
-- [ ] 휴가 잔여일수 정합성
-- [ ] 승인 플로우 전체 동작
-- [ ] 출퇴근 기록 즉시 반영
-- [ ] 이전 P0 #3 (이중 잔여일수 업데이트) 재검증
-- [ ] 이전 P0 #4, #5 (holidays/work-schedules 500) 재검증
+#### 이전 P0 재검증:
+- [ ] #3 이중 잔여일수 업데이트 방어
+- [ ] #4, #5 holidays/work-schedules 500 에러
+- [ ] 휴가 잔여일수 정합성 (이전: 4일 vs 139일)
 
 ---
 
 ### Session B-3: Payroll Pipeline
 
-#### Task B-3-1: Payroll 전체 플로우 (HR_ADMIN)
-1. `/payroll` → 급여 실행 목록
-2. 급여 실행 생성 버튼 → 모달/폼 (이전 P0: 버튼 무반응)
-3. 생성 → 근태 마감 → 계산 → 검토 → 승인 → 확정
-4. `/payroll/[runId]/review` → 상세 검토 화면
-5. `/payroll/[runId]/publish` → 급여명세서 발행
+**`/qa` 실행:**
+```
+/qa http://localhost:3002 --scope "Focus on Payroll pipeline (/payroll, /payroll/adjustments, /payroll/import, /payroll/simulation, /payroll/me). Test full payroll lifecycle: create run → close attendance → calculate → review → approve → publish. Then test EMPLOYEE payslip view at /payroll/me."
+```
 
-#### Task B-3-2: Employee 급여 확인
-1. EMPLOYEE → `/payroll/me` → 내 급여명세서 목록
-2. 명세서 상세 보기
+**핵심 플로우:**
+1. HR_ADMIN → 급여 실행 생성 → 근태 마감 → 계산 → 검토 → 승인 → 확정
+2. HR_ADMIN → 수당/공제 관리, CSV import, 시뮬레이션
+3. EMPLOYEE → `/payroll/me` → 급여명세서 확인
 
-#### Task B-3-3: Payroll 설정 (HR_ADMIN)
-1. `/payroll/adjustments` → 수당/공제 관리
-2. `/payroll/import` → CSV 가져오기
-3. `/payroll/simulation` → 급여 시뮬레이션
-
-#### 검증 포인트:
-- [ ] 급여 실행 생성~확정 전체 파이프라인
-- [ ] 직원 급여명세서 접근 가능
-- [ ] 이전 P0 #7, #8, #9 (payroll 접근/권한) 재검증
-- [ ] 이전 P0 #38 (ATTENDANCE_CLOSED 상태 수용) 재검증
+#### 이전 P0 재검증:
+- [ ] #7, #8, #9 payroll 접근/권한
+- [ ] #38 ATTENDANCE_CLOSED 상태 수용
+- [ ] 급여 실행 생성 버튼 동작 (이전: 무반응)
 
 ---
 
 ### Session B-4: Performance + CFR
 
-#### Task B-4-1: Performance Cycle (HR_ADMIN → Manager → Employee)
-1. HR_ADMIN → `/performance` → 평가 주기 목록
-2. 평가 주기 생성 → 목표 설정 기간 → 평가 기간 설정
-3. EMPLOYEE → `/performance/goals` → 목표 작성 → 제출
-4. MANAGER → 목표 승인 → 평가 작성
-5. HR_ADMIN → `/performance/calibration` → 캘리브레이션
-6. 결과 확정 → EMPLOYEE 결과 확인
+**`/qa` 실행:**
+```
+/qa http://localhost:3002 --scope "Focus on Performance management (/performance, /performance/goals, /performance/calibration, /performance/peer-review, /performance/one-on-one, /performance/recognition, /performance/pulse). Test full performance cycle: create cycle → goals → evaluation → calibration → results. Also test CFR features (1:1, recognition, pulse). Multi-role: HR_ADMIN creates cycle, EMPLOYEE sets goals, MANAGER evaluates."
+```
 
-#### Task B-4-2: CFR (1:1, Recognition, Pulse)
-1. MANAGER → `/performance/one-on-one` → 1:1 미팅 생성
-2. `/performance/recognition` → 칭찬 작성 → 좋아요
-3. HR_ADMIN → `/performance/pulse` → 펄스 서베이 생성
+**핵심 플로우:**
+1. HR_ADMIN → 평가 주기 생성 → 기간 설정
+2. EMPLOYEE → 목표 작성 → 제출
+3. MANAGER → 목표 승인 → 평가 작성
+4. HR_ADMIN → 캘리브레이션 → 결과 확정
+5. MANAGER → 1:1 미팅, 칭찬, 펄스 서베이
 
-#### 검증 포인트:
-- [ ] 평가 주기 전체 라이프사이클
-- [ ] 이전 P0 #10~#19 (Performance RBAC 전체) 재검증
-- [ ] 이전 P0 #40, #41 (excludeProbation, grade fallback) 재검증
+#### 이전 P0 재검증:
+- [ ] #10~#19 Performance RBAC 전체
+- [ ] #40 excludeProbation 설정 가능
+- [ ] #41 grade fallback (varchar/enum)
 
 ---
 
 ### Session B-5: Recruitment + Onboarding/Offboarding
 
-#### Task B-5-1: Recruitment Pipeline (HR_ADMIN)
-1. `/recruitment` → 채용 공고 목록
-2. `/recruitment/new` → 공고 생성 → 게시
-3. 지원자 등록 → 파이프라인 이동 (서류→면접→오퍼→채용)
-4. `/recruitment/board` → 칸반 보드 확인
-5. 채용 확정 → 직원 전환
+**`/qa` 실행:**
+```
+/qa http://localhost:3002 --scope "Focus on Recruitment (/recruitment, /recruitment/new, /recruitment/board, /recruitment/talent-pool), Onboarding (/onboarding, /onboarding/me, /onboarding/checkins), and Offboarding (/offboarding, /offboarding/exit-interviews). Test recruitment pipeline: create posting → add applicant → move through pipeline → hire. Test onboarding checklist progression. Test offboarding initiation."
+```
 
-#### Task B-5-2: Onboarding (HR_ADMIN + Employee)
-1. HR_ADMIN → `/onboarding` → 온보딩 인스턴스 생성
-2. 체크리스트 진행 (PENDING → IN_PROGRESS → DONE)
-3. EMPLOYEE → `/onboarding/me` → 셀프서비스
-4. `/onboarding/checkins` → 체크인 기록
+**핵심 플로우:**
+1. HR_ADMIN → 채용 공고 생성 → 지원자 → 파이프라인 → 채용 전환
+2. HR_ADMIN → 온보딩 인스턴스 → 체크리스트 (PENDING → IN_PROGRESS → DONE)
+3. EMPLOYEE → `/onboarding/me` → 셀프서비스 완료
+4. HR_ADMIN → 퇴직 프로세스 시작 → 퇴직 면담
 
-#### Task B-5-3: Offboarding (HR_ADMIN)
-1. `/offboarding` → 퇴직 프로세스 시작
-2. `/offboarding/exit-interviews` → 퇴직 면담
-
-#### 검증 포인트:
-- [ ] 채용→온보딩 연계 플로우
-- [ ] 이전 P0 #20~#25 (Recruitment/Onboarding RBAC) 재검증
-- [ ] 이전 P0 #43 (Employee DELETE 의존성 체크) 재검증
+#### 이전 P0 재검증:
+- [ ] #20~#25 Recruitment/Onboarding RBAC
+- [ ] #43 Employee DELETE 의존성 체크
 
 ---
 
 ### Session B-6: Analytics + AI + Compliance + Settings
 
-#### Task B-6-1: Analytics (HR_ADMIN + SA)
-1. `/analytics` → 전체 대시보드 (이전: 403 전멸)
-2. 8개 서브 대시보드 순회: workforce, compensation, attendance, performance, turnover, team-health, payroll, recruitment
-3. `/analytics/predictive` → 이탈/번아웃 예측
-4. AI 리포트 생성
+**`/qa` 실행 (2회 — 범위가 넓어 분할):**
 
-#### Task B-6-2: Compliance (HR_ADMIN)
-1. `/compliance` → 국가별 컴플라이언스 (kr, cn, ru)
-2. GDPR, 데이터 보존, PII 감사
+**B-6a: Analytics + AI + Compliance**
+```
+/qa http://localhost:3002 --scope "Focus on Analytics (/analytics and all 8 sub-dashboards: workforce, compensation, attendance, performance, turnover, team-health, payroll, recruitment), Predictive (/analytics/predictive), AI report generation, and Compliance (/compliance, /compliance/gdpr, /compliance/kr, /compliance/cn, /compliance/ru). Verify all dashboards render with data (no blank screens, no 403 errors)."
+```
 
-#### Task B-6-3: Settings 44탭 (SA + HR_ADMIN)
-1. `/settings` → 6개 카테고리 순회
-2. 각 탭 로드 + 기본 CRUD 동작 확인
-3. 설정 변경 → 저장 → 새로고침 후 유지 확인
+**B-6b: Settings 44탭**
+```
+/qa http://localhost:3002 --exhaustive --scope "Focus on Settings (/settings and all 6 categories: system, organization, attendance, payroll, performance, recruitment). Visit every tab. Test CRUD: change a value → save → refresh → verify persistence. Test with SUPER_ADMIN."
+```
 
-#### 검증 포인트:
-- [ ] Analytics 8개 대시보드 전부 렌더링
-- [ ] 이전 P0 #26~#29 (Analytics/AI 500/403) 재검증
-- [ ] Settings 44탭 전부 접근 가능
+#### 이전 P0 재검증:
+- [ ] #26~#29 Analytics/AI 500/403
+- [ ] Settings 44탭 전부 접근 가능 + CRUD 동작
 
 ---
 
 ### Session B-7: Security + Cross-Module 재검증
 
-#### Task B-7-1: RBAC 경계 테스트
-1. EMPLOYEE로 로그인 → HR 전용 URL 직접 접근 시도
-   - `/employees` (목록), `/payroll` (관리), `/settings` → 403/리다이렉트
-2. MANAGER로 → SA 전용 URL 접근 시도
-3. URL 파라미터 조작 (다른 직원 ID로 접근) → IDOR 방어 확인
+**`/qa` 실행 (2회):**
 
-#### Task B-7-2: Cross-Module Integration
-1. Hire-to-Retire: 채용 → 온보딩 → 근태 → 급여 → 성과 → 퇴직
-2. Time-to-Pay: 출퇴근 → 근태 마감 → 급여 계산
-3. Perf-to-Pay: 성과 결과 → 보상 연계
+**B-7a: RBAC 경계**
+```
+/qa http://localhost:3002 --scope "Security audit: Test RBAC boundaries. Login as EMPLOYEE and try accessing HR-only URLs (/employees, /payroll, /settings, /recruitment). Login as MANAGER and try SA-only URLs (/settings/system). Test IDOR: as EMPLOYEE, manually navigate to /employees/{other-employee-id}. Verify 403 pages or redirects for all unauthorized access."
+```
+
+**B-7b: Cross-Module Integration**
+```
+/qa http://localhost:3002 --exhaustive --scope "Cross-module integration testing. Test end-to-end pipelines: (1) Hire-to-Retire: recruitment → onboarding → attendance → payroll → performance → offboarding. (2) Time-to-Pay: clock-in/out → close attendance → payroll calculate. (3) Perf-to-Pay: performance results → compensation review. Verify data flows correctly across modules."
+```
 
 #### 검증 포인트:
 - [ ] 4개 역할 접근 제어 무결성
@@ -220,21 +218,24 @@ npm run dev
 
 ---
 
-## Phase 2: Bug Fix (1~3 세션)
+## Phase 2: 잔여 버그 정리 (0~1 세션)
 
-> Phase 1에서 발견된 버그를 심각도 순으로 수정
-> **산출물:** 수정 커밋 + 업데이트된 QA 리포트
+> `/qa` 스킬이 Phase 1에서 발견 즉시 수정 + atomic commit하므로, 대부분의 버그는 이미 해결됨.
+> Phase 2는 `/qa`가 못 잡은 항목만 처리.
 
-### Task 2-1: P0 버그 즉시 수정
-- 발견 즉시 수정, 개별 커밋
-- `npx tsc --noEmit` + `npm run lint` 통과 필수
+### Task 2-1: `/qa` deferred 항목 검토
+- 각 세션의 QA 리포트에서 "deferred" 상태 항목 수집
+- 소스코드 수정 불가능한 항목 (인프라, 외부 의존성) 분류
 
-### Task 2-2: P1 버그 수정
-- 기존 P1 34건 중 재현 확인된 항목 수정
-- Phase 1에서 새로 발견된 P1 수정
+### Task 2-2: 기존 P1 잔존 항목 재검증
+- `QF-FINAL-CONSOLIDATED-REPORT.md`의 P1 34건 중 `/qa`에서 재현 안 된 항목
+- 수동 curl/API로 재현 시도 → 수정 또는 "won't fix" 판정
 
-### Task 2-3: P2 판단
-- P2는 UX/UI 리뷰 단계에서 함께 처리할지 결정
+### Task 2-3: tsc + lint 최종 확인
+```bash
+npx tsc --noEmit   # 0 errors
+npm run lint        # no new warnings
+```
 
 ---
 
@@ -565,9 +566,9 @@ git commit -m "test(e2e): enable parallel execution for independent test suites"
 
 ## Phase 4: UX/UI 리뷰 (2~3 세션)
 
-> **도구:** `/browse` 또는 `/design-review` 스킬
+> **도구:** `/design-review` 스킬 (gstack 헤드리스 브라우저) 또는 Antigravity Browser
 > **기준:** QF-DEFINITIVE v6의 UX-1~8 범위
-> **산출물:** `docs/qa-reports/UI-REVIEW-{n}.md`
+> **산출물:** `.gstack/qa-reports/` + `docs/qa-reports/UI-REVIEW-{n}.md`
 
 ### Session UX-1: Design Token + 목록/상세 일관성
 
@@ -626,26 +627,37 @@ git commit -m "test(e2e): enable parallel execution for independent test suites"
 | 단계 | 세션 수 | 예상 시간 | 비고 |
 |------|---------|----------|------|
 | Phase 0: 사전 준비 | 0.5 | 15분 | 환경 확인 |
-| Phase 1: Track B 수동 QA | 7 | ~5시간 | B-1~B-7 |
-| Phase 2: Bug Fix | 1~3 | ~2시간 | 발견 건수에 따라 |
-| Phase 3: Track A E2E | 5 | ~4시간 | 12개 spec 파일 |
-| Phase 4: UX/UI | 3 | ~2시간 | UX-1~3 |
-| **합계** | **~16** | **~13시간** | |
+| Phase 1: `/qa` 테스트+수정 | 7~9 | ~5시간 | B-1~B-7 (B-6, B-7은 2회씩) |
+| Phase 2: 잔여 버그 정리 | 0~1 | ~30분 | `/qa` deferred 항목만 |
+| Phase 3: Playwright E2E | 5 | ~4시간 | 12개 spec 파일 |
+| Phase 4: UX/UI 리뷰 | 3 | ~2시간 | UX-1~3 |
+| **합계** | **~16** | **~12시간** | Phase 2 대폭 축소 |
+
+> **Phase 1 효율**: `/qa`가 발견→수정→커밋→재검증을 한 루프로 처리하므로
+> 이전 방식(수동 QA → 별도 Bug Fix)보다 ~2시간 절약
 
 ---
 
 ## 산출물 목록
 
 ```
+.gstack/qa-reports/                        ← Phase 1 (/qa 자동 생성)
+├── qa-report-localhost-3002-B1-*.md       ← 세션별 QA 리포트
+├── qa-report-localhost-3002-B2-*.md
+├── qa-report-localhost-3002-B3-*.md
+├── qa-report-localhost-3002-B4-*.md
+├── qa-report-localhost-3002-B5-*.md
+├── qa-report-localhost-3002-B6a-*.md
+├── qa-report-localhost-3002-B6b-*.md
+├── qa-report-localhost-3002-B7a-*.md
+├── qa-report-localhost-3002-B7b-*.md
+├── screenshots/                           ← before/after 증거
+│   ├── issue-001-*.png
+│   └── ...
+└── baseline.json                          ← 헬스 스코어 베이스라인
+
 docs/qa-reports/
-├── UI-B1-CoreHR.md              ← Phase 1
-├── UI-B2-LeaveAttendance.md
-├── UI-B3-Payroll.md
-├── UI-B4-Performance.md
-├── UI-B5-RecruitOnboard.md
-├── UI-B6-AnalyticsSettings.md
-├── UI-B7-SecurityCrossModule.md
-├── BUGFIX-PHASE2-REPORT.md      ← Phase 2
+├── PHASE2-DEFERRED-REPORT.md    ← Phase 2 (잔여 항목)
 ├── E2E-COVERAGE-REPORT.md       ← Phase 3
 ├── UX-REVIEW-1.md               ← Phase 4
 ├── UX-REVIEW-2.md
@@ -678,18 +690,22 @@ e2e/
 ```
 Phase 0 (환경 준비)
     ↓
-Phase 1: Track B (수동 QA)
+Phase 1: /qa 테스트 + 즉시 수정
     B-1 (CoreHR) ──→ B-2 (Leave/Att) ──→ B-3 (Payroll)
+         각 세션:                              ↓
+         /qa 실행 → 발견 → 수정 → commit    B-4 (Perf)
+         → 재검증 → 헬스 스코어                ↓
+                                        B-5 (Recruit/Onboard)
                                               ↓
-    B-4 (Perf) ←─────────────────────────────┘
-        ↓
-    B-5 (Recruit/Onboard) → B-6 (Analytics/Settings) → B-7 (Security)
+                                   B-6a (Analytics) + B-6b (Settings)
+                                              ↓
+                                   B-7a (RBAC) + B-7b (Cross-Module)
     ↓
-Phase 2: Bug Fix (P0 즉시, P1 순차)
+Phase 2: 잔여 정리 (deferred 항목만, 대부분 이미 해결)
     ↓
-Phase 3: Track A (Playwright E2E — Phase 2 완료 후)
+Phase 3: Track A (Playwright E2E — 정상 동작 확인 후 코드로 고정)
     3-0 (Helpers) → 3-1~3-8 (각 모듈 — 병렬 가능) → 3-9 (전체 실행)
     ↓
-Phase 4: UX/UI (기능 안정화 후)
+Phase 4: UX/UI (/design-review 또는 Antigravity)
     UX-1 → UX-2 → UX-3
 ```
