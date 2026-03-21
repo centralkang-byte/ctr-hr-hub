@@ -72,6 +72,8 @@ interface DataTableProps<T> {
   virtualScrollHeight?: number
   /** 가상 스크롤 예상 행 높이 (px, 기본값 52) */
   estimatedRowHeight?: number
+  /** 스켈레톤 로딩 행 수 (기본값 5, pageSize에 맞추면 자연스러움) */
+  skeletonRows?: number
 }
 
 // ─── Component ──────────────────────────────────────────────
@@ -93,6 +95,7 @@ export function DataTable<T extends Record<string, unknown>>({
   virtualScroll = false,
   virtualScrollHeight = 520,
   estimatedRowHeight = 52,
+  skeletonRows = 5,
 }: DataTableProps<T>) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
@@ -124,7 +127,7 @@ export function DataTable<T extends Record<string, unknown>>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {Array.from({ length: 5 }).map((_, i) => (
+            {Array.from({ length: skeletonRows }).map((_, i) => (
               <TableRow key={`skeleton-${i}`}>
                 {columns.map((col) => (
                   <TableCell key={`skeleton-${i}-${col.key}`}>
