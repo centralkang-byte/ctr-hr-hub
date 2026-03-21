@@ -35,7 +35,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { DetailPanel } from '@/components/shared/DetailPanel'
 import { EmployeeFilterPanel, type FilterValues } from '@/components/employees/EmployeeFilterPanel'
-import { BulkUploadWizard } from '@/components/employees/BulkUploadWizard'
+// BulkUploadWizard deprecated — 새 bulk-movements 페이지로 이동
 import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser, PaginationInfo, SortDirection } from '@/types'
@@ -266,7 +266,7 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
   const [status, setStatus] = useState('')
   const [filters, setFilters] = useState<FilterValues>({})
   const [exportLoading, setExportLoading] = useState(false)
-  const [bulkUploadOpen, setBulkUploadOpen] = useState(false)
+  // bulkUploadOpen state 제거 — 새 페이지로 navigate
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(20)
   const [sortBy, setSortBy] = useState('name')
@@ -444,11 +444,11 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
-                onClick={() => setBulkUploadOpen(true)}
+                onClick={() => router.push('/hr/bulk-movements')}
                 className="gap-2"
               >
                 <Upload className="h-4 w-4" />
-                일괄 업로드
+                일괄 발령
               </Button>
               <Button
                 onClick={() => router.push('/employees/new')}
@@ -604,17 +604,7 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
         )}
       </DetailPanel>
 
-      {/* ─── Bulk Upload Wizard ─── */}
-      {isHrAdmin && (
-        <BulkUploadWizard
-          open={bulkUploadOpen}
-          onClose={() => setBulkUploadOpen(false)}
-          onSuccess={() => {
-            setBulkUploadOpen(false)
-            setPage(1)
-          }}
-        />
-      )}
+      {/* Bulk Upload Wizard → /hr/bulk-movements 로 이동됨 */}
     </div>
   )
 }

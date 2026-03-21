@@ -170,10 +170,6 @@ export async function executeSignOff(
         }
     })
 
-    // 4. Fire-and-forget: Emit ONBOARDING_COMPLETED event (outside TX)
-    // TODO: Integrate with event system when handlers are ready
+    // Phase 4: ONBOARDING_COMPLETED 이벤트 발행 + 수습평가 트리거 연동 예정
     // emitDomainEvent('ONBOARDING_COMPLETED', { onboardingId, signedOffBy: managerId })
-
-    // 5. TODO: Trigger probation evaluation (GP#4 integration)
-    // 6. TODO: Update Employee.status if needed
 }

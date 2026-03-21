@@ -67,7 +67,7 @@ export const mboGoalSubmittedHandler: DomainEventHandler<'PERFORMANCE_MBO_GOAL_S
 
       // ── 2. 포지션 기반 매니저 조회 ─────────────────────────────
       if (!positionId) {
-        // TODO: 포지션이 없는 직원(HQ 임원 등)은 매니저 조회 불가 — 알림 skip
+        // 포지션이 없는 직원(HQ 임원 등)은 매니저 조회 불가 — 알림 skip
         console.warn(
           `[mboGoalSubmittedHandler] Employee ${payload.employeeId} has no positionId. Skipping manager notification.`,
         )
@@ -77,7 +77,7 @@ export const mboGoalSubmittedHandler: DomainEventHandler<'PERFORMANCE_MBO_GOAL_S
       const managerInfo = await getManagerByPosition(positionId)
 
       if (!managerInfo?.managerId) {
-        // TODO: 최상위 포지션이거나 reportsTo 미설정 — 알림 skip
+        // 최상위 포지션이거나 reportsTo 미설정 — 알림 skip
         console.warn(
           `[mboGoalSubmittedHandler] No manager found for positionId ${positionId} (employeeId: ${payload.employeeId}). Skipping notification.`,
         )
