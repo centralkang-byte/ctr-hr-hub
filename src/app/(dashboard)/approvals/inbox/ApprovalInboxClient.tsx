@@ -403,6 +403,9 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
   const [approveTarget,   setApproveTarget]   = useState<ApprovalItem | null>(null)
   const [showBulkConfirm, setShowBulkConfirm] = useState(false)
 
+  // Bulk progress
+  const [bulkProgress,    setBulkProgress]    = useState<{ total: number; done: number; failed: number } | null>(null)
+
   // ─── Fetch ───────────────────────────────────────────────
 
   const fetchItems = useCallback(async () => {
@@ -480,9 +483,20 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
   const doBulkApprove = async () => {
     setShowBulkConfirm(false)
     const toApprove = [...selectedItems]
-    for (const item of toApprove) {
-      await doApprove(item)
-    }
+    setBulkProgress({ total: toApprove.length, done: 0, failed: 0 })
+
+    const results = await Promise.allSettled(
+      toApprove.map(async (item) => {
+        await doApprove(item)
+        setBulkProgress(prev => prev ? { ...prev, done: prev.done + 1 } : null)
+      })
+    )
+
+    const failCount = results.filter(r => r.status === 'rejected').length
+    setBulkProgress(prev => prev ? { ...prev, done: prev.total, failed: failCount } : null)
+
+    // 2초 후 진행률 바 숨김
+    setTimeout(() => setBulkProgress(null), 2000)
     setSelectedIds(new Set())
   }
 
@@ -517,6 +531,26 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
           </Button>
         )}
       </div>
+
+      {/* ── Bulk progress bar ── */}
+      {bulkProgress && (
+        <div className="rounded-lg border border-[#F0F0F3] bg-white p-3 space-y-2">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-[#1C1D21] font-medium">
+              일괄 승인 진행 중... ({bulkProgress.done}/{bulkProgress.total})
+            </span>
+            {bulkProgress.failed > 0 && (
+              <span className="text-sm text-destructive">{bulkProgress.failed}건 실패</span>
+            )}
+          </div>
+          <div className="h-2 bg-[#F0F0F3] rounded-full overflow-hidden">
+            <div
+              className="h-full bg-ctr-primary rounded-full transition-all duration-300"
+              style={{ width: `${(bulkProgress.done / bulkProgress.total) * 100}%` }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* ── Module tabs ── */}
       <div className="flex flex-wrap gap-1.5">
