@@ -9,6 +9,9 @@ import {
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,
+} from '@/components/ui/sheet'
 import { apiClient } from '@/lib/api'
 
 export interface FilterValues {
@@ -53,6 +56,7 @@ export function EmployeeFilterPanel({
   isHrAdmin = false,
 }: EmployeeFilterPanelProps) {
   const [expanded, setExpanded] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
   const [companies, setCompanies] = useState<CompanyOption[]>([])
   const [departments, setDepartments] = useState<DeptOption[]>([])
   const [jobGrades, setJobGrades] = useState<GradeOption[]>([])
@@ -100,62 +104,9 @@ export function EmployeeFilterPanel({
 
   const hasFilters = chips.length > 0
 
-  return (
-    <div className="rounded-xl border border-[#F0F0F3] bg-white p-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => setExpanded((v) => !v)}
-          className="flex items-center gap-2 text-sm font-medium text-[#333] hover:text-[#1A1A1A]"
-        >
-          <SlidersHorizontal className="h-4 w-4 text-[#666]" />
-          고급 검색 필터
-          {hasFilters && (
-            <span className="rounded-full bg-[#5E81F4] text-white text-xs px-1.5 py-0.5">
-              {chips.length}
-            </span>
-          )}
-        </button>
-
-        <div className="flex items-center gap-2">
-          {hasFilters && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onFilterChange({})}
-              className="h-7 text-xs text-[#999] hover:text-[#333]"
-            >
-              필터 초기화
-            </Button>
-          )}
-          {isHrAdmin && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onExport}
-              disabled={exportLoading}
-              className="h-7 gap-1.5 text-xs border-[#D4D4D4]"
-            >
-              <Download className="h-3.5 w-3.5" />
-              {exportLoading ? '다운로드 중...' : '엑셀 다운로드'}
-            </Button>
-          )}
-        </div>
-      </div>
-
-      {hasFilters && (
-        <div className="flex flex-wrap gap-1.5">
-          {chips.map((chip) => (
-            <FilterChip
-              key={chip.key}
-              label={chip.label}
-              onRemove={() => set(chip.key, undefined)}
-            />
-          ))}
-        </div>
-      )}
-
-      {expanded && (
-        <div className="grid grid-cols-2 gap-3 pt-2 border-t border-[#F0F0F3] md:grid-cols-3 lg:grid-cols-4">
+  // 필터 폼 (데스크톱 인라인 + 모바일 Sheet 공용)
+  const filterForm = (
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-4">
           <div className="space-y-1">
             <Label className="text-xs text-[#666]">법인</Label>
             <Select value={filters.companyId ?? '__ALL__'} onValueChange={(v) => set('companyId', v === '__ALL__' ? undefined : v)}>
@@ -236,6 +187,110 @@ export function EmployeeFilterPanel({
               className="h-8 text-xs"
             />
           </div>
+        </div>
+  )
+
+  return (
+    <div className="rounded-xl border border-[#F0F0F3] bg-white p-4 space-y-3">
+      <div className="flex items-center justify-between">
+        {/* 데스크톱: 인라인 토글 */}
+        <button
+          onClick={() => setExpanded((v) => !v)}
+          className="hidden md:flex items-center gap-2 text-sm font-medium text-[#333] hover:text-[#1A1A1A]"
+        >
+          <SlidersHorizontal className="h-4 w-4 text-[#666]" />
+          고급 검색 필터
+          {hasFilters && (
+            <span className="rounded-full bg-[#5E81F4] text-white text-xs px-1.5 py-0.5">
+              {chips.length}
+            </span>
+          )}
+        </button>
+
+        {/* 모바일: Sheet 트리거 */}
+        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+          <SheetTrigger asChild>
+            <button className="flex md:hidden items-center gap-2 text-sm font-medium text-[#333] hover:text-[#1A1A1A]">
+              <SlidersHorizontal className="h-4 w-4 text-[#666]" />
+              필터
+              {hasFilters && (
+                <span className="rounded-full bg-[#5E81F4] text-white text-xs px-1.5 py-0.5">
+                  {chips.length}
+                </span>
+              )}
+            </button>
+          </SheetTrigger>
+          <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto">
+            <SheetHeader>
+              <SheetTitle>고급 검색 필터</SheetTitle>
+            </SheetHeader>
+            <div className="py-4 space-y-4">
+              {filterForm}
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  className="flex-1"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  적용
+                </Button>
+                {hasFilters && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => { onFilterChange({}); setMobileOpen(false) }}
+                  >
+                    초기화
+                  </Button>
+                )}
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
+
+        <div className="flex items-center gap-2">
+          {hasFilters && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onFilterChange({})}
+              className="hidden md:flex h-7 text-xs text-[#999] hover:text-[#333]"
+            >
+              필터 초기화
+            </Button>
+          )}
+          {isHrAdmin && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onExport}
+              disabled={exportLoading}
+              className="h-7 gap-1.5 text-xs border-[#D4D4D4]"
+            >
+              <Download className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{exportLoading ? '다운로드 중...' : '엑셀 다운로드'}</span>
+              <span className="sm:hidden">{exportLoading ? '...' : '엑셀'}</span>
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {hasFilters && (
+        <div className="flex flex-wrap gap-1.5">
+          {chips.map((chip) => (
+            <FilterChip
+              key={chip.key}
+              label={chip.label}
+              onRemove={() => set(chip.key, undefined)}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* 데스크톱 인라인 필터 */}
+      {expanded && (
+        <div className="hidden md:block pt-2 border-t border-[#F0F0F3]">
+          {filterForm}
         </div>
       )}
     </div>
