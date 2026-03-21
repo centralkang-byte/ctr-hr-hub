@@ -59,11 +59,21 @@ export const mboGoalReviewedHandler: DomainEventHandler<'PERFORMANCE_MBO_GOAL_RE
 
       const priority: 'normal' | 'high' = isApproved ? 'normal' : 'high'
 
+      const titleKey = isApproved
+        ? 'notifications.mboGoalApproved.title'
+        : 'notifications.mboGoalRejected.title'
+      const bodyKey  = isApproved
+        ? 'notifications.mboGoalApproved.body'
+        : 'notifications.mboGoalRejected.body'
+
       sendNotification({
         employeeId:  payload.employeeId,
         triggerType,
         title,
         body,
+        titleKey,
+        bodyKey,
+        bodyParams:  { reviewerName, comment: payload.comment ?? '' },
         link:        `/performance/goals?cycleId=${payload.cycleId}`,
         priority,
         companyId:   payload.companyId,

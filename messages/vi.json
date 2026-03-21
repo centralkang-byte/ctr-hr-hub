@@ -384,7 +384,7 @@
     "krCompliance": "Tuân thủ Hàn Quốc",
     "selfEval": "Self Đánh giá",
     "managerEval": "Quản lý Đánh giá",
-    "calibration": "Calibration",
+    "calibration": "Hiệu chuẩn",
     "teamResults": "Nhóm Kết quảs",
     "adminResults": "Công ty Kết quảs",
     "pulseSurvey": "Pulse Survey",
@@ -463,8 +463,7 @@
     "gdpr": "GDPR",
     "ai-report": "Báo cáo AI",
     "attrition": "Rủi ro nghỉ việc",
-    "results": "Kết quả",
-    "calibration": "Hiệu chuẩn"
+    "results": "Kết quả"
   },
   "employee": {
     "title": "Employee Management",
@@ -5085,7 +5084,107 @@
   "notifications": {
     "pageTitle": "Notifications",
     "emptyTitle": "No new notifications",
-    "emptyDesc": "Notifications will appear here."
+    "emptyDesc": "Notifications will appear here.",
+    "leaveApproved": {
+      "title": "Nghỉ phép đã duyệt",
+      "body": "Nghỉ phép đã được duyệt: {startDate} ~ {endDate}"
+    },
+    "leaveRejected": {
+      "title": "Nghỉ phép bị từ chối",
+      "body": "Lý do từ chối: {reason}"
+    },
+    "overtimeWarning48h": {
+      "title": "Vượt quá 48 giờ/tuần",
+      "body": "Giờ làm việc tuần đã vượt quá 48 giờ. Vui lòng lưu ý khi làm thêm giờ."
+    },
+    "overtimeBlocked52h": {
+      "title": "Đạt giới hạn giờ làm tối đa",
+      "body": "Đã đạt giới hạn giờ làm việc tối đa theo quy định (52 giờ). Không được làm thêm."
+    },
+    "turnoverRiskCritical": {
+      "title": "Rủi ro nghỉ việc nghiêm trọng",
+      "body": "Rủi ro nghỉ việc của nhân viên ở mức nghiêm trọng."
+    },
+    "mboGoalSubmitted": {
+      "title": "Mục tiêu MBO đã nộp",
+      "body": "{name} đã nộp mục tiêu MBO. {goalCount} mục tiêu, tổng trọng số {totalWeight}%"
+    },
+    "selfEvalSubmitted": {
+      "title": "Tự đánh giá đã nộp",
+      "body": "{name} đã nộp tự đánh giá. Vui lòng tiến hành đánh giá nhân viên."
+    },
+    "managerEvalSubmitted": {
+      "title": "Đánh giá quản lý hoàn tất",
+      "body": "Đánh giá quản lý đã hoàn tất. Kết quả sẽ có sau khi xác nhận chu kỳ."
+    },
+    "mboGoalApproved": {
+      "title": "Mục tiêu MBO đã duyệt",
+      "body": "Mục tiêu MBO đã được phê duyệt."
+    },
+    "mboGoalRejected": {
+      "title": "Mục tiêu MBO cần sửa đổi",
+      "body": "Mục tiêu MBO cần sửa đổi. Vui lòng kiểm tra phản hồi và nộp lại."
+    },
+    "goalOverdue": {
+      "title": "Mục tiêu MBO chưa nộp",
+      "body": "{name} chưa nộp mục tiêu MBO {cycleName}. Quá hạn {daysOverdue} ngày."
+    },
+    "evalOverdue": {
+      "title": "Đánh giá quá hạn",
+      "body": "Kỳ đánh giá {cycleName} đã quá hạn {daysOverdue} ngày. Cần theo dõi."
+    },
+    "payrollAttendanceClosed": {
+      "title": "Chấm công đã đóng",
+      "body": "Chấm công {yearMonth} đã đóng. {confirmedCount}/{totalEmployees} đã xác nhận. Vui lòng tính lương."
+    },
+    "payrollReviewReady": {
+      "title": "Sẵn sàng kiểm tra bất thường lương",
+      "body": "Kiểm tra bất thường lương {yearMonth} đã sẵn sàng."
+    },
+    "payrollPendingApproval": {
+      "title": "Yêu cầu duyệt lương",
+      "body": "Yêu cầu duyệt lương {yearMonth} ({headcount} nhân viên, {totalNet})."
+    },
+    "payrollApprovalRejected": {
+      "title": "Duyệt lương bị từ chối",
+      "body": "Lý do từ chối: {reason}"
+    },
+    "payrollApprovalNeeded": {
+      "title": "Cần duyệt lương",
+      "body": "Vui lòng tiến hành duyệt lương {yearMonth}."
+    },
+    "benefitApproved": {
+      "title": "Phúc lợi đã duyệt",
+      "body": "Yêu cầu phúc lợi {planName} đã được phê duyệt."
+    },
+    "profileChangeApproved": {
+      "title": "Thay đổi thông tin đã duyệt",
+      "body": "Yêu cầu thay đổi {fieldLabel} đã được phê duyệt."
+    },
+    "profileChangeRejected": {
+      "title": "Thay đổi thông tin bị từ chối",
+      "body": "Yêu cầu thay đổi {fieldLabel} bị từ chối. Lý do: {reason}"
+    },
+    "recognitionReceived": {
+      "title": "Nhận được ghi nhận",
+      "body": "{senderName} đã gửi lời ghi nhận cho bạn."
+    },
+    "hrChatbotEscalation": {
+      "title": "Yêu cầu tư vấn HR",
+      "body": "{userName} yêu cầu kết nối với nhân viên HR."
+    },
+    "evalReminder": {
+      "title": "Nhắc nhở hạn đánh giá",
+      "body": "{name}, hạn {type} {cycleName} là {label}. Vui lòng nộp."
+    },
+    "evalEscalation": {
+      "title": "Đánh giá quá hạn cần xử lý",
+      "body": "Hạn {type} {cycleName} đã qua. {count} nhân viên chưa nộp."
+    },
+    "leavePromotion": {
+      "title": "Khuyến nghị sử dụng phép",
+      "body": "{name}, bạn còn {remainingDays} ngày phép. Còn {daysUntilAnniversary} ngày đến ngày kỷ niệm. Khuyến nghị sử dụng phép."
+    }
   },
   "header": {
     "directory": "People Directory",

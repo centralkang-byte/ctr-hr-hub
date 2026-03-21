@@ -97,6 +97,9 @@ export async function POST(req: NextRequest) {
             triggerType: 'EVAL_REMINDER',
             title: `목표 설정 마감 ${label} (${cycle.name})`,
             body: `${emp.name}님, ${cycle.name} 목표 설정 마감일이 ${label}입니다. 목표를 설정해 주세요.`,
+            titleKey: 'notifications.evalReminder.title',
+            bodyKey: 'notifications.evalReminder.body',
+            bodyParams: { name: emp.name, cycleName: cycle.name, label, type: 'goal' },
             link: '/performance',
           })
           sentCount++
@@ -128,6 +131,9 @@ export async function POST(req: NextRequest) {
               triggerType: 'EVAL_ESCALATION',
               title: `[에스컬레이션] 목표 미설정 ${missing.length}명 (${cycle.name})`,
               body: `${cycle.name} 목표 설정 마감일이 경과했습니다. ${missing.length}명이 아직 목표를 설정하지 않았습니다.`,
+              titleKey: 'notifications.evalEscalation.title',
+              bodyKey: 'notifications.evalEscalation.body',
+              bodyParams: { cycleName: cycle.name, missingCount: missing.length, type: 'goal' },
               link: '/performance',
             })
           }
@@ -167,6 +173,9 @@ export async function POST(req: NextRequest) {
             triggerType: 'EVAL_REMINDER',
             title: `평가 제출 마감 ${label} (${cycle.name})`,
             body: `${emp.name}님, ${cycle.name} 평가 제출 마감일이 ${label}입니다. 평가를 제출해 주세요.`,
+            titleKey: 'notifications.evalReminder.title',
+            bodyKey: 'notifications.evalReminder.body',
+            bodyParams: { name: emp.name, cycleName: cycle.name, label, type: 'eval' },
             link: '/performance',
           })
           sentCount++
@@ -198,6 +207,9 @@ export async function POST(req: NextRequest) {
               triggerType: 'EVAL_ESCALATION',
               title: `[에스컬레이션] 평가 미제출 ${missing.length}명 (${cycle.name})`,
               body: `${cycle.name} 평가 제출 마감일이 경과했습니다. ${missing.length}명이 아직 평가를 제출하지 않았습니다.`,
+              titleKey: 'notifications.evalEscalation.title',
+              bodyKey: 'notifications.evalEscalation.body',
+              bodyParams: { cycleName: cycle.name, missingCount: missing.length, type: 'eval' },
               link: '/performance',
             })
           }

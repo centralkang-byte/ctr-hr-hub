@@ -463,8 +463,7 @@
     "gdpr": "GDPR",
     "ai-report": "AI Report",
     "attrition": "Attrition Risk",
-    "results": "Results",
-    "calibration": "Calibration"
+    "results": "Results"
   },
   "employee": {
     "title": "Employee Management",
@@ -5103,6 +5102,106 @@
   "notifications": {
     "pageTitle": "Notifications",
     "emptyTitle": "No new notifications",
-    "emptyDesc": "Notifications will appear here."
+    "emptyDesc": "Notifications will appear here.",
+    "leaveApproved": {
+      "title": "Leave Approved",
+      "body": "Leave approved: {startDate} ~ {endDate}"
+    },
+    "leaveRejected": {
+      "title": "Leave Rejected",
+      "body": "Rejected: {reason}"
+    },
+    "overtimeWarning48h": {
+      "title": "Weekly Hours Exceed 48h",
+      "body": "Weekly work hours exceeded 48 hours. Please be careful with additional overtime."
+    },
+    "overtimeBlocked52h": {
+      "title": "Maximum Work Hours Reached",
+      "body": "Reached the legal maximum work hours (52 hours). Additional work is restricted."
+    },
+    "turnoverRiskCritical": {
+      "title": "Critical Turnover Risk",
+      "body": "Employee turnover risk is at critical level."
+    },
+    "mboGoalSubmitted": {
+      "title": "MBO Goals Submitted",
+      "body": "{name} submitted MBO goals. {goalCount} goals, total weight {totalWeight}%"
+    },
+    "selfEvalSubmitted": {
+      "title": "Self-Evaluation Submitted",
+      "body": "{name} submitted self-evaluation. Please proceed with team member evaluation."
+    },
+    "managerEvalSubmitted": {
+      "title": "Manager Evaluation Complete",
+      "body": "Manager evaluation is complete. Results available after cycle finalization."
+    },
+    "mboGoalApproved": {
+      "title": "MBO Goals Approved",
+      "body": "MBO goals have been approved."
+    },
+    "mboGoalRejected": {
+      "title": "MBO Goals Need Revision",
+      "body": "MBO goals need revision. Please check feedback and resubmit."
+    },
+    "goalOverdue": {
+      "title": "MBO Goals Overdue",
+      "body": "{name} has not submitted {cycleName} MBO goals. {daysOverdue} days overdue."
+    },
+    "evalOverdue": {
+      "title": "Evaluation Overdue",
+      "body": "{cycleName} evaluation period is {daysOverdue} days overdue. Follow-up needed."
+    },
+    "payrollAttendanceClosed": {
+      "title": "Attendance Closed",
+      "body": "{yearMonth} attendance closed. {confirmedCount}/{totalEmployees} confirmed. Proceed with payroll calculation."
+    },
+    "payrollReviewReady": {
+      "title": "Payroll Anomaly Review Ready",
+      "body": "{yearMonth} payroll anomaly review ready."
+    },
+    "payrollPendingApproval": {
+      "title": "Payroll Approval Requested",
+      "body": "{yearMonth} payroll ({headcount} employees, {totalNet}) approval requested."
+    },
+    "payrollApprovalRejected": {
+      "title": "Payroll Approval Rejected",
+      "body": "Rejection reason: {reason}"
+    },
+    "payrollApprovalNeeded": {
+      "title": "Payroll Approval Needed",
+      "body": "Please proceed with {yearMonth} payroll approval."
+    },
+    "benefitApproved": {
+      "title": "Benefit Claim Approved",
+      "body": "{planName} benefit claim has been approved."
+    },
+    "profileChangeApproved": {
+      "title": "Profile Change Approved",
+      "body": "{fieldLabel} change request has been approved."
+    },
+    "profileChangeRejected": {
+      "title": "Profile Change Rejected",
+      "body": "{fieldLabel} change request has been rejected. Reason: {reason}"
+    },
+    "recognitionReceived": {
+      "title": "Recognition Received",
+      "body": "{senderName} sent you a recognition."
+    },
+    "hrChatbotEscalation": {
+      "title": "HR Escalation Request",
+      "body": "{userName} requested HR representative connection."
+    },
+    "evalReminder": {
+      "title": "Evaluation Deadline Reminder",
+      "body": "{name}, {cycleName} {type} deadline is {label}. Please submit."
+    },
+    "evalEscalation": {
+      "title": "Evaluation Overdue Escalation",
+      "body": "{cycleName} {type} deadline has passed. {count} employees have not yet submitted."
+    },
+    "leavePromotion": {
+      "title": "Use Your Leave",
+      "body": "{name}, you have {remainingDays} days of leave remaining. {daysUntilAnniversary} days until your anniversary. We recommend using your leave."
+    }
   }
 }

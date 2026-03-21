@@ -8,14 +8,23 @@ import type { Prisma } from '@/generated/prisma/client'
 import { sendTeamsMessage } from '@/lib/microsoft-graph'
 import { sendEmail } from '@/lib/email'
 import { subMinutes } from 'date-fns'
+import { resolveRecipientLocale, renderNotificationMessage } from '@/lib/notifications-i18n'
 
 export type NotificationPriority = 'low' | 'normal' | 'high' | 'urgent'
 
 export interface SendNotificationInput {
   employeeId: string
   triggerType: string
+  /** 직접 지정 (레거시) — titleKey 사용 시 무시됨 */
   title: string
+  /** 직접 지정 (레거시) — bodyKey 사용 시 무시됨 */
   body: string
+  /** i18n 메시지 키 (예: 'notifications.leaveApproved.title') */
+  titleKey?: string
+  /** i18n 메시지 키 (예: 'notifications.leaveApproved.body') */
+  bodyKey?: string
+  /** bodyKey 내 {변수} 치환 파라미터 */
+  bodyParams?: Record<string, string | number>
   link?: string
   priority?: NotificationPriority
   metadata?: Record<string, unknown>
@@ -48,6 +57,23 @@ export function sendNotifications(inputs: SendNotificationInput[]): void {
 
 async function dispatchNotification(input: SendNotificationInput): Promise<void> {
   const priority = input.priority ?? 'normal'
+
+  // 0. i18n: titleKey/bodyKey가 있으면 수신자 locale 기반 렌더링
+  let resolvedTitle = input.title
+  let resolvedBody = input.body
+  let resolvedHtmlBody: string | undefined
+
+  if (input.titleKey && input.bodyKey) {
+    const locale = await resolveRecipientLocale(input.employeeId)
+    const rendered = await renderNotificationMessage(locale, {
+      titleKey: input.titleKey,
+      bodyKey: input.bodyKey,
+      bodyParams: input.bodyParams,
+    })
+    resolvedTitle = rendered.title
+    resolvedBody = rendered.body
+    resolvedHtmlBody = rendered.htmlBody
+  }
 
   // 1. 5분 debounce: 동일 type + employee, 5분 이내 중복 방지
   const recent = await prisma.notification.findFirst({
@@ -90,19 +116,22 @@ async function dispatchNotification(input: SendNotificationInput): Promise<void>
 
   const promises: Promise<void>[] = []
 
+  // i18n이 적용된 resolved 값으로 input 오버라이드
+  const resolved = { ...input, title: resolvedTitle, body: resolvedBody }
+
   // 6. IN_APP
   if (inAppEnabled || globalChannels.includes('IN_APP')) {
-    promises.push(createInAppRecord(input, priority))
+    promises.push(createInAppRecord(resolved, priority))
   }
 
   // 7. EMAIL
   if (emailEnabled || globalChannels.includes('EMAIL')) {
-    promises.push(sendEmailNotification(input))
+    promises.push(sendEmailNotification(resolved, resolvedHtmlBody))
   }
 
   // 8. TEAMS (per-user 설정 또는 TeamsWebhookConfig)
   if (teamsEnabled || globalChannels.includes('TEAMS')) {
-    promises.push(sendTeamsNotification(input, priority))
+    promises.push(sendTeamsNotification(resolved, priority))
   }
 
   await Promise.allSettled(promises)
@@ -166,7 +195,7 @@ async function createInAppRecord(
 
 // ─── EMAIL ────────────────────────────────────────────────
 
-async function sendEmailNotification(input: SendNotificationInput): Promise<void> {
+async function sendEmailNotification(input: SendNotificationInput, htmlOverride?: string): Promise<void> {
   const employee = await prisma.employee.findUnique({
     where: { id: input.employeeId },
     select: { email: true },
@@ -174,10 +203,13 @@ async function sendEmailNotification(input: SendNotificationInput): Promise<void
 
   if (!employee?.email) return
 
+  const bodyHtml = htmlOverride ?? `<p>${input.body}</p>`
+  const linkHtml = input.link ? `<p><a href="${input.link}">View Details</a></p>` : ''
+
   await sendEmail({
     to: employee.email,
     subject: input.title,
-    htmlBody: `<p>${input.body}</p>${input.link ? `<p><a href="${input.link}">자세히 보기</a></p>` : ''}`,
+    htmlBody: `${bodyHtml}${linkHtml}`,
   })
 }
 

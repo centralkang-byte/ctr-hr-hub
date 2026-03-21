@@ -384,7 +384,7 @@
     "krCompliance": "Cumplimiento Corea",
     "selfEval": "Self Evaluación",
     "managerEval": "Gerente Evaluación",
-    "calibration": "Calibration",
+    "calibration": "Calibración",
     "teamResults": "Equipo Resultados",
     "adminResults": "Empresa Resultados",
     "pulseSurvey": "Pulse Survey",
@@ -463,8 +463,7 @@
     "gdpr": "GDPR",
     "ai-report": "Informe AI",
     "attrition": "Riesgo de deserción",
-    "results": "Resultados",
-    "calibration": "Calibración"
+    "results": "Resultados"
   },
   "employee": {
     "title": "Employee Management",
@@ -5085,7 +5084,107 @@
   "notifications": {
     "pageTitle": "Notifications",
     "emptyTitle": "No new notifications",
-    "emptyDesc": "Notifications will appear here."
+    "emptyDesc": "Notifications will appear here.",
+    "leaveApproved": {
+      "title": "Permiso aprobado",
+      "body": "Permiso aprobado: {startDate} ~ {endDate}"
+    },
+    "leaveRejected": {
+      "title": "Permiso rechazado",
+      "body": "Rechazado: {reason}"
+    },
+    "overtimeWarning48h": {
+      "title": "Horas semanales superan 48h",
+      "body": "Las horas semanales superaron las 48 horas. Tenga cuidado con las horas extra adicionales."
+    },
+    "overtimeBlocked52h": {
+      "title": "Máximo de horas alcanzado",
+      "body": "Se alcanzó el máximo legal de horas de trabajo (52 horas). El trabajo adicional está restringido."
+    },
+    "turnoverRiskCritical": {
+      "title": "Riesgo crítico de rotación",
+      "body": "El riesgo de rotación del empleado está en nivel crítico."
+    },
+    "mboGoalSubmitted": {
+      "title": "Objetivos MBO enviados",
+      "body": "{name} envió objetivos MBO. {goalCount} objetivos, peso total {totalWeight}%"
+    },
+    "selfEvalSubmitted": {
+      "title": "Autoevaluación enviada",
+      "body": "{name} envió su autoevaluación. Proceda con la evaluación del equipo."
+    },
+    "managerEvalSubmitted": {
+      "title": "Evaluación del gerente completa",
+      "body": "La evaluación del gerente está completa. Resultados disponibles tras la finalización del ciclo."
+    },
+    "mboGoalApproved": {
+      "title": "Objetivos MBO aprobados",
+      "body": "Los objetivos MBO han sido aprobados."
+    },
+    "mboGoalRejected": {
+      "title": "Objetivos MBO requieren revisión",
+      "body": "Los objetivos MBO necesitan revisión. Revise los comentarios y vuelva a enviar."
+    },
+    "goalOverdue": {
+      "title": "Objetivos MBO vencidos",
+      "body": "{name} no ha enviado los objetivos MBO de {cycleName}. {daysOverdue} días de retraso."
+    },
+    "evalOverdue": {
+      "title": "Evaluación vencida",
+      "body": "El período de evaluación de {cycleName} tiene {daysOverdue} días de retraso. Se requiere seguimiento."
+    },
+    "payrollAttendanceClosed": {
+      "title": "Asistencia cerrada",
+      "body": "Asistencia de {yearMonth} cerrada. {confirmedCount}/{totalEmployees} confirmados. Proceda con el cálculo de nómina."
+    },
+    "payrollReviewReady": {
+      "title": "Revisión de anomalías de nómina",
+      "body": "Revisión de anomalías de nómina de {yearMonth} lista."
+    },
+    "payrollPendingApproval": {
+      "title": "Aprobación de nómina solicitada",
+      "body": "Aprobación de nómina {yearMonth} ({headcount} empleados, {totalNet}) solicitada."
+    },
+    "payrollApprovalRejected": {
+      "title": "Aprobación de nómina rechazada",
+      "body": "Motivo de rechazo: {reason}"
+    },
+    "payrollApprovalNeeded": {
+      "title": "Se necesita aprobación de nómina",
+      "body": "Proceda con la aprobación de nómina de {yearMonth}."
+    },
+    "benefitApproved": {
+      "title": "Beneficio aprobado",
+      "body": "La solicitud de beneficio {planName} ha sido aprobada."
+    },
+    "profileChangeApproved": {
+      "title": "Cambio de perfil aprobado",
+      "body": "La solicitud de cambio de {fieldLabel} ha sido aprobada."
+    },
+    "profileChangeRejected": {
+      "title": "Cambio de perfil rechazado",
+      "body": "La solicitud de cambio de {fieldLabel} fue rechazada. Motivo: {reason}"
+    },
+    "recognitionReceived": {
+      "title": "Reconocimiento recibido",
+      "body": "{senderName} le envió un reconocimiento."
+    },
+    "hrChatbotEscalation": {
+      "title": "Solicitud de consulta HR",
+      "body": "{userName} solicitó conexión con un representante de HR."
+    },
+    "evalReminder": {
+      "title": "Recordatorio de evaluación",
+      "body": "{name}, la fecha límite de {type} de {cycleName} es {label}. Por favor envíe."
+    },
+    "evalEscalation": {
+      "title": "Evaluación vencida - escalación",
+      "body": "La fecha límite de {type} de {cycleName} ha pasado. {count} empleados aún no han enviado."
+    },
+    "leavePromotion": {
+      "title": "Recomendación de uso de vacaciones",
+      "body": "{name}, le quedan {remainingDays} días de vacaciones. Faltan {daysUntilAnniversary} días para su aniversario. Le recomendamos usar sus vacaciones."
+    }
   },
   "header": {
     "directory": "People Directory",

@@ -132,6 +132,9 @@ export const PUT = withPermission(
       triggerType: 'leave_rejected',
       title:       '휴가 신청이 반려되었습니다',
       body:        `반려 사유: ${parsed.data.rejectionReason}`,
+      titleKey:    'notifications.leaveRejected.title',
+      bodyKey:     'notifications.leaveRejected.body',
+      bodyParams:  { reason: parsed.data.rejectionReason },
       link:        '/my/leave',
       priority:    'normal',
     })

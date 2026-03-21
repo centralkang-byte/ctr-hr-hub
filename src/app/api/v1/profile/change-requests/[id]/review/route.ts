@@ -136,6 +136,9 @@ export const PUT = withPermission(
         triggerType: 'PROFILE_CHANGE_APPROVED',
         title: '프로필 변경 승인',
         body: `${fieldLabel} 변경 요청이 승인되었습니다.`,
+        titleKey: 'notifications.profileChangeApproved.title',
+        bodyKey: 'notifications.profileChangeApproved.body',
+        bodyParams: { fieldLabel },
         link: '/employees/me',
       })
 
@@ -176,6 +179,9 @@ export const PUT = withPermission(
       triggerType: 'PROFILE_CHANGE_REJECTED',
       title: '프로필 변경 반려',
       body: `${fieldLabel} 변경 요청이 반려되었습니다. 사유: ${rejectionReason!.trim()}`,
+      titleKey: 'notifications.profileChangeRejected.title',
+      bodyKey: 'notifications.profileChangeRejected.body',
+      bodyParams: { fieldLabel, reason: rejectionReason!.trim() },
       link: '/employees/me',
     })
 
