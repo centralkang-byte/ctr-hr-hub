@@ -50,3 +50,4 @@ data/*.xlsx
 data/*.json
 !data/README.md
 .gstack/
+.superpowers/
