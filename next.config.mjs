@@ -20,6 +20,21 @@ const nextConfig = {
     'pg-native',
   ],
 
+  // ── 번들 최적화 ──────────────────────────────────────
+  // 대형 라이브러리의 트리쉐이킹 개선 — 미사용 아이콘/컴포넌트 제외
+  experimental: {
+    optimizePackageImports: [
+      'lucide-react',
+      'recharts',
+      'framer-motion',
+      '@radix-ui/react-icons',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-popover',
+      '@radix-ui/react-select',
+      '@radix-ui/react-tabs',
+    ],
+  },
+
   headers: async () => [
     {
       source: '/sw.js',

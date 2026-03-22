@@ -94,11 +94,20 @@ export const GET = withPermission(
     const [employees, total] = await Promise.all([
       prisma.employee.findMany({
         where,
-        include: {
+        select: {
+          id: true,
+          name: true,
+          nameEn: true,
+          email: true,
+          phone: true,
+          employeeNo: true,
+          hireDate: true,
           assignments: {
             where: { isPrimary: true, endDate: null },
             take: 1,
-            include: {
+            select: {
+              status: true,
+              employmentType: true,
               department: { select: { id: true, name: true } },
               jobGrade: { select: { id: true, name: true } },
               jobCategory: { select: { id: true, name: true } },

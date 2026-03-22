@@ -12,6 +12,7 @@ import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { sendNotification } from '@/lib/notifications'
 import { checkDelegation } from '@/lib/delegation/resolve-delegatee'
+import { invalidateMultiple, CACHE_STRATEGY } from '@/lib/cache'
 import type { SessionUser } from '@/types'
 
 export const PUT = withPermission(
@@ -124,7 +125,13 @@ export const PUT = withPermission(
       ...meta,
     })
 
-    // 6. Fire-and-forget notification (sent directly to avoid double balance update)
+    // 6. 캐시 무효화 — 승인자/신청자 대시보드 + 사이드바 즉시 반영
+    void invalidateMultiple(
+      [CACHE_STRATEGY.DASHBOARD_KPI, CACHE_STRATEGY.SIDEBAR],
+      request.companyId,
+    )
+
+    // 7. Fire-and-forget notification (sent directly to avoid double balance update)
     void sendNotification({
       employeeId:  request.employeeId,
       triggerType: 'leave_approved',

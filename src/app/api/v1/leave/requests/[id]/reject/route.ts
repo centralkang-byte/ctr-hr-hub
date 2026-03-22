@@ -13,6 +13,7 @@ import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { sendNotification } from '@/lib/notifications'
 import { checkDelegation } from '@/lib/delegation/resolve-delegatee'
+import { invalidateMultiple, CACHE_STRATEGY } from '@/lib/cache'
 import type { SessionUser } from '@/types'
 
 const rejectionSchema = z.object({
@@ -138,6 +139,12 @@ export const PUT = withPermission(
       link:        '/my/leave',
       priority:    'normal',
     })
+
+    // 캐시 무효화
+    void invalidateMultiple(
+      [CACHE_STRATEGY.DASHBOARD_KPI, CACHE_STRATEGY.SIDEBAR],
+      request.companyId,
+    )
 
     return apiSuccess({
       request: updated,

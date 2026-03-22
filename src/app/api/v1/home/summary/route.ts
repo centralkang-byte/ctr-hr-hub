@@ -25,21 +25,23 @@ export const GET = withCache(withPermission(
       })
 
       if (user.role === ROLE.EMPLOYEE) {
-        // Employee-specific KPIs
-        const leaveBalance = await prisma.employeeLeaveBalance.findMany({
-          where: { employeeId: user.employeeId },
-          include: { policy: { select: { name: true } } },
-        })
-
+        // Employee-specific KPIs — 병렬 처리
         const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-        const attendanceCount = await prisma.attendance.count({
-          where: {
-            employeeId: user.employeeId,
-            workDate: {
-              gte: new Date(`${thisMonth}-01`),
+
+        const [leaveBalance, attendanceCount] = await Promise.all([
+          prisma.employeeLeaveBalance.findMany({
+            where: { employeeId: user.employeeId },
+            include: { policy: { select: { name: true } } },
+          }),
+          prisma.attendance.count({
+            where: {
+              employeeId: user.employeeId,
+              workDate: {
+                gte: new Date(`${thisMonth}-01`),
+              },
             },
-          },
-        })
+          }),
+        ])
 
         return apiSuccess({
           role: 'EMPLOYEE',
@@ -152,4 +154,4 @@ export const GET = withCache(withPermission(
     }
   },
   perm(MODULE.EMPLOYEES, ACTION.VIEW),
-), CACHE_STRATEGY.DASHBOARD_KPI)
+), CACHE_STRATEGY.DASHBOARD_KPI, 'user')
