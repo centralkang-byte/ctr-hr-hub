@@ -578,14 +578,14 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
 
   if (loading || !run) {
     return (
-      <div className="p-6 flex items-center justify-center min-h-[400px]">
+      <div className="p-4 flex items-center justify-center min-h-[400px]">
         <div className="animate-spin h-8 w-8 border-4 border-[#5E81F4] border-t-transparent rounded-full" />
       </div>
     )
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">

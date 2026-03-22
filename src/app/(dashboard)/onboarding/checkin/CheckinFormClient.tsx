@@ -102,7 +102,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
   // ─── Loading state ───
   if (loading) {
     return (
-      <div className="space-y-6 p-6">
+      <div className="space-y-6 p-8">
         <div className="h-10 w-64 bg-[#F5F5FA] rounded animate-pulse" />
         <div className="h-60 w-full bg-[#F5F5FA] rounded-xl animate-pulse" />
       </div>
@@ -112,7 +112,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
   // ─── Success state ───
   if (submitted) {
     return (
-      <div className="space-y-6 p-6">
+      <div className="space-y-6 p-8">
         <PageHeader title={t('weeklyCheckin')} description={t('weeklyCheckinCompleted')} />
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex flex-col items-center gap-4 py-12">
@@ -141,7 +141,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-8">
       <PageHeader
         title={t('weeklyCheckin')}
         description={t('checkinDescription', { name: user.name })}

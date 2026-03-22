@@ -187,7 +187,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
 
     if (loading || !run || !approval) {
         return (
-            <div className="p-6 flex items-center justify-center min-h-[400px]">
+            <div className="p-4 flex items-center justify-center min-h-[400px]">
                 <Loader2 className="h-8 w-8 animate-spin text-[#5E81F4]" />
             </div>
         )
@@ -200,7 +200,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
     const isPending = run.status === 'PENDING_APPROVAL'
 
     return (
-        <div className="p-6 max-w-3xl mx-auto space-y-5">
+        <div className="p-4 max-w-3xl mx-auto space-y-4">
             {/* Header */}
             <div className="flex items-center gap-3">
                 <button onClick={() => router.push('/approvals/inbox')} className="text-[#999] hover:text-[#333]">

@@ -15,7 +15,7 @@ export default function PiiAuditClient() {
   const t = useTranslations('compliance')
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 space-y-4">
       {/* Page Header */}
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 bg-[#FFEDD5] rounded-xl flex items-center justify-center">

@@ -483,7 +483,7 @@ export function EmployeeDetailClient({
       {/* ─── Right: Main Content ─── */}
       <div className="flex-1 min-w-0 overflow-auto">
         {/* Mobile profile header (shown on small screens) */}
-        <div className="lg:hidden p-6 pb-0">
+        <div className="lg:hidden p-8 pb-0">
           <div className="flex items-center gap-4">
             <Avatar name={employee.name} photoUrl={employee.photoUrl} size="lg" />
             <div>
@@ -498,7 +498,7 @@ export function EmployeeDetailClient({
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-8">
         <div className="flex-1 min-w-0">
           <Tabs defaultValue="profile">
             <TabsList className="mb-4">

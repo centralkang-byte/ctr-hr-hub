@@ -160,7 +160,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
   // ─── Loading state ───
   if (loading) {
     return (
-      <div className="space-y-6 p-6">
+      <div className="space-y-6 p-8">
         <div className="h-10 w-64 bg-[#F5F5FA] rounded animate-pulse" />
         <div className="h-24 w-full bg-[#F5F5FA] rounded-xl animate-pulse" />
         <div className="h-40 w-full bg-[#F5F5FA] rounded-xl animate-pulse" />
@@ -172,7 +172,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
   // ─── Empty state ───
   if (!data) {
     return (
-      <div className="space-y-6 p-6">
+      <div className="space-y-6 p-8">
         <PageHeader
           title={t('myOnboarding')}
           description={t('myOnboardingNoActive')}
@@ -188,7 +188,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-8">
       {/* ─── Welcome Banner ─── */}
       <div className="rounded-xl bg-[#5E81F4] p-6 text-white">
         <h1 className="text-2xl font-bold">

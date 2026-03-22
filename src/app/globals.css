@@ -45,30 +45,32 @@
     --chart-5: 0 72.2% 50.6%;
     --radius: 0.5rem;
   }
+  /* DESIGN.md Dark Mode — Slate 스케일 + semantic 400 레벨 */
   .dark {
-    --background: 222.2 47.4% 11.2%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 47.4% 11.2%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 47.4% 11.2%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 243.4 75.4% 63%;
+    --background: 222.2 84% 4.9%;          /* slate-950 #020617 */
+    --foreground: 210 40% 98%;             /* slate-50 #F8FAFC */
+    --card: 217.2 32.6% 11.8%;            /* slate-900 #0F172A */
+    --card-foreground: 210 40% 98%;        /* slate-50 */
+    --popover: 217.2 32.6% 11.8%;         /* slate-900 */
+    --popover-foreground: 210 40% 98%;     /* slate-50 */
+    --primary: 243.4 75.4% 63%;            /* Indigo L63% */
     --primary-foreground: 0 0% 100%;
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 217.2 32.6% 17.5%;        /* slate-800 #1E293B */
     --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
+    --muted: 217.2 32.6% 17.5%;           /* slate-800 */
+    --muted-foreground: 215 20.2% 65.1%;   /* slate-400 #94A3B8 */
+    --accent: 217.2 32.6% 17.5%;           /* slate-800 */
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 72% 51%;              /* error-dark fg #F87171 */
     --destructive-foreground: 0 0% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    --border: 217.2 32.6% 20%;             /* ~slate-700 #334155 */
+    --input: 217.2 32.6% 20%;
     --ring: 243.4 75.4% 63%;
-    --chart-1: 243.4 75.4% 58.6%;
-    --chart-2: 258.3 89.5% 66.3%;
-    --chart-3: 160 60% 45%;
-    --chart-4: 32 80% 55%;
-    --chart-5: 0 62.8% 55%;
+    --chart-1: 243.4 75.4% 63%;            /* Indigo */
+    --chart-2: 258.3 89.5% 66.3%;          /* Violet */
+    --chart-3: 160 84% 39.4%;              /* Emerald #34D399 */
+    --chart-4: 43 96% 56.3%;               /* Amber #FBBF24 */
+    --chart-5: 0 91% 71%;                  /* Red #F87171 */
+    --chart-6: 215 20.2% 65.1%;            /* Slate #94A3B8 */
   }
 }
