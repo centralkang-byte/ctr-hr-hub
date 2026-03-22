@@ -5044,7 +5044,11 @@
       "performance": "성과 현황",
       "payroll": "급여 현황",
       "onboarding": "온보딩 현황",
-      "compliance": "컴플라이언스"
+      "compliance": "컴플라이언스",
+      "summary": "종합",
+      "workforce": "인력 현황",
+      "recruit": "채용",
+      "training": "교육"
     },
     "kpi": {
       "totalEmployees": "전체 인원",
@@ -5066,7 +5070,23 @@
       "payroll_cost": "인건비"
     },
     "noData": "데이터가 없습니다",
-    "noDataDesc": "조건을 변경하거나 새로운 데이터를 추가해 보세요"
+    "noDataDesc": "조건을 변경하거나 새로운 데이터를 추가해 보세요",
+    "kpiDashboardTitle": "KPI 대시보드",
+    "kpiDashboardSubtitle": "전사 인사 현황을 한눈에 확인하세요",
+    "globalCompare": "글로벌 비교",
+    "allCompanies": "전체 법인",
+    "kpiHeadcount": "전사 인원",
+    "kpiTurnoverRate": "이직률",
+    "kpiRecruitActive": "채용 진행",
+    "kpiAttritionRisk": "이탈 위험",
+    "kpiLeaveUsage": "연차 사용률",
+    "kpiTrainingCompletion": "교육 이수율",
+    "unitPerson": "명",
+    "unitCase": "건",
+    "prevMonth": "전월 대비",
+    "avgDays": "평균 {days}일",
+    "attritionBreakdown": "High {high}명 · Critical {critical}명",
+    "trainingBreakdown": "{completed}/{total}명 이수"
   },
   "mySpace": {
     "tasksTitle": "나의 업무",

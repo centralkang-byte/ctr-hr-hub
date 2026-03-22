@@ -4968,7 +4968,11 @@
       "performance": "绩效 状态",
       "payroll": "工资roll 状态",
       "onboarding": "Onboarding 状态",
-      "compliance": "合规"
+      "compliance": "合规",
+      "summary": "综合",
+      "workforce": "人力状况",
+      "recruit": "招聘",
+      "training": "培训"
     },
     "kpi": {
       "totalEmployees": "All Headcount",
@@ -4990,7 +4994,23 @@
       "payroll_cost": "인item(s)비"
     },
     "noData": "No 데이터 available.",
-    "noDataDesc": "请更改条件或添加新数据。"
+    "noDataDesc": "请更改条件或添加新数据。",
+    "kpiDashboardTitle": "KPI 仪表板",
+    "kpiDashboardSubtitle": "查看全公司人事指标",
+    "globalCompare": "全球比较",
+    "allCompanies": "全部法人",
+    "kpiHeadcount": "总人数",
+    "kpiTurnoverRate": "离职率",
+    "kpiRecruitActive": "招聘进行",
+    "kpiAttritionRisk": "流失风险",
+    "kpiLeaveUsage": "休假使用率",
+    "kpiTrainingCompletion": "培训完成率",
+    "unitPerson": "人",
+    "unitCase": "件",
+    "prevMonth": "环比",
+    "avgDays": "平均 {days} 天",
+    "attritionBreakdown": "高 {high} 人 · 危急 {critical} 人",
+    "trainingBreakdown": "{completed}/{total} 人完成"
   },
   "mySpace": {
     "tasksTitle": "My Tasks",

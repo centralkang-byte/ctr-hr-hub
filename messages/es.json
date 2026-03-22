@@ -4968,7 +4968,11 @@
       "performance": "Rendimiento Estado",
       "payroll": "Pagoroll Estado",
       "onboarding": "Onboarding Estado",
-      "compliance": "Cumplimiento"
+      "compliance": "Cumplimiento",
+      "summary": "Resumen",
+      "workforce": "Personal",
+      "recruit": "Reclutamiento",
+      "training": "Capacitación"
     },
     "kpi": {
       "totalEmployees": "All Headcount",
@@ -4990,7 +4994,23 @@
       "payroll_cost": "인item(s)비"
     },
     "noData": "No 데이터 available.",
-    "noDataDesc": "Intente cambiar las condiciones o agregue nuevos datos."
+    "noDataDesc": "Intente cambiar las condiciones o agregue nuevos datos.",
+    "kpiDashboardTitle": "Panel KPI",
+    "kpiDashboardSubtitle": "Resumen de métricas de RRHH",
+    "globalCompare": "Comparación global",
+    "allCompanies": "Todas las empresas",
+    "kpiHeadcount": "Personal total",
+    "kpiTurnoverRate": "Tasa de rotación",
+    "kpiRecruitActive": "Vacantes activas",
+    "kpiAttritionRisk": "Riesgo de deserción",
+    "kpiLeaveUsage": "Uso de vacaciones",
+    "kpiTrainingCompletion": "Capacitación completada",
+    "unitPerson": "personas",
+    "unitCase": "casos",
+    "prevMonth": "vs. mes anterior",
+    "avgDays": "Promedio {days} días",
+    "attritionBreakdown": "Alto {high} · Crítico {critical}",
+    "trainingBreakdown": "{completed}/{total} completados"
   },
   "mySpace": {
     "tasksTitle": "My Tasks",
