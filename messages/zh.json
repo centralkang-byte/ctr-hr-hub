@@ -4801,7 +4801,12 @@
       "approvalsInbox": "审批收件箱",
       "myOffboarding": "我的离职流程",
       "myTasks": "My Tasks",
-      "myOnboarding": "My Onboarding"
+      "myOnboarding": "My Onboarding",
+      "documents": "文件/证明书",
+      "internalJobs": "内部招聘",
+      "notificationSettings": "通知设置",
+      "directory": "员工目录",
+      "orgChart": "组织架构"
     },
     "team": {
       "label": "团队管理",

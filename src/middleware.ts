@@ -76,8 +76,8 @@ const ROUTE_ACL: RouteRule[] = [
   { prefix: '/compliance', allowedRoles: HR_UP },
   // HR Management (section 4)
   { prefix: '/employees', allowedRoles: HR_UP },
-  { prefix: '/directory', allowedRoles: HR_UP },
-  { prefix: '/org', allowedRoles: HR_UP },
+  { prefix: '/directory', allowedRoles: ALL_ROLES },
+  { prefix: '/org', allowedRoles: ALL_ROLES },
   { prefix: '/attendance/admin', allowedRoles: HR_UP },
   { prefix: '/leave/admin', allowedRoles: HR_UP },
   { prefix: '/onboarding/me', allowedRoles: ALL_ROLES },

@@ -71,6 +71,23 @@ export async function deleteObject(key: string): Promise<void> {
   await client.send(command)
 }
 
+// ─── Direct Upload (Server → S3) ──────────────────────────
+
+export async function uploadBuffer(
+  key: string,
+  body: Buffer,
+  contentType: string,
+): Promise<void> {
+  const client = getS3Client()
+  const command = new PutObjectCommand({
+    Bucket: env.S3_BUCKET,
+    Key: key,
+    Body: body,
+    ContentType: contentType,
+  })
+  await client.send(command)
+}
+
 // ─── Build S3 Key ─────────────────────────────────────────
 
 export function buildS3Key(

@@ -146,11 +146,11 @@ function buildRolePermissions(): Record<string, PermKey[]> {
     'discipline_read',
   ]
 
-  // EMPLOYEE: self scoped (payroll_read for /payroll/me payslip access)
+  // EMPLOYEE: self scoped (payroll_read for /payroll/me, org_read for /org chart view)
   const employee: PermKey[] = [
     'employees_read', 'attendance_read', 'attendance_create',
     'leave_read', 'leave_create', 'performance_read', 'performance_create',
-    'payroll_read',
+    'payroll_read', 'org_read',
   ]
 
   // EXECUTIVE

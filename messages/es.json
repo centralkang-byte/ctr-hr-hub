@@ -4801,7 +4801,12 @@
       "approvalsInbox": "Bandeja de aprobación",
       "myOffboarding": "Mi baja laboral",
       "myTasks": "My Tasks",
-      "myOnboarding": "My Onboarding"
+      "myOnboarding": "My Onboarding",
+      "documents": "Documentos/Certificados",
+      "internalJobs": "Empleo interno",
+      "notificationSettings": "Configuración de notificaciones",
+      "directory": "Directorio de empleados",
+      "orgChart": "Organigrama"
     },
     "team": {
       "label": "Gestión de equipo",
