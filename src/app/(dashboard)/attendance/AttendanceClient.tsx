@@ -199,30 +199,43 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
     }
   }, [today])
 
-  // ─── Clock actions ───
+  // ─── Clock actions (optimistic UI) ───
   const handleClockIn = useCallback(async () => {
     setClockLoading(true)
+    const now = new Date().toISOString()
+    const prevToday = today
+    // 낙관적 업데이트: 즉시 WORKING 상태로 전환
+    setToday(prev => prev
+      ? { ...prev, clockIn: now, clockInMethod: 'WEB', status: 'NORMAL' }
+      : { id: 'optimistic', employeeId: '', workDate: now.slice(0, 10), clockIn: now, clockOut: null, clockInMethod: 'WEB', clockOutMethod: null, workType: 'NORMAL', totalMinutes: null, overtimeMinutes: null, status: 'NORMAL', note: null }
+    )
     try {
       await apiClient.post('/api/v1/attendance/clock-in', { method: 'WEB' })
-      await fetchToday()
+      await fetchToday() // 서버 데이터로 동기화
     } catch {
-      // Error handled by apiClient
+      setToday(prevToday) // 롤백
     } finally {
       setClockLoading(false)
     }
-  }, [fetchToday])
+  }, [fetchToday, today])
 
   const handleClockOut = useCallback(async () => {
     setClockLoading(true)
+    const now = new Date().toISOString()
+    const prevToday = today
+    const prevWeekly = weekly
+    // 낙관적 업데이트: 즉시 COMPLETED 상태로 전환
+    setToday(prev => prev ? { ...prev, clockOut: now, clockOutMethod: 'WEB' } : prev)
     try {
       await apiClient.post('/api/v1/attendance/clock-out', { method: 'WEB' })
       await Promise.all([fetchToday(), fetchWeekly()])
     } catch {
-      // Error handled by apiClient
+      setToday(prevToday) // 롤백
+      setWeekly(prevWeekly)
     } finally {
       setClockLoading(false)
     }
-  }, [fetchToday, fetchWeekly])
+  }, [fetchToday, fetchWeekly, today, weekly])
 
   // ─── Derived state ───
   const clockState = getClockState(today)
