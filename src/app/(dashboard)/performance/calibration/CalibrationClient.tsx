@@ -335,12 +335,12 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
   }
 
   if (loading) {
-    return <div className="p-6 flex items-center justify-center h-64 text-[#666]">{tc('loading')}...</div>
+    return <div className="p-4 flex items-center justify-center h-64 text-[#666]">{tc('loading')}...</div>
   }
 
   return (
     <>
-    <div className="p-6 space-y-6">
+    <div className="p-4 space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -392,7 +392,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Sessions list */}
         <div className="rounded-xl border border-[#E8E8E8] bg-white">
           <div className="px-5 py-4 border-b border-[#E8E8E8]">
