@@ -248,7 +248,10 @@
     "unitYear": "year",
     "unitPerson": " people",
     "unitCount": " items",
-    "unitMonth": " month(s)"
+    "unitMonth": " month(s)",
+    "noDataDesc": "当前筛选条件下无数据。请调整筛选条件或稍后再试。",
+    "completionRate": "完成率",
+    "employee": "员工"
   },
   "auth": {
     "login": "Login",
@@ -1610,7 +1613,8 @@
     "targetEmployees": "Target 员工s",
     "totalNominations": "合计 Nominations",
     "nominationCount": "# Nominations",
-    "avgScore": "Avg 分数"
+    "avgScore": "Avg 分数",
+    "recognitionCount": "表彰次数"
   },
   "recruitment": {
     "title": "Recruitment",
@@ -2201,7 +2205,18 @@
     "myOffboardingTitle": "My Offboarding",
     "myOffboardingEmpty": "No active offboarding process.",
     "selfServiceTitle": "Offboarding Self-Service",
-    "selfServiceDesc": "查看 offboarding tasks and required information."
+    "selfServiceDesc": "查看 offboarding tasks and required information.",
+    "satisfactionDetail": "满意度详情",
+    "satisfactionCompensation": "薪酬满意度",
+    "satisfactionCulture": "文化满意度",
+    "satisfactionManagement": "管理满意度",
+    "satisfactionGrowth": "成长满意度",
+    "suggestions": "建议",
+    "suggestionsPlaceholder": "请输入改进建议",
+    "detailedReason": "详细原因",
+    "detailedReasonPlaceholder": "请输入详细离职原因",
+    "isConfidential": "保密",
+    "isConfidentialDesc": "此面谈内容将被保密处理"
   },
   "salary": {
     "title": "Compensation Management",
@@ -2628,7 +2643,9 @@
     "confirmApply": "确认 Apply",
     "applyWarning": "This action cannot be undone. All changes in the plan will take effect immediately.",
     "restructureSuccess": "Restructuring completed successfully.",
-    "draftSaved": "草稿 saved successfully."
+    "draftSaved": "草稿 saved successfully.",
+    "name": "姓名",
+    "searchResult": "搜索结果"
   },
   "payroll": {
     "title": "Payroll",
@@ -2977,7 +2994,8 @@
     "kpiDeductionChange": "合计 扣除s Change",
     "kpiNetChange": "实发工资 Change",
     "current": "Current",
-    "simulated": "Simulated"
+    "simulated": "Simulated",
+    "reopenDescription": "重新打开已关闭的考勤将重置薪资计算。是否继续？"
   },
   "analytics": {
     "title": "Analytics",
@@ -3084,7 +3102,8 @@
       "issuesTrend": "Late/Absent/Early-out Trend",
       "late": "Late",
       "absent": "Absent",
-      "earlyOut": "Early Out"
+      "earlyOut": "Early Out",
+      "retry": "重试"
     },
     "recruitmentPage": {
       "title": "Recruitment Analysis",
@@ -3161,7 +3180,12 @@
       "jobCategory": "Job Category",
       "headcount": "Headcount",
       "average": "Average",
-      "median": "Median"
+      "median": "Median",
+      "underBand": "低于薪酬带下限",
+      "inBand": "薪酬带范围内",
+      "overBand": "超出薪酬带上限",
+      "compaRatio": "Compa-Ratio",
+      "compaRatioComparison": "Compa-Ratio 比较"
     },
     "attritionPage": {
       "title": "Attrition Risk Analysis",
@@ -3337,7 +3361,29 @@
     "calculating": "계산...",
     "caution": "注意",
     "warning": "警告",
-    "company_id": "法人"
+    "company_id": "法人",
+    "executive": {
+      "headcountTrend": "人员趋势",
+      "turnoverTrend": "离职率趋势",
+      "companyDistribution": "各法人人员分布",
+      "riskAlerts": "风险信号",
+      "companyComparison": "法人比较",
+      "hires": "入职",
+      "exits": "离职",
+      "netChange": "净增减",
+      "industryAvg": "行业平均",
+      "turnoverRateLabel": "离职率",
+      "detected": "检测到 {count} 项",
+      "noRiskDetected": "未检测到风险信号。",
+      "loadFailed": "无法加载数据",
+      "loadFailedDesc": "加载分析数据时发生错误，请刷新页面或稍后再试。",
+      "tooltipTotalEmp": "当前在职员工总数",
+      "tooltipTurnover": "当月离职人数 ÷ 上月末在职人数 × 100",
+      "tooltipTenure": "全体员工入职日起平均工龄",
+      "tooltipLaborCost": "最近确认的各法人薪资合计（KRW换算）",
+      "tooltipRecruitment": "当前进行中的招聘公告数",
+      "tooltipOnboarding": "已完成入职 ÷ 总入职数 × 100"
+    }
   },
   "notification": {
     "title": "Notifications",
@@ -3397,7 +3443,8 @@
       "saved": "保存d"
     },
     "noNotificationsDesc": "通知s will appear here.",
-    "allMarkedRead": "All notifications marked as read"
+    "allMarkedRead": "All notifications marked as read",
+    "viewAll": "查看全部"
   },
   "succession": {
     "title": "Succession Planning",
@@ -4366,7 +4413,10 @@
       "approved": "Approved",
       "paid": "Paid",
       "cancelled": "Cancelled"
-    }
+    },
+    "highOrAbove": "High 以上",
+    "totalAnomalies": "异常总数",
+    "noAnomalies": "无异常"
   },
   "payrollMe": {
     "title": "My Pay Stubs",
@@ -4374,7 +4424,10 @@
     "paid": "Paid",
     "grossPay": "Gross Pay",
     "deductions": "Deductions",
-    "netPay": "Net Pay"
+    "netPay": "Net Pay",
+    "unreadCount": "未阅读工资条 {count} 条",
+    "momSame": "与上月相同",
+    "newBadge": "NEW"
   },
   "payStubDetail": {
     "titleWithMonth": "{month} Pay Stub",
@@ -4613,7 +4666,27 @@
       "legalBasis": "法律依据",
       "consentedAt": "同意时间",
       "revokedAt": "撤销时间",
-      "expiresAt": "到期时间"
+      "expiresAt": "到期时间",
+      "piiAuditDesc": "PII 访问监控及审计追踪",
+      "retentionDesc": "数据保留策略及执行管理",
+      "dpiaDesc": "数据保护影响评估管理",
+      "riskLow": "低",
+      "riskMedium": "中",
+      "riskHigh": "高",
+      "riskCritical": "严重",
+      "statusDraft": "草稿",
+      "statusInReview": "审核中",
+      "statusApproved": "已批准",
+      "statusRejected": "已驳回",
+      "statusPending": "等待中",
+      "statusInProgress": "处理中",
+      "statusCompleted": "已完成",
+      "requestAccess": "查阅权",
+      "requestErasure": "删除权",
+      "requestPortability": "转移权",
+      "requestRectification": "更正权",
+      "requestRestriction": "限制处理权",
+      "requestObjection": "反对权"
     },
     "ru": {
       "title": "俄罗斯合规",
@@ -4634,7 +4707,8 @@
       "rejectDocument": "拒绝",
       "rejectionReason": "拒绝原因",
       "generateP4": "生成P-4报告",
-      "generate57T": "生成57-T报告"
+      "generate57T": "生成57-T报告",
+      "description": "兵役登记、电子文档(KEDO)、法定报告"
     },
     "cn": {
       "title": "中国合规",
@@ -4650,7 +4724,8 @@
       "baseMax": "基数上限",
       "calculate": "计算月度社保",
       "exportReport": "导出报告",
-      "exportRegistry": "导出花名册"
+      "exportRegistry": "导出花名册",
+      "description": "社会保险（五险一金）、员工登记管理"
     },
     "kr": {
       "title": "韩国合规",
@@ -4673,7 +4748,8 @@
       "requestDate": "申请日期",
       "approvedAt": "批准时间",
       "paidAt": "支付时间",
-      "calculateSeverance": "计算退职金"
+      "calculateSeverance": "计算退职金",
+      "description": "52小时监控、法定培训、退职金管理"
     },
     "status": {
       "DRAFT": "草稿",
@@ -4949,7 +5025,8 @@
     "emptyTitle": "No skills data",
     "emptyDesc": "Register employee skills.",
     "skillMatrixTitle": "Skill Matrix",
-    "teamSkillsTitle": "Team Skills"
+    "teamSkillsTitle": "Team Skills",
+    "enterComment": "请输入评论"
   },
   "lms": {
     "pageTitle": "Learning Management",
@@ -5010,7 +5087,24 @@
     "prevMonth": "环比",
     "avgDays": "平均 {days} 天",
     "attritionBreakdown": "高 {high} 人 · 危急 {critical} 人",
-    "trainingBreakdown": "{completed}/{total} 人完成"
+    "trainingBreakdown": "{completed}/{total} 人完成",
+    "widget": {
+      "gradeDistribution": "职级分布",
+      "companyDistribution": "法人分布",
+      "hireTrend": "招聘趋势",
+      "tenureDistribution": "工龄分布",
+      "recruitPipeline": "招聘流程",
+      "avgTimeToFill": "平均招聘周期",
+      "talentPool": "人才库",
+      "performanceGrade": "绩效等级",
+      "skillGapTop5": "技能差距 Top 5",
+      "overtime52h": "52小时加班风险",
+      "leaveTrend": "休假使用趋势",
+      "burnoutRisk": "倦怠风险",
+      "payrollCost": "薪资成本",
+      "mandatoryTraining": "必修培训",
+      "benefitsUsage": "福利使用情况"
+    }
   },
   "mySpace": {
     "tasksTitle": "My Tasks",
@@ -5095,7 +5189,18 @@
     "emptyBenefitClaim": "No claims yet",
     "emptyBenefitClaimDesc": "You haven't submitted any benefit claims yet.",
     "emptyTitle": "No data",
-    "emptyDesc": "Nothing has been added yet"
+    "emptyDesc": "Nothing has been added yet",
+    "atGlance": {
+      "team": "所属",
+      "tenure": "工龄",
+      "years": "年",
+      "joined": "入职",
+      "certLang": "资格/语言",
+      "certCount": "资格证 {count} 个",
+      "langCount": "语言 {count} 种",
+      "skills": "技能",
+      "skillCount": "项"
+    }
   },
   "directory": {
     "pageTitle": "People Directory",
