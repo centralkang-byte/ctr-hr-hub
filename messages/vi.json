@@ -4977,6 +4977,10 @@
     },
     "favorites": {
       "label": "Favorites"
+    },
+    "employee": {
+      "work": "Chấm công & Nghỉ phép",
+      "org": "Tổ chức"
     }
   },
   "myTasks": {

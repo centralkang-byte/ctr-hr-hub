@@ -4977,6 +4977,10 @@
     },
     "favorites": {
       "label": "즐겨찾기"
+    },
+    "employee": {
+      "work": "근태/휴가",
+      "org": "조직"
     }
   },
   "header": {
