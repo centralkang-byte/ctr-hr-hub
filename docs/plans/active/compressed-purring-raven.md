@@ -11,7 +11,7 @@ Phase 1~3(솔로 플레이, 리더보드, 실시간 대전)이 완료됐다. 이
 ## 프로젝트 구조 요약
 
 ```
-/Users/sangwoo/Documents/VibeCoding/Study-03/
+/Users/sangwoo/Vibe.nosync/05. Quizmaster/
 ├── docker-compose.yml
 ├── docs/plans/2026-02-23-content-quality-deploy.md   ← 상세 계획서
 ├── quiz-master/                   (React 19 + Vite + Zustand + TailwindCSS)
@@ -67,7 +67,7 @@ Phase 1~3(솔로 플레이, 리더보드, 실시간 대전)이 완료됐다. 이
 
 5. 마이그레이션:
    ```bash
-   cd /Users/sangwoo/Documents/VibeCoding/Study-03/server
+   cd /Users/sangwoo/Vibe.nosync/05. Quizmaster/server
    npx prisma migrate dev --name add-difficulty
    ```
 
@@ -80,8 +80,8 @@ Phase 1~3(솔로 플레이, 리더보드, 실시간 대전)이 완료됐다. 이
 
 7. 빌드 검증:
    ```bash
-   cd /Users/sangwoo/Documents/VibeCoding/Study-03/server && npm run build
-   cd /Users/sangwoo/Documents/VibeCoding/Study-03/quiz-master && npm run build
+   cd /Users/sangwoo/Vibe.nosync/05. Quizmaster/server && npm run build
+   cd /Users/sangwoo/Vibe.nosync/05. Quizmaster/quiz-master && npm run build
    ```
 
 8. Commit: `feat(A1): add difficulty field to questions, schema, and Claude generation`
@@ -153,7 +153,7 @@ Phase 1~3(솔로 플레이, 리더보드, 실시간 대전)이 완료됐다. 이
 
 3. tsx 확인 후 시드 실행:
    ```bash
-   cd /Users/sangwoo/Documents/VibeCoding/Study-03/server
+   cd /Users/sangwoo/Vibe.nosync/05. Quizmaster/server
    npx prisma db seed
    ```
    Expected: "✅ Seeded 20 questions"
