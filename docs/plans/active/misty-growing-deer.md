@@ -120,7 +120,7 @@ positions       Position[]
 
 **Step 6: Run `prisma validate`**
 ```bash
-cd /Users/sangwoo/Documents/VibeCoding/GHR/ctr-hr-hub
+cd /Users/sangwoo/Vibe.nosync/03. HR_Hub/ctr-hr-hub
 npx prisma validate
 ```
 Expected: "The schema at ... is valid 🚀"
