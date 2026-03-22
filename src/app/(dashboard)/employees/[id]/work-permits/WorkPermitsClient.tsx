@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { apiClient } from '@/lib/api'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 import type { Permission } from '@/types'
 import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
@@ -36,10 +37,10 @@ interface Props {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  ACTIVE: 'bg-green-100 text-green-800',
-  EXPIRED: 'bg-[#FEE2E2] text-[#991B1B]',
-  REVOKED: 'bg-[#F5F5F5] text-[#1A1A1A]',
-  PENDING_RENEWAL: 'bg-[#FEF9C3] text-[#854D0E]',
+  ACTIVE: STATUS_VARIANT.success,
+  EXPIRED: STATUS_VARIANT.error,
+  REVOKED: STATUS_VARIANT.neutral,
+  PENDING_RENEWAL: STATUS_VARIANT.warning,
 }
 
 export default function WorkPermitsClient({ employeeId, permissions }: Props) {
@@ -246,7 +247,7 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
                   )}
                 </TableCell>
                 <TableCell>
-                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[p.status] ?? 'bg-[#F5F5F5] text-[#1A1A1A]'}`}>
+                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[p.status] ?? STATUS_VARIANT.neutral}`}>
                     {STATUS_LABELS[p.status] ?? p.status}
                   </span>
                 </TableCell>

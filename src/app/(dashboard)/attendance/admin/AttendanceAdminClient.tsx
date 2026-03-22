@@ -15,6 +15,7 @@ import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { TYPOGRAPHY } from '@/lib/styles/typography'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 import { apiClient } from '@/lib/api'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable } from '@/components/shared/DataTable'
@@ -89,10 +90,10 @@ interface CorrectionForm {
 // ─── Status variant map ─────────────────────────────────────
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
-  NORMAL: 'bg-[#EDF1FE] text-[#2E7D32]',
-  LATE: 'bg-[#FFEBEE] text-[#E53935]',
-  EARLY_OUT: 'bg-[#FFF3E0] text-[#E65100]',
-  ABSENT: 'bg-[#FFEBEE] text-[#F44336]',
+  NORMAL: STATUS_VARIANT.success,
+  LATE: STATUS_VARIANT.error,
+  EARLY_OUT: STATUS_VARIANT.warning,
+  ABSENT: STATUS_VARIANT.error,
 }
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -251,7 +252,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
       key: 'status',
       header: t('status'),
       render: (row) => (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_BADGE_STYLES[row.status] ?? 'bg-[#F5F5F5] text-[#666]'}`}>
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_BADGE_STYLES[row.status] ?? STATUS_VARIANT.neutral}`}>
           {STATUS_LABELS[row.status] ?? row.status}
         </span>
       ),

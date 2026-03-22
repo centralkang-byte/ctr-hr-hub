@@ -43,6 +43,7 @@ import {
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import type { SessionUser, PaginationInfo } from '@/types'
+import { STATUS_BG, STATUS_FG } from '@/lib/styles/status'
 import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -101,10 +102,10 @@ const STATUS_KEYS: Record<string, string> = {
 }
 
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  SCHEDULED: { bg: '#E3F2FD', text: '#2196F3' },
-  COMPLETED: { bg: '#EDF1FE', text: '#5E81F4' },
-  CANCELLED: { bg: '#F5F5F5', text: '#999999' },
-  NO_SHOW: { bg: '#FFEBEE', text: '#F44336' },
+  SCHEDULED: { bg: STATUS_BG.info, text: STATUS_FG.info },
+  COMPLETED: { bg: STATUS_BG.success, text: STATUS_FG.success },
+  CANCELLED: { bg: STATUS_BG.error, text: STATUS_FG.error },
+  NO_SHOW: { bg: STATUS_BG.warning, text: STATUS_FG.warning },
 }
 
 const RECOMMENDATION_KEYS: Record<string, string> = {
@@ -533,8 +534,8 @@ export function InterviewListClient({
       header: '상태',
       render: (row) => {
         const colors = STATUS_COLORS[row.status] ?? {
-          bg: '#F5F5F5',
-          text: '#999',
+          bg: STATUS_BG.neutral,
+          text: STATUS_FG.neutral,
         }
         return (
           <span

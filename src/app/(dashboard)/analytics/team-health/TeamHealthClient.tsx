@@ -10,10 +10,11 @@ import { Heart, Clock, CalendarDays, Target, AlertTriangle, Flame } from 'lucide
 import { ChartCard } from '@/components/analytics/ChartCard'
 import type { TeamHealthResponse } from '@/lib/analytics/types'
 import { TABLE_STYLES } from '@/lib/styles'
+import { STATUS_FG } from '@/lib/styles/status'
 import { cn } from '@/lib/utils'
 
 const SCORE_COLORS: Record<string, string> = {
-  HEALTHY: '#10B981', CAUTION: '#F59E0B', WARNING: '#F97316', CRITICAL: '#EF4444',
+  HEALTHY: STATUS_FG.success, CAUTION: STATUS_FG.warning, WARNING: '#F97316', CRITICAL: STATUS_FG.error,
 }
 const SCORE_LABELS: Record<string, string> = {
   HEALTHY: '건강', CAUTION: '주의', WARNING: '경고', CRITICAL: '위험',
@@ -25,7 +26,7 @@ const SUB_ICONS = [
   { key: 'turnoverRisk', label: '이직 위험', icon: AlertTriangle },
   { key: 'burnoutRisk', label: '번아웃 위험', icon: Flame },
 ]
-const STATUS_COLORS = { GREEN: '#10B981', YELLOW: '#F59E0B', RED: '#EF4444' }
+const STATUS_COLORS = { GREEN: STATUS_FG.success, YELLOW: STATUS_FG.warning, RED: STATUS_FG.error }
 const STATUS_LABELS = { GREEN: '🟢', YELLOW: '🟡', RED: '🔴' }
 const RISK_COLORS = { HIGH: 'text-red-600 bg-red-50', MEDIUM: 'text-amber-600 bg-amber-50', LOW: 'text-emerald-600 bg-emerald-50' }
 

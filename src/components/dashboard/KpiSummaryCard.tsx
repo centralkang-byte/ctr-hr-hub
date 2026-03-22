@@ -2,6 +2,7 @@
 
 import { ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react'
 import { CARD_STYLES } from '@/lib/styles'
+import { STATUS_FG } from '@/lib/styles/status'
 
 interface KpiSummaryCardProps {
   label: string
@@ -23,10 +24,10 @@ export function KpiSummaryCard({
   onClick,
 }: KpiSummaryCardProps) {
   const statusColors: Record<string, string> = {
-    default: 'text-[#1A1A1A]',
-    danger: 'text-[#EF4444]',
-    warning: 'text-[#B45309]',
-    success: 'text-[#059669]',
+    default: `text-[${STATUS_FG.neutral}]`,
+    danger: `text-[${STATUS_FG.error}]`,
+    warning: `text-[${STATUS_FG.warning}]`,
+    success: `text-[${STATUS_FG.success}]`,
   }
 
   const displayValue = value === null || value === undefined ? '–' : value

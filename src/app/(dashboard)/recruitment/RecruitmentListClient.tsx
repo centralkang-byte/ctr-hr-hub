@@ -12,6 +12,7 @@ import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_SIZES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 import { EmptyState } from '@/components/ui/EmptyState'
 
 // ─── Label Maps ──────────────────────────────────────────
@@ -24,10 +25,10 @@ const STATUS_KEYS: Record<string, string> = {
 }
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
-  DRAFT: 'bg-[#F5F5F5] text-[#999]',
-  OPEN: 'bg-[#EDF1FE] text-[#2E7D32]',
-  CLOSED: 'bg-[#FFF3E0] text-[#E65100]',
-  CANCELLED: 'bg-[#FFEBEE] text-[#C62828]',
+  DRAFT: STATUS_VARIANT.neutral,
+  OPEN: STATUS_VARIANT.success,
+  CLOSED: STATUS_VARIANT.warning,
+  CANCELLED: STATUS_VARIANT.error,
 }
 
 const EMPLOYMENT_TYPE_KEYS: Record<string, string> = {
@@ -215,7 +216,7 @@ export default function RecruitmentListClient({ user }: Props) {
                     {row._count.applications}
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${STATUS_BADGE_STYLES[row.status] ?? 'bg-[#F5F5F5] text-[#999]'}`}>
+                    <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${STATUS_BADGE_STYLES[row.status] ?? STATUS_VARIANT.neutral}`}>
                       {STATUS_KEYS[row.status] ? t(STATUS_KEYS[row.status]) : row.status}
                     </span>
                   </td>

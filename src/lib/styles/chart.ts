@@ -1,17 +1,18 @@
+// DESIGN.md Section 2 — Chart Palette (6색 순서: Indigo, Violet, Emerald, Amber, Red, Slate)
 export const CHART_THEME = {
-  colors: ['#5E81F4', '#8B5CF6', '#F59E0B', '#10B981', '#EF4444', '#6B7280'],
+  colors: ['#6159E7', '#8B5CF6', '#059669', '#D97706', '#DC2626', '#64748B'],
   axis: {
-    stroke: '#E5E7EB',
-    tick: { fontSize: 12, fill: '#6B7280' },
-    label: { fontSize: 13, fill: '#374151', fontWeight: 500 },
+    stroke: '#E2E8F0',
+    tick: { fontSize: 12, fill: '#64748B' },
+    label: { fontSize: 13, fill: '#334155', fontWeight: 500 },
   },
-  grid: { stroke: '#F3F4F6', strokeDasharray: '3 3' },
+  grid: { stroke: '#F1F5F9', strokeDasharray: '3 3' },
   tooltip: {
     contentStyle: {
       backgroundColor: '#FFFFFF',
-      border: '1px solid #E5E7EB',
+      border: '1px solid #E2E8F0',
       borderRadius: '8px',
-      boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
+      boxShadow: '0 4px 12px rgba(15,23,42,0.08)',
       padding: '12px 16px',
       fontSize: '13px',
     },

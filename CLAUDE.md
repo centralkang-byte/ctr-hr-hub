@@ -110,6 +110,13 @@ Dev login: `NEXT_PUBLIC_SHOW_TEST_ACCOUNTS=true`
 - src/lib/api/withRLS.ts         (withRLS transaction wrapper)
 ```
 
+## Design System
+
+Always read `DESIGN.md` before making any visual or UI decisions.
+All font choices, colors, spacing, and aesthetic direction are defined there.
+Do not deviate without explicit user approval.
+In QA mode, flag any code that doesn't match DESIGN.md.
+
 ## Gotchas
 
 - Sidebar destruction: Session A modified sidebar while adding seed data → lost entire section. Always respect DO NOT TOUCH.

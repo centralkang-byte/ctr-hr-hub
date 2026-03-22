@@ -16,21 +16,22 @@ import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_SIZES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 
 // ─── Badge Styles ────────────────────────────────────────
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
-  DISCIPLINE_ACTIVE: 'bg-[#EDF1FE] text-[#2E7D32]',
-  DISCIPLINE_EXPIRED: 'bg-[#F5F5F5] text-[#999]',
-  DISCIPLINE_OVERTURNED: 'bg-[#FFF3E0] text-[#E65100]',
+  DISCIPLINE_ACTIVE: STATUS_VARIANT.error,
+  DISCIPLINE_EXPIRED: STATUS_VARIANT.neutral,
+  DISCIPLINE_OVERTURNED: STATUS_VARIANT.success,
 }
 
 const APPEAL_BADGE_STYLES: Record<string, string> = {
-  NONE: 'bg-[#F5F5F5] text-[#999]',
-  FILED: 'bg-[#E3F2FD] text-[#1565C0]',
-  UNDER_REVIEW: 'bg-[#FFF3E0] text-[#E65100]',
-  UPHELD: 'bg-[#FFEBEE] text-[#C62828]',
-  OVERTURNED: 'bg-[#EDF1FE] text-[#2E7D32]',
+  NONE: STATUS_VARIANT.neutral,
+  FILED: STATUS_VARIANT.warning,
+  UNDER_REVIEW: STATUS_VARIANT.info,
+  UPHELD: STATUS_VARIANT.error,
+  OVERTURNED: STATUS_VARIANT.success,
 }
 
 // ─── Types ───────────────────────────────────────────────
@@ -235,12 +236,12 @@ export default function DisciplineListClient({ user }: Props) {
                     {format(new Date(row.incidentDate), 'yyyy-MM-dd')}
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${STATUS_BADGE_STYLES[row.status] ?? 'bg-[#F5F5F5] text-[#999]'}`}>
+                    <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${STATUS_BADGE_STYLES[row.status] ?? STATUS_VARIANT.neutral}`}>
                       {t(`statusLabels.${row.status}`, { defaultValue: row.status })}
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${APPEAL_BADGE_STYLES[row.appealStatus] ?? 'bg-[#F5F5F5] text-[#999]'}`}>
+                    <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${APPEAL_BADGE_STYLES[row.appealStatus] ?? STATUS_VARIANT.neutral}`}>
                       {t(`appealLabels.${row.appealStatus}`, { defaultValue: row.appealStatus })}
                     </span>
                   </td>

@@ -29,6 +29,7 @@ import { apiClient } from '@/lib/api'
 import { EmptyState } from '@/components/ui/EmptyState'
 import type { SessionUser } from '@/types'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -55,10 +56,10 @@ interface TeamLeaveData {
 // ─── Constants ──────────────────────────────────────────────
 
 const STATUS_BADGE: Record<string, string> = {
-  PENDING: 'bg-[#FFF3E0] text-[#FF9800]',
-  APPROVED: 'bg-[#EDF1FE] text-[#2E7D32]',
-  REJECTED: 'bg-[#FFEBEE] text-[#F44336]',
-  CANCELLED: 'bg-[#F5F5F5] text-[#666]',
+  PENDING: STATUS_VARIANT.warning,
+  APPROVED: STATUS_VARIANT.success,
+  REJECTED: STATUS_VARIANT.error,
+  CANCELLED: STATUS_VARIANT.neutral,
 }
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -351,7 +352,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                             </span>
                             <span
                               className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${
-                                STATUS_BADGE[displayStatus] ?? 'bg-[#F5F5F5] text-[#666]'
+                                STATUS_BADGE[displayStatus] ?? STATUS_VARIANT.neutral
                               }`}
                             >
                               {STATUS_LABEL[displayStatus] ?? displayStatus}

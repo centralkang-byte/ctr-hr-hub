@@ -20,6 +20,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { SessionUser } from '@/types'
 import { TYPOGRAPHY } from '@/lib/styles'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -48,10 +49,10 @@ interface TeamAttendanceData {
 // ─── Status variant map ─────────────────────────────────────
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
-  NORMAL: 'bg-[#EDF1FE] text-[#2E7D32]',
-  LATE: 'bg-[#FFEBEE] text-[#E53935]',
-  EARLY_OUT: 'bg-[#FFF3E0] text-[#E65100]',
-  ABSENT: 'bg-[#FFEBEE] text-[#F44336]',
+  NORMAL: STATUS_VARIANT.success,
+  LATE: STATUS_VARIANT.error,
+  EARLY_OUT: STATUS_VARIANT.warning,
+  ABSENT: STATUS_VARIANT.error,
 }
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -130,7 +131,7 @@ export function AttendanceTeamClient({ user }: { user: SessionUser }) {
         }
         const status = row.attendance.status
         return (
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_BADGE_STYLES[status] ?? 'bg-[#F5F5F5] text-[#666]'}`}>
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_BADGE_STYLES[status] ?? STATUS_VARIANT.neutral}`}>
             {STATUS_LABELS[status] ?? status}
           </span>
         )

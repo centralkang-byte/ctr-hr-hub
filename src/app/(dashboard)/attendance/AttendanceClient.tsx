@@ -19,6 +19,7 @@ import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -58,19 +59,19 @@ type ClockState = 'NOT_CLOCKED_IN' | 'WORKING' | 'COMPLETED'
 // ─── Constants ──────────────────────────────────────────────
 
 const STATUS_COLORS: Record<string, string> = {
-  NORMAL: 'bg-[#EDF1FE] text-[#2E7D32]',
-  LATE: 'bg-[#FFEBEE] text-[#E53935]',
-  EARLY_OUT: 'bg-[#FFF3E0] text-[#E65100]',
-  ABSENT: 'bg-[#FFEBEE] text-[#F44336]',
-  ON_LEAVE: 'bg-[#E3F2FD] text-[#2196F3]',
-  HOLIDAY: 'bg-[#F3E5F5] text-[#9C27B0]',
+  NORMAL: STATUS_VARIANT.success,
+  LATE: STATUS_VARIANT.error,
+  EARLY_OUT: STATUS_VARIANT.warning,
+  ABSENT: STATUS_VARIANT.error,
+  ON_LEAVE: STATUS_VARIANT.info,
+  HOLIDAY: STATUS_VARIANT.primary,
 }
 
 const WORK_TYPE_COLORS: Record<string, string> = {
-  NORMAL: 'bg-[#F5F5F5] text-[#666]',
-  REMOTE: 'bg-[#E3F2FD] text-[#2196F3]',
-  FIELD: 'bg-[#EDF1FE] text-[#2E7D32]',
-  BUSINESS_TRIP: 'bg-[#F3E5F5] text-[#9C27B0]',
+  NORMAL: STATUS_VARIANT.neutral,
+  REMOTE: STATUS_VARIANT.info,
+  FIELD: STATUS_VARIANT.success,
+  BUSINESS_TRIP: STATUS_VARIANT.primary,
 }
 
 const STANDARD_WORK_HOURS = 8
@@ -390,7 +391,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
             {/* Attendance status badge */}
             <div className="flex items-center gap-2">
               <span className="text-sm text-[#999]">{t('status')}:</span>
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_COLORS[today.status] ?? 'bg-[#F5F5F5] text-[#666]'}`}>
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_COLORS[today.status] ?? STATUS_VARIANT.neutral}`}>
                 {STATUS_LABELS[today.status] ?? today.status}
               </span>
             </div>
@@ -398,7 +399,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
             {/* Work type badge */}
             <div className="flex items-center gap-2">
               <span className="text-sm text-[#999]">{t('workType')}:</span>
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${WORK_TYPE_COLORS[today.workType] ?? 'bg-[#F5F5F5] text-[#666]'}`}>
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${WORK_TYPE_COLORS[today.workType] ?? STATUS_VARIANT.neutral}`}>
                 {WORK_TYPE_LABELS[today.workType] ?? today.workType}
               </span>
             </div>
