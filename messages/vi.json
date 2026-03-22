@@ -4968,7 +4968,11 @@
       "performance": "Hiệu suất Trạng thái",
       "payroll": "Thanh toánroll Trạng thái",
       "onboarding": "Onboarding Trạng thái",
-      "compliance": "Tuân thủ"
+      "compliance": "Tuân thủ",
+      "summary": "Tổng hợp",
+      "workforce": "Nhân lực",
+      "recruit": "Tuyển dụng",
+      "training": "Đào tạo"
     },
     "kpi": {
       "totalEmployees": "All Headcount",
@@ -4990,7 +4994,23 @@
       "payroll_cost": "인item(s)비"
     },
     "noData": "No 데이터 available.",
-    "noDataDesc": "Hãy thay đổi điều kiện hoặc thêm dữ liệu mới."
+    "noDataDesc": "Hãy thay đổi điều kiện hoặc thêm dữ liệu mới.",
+    "kpiDashboardTitle": "Bảng điều khiển KPI",
+    "kpiDashboardSubtitle": "Tổng quan chỉ số nhân sự",
+    "globalCompare": "So sánh toàn cầu",
+    "allCompanies": "Tất cả công ty",
+    "kpiHeadcount": "Tổng nhân sự",
+    "kpiTurnoverRate": "Tỷ lệ nghỉ việc",
+    "kpiRecruitActive": "Tuyển dụng",
+    "kpiAttritionRisk": "Rủi ro rời bỏ",
+    "kpiLeaveUsage": "Sử dụng phép",
+    "kpiTrainingCompletion": "Hoàn thành đào tạo",
+    "unitPerson": "người",
+    "unitCase": "vụ",
+    "prevMonth": "so với tháng trước",
+    "avgDays": "TB {days} ngày",
+    "attritionBreakdown": "Cao {high} · Nguy cấp {critical}",
+    "trainingBreakdown": "{completed}/{total} hoàn thành"
   },
   "mySpace": {
     "tasksTitle": "My Tasks",

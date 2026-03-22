@@ -5044,7 +5044,11 @@
       "performance": "Performance Status",
       "payroll": "Payroll Status",
       "onboarding": "Onboarding Status",
-      "compliance": "Compliance"
+      "compliance": "Compliance",
+      "summary": "Summary",
+      "workforce": "Workforce",
+      "recruit": "Recruitment",
+      "training": "Training"
     },
     "kpi": {
       "totalEmployees": "All Headcount",
@@ -5066,7 +5070,23 @@
       "payroll_cost": "인item(s)비"
     },
     "noData": "No 데이터 available.",
-    "noDataDesc": "Try adjusting your filters or add new data."
+    "noDataDesc": "Try adjusting your filters or add new data.",
+    "kpiDashboardTitle": "KPI Dashboard",
+    "kpiDashboardSubtitle": "Overview of your organization's HR metrics",
+    "globalCompare": "Global Compare",
+    "allCompanies": "All Companies",
+    "kpiHeadcount": "Headcount",
+    "kpiTurnoverRate": "Turnover Rate",
+    "kpiRecruitActive": "Open Positions",
+    "kpiAttritionRisk": "Attrition Risk",
+    "kpiLeaveUsage": "Leave Usage",
+    "kpiTrainingCompletion": "Training Completion",
+    "unitPerson": "people",
+    "unitCase": "cases",
+    "prevMonth": "vs. prev month",
+    "avgDays": "Avg {days} days",
+    "attritionBreakdown": "High {high} · Critical {critical}",
+    "trainingBreakdown": "{completed}/{total} completed"
   },
   "mySpace": {
     "tasksTitle": "My Tasks",
