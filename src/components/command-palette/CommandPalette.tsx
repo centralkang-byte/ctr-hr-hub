@@ -224,7 +224,7 @@ export function CommandPalette() {
 
       {/* Modal */}
       <div
-        className="relative mx-4 w-full max-w-[560px] overflow-hidden rounded-xl border border-[#F0F0F3] bg-white shadow-2xl"
+        className="relative mx-4 w-full max-w-[560px] overflow-hidden rounded-xl border border-[#F0F0F3] bg-white shadow-lg"
         onMouseDown={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
       >

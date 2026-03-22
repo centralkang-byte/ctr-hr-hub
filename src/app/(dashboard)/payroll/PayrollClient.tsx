@@ -265,7 +265,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
           </div>
 
           {/* ── Pipeline Visualization ──────────────────────── */}
-          <div className="bg-white rounded-2xl border border-[#E8E8E8] p-5">
+          <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
             <div className="flex items-center gap-2 mb-4">
               <LayoutGrid className="h-4 w-4 text-[#5E81F4]" />
               <h2 className="font-semibold text-[#1A1A1A]">{'파이프라인 현황'}</h2>
@@ -283,7 +283,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
           </div>
 
           {/* ── Payroll Calendar ────────────────────────────── */}
-          <div className="bg-white rounded-2xl border border-[#E8E8E8] p-5">
+          <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
             <PayrollCalendar
               entries={calendarEntries}
               yearMonth={`${year}-${String(month).padStart(2, '0')}`}

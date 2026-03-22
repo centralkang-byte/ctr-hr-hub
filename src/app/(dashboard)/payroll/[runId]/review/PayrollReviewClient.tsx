@@ -237,7 +237,7 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
 
       {showWhitelistModal && (
         <div className={MODAL_STYLES.container}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-md">
             <div className="p-5 border-b border-[#E8E8E8] flex items-center justify-between">
               <h3 className="font-semibold text-[#1A1A1A]">{'예외 등록'}</h3>
               <button onClick={() => setShowWhitelistModal(false)} className="text-[#999] hover:text-[#333]">
@@ -306,7 +306,7 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
   return (
     <div className="fixed inset-0 z-40 flex">
       <div className="flex-1 bg-black/20" onClick={onClose} />
-      <div className="w-80 bg-white shadow-2xl flex flex-col h-full overflow-y-auto">
+      <div className="w-80 bg-white shadow-lg flex flex-col h-full overflow-y-auto">
         <div className="sticky top-0 bg-white p-4 border-b border-[#E8E8E8] flex items-center justify-between">
           <div>
             <p className="font-bold text-[#1A1A1A]">{row.employeeName}</p>

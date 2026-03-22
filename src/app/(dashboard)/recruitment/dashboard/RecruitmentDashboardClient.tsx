@@ -194,7 +194,7 @@ function CustomTooltip({
         border: '1px solid #E8E8E8',
         borderRadius: 8,
         padding: '8px 12px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+        boxShadow: '0 2px 8px rgba(15,23,42,0.08)',
       }}
     >
       <p style={{ fontSize: 13, fontWeight: 600, color: '#1A1A1A' }}>

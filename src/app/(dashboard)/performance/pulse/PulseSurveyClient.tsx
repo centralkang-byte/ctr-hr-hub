@@ -116,7 +116,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
 
   return (
     <div className={MODAL_STYLES.container}>
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-[#E8E8E8]">
           <h2 className="text-lg font-semibold text-[#1A1A1A]">{'새 펄스 서베이'}</h2>
         </div>

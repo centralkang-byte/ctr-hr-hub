@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button'
 function DefaultErrorFallback({ onReset }: { onReset: () => void }) {
   return (
     <div className="flex min-h-[400px] flex-col items-center justify-center px-6">
-      <div className="w-full max-w-md rounded-2xl border border-[#F0F0F3] bg-white p-8 text-center shadow-sm">
+      <div className="w-full max-w-md rounded-xl border border-[#F0F0F3] bg-white p-8 text-center shadow-sm">
         <div className="mb-4 flex items-center justify-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#FEF2F2]">
             <AlertTriangle className="h-8 w-8 text-[#EF4444]" />

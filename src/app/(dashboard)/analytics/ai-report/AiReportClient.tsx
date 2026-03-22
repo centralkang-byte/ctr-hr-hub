@@ -221,7 +221,7 @@ export default function AiReportClient() {
   return (
     <div className="space-y-6">
       {/* Generation Controls */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-6">
+      <div className="bg-white rounded-xl border border-gray-100 p-6">
         <div className="flex flex-wrap items-end gap-4">
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('period')}</label>
@@ -287,8 +287,8 @@ export default function AiReportClient() {
 
       {/* Generating animation */}
       {generating && (
-        <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#5E81F4]/10 mb-4">
+        <div className="bg-white rounded-xl border border-gray-100 p-12 text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-[#5E81F4]/10 mb-4">
             <Sparkles className="h-8 w-8 text-[#5E81F4] animate-pulse" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('kr_aikeab080_keba6aced_kec839dec_')}</h3>
@@ -303,7 +303,7 @@ export default function AiReportClient() {
 
       {/* Current Report */}
       {currentReport && !generating && (
-        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
           {/* Report Header */}
           <div className="relative bg-gradient-to-br from-[#5E81F4]/5 to-[#6B73E8]/5 px-6 py-4 border-b border-gray-100">
             <div className="flex items-center justify-between">
@@ -354,8 +354,8 @@ export default function AiReportClient() {
 
       {/* Empty state */}
       {!currentReport && !generating && reports.length === 0 && (
-        <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#5E81F4]/10 to-[#6B73E8]/10 mb-4">
+        <div className="bg-white rounded-xl border border-gray-100 p-12 text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-br from-[#5E81F4]/10 to-[#6B73E8]/10 mb-4">
             <Sparkles className="h-8 w-8 text-[#5E81F4]" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('kr_kec9584ec_kec839dec_keba6aced_')}</h3>
@@ -367,7 +367,7 @@ export default function AiReportClient() {
 
       {/* Report History */}
       {reports.length > 1 && (
-        <div className="bg-white rounded-2xl border border-gray-100">
+        <div className="bg-white rounded-xl border border-gray-100">
           <div className="px-6 py-4 border-b border-gray-100">
             <h3 className="text-sm font-semibold text-gray-700">{t('prev_keba6aced')}</h3>
           </div>

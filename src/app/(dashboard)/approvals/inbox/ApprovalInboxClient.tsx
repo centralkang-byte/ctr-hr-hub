@@ -107,7 +107,7 @@ function RejectionModal({ item, onClose, onConfirm }: RejectionModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+      <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
         {/* Header */}
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-semibold text-[#1C1D21]">반려 사유 입력</h2>
@@ -181,7 +181,7 @@ function ApproveConfirmModal({ item, onClose, onConfirm }: ApproveConfirmModalPr
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+      <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-lg">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-semibold text-[#1C1D21]">승인 확인</h2>
           <button type="button" onClick={onClose} className="rounded p-1 text-[#8181A5] hover:bg-[#F5F5FA]">
@@ -234,7 +234,7 @@ function BulkConfirmModal({ count, onClose, onConfirm }: BulkConfirmModalProps) 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+      <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-lg">
         <h2 className="mb-3 text-base font-semibold text-[#1C1D21]">일괄 승인 확인</h2>
         <p className="text-sm text-[#8181A5]">
           선택한 <span className="font-semibold text-[#1C1D21]">{count}건</span>을 모두 승인하시겠습니까?
@@ -666,7 +666,7 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
       {/* ── Bulk floating action bar ── */}
       {selectedIds.size > 0 && (
         <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2">
-          <div className="flex items-center gap-3 rounded-2xl bg-[#1C1D21] px-5 py-3 text-white shadow-2xl">
+          <div className="flex items-center gap-3 rounded-xl bg-[#1C1D21] px-5 py-3 text-white shadow-lg">
             <CheckSquare className="h-4 w-4 text-[#5E81F4]" />
             <span className="text-sm font-medium">{selectedIds.size}건 선택됨</span>
             <Button

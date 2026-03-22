@@ -263,7 +263,7 @@ export default function MyPeerReviewClient({user }: {
             {/* Review Form Slide-over */}
             {activeReview && (
                 <div className="fixed inset-0 z-50 flex items-start justify-end bg-black/30" onClick={() => setActiveReview(null)}>
-                    <div className="h-full w-full max-w-xl overflow-y-auto bg-white shadow-xl" onClick={(e) => e.stopPropagation()}>
+                    <div className="h-full w-full max-w-xl overflow-y-auto bg-white shadow-lg" onClick={(e) => e.stopPropagation()}>
                         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[#F0F0F3] bg-white px-6 py-4">
                             <h2 className="text-lg font-bold text-[#1C1D21]">{activeReview.employeeName} 님에 대한 동료평가</h2>
                             <button onClick={() => setActiveReview(null)} className="text-[#8181A5] hover:text-[#1C1D21]"><X className="h-5 w-5" /></button>

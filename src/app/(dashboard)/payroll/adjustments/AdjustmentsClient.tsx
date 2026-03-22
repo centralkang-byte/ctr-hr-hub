@@ -444,7 +444,7 @@ export default function AdjustmentsClient({user }: Props) {
             {/* Add Adjustment Modal */}
             {showForm && (
                 <div className={MODAL_STYLES.container}>
-                    <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full mx-4 overflow-hidden">
+                    <div className="bg-white rounded-xl shadow-lg max-w-lg w-full mx-4 overflow-hidden">
                         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8E8E8]">
                             <h2 className="text-lg font-bold text-[#1A1A1A]">{t('kr_keca1b0ec_add')}</h2>
                             <button onClick={() => setShowForm(false)} className="p-1 hover:bg-[#F5F5F5] rounded-lg">

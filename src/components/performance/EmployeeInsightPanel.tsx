@@ -112,7 +112,7 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
         onClick={onClose}
       />
       {/* 사이드패널 */}
-      <div className="fixed right-0 top-0 h-full w-96 bg-white border-l border-[#E8E8E8] shadow-xl z-50 overflow-y-auto">
+      <div className="fixed right-0 top-0 h-full w-96 bg-white border-l border-[#E8E8E8] shadow-lg z-50 overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-[#E8E8E8] sticky top-0 bg-white">
           <div>
