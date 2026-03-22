@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "i18n:validate": "tsx scripts/validate-i18n-keys.ts",
+    "i18n:fix": "tsx scripts/validate-i18n-keys.ts --fix",
     "postinstall": "prisma generate",
     "seed:dev": "npx tsx prisma/seed-dev.ts",
     "test:e2e": "npx playwright test",

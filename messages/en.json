@@ -248,7 +248,10 @@
     "unitYear": "year",
     "unitPerson": " people",
     "unitCount": " items",
-    "unitMonth": " month(s)"
+    "unitMonth": " month(s)",
+    "noDataDesc": "No data matches the current filters. Try adjusting the filters or check back later.",
+    "completionRate": "Completion Rate",
+    "employee": "Employee"
   },
   "auth": {
     "login": "Login",
@@ -2202,7 +2205,18 @@
     "selfServiceDesc": "View offboarding tasks and required information.",
     "pageTitle": "Offboarding",
     "emptyTitle": "No active offboarding",
-    "emptyDesc": "No employees need exit processing."
+    "emptyDesc": "No employees need exit processing.",
+    "satisfactionDetail": "Satisfaction Detail",
+    "satisfactionCompensation": "Compensation Satisfaction",
+    "satisfactionCulture": "Culture Satisfaction",
+    "satisfactionManagement": "Management Satisfaction",
+    "satisfactionGrowth": "Growth Satisfaction",
+    "suggestions": "Suggestions",
+    "suggestionsPlaceholder": "Enter improvement suggestions",
+    "detailedReason": "Detailed Reason",
+    "detailedReasonPlaceholder": "Enter detailed reason for departure",
+    "isConfidential": "Confidential",
+    "isConfidentialDesc": "This interview content will be treated as confidential"
   },
   "salary": {
     "title": "Compensation Management",
@@ -2629,7 +2643,9 @@
     "applyWarning": "This action cannot be undone. All changes in the plan will take effect immediately.",
     "restructureSuccess": "Restructuring completed successfully.",
     "draftSaved": "Draft saved successfully.",
-    "searchDepts": "Search departments..."
+    "searchDepts": "Search departments...",
+    "name": "Name",
+    "searchResult": "Search Results"
   },
   "payroll": {
     "title": "Payroll",
@@ -2978,7 +2994,8 @@
     "average": "Medium",
     "shinhanBank": "Shinhan Bank",
     "start": "Start",
-    "hours": "Hours"
+    "hours": "Hours",
+    "reopenDescription": "Reopening closed attendance will reset payroll calculations. Do you want to continue?"
   },
   "analytics": {
     "title": "Analytics",
@@ -3107,7 +3124,8 @@
       "issuesTrend": "Late/Absent/Early-out Trend",
       "late": "Late",
       "absent": "Absent",
-      "earlyOut": "Early Out"
+      "earlyOut": "Early Out",
+      "retry": "Retry"
     },
     "recruitmentPage": {
       "title": "Recruitment Analysis",
@@ -5025,7 +5043,8 @@
     "emptyTitle": "No skill data",
     "emptyDesc": "No skills have been added yet",
     "skillMatrixTitle": "Skill Matrix",
-    "teamSkillsTitle": "Team Skills"
+    "teamSkillsTitle": "Team Skills",
+    "enterComment": "Enter a comment"
   },
   "lms": {
     "pageTitle": "Learning Management",
@@ -5086,7 +5105,24 @@
     "prevMonth": "vs. prev month",
     "avgDays": "Avg {days} days",
     "attritionBreakdown": "High {high} · Critical {critical}",
-    "trainingBreakdown": "{completed}/{total} completed"
+    "trainingBreakdown": "{completed}/{total} completed",
+    "widget": {
+      "gradeDistribution": "Grade Distribution",
+      "companyDistribution": "Company Distribution",
+      "hireTrend": "Hiring Trend",
+      "tenureDistribution": "Tenure Distribution",
+      "recruitPipeline": "Recruitment Pipeline",
+      "avgTimeToFill": "Avg. Time to Fill",
+      "talentPool": "Talent Pool",
+      "performanceGrade": "Performance Grade",
+      "skillGapTop5": "Skill Gap Top 5",
+      "overtime52h": "52h Overtime Risk",
+      "leaveTrend": "Leave Usage Trend",
+      "burnoutRisk": "Burnout Risk",
+      "payrollCost": "Payroll Cost",
+      "mandatoryTraining": "Mandatory Training",
+      "benefitsUsage": "Benefits Usage"
+    }
   },
   "mySpace": {
     "tasksTitle": "My Tasks",

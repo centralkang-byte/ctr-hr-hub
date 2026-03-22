@@ -248,7 +248,10 @@
     "unitYear": "year",
     "unitPerson": " people",
     "unitCount": " items",
-    "unitMonth": " month(s)"
+    "unitMonth": " month(s)",
+    "noDataDesc": "No hay datos que coincidan. Ajuste los filtros o vuelva a intentarlo más tarde.",
+    "completionRate": "Tasa de finalización",
+    "employee": "Empleado"
   },
   "auth": {
     "login": "Login",
@@ -1610,7 +1613,8 @@
     "targetEmployees": "Target Empleados",
     "totalNominations": "Total Nominations",
     "nominationCount": "# Nominations",
-    "avgScore": "Avg Puntuación"
+    "avgScore": "Avg Puntuación",
+    "recognitionCount": "Reconocimientos"
   },
   "recruitment": {
     "title": "Recruitment",
@@ -2201,7 +2205,18 @@
     "myOffboardingTitle": "My Offboarding",
     "myOffboardingEmpty": "No active offboarding process.",
     "selfServiceTitle": "Offboarding Self-Service",
-    "selfServiceDesc": "Ver offboarding tasks and required information."
+    "selfServiceDesc": "Ver offboarding tasks and required information.",
+    "satisfactionDetail": "Detalle de satisfacción",
+    "satisfactionCompensation": "Satisfacción con compensación",
+    "satisfactionCulture": "Satisfacción con cultura",
+    "satisfactionManagement": "Satisfacción con gestión",
+    "satisfactionGrowth": "Satisfacción con crecimiento",
+    "suggestions": "Sugerencias",
+    "suggestionsPlaceholder": "Ingrese sugerencias de mejora",
+    "detailedReason": "Razón detallada",
+    "detailedReasonPlaceholder": "Ingrese la razón detallada de salida",
+    "isConfidential": "Confidencial",
+    "isConfidentialDesc": "El contenido de esta entrevista será tratado como confidencial"
   },
   "salary": {
     "title": "Compensation Management",
@@ -2628,7 +2643,9 @@
     "confirmApply": "Confirmar Apply",
     "applyWarning": "This action cannot be undone. All changes in the plan will take effect immediately.",
     "restructureSuccess": "Restructuring completed successfully.",
-    "draftSaved": "Borrador saved successfully."
+    "draftSaved": "Borrador saved successfully.",
+    "name": "Nombre",
+    "searchResult": "Resultados de búsqueda"
   },
   "payroll": {
     "title": "Payroll",
@@ -2977,7 +2994,8 @@
     "kpiDeductionChange": "Total Deduccións Change",
     "kpiNetChange": "Pago neto Change",
     "current": "Current",
-    "simulated": "Simulated"
+    "simulated": "Simulated",
+    "reopenDescription": "Reabrir la asistencia cerrada restablecerá los cálculos de nómina. ¿Desea continuar?"
   },
   "analytics": {
     "title": "Analytics",
@@ -3084,7 +3102,8 @@
       "issuesTrend": "Late/Absent/Early-out Trend",
       "late": "Late",
       "absent": "Absent",
-      "earlyOut": "Early Out"
+      "earlyOut": "Early Out",
+      "retry": "Reintentar"
     },
     "recruitmentPage": {
       "title": "Recruitment Analysis",
@@ -3161,7 +3180,12 @@
       "jobCategory": "Job Category",
       "headcount": "Headcount",
       "average": "Average",
-      "median": "Median"
+      "median": "Median",
+      "underBand": "Bajo el mínimo",
+      "inBand": "Dentro del rango",
+      "overBand": "Sobre el máximo",
+      "compaRatio": "Compa-Ratio",
+      "compaRatioComparison": "Comparación Compa-Ratio"
     },
     "attritionPage": {
       "title": "Attrition Risk Analysis",
@@ -3337,7 +3361,29 @@
     "calculating": "계산...",
     "caution": "Precaución",
     "warning": "Advertencia",
-    "company_id": "Entidad"
+    "company_id": "Entidad",
+    "executive": {
+      "headcountTrend": "Tendencia de personal",
+      "turnoverTrend": "Tendencia de rotación",
+      "companyDistribution": "Distribución por entidad legal",
+      "riskAlerts": "Señales de riesgo",
+      "companyComparison": "Comparación de entidades",
+      "hires": "Ingreso",
+      "exits": "Salida",
+      "netChange": "Cambio neto",
+      "industryAvg": "Promedio del sector",
+      "turnoverRateLabel": "Tasa de rotación",
+      "detected": "{count} detectados",
+      "noRiskDetected": "No se detectaron señales de riesgo.",
+      "loadFailed": "No se pudieron cargar los datos",
+      "loadFailedDesc": "Error al cargar los datos. Actualice la página o intente nuevamente más tarde.",
+      "tooltipTotalEmp": "Total de empleados activos",
+      "tooltipTurnover": "Salidas del mes ÷ Personal al fin del mes anterior × 100",
+      "tooltipTenure": "Antigüedad promedio desde la fecha de ingreso",
+      "tooltipLaborCost": "Total de nómina confirmada por entidad (conversión KRW)",
+      "tooltipRecruitment": "Vacantes de reclutamiento activas",
+      "tooltipOnboarding": "Onboarding completado ÷ Total onboarding × 100"
+    }
   },
   "notification": {
     "title": "Notifications",
@@ -3397,7 +3443,8 @@
       "saved": "Guardard"
     },
     "noNotificationsDesc": "Notificacións will appear here.",
-    "allMarkedRead": "All notifications marked as read"
+    "allMarkedRead": "All notifications marked as read",
+    "viewAll": "Ver todo"
   },
   "succession": {
     "title": "Succession Planning",
@@ -4366,7 +4413,10 @@
       "approved": "Approved",
       "paid": "Paid",
       "cancelled": "Cancelled"
-    }
+    },
+    "highOrAbove": "High o superior",
+    "totalAnomalies": "Total de anomalías",
+    "noAnomalies": "Sin anomalías"
   },
   "payrollMe": {
     "title": "My Pay Stubs",
@@ -4374,7 +4424,10 @@
     "paid": "Paid",
     "grossPay": "Gross Pay",
     "deductions": "Deductions",
-    "netPay": "Net Pay"
+    "netPay": "Net Pay",
+    "unreadCount": "{count} recibos de nómina sin leer",
+    "momSame": "Igual al mes anterior",
+    "newBadge": "NUEVO"
   },
   "payStubDetail": {
     "titleWithMonth": "{month} Pay Stub",
@@ -4613,7 +4666,27 @@
       "legalBasis": "Base jurídica",
       "consentedAt": "Consentido el",
       "revokedAt": "Revocado el",
-      "expiresAt": "Caduca el"
+      "expiresAt": "Caduca el",
+      "piiAuditDesc": "Monitoreo de acceso a PII y seguimiento de auditoría",
+      "retentionDesc": "Política de retención de datos y gestión de ejecución",
+      "dpiaDesc": "Gestión de evaluación de impacto de protección de datos",
+      "riskLow": "Bajo",
+      "riskMedium": "Medio",
+      "riskHigh": "Alto",
+      "riskCritical": "Crítico",
+      "statusDraft": "Borrador",
+      "statusInReview": "En revisión",
+      "statusApproved": "Aprobado",
+      "statusRejected": "Rechazado",
+      "statusPending": "Pendiente",
+      "statusInProgress": "En proceso",
+      "statusCompleted": "Completado",
+      "requestAccess": "Derecho de acceso",
+      "requestErasure": "Derecho de supresión",
+      "requestPortability": "Derecho de portabilidad",
+      "requestRectification": "Derecho de rectificación",
+      "requestRestriction": "Derecho a limitar el procesamiento",
+      "requestObjection": "Derecho de oposición"
     },
     "ru": {
       "title": "Cumplimiento Rusia",
@@ -4634,7 +4707,8 @@
       "rejectDocument": "Rechazar",
       "rejectionReason": "Motivo de rechazo",
       "generateP4": "Generar informe P-4",
-      "generate57T": "Generar informe 57-T"
+      "generate57T": "Generar informe 57-T",
+      "description": "Registro militar, documentos electrónicos (KEDO), informes legales"
     },
     "cn": {
       "title": "Cumplimiento China",
@@ -4650,7 +4724,8 @@
       "baseMax": "Base máxima",
       "calculate": "Calcular seguro mensual",
       "exportReport": "Exportar informe",
-      "exportRegistry": "Exportar registro"
+      "exportRegistry": "Exportar registro",
+      "description": "Seguro social (五险一金), gestión de registro de empleados"
     },
     "kr": {
       "title": "Cumplimiento Corea",
@@ -4673,7 +4748,8 @@
       "requestDate": "Fecha de solicitud",
       "approvedAt": "Aprobado el",
       "paidAt": "Pagado el",
-      "calculateSeverance": "Calcular indemnización"
+      "calculateSeverance": "Calcular indemnización",
+      "description": "Monitoreo 52 horas, capacitación legal, gestión de indemnización"
     },
     "status": {
       "DRAFT": "Borrador",
@@ -4949,7 +5025,8 @@
     "emptyTitle": "No skills data",
     "emptyDesc": "Register employee skills.",
     "skillMatrixTitle": "Skill Matrix",
-    "teamSkillsTitle": "Team Skills"
+    "teamSkillsTitle": "Team Skills",
+    "enterComment": "Ingrese un comentario"
   },
   "lms": {
     "pageTitle": "Learning Management",
@@ -5010,7 +5087,24 @@
     "prevMonth": "vs. mes anterior",
     "avgDays": "Promedio {days} días",
     "attritionBreakdown": "Alto {high} · Crítico {critical}",
-    "trainingBreakdown": "{completed}/{total} completados"
+    "trainingBreakdown": "{completed}/{total} completados",
+    "widget": {
+      "gradeDistribution": "Distribución por grado",
+      "companyDistribution": "Distribución por empresa",
+      "hireTrend": "Tendencia de contratación",
+      "tenureDistribution": "Distribución por antigüedad",
+      "recruitPipeline": "Pipeline de reclutamiento",
+      "avgTimeToFill": "Tiempo promedio de cobertura",
+      "talentPool": "Pool de talento",
+      "performanceGrade": "Calificación de desempeño",
+      "skillGapTop5": "Brecha de habilidades Top 5",
+      "overtime52h": "Riesgo horas extra 52h",
+      "leaveTrend": "Tendencia de vacaciones",
+      "burnoutRisk": "Riesgo de agotamiento",
+      "payrollCost": "Costo de nómina",
+      "mandatoryTraining": "Capacitación obligatoria",
+      "benefitsUsage": "Uso de beneficios"
+    }
   },
   "mySpace": {
     "tasksTitle": "My Tasks",
@@ -5095,7 +5189,18 @@
     "emptyBenefitClaim": "No claims yet",
     "emptyBenefitClaimDesc": "You haven't submitted any benefit claims yet.",
     "emptyTitle": "No data",
-    "emptyDesc": "Nothing has been added yet"
+    "emptyDesc": "Nothing has been added yet",
+    "atGlance": {
+      "team": "Departamento",
+      "tenure": "Antigüedad",
+      "years": "años",
+      "joined": "Ingreso",
+      "certLang": "Certificaciones/Idiomas",
+      "certCount": "{count} certificaciones",
+      "langCount": "{count} idiomas",
+      "skills": "Habilidades",
+      "skillCount": "habilidades"
+    }
   },
   "directory": {
     "pageTitle": "People Directory",

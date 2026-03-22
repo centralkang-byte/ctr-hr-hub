@@ -248,7 +248,10 @@
     "unitYear": "년",
     "unitPerson": "명",
     "unitCount": "건",
-    "unitMonth": "개월"
+    "unitMonth": "개월",
+    "noDataDesc": "조건에 맞는 데이터가 없습니다. 필터를 변경하거나 나중에 다시 확인해 주세요.",
+    "completionRate": "완료율",
+    "employee": "직원"
   },
   "auth": {
     "login": "로그인",
@@ -2202,7 +2205,18 @@
     "selfServiceDesc": "퇴직 과정에서 필요한 정보와 태스크를 확인합니다.",
     "pageTitle": "오프보딩 관리",
     "emptyTitle": "진행 중인 오프보딩이 없습니다",
-    "emptyDesc": "퇴직 처리가 필요한 직원이 없습니다."
+    "emptyDesc": "퇴직 처리가 필요한 직원이 없습니다.",
+    "satisfactionDetail": "만족도 상세",
+    "satisfactionCompensation": "보상 만족도",
+    "satisfactionCulture": "문화 만족도",
+    "satisfactionManagement": "경영진 만족도",
+    "satisfactionGrowth": "성장 만족도",
+    "suggestions": "건의 사항",
+    "suggestionsPlaceholder": "개선 건의 사항을 입력해 주세요",
+    "detailedReason": "상세 사유",
+    "detailedReasonPlaceholder": "상세 퇴직 사유를 입력해 주세요",
+    "isConfidential": "비공개",
+    "isConfidentialDesc": "이 면담 내용은 비공개로 처리됩니다"
   },
   "salary": {
     "title": "보상 관리",
@@ -2629,7 +2643,9 @@
     "applyWarning": "이 작업은 되돌릴 수 없습니다. 계획의 모든 변경 사항이 즉시 반영됩니다.",
     "restructureSuccess": "조직 개편이 완료되었습니다.",
     "draftSaved": "초안이 저장되었습니다.",
-    "searchDepts": "부서 검색..."
+    "searchDepts": "부서 검색...",
+    "name": "이름",
+    "searchResult": "검색 결과"
   },
   "payroll": {
     "title": "급여 관리",
@@ -2978,7 +2994,8 @@
     "average": "보통",
     "shinhanBank": "신한은행",
     "start": "시작",
-    "hours": "시간"
+    "hours": "시간",
+    "reopenDescription": "마감된 근태를 다시 열면 급여 계산이 초기화됩니다. 계속하시겠습니까?"
   },
   "analytics": {
     "title": "분석/리포트",
@@ -3107,7 +3124,8 @@
       "issuesTrend": "지각/결근/조퇴 트렌드",
       "late": "지각",
       "absent": "결근",
-      "earlyOut": "조퇴"
+      "earlyOut": "조퇴",
+      "retry": "다시 시도"
     },
     "recruitmentPage": {
       "title": "채용 분석",
@@ -5025,7 +5043,8 @@
     "emptyTitle": "스킬 데이터가 없습니다",
     "emptyDesc": "아직 등록된 스킬이 없습니다",
     "skillMatrixTitle": "스킬 매트릭스",
-    "teamSkillsTitle": "팀 스킬"
+    "teamSkillsTitle": "팀 스킬",
+    "enterComment": "코멘트를 입력하세요"
   },
   "lms": {
     "pageTitle": "교육 관리",
@@ -5086,7 +5105,24 @@
     "prevMonth": "전월 대비",
     "avgDays": "평균 {days}일",
     "attritionBreakdown": "High {high}명 · Critical {critical}명",
-    "trainingBreakdown": "{completed}/{total}명 이수"
+    "trainingBreakdown": "{completed}/{total}명 이수",
+    "widget": {
+      "gradeDistribution": "직급별 분포",
+      "companyDistribution": "법인별 분포",
+      "hireTrend": "채용 추이",
+      "tenureDistribution": "근속연수 분포",
+      "recruitPipeline": "채용 파이프라인",
+      "avgTimeToFill": "평균 충원 소요일",
+      "talentPool": "인재 풀",
+      "performanceGrade": "성과 등급",
+      "skillGapTop5": "Skill Gap Top 5",
+      "overtime52h": "52시간 초과 위험",
+      "leaveTrend": "휴가 사용 추이",
+      "burnoutRisk": "번아웃 위험",
+      "payrollCost": "급여 비용",
+      "mandatoryTraining": "필수 교육",
+      "benefitsUsage": "복리후생 사용 현황"
+    }
   },
   "mySpace": {
     "tasksTitle": "나의 업무",
