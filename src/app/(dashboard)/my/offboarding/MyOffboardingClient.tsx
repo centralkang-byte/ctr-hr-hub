@@ -241,7 +241,7 @@ export function MyOffboardingClient() {
   if (loading) {
     return (
       <div className="space-y-4">
-        <div className="h-32 animate-pulse rounded-2xl bg-[#F5F5FA]" />
+        <div className="h-32 animate-pulse rounded-xl bg-[#F5F5FA]" />
         <div className="space-y-2">
           {[1, 2, 3, 4].map(i => <div key={i} className="h-16 animate-pulse rounded-xl bg-[#F5F5FA]" />)}
         </div>
@@ -277,7 +277,7 @@ export function MyOffboardingClient() {
   return (
     <div className="space-y-6">
       {/* ── Header card ── */}
-      <div className="rounded-2xl border border-[#F0F0F3] bg-white p-6">
+      <div className="rounded-xl border border-[#F0F0F3] bg-white p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-xl font-bold text-[#1C1D21]">나의 퇴직 처리</h1>

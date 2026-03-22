@@ -280,7 +280,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#5E81F4]/5 rounded-full blur-3xl pointer-events-none" />
         
         <div className="relative shrink-0">
-          <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#5E81F4] to-[#4B6DE0] flex items-center justify-center text-white text-3xl font-bold shadow-md">
+          <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-[#5E81F4] to-[#4B6DE0] flex items-center justify-center text-white text-3xl font-bold shadow-md">
             {employee.name.slice(0, 1)}
           </div>
           <button
@@ -712,7 +712,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
       {/* ── Modal: Emergency Contact ── */}
       {showEcForm && (
         <div className={MODAL_STYLES.container}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-[#1A1A1A]">비상연락처 추가</h3>
               <button onClick={() => setShowEcForm(false)} className="text-[#999] hover:text-[#333]"><X className="w-5 h-5" /></button>
@@ -755,7 +755,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
       {/* ── Modal: Change Request ── */}
       {changeReqField && (
         <div className={MODAL_STYLES.container}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-[#1A1A1A]">정보 변경 요청</h3>
               <button onClick={() => setChangeReqField(null)} className="text-[#999] hover:text-[#333]"><X className="w-5 h-5" /></button>

@@ -443,7 +443,7 @@ export default function PipelineClient({ user, postingId }: Props) {
               setRejectionModal({ open: false, applicationId: '', reason: '' })
             }
           />
-          <div className="relative bg-white border border-[#E8E8E8] rounded-2xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
+          <div className="relative bg-white border border-[#E8E8E8] rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <h2
                 className="text-lg font-bold text-[#333]"
@@ -504,7 +504,7 @@ export default function PipelineClient({ user, postingId }: Props) {
               })
             }
           />
-          <div className="relative bg-white border border-[#E8E8E8] rounded-2xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
+          <div className="relative bg-white border border-[#E8E8E8] rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <h2
                 className="text-lg font-bold text-[#333]"

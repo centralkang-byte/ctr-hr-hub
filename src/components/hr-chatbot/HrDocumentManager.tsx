@@ -134,7 +134,7 @@ export function HrDocumentManager({ user: _user }: HrDocumentManagerProps) {
       {/* Upload Dialog */}
       {showUpload && (
         <div className={MODAL_STYLES.container}>
-          <div className="mx-4 w-full max-w-2xl rounded-xl bg-white p-6 shadow-xl">
+          <div className="mx-4 w-full max-w-2xl rounded-xl bg-white p-6 shadow-lg">
             <h3 className="mb-4 text-lg font-semibold text-ctr-gray-900">
               <Upload className="mr-2 inline h-5 w-5" />
               문서 추가
@@ -222,7 +222,7 @@ export function HrDocumentManager({ user: _user }: HrDocumentManagerProps) {
       {/* Delete Confirmation */}
       {deleteId && (
         <div className={MODAL_STYLES.container}>
-          <div className="mx-4 w-full max-w-sm rounded-xl bg-white p-6 shadow-xl">
+          <div className="mx-4 w-full max-w-sm rounded-xl bg-white p-6 shadow-lg">
             <h3 className="mb-2 text-lg font-semibold text-ctr-gray-900">
               문서 삭제
             </h3>

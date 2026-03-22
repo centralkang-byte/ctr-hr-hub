@@ -475,7 +475,7 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
 
   return (
     <div className={MODAL_STYLES.container}>
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-xl shadow-lg w-full max-w-3xl max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8E8E8] shrink-0">
           <div className="flex items-center gap-2">

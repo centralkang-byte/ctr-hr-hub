@@ -16,7 +16,7 @@ interface SettingsTabPlaceholderProps {
 export function SettingsTabPlaceholder({ tabLabel, description, phase = 'H-2' }: SettingsTabPlaceholderProps) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
-      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F5F5FA]">
+      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-[#F5F5FA]">
         <Construction className="h-7 w-7 text-[#8181A5]" />
       </div>
       <h3 className="mb-1 text-base font-semibold text-[#1C1D21]">{tabLabel}</h3>

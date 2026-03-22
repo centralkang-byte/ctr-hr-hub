@@ -334,7 +334,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             {/* Reject Modal */}
             {showReject && (
                 <div className={MODAL_STYLES.container}>
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+                    <div className="bg-white rounded-xl shadow-lg w-full max-w-md">
                         <div className="p-5 border-b border-[#E8E8E8] flex items-center justify-between">
                             <h3 className="font-bold text-lg text-[#1A1A1A]">{t('reject_kec82acec_kec9e85eb')}</h3>
                             <button onClick={() => setShowReject(false)} className="text-[#999] hover:text-[#333]">

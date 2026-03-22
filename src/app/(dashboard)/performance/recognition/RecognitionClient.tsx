@@ -382,7 +382,7 @@ export default function RecognitionClient() {
       {/* Create Modal */}
       {showCreateModal && (
         <div className={MODAL_STYLES.container}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-md">
             <div className="p-6 border-b border-[#E8E8E8]">
               <h3 className="text-lg font-semibold text-[#1A1A1A]">{t('kr_kecb9adec_kebb3b4eb')}</h3>
             </div>

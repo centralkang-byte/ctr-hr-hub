@@ -161,7 +161,7 @@ function RadarModal({
 
   return (
     <div className={MODAL_STYLES.container}>
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl">
+      <div className="bg-white rounded-xl shadow-lg w-full max-w-xl">
         <div className="flex items-center justify-between p-5 border-b border-[#E8E8E8]">
           <div>
             <h2 className="text-lg font-semibold text-[#1A1A1A]">

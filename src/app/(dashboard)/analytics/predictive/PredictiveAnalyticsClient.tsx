@@ -117,7 +117,7 @@ const RISK_COLORS: Record<RiskLevel, string> = {
 const CHART_THEME = {
   grid: { stroke: '#F5F5F5', strokeDasharray: '3 3' },
   tooltip: {
-    contentStyle: { borderRadius: '8px', border: '1px solid #E8E8E8', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' },
+    contentStyle: { borderRadius: '8px', border: '1px solid #E8E8E8', boxShadow: '0 4px 16px rgba(15,23,42,0.06)' },
     labelStyle: { fontWeight: 600, color: '#1A1A1A' },
   },
   colors: ['#5E81F4', '#22C55E', '#F59E0B', '#8B5CF6', '#EF4444'],
