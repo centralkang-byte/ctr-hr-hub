@@ -437,7 +437,7 @@ export function EmployeeDetailClient({
         <div>
           <h3 className="mb-3 text-base font-bold text-[#1A1A1A] tracking-ctr">{t('employmentInfo')}</h3>
           <dl className="grid grid-cols-1 gap-x-8 gap-y-0 md:grid-cols-2">
-            <InfoRow label={t('employeeCode')} value={<span className="font-mono">{employee.employeeNo}</span>} />
+            <InfoRow label={t('employeeCode')} value={<span className="font-mono tabular-nums">{employee.employeeNo}</span>} />
             <InfoRow label={t('companyEntity')} value={employee.company?.name} />
             <InfoRow label={t('department')} value={employee.department?.name} />
             <InfoRow label={t('jobGrade')} value={employee.jobGrade?.name} />
@@ -710,7 +710,7 @@ export function EmployeeDetailClient({
                     {offboardingData.handoverToId && (
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">{t('handoverToId')}</span>
-                        <span className="font-mono text-xs font-medium">{offboardingData.handoverToId}</span>
+                        <span className="font-mono tabular-nums text-xs font-medium">{offboardingData.handoverToId}</span>
                       </div>
                     )}
                   </div>

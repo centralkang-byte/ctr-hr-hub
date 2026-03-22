@@ -214,7 +214,7 @@ export default function EmployeeRegistryTab() {
                     key={row.employeeNo}
                     className={TABLE_STYLES.row}
                   >
-                    <td className="px-4 py-3 font-mono text-[#555] text-xs">
+                    <td className="px-4 py-3 font-mono tabular-nums text-[#555] text-xs">
                       {row.employeeNo}
                     </td>
                     <td className="px-4 py-3">

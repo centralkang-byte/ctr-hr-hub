@@ -234,7 +234,7 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
                 className={isExpiringSoon(p.expiryDate) && p.status === 'ACTIVE' ? 'bg-[#FEFCE8]' : ''}
               >
                 <TableCell>{PERMIT_TYPE_LABELS[p.permitType] ?? p.permitType}</TableCell>
-                <TableCell className="font-mono text-sm">{p.permitNumber ?? '-'}</TableCell>
+                <TableCell className="font-mono tabular-nums text-sm">{p.permitNumber ?? '-'}</TableCell>
                 <TableCell>{p.issuingCountry}</TableCell>
                 <TableCell>{format(new Date(p.issueDate), 'yyyy-MM-dd')}</TableCell>
                 <TableCell>

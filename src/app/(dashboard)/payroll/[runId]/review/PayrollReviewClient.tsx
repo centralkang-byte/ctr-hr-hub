@@ -923,7 +923,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                   <tr key={entry.id} className={TABLE_STYLES.row}>
                     <td className={cn(TABLE_STYLES.cell, "font-medium")}>{entry.employee.name}</td>
                     <td className={TABLE_STYLES.cell}>
-                      <span className="px-2 py-1 bg-[#F5F5F5] rounded text-xs font-mono text-[#555]">{entry.ruleCode}</span>
+                      <span className="px-2 py-1 bg-[#F5F5F5] rounded text-xs font-mono tabular-nums text-[#555]">{entry.ruleCode}</span>
                     </td>
                     <td className={TABLE_STYLES.cellMuted}>{entry.whitelistReason ?? '—'}</td>
                     <td className={cn(TABLE_STYLES.cellMuted, "text-xs")}>{entry.payrollRun?.yearMonth}</td>

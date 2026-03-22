@@ -63,9 +63,9 @@ function DetailRow({ label, c, s }: { label: string; c: number; s: number }) {
   return (
     <tr className={TABLE_STYLES.row}>
       <td className={TABLE_STYLES.cell}>{label}</td>
-      <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(c)}</td>
-      <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(s)}</td>
-      <td className={cn(TABLE_STYLES.cell, "text-right font-mono", diffColor(d))}>{signedKRW(d)}</td>
+      <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(c)}</td>
+      <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(s)}</td>
+      <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(d))}>{signedKRW(d)}</td>
     </tr>
   )
 }
@@ -95,9 +95,9 @@ function EmployeeExpandedDetail({ emp }: { emp: EmployeeSimResult }) {
                 <DetailRow label="교통비" c={c.transportAllowance} s={s.transportAllowance} />
                 <tr className={cn(TABLE_STYLES.row, "bg-[#FAFAFA] font-semibold")}>
                   <td className={TABLE_STYLES.cell}>{'총 지급액'}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(c.grossPay)}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(s.grossPay)}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono", diffColor(s.grossPay - c.grossPay))}>{signedKRW(s.grossPay - c.grossPay)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(c.grossPay)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(s.grossPay)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(s.grossPay - c.grossPay))}>{signedKRW(s.grossPay - c.grossPay)}</td>
                 </tr>
                 <DetailRow label="국민연금" c={c.nationalPension} s={s.nationalPension} />
                 <DetailRow label="건강보험" c={c.healthInsurance} s={s.healthInsurance} />
@@ -107,15 +107,15 @@ function EmployeeExpandedDetail({ emp }: { emp: EmployeeSimResult }) {
                 <DetailRow label="지방소득세" c={c.localIncomeTax} s={s.localIncomeTax} />
                 <tr className={cn(TABLE_STYLES.row, "bg-[#FAFAFA] font-semibold")}>
                   <td className={TABLE_STYLES.cell}>{'총 공제액'}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(c.totalDeductions)}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(s.totalDeductions)}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono", diffColor(s.totalDeductions - c.totalDeductions))}>{signedKRW(s.totalDeductions - c.totalDeductions)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(c.totalDeductions)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(s.totalDeductions)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(s.totalDeductions - c.totalDeductions))}>{signedKRW(s.totalDeductions - c.totalDeductions)}</td>
                 </tr>
                 <tr className={cn(TABLE_STYLES.row, "bg-[#EFF6FF] font-bold")}>
                   <td className={TABLE_STYLES.cell}>{'실수령액'}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono text-[#1D4ED8]")}>{fmtKRW(c.netPay)}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono text-[#1D4ED8]")}>{fmtKRW(s.netPay)}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono", diffColor(s.netPay - c.netPay))}>{signedKRW(s.netPay - c.netPay)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums text-[#1D4ED8]")}>{fmtKRW(c.netPay)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums text-[#1D4ED8]")}>{fmtKRW(s.netPay)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(s.netPay - c.netPay))}>{signedKRW(s.netPay - c.netPay)}</td>
                 </tr>
               </tbody>
             </table>
@@ -577,9 +577,9 @@ export default function PayrollSimulationClient({ user, companies, departments }
                           <tr key={dept.department} className={TABLE_STYLES.row}>
                             <td className={TABLE_STYLES.cell}>{dept.department}</td>
                             <td className={cn(TABLE_STYLES.cell, "text-right")}>{dept.employeeCount}명</td>
-                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(dept.currentGross)}</td>
-                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(dept.simulatedGross)}</td>
-                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono", diffColor(dept.difference))}>{signedKRW(dept.difference)}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(dept.currentGross)}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(dept.simulatedGross)}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(dept.difference))}>{signedKRW(dept.difference)}</td>
                             <td className={cn(TABLE_STYLES.cell, "text-right", diffColor(dept.difference))}>
                               {dept.currentGross > 0 ? pctStr(dept.difference / dept.currentGross) : '—'}
                             </td>
@@ -588,9 +588,9 @@ export default function PayrollSimulationClient({ user, companies, departments }
                         <tr className={cn(TABLE_STYLES.row, "bg-[#FAFAFA] font-semibold")}>
                           <td className={TABLE_STYLES.cell}>{tCommon('total')}</td>
                           <td className={cn(TABLE_STYLES.cell, "text-right")}>{sm.employeeCount}{tCommon('unit.person')}</td>
-                          <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(totals.currentGross)}</td>
-                          <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(totals.simulatedGross)}</td>
-                          <td className={cn(TABLE_STYLES.cell, "text-right font-mono", diffColor(totals.grossDifference))}>{signedKRW(totals.grossDifference)}</td>
+                          <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(totals.currentGross)}</td>
+                          <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(totals.simulatedGross)}</td>
+                          <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(totals.grossDifference))}>{signedKRW(totals.grossDifference)}</td>
                           <td className={cn(TABLE_STYLES.cell, "text-right", diffColor(totals.grossDifference))}>{pctStr(totals.grossChangeRate)}</td>
                         </tr>
                       </tbody>
@@ -629,9 +629,9 @@ export default function PayrollSimulationClient({ user, companies, departments }
                             </td>
                             <td className={TABLE_STYLES.cell}>{emp.department}</td>
                             <td className={TABLE_STYLES.cell}>{emp.position}</td>
-                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(emp.current.netPay)}</td>
-                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono")}>{fmtKRW(emp.simulated.netPay)}</td>
-                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono", diffColor(netDiff))}>
+                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(emp.current.netPay)}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(emp.simulated.netPay)}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(netDiff))}>
                               {diffArrow(netDiff)}{fmtKRW(Math.abs(netDiff))}
                             </td>
                             <td className={cn(TABLE_STYLES.cell, "text-right", diffColor(netDiff))}>{pctStr(netRate)}</td>

@@ -578,9 +578,9 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                         const ist = ITEM_STATUS_MAP[item.status] ?? ITEM_STATUS_MAP.PENDING
                         return (
                           <tr key={item.id} className={TABLE_STYLES.row}>
-                            <td className={cn(TABLE_STYLES.cell, "font-mono text-xs")}>{item.employeeNo}</td>
+                            <td className={cn(TABLE_STYLES.cell, "font-mono tabular-nums text-xs")}>{item.employeeNo}</td>
                             <td className={cn(TABLE_STYLES.cell, "font-medium")}>{item.employeeName}</td>
-                            <td className={cn(TABLE_STYLES.cell, "font-mono text-xs")}>{item.accountNumber}</td>
+                            <td className={cn(TABLE_STYLES.cell, "font-mono tabular-nums text-xs")}>{item.accountNumber}</td>
                             <td className={TABLE_STYLES.cell}>{item.accountHolder}</td>
                             <td className={cn(TABLE_STYLES.cell, "text-right font-medium")}>{formatAmount(item.amount)}</td>
                             <td className={cn(TABLE_STYLES.cell, "text-center")}>

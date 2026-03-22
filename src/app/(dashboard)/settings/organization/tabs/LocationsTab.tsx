@@ -256,7 +256,7 @@ export function LocationsTab({ companyId }: Props) {
               {locations.map((loc) => (
                 <tr key={loc.id} className={TABLE_STYLES.row}>
                   <td className={TABLE_STYLES.cell}>
-                    <span className="font-mono text-xs">{loc.code}</span>
+                    <span className="font-mono tabular-nums text-xs">{loc.code}</span>
                   </td>
                   <td className={TABLE_STYLES.cell}>
                     <div>{loc.name}</div>

@@ -86,6 +86,9 @@ const config: Config = {
 					900: '#0F172A',
 				},
 			},
+			fontSize: {
+				'2xs': ['0.6875rem', { lineHeight: '1.4' }],  // 11px — table headers
+			},
 			letterSpacing: {
 				'ctr': '-0.02em',
 			},
