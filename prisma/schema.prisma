@@ -80,6 +80,19 @@ enum DocType {
   OTHER
 }
 
+enum CertificateRequestType {
+  EMPLOYMENT_CERT
+  CAREER_CERT
+  INCOME_CERT
+}
+
+enum CertificateRequestStatus {
+  REQUESTED
+  APPROVED
+  ISSUED
+  REJECTED
+}
+
 enum OffboardingTargetType {
   VOLUNTARY
   INVOLUNTARY
@@ -922,6 +935,9 @@ model Company {
   // B-2a: Work Locations
   workLocations          WorkLocation[]
 
+  // Certificate Requests
+  certificateRequests    CertificateRequest[]
+
   @@map("companies")
 }
 
@@ -1420,6 +1436,10 @@ model Employee {
   delegationsAsDelegatee ApprovalDelegation[]     @relation("DelegationDelegatee")
   leaveApprovalsDelegated LeaveRequest[]          @relation("LeaveDelegatee")
   leaveCancelled          LeaveRequest[]          @relation("LeaveCanceller")
+
+  // Certificate Requests
+  certificateRequests         CertificateRequest[] @relation("CertRequestEmployee")
+  certificateRequestApprovals CertificateRequest[] @relation("CertRequestApprover")
 
   @@index([deletedAt])
   @@index([hireDate])
@@ -6046,4 +6066,31 @@ model WorkLocation {
 
   @@unique([companyId, code])
   @@map("work_locations")
+}
+
+// ================================================================
+// Certificate Request (증명서 발급 요청)
+// ================================================================
+
+model CertificateRequest {
+  id             String                    @id @default(uuid())
+  employeeId     String                    @map("employee_id")
+  companyId      String                    @map("company_id")
+  type           CertificateRequestType
+  purpose        String?
+  status         CertificateRequestStatus  @default(REQUESTED)
+  rejectedReason String?                   @map("rejected_reason")
+  issuedFileKey  String?                   @map("issued_file_key")
+  requestedAt    DateTime                  @default(now()) @map("requested_at")
+  approvedAt     DateTime?                 @map("approved_at")
+  issuedAt       DateTime?                 @map("issued_at")
+  approvedBy     String?                   @map("approved_by")
+
+  employee Employee  @relation("CertRequestEmployee", fields: [employeeId], references: [id])
+  company  Company   @relation(fields: [companyId], references: [id])
+  approver Employee? @relation("CertRequestApprover", fields: [approvedBy], references: [id])
+
+  @@index([employeeId])
+  @@index([companyId, status])
+  @@map("certificate_requests")
 }

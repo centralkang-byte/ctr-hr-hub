@@ -4801,7 +4801,12 @@
       "approvalsInbox": "Approval Inbox",
       "myOnboarding": "My Onboarding",
       "myOffboarding": "My Offboarding",
-      "myTasks": "My Tasks"
+      "myTasks": "My Tasks",
+      "documents": "Documents",
+      "internalJobs": "Internal Jobs",
+      "notificationSettings": "Notification Settings",
+      "directory": "People Directory",
+      "orgChart": "Org Chart"
     },
     "team": {
       "label": "Team",

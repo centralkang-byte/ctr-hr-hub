@@ -4801,7 +4801,12 @@
       "approvalsInbox": "승인함",
       "myOnboarding": "나의 온보딩",
       "myOffboarding": "나의 퇴직처리",
-      "myTasks": "나의 업무"
+      "myTasks": "나의 업무",
+      "documents": "문서/증명서",
+      "internalJobs": "사내 채용",
+      "notificationSettings": "알림 설정",
+      "directory": "구성원 검색",
+      "orgChart": "조직도"
     },
     "team": {
       "label": "팀 관리",
