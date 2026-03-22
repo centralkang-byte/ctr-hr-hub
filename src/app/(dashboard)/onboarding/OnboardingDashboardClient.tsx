@@ -163,23 +163,31 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
     fetchData()
   }, [fetchData])
 
-  // ─── Force complete handler ───
+  // ─── Force complete handler (optimistic UI) ───
   const handleForceComplete = useCallback(async () => {
     if (!forceTarget || !forceReason.trim()) return
     setForceLoading(true)
+    const targetId = forceTarget.id
+    const prevData = data
+    // 낙관적 업데이트: 즉시 완료 상태로 전환
+    setData(prev => prev.map(row =>
+      row.id === targetId
+        ? { ...row, status: 'COMPLETED', progress: { ...row.progress, completed: row.progress.total }, isDelayed: false }
+        : row
+    ))
+    setForceTarget(null)
+    setForceReason('')
     try {
-      await apiClient.put(`/api/v1/onboarding/${forceTarget.id}/force-complete`, {
+      await apiClient.put(`/api/v1/onboarding/${targetId}/force-complete`, {
         reason: forceReason.trim(),
       })
-      setForceTarget(null)
-      setForceReason('')
-      fetchData()
+      fetchData() // 서버 데이터로 동기화
     } catch {
-      // Error handled by apiClient
+      setData(prevData) // 롤백
     } finally {
       setForceLoading(false)
     }
-  }, [forceTarget, forceReason, fetchData])
+  }, [forceTarget, forceReason, fetchData, data])
 
   // ─── Pagination ───
   const totalPages = pagination?.totalPages ?? 1

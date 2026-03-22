@@ -145,7 +145,7 @@ export default function ExecutiveSummaryClient() {
               <PieChart>
                 <Pie data={charts.companyDistribution} dataKey="count" nameKey="company" cx="50%" cy="50%" outerRadius={100}
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  label={(entry: any) => `${entry.company} ${entry.percentage}%`} labelLine={{ strokeWidth: 1 }}> // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma result mapping callback
+                  label={(entry: any) => `${entry.company} ${entry.percentage}%`} labelLine={{ strokeWidth: 1 }}>
                   {charts.companyDistribution.map((_, i) => (
                     <Cell key={i} fill={[CHART_COLORS.primary, ...CHART_COLORS.secondary][i % 8]} />
                   ))}
