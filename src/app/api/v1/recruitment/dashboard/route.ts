@@ -6,6 +6,7 @@ import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
+import { withCache, CACHE_STRATEGY } from '@/lib/cache'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 
@@ -35,7 +36,7 @@ const STAGE_ORDER = [
 
 // ─── GET /api/v1/recruitment/dashboard ───────────────────
 
-export const GET = withPermission(
+export const GET = withCache(withPermission(
   async (_req: NextRequest, _context, user: SessionUser) => {
     const companyFilter =
       user.role === ROLE.SUPER_ADMIN ? {} : { companyId: user.companyId }
@@ -172,4 +173,4 @@ export const GET = withPermission(
     })
   },
   perm(MODULE.RECRUITMENT, ACTION.VIEW),
-)
+), CACHE_STRATEGY.RECRUITMENT, 'company')

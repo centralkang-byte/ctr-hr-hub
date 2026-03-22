@@ -1,4 +1,6 @@
+import { Suspense } from 'react'
 import ExecutiveSummaryClient from './ExecutiveSummaryClient'
+import { AnalyticsSkeleton } from '@/components/shared/PageSkeleton'
 
 export default function AnalyticsPage() {
   return (
@@ -7,7 +9,9 @@ export default function AnalyticsPage() {
         <h1 className="text-2xl font-bold text-gray-900">Executive Summary</h1>
         <p className="text-sm text-gray-500 mt-1">{'전사 인사 현황을 한눈에 파악하고 효율적으로 관리합니다.'}</p>
       </div>
-      <ExecutiveSummaryClient />
+      <Suspense fallback={<AnalyticsSkeleton />}>
+        <ExecutiveSummaryClient />
+      </Suspense>
     </div>
   )
 }

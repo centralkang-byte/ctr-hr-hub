@@ -6,6 +6,7 @@
 import { NextRequest } from 'next/server'
 import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
+import { withCache, CACHE_STRATEGY } from '@/lib/cache'
 import { MODULE, ACTION } from '@/lib/constants'
 import { attendanceQuerySchema } from '@/lib/schemas/analytics'
 import {
@@ -16,7 +17,7 @@ import {
 } from '@/lib/analytics/queries'
 import type { AttendanceData } from '@/lib/analytics/types'
 
-export const GET = withPermission(
+export const GET = withCache(withPermission(
   async (req: NextRequest) => {
     const { searchParams } = new URL(req.url)
     const { company_id: companyId, weeks } = attendanceQuerySchema.parse({
@@ -53,4 +54,4 @@ export const GET = withPermission(
     return apiSuccess(data)
   },
   perm(MODULE.ANALYTICS, ACTION.VIEW),
-)
+), CACHE_STRATEGY.ANALYTICS, 'company')

@@ -12,6 +12,12 @@
 - **Sessions**: `~/Documents/Obsidian Vault/projects/hr-hub/sessions/`
 - **SessionStart hook**: `.claude/hooks/session-start.sh` → loads STATUS.md automatically
 
+## Plans
+
+- **저장 경로**: `docs/plans/active/` (프로젝트 내부)
+- `.claude/plans/` 사용 금지 — 반드시 `docs/plans/active/`에 저장
+- 네이밍: `YYYY-MM-DD-<topic>.md`
+
 ## Session End Routine
 
 When the user says "STATUS.md 업데이트해줘" or ends a session:

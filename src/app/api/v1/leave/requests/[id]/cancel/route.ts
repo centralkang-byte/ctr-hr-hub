@@ -15,6 +15,7 @@ import { badRequest, notFound, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
+import { invalidateMultiple, CACHE_STRATEGY } from '@/lib/cache'
 import type { SessionUser } from '@/types'
 
 // ─── Helper: HR_ADMIN or above ───────────────────────────
@@ -97,6 +98,7 @@ export const PUT = withPermission(
       })
 
       await auditCancel(req, user, request, 'PENDING_CANCEL', 0)
+      void invalidateMultiple([CACHE_STRATEGY.DASHBOARD_KPI, CACHE_STRATEGY.SIDEBAR], request.companyId)
 
       return apiSuccess({
         ...updated,
@@ -138,6 +140,7 @@ export const PUT = withPermission(
       })
 
       await auditCancel(req, user, request, 'PRE_START_CANCEL', daysToRestore)
+      void invalidateMultiple([CACHE_STRATEGY.DASHBOARD_KPI, CACHE_STRATEGY.SIDEBAR], request.companyId)
 
       return apiSuccess({
         ...updated,
@@ -183,6 +186,7 @@ export const PUT = withPermission(
       })
 
       await auditCancel(req, user, request, 'POST_START_CANCEL', unusedDays)
+      void invalidateMultiple([CACHE_STRATEGY.DASHBOARD_KPI, CACHE_STRATEGY.SIDEBAR], request.companyId)
 
       return apiSuccess({
         ...updated,

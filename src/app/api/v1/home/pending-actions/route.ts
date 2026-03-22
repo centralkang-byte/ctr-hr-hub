@@ -2,12 +2,13 @@ import { type NextRequest } from 'next/server'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, isAppError, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
+import { withCache, CACHE_STRATEGY } from '@/lib/cache'
 import { MODULE, ACTION } from '@/lib/constants'
 import { pendingActionsQuerySchema } from '@/lib/schemas/pending-actions'
 import { getPendingActions } from '@/lib/pending-actions'
 import type { SessionUser } from '@/types'
 
-export const GET = withPermission(
+export const GET = withCache(withPermission(
   async (
     req: NextRequest,
     _context: { params: Promise<Record<string, string>> },
@@ -28,4 +29,4 @@ export const GET = withPermission(
     }
   },
   perm(MODULE.EMPLOYEES, ACTION.VIEW),
-)
+), CACHE_STRATEGY.DASHBOARD_KPI, 'user')
