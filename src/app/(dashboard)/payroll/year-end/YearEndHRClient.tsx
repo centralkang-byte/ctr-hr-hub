@@ -22,6 +22,7 @@ import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { ROLE } from '@/lib/constants'
 import { BUTTON_SIZES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 import { cn } from '@/lib/utils'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
@@ -77,11 +78,11 @@ const STATUS_LABELS: Record<string, string> = {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  not_started: 'bg-[#F5F5F5] text-[#666] border-[#E8E8E8]',
-  in_progress: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]',
-  submitted: 'bg-[#E0E7FF] text-[#4B6DE0] border-[#C7D2FE]',
-  hr_review: 'bg-[#FFF7ED] text-[#C2410C] border-[#FED7AA]',
-  confirmed: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]',
+  not_started: STATUS_VARIANT.neutral,
+  in_progress: STATUS_VARIANT.info,
+  submitted: STATUS_VARIANT.warning,
+  hr_review: STATUS_VARIANT.primary,
+  confirmed: STATUS_VARIANT.success,
 }
 
 function formatKRW(amount: string | number): string {
@@ -106,7 +107,7 @@ function formatDate(d: string | null | undefined): string {
 // ─── Status Badge ──────────────────────────────────────────
 
 function StatusBadge({ status }: { status: string }) {
-  const color = STATUS_COLORS[status] ?? 'bg-[#F5F5F5] text-[#666]'
+  const color = STATUS_COLORS[status] ?? STATUS_VARIANT.neutral
   return (
     <span
       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${color}`}

@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, ChevronRight, Settings2, Clock, ShieldAlert } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 import type { SessionUser } from '@/types'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
@@ -24,15 +25,15 @@ interface Cycle {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-    DRAFT: 'bg-[#F5F5FA] text-[#8181A5]',
-    ACTIVE: 'bg-[#DBEAFE] text-[#1D4ED8]',
-    CHECK_IN: 'bg-[#FEF3C7] text-[#92400E]',
-    EVAL_OPEN: 'bg-[#D1FAE5] text-[#047857]',
-    CALIBRATION: 'bg-[#EDE9FE] text-[#6D28D9]',
-    FINALIZED: 'bg-[#D1FAE5] text-[#047857]',
-    CLOSED: 'bg-[#F5F5FA] text-[#8181A5]',
-    COMP_REVIEW: 'bg-[#FEF3C7] text-[#92400E]',
-    COMP_COMPLETED: 'bg-[#D1FAE5] text-[#047857]',
+    DRAFT: STATUS_VARIANT.neutral,
+    ACTIVE: STATUS_VARIANT.info,
+    CHECK_IN: STATUS_VARIANT.warning,
+    EVAL_OPEN: STATUS_VARIANT.success,
+    CALIBRATION: STATUS_VARIANT.primary,
+    FINALIZED: STATUS_VARIANT.success,
+    CLOSED: STATUS_VARIANT.neutral,
+    COMP_REVIEW: STATUS_VARIANT.warning,
+    COMP_COMPLETED: STATUS_VARIANT.success,
 }
 
 const STATUS_LABEL_KEYS: Record<string, string> = {
@@ -125,7 +126,7 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
                 ) : (
                     <div className="space-y-4">
                         {cycles.map((cycle) => {
-                            const badgeColor = STATUS_COLORS[cycle.status] ?? 'bg-[#F5F5FA] text-[#8181A5]'
+                            const badgeColor = STATUS_COLORS[cycle.status] ?? STATUS_VARIANT.neutral
                             const badgeLabel = STATUS_LABEL_KEYS[cycle.status] ? t(STATUS_LABEL_KEYS[cycle.status]) : cycle.status
                             return (
                                 <button key={cycle.id} onClick={() => router.push(`/performance/cycles/${cycle.id}`)}

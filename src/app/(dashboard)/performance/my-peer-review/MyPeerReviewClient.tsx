@@ -8,6 +8,7 @@ import { toast } from '@/hooks/use-toast'
 import { useCallback, useEffect, useState } from 'react'
 import { Star, Send, Save, CheckCircle2, Clock, AlertCircle, ArrowLeft, Users, X } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 import type { SessionUser } from '@/types'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
@@ -32,8 +33,8 @@ const EMPTY_FORM: ReviewForm = {
 }
 
 const STATUS_BADGE: Record<string, { label: string; icon: typeof CheckCircle2; cls: string }> = {
-    SUBMITTED: { label: '제출 완료', icon: CheckCircle2, cls: 'bg-[#D1FAE5] text-[#047857]' },
-    DRAFT: { label: '작성 중', icon: Clock, cls: 'bg-[#FEF3C7] text-[#92400E]' },
+    SUBMITTED: { label: '제출 완료', icon: CheckCircle2, cls: STATUS_VARIANT.info },
+    DRAFT: { label: '작성 중', icon: Clock, cls: STATUS_VARIANT.neutral },
 }
 
 // ─── Star Rating ──────────────────────────────────────────

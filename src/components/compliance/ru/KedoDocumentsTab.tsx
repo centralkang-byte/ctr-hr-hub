@@ -11,6 +11,7 @@ import KedoDocumentForm from './KedoDocumentForm'
 import KedoSignDialog from './KedoSignDialog'
 import type { PaginationInfo } from '@/types'
 import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 
 interface KedoDocument {
   id: string
@@ -40,11 +41,11 @@ const STATUS_LABELS: Record<string, string> = {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  DRAFT: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]',
-  PENDING_SIGNATURE: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]',
-  SIGNED: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]',
-  REJECTED: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]',
-  EXPIRED: 'bg-[#FFF7ED] text-[#C2410C] border-[#FED7AA]',
+  DRAFT: STATUS_VARIANT.neutral,
+  PENDING_SIGNATURE: STATUS_VARIANT.warning,
+  SIGNED: STATUS_VARIANT.success,
+  REJECTED: STATUS_VARIANT.error,
+  EXPIRED: STATUS_VARIANT.neutral,
 }
 
 const DOC_TYPE_LABELS: Record<string, string> = {

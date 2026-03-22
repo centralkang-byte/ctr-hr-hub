@@ -8,6 +8,7 @@ import type { SessionUser } from '@/types'
 import type { EvaluationSettings } from '@/types/settings'
 import AiDraftModal from '@/components/performance/AiDraftModal'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 import { toast } from '@/hooks/use-toast'
 
@@ -42,9 +43,9 @@ interface EvalPayload {
 const SCORE_LABELS = ['', '매우 부족', '부족', '보통', '우수', '탁월']
 
 const STATUS_BADGE: Record<string, string> = {
-  DRAFT: 'bg-[#F5F5F5] text-[#666]',
-  SUBMITTED: 'bg-[#D1FAE5] text-[#047857]',
-  CONFIRMED: 'bg-[#EDF1FE] text-[#4B6DE0]',
+  DRAFT: STATUS_VARIANT.neutral,
+  SUBMITTED: STATUS_VARIANT.info,
+  CONFIRMED: STATUS_VARIANT.success,
 }
 
 // ─── Component ────────────────────────────────────────────
