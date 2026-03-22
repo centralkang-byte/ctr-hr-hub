@@ -122,7 +122,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
         const calibCycles = res.data.filter((c) => c.status === 'CALIBRATION' || c.status === 'CLOSED')
         setCycles(calibCycles)
         if (calibCycles.length > 0) setSelectedCycleId(calibCycles[0].id)
-      } catch { /* ignore */ }
+      } catch { setLoading(false) }
     }
     fetchCycles()
   }, [])
@@ -130,7 +130,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
   // ─── Fetch sessions ─────────────────────────────────
 
   const fetchSessions = useCallback(async () => {
-    if (!selectedCycleId) return
+    if (!selectedCycleId) { setLoading(false); return }
     setLoading(true)
     try {
       const res = await apiClient.getList<CalibSession>('/api/v1/performance/calibration/sessions', { cycleId: selectedCycleId })

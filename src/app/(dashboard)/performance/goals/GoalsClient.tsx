@@ -68,6 +68,7 @@ export default function GoalsClient({
         }
       } catch {
         console.error(t('cycleListLoadFailed'))
+        setLoading(false)
       }
     }
     fetchCycles()
@@ -76,7 +77,7 @@ export default function GoalsClient({
   // ─── Fetch goals ──────────────────────────────────────
 
   const fetchGoals = useCallback(async () => {
-    if (!selectedCycleId) return
+    if (!selectedCycleId) { setLoading(false); return }
     setLoading(true)
     try {
       const res = await apiClient.getList<MboGoal>(
