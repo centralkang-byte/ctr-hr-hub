@@ -187,7 +187,7 @@ export default function TurnoverClient() {
                               style={{ width: `${emp.score}%` }}
                             />
                           </div>
-                          <span className="text-xs font-mono text-gray-700 w-6 text-right">{emp.score}</span>
+                          <span className="text-xs font-mono tabular-nums text-gray-700 w-6 text-right">{emp.score}</span>
                         </div>
                       </td>
                       <td className={TABLE_STYLES.cell}>

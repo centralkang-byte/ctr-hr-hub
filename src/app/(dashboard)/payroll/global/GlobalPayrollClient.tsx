@@ -323,20 +323,20 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
                           </div>
                         </div>
                       </td>
-                      <td className={cn(TABLE_STYLES.cell, "font-mono text-[#555]")}>{co.currency}</td>
-                      <td className={cn(TABLE_STYLES.cellRight, "font-mono text-[#555]")}>
+                      <td className={cn(TABLE_STYLES.cell, "font-mono tabular-nums text-[#555]")}>{co.currency}</td>
+                      <td className={cn(TABLE_STYLES.cellRight, "font-mono tabular-nums text-[#555]")}>
                         {co.currency === 'KRW' ? '—' : `${Number(co.exchangeRate).toLocaleString('ko-KR', { maximumFractionDigits: 4 })}`}
                       </td>
-                      <td className={cn(TABLE_STYLES.cellRight, "font-mono text-[#555]")}>
+                      <td className={cn(TABLE_STYLES.cellRight, "font-mono tabular-nums text-[#555]")}>
                         {co.hasData ? `${fmt(Math.round(co.totalGrossLocal))} ${co.currency}` : '—'}
                       </td>
-                      <td className={cn(TABLE_STYLES.cellRight, "font-mono font-semibold text-[#1A1A1A]")}>
+                      <td className={cn(TABLE_STYLES.cellRight, "font-mono tabular-nums font-semibold text-[#1A1A1A]")}>
                         {co.hasData ? `₩${fmtBillion(co.totalGrossKRW)}` : '—'}
                       </td>
                       <td className={cn(TABLE_STYLES.cellRight, "text-[#555]")}>
                         {co.headcount > 0 ? `${co.headcount}명` : '—'}
                       </td>
-                      <td className={cn(TABLE_STYLES.cellRight, "font-mono text-[#555]")}>
+                      <td className={cn(TABLE_STYLES.cellRight, "font-mono tabular-nums text-[#555]")}>
                         {co.avgPerHeadKRW > 0 ? `₩${fmtBillion(co.avgPerHeadKRW)}` : '—'}
                       </td>
                       <td className={cn(TABLE_STYLES.cell, "text-center")}>
@@ -352,9 +352,9 @@ export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
                 <tfoot>
                   <tr className={TABLE_STYLES.header}>
                     <td colSpan={4} className="px-4 py-3 font-semibold text-sm text-[#1A1A1A]">{tCommon('total')}</td>
-                    <td className="px-4 py-3 text-right font-mono font-bold text-[#1A1A1A]">₩{fmtBillion(data.totalKRW)}</td>
+                    <td className="px-4 py-3 text-right font-mono tabular-nums font-bold text-[#1A1A1A]">₩{fmtBillion(data.totalKRW)}</td>
                     <td className="px-4 py-3 text-right font-semibold text-[#1A1A1A]">{data.totalHeadcount}명</td>
-                    <td className="px-4 py-3 text-right font-mono font-semibold text-[#1A1A1A]">
+                    <td className="px-4 py-3 text-right font-mono tabular-nums font-semibold text-[#1A1A1A]">
                       {data.totalHeadcount > 0 ? `₩${fmtBillion(data.totalKRW / data.totalHeadcount)}` : '—'}
                     </td>
                     <td />

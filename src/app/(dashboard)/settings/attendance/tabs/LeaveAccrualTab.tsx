@@ -149,7 +149,7 @@ export function LeaveAccrualTab({
                     ) : (
                       <ChevronRight className="h-4 w-4 text-[#8181A5]" />
                     )}
-                    <span className="font-mono text-xs text-[#5E81F4]">{typeDef.code}</span>
+                    <span className="font-mono tabular-nums text-xs text-[#5E81F4]">{typeDef.code}</span>
                     <span className="text-sm font-medium text-[#1C1D21]">{typeDef.name}</span>
                     {rule && (
                       <span className="ml-auto text-xs text-[#8181A5]">

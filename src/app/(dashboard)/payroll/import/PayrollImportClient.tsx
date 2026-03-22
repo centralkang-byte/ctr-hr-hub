@@ -377,7 +377,7 @@ export default function PayrollImportClient({ user, companies }: {
                     <tr key={m.id} className={TABLE_STYLES.row}>
                       <td className={cn(TABLE_STYLES.cell, "font-medium")}>{m.name}</td>
                       <td className={TABLE_STYLES.cellMuted}>{m.fileType.toUpperCase()}</td>
-                      <td className={cn(TABLE_STYLES.cellMuted, "font-mono")}>{m.currency}</td>
+                      <td className={cn(TABLE_STYLES.cellMuted, "font-mono tabular-nums")}>{m.currency}</td>
                       <td className={TABLE_STYLES.cell}>
                         {m.isDefault && (
                           <CheckCircle2 className="w-4 h-4 text-[#059669]" />
@@ -512,7 +512,7 @@ export default function PayrollImportClient({ user, companies }: {
                       <div className="truncate max-w-[180px]" title={log.fileName}>{log.fileName}</div>
                     </td>
                     <td className={TABLE_STYLES.cellRight}>{log.employeeCount.toLocaleString()}명</td>
-                    <td className={cn(TABLE_STYLES.cellRight, "font-mono")}>
+                    <td className={cn(TABLE_STYLES.cellRight, "font-mono tabular-nums")}>
                       {Number(log.totalGross).toLocaleString()} {log.currency}
                     </td>
                     <td className={TABLE_STYLES.cell}>{statusBadge(log.status)}</td>

@@ -148,7 +148,7 @@ function EmployeeQuickPanel({
             <p className="text-xs text-[#8181A5] truncate">{employee.nameEn}</p>
           )}
           <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
-            <span className="text-xs font-mono text-[#8181A5]">{employee.employeeNo}</span>
+            <span className="text-xs font-mono tabular-nums text-[#8181A5]">{employee.employeeNo}</span>
             {employee.jobGrade && (
               <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-[#F0F0F3] text-[#5E81F4]">
                 {employee.jobGrade.name}
@@ -378,7 +378,7 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
     {
       key: 'employeeNo',
       header: t('employeeCode'),
-      render: (row) => <span className="font-mono text-sm">{row.employeeNo}</span>,
+      render: (row) => <span className="font-mono tabular-nums text-sm">{row.employeeNo}</span>,
     },
     {
       key: 'name',

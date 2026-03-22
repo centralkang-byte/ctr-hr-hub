@@ -278,7 +278,7 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
                       }
                     >
                       <td className="px-3 py-2 text-[#999]">{row.rowNum}</td>
-                      <td className="px-3 py-2 font-mono">{String(row.사번 ?? '')}</td>
+                      <td className="px-3 py-2 font-mono tabular-nums">{String(row.사번 ?? '')}</td>
                       <td className="px-3 py-2">{String(row[DEPT_COL] ?? '')}</td>
                       <td className="px-3 py-2">{String(row[GRADE_COL] ?? '')}</td>
                       <td className="px-3 py-2">

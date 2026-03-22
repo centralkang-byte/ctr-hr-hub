@@ -77,7 +77,7 @@ export function ValidationPreview({ result }: ValidationPreviewProps) {
                 {result.errors.map((err, idx) => (
                   <TableRow key={idx}>
                     <TableCell className="text-sm">{err.row}</TableCell>
-                    <TableCell className="text-sm font-mono">
+                    <TableCell className="text-sm font-mono tabular-nums">
                       {err.column}
                     </TableCell>
                     <TableCell className="text-sm">{err.message}</TableCell>
@@ -128,7 +128,7 @@ export function ValidationPreview({ result }: ValidationPreviewProps) {
                     <TableCell className="text-sm text-muted-foreground">
                       {row.rowNum}
                     </TableCell>
-                    <TableCell className="text-sm font-mono">
+                    <TableCell className="text-sm font-mono tabular-nums">
                       {row.employeeNo}
                     </TableCell>
                     <TableCell className="text-sm">{row.employeeName}</TableCell>

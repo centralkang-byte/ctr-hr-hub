@@ -177,8 +177,8 @@ export default function PiiAccessLogTable() {
                           {log.access_type}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-sm text-[#555] font-mono text-xs">{log.field_name ?? '-'}</td>
-                      <td className="px-4 py-3 text-sm text-[#666] font-mono text-xs">{log.ip_address ?? '-'}</td>
+                      <td className="px-4 py-3 text-sm text-[#555] font-mono tabular-nums text-xs">{log.field_name ?? '-'}</td>
+                      <td className="px-4 py-3 text-sm text-[#666] font-mono tabular-nums text-xs">{log.ip_address ?? '-'}</td>
                       <td className="px-4 py-3 text-sm text-[#555]">
                         {new Date(log.created_at).toLocaleString()}
                       </td>
