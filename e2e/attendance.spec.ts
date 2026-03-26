@@ -1,90 +1,63 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Attendance E2E Tests
-// Covers employee self-service and HR admin attendance flows
-//
-// Requires:
-//   1. Dev server running (npm run dev)
-//   2. NEXT_PUBLIC_SHOW_TEST_ACCOUNTS=true in .env
-//   3. Seeded test accounts
+// Uses storageState for session reuse.
 // ═══════════════════════════════════════════════════════════
 
 import { test, expect } from '@playwright/test'
-import { loginAs, assertPageLoads } from './helpers/auth'
+import { authFile, assertPageLoads } from './helpers/auth'
 import { waitForLoading, waitForPageReady, waitForTableRows } from './helpers/wait-helpers'
 
-test.describe('Attendance', () => {
-  // ─── Employee: Attendance Page Load ──────────────────────
+// ─── EMPLOYEE tests ──────────────────────────────────────
 
-  test('EMPLOYEE can view attendance page', async ({ page }) => {
-    await loginAs(page, 'EMPLOYEE')
+test.describe('Attendance: EMPLOYEE', () => {
+  test.use({ storageState: authFile('EMPLOYEE') })
+
+  test('can view attendance page', async ({ page }) => {
     await assertPageLoads(page, '/attendance')
     await waitForPageReady(page)
   })
 
-  // ─── Employee: Clock-In Button Visible ───────────────────
-
-  test('EMPLOYEE can see clock-in button', async ({ page }) => {
-    await loginAs(page, 'EMPLOYEE')
+  test('can see clock-in button', async ({ page }) => {
     await assertPageLoads(page, '/attendance')
     await waitForLoading(page)
 
-    // Clock-in button — Korean "출근" or English "Clock In"
-    const clockInButton = page.locator(
-      'button:has-text("출근"), button:has-text("Clock In")',
-    ).first()
+    const clockInButton = page.getByRole('button', { name: /출근|Clock In/i }).first()
     await expect(clockInButton).toBeVisible({ timeout: 10000 })
   })
+})
 
-  // ─── HR Admin: Attendance Admin Page ─────────────────────
+// ─── HR_ADMIN tests ──────────────────────────────────────
 
-  test('HR_ADMIN can view attendance admin', async ({ page }) => {
-    await loginAs(page, 'HR_ADMIN')
+test.describe('Attendance: HR_ADMIN', () => {
+  test.use({ storageState: authFile('HR_ADMIN') })
+
+  test('can view attendance admin', async ({ page }) => {
     await assertPageLoads(page, '/attendance/admin')
     await waitForPageReady(page)
-
-    // Admin page should render a table or data grid with attendance records
     await waitForTableRows(page, 1)
   })
 
-  // ─── HR Admin: Shift Calendar ────────────────────────────
-
-  test('HR_ADMIN can view shift calendar', async ({ page }) => {
-    await loginAs(page, 'HR_ADMIN')
+  test('can view shift calendar', async ({ page }) => {
     await assertPageLoads(page, '/attendance/shift-calendar')
     await waitForPageReady(page)
 
-    // Calendar grid or day cells should be present
-    const calendar = page.locator(
-      '[class*="calendar"], [class*="Calendar"], [role="grid"], [class*="grid"]',
-    ).first()
+    const calendar = page.locator('[role="grid"]').or(page.getByText(/월|화|수|목|금/)).first()
     await expect(calendar).toBeVisible({ timeout: 10000 })
   })
 
-  // ─── HR Admin: Shift Roster ──────────────────────────────
-
-  test('HR_ADMIN can view shift roster', async ({ page }) => {
-    await loginAs(page, 'HR_ADMIN')
+  test('can view shift roster', async ({ page }) => {
     await assertPageLoads(page, '/attendance/shift-roster')
     await waitForPageReady(page)
 
-    // Roster renders as a table or list of employee shifts
-    const roster = page.locator(
-      'table, [role="table"], tbody tr, [class*="roster"], [class*="Roster"]',
-    ).first()
+    const roster = page.locator('table, [role="table"], tbody tr').first()
     await expect(roster).toBeVisible({ timeout: 10000 })
   })
 
-  // ─── HR Admin: Close Attendance (Payroll) ────────────────
-
-  test('HR_ADMIN can access close-attendance page', async ({ page }) => {
-    await loginAs(page, 'HR_ADMIN')
+  test('can access close-attendance page', async ({ page }) => {
     await assertPageLoads(page, '/payroll/close-attendance')
     await waitForLoading(page)
 
-    // Page should show some content — heading, period selector, or summary
-    const content = page.locator(
-      'h1, h2, text=마감, text=정산, text=Close, text=Attendance, [class*="card"], [class*="Card"]',
-    ).first()
+    const content = page.locator('h1, h2').or(page.getByText(/마감|정산|Close|Attendance/)).first()
     await expect(content).toBeVisible({ timeout: 10000 })
   })
 })

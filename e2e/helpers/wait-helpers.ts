@@ -16,36 +16,54 @@ export async function waitForToast(page: Page, text: string | RegExp, timeout = 
 
 /**
  * Wait for loading spinner to disappear.
+ * Excludes permanent spinners (e.g., refresh icons with animate-spin class).
  */
 export async function waitForLoading(page: Page, timeout = 10000) {
-  const spinner = page.locator('.animate-spin').first()
-  if (await spinner.isVisible({ timeout: 1000 }).catch(() => false)) {
+  // Target loading-specific spinners: border-based spinner divs, not icon SVGs
+  const spinner = page.locator('div.animate-spin, [data-loading="true"]').first()
+  if (await spinner.isVisible({ timeout: 2000 }).catch(() => false)) {
     await expect(spinner).not.toBeVisible({ timeout })
   }
 }
 
 /**
  * Wait for a DataTable to render rows.
+ * Uses expect.toPass() for retry resilience.
  */
-export async function waitForTableRows(page: Page, minRows = 1, timeout = 10000) {
-  const rows = page.locator('tbody tr')
-  await expect(rows.first()).toBeVisible({ timeout })
-  const count = await rows.count()
-  expect(count).toBeGreaterThanOrEqual(minRows)
-  return count
+export async function waitForTableRows(page: Page, minRows = 1, timeout = 15000) {
+  // Wait for table element first
+  await expect(page.locator('table')).toBeVisible({ timeout })
+
+  // Then wait for rows with retry
+  await expect(async () => {
+    const count = await page.locator('tbody tr').count()
+    expect(count).toBeGreaterThanOrEqual(minRows)
+  }).toPass({ timeout })
+
+  return await page.locator('tbody tr').count()
 }
 
 /**
  * Wait for page content to stabilize after navigation.
- * More reliable than networkidle for SPA transitions.
+ * Handles skeleton loaders AND spinners.
  */
-export async function waitForPageReady(page: Page, timeout = 10000) {
+export async function waitForPageReady(page: Page, timeout = 15000) {
   await page.waitForLoadState('domcontentloaded', { timeout })
-  // Wait for any skeleton loaders to disappear
+
+  // Wait for skeleton loaders to disappear
   const skeleton = page.locator('[class*="skeleton"], [class*="Skeleton"]').first()
-  if (await skeleton.isVisible({ timeout: 1000 }).catch(() => false)) {
+  if (await skeleton.isVisible({ timeout: 2000 }).catch(() => false)) {
     await expect(skeleton).not.toBeVisible({ timeout })
   }
+
+  // Wait for spinners
+  const spinner = page.locator('.animate-spin').first()
+  if (await spinner.isVisible({ timeout: 1000 }).catch(() => false)) {
+    await expect(spinner).not.toBeVisible({ timeout })
+  }
+
+  // Brief stability pause for SPA hydration
+  await page.waitForTimeout(300)
 }
 
 /**

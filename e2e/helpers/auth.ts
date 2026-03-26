@@ -1,24 +1,41 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — E2E Auth Helpers
-// Login uses NextAuth credentials provider via API call
+// Login uses NextAuth credentials provider via API call.
+// storageState-based session reuse via authFile().
 // ═══════════════════════════════════════════════════════════
 
+import path from 'path'
 import { type Page, expect } from '@playwright/test'
 
-const TEST_EMAILS: Record<string, string> = {
+// ─── Role types ──────────────────────────────────────────
+export type RoleType = 'SUPER_ADMIN' | 'HR_ADMIN' | 'MANAGER' | 'EMPLOYEE'
+
+const TEST_EMAILS: Record<RoleType, string> = {
   SUPER_ADMIN: 'super@ctr.co.kr',
   HR_ADMIN:    'hr@ctr.co.kr',
   MANAGER:     'manager@ctr.co.kr',
   EMPLOYEE:    'employee-a@ctr.co.kr',
 }
 
+// ─── storageState path helper ────────────────────────────
+const AUTH_DIR = path.join(__dirname, '..', '.auth')
+
+/**
+ * Returns the storageState JSON file path for a given role.
+ * Use with `test.use({ storageState: authFile('HR_ADMIN') })`.
+ */
+export function authFile(role: RoleType): string {
+  return path.join(AUTH_DIR, `${role}.json`)
+}
+
+// ─── loginAs (kept for golden-paths backward compat) ─────
 /**
  * Login as a specific user role using NextAuth credentials API directly.
- * More reliable than clicking UI buttons (avoids client-side signIn race conditions).
+ * Prefer storageState + authFile() for new tests.
  */
 export async function loginAs(
   page: Page,
-  role: 'SUPER_ADMIN' | 'HR_ADMIN' | 'MANAGER' | 'EMPLOYEE',
+  role: RoleType,
 ) {
   const email = TEST_EMAILS[role]
 
@@ -45,6 +62,7 @@ export async function loginAs(
   }
 }
 
+// ─── assertPageLoads ─────────────────────────────────────
 /**
  * Assert that a page loads without showing the error boundary.
  */

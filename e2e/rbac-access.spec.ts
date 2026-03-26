@@ -5,24 +5,19 @@
 // - Allowed routes load without redirecting to login or error
 // - Forbidden routes redirect to / (with ?error=forbidden)
 //
-// Requires:
-//   1. Dev server running (npm run dev)
-//   2. NEXT_PUBLIC_SHOW_TEST_ACCOUNTS=true in .env
-//   3. Seeded test accounts
+// Uses storageState for session reuse (no per-test loginAs).
 // ═══════════════════════════════════════════════════════════
 
 import { test, expect, type Page } from '@playwright/test'
-import { loginAs, assertPageLoads } from './helpers/auth'
+import { authFile, assertPageLoads } from './helpers/auth'
 import { waitForPageReady } from './helpers/wait-helpers'
 
 // ─── Helper: assert a route is blocked ──────────────────────
-// Middleware redirects forbidden pages to /?error=forbidden
 async function assertBlocked(page: Page, path: string) {
   await page.goto(path)
   await waitForPageReady(page)
 
   const url = page.url()
-  // Must NOT remain on the forbidden path
   const isForbiddenPath = url.includes(path)
   const isRedirectedAway = url.includes('error=forbidden') || url.includes('/login') || !isForbiddenPath
 
@@ -32,9 +27,7 @@ async function assertBlocked(page: Page, path: string) {
 // ─── EMPLOYEE ────────────────────────────────────────────────
 
 test.describe('RBAC: EMPLOYEE role', () => {
-  test.beforeEach(async ({ page }) => {
-    await loginAs(page, 'EMPLOYEE')
-  })
+  test.use({ storageState: authFile('EMPLOYEE') })
 
   test('can access /home', async ({ page }) => {
     await assertPageLoads(page, '/home')
@@ -80,9 +73,7 @@ test.describe('RBAC: EMPLOYEE role', () => {
 // ─── MANAGER ─────────────────────────────────────────────────
 
 test.describe('RBAC: MANAGER role', () => {
-  test.beforeEach(async ({ page }) => {
-    await loginAs(page, 'MANAGER')
-  })
+  test.use({ storageState: authFile('MANAGER') })
 
   test('can access /analytics', async ({ page }) => {
     await assertPageLoads(page, '/analytics')
@@ -116,9 +107,7 @@ test.describe('RBAC: MANAGER role', () => {
 // ─── HR_ADMIN ────────────────────────────────────────────────
 
 test.describe('RBAC: HR_ADMIN role', () => {
-  test.beforeEach(async ({ page }) => {
-    await loginAs(page, 'HR_ADMIN')
-  })
+  test.use({ storageState: authFile('HR_ADMIN') })
 
   test('can access /employees', async ({ page }) => {
     await assertPageLoads(page, '/employees')
@@ -144,9 +133,7 @@ test.describe('RBAC: HR_ADMIN role', () => {
 // ─── SUPER_ADMIN ──────────────────────────────────────────────
 
 test.describe('RBAC: SUPER_ADMIN role', () => {
-  test.beforeEach(async ({ page }) => {
-    await loginAs(page, 'SUPER_ADMIN')
-  })
+  test.use({ storageState: authFile('SUPER_ADMIN') })
 
   test('can access /home', async ({ page }) => {
     await assertPageLoads(page, '/home')
