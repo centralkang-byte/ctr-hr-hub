@@ -7,7 +7,7 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound, conflict } from '@/lib/errors'
+import { badRequest, notFound, conflict, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { sendNotifications } from '@/lib/notifications'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
@@ -18,6 +18,7 @@ import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
 import { withRLS, buildRLSContext } from '@/lib/api/withRLS'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import { getManagerIdByPosition } from '@/lib/employee/direct-reports'
+import { validateApprover } from '@/lib/approval/resolve-approval-flow'
 import type { SessionUser } from '@/types'
 import type { OffboardingTargetType } from '@/generated/prisma/enums'
 
@@ -97,6 +98,15 @@ export const POST = withPermission(
 
     if (existingOffboarding) {
       throw conflict(`이미 진행 중인 퇴직 프로세스가 있습니다. (ID: ${existingOffboarding.id})`)
+    }
+
+    // 3-b. ApprovalFlow 검증 (규정: dept_head → ceo)
+    const employeeCompanyIdForApproval = employee.assignments[0]?.companyId ?? user.companyId
+    const approval = await validateApprover(
+      'offboarding', employeeCompanyIdForApproval, employeeId, user.employeeId,
+    )
+    if (!approval.allowed && !approval.noFlowConfigured) {
+      throw forbidden('퇴직 프로세스 시작 권한이 없습니다.')
     }
 
     // 4. Map resignType to OffboardingTargetType for checklist matching

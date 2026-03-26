@@ -14,6 +14,7 @@ import { getTemplate } from '@/lib/bulk-movement/templates'
 import { parseCSV } from '@/lib/bulk-movement/parser'
 import { verifyValidationToken } from '@/lib/bulk-movement/validator'
 import { executeMovements } from '@/lib/bulk-movement/executor'
+import { resolveApprovalFlow } from '@/lib/approval/resolve-approval-flow'
 import type { SessionUser } from '@/types'
 
 export const POST = withPermission(
@@ -36,6 +37,24 @@ export const POST = withPermission(
     // superAdminOnly 템플릿은 SUPER_ADMIN만 접근 가능
     if (template.superAdminOnly && user.role !== ROLE.SUPER_ADMIN) {
       throw forbidden('이 발령 유형은 최고관리자만 사용할 수 있습니다')
+    }
+
+    // ApprovalFlow 검증: personnel_order 모듈 (규정: CEO 승인)
+    // 배치 발령이므로 step의 role과 현재 사용자 역할을 비교
+    const steps = await resolveApprovalFlow('personnel_order', user.companyId)
+    if (steps.length > 0) {
+      const requiredRoles = steps.map(s => s.approverRole).filter(Boolean)
+      const roleMap: Record<string, string[]> = {
+        ceo: [ROLE.SUPER_ADMIN, ROLE.EXECUTIVE],
+        hr_admin: [ROLE.HR_ADMIN, ROLE.SUPER_ADMIN],
+        dept_head: [ROLE.MANAGER, ROLE.HR_ADMIN, ROLE.SUPER_ADMIN],
+        direct_manager: [ROLE.MANAGER, ROLE.HR_ADMIN, ROLE.SUPER_ADMIN],
+        finance: [ROLE.HR_ADMIN, ROLE.SUPER_ADMIN],
+      }
+      const allowedSystemRoles = requiredRoles.flatMap(r => roleMap[r!] ?? [])
+      if (!allowedSystemRoles.includes(user.role)) {
+        throw forbidden('인사발령 실행 권한이 없습니다. (결재 플로우 기준)')
+      }
     }
 
     // 파일 파싱
