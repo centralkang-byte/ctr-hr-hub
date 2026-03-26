@@ -23,7 +23,7 @@ export type AttendanceTabSlug = 'work-schedules' | 'weekly-hours' | 'shift-patte
 export type PayrollTabSlug = 'earnings' | 'deductions' | 'tax-free' | 'salary-bands' | 'merit-matrix' | 'bonus-rules' | 'pay-schedule' | 'currency'
 export type PerformanceTabSlug = 'cycle' | 'methodology' | 'grade-scale' | 'distribution' | 'calibration' | 'cfr' | 'competency'
 export type RecruitmentTabSlug = 'pipeline' | 'interview-form' | 'ai-screening' | 'onboarding-templates' | 'offboarding-checklist' | 'probation-eval'
-export type SystemTabSlug = 'notification-channels' | 'notification-rules' | 'locale' | 'roles' | 'audit' | 'data-retention' | 'integrations'
+export type SystemTabSlug = 'notification-channels' | 'notification-rules' | 'locale' | 'roles' | 'approval-flows' | 'audit' | 'data-retention' | 'integrations'
 
 export type SettingsTabSlug =
   | OrganizationTabSlug
@@ -142,6 +142,7 @@ export const SETTINGS_CATEGORIES: SettingsCategoryConfig[] = [
       { slug: 'notification-rules', label: '알림 규칙', description: '이벤트별 알림 대상' },
       { slug: 'locale', label: '언어/타임존', description: '법인별 기본 언어 + 타임존' },
       { slug: 'roles', label: '역할/권한', description: 'RBAC 역할 정의', isGlobalOnly: true },
+      { slug: 'approval-flows', label: '결재 플로우', description: '모듈별 전결 규정 설정' },
       { slug: 'audit', label: '감사 로그', description: '보존 기간, 조회 범위' },
       { slug: 'data-retention', label: '데이터 보존', description: 'GDPR 삭제 주기, PII 마스킹' },
       { slug: 'integrations', label: '연동', description: 'Teams 웹훅, SSO/SAML, ERP, API 키' },

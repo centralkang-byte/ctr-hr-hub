@@ -14,9 +14,9 @@
 
 ## Plans
 
-- **저장 경로**: `docs/plans/active/` (프로젝트 내부)
-- `.claude/plans/` 사용 금지 — 반드시 `docs/plans/active/`에 저장
-- 네이밍: `YYYY-MM-DD-<topic>.md`
+- **수동 플랜**: `docs/plans/active/` — 네이밍: `YYYY-MM-DD-<topic>.md`
+- **Plan mode 플랜**: `.claude/plans/` — 시스템 자동 생성 경로 (변경 불가)
+- Plan mode 진입 시 `.claude/plans/`에 자동 할당됨, 이를 허용
 
 ## Session End Routine
 

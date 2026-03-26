@@ -6,8 +6,12 @@
 // ═══════════════════════════════════════════════════════════
 
 import { getPayrollSetting } from '@/lib/settings/get-setting'
+import { prisma } from '@/lib/prisma'
 
 // ─── Default approval chains (fallback) ──────────────────
+// 규정 참조: CP-A-03-04 전결관리규정 Rev13 + 부표#1 업무전결권한기준표
+// Gap: 아래 역할명(HR_MANAGER, CFO 등)은 규정 직급(본부장, 대표)과 매핑 필요
+// → docs/regulation-audit/A1-gap-analysis.md 참조
 
 export const PAYROLL_APPROVAL_CHAINS: Record<string, string[]> = {
     'CTR': ['HR_MANAGER', 'CFO'],
@@ -28,12 +32,31 @@ export function getApprovalChain(companyCode: string | null): string[] {
 }
 
 /**
- * Async version — reads from Settings, falls back to defaults
+ * ApprovalFlow 기반 체인 조회 (Settings > 결재 플로우에서 설정)
+ * 우선순위: ApprovalFlow(법인) > ApprovalFlow(글로벌) > Settings 테이블 > 하드코딩
  */
 export async function getApprovalChainFromSettings(
     companyCode: string | null,
     companyId?: string | null,
 ): Promise<string[]> {
+    // 1. ApprovalFlow에서 payroll 모듈 플로우 조회
+    if (companyId) {
+        const flow = await prisma.approvalFlow.findFirst({
+            where: {
+                module: 'payroll',
+                isActive: true,
+                OR: [{ companyId }, { companyId: null }],
+            },
+            include: { steps: { orderBy: { stepOrder: 'asc' } } },
+            orderBy: { companyId: 'asc' }, // 법인 오버라이드 우선
+        })
+
+        if (flow && flow.steps.length > 0) {
+            return flow.steps.map(s => s.approverRole ?? 'HR_ADMIN')
+        }
+    }
+
+    // 2. Settings 테이블 fallback
     const settings = await getPayrollSetting<Record<string, string[]>>(
         'approval-chains',
         companyId,
@@ -43,6 +66,7 @@ export async function getApprovalChainFromSettings(
         return settings[companyCode]
     }
 
+    // 3. 하드코딩 fallback
     if (!companyCode) return PAYROLL_APPROVAL_CHAINS.DEFAULT
     return PAYROLL_APPROVAL_CHAINS[companyCode] ?? PAYROLL_APPROVAL_CHAINS.DEFAULT
 }

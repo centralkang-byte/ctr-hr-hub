@@ -30,6 +30,8 @@ import { performanceEvalOverdueRule }            from './rules/performance-eval-
 import { performanceCalibrationPendingRule }     from './rules/performance-calibration-pending.rule'
 import { delegationNotSetRule }                  from './rules/delegation-not-set.rule'
 import { leaveYearendBurnRule }                  from './rules/leave-yearend-burn.rule'
+import { probationEndingRule }                   from './rules/probation-ending.rule'
+import { contractExpiringRule }                  from './rules/contract-expiring.rule'
 import type { NudgeRunSummary } from './types'
 
 // ------------------------------------
@@ -59,6 +61,9 @@ function getEngine(): NudgeEngine {
         delegationNotSetRule,
         // F-3: Leave year-end burn
         leaveYearendBurnRule,
+        // A2: Probation & Contract conversion
+        probationEndingRule,
+        contractExpiringRule,
       ],
       oncePer24h: true,
     })
