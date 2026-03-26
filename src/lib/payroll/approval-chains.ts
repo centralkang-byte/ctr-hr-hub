@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { getPayrollSetting } from '@/lib/settings/get-setting'
-import { prisma } from '@/lib/prisma'
+import { resolveApprovalFlow } from '@/lib/approval/resolve-approval-flow'
 
 // ─── Default approval chains (fallback) ──────────────────
 // 규정 참조: CP-A-03-04 전결관리규정 Rev13 + 부표#1 업무전결권한기준표
@@ -39,21 +39,10 @@ export async function getApprovalChainFromSettings(
     companyCode: string | null,
     companyId?: string | null,
 ): Promise<string[]> {
-    // 1. ApprovalFlow에서 payroll 모듈 플로우 조회
-    if (companyId) {
-        const flow = await prisma.approvalFlow.findFirst({
-            where: {
-                module: 'payroll',
-                isActive: true,
-                OR: [{ companyId }, { companyId: null }],
-            },
-            include: { steps: { orderBy: { stepOrder: 'asc' } } },
-            orderBy: { companyId: 'asc' }, // 법인 오버라이드 우선
-        })
-
-        if (flow && flow.steps.length > 0) {
-            return flow.steps.map(s => s.approverRole ?? 'HR_ADMIN')
-        }
+    // 1. ApprovalFlow에서 payroll 모듈 플로우 조회 (공용 resolver 사용)
+    const steps = await resolveApprovalFlow('payroll', companyId ?? null)
+    if (steps.length > 0) {
+        return steps.map(s => s.approverRole ?? 'HR_ADMIN')
     }
 
     // 2. Settings 테이블 fallback
