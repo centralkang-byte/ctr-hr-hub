@@ -933,6 +933,9 @@ model Company {
   // G-2: AI Reports
   aiReports              AiReport[]
 
+  // 직급 리팩터링: 호칭 관리
+  employeeTitles         EmployeeTitle[]
+
   // B-2a: Work Locations
   workLocations          WorkLocation[]
 
@@ -981,6 +984,10 @@ model JobGrade {
   name      String
   rankOrder Int       @map("rank_order")
   deletedAt DateTime? @map("deleted_at")
+  // 직급 리팩터링: 법인별 가변 직급 체계
+  gradeType         String  @default("STAFF") @map("grade_type") // STAFF | SPECIALIST | EXECUTIVE
+  nameEn            String? @map("name_en")
+  minPromotionYears Int?    @map("min_promotion_years")
 
   company               Company              @relation(fields: [companyId], references: [id])
   assignments           EmployeeAssignment[]
@@ -993,6 +1000,24 @@ model JobGrade {
   positions             Position[]
 
   @@map("job_grades")
+}
+
+// 호칭 모델 — 직급(Grade)과 독립적으로 관리 (국가별 다른 호칭명)
+model EmployeeTitle {
+  id          String    @id @default(uuid())
+  companyId   String    @map("company_id")
+  code        String
+  name        String
+  nameEn      String?   @map("name_en")
+  rankOrder   Int       @map("rank_order")
+  isExecutive Boolean   @default(false) @map("is_executive")
+  deletedAt   DateTime? @map("deleted_at")
+
+  company     Company              @relation(fields: [companyId], references: [id])
+  assignments EmployeeAssignment[]
+
+  @@unique([companyId, code])
+  @@map("employee_titles")
 }
 
 model JobCategory {
@@ -1467,6 +1492,7 @@ model EmployeeAssignment {
   positionId     String?   @map("position_id")
   isPrimary      Boolean   @default(true) @map("is_primary")
   workLocationId String?   @map("work_location_id") // B-2b: nullable FK to WorkLocation
+  titleId        String?   @map("title_id") // 호칭 (직급과 독립)
   reason         String?
   orderNumber    String?   @map("order_number")
   approvedBy     String?   @map("approved_by")
@@ -1481,6 +1507,7 @@ model EmployeeAssignment {
   position     Position?     @relation(fields: [positionId], references: [id])
   approver     Employee?     @relation("AssignmentApprover", fields: [approvedBy], references: [id])
   workLocation WorkLocation? @relation(fields: [workLocationId], references: [id], onDelete: SetNull)
+  title        EmployeeTitle? @relation(fields: [titleId], references: [id])
 
   @@index([employeeId])
   @@index([effectiveDate])
