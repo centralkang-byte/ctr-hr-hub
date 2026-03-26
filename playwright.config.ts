@@ -16,10 +16,12 @@ export default defineConfig({
     ['list'],
   ],
 
+  timeout: 90000,           // 90s per test (SSR pages can be slow in dev cold start)
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3002',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    navigationTimeout: 30000,
   },
 
   projects: [

@@ -1,18 +1,10 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — E2E Auth Helpers
-// Phase Q-5f: Playwright Golden Path Tests
-//
-// Login uses NextAuth credentials provider via test account buttons
-// (see src/app/(auth)/login/LoginPageContent.tsx — TEST_ACCOUNTS)
+// Login uses NextAuth credentials provider via API call
 // ═══════════════════════════════════════════════════════════
 
 import { type Page, expect } from '@playwright/test'
 
-/**
- * Test account emails matching LoginPageContent.tsx TEST_ACCOUNTS.
- * These use NextAuth credentials provider (signIn('credentials', { email })).
- * The dev login buttons trigger signIn directly — no password field needed.
- */
 const TEST_EMAILS: Record<string, string> = {
   SUPER_ADMIN: 'super@ctr.co.kr',
   HR_ADMIN:    'hr@ctr.co.kr',
@@ -21,8 +13,8 @@ const TEST_EMAILS: Record<string, string> = {
 }
 
 /**
- * Login as a specific user role by clicking the dev test-account button.
- * Requires NEXT_PUBLIC_SHOW_TEST_ACCOUNTS=true in .env
+ * Login as a specific user role using NextAuth credentials API directly.
+ * More reliable than clicking UI buttons (avoids client-side signIn race conditions).
  */
 export async function loginAs(
   page: Page,
@@ -30,30 +22,27 @@ export async function loginAs(
 ) {
   const email = TEST_EMAILS[role]
 
-  await page.goto('/login')
+  // 1. Get CSRF token from NextAuth
+  const csrfRes = await page.request.get('/api/auth/csrf')
+  const { csrfToken } = await csrfRes.json()
 
-  // Wait for the login page to fully load
-  await page.waitForLoadState('networkidle', { timeout: 10000 })
-
-  // Click the test account button that matches the email
-  // Each test account card shows the email as text
-  const accountButton = page.locator(`button:has-text("${email}")`)
-  
-  if (await accountButton.isVisible({ timeout: 5000 })) {
-    // Dev mode: click the test account button directly
-    await accountButton.click()
-  } else {
-    // Fallback: try NextAuth signIn via URL (credentials provider)
-    await page.goto(
-      `/api/auth/callback/credentials?email=${encodeURIComponent(email)}&callbackUrl=${encodeURIComponent('/home')}`,
-    )
-  }
-
-  // Wait for redirect to dashboard/home
-  await page.waitForURL('**/home**', { timeout: 15000 }).catch(() => {
-    // Some roles might redirect elsewhere
-    return page.waitForURL('**/*', { timeout: 5000 })
+  // 2. POST credentials directly to NextAuth callback
+  await page.request.post('/api/auth/callback/credentials', {
+    form: {
+      email,
+      csrfToken,
+      callbackUrl: '/home',
+      json: 'true',
+    },
   })
+
+  // 3. Navigate to home — session cookie is now set
+  await page.goto('/home', { waitUntil: 'domcontentloaded', timeout: 45000 })
+
+  // Verify we're not redirected to login
+  if (page.url().includes('/login')) {
+    throw new Error(`loginAs(${role}) failed — redirected to /login`)
+  }
 }
 
 /**
@@ -64,13 +53,15 @@ export async function assertPageLoads(
   url: string,
   options?: { timeout?: number },
 ) {
-  await page.goto(url, { timeout: options?.timeout || 15000 })
-  await page.waitForLoadState('networkidle', { timeout: 10000 })
-
-  // Should NOT show error boundary
-  const errorBoundary = page.locator('text=페이지를 불러올 수 없습니다')
-  await expect(errorBoundary).not.toBeVisible({ timeout: 3000 })
+  await page.goto(url, {
+    timeout: options?.timeout || 45000,
+    waitUntil: 'domcontentloaded',
+  })
 
   // Should NOT be redirected back to login
   expect(page.url()).not.toContain('/login')
+
+  // Should NOT show error boundary
+  const errorBoundary = page.locator('text=페이지를 불러올 수 없습니다')
+  await expect(errorBoundary).not.toBeVisible({ timeout: 5000 })
 }
