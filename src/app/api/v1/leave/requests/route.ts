@@ -19,6 +19,8 @@ import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { leaveRequestCreateSchema } from '@/lib/schemas/leave'
 import { fetchPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { calculateLeaveDays } from '@/lib/leave/calculateLeaveDays'
+import { fetchCompanyHolidays } from '@/lib/leave/fetchHolidays'
 import type { SessionUser } from '@/types'
 
 // ─── GET: My leave requests ──────────────────────────────
@@ -54,19 +56,6 @@ export const GET = withPermission(
   perm(MODULE.LEAVE, ACTION.VIEW),
 )
 
-// ─── Helpers ─────────────────────────────────────────────
-
-function differenceInBusinessDays(start: Date, end: Date): number {
-  let count = 0
-  const current = new Date(start)
-  while (current <= end) {
-    const day = current.getDay()
-    if (day !== 0 && day !== 6) count++
-    current.setDate(current.getDate() + 1)
-  }
-  return count
-}
-
 // ─── POST: Create leave request ──────────────────────────
 
 export const POST = withPermission(
@@ -91,46 +80,121 @@ export const POST = withPermission(
 
     // ── F-3: LeaveTypeDef validation (minAdvanceDays, maxConsecutiveDays) ───
 
-    // Try to get LeaveTypeDef via policy → leaveType matching
-    const policy = await prisma.leavePolicy.findUnique({
-      where: { id: parsed.data.policyId },
-      select: { leaveType: true, companyId: true },
-    })
+    // ── Phase 5: LeaveTypeDef 조회 (직접 ID 또는 policy 경유) ──
 
-    if (policy) {
-      const leaveTypeDef = await prisma.leaveTypeDef.findFirst({
-        where: {
-          OR: [
-            { companyId: policy.companyId, isActive: true },
-            { companyId: null, isActive: true },
-          ],
+    let countingMethod: 'business_day' | 'calendar_day' = 'business_day'
+    let includesHolidays = false
+    let resolvedLeaveTypeDefId: string | null = parsed.data.leaveTypeDefId ?? null
+
+    // leaveTypeDefId가 직접 제공되면 바로 조회, 아니면 policy 경유
+    type LeaveTypeDefInfo = {
+      id: string
+      minAdvanceDays: number | null
+      maxConsecutiveDays: number | null
+      countingMethod: string
+      includesHolidays: boolean
+      maxPerYear: number | null
+      isSplittable: boolean
+    }
+    let leaveTypeDef: LeaveTypeDefInfo | null = null
+
+    if (resolvedLeaveTypeDefId) {
+      leaveTypeDef = await prisma.leaveTypeDef.findUnique({
+        where: { id: resolvedLeaveTypeDefId },
+        select: {
+          id: true,
+          minAdvanceDays: true,
+          maxConsecutiveDays: true,
+          countingMethod: true,
+          includesHolidays: true,
+          maxPerYear: true,
+          isSplittable: true,
         },
-        orderBy: { companyId: 'desc' }, // company-specific first
-        select: { minAdvanceDays: true, maxConsecutiveDays: true },
       })
+    } else {
+      const policy = await prisma.leavePolicy.findUnique({
+        where: { id: parsed.data.policyId },
+        select: { leaveType: true, companyId: true },
+      })
+      if (policy) {
+        leaveTypeDef = await prisma.leaveTypeDef.findFirst({
+          where: {
+            OR: [
+              { companyId: policy.companyId, isActive: true },
+              { companyId: null, isActive: true },
+            ],
+          },
+          orderBy: { companyId: 'desc' },
+          select: {
+            id: true,
+            minAdvanceDays: true,
+            maxConsecutiveDays: true,
+            countingMethod: true,
+            includesHolidays: true,
+            maxPerYear: true,
+            isSplittable: true,
+          },
+        })
+        if (leaveTypeDef) resolvedLeaveTypeDefId = leaveTypeDef.id
+      }
+    }
 
-      if (leaveTypeDef) {
-        // Rule 1: Minimum advance booking (사전 신청 기간)
-        if (leaveTypeDef.minAdvanceDays && leaveTypeDef.minAdvanceDays > 0) {
-          const daysUntilStart = Math.floor(
-            (startDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+    if (leaveTypeDef) {
+      countingMethod = (leaveTypeDef.countingMethod as 'business_day' | 'calendar_day') ?? 'business_day'
+      includesHolidays = leaveTypeDef.includesHolidays ?? false
+
+      // Rule 1: Minimum advance booking (사전 신청 기간)
+      if (leaveTypeDef.minAdvanceDays && leaveTypeDef.minAdvanceDays > 0) {
+        const daysUntilStart = Math.floor(
+          (startDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+        )
+        if (daysUntilStart < leaveTypeDef.minAdvanceDays) {
+          throw badRequest(
+            `이 휴가 유형은 최소 ${leaveTypeDef.minAdvanceDays}일 전에 신청해야 합니다.`,
           )
-          if (daysUntilStart < leaveTypeDef.minAdvanceDays) {
-            throw badRequest(
-              `이 휴가 유형은 최소 ${leaveTypeDef.minAdvanceDays}일 전에 신청해야 합니다.`,
-            )
-          }
         }
+      }
 
-        // Rule 2: Maximum consecutive days (연속 상한)
-        if (leaveTypeDef.maxConsecutiveDays && leaveTypeDef.maxConsecutiveDays > 0) {
-          const businessDays = differenceInBusinessDays(startDate, endDate)
-          if (businessDays > leaveTypeDef.maxConsecutiveDays) {
-            throw badRequest(
-              `최대 연속 ${leaveTypeDef.maxConsecutiveDays}일까지 신청할 수 있습니다.`,
-            )
-          }
+      // Rule 2: Maximum consecutive days (연속 상한) — countingMethod 반영
+      if (leaveTypeDef.maxConsecutiveDays && leaveTypeDef.maxConsecutiveDays > 0) {
+        const holidays = await fetchCompanyHolidays(primaryCompanyId, startDate, endDate)
+        const leaveDays = calculateLeaveDays({
+          startDate,
+          endDate,
+          countingMethod,
+          includesHolidays,
+          holidays,
+        })
+        if (leaveDays > leaveTypeDef.maxConsecutiveDays) {
+          throw badRequest(
+            `최대 연속 ${leaveTypeDef.maxConsecutiveDays}일까지 신청할 수 있습니다.`,
+          )
         }
+      }
+
+      // Rule 3: maxPerYear 검증 (연간 최대 사용 횟수)
+      if (leaveTypeDef.maxPerYear && resolvedLeaveTypeDefId) {
+        const currentYear = now.getFullYear()
+        const yearStart = new Date(currentYear, 0, 1)
+        const yearEnd = new Date(currentYear, 11, 31)
+        const usedCount = await prisma.leaveRequest.count({
+          where: {
+            employeeId: user.employeeId,
+            leaveTypeDefId: resolvedLeaveTypeDefId,
+            status: { in: ['PENDING', 'APPROVED'] },
+            startDate: { gte: yearStart, lte: yearEnd },
+          },
+        })
+        if (usedCount >= leaveTypeDef.maxPerYear) {
+          throw badRequest(
+            `이 휴가 유형은 연간 최대 ${leaveTypeDef.maxPerYear}회까지 사용할 수 있습니다. (현재 ${usedCount}회 사용)`,
+          )
+        }
+      }
+
+      // Rule 4: isSplittable 검증 (분할 불가인데 반차 신청)
+      if (!leaveTypeDef.isSplittable && parsed.data.halfDayType) {
+        throw badRequest('이 휴가 유형은 반차(분할) 사용이 불가합니다.')
       }
     }
 
@@ -210,6 +274,7 @@ export const POST = withPermission(
           employeeId: user.employeeId,
           companyId: primaryCompanyId,
           policyId: parsed.data.policyId,
+          leaveTypeDefId: resolvedLeaveTypeDefId,
           startDate,
           endDate,
           days: parsed.data.days,

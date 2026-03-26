@@ -29,6 +29,7 @@ export type LeavePolicyUpdateInput = z.infer<typeof leavePolicyUpdateSchema>
 export const leaveRequestCreateSchema = z
   .object({
     policyId: z.string().uuid('정책 ID가 올바르지 않습니다'),
+    leaveTypeDefId: z.string().uuid().optional(), // Phase 5: 규정 기반 연결
     startDate: z.string().date(),
     endDate: z.string().date(),
     days: z.number().min(0.25).max(365),

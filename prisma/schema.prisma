@@ -2058,16 +2058,18 @@ model LeaveRequest {
   delegatedBy     String?            @map("delegated_by")
   cancelledBy     String?            @map("cancelled_by")     // F-3: 취소 처리자
   cancelNote      String?            @map("cancel_note")      // F-3: 취소 사유/메모
+  leaveTypeDefId  String?            @map("leave_type_def_id") // Phase 5: 규정 기반 연결
   createdAt       DateTime           @default(now()) @map("created_at")
   updatedAt       DateTime           @updatedAt @map("updated_at")
 
-  employee  Employee    @relation("LeaveRequester", fields: [employeeId], references: [id])
-  policy    LeavePolicy @relation(fields: [policyId], references: [id])
-  approver  Employee?   @relation("LeaveApprover", fields: [approvedBy], references: [id])
-  delegatee Employee?   @relation("LeaveDelegatee", fields: [delegatedBy], references: [id])
-  canceller Employee?   @relation("LeaveCanceller", fields: [cancelledBy], references: [id])
-  company   Company     @relation(fields: [companyId], references: [id])
-  companyId String      @map("company_id")
+  employee     Employee      @relation("LeaveRequester", fields: [employeeId], references: [id])
+  policy       LeavePolicy   @relation(fields: [policyId], references: [id])
+  approver     Employee?     @relation("LeaveApprover", fields: [approvedBy], references: [id])
+  delegatee    Employee?     @relation("LeaveDelegatee", fields: [delegatedBy], references: [id])
+  canceller    Employee?     @relation("LeaveCanceller", fields: [cancelledBy], references: [id])
+  company      Company       @relation(fields: [companyId], references: [id])
+  companyId    String         @map("company_id")
+  leaveTypeDef LeaveTypeDef? @relation(fields: [leaveTypeDefId], references: [id])
 
   @@index([employeeId, status])
   @@map("leave_requests")
@@ -5479,12 +5481,25 @@ model LeaveTypeDef {
   minAdvanceDays     Int?     @map("min_advance_days")      // F-3: 최소 N일 전 신청
   isActive           Boolean  @default(true) @map("is_active")
   displayOrder       Int      @default(0) @map("display_order")
+
+  // ── 규정 정합성 필드 (2026-03-26) ──
+  category          String?  @db.VarChar(30) @map("category")           // annual, family_event, maternity, health, military, other
+  subcategory       String?  @db.VarChar(30) @map("subcategory")        // celebration, condolence
+  countingMethod    String   @default("business_day") @db.VarChar(20) @map("counting_method") // business_day, calendar_day
+  includesHolidays  Boolean  @default(false) @map("includes_holidays")  // true: 공휴일 포함 통산 (경조)
+  isSplittable      Boolean  @default(false) @map("is_splittable")      // 분할사용 가능 (배우자출산 등)
+  splitDeadlineDays Int?     @map("split_deadline_days")                // 분할사용 기한 (일)
+  maxPerYear        Int?     @map("max_per_year")                       // 연간 최대 사용 횟수
+  paidDaysPerYear   Int?     @map("paid_days_per_year")                 // 부분유급 시 유급일수
+  condolenceAmount  Int?     @map("condolence_amount")                  // 경조금 (KRW)
+
   createdAt          DateTime @default(now()) @map("created_at")
   updatedAt          DateTime @updatedAt @map("updated_at")
 
-  company      Company?           @relation("CompanyLeaveTypeDefs", fields: [companyId], references: [id])
-  accrualRules LeaveAccrualRule[]
-  yearBalances LeaveYearBalance[]
+  company       Company?           @relation("CompanyLeaveTypeDefs", fields: [companyId], references: [id])
+  accrualRules  LeaveAccrualRule[]
+  yearBalances  LeaveYearBalance[]
+  leaveRequests LeaveRequest[]
 
   @@unique([companyId, code])
   @@map("leave_type_defs")

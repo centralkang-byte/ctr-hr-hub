@@ -22,7 +22,18 @@ const createSchema = z.object({
   allowHalfDay: z.boolean().default(true),
   requiresProof: z.boolean().default(false),
   maxConsecutiveDays: z.number().int().positive().optional(),
+  minAdvanceDays: z.number().int().nonnegative().optional(),
   displayOrder: z.number().int().default(0),
+  // 규정 필드
+  category: z.string().max(30).optional(),
+  subcategory: z.string().max(30).optional(),
+  countingMethod: z.enum(['business_day', 'calendar_day']).default('business_day'),
+  includesHolidays: z.boolean().default(false),
+  isSplittable: z.boolean().default(false),
+  splitDeadlineDays: z.number().int().positive().optional(),
+  maxPerYear: z.number().int().positive().optional(),
+  paidDaysPerYear: z.number().int().positive().optional(),
+  condolenceAmount: z.number().int().nonnegative().optional(),
 })
 
 // ─── GET ─────────────────────────────────────────────────
@@ -75,8 +86,19 @@ export const POST = withPermission(
         allowHalfDay: data.allowHalfDay,
         requiresProof: data.requiresProof,
         maxConsecutiveDays: data.maxConsecutiveDays,
+        minAdvanceDays: data.minAdvanceDays,
         displayOrder: data.displayOrder,
         isActive: true,
+        // 규정 필드
+        category: data.category,
+        subcategory: data.subcategory,
+        countingMethod: data.countingMethod,
+        includesHolidays: data.includesHolidays,
+        isSplittable: data.isSplittable,
+        splitDeadlineDays: data.splitDeadlineDays,
+        maxPerYear: data.maxPerYear,
+        paidDaysPerYear: data.paidDaysPerYear,
+        condolenceAmount: data.condolenceAmount,
       },
     })
 

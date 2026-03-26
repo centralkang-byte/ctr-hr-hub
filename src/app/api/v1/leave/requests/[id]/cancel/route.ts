@@ -16,28 +16,15 @@ import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { invalidateMultiple, CACHE_STRATEGY } from '@/lib/cache'
+import { calculateLeaveDays } from '@/lib/leave/calculateLeaveDays'
+import { fetchCompanyHolidays } from '@/lib/leave/fetchHolidays'
+import type { CountingMethod } from '@/lib/leave/calculateLeaveDays'
 import type { SessionUser } from '@/types'
 
 // ─── Helper: HR_ADMIN or above ───────────────────────────
 
 function isHrOrAbove(role: string): boolean {
   return (['HR_ADMIN', 'EXECUTIVE', 'SUPER_ADMIN'] as string[]).includes(role)
-}
-
-// ─── Helper: Calculate business days used (for partial cancel) ───
-
-function calculateActualUsedDays(startDate: Date, untilDate: Date): number {
-  let count = 0
-  const current = new Date(startDate)
-  const end = new Date(untilDate)
-  // Don't count today (partially used)
-  end.setDate(end.getDate() - 1)
-  while (current <= end) {
-    const day = current.getDay()
-    if (day !== 0 && day !== 6) count++
-    current.setDate(current.getDate() + 1)
-  }
-  return Math.max(count, 0)
 }
 
 // ─── PUT Handler ─────────────────────────────────────────
@@ -157,7 +144,51 @@ export const PUT = withPermission(
         throw forbidden('휴가 시작 후에는 HR 관리자만 취소할 수 있습니다.')
       }
 
-      const actualUsed = calculateActualUsedDays(requestStart, now)
+      // LeaveTypeDef 기반 countingMethod 조회 (직접 또는 policy 경유)
+      let countingMethod: CountingMethod = 'business_day'
+      let includesHolidays = false
+
+      if (request.leaveTypeDefId) {
+        // Phase 5: 직접 연결된 LeaveTypeDef 사용
+        const typeDef = await prisma.leaveTypeDef.findUnique({
+          where: { id: request.leaveTypeDefId },
+          select: { countingMethod: true, includesHolidays: true },
+        })
+        if (typeDef) {
+          countingMethod = (typeDef.countingMethod as CountingMethod) ?? 'business_day'
+          includesHolidays = typeDef.includesHolidays ?? false
+        }
+      } else {
+        // 하위호환: 기존 요청은 policy 경유 lookup
+        const policyWithType = await prisma.leavePolicy.findUnique({
+          where: { id: request.policyId },
+          select: { companyId: true },
+        })
+        if (policyWithType) {
+          const typeDef = await prisma.leaveTypeDef.findFirst({
+            where: {
+              OR: [
+                { companyId: policyWithType.companyId, isActive: true },
+                { companyId: null, isActive: true },
+              ],
+            },
+            orderBy: { companyId: 'desc' },
+            select: { countingMethod: true, includesHolidays: true },
+          })
+          if (typeDef) {
+            countingMethod = (typeDef.countingMethod as CountingMethod) ?? 'business_day'
+            includesHolidays = typeDef.includesHolidays ?? false
+          }
+        }
+      }
+
+      // 어제까지 실제 사용일 계산 (오늘 미포함)
+      const yesterday = new Date(now)
+      yesterday.setDate(yesterday.getDate() - 1)
+      const holidays = await fetchCompanyHolidays(request.companyId, requestStart, yesterday)
+      const actualUsed = yesterday >= requestStart
+        ? calculateLeaveDays({ startDate: requestStart, endDate: yesterday, countingMethod, includesHolidays, holidays })
+        : 0
       const totalDays = Number(request.days)
       const unusedDays = Math.max(totalDays - actualUsed, 0)
 
