@@ -3,11 +3,13 @@
 // 퇴직 처리 상세 페이지
 // ═══════════════════════════════════════════════════════════
 
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import { OffboardingDetailClient } from './OffboardingDetailClient'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export default async function OffboardingDetailPage({
   params,
@@ -20,5 +22,9 @@ export default async function OffboardingDetailPage({
   const user = session.user as unknown as SessionUser
   const { id } = await params
 
-  return <OffboardingDetailClient user={user} offboardingId={id} />
+  return (
+    <Suspense fallback={<ListPageSkeleton />}>
+      <OffboardingDetailClient user={user} offboardingId={id} />
+    </Suspense>
+  )
 }

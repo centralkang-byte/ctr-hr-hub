@@ -1,6 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — 나의 역량 자기평가 페이지 (B8-3)
 // ═══════════════════════════════════════════════════════════
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
@@ -8,6 +9,7 @@ import { prisma } from '@/lib/prisma'
 import MySkillsClient from './MySkillsClient'
 import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export default async function MySkillsPage() {
   const session = await getServerSession(authOptions)
@@ -49,11 +51,13 @@ export default async function MySkillsPage() {
   const reqMap = Object.fromEntries(requirements.map((r) => [r.competencyId, r.expectedLevel]))
 
   return (
-    <MySkillsClient
-      user={user}
-      competencies={competencies}
-      requirementMap={reqMap}
-      grade={grade}
-    />
+    <Suspense fallback={<ListPageSkeleton />}>
+      <MySkillsClient
+        user={user}
+        competencies={competencies}
+        requirementMap={reqMap}
+        grade={grade}
+      />
+    </Suspense>
   )
 }

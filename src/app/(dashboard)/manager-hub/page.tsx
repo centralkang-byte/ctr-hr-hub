@@ -1,9 +1,11 @@
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { ManagerInsightsHub } from '@/components/manager-hub/ManagerInsightsHub'
+import { HomeSkeleton } from '@/components/shared/PageSkeleton'
 
 export default async function ManagerHubPage() {
   const session = await getServerSession(authOptions)
@@ -19,5 +21,9 @@ export default async function ManagerHubPage() {
     redirect('/')
   }
 
-  return <ManagerInsightsHub user={user} />
+  return (
+    <Suspense fallback={<HomeSkeleton />}>
+      <ManagerInsightsHub user={user} />
+    </Suspense>
+  )
 }

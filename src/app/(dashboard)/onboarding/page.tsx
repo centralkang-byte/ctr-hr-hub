@@ -2,6 +2,7 @@
 // CTR HR Hub — /onboarding (Server Page)
 // ═══════════════════════════════════════════════════════════
 
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
@@ -9,6 +10,7 @@ import { prisma } from '@/lib/prisma'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { OnboardingDashboardClient } from './OnboardingDashboardClient'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export default async function OnboardingPage() {
   const session = await getServerSession(authOptions)
@@ -27,5 +29,9 @@ export default async function OnboardingPage() {
         })
       : []
 
-  return <OnboardingDashboardClient user={user} companies={companies} />
+  return (
+    <Suspense fallback={<ListPageSkeleton />}>
+      <OnboardingDashboardClient user={user} companies={companies} />
+    </Suspense>
+  )
 }

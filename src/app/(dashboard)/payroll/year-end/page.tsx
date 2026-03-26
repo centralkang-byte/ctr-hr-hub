@@ -1,9 +1,11 @@
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import YearEndHRClient from './YearEndHRClient'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export default async function YearEndHRPage() {
   const session = await getServerSession(authOptions)
@@ -18,5 +20,9 @@ export default async function YearEndHRPage() {
 
   const currentYear = new Date().getFullYear()
 
-  return <YearEndHRClient user={user} defaultYear={currentYear} />
+  return (
+    <Suspense fallback={<ListPageSkeleton />}>
+      <YearEndHRClient user={user} defaultYear={currentYear} />
+    </Suspense>
+  )
 }

@@ -1,7 +1,9 @@
+import { Suspense } from 'react'
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions } from '@/lib/auth'
 import PredictiveAnalyticsClient from './PredictiveAnalyticsClient'
+import { ChartSkeleton } from '@/components/shared/PageSkeleton'
 
 export default async function PredictiveAnalyticsPage() {
   const session = await getServerSession(authOptions)
@@ -12,5 +14,9 @@ export default async function PredictiveAnalyticsPage() {
     redirect('/analytics')
   }
 
-  return <PredictiveAnalyticsClient />
+  return (
+    <Suspense fallback={<ChartSkeleton />}>
+      <PredictiveAnalyticsClient />
+    </Suspense>
+  )
 }

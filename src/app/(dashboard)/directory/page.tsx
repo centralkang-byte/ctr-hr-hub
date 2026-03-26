@@ -1,9 +1,11 @@
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import { prisma } from '@/lib/prisma'
 import { DirectoryClient } from './DirectoryClient'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export const metadata = { title: 'People Directory | CTR HR Hub' }
 
@@ -30,11 +32,13 @@ export default async function DirectoryPage() {
   })
 
   return (
-    <DirectoryClient
-      user={user}
-      companies={companies}
-      departments={departments}
-      jobGrades={jobGrades}
-    />
+    <Suspense fallback={<ListPageSkeleton />}>
+      <DirectoryClient
+        user={user}
+        companies={companies}
+        departments={departments}
+        jobGrades={jobGrades}
+      />
+    </Suspense>
   )
 }

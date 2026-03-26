@@ -3,6 +3,7 @@
 // 직원 프로필: 5탭 (기본정보/인사이력/문서/징계상벌/연봉이력)
 // ═══════════════════════════════════════════════════════════
 
+import { Suspense } from 'react'
 import { redirect, notFound } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
@@ -12,6 +13,7 @@ import type { SessionUser, DeptOption, RefOption } from '@/types'
 import { EmployeeDetailClient } from './EmployeeDetailClient'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import { getManagerIdByPosition } from '@/lib/employee/direct-reports'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export default async function EmployeeDetailPage({
   params,
@@ -103,13 +105,15 @@ export default async function EmployeeDetailPage({
   }
 
   return (
-    <EmployeeDetailClient
-      user={user}
-      employee={employee as Parameters<typeof EmployeeDetailClient>[0]['employee']}
-      companies={companies}
-      departments={departments as DeptOption[]}
-      jobGrades={jobGrades}
-      jobCategories={jobCategories}
-    />
+    <Suspense fallback={<ListPageSkeleton />}>
+      <EmployeeDetailClient
+        user={user}
+        employee={employee as Parameters<typeof EmployeeDetailClient>[0]['employee']}
+        companies={companies}
+        departments={departments as DeptOption[]}
+        jobGrades={jobGrades}
+        jobCategories={jobCategories}
+      />
+    </Suspense>
   )
 }

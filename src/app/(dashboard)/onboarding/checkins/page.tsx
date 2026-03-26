@@ -3,11 +3,13 @@
 // HR 관리자 체크인 대시보드
 // ═══════════════════════════════════════════════════════════
 
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import { CheckinsAdminClient } from './CheckinsAdminClient'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export default async function OnboardingCheckinsPage() {
   const session = await getServerSession(authOptions)
@@ -17,5 +19,9 @@ export default async function OnboardingCheckinsPage() {
 
   const user = session.user as SessionUser
 
-  return <CheckinsAdminClient user={user} />
+  return (
+    <Suspense fallback={<ListPageSkeleton />}>
+      <CheckinsAdminClient user={user} />
+    </Suspense>
+  )
 }

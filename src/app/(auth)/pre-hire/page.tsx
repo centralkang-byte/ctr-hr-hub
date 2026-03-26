@@ -3,12 +3,14 @@
 // 발령일 미도래 직원에게 안내 화면 표시
 // ═══════════════════════════════════════════════════════════
 
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import type { SessionUser } from '@/types'
 import PreHireClient from './PreHireClient'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export const dynamic = 'force-dynamic'
 
@@ -35,14 +37,16 @@ export default async function PreHirePage() {
   })
 
   return (
-    <PreHireClient
-      userName={user.name ?? ''}
-      futureAssignment={futureAssignment ? {
-        effectiveDate: futureAssignment.effectiveDate.toISOString(),
-        companyName: futureAssignment.company?.name ?? '',
-        departmentName: futureAssignment.department?.name ?? '',
-        positionTitle: futureAssignment.position?.titleKo ?? '',
-      } : null}
-    />
+    <Suspense fallback={<ListPageSkeleton />}>
+      <PreHireClient
+        userName={user.name ?? ''}
+        futureAssignment={futureAssignment ? {
+          effectiveDate: futureAssignment.effectiveDate.toISOString(),
+          companyName: futureAssignment.company?.name ?? '',
+          departmentName: futureAssignment.department?.name ?? '',
+          positionTitle: futureAssignment.position?.titleKo ?? '',
+        } : null}
+      />
+    </Suspense>
   )
 }

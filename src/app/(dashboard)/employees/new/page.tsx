@@ -3,6 +3,7 @@
 // HR_ADMIN 전용 직원 등록 4-step 위자드
 // ═══════════════════════════════════════════════════════════
 
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
@@ -10,6 +11,7 @@ import { prisma } from '@/lib/prisma'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser, RefOption, DeptOption } from '@/types'
 import { EmployeeNewClient } from './EmployeeNewClient'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export type { RefOption, DeptOption }
 
@@ -56,12 +58,14 @@ export default async function EmployeeNewPage() {
   ])
 
   return (
-    <EmployeeNewClient
-      user={user}
-      companies={companies}
-      departments={departments}
-      jobGrades={jobGrades}
-      jobCategories={jobCategories}
-    />
+    <Suspense fallback={<ListPageSkeleton />}>
+      <EmployeeNewClient
+        user={user}
+        companies={companies}
+        departments={departments}
+        jobGrades={jobGrades}
+        jobCategories={jobCategories}
+      />
+    </Suspense>
   )
 }

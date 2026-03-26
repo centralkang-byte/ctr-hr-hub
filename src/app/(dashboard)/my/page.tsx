@@ -1,9 +1,11 @@
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import { prisma } from '@/lib/prisma'
 import { MySpaceClient } from './MySpaceClient'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export const metadata = { title: '나의 공간 | CTR HR Hub' }
 
@@ -43,11 +45,13 @@ export default async function MySpacePage() {
   if (!employee) redirect('/login')
 
   return (
-    <MySpaceClient
-      user={user}
-      employee={employee}
-      leaveBalances={leaveBalances}
-      pendingChangeRequests={pendingChangeRequests}
-    />
+    <Suspense fallback={<ListPageSkeleton />}>
+      <MySpaceClient
+        user={user}
+        employee={employee}
+        leaveBalances={leaveBalances}
+        pendingChangeRequests={pendingChangeRequests}
+      />
+    </Suspense>
   )
 }

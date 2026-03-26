@@ -3,11 +3,13 @@
 // /(dashboard)/my/offboarding
 // ═══════════════════════════════════════════════════════════
 
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import { MyOffboardingClient } from './MyOffboardingClient'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export const metadata = {
   title: '나의 퇴직처리 — CTR HR Hub',
@@ -22,8 +24,10 @@ export default async function MyOffboardingPage() {
   const _user = session.user as SessionUser
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-6">
-      <MyOffboardingClient />
-    </div>
+    <Suspense fallback={<ListPageSkeleton />}>
+      <div className="mx-auto max-w-2xl px-4 py-6">
+        <MyOffboardingClient />
+      </div>
+    </Suspense>
   )
 }

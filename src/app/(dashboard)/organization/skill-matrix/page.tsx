@@ -2,12 +2,14 @@
 // CTR HR Hub — 스킬 매트릭스 페이지 (B8-3)
 // ═══════════════════════════════════════════════════════════
 
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import SkillMatrixClient from './SkillMatrixClient'
 import type { SessionUser } from '@/types'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export const dynamic = 'force-dynamic'
 
@@ -26,5 +28,9 @@ export default async function SkillMatrixPage() {
     orderBy: { name: 'asc' },
   })
 
-  return <SkillMatrixClient user={user} departments={departments} />
+  return (
+    <Suspense fallback={<ListPageSkeleton />}>
+      <SkillMatrixClient user={user} departments={departments} />
+    </Suspense>
+  )
 }

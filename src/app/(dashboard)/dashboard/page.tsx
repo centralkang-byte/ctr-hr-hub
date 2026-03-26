@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
@@ -5,6 +6,7 @@ import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { prisma } from '@/lib/prisma'
 import { DashboardClient } from './DashboardClient'
+import { HomeSkeleton } from '@/components/shared/PageSkeleton'
 
 export const metadata = { title: 'HR KPI 대시보드 | CTR HR Hub' }
 
@@ -31,5 +33,9 @@ export default async function DashboardPage() {
 
   const defaultCompanyId = user.role === ROLE.SUPER_ADMIN ? null : (user.companyId ?? null)
 
-  return <DashboardClient user={user} companies={companies} defaultCompanyId={defaultCompanyId} />
+  return (
+    <Suspense fallback={<HomeSkeleton />}>
+      <DashboardClient user={user} companies={companies} defaultCompanyId={defaultCompanyId} />
+    </Suspense>
+  )
 }

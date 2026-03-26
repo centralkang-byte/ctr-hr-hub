@@ -1,8 +1,10 @@
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import PayrollReviewClient from './PayrollReviewClient'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 interface Props {
   params: Promise<{ runId: string }>
@@ -13,5 +15,9 @@ export default async function PayrollReviewPage({ params }: Props) {
   if (!session?.user) redirect('/login')
   const user = session.user as SessionUser
   const { runId } = await params
-  return <PayrollReviewClient user={user} runId={runId} />
+  return (
+    <Suspense fallback={<ListPageSkeleton />}>
+      <PayrollReviewClient user={user} runId={runId} />
+    </Suspense>
+  )
 }

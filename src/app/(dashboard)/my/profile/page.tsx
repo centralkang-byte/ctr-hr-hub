@@ -1,9 +1,11 @@
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import { prisma } from '@/lib/prisma'
 import { MyProfileClient } from './MyProfileClient'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export const metadata = { title: '내 프로필 | CTR HR Hub' }
 
@@ -139,6 +141,10 @@ export default async function MyProfilePage() {
     })) ?? []
   }
 
-  return <MyProfileClient user={user} employee={serialized as any} />
+  return (
+    <Suspense fallback={<ListPageSkeleton />}>
+      <MyProfileClient user={user} employee={serialized as any} />
+    </Suspense>
+  )
 }
 

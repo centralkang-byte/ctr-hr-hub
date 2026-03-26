@@ -2,11 +2,13 @@
 // CTR HR Hub — /discipline/[id] (Server Page)
 // ═══════════════════════════════════════════════════════════
 
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import DisciplineDetailClient from './DisciplineDetailClient'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export default async function DisciplineDetailPage({
   params,
@@ -21,5 +23,9 @@ export default async function DisciplineDetailPage({
   const user = session.user as SessionUser
   const { id } = await params
 
-  return <DisciplineDetailClient user={user} id={id} />
+  return (
+    <Suspense fallback={<ListPageSkeleton />}>
+      <DisciplineDetailClient user={user} id={id} />
+    </Suspense>
+  )
 }
