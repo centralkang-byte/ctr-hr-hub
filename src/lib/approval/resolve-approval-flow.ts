@@ -37,8 +37,8 @@ export async function resolveApprovalFlow(
         : [{ companyId: null }],
     },
     include: { steps: { orderBy: { stepOrder: 'asc' } } },
-    // 법인 오버라이드 우선 (null → asc에서 뒤로)
-    orderBy: { companyId: 'desc' },
+    // 법인 오버라이드 우선 (PostgreSQL: NULL LAST in asc → 법인 레코드가 먼저)
+    orderBy: { companyId: 'asc' },
   })
 
   if (!flow || flow.steps.length === 0) return []
