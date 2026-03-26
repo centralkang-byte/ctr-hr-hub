@@ -158,7 +158,8 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
         year: y,
       })
       setData(res.data)
-    } catch {
+    } catch (err) {
+      toast({ title: '휴가 관리 데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
       setData(null)
     } finally {
       setLoading(false)
@@ -179,7 +180,8 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
       ])
       setPolicies(pRes.data ?? [])
       setDepartments(dRes.data ?? [])
-    } catch {
+    } catch (err) {
+      toast({ title: '휴가 관리 데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
       setPolicies([])
       setDepartments([])
     }

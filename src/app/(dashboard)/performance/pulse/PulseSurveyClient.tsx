@@ -110,7 +110,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
         })),
       })
       onCreated()
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '설문 생성 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setSaving(false)
   }
 
@@ -241,7 +241,7 @@ export default function PulseSurveyClient() {
       ])
       setSurveys(surveyRes.data.items ?? [])
       setPending(pendingRes.data ?? [])
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '설문 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setLoading(false)
   }, [statusFilter])
 
@@ -251,14 +251,14 @@ export default function PulseSurveyClient() {
     try {
       await apiClient.put(`/api/v1/pulse/surveys/${id}`, { status: newStatus })
       fetchAll()
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '설문 상태 변경 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
   }
 
   const handleDelete = async (id: string) => {
     try {
       await apiClient.delete(`/api/v1/pulse/surveys/${id}`)
       fetchAll()
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '설문 삭제 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
   }
 
   const TABS = [

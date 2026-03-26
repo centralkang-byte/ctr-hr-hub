@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Search, Plus, ChevronLeft, ChevronRight, Briefcase, Filter } from 'lucide-react'
 import { format } from 'date-fns'
+import { toast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_SIZES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
@@ -83,8 +84,8 @@ export default function RecruitmentListClient({ user }: Props) {
       })
       setData(res.data)
       setTotal(res.pagination.total)
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: '채용 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setLoading(false)
     }

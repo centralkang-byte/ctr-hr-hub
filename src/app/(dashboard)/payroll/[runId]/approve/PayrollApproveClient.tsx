@@ -141,7 +141,9 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             ])
             setRun(runRes.data)
             setApproval(approvalRes.data)
-        } catch { /* silent */ } finally {
+        } catch (err) {
+            toast({ title: '결재 정보 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+        } finally {
             setLoading(false)
         }
     }, [runId])
@@ -158,7 +160,9 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             if (newApproval.data.approval?.status === 'APPROVED') {
                 router.push('/payroll')
             }
-        } catch { /* silent */ } finally {
+        } catch (err) {
+            toast({ title: '승인 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+        } finally {
             setSubmitting(false)
         }
     }
@@ -179,7 +183,9 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
         try {
             await apiClient.post(`/api/v1/payroll/${runId}/reject`, { comment: rejectComment })
             router.push('/approvals/inbox')
-        } catch { /* silent */ } finally {
+        } catch (err) {
+            toast({ title: '반려 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+        } finally {
             setSubmitting(false)
             setShowReject(false)
         }

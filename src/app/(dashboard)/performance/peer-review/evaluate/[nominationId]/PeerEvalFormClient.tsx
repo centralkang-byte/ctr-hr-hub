@@ -58,7 +58,7 @@ export default function PeerEvalFormClient() {
         competencyScore: avgScore,
       })
       setSubmitted(true)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '평가 양식 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setSubmitting(false)
   }
 

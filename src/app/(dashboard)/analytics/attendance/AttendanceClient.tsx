@@ -36,7 +36,9 @@ export default function AttendanceClient() {
       ])
       if (res.ok) { const j = await res.json(); setData(j.data) }
       if (compRes.ok) { const c = await compRes.json(); setCompanies(c.data || []) }
-    } catch { /* */ } finally { setLoading(false) }
+    } catch (err) {
+      toast({ title: '근태 분석 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    } finally { setLoading(false) }
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])

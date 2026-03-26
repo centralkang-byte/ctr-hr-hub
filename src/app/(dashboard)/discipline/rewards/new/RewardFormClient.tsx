@@ -89,7 +89,9 @@ export default function RewardFormClient({ user }: Props) {
     try {
       const res = await apiClient.getList<EmployeeOption>('/api/v1/employees', { limit: 100 })
       setEmployees(res.data)
-    } catch { /* silently handle */ }
+    } catch (err) {
+      toast({ title: '포상 저장 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
   }, [])
 
   useEffect(() => { fetchEmployees() }, [fetchEmployees])
@@ -108,8 +110,8 @@ export default function RewardFormClient({ user }: Props) {
         serviceYears: values.serviceYears !== '' ? Number(values.serviceYears) : undefined,
       })
       router.push('/discipline/rewards')
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: '포상 저장 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setSubmitting(false)
     }

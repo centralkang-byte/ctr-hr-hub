@@ -251,7 +251,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
         // Fetch peer results
         apiClient.get<{ reviews: typeof peerResults }>(`/api/v1/performance/peer-review/results/${member.employeeId}`, { cycleId })
             .then((res) => setPeerResults(res.data.reviews ?? []))
-            .catch(() => { /* no peer results */ })
+            .catch((err) => { toast({ title: '동료 평가 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) })
     }, [member, cycleId]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const mboAvg = Object.values(goalScores).length > 0
@@ -424,7 +424,7 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
             try {
                 const res = await apiClient.get<PeerCandidate[]>('/api/v1/performance/peer-review/candidates', { employeeId: member.employeeId, cycleId })
                 setCandidates(res.data ?? [])
-            } catch { /* ignore */ }
+            } catch (err) { toast({ title: '동료평가 후보 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
             finally { setLoading(false) }
         }
         load()

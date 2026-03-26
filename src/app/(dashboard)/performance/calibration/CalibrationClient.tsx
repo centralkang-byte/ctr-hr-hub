@@ -122,7 +122,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
         const calibCycles = res.data.filter((c) => c.status === 'CALIBRATION' || c.status === 'CLOSED')
         setCycles(calibCycles)
         if (calibCycles.length > 0) setSelectedCycleId(calibCycles[0].id)
-      } catch { setLoading(false) }
+      } catch (err) { toast({ title: '평가 주기 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }); setLoading(false) }
     }
     fetchCycles()
   }, [])
@@ -135,7 +135,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
     try {
       const res = await apiClient.getList<CalibSession>('/api/v1/performance/calibration/sessions', { cycleId: selectedCycleId })
       setSessions(res.data)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '캘리브레이션 세션 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     finally { setLoading(false) }
   }, [selectedCycleId])
 
@@ -172,7 +172,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
       if (res.data.evaluations && res.data.evaluations.length > 0) {
         loadReadinessData(res.data.evaluations.map((e: EvalItem) => e.employeeId))
       }
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '세션 상세 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     finally { setDetailLoading(false) }
   }, [loadReadinessData])
 

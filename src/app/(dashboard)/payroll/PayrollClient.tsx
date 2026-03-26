@@ -136,7 +136,9 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
     try {
       const res = await apiClient.get<DashboardData>(`/api/v1/payroll/dashboard?year=${year}&month=${month}`)
       setData(res.data)
-    } catch { /* silent */ } finally {
+    } catch (err) {
+      toast({ title: '급여 대시보드 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    } finally {
       setLoading(false)
     }
   }, [year, month])

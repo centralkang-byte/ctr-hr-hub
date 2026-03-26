@@ -60,8 +60,8 @@ export default function AiReportClient() {
         const c = await compRes.json()
         setCompanies(c.data || [])
       }
-    } catch {
-      /* ignore */
+    } catch (err) {
+      toast({ title: 'AI 리포트 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setLoading(false)
     }

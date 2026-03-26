@@ -162,8 +162,8 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
     try {
       await apiClient.put(`/api/v1/payroll/${runId}/anomalies/${anomaly.id}/resolve`, { resolution, note })
       onResolved()
-    } catch (e) {
-      console.error(e)
+    } catch (err) {
+      toast({ title: '이상 항목 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -470,7 +470,9 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
     try {
       const res = await apiClient.get<PayrollRunInfo>(`/api/v1/payroll/runs/${runId}`)
       setRun(res.data)
-    } catch { /* silent */ }
+    } catch (err) {
+      toast({ title: '급여 실행 정보 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
   }, [runId])
 
   const fetchAnomalies = useCallback(async () => {
@@ -480,7 +482,9 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       )
       setAnomalies(res.data.anomalies)
       setAnomalySummary(res.data.summary)
-    } catch { /* silent */ }
+    } catch (err) {
+      toast({ title: '이상 항목 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
   }, [runId])
 
   const fetchComparison = useCallback(async () => {
@@ -493,7 +497,9 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       )
       setComparisonRows(res.data.rows)
       setComparisonSummary(res.data.summary)
-    } catch { /* silent */ }
+    } catch (err) {
+      toast({ title: '비교 데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
   }, [runId, sortBy, sortOrder, deptFilter, anomalyOnly])
 
   const fetchWhitelist = useCallback(async () => {
@@ -504,7 +510,9 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
         `/api/v1/payroll/whitelist`, { companyId: run.id }
       )
       setWhitelistEntries(res.data.items ?? [])
-    } catch { /* silent */ }
+    } catch (err) {
+      toast({ title: '화이트리스트 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
   }, [run?.id])
 
   useEffect(() => {
@@ -537,7 +545,9 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       })
       await fetchAnomalies()
       await fetchRun()
-    } catch { /* silent */ } finally {
+    } catch (err) {
+      toast({ title: '일괄 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    } finally {
       setBulkResolving(false)
     }
   }
@@ -548,7 +558,9 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       await apiClient.post(`/api/v1/payroll/${runId}/submit-for-approval`, { note: submitNote })
       setShowSubmitModal(false)
       router.push('/payroll')
-    } catch { /* silent */ } finally {
+    } catch (err) {
+      toast({ title: '결재 요청 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    } finally {
       setSubmitting(false)
     }
   }
@@ -557,7 +569,9 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
     try {
       await apiClient.delete(`/api/v1/payroll/whitelist/${anomalyId}`)
       await fetchWhitelist()
-    } catch { /* silent */ }
+    } catch (err) {
+      toast({ title: '화이트리스트 삭제 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
   }
 
   const triggerDownload = (url: string) => {

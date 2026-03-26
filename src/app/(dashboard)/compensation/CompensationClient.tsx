@@ -46,8 +46,8 @@ export default function CompensationClient() {
       if (res.data.length > 0 && !selectedCycleId) {
         setSelectedCycleId(res.data[0].id)
       }
-    } catch {
-      // ignore
+    } catch (err) {
+      toast({ title: '보상 데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     }
   }, [selectedCycleId])
 

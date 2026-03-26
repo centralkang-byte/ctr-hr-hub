@@ -49,7 +49,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
   useEffect(() => {
     apiClient.getList<Company>('/api/v1/companies', { limit: '100' })
       .then((res) => setCompanies(res.data ?? []))
-      .catch(() => {})
+      .catch((err: unknown) => { toast({ title: '데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) })
   }, [])
 
   // 부서 목록 (법인 선택 시)
@@ -60,7 +60,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
       limit: '200',
     })
       .then((res) => setDepartments(res.data ?? []))
-      .catch(() => {})
+      .catch((err: unknown) => { toast({ title: '데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) })
   }, [form.companyId])
 
   // 공석 Position 목록
@@ -72,7 +72,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
       limit: '100',
     })
       .then((res) => setPositions(res.data ?? []))
-      .catch(() => {})
+      .catch((err: unknown) => { toast({ title: '데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) })
   }, [form.companyId])
 
   const handleSave = async (submitForApproval: boolean) => {

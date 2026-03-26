@@ -75,7 +75,7 @@ export default function PeerReviewResultsClient() {
         `/api/v1/peer-review/results?cycleId=${cycleId}&employeeId=${employeeId}`
       )
       setResults(res.data)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '동료 평가 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setLoading(false)
   }, [cycleId, employeeId])
 
@@ -86,7 +86,7 @@ export default function PeerReviewResultsClient() {
     try {
       const res = await apiClient.post<AiSummary>('/api/v1/ai/peer-review-summary', { cycleId, employeeId })
       setAiSummary(res.data)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '동료 평가 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setAiLoading(false)
   }
 

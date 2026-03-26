@@ -124,8 +124,8 @@ export default function PostingFormClient({
       setGrades(gradeRes.data)
       setCategories(catRes.data)
       setEmployees(empRes.data)
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: '데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     }
   }, [])
 
@@ -161,8 +161,8 @@ export default function PostingFormClient({
       setValue('description', res.data.description)
       setValue('requirements', res.data.qualifications)
       setValue('preferred', res.data.preferred)
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: 'AI 생성 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setAiLoading(false)
     }
@@ -197,8 +197,8 @@ export default function PostingFormClient({
 
       const res = await apiClient.post<{ id: string }>('/api/v1/recruitment/postings', payload)
       router.push(`/recruitment/${res.data.id}`)
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: '채용 공고 등록 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setSubmitting(false)
     }

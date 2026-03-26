@@ -86,7 +86,9 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
       if (year) params.year = year
       const res = await apiClient.get<GapData>('/api/v1/analytics/gender-pay-gap', params)
       setData(res.data)
-    } catch { /* ignore */ }
+    } catch (err) {
+      toast({ title: '성별 급여 격차 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
     setLoading(false)
   }, [groupBy, year])
 
@@ -109,7 +111,9 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
       a.download = `gender-pay-gap-${groupBy}${year ? `-${year}` : ''}.csv`
       a.click()
       URL.revokeObjectURL(url)
-    } catch { /* ignore */ }
+    } catch (err) {
+      toast({ title: '성별 급여 격차 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
     setExporting(false)
   }
 

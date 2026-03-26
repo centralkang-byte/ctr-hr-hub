@@ -118,7 +118,9 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
         try {
             const res = await apiClient.get<PublishStatus>(`/api/v1/payroll/${runId}/publish-status`)
             setData(res.data)
-        } catch { /* silent */ } finally {
+        } catch (err) {
+            toast({ title: '발행 현황 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+        } finally {
             setLoading(false)
         }
     }, [runId])
@@ -135,7 +137,9 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
             )
             setNotifyResult(res.data.message)
             await fetchData()
-        } catch { /* silent */ } finally {
+        } catch (err) {
+            toast({ title: '재알림 발송 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+        } finally {
             setNotifying(false)
         }
     }

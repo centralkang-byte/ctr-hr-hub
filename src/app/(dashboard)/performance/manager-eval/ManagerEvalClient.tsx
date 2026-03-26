@@ -86,7 +86,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
         const evalCycles = res.data.filter((c) => c.status === 'EVAL_OPEN' || c.status === 'CLOSED')
         setCycles(evalCycles)
         if (evalCycles.length > 0) setSelectedCycleId(evalCycles[0].id)
-      } catch { /* ignore */ }
+      } catch (err) { toast({ title: '평가 주기 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     }
     fetchCycles()
   }, [])
@@ -101,7 +101,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
       setTeamMembers(res.data.members ?? [])
       setEvalSettings(res.data.evalSettings)
       setBeiIndicators(res.data.beiIndicators ?? [])
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '평가 설정 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     finally { setLoading(false) }
   }, [selectedCycleId])
 
@@ -135,7 +135,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
       if (tm?.managerEval?.id) {
         setCurrentEvaluationId(tm.managerEval.id)
       }
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '팀원 평가 데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     finally { setFormLoading(false) }
   }, [selectedCycleId, teamMembers])
 

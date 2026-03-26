@@ -155,7 +155,7 @@ function RadarModal({
     setLoading(true)
     apiClient.get<RadarData>(`/api/v1/skills/radar?employeeId=${employeeId}&period=${period}`)
       .then((res) => setData(res.data))
-      .catch(() => {})
+      .catch((err: unknown) => { toast({ title: '스킬 매트릭스 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) })
       .finally(() => setLoading(false))
   }, [employeeId, period])
 
@@ -272,8 +272,8 @@ export default function SkillMatrixClient({user,
       ])
       setMatrixData(matrix.data)
       setGapReport(report.data)
-    } catch {
-      // 에러 무시
+    } catch (err) {
+      toast({ title: '스킬 매트릭스 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setLoading(false)
     }

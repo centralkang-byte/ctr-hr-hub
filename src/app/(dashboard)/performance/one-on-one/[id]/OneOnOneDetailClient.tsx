@@ -87,7 +87,7 @@ export default function OneOnOneDetailClient() {
         if (pm.actionItems) prev.push(...pm.actionItems)
       }
       setPrevActions(prev)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '미팅 정보 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setLoading(false)
   }, [id])
 
@@ -107,7 +107,7 @@ export default function OneOnOneDetailClient() {
       } else {
         fetchMeeting()
       }
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '미팅 저장 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setSaving(false)
   }
 
@@ -133,7 +133,7 @@ export default function OneOnOneDetailClient() {
       await apiClient.put(`/api/v1/cfr/one-on-ones/${id}`, {
         aiSummary: res.data.coaching_tip,
       })
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: 'AI 분석 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setAiLoading(false)
   }
 

@@ -62,8 +62,8 @@ export default function NewGoalClient({
           { page: 1, limit: 100 },
         )
         setCycles(res.data)
-      } catch {
-        console.error(t('cycleListLoadFailed'))
+      } catch (err) {
+        toast({ title: '데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
       }
     }
     fetchCycles()

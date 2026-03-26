@@ -92,7 +92,7 @@ export default function OneOnOneClient() {
     try {
       const res = await apiClient.getList<Meeting>('/api/v1/cfr/one-on-ones', { status: statusFilter })
       setMeetings(res.data)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '미팅 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setLoading(false)
   }, [statusFilter])
 
@@ -101,7 +101,7 @@ export default function OneOnOneClient() {
     try {
       const res = await apiClient.get<DashboardData>('/api/v1/cfr/one-on-ones/dashboard')
       setDashboard(res.data)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '대시보드 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
   }, [isManager])
 
   useEffect(() => { fetchMeetings() }, [fetchMeetings])
@@ -111,7 +111,7 @@ export default function OneOnOneClient() {
     try {
       const res = await apiClient.getList<TeamMember>('/api/v1/employees', { managerId: session?.user?.employeeId, status: 'ACTIVE', limit: 100 })
       setTeamMembers(res.data)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '팀원 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setShowCreateModal(true)
   }
 
@@ -128,7 +128,7 @@ export default function OneOnOneClient() {
       setShowCreateModal(false)
       setNewMeeting({ employeeId: '', scheduledAt: '', meetingType: 'REGULAR', agenda: '' })
       fetchMeetings()
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '미팅 생성 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setCreating(false)
   }
 

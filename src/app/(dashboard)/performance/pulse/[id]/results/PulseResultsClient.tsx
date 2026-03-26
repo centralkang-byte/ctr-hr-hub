@@ -60,7 +60,9 @@ export default function PulseResultsClient() {
     try {
       const res = await apiClient.get<SurveyResults>(`/api/v1/pulse/surveys/${id}/results`)
       setResults(res.data)
-    } catch { /* ignore */ }
+    } catch (err) {
+      toast({ title: '설문 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
     setLoading(false)
   }, [id])
 
@@ -71,7 +73,9 @@ export default function PulseResultsClient() {
     try {
       const res = await apiClient.post<AiAnalysis>('/api/v1/ai/pulse-analysis', { surveyId: id })
       setAiAnalysis(res.data)
-    } catch { /* ignore */ }
+    } catch (err) {
+      toast({ title: '설문 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
     setAiLoading(false)
   }
 

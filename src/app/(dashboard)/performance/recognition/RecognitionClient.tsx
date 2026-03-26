@@ -94,7 +94,7 @@ export default function RecognitionClient() {
         setFeed(res.data.items)
       }
       setNextCursor(res.data.nextCursor)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '리코그니션 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setLoading(false)
   }, [valueFilter])
 
@@ -103,7 +103,7 @@ export default function RecognitionClient() {
     try {
       const res = await apiClient.get<Stats>('/api/v1/cfr/recognitions/stats')
       setStats(res.data)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '통계 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
   }, [isAdmin])
 
   useEffect(() => { fetchFeed() }, [fetchFeed])
@@ -117,7 +117,7 @@ export default function RecognitionClient() {
           ? { ...item, likedByMe: res.data.liked, likeCount: res.data.likeCount }
           : item,
       ))
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '반응 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
   }
 
   const searchEmployees = (query: string) => {
@@ -128,7 +128,7 @@ export default function RecognitionClient() {
       try {
         const res = await apiClient.getList<Employee>('/api/v1/employees', { search: query, limit: 10 })
         setSearchResults(res.data.filter((emp: Employee) => emp.id !== session?.user?.employeeId))
-      } catch { /* ignore */ }
+      } catch (err) { toast({ title: '직원 검색 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     }, 200)
   }
 
@@ -147,7 +147,7 @@ export default function RecognitionClient() {
       setMessage('')
       setSearchQuery('')
       fetchFeed()
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '리코그니션 등록 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setCreating(false)
   }
 

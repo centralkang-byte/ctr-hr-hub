@@ -124,8 +124,8 @@ export default function TeamGoalsClient({
         if (res.data.length > 0) {
           setSelectedCycleId(res.data[0].id)
         }
-      } catch {
-        console.error(t('cycleListLoadFailed'))
+      } catch (err) {
+        toast({ title: '팀 목표 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
       }
     }
     fetchCycles()
@@ -141,8 +141,8 @@ export default function TeamGoalsClient({
         `/api/v1/performance/team-goals?cycleId=${selectedCycleId}`,
       )
       setMembers(res.data)
-    } catch {
-      console.error(t('teamLoadFailed'))
+    } catch (err) {
+      toast({ title: '팀 목표 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
       setMembers([])
     } finally {
       setLoading(false)

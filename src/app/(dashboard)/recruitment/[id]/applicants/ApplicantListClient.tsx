@@ -140,8 +140,8 @@ export default function ApplicantListClient({
       )
       setData(res.data)
       setTotal(res.pagination.total)
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: '지원자 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setLoading(false)
     }

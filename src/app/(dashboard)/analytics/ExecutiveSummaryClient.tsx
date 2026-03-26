@@ -44,7 +44,7 @@ export default function ExecutiveSummaryClient() {
         const json = await res.json()
         setData(json.data ?? null)
       } else {
-        console.error('Executive Summary API error:', res.status)
+        toast({ title: '경영진 요약 로드 실패', description: `API 오류: ${res.status}`, variant: 'destructive' })
         setError(true)
       }
       if (compRes.ok) {
@@ -52,7 +52,7 @@ export default function ExecutiveSummaryClient() {
         setCompanies(cJson.data || [])
       }
     } catch (err) {
-      console.error('Executive Summary fetch error:', err)
+      toast({ title: '경영진 요약 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
       setError(true)
     } finally { setLoading(false) }
   }, [])

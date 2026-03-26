@@ -51,7 +51,9 @@ export default function PulseRespondClient() {
     try {
       const res = await apiClient.get<SurveyDetail>(`/api/v1/pulse/surveys/${id}`)
       setSurvey(res.data)
-    } catch { /* ignore */ }
+    } catch (err) {
+      toast({ title: '설문 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
     setLoading(false)
   }, [id])
 
@@ -71,7 +73,9 @@ export default function PulseRespondClient() {
       }))
       await apiClient.post(`/api/v1/pulse/surveys/${id}/respond`, { answers: answerList })
       setSubmitted(true)
-    } catch { /* ignore */ }
+    } catch (err) {
+      toast({ title: '응답 제출 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
     setSubmitting(false)
   }
 

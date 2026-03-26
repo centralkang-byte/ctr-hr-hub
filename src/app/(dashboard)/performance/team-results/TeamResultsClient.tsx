@@ -47,7 +47,7 @@ export default function TeamResultsClient({
         const res = await apiClient.getList<CycleOption>('/api/v1/performance/cycles', { page: 1, limit: 100 })
         setCycles(res.data)
         if (res.data.length > 0) setSelectedCycleId(res.data[0].id)
-      } catch { /* ignore */ }
+      } catch (err) { toast({ title: '팀 평가 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     }
     fetchCycles()
   }, [])
@@ -58,7 +58,7 @@ export default function TeamResultsClient({
     try {
       const res = await apiClient.get<TeamResult[]>('/api/v1/performance/results/team', { cycleId: selectedCycleId })
       setResults(res.data)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '팀 평가 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     finally { setLoading(false) }
   }, [selectedCycleId])
 

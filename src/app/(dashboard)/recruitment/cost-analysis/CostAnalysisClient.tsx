@@ -133,7 +133,9 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
     try {
       const res = await apiClient.get<CostAnalysis>('/api/v1/recruitment/cost-analysis', { year })
       setAnalysis(res.data)
-    } catch { /* ignore */ }
+    } catch (err) {
+      toast({ title: '채용 비용 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
   }, [year])
 
   const fetchCosts = useCallback(async () => {
@@ -142,7 +144,9 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
       if (costFilter !== 'ALL') params.costType = costFilter
       const res = await apiClient.get<RecruitmentCost[]>('/api/v1/recruitment/costs', params)
       setCosts(res.data)
-    } catch { /* ignore */ }
+    } catch (err) {
+      toast({ title: '채용 비용 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
   }, [costFilter])
 
   useEffect(() => {
@@ -168,7 +172,9 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
       setForm({ applicantSource: 'DIRECT', costType: 'AD_FEE', amount: '', currency: 'KRW', description: '', vendorName: '', invoiceDate: '' })
       fetchCosts()
       fetchAnalysis()
-    } catch { /* ignore */ }
+    } catch (err) {
+      toast({ title: '채용 비용 등록 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
     setCreating(false)
   }
 
@@ -179,7 +185,9 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
         await apiClient.delete(`/api/v1/recruitment/costs/${id}`)
         fetchCosts()
         fetchAnalysis()
-      } catch { /* ignore */ }
+      } catch (err) {
+        toast({ title: '채용 비용 삭제 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      }
     }})
   }
 

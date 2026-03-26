@@ -100,8 +100,8 @@ export default function PostingDetailClient({
     try {
       const res = await apiClient.get<PostingDetail>(`/api/v1/recruitment/postings/${id}`)
       setData(res.data)
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: '채용 공고 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -114,8 +114,8 @@ export default function PostingDetailClient({
     try {
       await apiClient.put(`/api/v1/recruitment/postings/${id}/publish`)
       fetchDetail()
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: '채용 공고 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setActionLoading(false)
     }
@@ -126,8 +126,8 @@ export default function PostingDetailClient({
     try {
       await apiClient.put(`/api/v1/recruitment/postings/${id}/close`)
       fetchDetail()
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: '채용 공고 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setActionLoading(false)
     }
