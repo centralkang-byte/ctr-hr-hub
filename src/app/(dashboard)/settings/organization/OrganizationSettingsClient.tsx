@@ -20,6 +20,7 @@ import { ProbationTab } from './tabs/ProbationTab'
 import { CustomFieldsTab } from './tabs/CustomFieldsTab'
 import { CodeManagementTab } from './tabs/CodeManagementTab'
 import { LocationsTab } from './tabs/LocationsTab'
+import { EmployeeTitlesTab } from './tabs/EmployeeTitlesTab'
 
 const config = getCategoryConfig('organization')
 
@@ -36,6 +37,8 @@ function OrganizationSettingsContent() {
         return <DepartmentsTab companyId={companyId} />
       case 'job-grades':
         return <JobGradesTab companyId={companyId} />
+      case 'employee-titles':
+        return <EmployeeTitlesTab companyId={companyId} />
       case 'job-families':
         return <JobFamiliesTab companyId={companyId} />
       case 'assignment-rules':
