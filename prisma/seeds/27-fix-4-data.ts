@@ -125,6 +125,34 @@ async function main() {
             carryOverDays: 0,
           },
         })
+
+        // Phase 6: Mirror to LeaveYearBalance
+        const annualTypeDef = await prisma.leaveTypeDef.findFirst({
+          where: { companyId: krCompany.id, code: 'annual', isActive: true },
+          select: { id: true },
+        })
+        if (annualTypeDef) {
+          await prisma.leaveYearBalance.upsert({
+            where: {
+              employeeId_leaveTypeDefId_year: {
+                employeeId: eaSso.employeeId,
+                leaveTypeDefId: annualTypeDef.id,
+                year: 2026,
+              },
+            },
+            update: { entitled: 15 },
+            create: {
+              employeeId: eaSso.employeeId,
+              leaveTypeDefId: annualTypeDef.id,
+              year: 2026,
+              entitled: 15,
+              used: 0,
+              pending: 0,
+              carriedOver: 0,
+              adjusted: 0,
+            },
+          })
+        }
         console.log('  ✅ Employee-A (이민준) leave balance for 2026 created')
       } else {
         console.warn('  ⚠️ No active LeavePolicy found for CTR-KR')

@@ -51,11 +51,27 @@ import { CalendarIcon } from 'lucide-react'
 
 interface LeaveBalanceLocal {
   id: string
-  grantedDays: number
-  usedDays: number
-  pendingDays: number
-  carryOverDays: number
-  policy: { id: string; name: string; leaveType: string; isPaid: boolean }
+  entitled: number
+  used: number
+  pending: number
+  carriedOver: number
+  adjusted: number
+  remaining: number
+  leaveTypeDefId: string
+  leaveTypeDef: {
+    id: string
+    name: string
+    nameEn: string | null
+    code: string
+    category: string | null
+    isPaid: boolean
+  }
+  // legacy compat (policy field removed after Phase 6)
+  grantedDays?: number
+  usedDays?: number
+  pendingDays?: number
+  carryOverDays?: number
+  policy?: { id: string; name: string; leaveType: string; isPaid: boolean }
 }
 
 interface LeaveRequestLocal {
@@ -222,12 +238,12 @@ export function LeaveClient({ user }: { user: SessionUser }) {
   }, [watchedStart, watchedEnd])
 
   // ─── Balance preview calculation ───
-  const selectedBalance = balances.find((b) => b.policy.id === watchedPolicyId) ?? null
+  const getRemainingDays = (b: LeaveBalanceLocal) =>
+    b.remaining ?? (b.entitled + b.carriedOver + b.adjusted - b.used - b.pending)
+
+  const selectedBalance = balances.find((b) => b.leaveTypeDef?.id === watchedPolicyId || b.policy?.id === watchedPolicyId) ?? null
   const selectedRemaining = selectedBalance
-    ? Number(selectedBalance.grantedDays) +
-      Number(selectedBalance.carryOverDays) -
-      Number(selectedBalance.usedDays) -
-      Number(selectedBalance.pendingDays)
+    ? getRemainingDays(selectedBalance)
     : null
   const requestedDaysNum = Number(watchedDays) || 0
   const projectedRemaining =
@@ -381,9 +397,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
     }
   }
 
-  // ─── Balance remaining calculation ───
-  const getRemainingDays = (b: LeaveBalanceLocal) =>
-    Number(b.grantedDays) + Number(b.carryOverDays) - Number(b.usedDays) - Number(b.pendingDays)
+  // ─── Date formatting below ───
 
   // ─── Date formatting ───
   const formatDate = (date: string) =>
@@ -467,44 +481,69 @@ export function LeaveClient({ user }: { user: SessionUser }) {
         }
       />
 
-      {/* ─── Section 1: Leave Balance Cards ─── */}
-      <div className="flex gap-6 overflow-x-auto pb-2">
-        {!balances?.length && <EmptyState />}
-              {balances?.map((b) => {
-          const remaining = getRemainingDays(b)
-          const total = Number(b.grantedDays) + Number(b.carryOverDays)
-          const usagePct = total > 0 ? Math.round(((total - remaining) / total) * 100) : 0
-          return (
-            <div
-              key={b.id}
-              className="min-w-[220px] flex-shrink-0 bg-white border border-[#E8E8E8] rounded-xl p-6"
-            >
-              <p className="text-xs text-[#999] font-medium mb-2">
-                {b.policy.name}
-              </p>
-              <div className="flex items-end gap-1">
-                <p className={`text-3xl font-bold tracking-[-0.02em] ${remaining > 0 ? 'text-[#5E81F4]' : 'text-[#999]'}`}>
-                  {remaining}
+      {/* ─── Section 1: Leave Balance Cards (카테고리 그룹핑) ─── */}
+      {!balances?.length && !loading && (
+        <p className="py-4 text-sm text-[#999]">{tc('noData')}</p>
+      )}
+      {balances?.length > 0 && (() => {
+        // 카테고리별 그룹핑
+        const CATEGORY_ORDER = ['annual', 'health', 'family_event', 'maternity', 'military', 'other']
+        const CATEGORY_LABELS: Record<string, string> = {
+          annual: '연차', health: '보건/건강', family_event: '경조',
+          maternity: '모성보호', military: '병역', other: '기타',
+        }
+        const groups: Record<string, LeaveBalanceLocal[]> = {}
+        for (const b of balances) {
+          const cat = b.leaveTypeDef?.category ?? 'other'
+          if (!groups[cat]) groups[cat] = []
+          groups[cat].push(b)
+        }
+        const orderedGroups = CATEGORY_ORDER.filter(c => groups[c]?.length)
+
+        return (
+          <div className="space-y-4">
+            {orderedGroups.map(cat => (
+              <div key={cat}>
+                <p className="text-xs font-semibold text-[#555] mb-2 uppercase tracking-wide">
+                  {CATEGORY_LABELS[cat] ?? cat}
                 </p>
-                <p className="text-sm text-[#999] mb-1">/ {total} {t('fullDay')}</p>
+                <div className="flex gap-4 overflow-x-auto pb-1">
+                  {groups[cat].map((b) => {
+                    const remaining = getRemainingDays(b)
+                    const total = b.entitled + b.carriedOver + b.adjusted
+                    const usagePct = total > 0 ? Math.round(((total - remaining) / total) * 100) : 0
+                    return (
+                      <div
+                        key={b.id}
+                        className="min-w-[200px] flex-shrink-0 bg-white border border-[#E8E8E8] rounded-xl p-5"
+                      >
+                        <p className="text-xs text-[#999] font-medium mb-2">
+                          {b.leaveTypeDef?.name ?? b.policy?.name ?? '-'}
+                        </p>
+                        <div className="flex items-end gap-1">
+                          <p className={`text-2xl font-bold tracking-[-0.02em] ${remaining > 0 ? 'text-[#5E81F4]' : 'text-[#999]'}`}>
+                            {remaining}
+                          </p>
+                          <p className="text-sm text-[#999] mb-0.5">/ {total} {t('fullDay')}</p>
+                        </div>
+                        <div className="mt-2 h-1.5 rounded-full bg-[#E8E8E8] overflow-hidden">
+                          <div
+                            className="h-full rounded-full bg-gradient-to-r from-[#5E81F4] to-[#00BFA5]"
+                            style={{ width: `${Math.min(usagePct, 100)}%` }}
+                          />
+                        </div>
+                        <p className="mt-1.5 text-xs text-[#999]">
+                          {t('usedDays')} {b.used}{t('fullDay')} / {t('pendingDays')} {b.pending}{t('fullDay')}
+                        </p>
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
-              {/* Progress bar */}
-              <div className="mt-3 h-2 rounded-full bg-[#E8E8E8] overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#5E81F4] to-[#00BFA5]"
-                  style={{ width: `${Math.min(usagePct, 100)}%` }}
-                />
-              </div>
-              <p className="mt-2 text-xs text-[#999]">
-                {t('usedDays')} {b.usedDays}{t('fullDay')} / {t('pendingDays')} {b.pendingDays}{t('fullDay')}
-              </p>
-            </div>
-          )
-        })}
-        {balances.length === 0 && !loading && (
-          <p className="py-4 text-sm text-[#999]">{tc('noData')}</p>
-        )}
-      </div>
+            ))}
+          </div>
+        )
+      })()}
 
       {/* ─── Section 3: Status filter + Request History ─── */}
       <div className="flex items-center gap-2">

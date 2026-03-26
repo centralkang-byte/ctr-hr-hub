@@ -21,6 +21,7 @@ import { leaveRequestCreateSchema } from '@/lib/schemas/leave'
 import { fetchPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import { calculateLeaveDays } from '@/lib/leave/calculateLeaveDays'
 import { fetchCompanyHolidays } from '@/lib/leave/fetchHolidays'
+import { resolveLeaveTypeDefId } from '@/lib/leave/resolveLeaveTypeDefId'
 import type { SessionUser } from '@/types'
 
 // ─── GET: My leave requests ──────────────────────────────
@@ -86,7 +87,7 @@ export const POST = withPermission(
     let includesHolidays = false
     let resolvedLeaveTypeDefId: string | null = parsed.data.leaveTypeDefId ?? null
 
-    // leaveTypeDefId가 직접 제공되면 바로 조회, 아니면 policy 경유
+    // leaveTypeDefId가 직접 제공되면 바로 조회, 아니면 policyId 경유 resolve
     type LeaveTypeDefInfo = {
       id: string
       minAdvanceDays: number | null
@@ -97,6 +98,10 @@ export const POST = withPermission(
       isSplittable: boolean
     }
     let leaveTypeDef: LeaveTypeDefInfo | null = null
+
+    if (!resolvedLeaveTypeDefId) {
+      resolvedLeaveTypeDefId = await resolveLeaveTypeDefId(parsed.data.policyId)
+    }
 
     if (resolvedLeaveTypeDefId) {
       leaveTypeDef = await prisma.leaveTypeDef.findUnique({
@@ -111,32 +116,6 @@ export const POST = withPermission(
           isSplittable: true,
         },
       })
-    } else {
-      const policy = await prisma.leavePolicy.findUnique({
-        where: { id: parsed.data.policyId },
-        select: { leaveType: true, companyId: true },
-      })
-      if (policy) {
-        leaveTypeDef = await prisma.leaveTypeDef.findFirst({
-          where: {
-            OR: [
-              { companyId: policy.companyId, isActive: true },
-              { companyId: null, isActive: true },
-            ],
-          },
-          orderBy: { companyId: 'desc' },
-          select: {
-            id: true,
-            minAdvanceDays: true,
-            maxConsecutiveDays: true,
-            countingMethod: true,
-            includesHolidays: true,
-            maxPerYear: true,
-            isSplittable: true,
-          },
-        })
-        if (leaveTypeDef) resolvedLeaveTypeDefId = leaveTypeDef.id
-      }
     }
 
     if (leaveTypeDef) {
@@ -217,25 +196,33 @@ export const POST = withPermission(
 
     // ── Balance check + Negative balance + Transaction ──────
 
+    // leaveTypeDefId가 없으면 policyId 경유 resolve
+    if (!resolvedLeaveTypeDefId) {
+      resolvedLeaveTypeDefId = await resolveLeaveTypeDefId(parsed.data.policyId)
+    }
+
     const result = await prisma.$transaction(async (tx) => {
-      // 1. Read balance INSIDE transaction (isolation)
-      const balance = await tx.employeeLeaveBalance.findFirst({
-        where: {
-          employeeId: user.employeeId,
-          policyId: parsed.data.policyId,
-          year: new Date().getFullYear(),
-        },
-      })
+      // 1. Read balance INSIDE transaction (LeaveYearBalance)
+      const balance = resolvedLeaveTypeDefId
+        ? await tx.leaveYearBalance.findFirst({
+            where: {
+              employeeId: user.employeeId,
+              leaveTypeDefId: resolvedLeaveTypeDefId,
+              year: new Date().getFullYear(),
+            },
+          })
+        : null
 
       if (!balance) {
         throw badRequest('해당 휴가 유형의 잔여일이 없습니다.')
       }
 
       const totalAvailable =
-        Number(balance.grantedDays) +
-        Number(balance.carryOverDays) -
-        Number(balance.usedDays) -
-        Number(balance.pendingDays)
+        balance.entitled +
+        balance.carriedOver +
+        balance.adjusted -
+        balance.used -
+        balance.pending
 
       // 2. Check if request exceeds available
       if (parsed.data.days > totalAvailable) {
@@ -284,10 +271,10 @@ export const POST = withPermission(
         },
       })
 
-      // 7. Atomic increment pendingDays
-      await tx.employeeLeaveBalance.update({
+      // 7. Atomic increment pending
+      await tx.leaveYearBalance.update({
         where: { id: balance.id },
-        data: { pendingDays: { increment: parsed.data.days } },
+        data: { pending: { increment: parsed.data.days } },
       })
 
       return request

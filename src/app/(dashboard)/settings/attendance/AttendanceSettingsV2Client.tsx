@@ -25,6 +25,7 @@ import { ShiftPatternsTab } from './tabs/ShiftPatternsTab'
 import { LeaveTypesTab } from './tabs/LeaveTypesTab'
 import { LeaveAccrualTab } from './tabs/LeaveAccrualTab'
 import { LeavePromotionTab } from './tabs/LeavePromotionTab'
+import { DesignatedLeaveTab } from './tabs/DesignatedLeaveTab'
 import { HolidaysTab } from './tabs/HolidaysTab'
 import { OvertimeTab } from './tabs/OvertimeTab'
 import { BUTTON_VARIANTS } from '@/lib/styles'
@@ -228,6 +229,8 @@ function AttendanceSettingsContent() {
         return <LeaveAccrualTab companyId={companyId} />
       case 'leave-promotion':
         return <LeavePromotionTab companyId={companyId} />
+      case 'designated-leave':
+        return <DesignatedLeaveTab companyId={companyId} />
       case 'holidays':
         return <HolidaysTab companyId={companyId} />
       case 'overtime':

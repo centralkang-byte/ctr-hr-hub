@@ -14,6 +14,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { sendNotification } from '@/lib/notifications'
 import { checkDelegation } from '@/lib/delegation/resolve-delegatee'
 import { invalidateMultiple, CACHE_STRATEGY } from '@/lib/cache'
+import { resolveLeaveTypeDefId } from '@/lib/leave/resolveLeaveTypeDefId'
 import type { SessionUser } from '@/types'
 
 const rejectionSchema = z.object({
@@ -63,12 +64,19 @@ export const PUT = withPermission(
       delegatedBy = user.employeeId
     }
 
-    // 3. Find corresponding balance
-    const balance = await prisma.employeeLeaveBalance.findFirst({
+    // 3. Resolve leaveTypeDefId + find balance (LeaveYearBalance)
+    const leaveTypeDefId = request.leaveTypeDefId
+      ?? await resolveLeaveTypeDefId(request.policyId)
+
+    if (!leaveTypeDefId) {
+      throw badRequest('해당 휴가 유형 정의를 찾을 수 없습니다.')
+    }
+
+    const balance = await prisma.leaveYearBalance.findFirst({
       where: {
         employeeId: request.employeeId,
-        policyId:   request.policyId,
-        year:       new Date(request.startDate).getFullYear(),
+        leaveTypeDefId,
+        year: new Date(request.startDate).getFullYear(),
       },
     })
 
@@ -76,7 +84,7 @@ export const PUT = withPermission(
       throw badRequest('해당 휴가 유형의 잔여일 정보를 찾을 수 없습니다.')
     }
 
-    // 4. Transaction: reject request + restore pendingDays (direct, not via event)
+    // 4. Transaction: reject request + restore pending (direct, not via event)
     const days = Number(request.days)
 
     const updated = await prisma.$transaction(async (tx) => {
@@ -91,24 +99,25 @@ export const PUT = withPermission(
         },
       })
 
-      // Restore pendingDays (usedDays unchanged for rejection)
-      await tx.employeeLeaveBalance.update({
+      // Restore pending (used unchanged for rejection)
+      await tx.leaveYearBalance.update({
         where: { id: balance.id },
-        data: { pendingDays: { decrement: days } },
+        data: { pending: { decrement: days } },
       })
 
       return rejected
     })
 
     // 5. Fetch updated balance for response
-    const updatedBalance = await prisma.employeeLeaveBalance.findUnique({
+    const updatedBalance = await prisma.leaveYearBalance.findUnique({
       where: { id: balance.id },
     })
     const remaining = updatedBalance
-      ? Number(updatedBalance.grantedDays) +
-        Number(updatedBalance.carryOverDays) -
-        Number(updatedBalance.usedDays) -
-        Number(updatedBalance.pendingDays)
+      ? updatedBalance.entitled +
+        updatedBalance.carriedOver +
+        updatedBalance.adjusted -
+        updatedBalance.used -
+        updatedBalance.pending
       : 0
 
     // 6. Audit log
@@ -149,9 +158,9 @@ export const PUT = withPermission(
     return apiSuccess({
       request: updated,
       balance: {
-        granted:   Number(updatedBalance?.grantedDays ?? 0),
-        used:      Number(updatedBalance?.usedDays ?? 0),
-        pending:   Number(updatedBalance?.pendingDays ?? 0),
+        entitled:  updatedBalance?.entitled ?? 0,
+        used:      updatedBalance?.used ?? 0,
+        pending:   updatedBalance?.pending ?? 0,
         remaining,
       },
     })

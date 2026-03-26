@@ -21,7 +21,7 @@ export const GET = withPermission(
       where: { employeeId, year },
       include: {
         leaveTypeDef: {
-          select: { id: true, code: true, name: true, isPaid: true, allowHalfDay: true },
+          select: { id: true, code: true, name: true, nameEn: true, isPaid: true, allowHalfDay: true, category: true, subcategory: true, displayOrder: true },
         },
       },
       orderBy: [{ leaveTypeDef: { displayOrder: 'asc' } }, { leaveTypeDef: { name: 'asc' } }],

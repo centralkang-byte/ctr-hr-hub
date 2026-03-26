@@ -26,12 +26,12 @@ export const leaveApprovedHandler: DomainEventHandler<'LEAVE_APPROVED'> = {
 
   async handle(payload: LeaveApprovedPayload, tx?: TxClient): Promise<void> {
     if (tx) {
-      // 1. [TX] Balance deduction: pending → used (only inside transaction)
-      await tx.employeeLeaveBalance.update({
+      // 1. [TX] Balance deduction: pending → used (LeaveYearBalance)
+      await tx.leaveYearBalance.update({
         where: { id: payload.balanceId },
         data: {
-          usedDays:    { increment: payload.days },
-          pendingDays: { decrement: payload.days },
+          used:    { increment: payload.days },
+          pending: { decrement: payload.days },
         },
       })
     } else {

@@ -345,6 +345,76 @@ export async function seedLeave(prisma: PrismaClient): Promise<void> {
 
   console.log(`  ✅ ${balCount} leave balance records`)
 
+  // ── 4b. Mirror to LeaveYearBalance (Phase 6) ──────────────
+  // LeaveTypeDef가 존재하면 LeaveYearBalance도 생성 (35-statutory 이후 실행 시)
+  console.log('📌 Mirroring to LeaveYearBalance (if LeaveTypeDefs exist)...')
+  let yearBalCount = 0
+
+  const CODE_MAP: Record<string, string> = {
+    'KR-ANNUAL': 'annual', 'KR-SICK': 'sick',
+    'CN-ANNUAL': 'annual', 'CN-SICK': 'sick',
+  }
+  const COMPANY_MAP: Record<string, string> = {
+    'KR-ANNUAL': krId, 'KR-SICK': krId,
+    'CN-ANNUAL': cnId, 'CN-SICK': cnId,
+  }
+
+  // LeaveTypeDef lookup cache
+  const typeDefCache: Record<string, string | null> = {}
+  async function findTypeDefId(policyCode: string): Promise<string | null> {
+    if (typeDefCache[policyCode] !== undefined) return typeDefCache[policyCode]
+    const code = CODE_MAP[policyCode]
+    const companyId = COMPANY_MAP[policyCode]
+    if (!code || !companyId) { typeDefCache[policyCode] = null; return null }
+    const td = await prisma.leaveTypeDef.findFirst({
+      where: { companyId, code, isActive: true },
+      select: { id: true },
+    })
+    typeDefCache[policyCode] = td?.id ?? null
+    return typeDefCache[policyCode]
+  }
+
+  // Re-read balances and mirror to LeaveYearBalance
+  for (const asgn of [...krAssignments, ...cnAssignments]) {
+    const empBalances = await prisma.employeeLeaveBalance.findMany({
+      where: { employeeId: asgn.employeeId },
+      include: { policy: { select: { leaveType: true, companyId: true } } },
+    })
+    for (const bal of empBalances) {
+      const pCode = bal.policy.companyId === krId
+        ? `KR-${bal.policy.leaveType}`
+        : `CN-${bal.policy.leaveType}`
+      const typeDefId = await findTypeDefId(pCode)
+      if (!typeDefId) continue
+
+      await prisma.leaveYearBalance.upsert({
+        where: {
+          employeeId_leaveTypeDefId_year: {
+            employeeId: bal.employeeId,
+            leaveTypeDefId: typeDefId,
+            year: bal.year,
+          },
+        },
+        update: {
+          used: Number(bal.usedDays),
+          pending: Number(bal.pendingDays),
+        },
+        create: {
+          employeeId: bal.employeeId,
+          leaveTypeDefId: typeDefId,
+          year: bal.year,
+          entitled: Number(bal.grantedDays),
+          used: Number(bal.usedDays),
+          pending: Number(bal.pendingDays),
+          carriedOver: Number(bal.carryOverDays),
+          adjusted: 0,
+        },
+      })
+      yearBalCount++
+    }
+  }
+  console.log(`  ✅ ${yearBalCount} LeaveYearBalance records (mirrored)`)
+
   // ── 5. Create LeaveRequests ───────────────────────────────
   console.log('📌 Seeding leave requests...')
 

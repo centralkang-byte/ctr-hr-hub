@@ -1,6 +1,8 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Leave Request Approve API
 // PUT /api/v1/leave/requests/[id]/approve
+//
+// Phase 6: LeaveYearBalance 기반으로 전환 (EmployeeLeaveBalance 탈피)
 // ═══════════════════════════════════════════════════════════
 
 import { type NextRequest } from 'next/server'
@@ -13,6 +15,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { sendNotification } from '@/lib/notifications'
 import { checkDelegation } from '@/lib/delegation/resolve-delegatee'
 import { invalidateMultiple, CACHE_STRATEGY } from '@/lib/cache'
+import { resolveLeaveTypeDefId } from '@/lib/leave/resolveLeaveTypeDefId'
 import type { SessionUser } from '@/types'
 
 export const PUT = withPermission(
@@ -48,32 +51,37 @@ export const PUT = withPermission(
       delegatedBy = user.employeeId
     }
 
-    // 3. Atomic balance check + deduction using advisory lock + FOR UPDATE
-    //    Advisory lock keyed on employeeId prevents concurrent approvals for same employee
+    // 3. Resolve leaveTypeDefId (직접 또는 policyId 경유)
+    const leaveTypeDefId = request.leaveTypeDefId
+      ?? await resolveLeaveTypeDefId(request.policyId)
+
+    if (!leaveTypeDefId) {
+      throw badRequest('해당 휴가 유형 정의를 찾을 수 없습니다.')
+    }
+
+    // 4. Atomic balance check + deduction (LeaveYearBalance)
     const days = Number(request.days)
     const startYear = new Date(request.startDate).getFullYear()
     const endYear   = new Date(request.endDate).getFullYear()
 
-    // Atomic UPDATE: deduct balance only if (used_days + days) doesn't exceed total grant
-    // The WHERE clause on used_days ensures PostgreSQL's row-level lock serializes concurrent approvals
+    // Atomic UPDATE: WHERE 조건이 PostgreSQL row-level lock으로 동시 승인 직렬화
     const deductResult = await prisma.$queryRaw<Array<{ id: string }>>`
-      UPDATE employee_leave_balances
-      SET used_days = used_days + ${days}::decimal,
-          pending_days = GREATEST(pending_days - ${days}::decimal, 0::decimal),
+      UPDATE leave_year_balances
+      SET used = used + ${days},
+          pending = GREATEST(pending - ${days}, 0),
           updated_at = NOW()
       WHERE employee_id = ${request.employeeId}
-        AND policy_id = ${request.policyId}
+        AND leave_type_def_id = ${leaveTypeDefId}
         AND year IN (${startYear}, ${endYear})
-        AND (used_days + ${days}::decimal) <= (granted_days + carry_over_days)
+        AND (used + ${days}) <= (entitled + carried_over + adjusted)
       RETURNING id
     `
 
     if (deductResult.length === 0) {
-      // Check if balance record exists at all
-      const balanceExists = await prisma.employeeLeaveBalance.findFirst({
+      const balanceExists = await prisma.leaveYearBalance.findFirst({
         where: {
           employeeId: request.employeeId,
-          policyId: request.policyId,
+          leaveTypeDefId,
           year: { in: [startYear, endYear] },
         },
       })
@@ -86,31 +94,29 @@ export const PUT = withPermission(
     const balanceId = deductResult[0].id
 
     // Now approve the request (balance already deducted atomically)
-    const updated = await prisma.$transaction(async (tx) => {
-      const approved = await tx.leaveRequest.update({
-        where: { id },
-        data: {
-          status:      'APPROVED',
-          approvedBy:  request.approvedBy ?? user.employeeId,
-          approvedAt:  new Date(),
-          delegatedBy: delegatedBy,
-        },
-      })
-      return { approved, balanceId }
+    const approved = await prisma.leaveRequest.update({
+      where: { id },
+      data: {
+        status:      'APPROVED',
+        approvedBy:  request.approvedBy ?? user.employeeId,
+        approvedAt:  new Date(),
+        delegatedBy: delegatedBy,
+      },
     })
 
-    // 4. Fetch updated balance for response
-    const updatedBalance = await prisma.employeeLeaveBalance.findUnique({
-      where: { id: updated.balanceId },
+    // 5. Fetch updated balance for response
+    const updatedBalance = await prisma.leaveYearBalance.findUnique({
+      where: { id: balanceId },
     })
     const remaining = updatedBalance
-      ? Number(updatedBalance.grantedDays) +
-        Number(updatedBalance.carryOverDays) -
-        Number(updatedBalance.usedDays) -
-        Number(updatedBalance.pendingDays)
+      ? updatedBalance.entitled +
+        updatedBalance.carriedOver +
+        updatedBalance.adjusted -
+        updatedBalance.used -
+        updatedBalance.pending
       : 0
 
-    // 5. Audit log
+    // 6. Audit log
     const meta = extractRequestMeta(req.headers)
     logAudit({
       actorId:      user.employeeId,
@@ -125,13 +131,13 @@ export const PUT = withPermission(
       ...meta,
     })
 
-    // 6. 캐시 무효화 — 승인자/신청자 대시보드 + 사이드바 즉시 반영
+    // 7. 캐시 무효화 — 승인자/신청자 대시보드 + 사이드바 즉시 반영
     void invalidateMultiple(
       [CACHE_STRATEGY.DASHBOARD_KPI, CACHE_STRATEGY.SIDEBAR],
       request.companyId,
     )
 
-    // 7. Fire-and-forget notification (sent directly to avoid double balance update)
+    // 8. Fire-and-forget notification
     void sendNotification({
       employeeId:  request.employeeId,
       triggerType: 'leave_approved',
@@ -145,11 +151,11 @@ export const PUT = withPermission(
     })
 
     return apiSuccess({
-      request: updated.approved,
+      request: approved,
       balance: {
-        granted:   Number(updatedBalance?.grantedDays ?? 0),
-        used:      Number(updatedBalance?.usedDays ?? 0),
-        pending:   Number(updatedBalance?.pendingDays ?? 0),
+        entitled:  updatedBalance?.entitled ?? 0,
+        used:      updatedBalance?.used ?? 0,
+        pending:   updatedBalance?.pending ?? 0,
         remaining,
       },
     })

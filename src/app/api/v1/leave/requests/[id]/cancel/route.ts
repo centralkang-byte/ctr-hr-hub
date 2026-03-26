@@ -18,6 +18,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { invalidateMultiple, CACHE_STRATEGY } from '@/lib/cache'
 import { calculateLeaveDays } from '@/lib/leave/calculateLeaveDays'
 import { fetchCompanyHolidays } from '@/lib/leave/fetchHolidays'
+import { resolveLeaveTypeDefId } from '@/lib/leave/resolveLeaveTypeDefId'
 import type { CountingMethod } from '@/lib/leave/calculateLeaveDays'
 import type { SessionUser } from '@/types'
 
@@ -61,7 +62,7 @@ export const PUT = withPermission(
         throw forbidden('본인의 신청만 취소할 수 있습니다.')
       }
 
-      // PENDING → no usedDays change, only pendingDays decrement
+      // PENDING → no used change, only pending decrement
       const updated = await prisma.$transaction(async (tx) => {
         const cancelled = await tx.leaveRequest.update({
           where: { id },
@@ -72,12 +73,12 @@ export const PUT = withPermission(
           },
         })
 
-        // Restore pendingDays
+        // Restore pending
         const balance = await findBalance(tx, request)
         if (balance) {
-          await tx.employeeLeaveBalance.update({
+          await tx.leaveYearBalance.update({
             where: { id: balance.id },
-            data: { pendingDays: { decrement: Number(request.days) } },
+            data: { pending: { decrement: Number(request.days) } },
           })
         }
 
@@ -114,12 +115,12 @@ export const PUT = withPermission(
           },
         })
 
-        // Restore full usedDays
+        // Restore full used
         const balance = await findBalance(tx, request)
         if (balance) {
-          await tx.employeeLeaveBalance.update({
+          await tx.leaveYearBalance.update({
             where: { id: balance.id },
-            data: { usedDays: { decrement: daysToRestore } },
+            data: { used: { decrement: daysToRestore } },
           })
         }
 
@@ -206,9 +207,9 @@ export const PUT = withPermission(
         if (unusedDays > 0) {
           const balance = await findBalance(tx, request)
           if (balance) {
-            await tx.employeeLeaveBalance.update({
+            await tx.leaveYearBalance.update({
               where: { id: balance.id },
-              data: { usedDays: { decrement: unusedDays } },
+              data: { used: { decrement: unusedDays } },
             })
           }
         }
@@ -239,24 +240,30 @@ type TxPrisma = Parameters<Parameters<typeof prisma.$transaction>[0]>[0]
 
 async function findBalance(
   tx: TxPrisma,
-  request: { employeeId: string; policyId: string; startDate: Date; endDate: Date },
+  request: { employeeId: string; policyId: string; leaveTypeDefId: string | null; startDate: Date; endDate: Date },
 ) {
+  // leaveTypeDefId 결정 (직접 또는 policyId 경유)
+  const leaveTypeDefId = request.leaveTypeDefId
+    ?? await resolveLeaveTypeDefId(request.policyId, tx)
+
+  if (!leaveTypeDefId) return null
+
   const startYear = new Date(request.startDate).getFullYear()
   const endYear = new Date(request.endDate).getFullYear()
 
-  let balance = await tx.employeeLeaveBalance.findFirst({
+  let balance = await tx.leaveYearBalance.findFirst({
     where: {
       employeeId: request.employeeId,
-      policyId: request.policyId,
+      leaveTypeDefId,
       year: startYear,
     },
   })
 
   if (!balance && endYear !== startYear) {
-    balance = await tx.employeeLeaveBalance.findFirst({
+    balance = await tx.leaveYearBalance.findFirst({
       where: {
         employeeId: request.employeeId,
-        policyId: request.policyId,
+        leaveTypeDefId,
         year: endYear,
       },
     })

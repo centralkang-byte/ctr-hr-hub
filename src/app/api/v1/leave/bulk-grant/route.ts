@@ -6,10 +6,11 @@ import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { leaveBalanceBulkGrantSchema } from '@/lib/schemas/leave'
+import { resolveLeaveTypeDefId } from '@/lib/leave/resolveLeaveTypeDefId'
 import type { SessionUser } from '@/types'
 
 // ─── POST /api/v1/leave/bulk-grant ───────────────────────
-// Bulk grant leave balances to multiple employees
+// Bulk grant leave balances to multiple employees (LeaveYearBalance)
 
 export const POST = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
@@ -32,38 +33,45 @@ export const POST = withPermission(
       throw badRequest('해당 휴가 정책을 찾을 수 없습니다.')
     }
 
+    // Resolve policyId → leaveTypeDefId
+    const leaveTypeDefId = await resolveLeaveTypeDefId(parsed.data.policyId)
+    if (!leaveTypeDefId) {
+      throw badRequest('해당 휴가 유형 정의를 찾을 수 없습니다.')
+    }
+
     try {
       const result = await prisma.$transaction(async (tx) => {
         const results = []
 
         for (const employeeId of parsed.data.employeeIds) {
-          // Check if balance already exists for this employee+policy+year
-          const existing = await tx.employeeLeaveBalance.findFirst({
+          // Check if balance already exists (LeaveYearBalance)
+          const existing = await tx.leaveYearBalance.findFirst({
             where: {
               employeeId,
-              policyId: parsed.data.policyId,
+              leaveTypeDefId,
               year: parsed.data.year,
             },
           })
 
           if (existing) {
-            // Add to existing balance
-            const updated = await tx.employeeLeaveBalance.update({
+            // adjusted 필드로 수동 부여분 추가
+            const updated = await tx.leaveYearBalance.update({
               where: { id: existing.id },
-              data: { grantedDays: { increment: parsed.data.days } },
+              data: { adjusted: { increment: parsed.data.days } },
             })
             results.push(updated)
           } else {
             // Create new balance
-            const created = await tx.employeeLeaveBalance.create({
+            const created = await tx.leaveYearBalance.create({
               data: {
                 employeeId,
-                policyId: parsed.data.policyId,
+                leaveTypeDefId,
                 year: parsed.data.year,
-                grantedDays: parsed.data.days,
-                usedDays: 0,
-                pendingDays: 0,
-                carryOverDays: 0,
+                entitled: parsed.data.days,
+                used: 0,
+                pending: 0,
+                carriedOver: 0,
+                adjusted: 0,
               },
             })
             results.push(created)
@@ -77,11 +85,12 @@ export const POST = withPermission(
       logAudit({
         actorId: user.employeeId,
         action: 'leave.bulk_grant',
-        resourceType: 'employeeLeaveBalance',
-        resourceId: parsed.data.policyId,
+        resourceType: 'LeaveYearBalance',
+        resourceId: leaveTypeDefId,
         companyId: policy.companyId,
         changes: {
           policyId: parsed.data.policyId,
+          leaveTypeDefId,
           year: parsed.data.year,
           days: parsed.data.days,
           employeeCount: result.length,

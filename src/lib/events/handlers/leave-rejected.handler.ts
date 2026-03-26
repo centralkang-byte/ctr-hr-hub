@@ -23,11 +23,11 @@ export const leaveRejectedHandler: DomainEventHandler<'LEAVE_REJECTED'> = {
 
   async handle(payload: LeaveRejectedPayload, tx?: TxClient): Promise<void> {
     if (tx) {
-      // 1. [TX] Restore pendingDays (usedDays 미변경) — only inside transaction
-      await tx.employeeLeaveBalance.update({
+      // 1. [TX] Restore pending (used 미변경) — LeaveYearBalance
+      await tx.leaveYearBalance.update({
         where: { id: payload.balanceId },
         data: {
-          pendingDays: { decrement: payload.days },
+          pending: { decrement: payload.days },
         },
       })
     } else {

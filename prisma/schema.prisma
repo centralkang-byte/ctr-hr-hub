@@ -793,6 +793,7 @@ model Company {
   attendanceTerminals    AttendanceTerminal[]
   leavePolicies          LeavePolicy[]
   holidays               Holiday[]
+  designatedLeaveDays    DesignatedLeaveDay[]
   jobPostings            JobPosting[]
   competencyLibrary      CompetencyLibrary[]
   competencyRequirements CompetencyRequirement[]
@@ -2088,6 +2089,22 @@ model Holiday {
 
   @@unique([companyId, date])
   @@map("holidays")
+}
+
+// 지정연차 (회사가 지정한 연차 사용일)
+model DesignatedLeaveDay {
+  id        String   @id @default(uuid())
+  companyId String   @map("company_id")
+  date      DateTime
+  name      String   @db.VarChar(100)  // 예: "여름 집단휴가", "설 연휴 사이"
+  year      Int
+  createdAt DateTime @default(now()) @map("created_at")
+
+  company Company @relation(fields: [companyId], references: [id])
+
+  @@unique([companyId, date])
+  @@index([companyId, year])
+  @@map("designated_leave_days")
 }
 
 // ================================================================

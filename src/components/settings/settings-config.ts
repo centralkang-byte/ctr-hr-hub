@@ -19,7 +19,7 @@ export type SettingsCategoryKey =
   | 'system'
 
 export type OrganizationTabSlug = 'company-info' | 'departments' | 'job-grades' | 'job-families' | 'assignment-rules' | 'probation' | 'custom-fields' | 'code-management' | 'locations'
-export type AttendanceTabSlug = 'work-schedules' | 'weekly-hours' | 'shift-patterns' | 'leave-types' | 'leave-accrual' | 'leave-promotion' | 'holidays' | 'overtime'
+export type AttendanceTabSlug = 'work-schedules' | 'weekly-hours' | 'shift-patterns' | 'leave-types' | 'leave-accrual' | 'leave-promotion' | 'designated-leave' | 'holidays' | 'overtime'
 export type PayrollTabSlug = 'earnings' | 'deductions' | 'tax-free' | 'salary-bands' | 'merit-matrix' | 'bonus-rules' | 'pay-schedule' | 'currency'
 export type PerformanceTabSlug = 'cycle' | 'methodology' | 'grade-scale' | 'distribution' | 'calibration' | 'cfr' | 'competency'
 export type RecruitmentTabSlug = 'pipeline' | 'interview-form' | 'ai-screening' | 'onboarding-templates' | 'offboarding-checklist' | 'probation-eval'
@@ -82,6 +82,7 @@ export const SETTINGS_CATEGORIES: SettingsCategoryConfig[] = [
       { slug: 'leave-types', label: '휴가 유형', description: '연차/병가/경조사 등 목록' },
       { slug: 'leave-accrual', label: '휴가 부여 규칙', description: '입사일 기준 vs 회계연도, 비례 부여' },
       { slug: 'leave-promotion', label: '연차촉진', description: '알림 시점, 미사용 소멸 규칙' },
+      { slug: 'designated-leave', label: '지정연차', description: '법인별 지정 연차 사용일 관리' },
       { slug: 'holidays', label: '법정 공휴일', description: '나라별 공휴일 캘린더' },
       { slug: 'overtime', label: '초과근무', description: '사전승인 필수 여부, 수당 배율' },
     ],

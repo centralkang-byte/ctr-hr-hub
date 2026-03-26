@@ -27,16 +27,16 @@ export const leaveCancelledHandler: DomainEventHandler<'LEAVE_CANCELLED'> = {
     if (!tx) return
 
     if (payload.previousStatus === 'PENDING') {
-      // PENDING 취소: pendingDays 복원
-      await tx.employeeLeaveBalance.update({
+      // PENDING 취소: pending 복원 (LeaveYearBalance)
+      await tx.leaveYearBalance.update({
         where: { id: payload.balanceId },
-        data: { pendingDays: { decrement: payload.days } },
+        data: { pending: { decrement: payload.days } },
       })
     } else if (payload.previousStatus === 'APPROVED') {
-      // APPROVED 취소: usedDays 복원
-      await tx.employeeLeaveBalance.update({
+      // APPROVED 취소: used 복원 (LeaveYearBalance)
+      await tx.leaveYearBalance.update({
         where: { id: payload.balanceId },
-        data: { usedDays: { decrement: payload.days } },
+        data: { used: { decrement: payload.days } },
       })
     }
   },
