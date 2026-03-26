@@ -17,8 +17,9 @@ import { apiClient } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
 import { AnalyticsPageLayout } from '@/components/analytics/AnalyticsPageLayout'
 import type { ExecutiveReport } from '@/lib/analytics/types'
+import type { SessionUser } from '@/types'
 
-export default function ExecutiveReportClient() {
+export default function ExecutiveReportClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('analytics.executiveReportPage')
 

@@ -12,6 +12,7 @@ import { STATUS_VARIANT } from '@/lib/styles/status'
 import { cn } from '@/lib/utils'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import type { SessionUser } from '@/types'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 // ─── Types ───────────────────────────────────────────────
@@ -57,7 +58,7 @@ const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
 
 // ─── Component ───────────────────────────────────────────
 
-export default function PeerReviewClient() {
+export default function PeerReviewClient({ user }: { user: SessionUser }) {
   // ✅ ALL hooks at top — before any conditions
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')

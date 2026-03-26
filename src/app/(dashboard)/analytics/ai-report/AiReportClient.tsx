@@ -12,6 +12,7 @@ import {
   Calendar, Building2, ChevronDown, Clock,
 } from 'lucide-react'
 import { TABLE_STYLES } from '@/lib/styles'
+import type { SessionUser } from '@/types'
 
 interface AiReport {
   id: string
@@ -24,7 +25,7 @@ interface AiReport {
   companyName: string
 }
 
-export default function AiReportClient() {
+export default function AiReportClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('analytics')
 

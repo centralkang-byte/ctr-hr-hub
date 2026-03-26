@@ -10,8 +10,8 @@ import { useRouter } from 'next/navigation'
 import { MessageSquare, Plus, Calendar, AlertTriangle, CheckCircle2, Clock, Users } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { apiClient } from '@/lib/api'
-import { useSession } from 'next-auth/react'
 import { ROLE } from '@/lib/constants'
+import type { SessionUser } from '@/types'
 import { CARD_STYLES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES, CHART_THEME } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
@@ -68,13 +68,12 @@ const MEETING_TYPE_LABELS: Record<string, string> = {
 
 // ─── Component ───────────────────────────────────────────
 
-export default function OneOnOneClient() {
+export default function OneOnOneClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
 
-  const { data: session } = useSession()
   const router = useRouter()
-  const isManager = session?.user?.role === ROLE.MANAGER || session?.user?.role === ROLE.HR_ADMIN || session?.user?.role === ROLE.EXECUTIVE
+  const isManager = user.role === ROLE.MANAGER || user.role === ROLE.HR_ADMIN || user.role === ROLE.EXECUTIVE
 
   const [meetings, setMeetings] = useState<Meeting[]>([])
   const [dashboard, setDashboard] = useState<DashboardData | null>(null)
@@ -109,7 +108,7 @@ export default function OneOnOneClient() {
 
   const openCreateModal = async () => {
     try {
-      const res = await apiClient.getList<TeamMember>('/api/v1/employees', { managerId: session?.user?.employeeId, status: 'ACTIVE', limit: 100 })
+      const res = await apiClient.getList<TeamMember>('/api/v1/employees', { managerId: user.employeeId, status: 'ACTIVE', limit: 100 })
       setTeamMembers(res.data)
     } catch (err) { toast({ title: '팀원 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setShowCreateModal(true)

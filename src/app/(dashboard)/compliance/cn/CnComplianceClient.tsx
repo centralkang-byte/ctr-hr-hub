@@ -7,13 +7,14 @@ import { toast } from '@/hooks/use-toast'
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Shield } from 'lucide-react'
+import type { SessionUser } from '@/types'
 import SocialInsuranceConfigTab from '@/components/compliance/cn/SocialInsuranceConfigTab'
 import SocialInsuranceReportTab from '@/components/compliance/cn/SocialInsuranceReportTab'
 import EmployeeRegistryTab from '@/components/compliance/cn/EmployeeRegistryTab'
 
 type TabKey = 'config' | 'report' | 'registry'
 
-export default function CnComplianceClient() {
+export default function CnComplianceClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
 
   const t = useTranslations('compliance')

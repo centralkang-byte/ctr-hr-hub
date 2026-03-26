@@ -16,8 +16,9 @@ import { AnalyticsFilterBar } from '@/components/analytics/AnalyticsFilterBar'
 import { CHART_COLORS } from '@/components/analytics/chart-colors'
 import { CHART_THEME } from '@/lib/styles/chart'
 import type { WorkforceResponse } from '@/lib/analytics/types'
+import type { SessionUser } from '@/types'
 
-export default function WorkforceClient() {
+export default function WorkforceClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('analytics')
   const [data, setData] = useState<WorkforceResponse | null>(null)

@@ -18,8 +18,9 @@ import { AnalyticsFilterBar } from '@/components/analytics/AnalyticsFilterBar'
 import { CHART_COLORS } from '@/components/analytics/chart-colors'
 import type { AttendanceResponse } from '@/lib/analytics/types'
 import { CHART_THEME } from '@/lib/styles'
+import type { SessionUser } from '@/types'
 
-export default function AttendanceClient() {
+export default function AttendanceClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('analytics')
 

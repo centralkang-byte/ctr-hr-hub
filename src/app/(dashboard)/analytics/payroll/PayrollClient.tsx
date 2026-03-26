@@ -18,8 +18,9 @@ import { AnalyticsFilterBar } from '@/components/analytics/AnalyticsFilterBar'
 import { CHART_COLORS } from '@/components/analytics/chart-colors'
 import type { PayrollResponse } from '@/lib/analytics/types'
 import { CHART_THEME } from '@/lib/styles/chart'
+import type { SessionUser } from '@/types'
 
-export default function PayrollClient() {
+export default function PayrollClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('analytics')
 

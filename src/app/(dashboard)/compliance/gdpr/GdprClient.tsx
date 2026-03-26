@@ -11,10 +11,11 @@ import ConsentManagementTab from '@/components/compliance/gdpr/ConsentManagement
 import DataRequestsTab from '@/components/compliance/gdpr/DataRequestsTab'
 import DataRetentionClientContent from '@/components/compliance/gdpr/DataRetentionTabContent'
 import DpiaTabContent from '@/components/compliance/gdpr/DpiaTabContent'
+import type { SessionUser } from '@/types'
 
 type TabKey = 'consents' | 'requests' | 'retention' | 'dpia'
 
-export default function GdprClient() {
+export default function GdprClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
 
   const t = useTranslations('compliance')

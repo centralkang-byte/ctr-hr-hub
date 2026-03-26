@@ -9,8 +9,8 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { Heart, ThumbsUp, Search, Send, Sparkles } from 'lucide-react'
 import { PieChart, Pie, Cell, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { apiClient } from '@/lib/api'
-import { useSession } from 'next-auth/react'
 import { ROLE } from '@/lib/constants'
+import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS, MODAL_STYLES, CHART_THEME } from '@/lib/styles'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
 
@@ -57,12 +57,11 @@ const CHART_COLORS = ['#EF4444', '#5E81F4', '#F59E0B', '#3B82F6']
 
 // ─── Component ───────────────────────────────────────────
 
-export default function RecognitionClient() {
+export default function RecognitionClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
 
-  const { data: session } = useSession()
-  const isAdmin = session?.user?.role === ROLE.HR_ADMIN || session?.user?.role === ROLE.SUPER_ADMIN
+  const isAdmin = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
 
   const [activeTab, setActiveTab] = useState<'feed' | 'stats'>('feed')
   const [feed, setFeed] = useState<FeedItem[]>([])
@@ -127,7 +126,7 @@ export default function RecognitionClient() {
     searchTimeout.current = setTimeout(async () => {
       try {
         const res = await apiClient.getList<Employee>('/api/v1/employees', { search: query, limit: 10 })
-        setSearchResults(res.data.filter((emp: Employee) => emp.id !== session?.user?.employeeId))
+        setSearchResults(res.data.filter((emp: Employee) => emp.id !== user.employeeId))
       } catch (err) { toast({ title: '직원 검색 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     }, 200)
   }

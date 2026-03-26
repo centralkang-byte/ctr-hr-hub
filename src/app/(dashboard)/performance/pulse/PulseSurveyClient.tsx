@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation'
 import { BarChart3, Plus, Eye, Trash2, Play, Square, Calendar } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { CARD_STYLES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
+import type { SessionUser } from '@/types'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -220,7 +221,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
 
 // ─── Component ───────────────────────────────────────────
 
-export default function PulseSurveyClient() {
+export default function PulseSurveyClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
 

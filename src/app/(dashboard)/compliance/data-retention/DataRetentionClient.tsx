@@ -11,6 +11,7 @@ import RetentionPolicyForm from '@/components/compliance/gdpr/RetentionPolicyFor
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import type { SessionUser } from '@/types'
 
 interface RetentionPolicy {
   id: string
@@ -22,7 +23,7 @@ interface RetentionPolicy {
   last_run_at: string | null
 }
 
-export default function DataRetentionClient() {
+export default function DataRetentionClient({ user }: { user: SessionUser }) {
   const t = useTranslations('compliance')
   const tc = useTranslations('common')
 

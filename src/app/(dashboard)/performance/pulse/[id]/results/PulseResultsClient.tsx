@@ -6,11 +6,12 @@ import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { ArrowLeft, BarChart3, Sparkles } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { apiClient } from '@/lib/api'
 import { CHART_THEME } from '@/lib/styles'
+import type { SessionUser } from '@/types'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -44,11 +45,9 @@ const CHART_COLORS = ['#5E81F4', '#059669', '#F59E0B', '#8B5CF6', '#EC4899', '#0
 
 // ─── Component ───────────────────────────────────────────
 
-export default function PulseResultsClient() {
+export default function PulseResultsClient({ user, id }: { user: SessionUser; id: string }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
-
-  const { id } = useParams<{ id: string }>()
   const router = useRouter()
 
   const [results, setResults] = useState<SurveyResults | null>(null)

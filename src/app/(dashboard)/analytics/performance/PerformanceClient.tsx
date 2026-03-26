@@ -18,8 +18,9 @@ import { AnalyticsFilterBar } from '@/components/analytics/AnalyticsFilterBar'
 import { CHART_COLORS } from '@/components/analytics/chart-colors'
 import type { PerformanceResponse } from '@/lib/analytics/types'
 import { CHART_THEME } from '@/lib/styles/chart'
+import type { SessionUser } from '@/types'
 
-export default function PerformanceClient() {
+export default function PerformanceClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('analytics')
 

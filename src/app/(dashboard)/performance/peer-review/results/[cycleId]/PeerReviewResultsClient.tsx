@@ -6,11 +6,12 @@ import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useSearchParams, useRouter } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Users, Sparkles } from 'lucide-react'
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts'
 import { apiClient } from '@/lib/api'
 import { CHART_THEME } from '@/lib/styles'
+import type { SessionUser } from '@/types'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -54,11 +55,9 @@ const COMPETENCY_LABELS: Record<string, string> = {
 
 // ─── Component ───────────────────────────────────────────
 
-export default function PeerReviewResultsClient() {
+export default function PeerReviewResultsClient({ user, cycleId }: { user: SessionUser; cycleId: string }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
-
-  const { cycleId } = useParams<{ cycleId: string }>()
   const searchParams = useSearchParams()
   const employeeId = searchParams.get('employeeId') ?? ''
   const router = useRouter()

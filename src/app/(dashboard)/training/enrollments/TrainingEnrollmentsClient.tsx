@@ -13,6 +13,7 @@ import { apiClient } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
 import type { PaginationInfo } from '@/types'
 import { STATUS_VARIANT } from '@/lib/styles/status'
+import type { SessionUser } from '@/types'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -29,7 +30,7 @@ type EnrollmentRow = {
 
 // ─── Component ───────────────────────────────────────────
 
-export default function TrainingEnrollmentsClient() {
+export default function TrainingEnrollmentsClient({ user }: { user: SessionUser }) {
 //   const tCommon = useTranslations('common')
 
   const t = useTranslations('training')

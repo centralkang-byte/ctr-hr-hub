@@ -2,8 +2,24 @@
 // CTR HR Hub — Russia Compliance Page (Server Component)
 // ═══════════════════════════════════════════════════════════
 
+import { Suspense } from 'react'
+import { redirect } from 'next/navigation'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import type { SessionUser } from '@/types'
 import RuComplianceClient from './RuComplianceClient'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
-export default function RuCompliancePage() {
-  return <RuComplianceClient />
+export default async function RuCompliancePage() {
+  const session = await getServerSession(authOptions)
+  if (!session?.user) {
+    redirect('/login')
+  }
+  const user = session.user as SessionUser
+
+  return (
+    <Suspense fallback={<ListPageSkeleton />}>
+      <RuComplianceClient user={user} />
+    </Suspense>
+  )
 }

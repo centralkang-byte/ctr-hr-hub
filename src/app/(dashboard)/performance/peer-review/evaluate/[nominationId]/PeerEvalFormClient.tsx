@@ -5,10 +5,11 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 import { useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { ArrowLeft, Users, Send, CheckCircle2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import type { SessionUser } from '@/types'
 
 // ─── Peer Review Questions ──────────────────────────────
 
@@ -27,11 +28,9 @@ const SCORE_LABELS = ['매우 부족', '부족', '보통', '우수', '탁월']
 
 // ─── Component ───────────────────────────────────────────
 
-export default function PeerEvalFormClient() {
+export default function PeerEvalFormClient({ user, nominationId }: { user: SessionUser; nominationId: string }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
-
-  const { nominationId } = useParams<{ nominationId: string }>()
   const router = useRouter()
 
   const [scores, setScores] = useState<Record<string, number>>({})

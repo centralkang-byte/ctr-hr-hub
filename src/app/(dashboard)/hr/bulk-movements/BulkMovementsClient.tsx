@@ -13,6 +13,7 @@ import { TypeSelector } from './components/TypeSelector'
 import { FileUploader } from './components/FileUploader'
 import { ValidationPreview } from './components/ValidationPreview'
 import { ExecutionConfirm } from './components/ExecutionConfirm'
+import type { SessionUser } from '@/types'
 
 type Step = 'select' | 'upload' | 'confirm'
 
@@ -22,7 +23,7 @@ const STEPS: { key: Step; label: string }[] = [
   { key: 'confirm', label: '실행 확인' },
 ]
 
-export default function BulkMovementsClient() {
+export default function BulkMovementsClient({ user }: { user: SessionUser }) {
   const [step, setStep] = useState<Step>('select')
   const [selectedType, setSelectedType] = useState<MovementType | null>(null)
   const [file, setFile] = useState<File | null>(null)

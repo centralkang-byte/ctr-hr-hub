@@ -1,10 +1,21 @@
 import { Suspense } from 'react'
+import { redirect } from 'next/navigation'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import type { SessionUser } from '@/types'
 import BulkMovementsClient from './BulkMovementsClient'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
-export default function BulkMovementsPage() {
+export default async function BulkMovementsPage() {
+  const session = await getServerSession(authOptions)
+  if (!session?.user) {
+    redirect('/login')
+  }
+  const user = session.user as SessionUser
+
   return (
-    <Suspense fallback={<div className="p-6">로딩 중...</div>}>
-      <BulkMovementsClient />
+    <Suspense fallback={<ListPageSkeleton />}>
+      <BulkMovementsClient user={user} />
     </Suspense>
   )
 }

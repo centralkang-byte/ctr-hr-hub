@@ -24,6 +24,7 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { CARD_STYLES } from '@/lib/styles'
+import type { SessionUser } from '@/types'
 
 interface GdprStats {
   activeConsents: number
@@ -32,7 +33,7 @@ interface GdprStats {
   dpiaRecords: number
 }
 
-export default function ComplianceClient() {
+export default function ComplianceClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
 
   const t = useTranslations('compliance')

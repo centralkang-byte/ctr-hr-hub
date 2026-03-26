@@ -25,10 +25,11 @@ import { AnalyticsKpiCard } from '@/components/analytics/AnalyticsKpiCard'
 import type { CompensationData } from '@/lib/analytics/types'
 import { Banknote } from 'lucide-react'
 import { TABLE_STYLES, CHART_THEME } from '@/lib/styles'
+import type { SessionUser } from '@/types'
 
 const BAND_COLORS = ['#EF4444', '#10B981', '#F59E0B']
 
-export default function CompensationAnalyticsClient() {
+export default function CompensationAnalyticsClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('analytics.compensationPage')
 

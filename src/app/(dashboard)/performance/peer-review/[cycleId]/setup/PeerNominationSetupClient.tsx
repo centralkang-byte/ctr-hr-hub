@@ -6,10 +6,11 @@ import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { ArrowLeft, Users, Sparkles, Plus, CheckCircle2, XCircle, Search } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import type { SessionUser } from '@/types'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -56,11 +57,9 @@ const STATUS_MAP: Record<string, { label: string; cls: string }> = {
 
 // ─── Component ───────────────────────────────────────────
 
-export default function PeerNominationSetupClient() {
+export default function PeerNominationSetupClient({ user, cycleId }: { user: SessionUser; cycleId: string }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
-
-  const { cycleId } = useParams<{ cycleId: string }>()
   const router = useRouter()
 
   const [nominations, setNominations] = useState<Nomination[]>([])

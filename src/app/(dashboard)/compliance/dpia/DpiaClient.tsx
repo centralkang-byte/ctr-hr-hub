@@ -10,6 +10,7 @@ import { FileSearch, Plus, Pencil, Eye, AlertTriangle } from 'lucide-react'
 import DpiaForm from '@/components/compliance/gdpr/DpiaForm'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 import { cn } from '@/lib/utils'
+import type { SessionUser } from '@/types'
 
 interface Dpia {
   id: string
@@ -51,7 +52,7 @@ function StatusBadge({ status }: { status: string }) {
   )
 }
 
-export default function DpiaClient() {
+export default function DpiaClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
 
   const t = useTranslations('compliance')

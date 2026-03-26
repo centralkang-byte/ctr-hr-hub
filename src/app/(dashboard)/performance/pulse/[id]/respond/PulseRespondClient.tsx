@@ -5,10 +5,11 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { ArrowLeft, Send, CheckCircle2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import type { SessionUser } from '@/types'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -34,11 +35,9 @@ const LIKERT_LABELS = ['매우 부정', '부정', '보통', '긍정', '매우 �
 
 // ─── Component ───────────────────────────────────────────
 
-export default function PulseRespondClient() {
+export default function PulseRespondClient({ user, id }: { user: SessionUser; id: string }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
-
-  const { id } = useParams<{ id: string }>()
   const router = useRouter()
 
   const [survey, setSurvey] = useState<SurveyDetail | null>(null)

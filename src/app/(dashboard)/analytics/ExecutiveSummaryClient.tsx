@@ -21,8 +21,9 @@ import type { ExecutiveSummaryResponse } from '@/lib/analytics/types'
 import { TABLE_STYLES } from '@/lib/styles'
 import { CHART_THEME } from '@/lib/styles/chart'
 import { cn } from '@/lib/utils'
+import type { SessionUser } from '@/types'
 
-export default function ExecutiveSummaryClient() {
+export default function ExecutiveSummaryClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('analytics')
   const te = useTranslations('analytics.executive')

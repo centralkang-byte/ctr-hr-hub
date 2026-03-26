@@ -14,6 +14,7 @@ import AttritionDonutChart from '@/components/compensation/AttritionDonutChart'
 import HighRiskList from '@/components/compensation/HighRiskList'
 import DepartmentHeatmap from '@/components/compensation/DepartmentHeatmap'
 import AttritionTrendChart from '@/components/compensation/AttritionTrendChart'
+import type { SessionUser } from '@/types'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -101,7 +102,7 @@ function parseFactors(
 // AttritionRiskClient
 // ═════════════════════════════════════════════════════════
 
-export default function AttritionRiskClient() {
+export default function AttritionRiskClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('analytics.attritionPage')
 

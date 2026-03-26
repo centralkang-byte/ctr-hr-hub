@@ -12,6 +12,7 @@ import type { TeamHealthResponse } from '@/lib/analytics/types'
 import { TABLE_STYLES } from '@/lib/styles'
 import { STATUS_FG } from '@/lib/styles/status'
 import { cn } from '@/lib/utils'
+import type { SessionUser } from '@/types'
 
 const SCORE_COLORS: Record<string, string> = {
   HEALTHY: STATUS_FG.success, CAUTION: STATUS_FG.warning, WARNING: '#F97316', CRITICAL: STATUS_FG.error,
@@ -30,7 +31,7 @@ const STATUS_COLORS = { GREEN: STATUS_FG.success, YELLOW: STATUS_FG.warning, RED
 const STATUS_LABELS = { GREEN: '🟢', YELLOW: '🟡', RED: '🔴' }
 const RISK_COLORS = { HIGH: 'text-red-600 bg-red-50', MEDIUM: 'text-amber-600 bg-amber-50', LOW: 'text-emerald-600 bg-emerald-50' }
 
-export default function TeamHealthClient() {
+export default function TeamHealthClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('analytics')
 
