@@ -68,6 +68,7 @@ import {
 //   Upload,
   CheckCircle2,
   LogOut,
+  BedDouble,
   type LucideIcon,
 } from 'lucide-react'
 import { MODULE, ROLE } from '@/lib/constants'
@@ -200,6 +201,14 @@ export const NAVIGATION: NavSection[] = [
         label: '휴가 신청',
         href: '/leave',
         icon: CalendarDays,
+        module: MODULE.LEAVE,
+      },
+      {
+        key: 'my-loa',
+        labelKey: 'nav.mySpace.loa',
+        label: '휴직 신청',
+        href: '/leave-of-absence',
+        icon: BedDouble,
         module: MODULE.LEAVE,
       },
       {
@@ -434,6 +443,14 @@ export const NAVIGATION: NavSection[] = [
         label: '휴가 관리',
         href: '/leave/admin',
         icon: CalendarDays,
+        module: MODULE.LEAVE,
+      },
+      {
+        key: 'loa-admin',
+        labelKey: 'nav.hrMgmt.loaAdmin',
+        label: '휴직 관리',
+        href: '/leave-of-absence',
+        icon: BedDouble,
         module: MODULE.LEAVE,
       },
       {
