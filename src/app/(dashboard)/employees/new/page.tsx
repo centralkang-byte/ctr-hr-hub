@@ -34,8 +34,11 @@ export default async function EmployeeNewPage() {
   const deptCompanyFilter =
     user.role === ROLE.SUPER_ADMIN ? {} : { companyId: user.companyId }
 
+  const positionCompanyFilter =
+    user.role === ROLE.SUPER_ADMIN ? {} : { companyId: user.companyId }
+
   // Fetch reference data for the wizard
-  const [companies, departments, jobCategories, gradeTitleMappings] = await Promise.all([
+  const [companies, departments, jobCategories, gradeTitleMappings, positions] = await Promise.all([
     prisma.company.findMany({
       where: { deletedAt: null, ...companyFilter },
       select: { id: true, name: true },
@@ -61,6 +64,11 @@ export default async function EmployeeNewPage() {
       },
       orderBy: { jobGrade: { rankOrder: 'asc' } },
     }),
+    prisma.position.findMany({
+      where: { isActive: true, ...positionCompanyFilter },
+      select: { id: true, titleKo: true, code: true, companyId: true },
+      orderBy: { titleKo: 'asc' },
+    }),
   ])
 
   return (
@@ -71,6 +79,7 @@ export default async function EmployeeNewPage() {
         departments={departments}
         jobCategories={jobCategories}
         gradeTitleMappings={gradeTitleMappings}
+        positions={positions}
       />
     </Suspense>
   )

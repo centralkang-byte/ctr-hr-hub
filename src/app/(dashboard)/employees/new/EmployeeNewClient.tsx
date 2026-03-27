@@ -52,6 +52,7 @@ interface WizardData {
   departmentId: string
   jobGradeId: string
   jobCategoryId: string
+  positionId: string
   managerId: string
   managerName: string
 }
@@ -71,12 +72,20 @@ interface GradeTitleMappingItem {
   employeeTitle: { id: string; name: string }
 }
 
+interface PositionOption {
+  id: string
+  titleKo: string
+  code: string
+  companyId: string
+}
+
 interface EmployeeNewClientProps {
   user: SessionUser
   companies: RefOption[]
   departments: DeptOption[]
   jobCategories: RefOption[]
   gradeTitleMappings: GradeTitleMappingItem[]
+  positions: PositionOption[]
 }
 
 // ─── Constants ──────────────────────────────────────────────
@@ -98,6 +107,7 @@ const INITIAL_DATA: WizardData = {
   departmentId: '',
   jobGradeId: '',
   jobCategoryId: '',
+  positionId: '',
   managerId: '',
   managerName: '',
 }
@@ -132,6 +142,7 @@ export function EmployeeNewClient({
   departments,
   jobCategories,
   gradeTitleMappings,
+  positions,
 }: EmployeeNewClientProps) {
   const router = useRouter()
   const t = useTranslations('employee')
@@ -169,6 +180,9 @@ export function EmployeeNewClient({
 
   // Filtered departments by selected company
   const filteredDepts = departments.filter((d) => d.companyId === data.companyId)
+
+  // Filtered positions by selected company
+  const filteredPositions = positions.filter((p) => p.companyId === data.companyId)
 
   // Grade↔Title 매핑: 선택된 법인의 매핑만 필터
   const companyMappings = gradeTitleMappings.filter((m) => m.jobGrade.companyId === data.companyId)
@@ -264,6 +278,7 @@ export function EmployeeNewClient({
         ...(data.emergencyContact ? { emergencyContact: data.emergencyContact } : {}),
         ...(data.emergencyContactPhone ? { emergencyContactPhone: data.emergencyContactPhone } : {}),
         ...(data.managerId ? { managerId: data.managerId } : {}),
+        ...(data.positionId ? { positionId: data.positionId } : {}),
         ...(mappedTitle ? { titleId: mappedTitle.employeeTitle.id } : {}),
       }
       const res = await apiClient.post<{ id: string }>('/api/v1/employees', payload)
@@ -434,6 +449,23 @@ export function EmployeeNewClient({
           <Input value={mappedTitle.employeeTitle.name} readOnly className="bg-muted" />
         </Field>
       )}
+      <Field label="직위 (선택)">
+        <Select
+          value={data.positionId || '__NONE__'}
+          onValueChange={(v) => set('positionId', v === '__NONE__' ? '' : v)}
+          disabled={!data.companyId}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="직위 선택" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__NONE__">선택 안 함</SelectItem>
+            {filteredPositions.map((p) => (
+              <SelectItem key={p.id} value={p.id}>{p.titleKo} ({p.code})</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </Field>
       <div className="sm:col-span-2">
         <Field label={t('managerOptional')}>
           <div className="relative">

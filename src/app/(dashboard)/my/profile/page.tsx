@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import { prisma } from '@/lib/prisma'
+import { getDivisionName } from '@/lib/employee/profile-utils'
 import { MyProfileClient } from './MyProfileClient'
 import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
@@ -32,9 +33,22 @@ export default async function MyProfilePage() {
           where: { isPrimary: true, endDate: null },
           take: 1,
           include: {
-            department: { select: { id: true, name: true } },
+            department: {
+              select: {
+                id: true, name: true, level: true,
+                parent: {
+                  select: {
+                    id: true, name: true, level: true,
+                    parent: { select: { id: true, name: true, level: true } },
+                  },
+                },
+              },
+            },
             jobGrade: { select: { id: true, name: true, code: true } },
             company: { select: { id: true, code: true, name: true } },
+            title: { select: { id: true, name: true } },
+            position: { select: { id: true, titleKo: true } },
+            workLocation: { select: { country: true, city: true, name: true } },
           },
         },
         profileExtension: true,
@@ -121,6 +135,9 @@ export default async function MyProfilePage() {
   // ─── Date 직렬화 (Server→Client 경계 crossing) ────────────
   // Next.js App Router는 Date 객체를 직접 넘길 수 없음.
   // 문자열로 변환 후 Client Component에서 new Date()로 복원.
+  const primaryAsgn = (employee as any).assignments?.[0]
+  const division = getDivisionName(primaryAsgn?.department ?? null)
+
   const serialized = {
     ...employee,
     hireDate:  employee.hireDate?.toISOString() ?? new Date().toISOString(),
@@ -143,7 +160,7 @@ export default async function MyProfilePage() {
 
   return (
     <Suspense fallback={<ListPageSkeleton />}>
-      <MyProfileClient user={user} employee={serialized as any} />
+      <MyProfileClient user={user} employee={serialized as any} division={division} />
     </Suspense>
   )
 }

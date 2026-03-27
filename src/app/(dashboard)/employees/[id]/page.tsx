@@ -13,6 +13,7 @@ import type { SessionUser, DeptOption, RefOption } from '@/types'
 import { EmployeeDetailClient } from './EmployeeDetailClient'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import { getManagerIdByPosition } from '@/lib/employee/direct-reports'
+import { getDivisionName, canViewGrade as canViewGradeUtil } from '@/lib/employee/profile-utils'
 import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export default async function EmployeeDetailPage({
@@ -46,10 +47,22 @@ export default async function EmployeeDetailPage({
           take: 1,
           include: {
             company: { select: { id: true, name: true } },
-            department: { select: { id: true, name: true } },
+            department: {
+              select: {
+                id: true, name: true, level: true,
+                parent: {
+                  select: {
+                    id: true, name: true, level: true,
+                    parent: { select: { id: true, name: true, level: true } },
+                  },
+                },
+              },
+            },
             jobGrade: { select: { id: true, name: true } },
             title: { select: { id: true, name: true } },
             jobCategory: { select: { id: true, name: true } },
+            position: { select: { id: true, titleKo: true, titleEn: true, code: true } },
+            workLocation: { select: { country: true, city: true, name: true } },
           },
         },
       },
@@ -95,9 +108,35 @@ export default async function EmployeeDetailPage({
   const managerData = managerId
     ? await prisma.employee.findUnique({
         where: { id: managerId },
-        select: { id: true, name: true },
+        select: {
+          id: true,
+          name: true,
+          photoUrl: true,
+          assignments: {
+            where: { isPrimary: true, endDate: null },
+            take: 1,
+            select: {
+              title: { select: { name: true } },
+              department: { select: { name: true } },
+            },
+          },
+        },
       })
     : null
+
+  const managerPrimary = managerData?.assignments?.[0] ?? null
+  const manager = managerData
+    ? {
+        id: managerData.id,
+        name: managerData.name,
+        photoUrl: managerData.photoUrl ?? null,
+        title: managerPrimary?.title?.name ?? null,
+        department: managerPrimary?.department?.name ?? null,
+      }
+    : null
+
+  const division = getDivisionName(primaryAssignment?.department ?? null)
+  const canViewGradeFlag = canViewGradeUtil(user.role, user.employeeId, id, managerId)
 
   const employee = {
     ...rawEmployee,
@@ -109,7 +148,9 @@ export default async function EmployeeDetailPage({
     jobCategory: primaryAssignment?.jobCategory ?? null,
     employmentType: primaryAssignment?.employmentType ?? '',
     status: primaryAssignment?.status ?? '',
-    manager: managerData,
+    position: primaryAssignment?.position ?? null,
+    workLocation: primaryAssignment?.workLocation ?? null,
+    manager,
   }
 
   return (
@@ -121,6 +162,9 @@ export default async function EmployeeDetailPage({
         departments={departments as DeptOption[]}
         jobCategories={jobCategories}
         gradeTitleMappings={gradeTitleMappings}
+        division={division}
+        canViewGrade={canViewGradeFlag}
+        canViewSensitive={canViewGradeFlag}
       />
     </Suspense>
   )

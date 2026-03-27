@@ -22,6 +22,7 @@ import { CodeManagementTab } from './tabs/CodeManagementTab'
 import { LocationsTab } from './tabs/LocationsTab'
 import { EmployeeTitlesTab } from './tabs/EmployeeTitlesTab'
 import { GradeTitleMappingTab } from './tabs/GradeTitleMappingTab'
+import { PositionsTab } from './tabs/PositionsTab'
 
 const config = getCategoryConfig('organization')
 
@@ -36,6 +37,8 @@ function OrganizationSettingsContent() {
         return <CompanyInfoTab companyId={companyId} />
       case 'departments':
         return <DepartmentsTab companyId={companyId} />
+      case 'positions':
+        return <PositionsTab companyId={companyId} />
       case 'grade-title-mappings':
         return <GradeTitleMappingTab companyId={companyId} />
       case 'job-grades':

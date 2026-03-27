@@ -23,6 +23,8 @@ interface Assignment {
   department: { id: string; name: string } | null
   jobGrade: { id: string; name: string; code: string } | null
   company: { id: string; code: string; name: string } | null
+  title: { id: string; name: string } | null
+  position: { id: string; titleKo: string } | null
 }
 
 interface EmergencyContact {
@@ -101,6 +103,7 @@ interface EmployeeData {
 interface MyProfileClientProps {
   user: SessionUser
   employee: EmployeeData
+  division: string | null
 }
 
 // ─── Constants ──────────────────────────────────────────────
@@ -177,7 +180,7 @@ function VisibilityBadge({ level }: { level: string }) {
 
 // ─── Main Component ─────────────────────────────────────────
 
-export function MyProfileClient({ user: _user, employee }: MyProfileClientProps) {
+export function MyProfileClient({ user: _user, employee, division }: MyProfileClientProps) {
   const tCommon = useTranslations('common')
   const t = useTranslations('mySpace')
 
@@ -297,7 +300,12 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                 {employee.name}
                 {employee.nameEn && <span className="text-sm font-normal text-[#666]">({employee.nameEn})</span>}
               </h1>
-              <p className="text-[#5E81F4] font-medium mt-1">{asgn?.jobGrade?.name ?? '-'} · {asgn?.department?.name ?? '-'}</p>
+              <p className="text-[#5E81F4] font-medium mt-1">
+                {[asgn?.title?.name, asgn?.position?.titleKo].filter(Boolean).join(' · ') || (asgn?.jobGrade?.name ?? '-')}
+              </p>
+              <p className="text-sm text-[#999] mt-0.5">
+                {[asgn?.company?.name, division, asgn?.department?.name].filter(Boolean).join(' · ')}
+              </p>
             </div>
             <div className="text-right">
               <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-[#EDF1FE] text-[#4B6DE0]">
@@ -306,7 +314,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
             </div>
           </div>
           <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-[#666]">
-            <span className="flex items-center gap-1.5"><Building className="w-4 h-4 text-[#999]" /> {asgn?.company?.name ?? '-'}</span>
+            <span className="flex items-center gap-1.5"><Building className="w-4 h-4 text-[#999]" /> {asgn?.jobGrade?.name ?? '-'}</span>
             <span className="flex items-center gap-1.5"><User className="w-4 h-4 text-[#999]" /> {employee.employeeNo}</span>
             <span className="flex items-center gap-1.5"><Globe className="w-4 h-4 text-[#999]" /> {employee.email}</span>
           </div>
