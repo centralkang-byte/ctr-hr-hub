@@ -20,6 +20,9 @@ import {
   Calendar,
   ExternalLink,
   Briefcase,
+  Mail,
+  Phone,
+  MapPin,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -61,6 +64,10 @@ type EmployeeDetail = EmployeeRow & {
   email: string | null
   phone: string | null
   photoUrl: string | null
+  title: { id: string; name: string } | null
+  position: { id: string; titleKo: string } | null
+  workLocation: { id: string; name: string } | null
+  company: { id: string; name: string; code: string } | null
   manager?: { id: string; name: string } | null
 }
 
@@ -127,11 +134,31 @@ function EmployeeQuickPanel({
     ? new Date(employee.hireDate).toLocaleDateString('ko-KR')
     : '-'
 
+  const subtitle = [employee.title?.name, employee.position?.titleKo].filter(Boolean).join(' · ')
+
+  const STATUS_RING: Record<string, string> = {
+    ACTIVE: 'ring-2 ring-green-500',
+    ON_LEAVE: 'ring-2 ring-orange-400',
+    RESIGNED: 'ring-2 ring-gray-400',
+    TERMINATED: '',
+  }
+  const ringClass = STATUS_RING[employee.status] ?? ''
+
+  function calcTenure(d: string): string {
+    const hire = new Date(d)
+    const now = new Date()
+    const totalMonths = (now.getFullYear() - hire.getFullYear()) * 12 + (now.getMonth() - hire.getMonth())
+    const y = Math.floor(totalMonths / 12)
+    const m = totalMonths % 12
+    if (y === 0) return `${m}개월`
+    return `${y}년 ${m}개월`
+  }
+
   return (
     <div className="flex flex-col h-full">
       {/* Profile header */}
       <div className="px-5 py-5 flex items-center gap-4 border-b border-[#F0F0F3]">
-        <div className="w-14 h-14 rounded-full bg-[#F0F0F3] flex items-center justify-center overflow-hidden flex-shrink-0">
+        <div className={`w-14 h-14 rounded-full bg-[#F0F0F3] flex items-center justify-center overflow-hidden flex-shrink-0 ${ringClass} ring-offset-2`}>
           {employee.photoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -148,19 +175,26 @@ function EmployeeQuickPanel({
           {employee.nameEn && (
             <p className="text-xs text-[#8181A5] truncate">{employee.nameEn}</p>
           )}
-          <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
-            <span className="text-xs font-mono tabular-nums text-[#8181A5]">{employee.employeeNo}</span>
-            {employee.jobGrade && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-[#F0F0F3] text-[#5E81F4]">
-                {employee.jobGrade.name}
-              </span>
-            )}
-          </div>
+          {subtitle && (
+            <p className="text-sm text-[#666] mt-0.5 truncate">{subtitle}</p>
+          )}
+          <span className="text-xs font-mono tabular-nums text-[#8181A5] mt-1 block">{employee.employeeNo}</span>
         </div>
       </div>
 
       {/* Detail fields */}
-      <div className="px-5 py-4 space-y-3 flex-1">
+      <div className="px-5 py-4 space-y-3 flex-1 overflow-y-auto">
+        {/* 조직 */}
+        {employee.company && (
+          <div className="flex items-center gap-3">
+            <Building2 className="w-4 h-4 text-[#8181A5] flex-shrink-0" />
+            <div>
+              <p className="text-[11px] text-[#8181A5]">법인</p>
+              <p className="text-sm text-[#1C1D21]">{employee.company.name}</p>
+            </div>
+          </div>
+        )}
+
         {employee.department && (
           <div className="flex items-center gap-3">
             <Building2 className="w-4 h-4 text-[#8181A5] flex-shrink-0" />
@@ -171,24 +205,52 @@ function EmployeeQuickPanel({
           </div>
         )}
 
-        {employee.jobCategory && (
+        {employee.workLocation && (
           <div className="flex items-center gap-3">
-            <Briefcase className="w-4 h-4 text-[#8181A5] flex-shrink-0" />
+            <MapPin className="w-4 h-4 text-[#8181A5] flex-shrink-0" />
             <div>
-              <p className="text-[11px] text-[#8181A5]">직무</p>
-              <p className="text-sm text-[#1C1D21]">{employee.jobCategory.name}</p>
+              <p className="text-[11px] text-[#8181A5]">근무지</p>
+              <p className="text-sm text-[#1C1D21]">{employee.workLocation.name}</p>
             </div>
           </div>
         )}
 
+        {/* 구분선 */}
+        <div className="border-t border-[#F0F0F3]" />
+
+        {/* 연락처 */}
+        {employee.email && (
+          <div className="flex items-center gap-3">
+            <Mail className="w-4 h-4 text-[#8181A5] flex-shrink-0" />
+            <p className="text-sm text-[#1C1D21] truncate">{employee.email}</p>
+          </div>
+        )}
+
+        {employee.phone && (
+          <div className="flex items-center gap-3">
+            <Phone className="w-4 h-4 text-[#8181A5] flex-shrink-0" />
+            <p className="text-sm text-[#1C1D21]">{employee.phone}</p>
+          </div>
+        )}
+
+        {/* 구분선 */}
+        <div className="border-t border-[#F0F0F3]" />
+
+        {/* 입사일 + 근속 */}
         <div className="flex items-center gap-3">
           <Calendar className="w-4 h-4 text-[#8181A5] flex-shrink-0" />
           <div>
             <p className="text-[11px] text-[#8181A5]">입사일</p>
-            <p className="text-sm text-[#1C1D21]">{hireDate}</p>
+            <p className="text-sm text-[#1C1D21]">
+              {hireDate}
+              {employee.hireDate && (
+                <span className="text-xs text-[#8181A5] ml-1.5">· {calcTenure(employee.hireDate)}</span>
+              )}
+            </p>
           </div>
         </div>
 
+        {/* 재직 상태 */}
         <div className="pt-1">
           <p className="text-[11px] text-[#8181A5] mb-1.5">재직 상태</p>
           <Badge variant={STATUS_VARIANTS[employee.status] ?? 'outline'}>
