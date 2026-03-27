@@ -28,6 +28,7 @@ import { LeavePromotionTab } from './tabs/LeavePromotionTab'
 import { DesignatedLeaveTab } from './tabs/DesignatedLeaveTab'
 import { HolidaysTab } from './tabs/HolidaysTab'
 import { OvertimeTab } from './tabs/OvertimeTab'
+import { LoaTypesTab } from './tabs/LoaTypesTab'
 import { BUTTON_VARIANTS } from '@/lib/styles'
 
 const config = getCategoryConfig('attendance')
@@ -235,6 +236,8 @@ function AttendanceSettingsContent() {
         return <HolidaysTab companyId={companyId} />
       case 'overtime':
         return <OvertimeTab companyId={companyId} />
+      case 'loa-types':
+        return <LoaTypesTab companyId={companyId} />
       default:
         return <WorkSchedulesTab companyId={companyId} />
     }

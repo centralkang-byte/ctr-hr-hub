@@ -18,8 +18,8 @@ export type SettingsCategoryKey =
   | 'recruitment'
   | 'system'
 
-export type OrganizationTabSlug = 'company-info' | 'departments' | 'grade-title-mappings' | 'job-grades' | 'employee-titles' | 'job-families' | 'assignment-rules' | 'probation' | 'custom-fields' | 'code-management' | 'locations'
-export type AttendanceTabSlug = 'work-schedules' | 'weekly-hours' | 'shift-patterns' | 'leave-types' | 'leave-accrual' | 'leave-promotion' | 'designated-leave' | 'holidays' | 'overtime'
+export type OrganizationTabSlug = 'company-info' | 'departments' | 'positions' | 'grade-title-mappings' | 'job-grades' | 'employee-titles' | 'job-families' | 'assignment-rules' | 'probation' | 'custom-fields' | 'code-management' | 'locations'
+export type AttendanceTabSlug = 'work-schedules' | 'weekly-hours' | 'shift-patterns' | 'leave-types' | 'leave-accrual' | 'leave-promotion' | 'designated-leave' | 'holidays' | 'overtime' | 'loa-types'
 export type PayrollTabSlug = 'earnings' | 'deductions' | 'tax-free' | 'salary-bands' | 'merit-matrix' | 'bonus-rules' | 'pay-schedule' | 'currency'
 export type PerformanceTabSlug = 'cycle' | 'methodology' | 'grade-scale' | 'distribution' | 'calibration' | 'cfr' | 'competency'
 export type RecruitmentTabSlug = 'pipeline' | 'interview-form' | 'ai-screening' | 'onboarding-templates' | 'offboarding-checklist' | 'probation-eval'
@@ -61,6 +61,7 @@ export const SETTINGS_CATEGORIES: SettingsCategoryConfig[] = [
     tabs: [
       { slug: 'company-info', label: '법인 기본정보', description: '법인명, 주소, 사업자번호, 대표자' },
       { slug: 'departments', label: '부서 구조', description: '부서 트리, 코드 체계' },
+      { slug: 'positions', label: '직위 관리', description: '법인별 직위(보직) 목록 및 보고 체계' },
       { slug: 'grade-title-mappings', label: '직급-호칭 매핑', description: '법인별 직급↔호칭 매핑 (L/E/S 체계)' },
       { slug: 'job-grades', label: '직급 체계 (레거시)', description: '직급 목록, 승진 순서, 체류 연수' },
       { slug: 'employee-titles', label: '호칭 관리 (레거시)', description: '법인별 호칭 목록 (직급과 독립)' },
@@ -87,6 +88,7 @@ export const SETTINGS_CATEGORIES: SettingsCategoryConfig[] = [
       { slug: 'designated-leave', label: '지정연차', description: '법인별 지정 연차 사용일 관리' },
       { slug: 'holidays', label: '법정 공휴일', description: '나라별 공휴일 캘린더' },
       { slug: 'overtime', label: '초과근무', description: '사전승인 필수 여부, 수당 배율' },
+      { slug: 'loa-types', label: '휴직 유형', description: '육아/질병/가족돌봄 등 휴직 유형 관리' },
     ],
   },
   {
