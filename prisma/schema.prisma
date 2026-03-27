@@ -943,6 +943,10 @@ model Company {
   // Certificate Requests
   certificateRequests    CertificateRequest[]
 
+  // B1: Leave of Absence (휴직)
+  leaveOfAbsenceTypes    LeaveOfAbsenceType[]
+  leaveOfAbsences        LeaveOfAbsence[]
+
   @@map("companies")
 }
 
@@ -1484,6 +1488,11 @@ model Employee {
   // Certificate Requests
   certificateRequests         CertificateRequest[] @relation("CertRequestEmployee")
   certificateRequestApprovals CertificateRequest[] @relation("CertRequestApprover")
+
+  // B1: Leave of Absence (휴직)
+  leaveOfAbsences            LeaveOfAbsence[]  @relation("LOAEmployee")
+  leaveOfAbsenceApprovals    LeaveOfAbsence[]  @relation("LOAApprover")
+  leaveOfAbsenceRejections   LeaveOfAbsence[]  @relation("LOARejecter")
 
   @@index([deletedAt])
   @@index([hireDate])
@@ -6170,4 +6179,106 @@ model CertificateRequest {
   @@index([employeeId])
   @@index([companyId, status])
   @@map("certificate_requests")
+}
+
+// ================================================================
+// B1: Leave of Absence (휴직) — 육아/질병/가족돌봄/병역 등
+// ================================================================
+
+/// 법인별 휴직 유형 정의
+model LeaveOfAbsenceType {
+  id                       String    @id @default(uuid())
+  companyId                String    @map("company_id")
+  code                     String                          // PARENTAL, MATERNITY, FAMILY_CARE, MEDICAL, WORK_INJURY, MILITARY, PERSONAL, STUDY, ...
+  name                     String                          // "육아휴직"
+  nameEn                   String?   @map("name_en")       // "Parental Leave"
+  category                 String                          // STATUTORY | CONTRACTUAL
+  maxDurationDays          Int?      @map("max_duration_days")   // null = 무제한 (산재 등)
+  payType                  String    @default("UNPAID") @map("pay_type")    // PAID | UNPAID | PARTIAL | INSURANCE | MIXED
+  payRate                  Int?      @map("pay_rate")            // 급여 비율 % (null = N/A)
+  paySource                String?   @map("pay_source")          // EMPLOYER | GOVERNMENT | INSURANCE | MIXED
+  eligibilityMonths        Int?      @map("eligibility_months")  // 최소 근속 요건 (개월)
+  countsAsService          Boolean   @default(true)  @map("counts_as_service")     // 근속기간 산입
+  countsAsAttendance       Boolean   @default(false) @map("counts_as_attendance")  // 연차 출근일수 산입
+  splittable               Boolean   @default(false)             // 분할 사용 가능
+  maxSplitCount            Int?      @map("max_split_count")
+  requiresProof            Boolean   @default(false) @map("requires_proof")
+  proofDescription         String?   @map("proof_description")   // "의사 진단서, 출생증명서"
+  advanceNoticeDays        Int?      @map("advance_notice_days") // 사전 신청 기한 (일)
+  reinstatementGuaranteed  Boolean   @default(false) @map("reinstatement_guaranteed") // 원직 복귀 보장
+  sortOrder                Int       @default(0) @map("sort_order")
+  isActive                 Boolean   @default(true) @map("is_active")
+  deletedAt                DateTime? @map("deleted_at")
+
+  company  Company            @relation(fields: [companyId], references: [id])
+  records  LeaveOfAbsence[]
+
+  @@unique([companyId, code])
+  @@map("leave_of_absence_types")
+}
+
+/// 휴직 기록 (6-state 워크플로: REQUESTED → APPROVED → ACTIVE → RETURN_REQUESTED → COMPLETED)
+model LeaveOfAbsence {
+  id                 String    @id @default(uuid())
+  employeeId         String    @map("employee_id")
+  companyId          String    @map("company_id")
+  typeId             String    @map("type_id")
+
+  // 기간
+  startDate          DateTime  @map("start_date") @db.Date
+  expectedEndDate    DateTime? @map("expected_end_date") @db.Date   // 예정 복귀일
+  actualEndDate      DateTime? @map("actual_end_date") @db.Date     // 실제 복귀일
+
+  // 상태
+  status             String    @default("REQUESTED")
+  // REQUESTED → APPROVED → ACTIVE → RETURN_REQUESTED → COMPLETED
+  //                                                   ↘ CANCELLED
+  //           → REJECTED
+
+  // 급여 (유형 기본값 오버라이드)
+  payType            String?   @map("pay_type")
+  payRate            Int?      @map("pay_rate")
+
+  // 사유 & 증빙
+  reason             String?
+  proofFileUrl       String?   @map("proof_file_url")
+
+  // 승인
+  requestedAt        DateTime  @default(now()) @map("requested_at")
+  approvedBy         String?   @map("approved_by")
+  approvedAt         DateTime? @map("approved_at")
+  rejectedBy         String?   @map("rejected_by")
+  rejectedAt         DateTime? @map("rejected_at")
+  rejectionReason    String?   @map("rejection_reason")
+
+  // 복직
+  returnPositionId   String?   @map("return_position_id")  // 복귀 직위 (null = 원직)
+  returnNotes        String?   @map("return_notes")
+
+  // Assignment 연동
+  loaAssignmentId    String?   @map("loa_assignment_id")    // ON_LEAVE 발령 ID
+  returnAssignmentId String?   @map("return_assignment_id") // 복직 발령 ID
+
+  // 분할 사용 (splittable인 경우)
+  splitSequence      Int       @default(1) @map("split_sequence")
+  parentId           String?   @map("parent_id")
+
+  // 메타
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+  deletedAt          DateTime? @map("deleted_at")
+
+  // Relations
+  employee  Employee             @relation("LOAEmployee", fields: [employeeId], references: [id])
+  company   Company              @relation(fields: [companyId], references: [id])
+  type      LeaveOfAbsenceType   @relation(fields: [typeId], references: [id])
+  approver  Employee?            @relation("LOAApprover", fields: [approvedBy], references: [id])
+  rejecter  Employee?            @relation("LOARejecter", fields: [rejectedBy], references: [id])
+  parent    LeaveOfAbsence?      @relation("LOASplit", fields: [parentId], references: [id])
+  splits    LeaveOfAbsence[]     @relation("LOASplit")
+
+  @@index([employeeId])
+  @@index([companyId, status])
+  @@index([startDate])
+  @@map("leave_of_absences")
 }
