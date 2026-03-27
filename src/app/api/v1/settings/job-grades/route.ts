@@ -40,7 +40,7 @@ export const GET = withPermission(
 
     return apiSuccess(jobGrades)
   },
-  perm(MODULE.ORG, ACTION.VIEW),
+  perm(MODULE.SETTINGS, ACTION.VIEW),
 )
 
 export const POST = withPermission(
