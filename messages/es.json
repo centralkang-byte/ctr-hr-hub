@@ -4788,6 +4788,7 @@
       "profile": "Mi perfil",
       "attendance": "Asistencia",
       "leave": "Vacaciones",
+      "loa": "Licencia",
       "goals": "Mis objetivos/evaluación",
       "payslip": "Mi recibo de nómina",
       "benefits": "Beneficios",
@@ -4933,6 +4934,7 @@
       "org": "Org Management",
       "attendanceAdmin": "Attendance Administrador",
       "leaveAdmin": "Leave Administrador",
+      "loaAdmin": "Administración de licencias",
       "onboardingOffboarding": "Onboarding/Offboarding",
       "disciplineRewards": "Discipline & Rewards"
     },

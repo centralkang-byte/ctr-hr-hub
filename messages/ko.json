@@ -4788,6 +4788,7 @@
       "profile": "내 프로필",
       "attendance": "출퇴근",
       "leave": "휴가 신청",
+      "loa": "휴직 신청",
       "goals": "목표/평가",
       "payslip": "급여명세서",
       "benefits": "복리후생",
@@ -4828,6 +4829,7 @@
       "org": "조직 관리",
       "attendanceAdmin": "근태 관리",
       "leaveAdmin": "휴가 관리",
+      "loaAdmin": "휴직 관리",
       "onboardingOffboarding": "온보딩/오프보딩",
       "disciplineRewards": "징계/포상",
       "exitInterviewStats": "퇴직 면담 통계"

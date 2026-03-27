@@ -4788,6 +4788,7 @@
       "profile": "My Profile",
       "attendance": "Clock In/Out",
       "leave": "Leave Request",
+      "loa": "Leave of Absence",
       "goals": "Goals & Evaluation",
       "payslip": "My Payslips",
       "benefits": "Benefits",
@@ -4828,6 +4829,7 @@
       "org": "Org Management",
       "attendanceAdmin": "Attendance Admin",
       "leaveAdmin": "Leave Admin",
+      "loaAdmin": "Leave of Absence Admin",
       "onboardingOffboarding": "Onboarding/Offboarding",
       "disciplineRewards": "Discipline & Rewards",
       "exitInterviewStats": "Exit Interview Stats"

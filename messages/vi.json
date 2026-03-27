@@ -4788,6 +4788,7 @@
       "profile": "Hồ sơ của tôi",
       "attendance": "Chấm công",
       "leave": "Nghỉ phép",
+      "loa": "Nghỉ phép dài hạn",
       "goals": "Mục tiêu/Đánh giá",
       "payslip": "Phiếu lương của tôi",
       "benefits": "Phúc lợi",
@@ -4933,6 +4934,7 @@
       "org": "Org Management",
       "attendanceAdmin": "Attendance Quản trị viên",
       "leaveAdmin": "Leave Quản trị viên",
+      "loaAdmin": "Quản lý nghỉ phép dài hạn",
       "onboardingOffboarding": "Onboarding/Offboarding",
       "disciplineRewards": "Discipline & Rewards"
     },

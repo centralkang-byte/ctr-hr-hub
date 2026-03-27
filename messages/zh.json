@@ -4788,6 +4788,7 @@
       "profile": "我的档案",
       "attendance": "考勤",
       "leave": "假期",
+      "loa": "休假申请",
       "goals": "我的目标/绩效",
       "payslip": "我的工资单",
       "benefits": "福利",
@@ -4933,6 +4934,7 @@
       "org": "Org Management",
       "attendanceAdmin": "Attendance 管理员",
       "leaveAdmin": "Leave 管理员",
+      "loaAdmin": "休假管理",
       "onboardingOffboarding": "Onboarding/Offboarding",
       "disciplineRewards": "Discipline & Rewards"
     },
