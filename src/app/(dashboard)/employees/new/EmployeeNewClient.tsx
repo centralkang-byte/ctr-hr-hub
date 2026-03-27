@@ -51,6 +51,7 @@ interface WizardData {
   companyId: string
   departmentId: string
   jobGradeId: string
+  titleId: string
   jobCategoryId: string
   managerId: string
   managerName: string
@@ -70,6 +71,7 @@ interface EmployeeNewClientProps {
   departments: DeptOption[]
   jobGrades: RefOption[]
   jobCategories: RefOption[]
+  employeeTitles: RefOption[]
 }
 
 // ─── Constants ──────────────────────────────────────────────
@@ -90,6 +92,7 @@ const INITIAL_DATA: WizardData = {
   companyId: '',
   departmentId: '',
   jobGradeId: '',
+  titleId: '',
   jobCategoryId: '',
   managerId: '',
   managerName: '',
@@ -125,6 +128,7 @@ export function EmployeeNewClient({
   departments,
   jobGrades,
   jobCategories,
+  employeeTitles,
 }: EmployeeNewClientProps) {
   const router = useRouter()
   const t = useTranslations('employee')
@@ -253,6 +257,7 @@ export function EmployeeNewClient({
         ...(data.emergencyContact ? { emergencyContact: data.emergencyContact } : {}),
         ...(data.emergencyContactPhone ? { emergencyContactPhone: data.emergencyContactPhone } : {}),
         ...(data.managerId ? { managerId: data.managerId } : {}),
+        ...(data.titleId ? { titleId: data.titleId } : {}),
       }
       const res = await apiClient.post<{ id: string }>('/api/v1/employees', payload)
       router.push(`/employees/${res.data.id}`)
@@ -415,6 +420,21 @@ export function EmployeeNewClient({
           </SelectContent>
         </Select>
       </Field>
+      {employeeTitles.length > 0 && (
+        <Field label="호칭">
+          <Select value={data.titleId || '__NONE__'} onValueChange={(v) => set('titleId', v === '__NONE__' ? '' : v)}>
+            <SelectTrigger>
+              <SelectValue placeholder={tc('selectPlaceholder')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
+              {employeeTitles.map((t) => (
+                <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </Field>
+      )}
       <div className="sm:col-span-2">
         <Field label={t('managerOptional')}>
           <div className="relative">
@@ -482,6 +502,7 @@ export function EmployeeNewClient({
     const company = companies.find((c) => c.id === data.companyId)
     const dept = departments.find((d) => d.id === data.departmentId)
     const grade = jobGrades.find((g) => g.id === data.jobGradeId)
+    const empTitle = employeeTitles.find((et) => et.id === data.titleId)
     const category = jobCategories.find((c) => c.id === data.jobCategoryId)
 
     const GENDER_LABELS: Record<string, string> = { M: t('male'), F: t('female') }
@@ -502,6 +523,7 @@ export function EmployeeNewClient({
       [t('companyEntity'), company?.name ?? '-'],
       [t('department'), dept?.name ?? '-'],
       [t('jobGrade'), grade?.name ?? '-'],
+      ['호칭', empTitle?.name ?? '-'],
       [t('jobCategory'), category?.name ?? '-'],
       [t('manager'), data.managerName || '-'],
     ]

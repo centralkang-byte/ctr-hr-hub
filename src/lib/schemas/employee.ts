@@ -19,6 +19,7 @@ export const employeeCreateSchema = z.object({
   status: z.enum(['ACTIVE', 'ON_LEAVE', 'RESIGNED', 'TERMINATED']),
 
   // Optional fields
+  titleId: z.string().uuid('Invalid title ID').optional().nullable(),
   nameEn: z.string().max(100).optional(),
   managerId: z.string().uuid().optional().nullable(),
   birthDate: z.string().date().optional().nullable(),

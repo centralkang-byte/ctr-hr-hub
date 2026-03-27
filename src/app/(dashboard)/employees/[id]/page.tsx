@@ -37,7 +37,7 @@ export default async function EmployeeDetailPage({
       ? {}
       : { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
 
-  const [rawEmployee, companies, departments, jobGrades, jobCategories] = await Promise.all([
+  const [rawEmployee, companies, departments, jobGrades, jobCategories, employeeTitles] = await Promise.all([
     prisma.employee.findFirst({
       where: { id, deletedAt: null, ...assignmentFilter },
       include: {
@@ -48,6 +48,7 @@ export default async function EmployeeDetailPage({
             company: { select: { id: true, name: true } },
             department: { select: { id: true, name: true } },
             jobGrade: { select: { id: true, name: true } },
+            title: { select: { id: true, name: true } },
             jobCategory: { select: { id: true, name: true } },
           },
         },
@@ -71,6 +72,11 @@ export default async function EmployeeDetailPage({
     prisma.jobCategory.findMany({
       select: { id: true, name: true },
       orderBy: { name: 'asc' },
+    }),
+    prisma.employeeTitle.findMany({
+      where: { deletedAt: null },
+      select: { id: true, name: true },
+      orderBy: { rankOrder: 'asc' },
     }),
   ])
 
@@ -98,6 +104,7 @@ export default async function EmployeeDetailPage({
     company: primaryAssignment?.company ?? null,
     department: primaryAssignment?.department ?? null,
     jobGrade: primaryAssignment?.jobGrade ?? null,
+    title: primaryAssignment?.title ?? null,
     jobCategory: primaryAssignment?.jobCategory ?? null,
     employmentType: primaryAssignment?.employmentType ?? '',
     status: primaryAssignment?.status ?? '',
@@ -113,6 +120,7 @@ export default async function EmployeeDetailPage({
         departments={departments as DeptOption[]}
         jobGrades={jobGrades}
         jobCategories={jobCategories}
+        employeeTitles={employeeTitles}
       />
     </Suspense>
   )

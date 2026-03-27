@@ -120,6 +120,7 @@ export const PUT = withPermission(
       companyId: _companyId,
       departmentId: _departmentId,
       jobGradeId: _jobGradeId,
+      titleId: _titleId,
       jobCategoryId: _jobCategoryId,
       employmentType: _employmentType,
       status: _status,

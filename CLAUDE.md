@@ -134,5 +134,6 @@ In QA mode, flag any code that doesn't match DESIGN.md.
 After any implementation:
 1. `npx tsc --noEmit` — 0 errors
 2. `npm run lint` — no new warnings
-3. Preview/screenshot for UI changes
-4. DB verification for seed/migration changes
+3. `npx prisma migrate status` — "Database schema is up to date!" 확인 (migration drift 방지)
+4. Preview/screenshot for UI changes
+5. DB verification for seed/migration changes

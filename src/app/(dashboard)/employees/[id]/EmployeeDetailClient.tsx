@@ -72,6 +72,7 @@ type EmployeeDetail = {
   company: { id: string; name: string } | null
   department: { id: string; name: string } | null
   jobGrade: { id: string; name: string } | null
+  title: { id: string; name: string } | null
   jobCategory: { id: string; name: string } | null
   manager: {
     id: string
@@ -92,6 +93,7 @@ interface EmployeeDetailClientProps {
   departments: DeptOption[]
   jobGrades: RefOption[]
   jobCategories: RefOption[]
+  employeeTitles: RefOption[]
 }
 
 // ─── Constants ──────────────────────────────────────────────
@@ -163,6 +165,7 @@ export function EmployeeDetailClient({
   departments,
   jobGrades,
   jobCategories,
+  employeeTitles,
 }: EmployeeDetailClientProps) {
   const router = useRouter()
   const t = useTranslations('employee')
@@ -200,6 +203,7 @@ export function EmployeeDetailClient({
     emergencyContactPhone: initialEmployee.emergencyContactPhone ?? '',
     departmentId: initialEmployee.department?.id ?? '',
     jobGradeId: initialEmployee.jobGrade?.id ?? '',
+    titleId: initialEmployee.title?.id ?? '',
     jobCategoryId: initialEmployee.jobCategory?.id ?? '',
     employmentType: initialEmployee.employmentType,
     status: initialEmployee.status,
@@ -277,6 +281,7 @@ export function EmployeeDetailClient({
         emergencyContactPhone: editData.emergencyContactPhone || null,
         departmentId: editData.departmentId,
         jobGradeId: editData.jobGradeId,
+        titleId: editData.titleId || null,
         jobCategoryId: editData.jobCategoryId,
         employmentType: editData.employmentType,
         status: editData.status,
@@ -374,6 +379,18 @@ export function EmployeeDetailClient({
                 </SelectContent>
               </Select>
             </div>
+            {employeeTitles.length > 0 && (
+              <div className="space-y-1.5">
+                <Label>호칭</Label>
+                <Select value={editData.titleId || '__NONE__'} onValueChange={(v) => setEditData((p) => ({ ...p, titleId: v === '__NONE__' ? '' : v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
+                    {employeeTitles.map((et) => <SelectItem key={et.id} value={et.id}>{et.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="space-y-1.5">
               <Label>{t('jobCategory')}</Label>
               <Select value={editData.jobCategoryId || '__NONE__'} onValueChange={(v) => setEditData((p) => ({ ...p, jobCategoryId: v === '__NONE__' ? '' : v }))}>
@@ -441,6 +458,7 @@ export function EmployeeDetailClient({
             <InfoRow label={t('companyEntity')} value={employee.company?.name} />
             <InfoRow label={t('department')} value={employee.department?.name} />
             <InfoRow label={t('jobGrade')} value={employee.jobGrade?.name} />
+            {employee.title && <InfoRow label="호칭" value={employee.title.name} />}
             <InfoRow label={t('jobCategory')} value={employee.jobCategory?.name} />
             <InfoRow label={t('employmentType')} value={EMPLOYMENT_TYPE_LABELS[employee.employmentType] ?? employee.employmentType} />
             <InfoRow label={tc('status')} value={<Badge variant={STATUS_VARIANTS[employee.status] ?? 'outline'}>{STATUS_LABELS[employee.status] ?? employee.status}</Badge>} />
@@ -463,6 +481,7 @@ export function EmployeeDetailClient({
         photoUrl={employee.photoUrl}
         department={employee.department?.name ?? null}
         jobGrade={employee.jobGrade?.name ?? null}
+        title={employee.title?.name ?? null}
         email={employee.email}
         phone={employee.phone}
         hireDate={employee.hireDate}

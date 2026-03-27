@@ -16,6 +16,7 @@ interface ProfileSidebarProps {
   photoUrl: string | null
   department: string | null
   jobGrade: string | null
+  title?: string | null
   email: string
   phone: string | null
   hireDate: Date | string | null
@@ -59,6 +60,7 @@ export function ProfileSidebar({
   photoUrl,
   department,
   jobGrade,
+  title,
   email,
   phone,
   hireDate,
@@ -87,7 +89,7 @@ export function ProfileSidebar({
         <h2 className="text-lg font-bold text-[#1A1A1A] tracking-ctr">{name}</h2>
         {nameEn && <p className="text-xs text-[#999] mt-0.5">{nameEn}</p>}
         <p className="text-sm text-[#999] mt-0.5">
-          {department ?? '-'}{jobGrade ? ` · ${jobGrade}` : ''}
+          {department ?? '-'}{jobGrade ? ` · ${jobGrade}` : ''}{title ? ` (${title})` : ''}
         </p>
         <span
           className={`inline-flex items-center px-2.5 py-0.5 mt-2 rounded-[4px] text-xs font-semibold ${STATUS_STYLES[status] ?? 'bg-[#F5F5F5] text-[#666]'}`}
