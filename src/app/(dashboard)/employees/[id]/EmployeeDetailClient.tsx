@@ -86,14 +86,20 @@ type EmployeeDetail = {
 }
 
 
+// Grade↔Title 매핑 (서버에서 전달)
+interface GradeTitleMappingItem {
+  id: string
+  jobGrade: { id: string; code: string; name: string; gradeType: string; rankOrder: number; companyId: string }
+  employeeTitle: { id: string; name: string }
+}
+
 interface EmployeeDetailClientProps {
   user: SessionUser
   employee: EmployeeDetail
   companies: RefOption[]
   departments: DeptOption[]
-  jobGrades: RefOption[]
   jobCategories: RefOption[]
-  employeeTitles: RefOption[]
+  gradeTitleMappings: GradeTitleMappingItem[]
 }
 
 // ─── Constants ──────────────────────────────────────────────
@@ -163,9 +169,8 @@ export function EmployeeDetailClient({
   employee: initialEmployee,
   companies,
   departments,
-  jobGrades,
   jobCategories,
-  employeeTitles,
+  gradeTitleMappings,
 }: EmployeeDetailClientProps) {
   const router = useRouter()
   const t = useTranslations('employee')
@@ -203,7 +208,6 @@ export function EmployeeDetailClient({
     emergencyContactPhone: initialEmployee.emergencyContactPhone ?? '',
     departmentId: initialEmployee.department?.id ?? '',
     jobGradeId: initialEmployee.jobGrade?.id ?? '',
-    titleId: initialEmployee.title?.id ?? '',
     jobCategoryId: initialEmployee.jobCategory?.id ?? '',
     employmentType: initialEmployee.employmentType,
     status: initialEmployee.status,
@@ -281,7 +285,7 @@ export function EmployeeDetailClient({
         emergencyContactPhone: editData.emergencyContactPhone || null,
         departmentId: editData.departmentId,
         jobGradeId: editData.jobGradeId,
-        titleId: editData.titleId || null,
+        titleId: mappedTitle?.employeeTitle.id ?? null,
         jobCategoryId: editData.jobCategoryId,
         employmentType: editData.employmentType,
         status: editData.status,
@@ -301,6 +305,10 @@ export function EmployeeDetailClient({
     () => departments.filter((d) => d.companyId === employee.companyId),
     [departments, employee.companyId],
   )
+
+  // Grade↔Title 매핑: 해당 법인만 필터
+  const companyMappings = gradeTitleMappings.filter((m) => m.jobGrade.companyId === employee.companyId)
+  const mappedTitle = companyMappings.find((m) => m.jobGrade.id === editData.jobGradeId) ?? null
 
   // ─── Tab 1: 기본정보 ────────────────────────────────────────
 
@@ -375,20 +383,18 @@ export function EmployeeDetailClient({
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
-                  {jobGrades.map((g) => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
+                  {companyMappings.map((m) => (
+                    <SelectItem key={m.jobGrade.id} value={m.jobGrade.id}>
+                      {m.jobGrade.code} ({m.employeeTitle.name})
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
-            {employeeTitles.length > 0 && (
+            {mappedTitle && (
               <div className="space-y-1.5">
                 <Label>호칭</Label>
-                <Select value={editData.titleId || '__NONE__'} onValueChange={(v) => setEditData((p) => ({ ...p, titleId: v === '__NONE__' ? '' : v }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
-                    {employeeTitles.map((et) => <SelectItem key={et.id} value={et.id}>{et.name}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                <Input value={mappedTitle.employeeTitle.name} readOnly className="bg-muted" />
               </div>
             )}
             <div className="space-y-1.5">
@@ -459,6 +465,7 @@ export function EmployeeDetailClient({
             <InfoRow label={t('department')} value={employee.department?.name} />
             <InfoRow label={t('jobGrade')} value={employee.jobGrade?.name} />
             {employee.title && <InfoRow label="호칭" value={employee.title.name} />}
+
             <InfoRow label={t('jobCategory')} value={employee.jobCategory?.name} />
             <InfoRow label={t('employmentType')} value={EMPLOYMENT_TYPE_LABELS[employee.employmentType] ?? employee.employmentType} />
             <InfoRow label={tc('status')} value={<Badge variant={STATUS_VARIANTS[employee.status] ?? 'outline'}>{STATUS_LABELS[employee.status] ?? employee.status}</Badge>} />

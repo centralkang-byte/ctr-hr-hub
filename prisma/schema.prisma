@@ -935,6 +935,7 @@ model Company {
 
   // 직급 리팩터링: 호칭 관리
   employeeTitles         EmployeeTitle[]
+  gradeTitleMappings     GradeTitleMapping[]
 
   // B-2a: Work Locations
   workLocations          WorkLocation[]
@@ -998,6 +999,7 @@ model JobGrade {
   disciplinaryDemotions DisciplinaryAction[] @relation("DisciplinaryDemotionGrade")
   entityTransfers       EntityTransfer[]
   positions             Position[]
+  gradeTitleMappings    GradeTitleMapping[]
 
   @@map("job_grades")
 }
@@ -1013,11 +1015,27 @@ model EmployeeTitle {
   isExecutive Boolean   @default(false) @map("is_executive")
   deletedAt   DateTime? @map("deleted_at")
 
-  company     Company              @relation(fields: [companyId], references: [id])
-  assignments EmployeeAssignment[]
+  company            Company              @relation(fields: [companyId], references: [id])
+  assignments        EmployeeAssignment[]
+  gradeTitleMappings GradeTitleMapping[]
 
   @@unique([companyId, code])
   @@map("employee_titles")
+}
+
+// Grade↔Title 매핑 — 법인별 직급→호칭 1:1 매핑 (국가별 다른 체계 지원)
+model GradeTitleMapping {
+  id              String @id @default(uuid())
+  companyId       String @map("company_id")
+  jobGradeId      String @map("job_grade_id")
+  employeeTitleId String @map("employee_title_id")
+
+  company       Company       @relation(fields: [companyId], references: [id])
+  jobGrade      JobGrade      @relation(fields: [jobGradeId], references: [id])
+  employeeTitle EmployeeTitle @relation(fields: [employeeTitleId], references: [id])
+
+  @@unique([companyId, jobGradeId])
+  @@map("grade_title_mappings")
 }
 
 model JobCategory {

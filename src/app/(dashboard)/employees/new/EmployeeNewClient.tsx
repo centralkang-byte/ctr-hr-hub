@@ -51,7 +51,6 @@ interface WizardData {
   companyId: string
   departmentId: string
   jobGradeId: string
-  titleId: string
   jobCategoryId: string
   managerId: string
   managerName: string
@@ -65,13 +64,19 @@ interface ManagerSearchResult {
   jobGrade: { name: string } | null
 }
 
+// Grade↔Title 매핑 (서버에서 전달)
+interface GradeTitleMappingItem {
+  id: string
+  jobGrade: { id: string; code: string; name: string; gradeType: string; rankOrder: number; companyId: string }
+  employeeTitle: { id: string; name: string }
+}
+
 interface EmployeeNewClientProps {
   user: SessionUser
   companies: RefOption[]
   departments: DeptOption[]
-  jobGrades: RefOption[]
   jobCategories: RefOption[]
-  employeeTitles: RefOption[]
+  gradeTitleMappings: GradeTitleMappingItem[]
 }
 
 // ─── Constants ──────────────────────────────────────────────
@@ -92,7 +97,6 @@ const INITIAL_DATA: WizardData = {
   companyId: '',
   departmentId: '',
   jobGradeId: '',
-  titleId: '',
   jobCategoryId: '',
   managerId: '',
   managerName: '',
@@ -126,9 +130,8 @@ export function EmployeeNewClient({
   user,
   companies,
   departments,
-  jobGrades,
   jobCategories,
-  employeeTitles,
+  gradeTitleMappings,
 }: EmployeeNewClientProps) {
   const router = useRouter()
   const t = useTranslations('employee')
@@ -166,6 +169,10 @@ export function EmployeeNewClient({
 
   // Filtered departments by selected company
   const filteredDepts = departments.filter((d) => d.companyId === data.companyId)
+
+  // Grade↔Title 매핑: 선택된 법인의 매핑만 필터
+  const companyMappings = gradeTitleMappings.filter((m) => m.jobGrade.companyId === data.companyId)
+  const mappedTitle = companyMappings.find((m) => m.jobGrade.id === data.jobGradeId) ?? null
 
   // ─── Validation per step ───
   function validateStep(stepNum: number, wizardData: WizardData): string | null {
@@ -257,7 +264,7 @@ export function EmployeeNewClient({
         ...(data.emergencyContact ? { emergencyContact: data.emergencyContact } : {}),
         ...(data.emergencyContactPhone ? { emergencyContactPhone: data.emergencyContactPhone } : {}),
         ...(data.managerId ? { managerId: data.managerId } : {}),
-        ...(data.titleId ? { titleId: data.titleId } : {}),
+        ...(mappedTitle ? { titleId: mappedTitle.employeeTitle.id } : {}),
       }
       const res = await apiClient.post<{ id: string }>('/api/v1/employees', payload)
       router.push(`/employees/${res.data.id}`)
@@ -401,8 +408,10 @@ export function EmployeeNewClient({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
-            {jobGrades.map((g) => (
-              <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>
+            {companyMappings.map((m) => (
+              <SelectItem key={m.jobGrade.id} value={m.jobGrade.id}>
+                {m.jobGrade.code} ({m.employeeTitle.name})
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -420,19 +429,9 @@ export function EmployeeNewClient({
           </SelectContent>
         </Select>
       </Field>
-      {employeeTitles.length > 0 && (
+      {mappedTitle && (
         <Field label="호칭">
-          <Select value={data.titleId || '__NONE__'} onValueChange={(v) => set('titleId', v === '__NONE__' ? '' : v)}>
-            <SelectTrigger>
-              <SelectValue placeholder={tc('selectPlaceholder')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
-              {employeeTitles.map((t) => (
-                <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Input value={mappedTitle.employeeTitle.name} readOnly className="bg-muted" />
         </Field>
       )}
       <div className="sm:col-span-2">
@@ -501,8 +500,7 @@ export function EmployeeNewClient({
   const renderStep4 = () => {
     const company = companies.find((c) => c.id === data.companyId)
     const dept = departments.find((d) => d.id === data.departmentId)
-    const grade = jobGrades.find((g) => g.id === data.jobGradeId)
-    const empTitle = employeeTitles.find((et) => et.id === data.titleId)
+    const gradeMapping = companyMappings.find((m) => m.jobGrade.id === data.jobGradeId)
     const category = jobCategories.find((c) => c.id === data.jobCategoryId)
 
     const GENDER_LABELS: Record<string, string> = { M: t('male'), F: t('female') }
@@ -522,8 +520,7 @@ export function EmployeeNewClient({
       [t('hireDate'), data.hireDate],
       [t('companyEntity'), company?.name ?? '-'],
       [t('department'), dept?.name ?? '-'],
-      [t('jobGrade'), grade?.name ?? '-'],
-      ['호칭', empTitle?.name ?? '-'],
+      [t('jobGrade'), gradeMapping ? `${gradeMapping.jobGrade.code} (${gradeMapping.employeeTitle.name})` : '-'],
       [t('jobCategory'), category?.name ?? '-'],
       [t('manager'), data.managerName || '-'],
     ]
