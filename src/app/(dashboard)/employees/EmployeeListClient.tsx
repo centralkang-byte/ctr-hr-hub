@@ -53,6 +53,7 @@ type EmployeeRow = {
   status: string
   department: { id: string; name: string } | null
   jobGrade: { id: string; name: string } | null
+  title: { id: string; name: string } | null
   jobCategory: { id: string; name: string } | null
 }
 
@@ -400,9 +401,9 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
       render: (row) => row.department?.name ?? '-',
     },
     {
-      key: 'jobGrade',
-      header: t('jobGrade'),
-      render: (row) => row.jobGrade?.name ?? '-',
+      key: 'title',
+      header: '호칭',
+      render: (row) => row.title?.name ?? '-',
     },
     {
       key: 'jobCategory',
