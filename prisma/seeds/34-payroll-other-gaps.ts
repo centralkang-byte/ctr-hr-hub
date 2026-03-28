@@ -136,7 +136,6 @@ export async function seedPayrollOtherGaps(prisma: PrismaClient) {
         version: '1.0',
         locale: 'ko',
         uploadedById: hrEmp.id,
-        isActive: true,
       },
     })
     docCount++
@@ -216,7 +215,6 @@ export async function seedPayrollOtherGaps(prisma: PrismaClient) {
         description: `${f.name} 기본 플로우`,
         companyId: ctrKr.id,
         module: f.module,
-        isActive: true,
         steps: {
           create: f.steps.map(s => ({
             id: deterministicUUID('af-step', `${f.key}:${s.order}`),

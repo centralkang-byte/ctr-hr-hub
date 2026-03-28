@@ -57,7 +57,7 @@ export const GET = withPermission(
     })
 
     const competencies = await prisma.competency.findMany({
-      where: { isActive: true },
+      where: { deletedAt: null },
       include: {
         category: { select: { id: true, name: true, code: true } },
       },

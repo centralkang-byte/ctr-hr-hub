@@ -32,7 +32,7 @@ export function logPiiAccess(
  */
 export async function enforceRetention(companyId: string, policyId: string) {
   const policy = await prisma.dataRetentionPolicy.findFirst({
-    where: { id: policyId, companyId, isActive: true },
+    where: { id: policyId, companyId, deletedAt: null },
   })
   if (!policy) return { processed: 0 }
 

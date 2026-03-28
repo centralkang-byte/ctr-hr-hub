@@ -58,7 +58,7 @@ export const GET = withPermission(
         // ── 1. Fetch all companies for this HR admin ─────────────
 
         const companies = await prisma.company.findMany({
-            where: { isActive: true },
+            where: { deletedAt: null },
             select: {
                 id: true, code: true, name: true, countryCode: true,
                 payrollRuns: {

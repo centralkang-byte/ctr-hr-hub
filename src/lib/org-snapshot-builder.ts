@@ -11,7 +11,7 @@ export async function buildOrgSnapshot(
 ) {
   const [departments, totalHeadcount] = await Promise.all([
     prisma.department.findMany({
-      where: { companyId, deletedAt: null, isActive: true },
+      where: { companyId, deletedAt: null },
       select: {
         id: true,
         name: true,
@@ -35,7 +35,6 @@ export async function buildOrgSnapshot(
     }),
     prisma.employee.count({
       where: {
-        deletedAt: null,
         assignments: {
           some: {
             companyId,

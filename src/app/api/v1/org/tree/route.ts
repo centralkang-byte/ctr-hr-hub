@@ -20,7 +20,6 @@ type DeptNode = {
   code: string
   level: number
   sortOrder: number
-  isActive: boolean
   parentId: string | null
   employeeCount: number
   children: DeptNode[]
@@ -107,7 +106,6 @@ export const GET = withCache(withPermission(
         code: true,
         level: true,
         sortOrder: true,
-        isActive: true,
         parentId: true,
         _count: {
           select: {
@@ -124,7 +122,6 @@ export const GET = withCache(withPermission(
       code: d.code,
       level: d.level,
       sortOrder: d.sortOrder,
-      isActive: d.isActive,
       parentId: d.parentId,
       employeeCount: (d as any)._count.assignments, // eslint-disable-line @typescript-eslint/no-explicit-any
     }))

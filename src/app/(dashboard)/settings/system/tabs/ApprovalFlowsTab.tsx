@@ -36,7 +36,7 @@ function emptyFlow(module: ApprovalModule, companyId: string | null): ApprovalFl
     description: null,
     companyId,
     module,
-    isActive: true,
+    deletedAt: null,
     steps: [],
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -82,7 +82,7 @@ export function ApprovalFlowsTab({ companyId }: Props) {
       const method = isNew ? 'POST' : 'PUT'
       const body = isNew
         ? { name: flow.name, description: flow.description, companyId: flow.companyId, module: flow.module, steps: flow.steps.map(s => ({ approverType: s.approverType, approverRole: s.approverRole, approverUserId: s.approverUserId, isRequired: s.isRequired, autoApproveDays: s.autoApproveDays })) }
-        : { id: flow.id, name: flow.name, description: flow.description, module: flow.module, isActive: flow.isActive, steps: flow.steps.map(s => ({ approverType: s.approverType, approverRole: s.approverRole, approverUserId: s.approverUserId, isRequired: s.isRequired, autoApproveDays: s.autoApproveDays })) }
+        : { id: flow.id, name: flow.name, description: flow.description, module: flow.module, deletedAt: flow.deletedAt, steps: flow.steps.map(s => ({ approverType: s.approverType, approverRole: s.approverRole, approverUserId: s.approverUserId, isRequired: s.isRequired, autoApproveDays: s.autoApproveDays })) }
 
       const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       if (!res.ok) {
@@ -198,11 +198,11 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                             {MODULE_LABELS[flow.module] ?? flow.module}
                           </span>
                           <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                            flow.isActive
+                            !flow.deletedAt
                               ? 'bg-emerald-50 text-emerald-600'
                               : 'bg-gray-100 text-gray-400'
                           }`}>
-                            {flow.isActive ? '활성' : '비활성'}
+                            {!flow.deletedAt ? '활성' : '비활성'}
                           </span>
                           {!flow.companyId && (
                             <span className="rounded-full bg-[#F5F5FA] px-2 py-0.5 text-[10px] text-[#8181A5]">글로벌</span>

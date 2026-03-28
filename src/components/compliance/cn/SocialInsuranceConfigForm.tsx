@@ -21,7 +21,7 @@ interface SocialInsuranceConfig {
   baseMax: number
   effectiveFrom: string
   effectiveTo: string | null
-  isActive: boolean
+  deletedAt: string | null
 }
 
 interface SocialInsuranceConfigFormProps {

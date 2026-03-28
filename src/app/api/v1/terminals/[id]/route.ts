@@ -27,7 +27,7 @@ export const GET = withPermission(
         terminalType: true,
         locationName: true,
         ipAddress: true,
-        isActive: true,
+        deletedAt: true,
         lastHeartbeatAt: true,
         companyId: true,
         createdAt: true,
@@ -70,7 +70,7 @@ export const PUT = withPermission(
           ...(parsed.data.terminalType !== undefined && { terminalType: parsed.data.terminalType }),
           ...(parsed.data.locationName !== undefined && { locationName: parsed.data.locationName }),
           ...(parsed.data.ipAddress !== undefined && { ipAddress: parsed.data.ipAddress }),
-          ...(parsed.data.isActive !== undefined && { isActive: parsed.data.isActive }),
+          
         },
       })
 

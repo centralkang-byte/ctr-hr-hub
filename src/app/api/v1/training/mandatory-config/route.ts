@@ -27,7 +27,7 @@ export const GET = withPermission(
     const configs = await prisma.mandatoryTrainingConfig.findMany({
       where: {
         OR: [{ companyId: user.companyId }, { companyId: null }],
-        isActive: true,
+        deletedAt: null,
       },
       include: {
         course: {
@@ -80,7 +80,6 @@ export const POST = withPermission(
           targetGroup: parsed.data.targetGroup,
           frequency: parsed.data.frequency,
           deadlineMonth: parsed.data.deadlineMonth,
-          isActive: parsed.data.isActive,
         },
         include: {
           course: { select: { id: true, code: true, title: true } },

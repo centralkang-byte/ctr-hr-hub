@@ -77,7 +77,6 @@ export const DELETE = withPermission(
         where: {
           typeId: id,
           status: { in: ['REQUESTED', 'APPROVED', 'ACTIVE', 'RETURN_REQUESTED'] },
-          deletedAt: null,
         },
       })
       if (activeRecords > 0) {
@@ -87,7 +86,7 @@ export const DELETE = withPermission(
       // Soft delete
       await prisma.leaveOfAbsenceType.update({
         where: { id },
-        data: { deletedAt: new Date(), isActive: false },
+        data: { deletedAt: new Date() },
       })
 
       return apiSuccess({ id })

@@ -10,7 +10,7 @@ export const GET = withPermission(
   async (_req: NextRequest, _ctx: { params: Promise<Record<string, string>> }, user: SessionUser) => {
     const companyId = user.companyId
     const plans = await prisma.benefitPlan.findMany({
-      where: { companyId, isActive: true },
+      where: { companyId, deletedAt: null },
       orderBy: [{ category: 'asc' }, { displayOrder: 'asc' }],
     })
     return apiSuccess(plans)

@@ -41,7 +41,7 @@ export const PATCH = withPermission(
         ...(parsed.data.channelName !== undefined ? { channelName: parsed.data.channelName } : {}),
         ...(parsed.data.webhookUrl !== undefined ? { webhookUrl: parsed.data.webhookUrl } : {}),
         ...(parsed.data.eventTypes !== undefined ? { eventTypes: parsed.data.eventTypes } : {}),
-        ...(parsed.data.isActive !== undefined ? { isActive: parsed.data.isActive } : {}),
+        
       },
     })
 

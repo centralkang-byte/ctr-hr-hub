@@ -48,9 +48,9 @@ export const GET = withPermission(
       : {}
 
     const typeDefs = await prisma.leaveTypeDef.findMany({
-      where: { ...where, isActive: true },
+      where: { ...where, deletedAt: null },
       include: {
-        accrualRules: { where: { isActive: true }, take: 1 },
+        accrualRules: { where: { deletedAt: null }, take: 1 },
         _count: { select: { yearBalances: true } },
       },
       orderBy: [{ companyId: 'asc' }, { displayOrder: 'asc' }, { name: 'asc' }],
@@ -88,7 +88,7 @@ export const POST = withPermission(
         maxConsecutiveDays: data.maxConsecutiveDays,
         minAdvanceDays: data.minAdvanceDays,
         displayOrder: data.displayOrder,
-        isActive: true,
+        deletedAt: null,
         // 규정 필드
         category: data.category,
         subcategory: data.subcategory,

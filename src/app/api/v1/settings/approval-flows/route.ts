@@ -75,7 +75,6 @@ export const POST = withPermission(
         description,
         companyId: companyId ?? null,
         module,
-        isActive: true,
         steps: {
           create: (steps ?? []).map((s, i: number) => ({
             stepOrder: i + 1,
@@ -125,7 +124,6 @@ export const PUT = withPermission(
         name,
         description,
         module,
-        isActive,
         steps: {
           create: (steps ?? []).map((s, i: number) => ({
             stepOrder: i + 1,

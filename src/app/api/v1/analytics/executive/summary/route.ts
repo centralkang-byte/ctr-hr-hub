@@ -39,7 +39,7 @@ export const GET = withPermission(
       }),
       // 2. All companies (for comparison)
       prisma.company.findMany({
-        where: { isActive: true, deletedAt: null },
+        where: { deletedAt: null },
         select: { id: true, name: true, currency: true },
       }),
       // 3. Recent exits (current month)

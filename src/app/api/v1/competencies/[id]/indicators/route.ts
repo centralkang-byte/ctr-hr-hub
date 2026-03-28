@@ -50,7 +50,6 @@ export const PUT = withPermission(
               indicatorText: ind.indicatorText,
               indicatorTextEn: ind.indicatorTextEn ?? undefined,
               displayOrder: ind.displayOrder ?? idx + 1,
-              isActive: ind.isActive,
             })),
           })
         }

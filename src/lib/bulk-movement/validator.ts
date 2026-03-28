@@ -246,7 +246,7 @@ async function validateByType(
     case 'transfer': {
       const deptCode = (row.raw['부서코드'] ?? '').trim()
       const dept = await prisma.department.findFirst({
-        where: { code: deptCode, isActive: true },
+        where: { code: deptCode, deletedAt: null },
         select: { id: true, name: true, companyId: true },
       })
       if (!dept) {
@@ -332,7 +332,7 @@ async function validateByType(
       }
       const deptCode = (row.raw['부서코드'] ?? '').trim()
       const dept = await prisma.department.findFirst({
-        where: { code: deptCode, isActive: true },
+        where: { code: deptCode, deletedAt: null },
         select: { id: true, name: true, companyId: true },
       })
       if (!dept) {

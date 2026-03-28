@@ -19,7 +19,7 @@ export const GET = withPermission(
     const configs = await prisma.mandatoryTrainingConfig.findMany({
       where: {
         OR: [{ companyId }, { companyId: null }],
-        isActive: true,
+        deletedAt: null,
       },
       include: {
         course: {

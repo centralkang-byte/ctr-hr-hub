@@ -43,7 +43,7 @@ type DeptNode = {
   code: string
   level: number
   sortOrder: number
-  isActive: boolean
+  deletedAt: string | null
   parentId: string | null
   employeeCount: number
   children: DeptNode[]
@@ -92,7 +92,7 @@ function DeptFlowNode({ data }: NodeProps) {
         w-[200px] min-h-[76px] rounded-xl border bg-white cursor-pointer
         flex flex-col items-center justify-center px-3 py-3 shadow-none
         transition-colors hover:border-ctr-primary
-        ${dept.isActive ? 'border-[#E8E8E8]' : 'border-[#E8E8E8] opacity-60'}
+        ${!dept.deletedAt ? 'border-[#E8E8E8]' : 'border-[#E8E8E8] opacity-60'}
       `}
       onClick={() => onClick(dept)}
     >
@@ -256,11 +256,11 @@ function ListView({ depts, onSelect, selectedId }: ListViewProps) {
               <td className="px-4 py-3 text-[#1A1A1A]">{tOrg('headcountUnit', { count: dept.employeeCount })}</td>
               <td className="px-4 py-3">
                 <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                  dept.isActive
+                  !dept.deletedAt
                     ? 'bg-[#D1FAE5] text-[#047857]'
                     : 'bg-[#FAFAFA] text-[#999] border border-[#E8E8E8]'
                 }`}>
-                  {dept.isActive ? tc('active') : tc('inactive')}
+                  {!dept.deletedAt ? tc('active') : tc('inactive')}
                 </span>
               </td>
             </tr>
@@ -302,11 +302,11 @@ function GridView({ depts, onSelect, selectedId }: GridViewProps) {
               selectedId === dept.id
                 ? 'border-ctr-primary bg-[#EDF1FE] shadow-sm'
                 : 'border-[#E8E8E8] bg-white'
-            } ${!dept.isActive ? 'opacity-60' : ''}`}
+            } ${!!dept.deletedAt ? 'opacity-60' : ''}`}
           >
             <div className="flex items-start justify-between mb-2">
               <span className="text-[10px] font-mono tabular-nums text-[#999] bg-[#FAFAFA] px-1.5 py-0.5 rounded">{dept.code}</span>
-              {!dept.isActive && (
+              {!!dept.deletedAt && (
                 <span className="text-[10px] text-[#999]">{tc('inactive')}</span>
               )}
             </div>
@@ -378,7 +378,7 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
           <div className="bg-[#FAFAFA] rounded-lg p-3 space-y-1.5 text-sm">
             <InfoRow label={'code'} value={dept.code} />
             <InfoRow label={'level'} value={String(dept.level)} />
-            <InfoRow label={'상태'} value={dept.isActive ? tc('active') : tc('inactive')} />
+            <InfoRow label={'상태'} value={!dept.deletedAt ? tc('active') : tc('inactive')} />
             <InfoRow label={'headcount'} value={t('headcountUnit', { count: dept.employeeCount })} />
             {dept.nameEn && <InfoRow label={'nameEn'} value={dept.nameEn} />}
           </div>
@@ -454,7 +454,7 @@ function buildSnapshotTree(
       code: d.code,
       level: d.level,
       sortOrder: 0,
-      isActive: true,
+      deletedAt: null,
       parentId: d.parentId,
       employeeCount: d.headcount,
       children: [],

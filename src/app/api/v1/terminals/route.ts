@@ -26,7 +26,7 @@ export const GET = withPermission(
     const where = {
       ...companyFilter,
       ...(terminalType ? { terminalType } : {}),
-      ...(isActive !== undefined ? { isActive } : {}),
+      ...(isActive !== undefined ? { deletedAt: isActive ? null : { not: null } } : {}),
     }
 
     const [terminals, total] = await Promise.all([
@@ -38,7 +38,7 @@ export const GET = withPermission(
           terminalType: true,
           locationName: true,
           ipAddress: true,
-          isActive: true,
+          deletedAt: true,
           lastHeartbeatAt: true,
           companyId: true,
           createdAt: true,
@@ -77,7 +77,6 @@ export const POST = withPermission(
           ...parsed.data,
           companyId: effectiveCompanyId,
           apiSecret: generateTerminalSecret(),
-          isActive: true,
         },
       })
 

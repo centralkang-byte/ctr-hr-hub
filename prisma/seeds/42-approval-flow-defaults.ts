@@ -110,7 +110,6 @@ export async function seedApprovalFlowDefaults(prisma: PrismaClient) {
         name: flowDef.name,
         module: flowDef.module,
         companyId: null,
-        isActive: true,
         steps: {
           create: flowDef.steps.map((s, i) => ({
             stepOrder: i + 1,

@@ -194,7 +194,7 @@ export async function calculatePayrollForEmployee(
       policy: {
         companyId,
         frequency: 'MONTHLY',
-        isActive: true,
+        deletedAt: null,
         effectiveFrom: { lte: periodEnd },
         OR: [{ effectiveTo: null }, { effectiveTo: { gte: periodStart } }],
       },
@@ -218,7 +218,7 @@ export async function calculatePayrollForEmployee(
 
   // 4. 비과세 한도 로드 — year/month는 타임존 기준으로 상단에서 계산됨
   const nontaxableLimitRows = await prisma.nontaxableLimit.findMany({
-    where: { year, isActive: true },
+    where: { year, deletedAt: null },
   })
   const nontaxableLimitsMap: Record<string, number> = {}
   for (const row of nontaxableLimitRows) {

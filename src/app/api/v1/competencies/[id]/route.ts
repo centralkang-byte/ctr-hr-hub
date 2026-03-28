@@ -27,7 +27,7 @@ export const GET = withPermission(
       where: { id },
       include: {
         category: true,
-        indicators: { where: { isActive: true }, orderBy: { displayOrder: 'asc' } },
+        indicators: { where: { deletedAt: null }, orderBy: { displayOrder: 'asc' } },
         levels: { orderBy: { level: 'asc' } },
         requirements: true,
       },

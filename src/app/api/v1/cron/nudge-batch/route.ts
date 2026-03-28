@@ -34,7 +34,6 @@ export async function POST(req: NextRequest) {
     // 해당 법인의 MANAGER/HR_ADMIN/EXECUTIVE 역할 직원 조회
     const managers = await prisma.employee.findMany({
       where: {
-        deletedAt: null,
         assignments: {
           some: {
             companyId: company.id,

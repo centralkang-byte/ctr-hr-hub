@@ -120,7 +120,7 @@ export async function collectReportData(
     }),
     // 6. Companies for name resolution
     prisma.company.findMany({
-      where: { isActive: true, deletedAt: null, ...(companyId ? { id: companyId } : {}) },
+      where: { deletedAt: null, ...(companyId ? { id: companyId } : {}) },
       select: { id: true, name: true, currency: true },
     }),
     // 7. Payroll runs for this period

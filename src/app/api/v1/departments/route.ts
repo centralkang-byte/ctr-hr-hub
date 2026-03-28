@@ -14,7 +14,7 @@ export const GET = withPermission(
     const { searchParams } = new URL(req.url)
     const companyId = searchParams.get('companyId')
 
-    const where: Record<string, unknown> = { isActive: true, deletedAt: null }
+    const where: Record<string, unknown> = { deletedAt: null }
     if (companyId) where.companyId = companyId
 
     const departments = await prisma.department.findMany({

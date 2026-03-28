@@ -76,7 +76,7 @@ export const POST = withPermission(
     const configs = await prisma.mandatoryTrainingConfig.findMany({
       where: {
         OR: [{ companyId: targetCompanyId }, { companyId: null }],
-        isActive: true,
+        deletedAt: null,
       },
       include: {
         course: { select: { id: true, validityMonths: true } },

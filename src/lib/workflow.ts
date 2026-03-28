@@ -28,7 +28,7 @@ export async function getApplicableWorkflow(
     where: {
       companyId,
       workflowType,
-      isActive: true,
+      deletedAt: null,
     },
     include: {
       steps: {

@@ -66,7 +66,7 @@ export const POST = withPermission(
       user.role === 'SUPER_ADMIN' ? (reqCompanyId ?? user.companyId) : user.companyId
 
     const template = await prisma.onboardingTemplate.create({
-      data: { name, description, targetType, companyId, isActive: true },
+      data: { name, description, targetType, companyId, deletedAt: null },
     })
 
     return apiSuccess(template, 201)

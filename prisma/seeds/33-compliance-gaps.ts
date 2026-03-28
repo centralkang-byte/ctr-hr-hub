@@ -105,7 +105,6 @@ export async function seedComplianceGaps(prisma: PrismaClient) {
         description: p.desc,
         autoDelete: p.autoDelete,
         anonymize: true,
-        isActive: true,
       },
     })
     retCount++
@@ -177,7 +176,6 @@ export async function seedComplianceGaps(prisma: PrismaClient) {
           baseMin: si.min,
           baseMax: si.max,
           effectiveFrom: new Date('2026-01-01'),
-          isActive: true,
         },
       })
       siConfigCount++

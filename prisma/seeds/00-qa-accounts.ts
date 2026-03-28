@@ -128,33 +128,33 @@ export async function seedQAAccounts(prisma: PrismaClient) {
   // Manager positions (no reportsTo — they are the top)
   await prisma.position.upsert({
     where: { code: 'CTR-KR-QA-TEAM-A-MGR' },
-    update: { titleKo: '생산기술팀장', titleEn: 'Production Engineering Manager', departmentId: qaTeamAId, isActive: true, isFilled: true },
-    create: { id: posM1Id, code: 'CTR-KR-QA-TEAM-A-MGR', titleKo: '생산기술팀장', titleEn: 'Production Engineering Manager', companyId: krId, departmentId: qaTeamAId, isActive: true, isFilled: true },
+    update: { titleKo: '생산기술팀장', titleEn: 'Production Engineering Manager', departmentId: qaTeamAId, isFilled: true },
+    create: { id: posM1Id, code: 'CTR-KR-QA-TEAM-A-MGR', titleKo: '생산기술팀장', titleEn: 'Production Engineering Manager', companyId: krId, departmentId: qaTeamAId, isFilled: true },
   })
 
   await prisma.position.upsert({
     where: { code: 'CTR-KR-QA-TEAM-B-MGR' },
-    update: { titleKo: '품질관리팀장', titleEn: 'Quality Control Manager', departmentId: qaTeamBId, isActive: true, isFilled: true },
-    create: { id: posM2Id, code: 'CTR-KR-QA-TEAM-B-MGR', titleKo: '품질관리팀장', titleEn: 'Quality Control Manager', companyId: krId, departmentId: qaTeamBId, isActive: true, isFilled: true },
+    update: { titleKo: '품질관리팀장', titleEn: 'Quality Control Manager', departmentId: qaTeamBId, isFilled: true },
+    create: { id: posM2Id, code: 'CTR-KR-QA-TEAM-B-MGR', titleKo: '품질관리팀장', titleEn: 'Quality Control Manager', companyId: krId, departmentId: qaTeamBId, isFilled: true },
   })
 
   // Employee positions (reportsTo manager)
   await prisma.position.upsert({
     where: { code: 'CTR-KR-QA-TEAM-A-01' },
-    update: { titleKo: '생산기술팀원', titleEn: 'Production Engineering Staff 1', reportsToPositionId: posM1Id, departmentId: qaTeamAId, isActive: true, isFilled: true },
-    create: { id: posEA, code: 'CTR-KR-QA-TEAM-A-01', titleKo: '생산기술팀원', titleEn: 'Production Engineering Staff 1', companyId: krId, departmentId: qaTeamAId, reportsToPositionId: posM1Id, isActive: true, isFilled: true },
+    update: { titleKo: '생산기술팀원', titleEn: 'Production Engineering Staff 1', reportsToPositionId: posM1Id, departmentId: qaTeamAId, isFilled: true },
+    create: { id: posEA, code: 'CTR-KR-QA-TEAM-A-01', titleKo: '생산기술팀원', titleEn: 'Production Engineering Staff 1', companyId: krId, departmentId: qaTeamAId, reportsToPositionId: posM1Id, isFilled: true },
   })
 
   await prisma.position.upsert({
     where: { code: 'CTR-KR-QA-TEAM-A-02' },
-    update: { titleKo: '생산기술팀원', titleEn: 'Production Engineering Staff 2', reportsToPositionId: posM1Id, departmentId: qaTeamAId, isActive: true, isFilled: true },
-    create: { id: posEB, code: 'CTR-KR-QA-TEAM-A-02', titleKo: '생산기술팀원', titleEn: 'Production Engineering Staff 2', companyId: krId, departmentId: qaTeamAId, reportsToPositionId: posM1Id, isActive: true, isFilled: true },
+    update: { titleKo: '생산기술팀원', titleEn: 'Production Engineering Staff 2', reportsToPositionId: posM1Id, departmentId: qaTeamAId, isFilled: true },
+    create: { id: posEB, code: 'CTR-KR-QA-TEAM-A-02', titleKo: '생산기술팀원', titleEn: 'Production Engineering Staff 2', companyId: krId, departmentId: qaTeamAId, reportsToPositionId: posM1Id, isFilled: true },
   })
 
   await prisma.position.upsert({
     where: { code: 'CTR-KR-QA-TEAM-B-01' },
-    update: { titleKo: '품질관리팀원', titleEn: 'Quality Control Staff 1', reportsToPositionId: posM2Id, departmentId: qaTeamBId, isActive: true, isFilled: true },
-    create: { id: posEC, code: 'CTR-KR-QA-TEAM-B-01', titleKo: '품질관리팀원', titleEn: 'Quality Control Staff 1', companyId: krId, departmentId: qaTeamBId, reportsToPositionId: posM2Id, isActive: true, isFilled: true },
+    update: { titleKo: '품질관리팀원', titleEn: 'Quality Control Staff 1', reportsToPositionId: posM2Id, departmentId: qaTeamBId, isFilled: true },
+    create: { id: posEC, code: 'CTR-KR-QA-TEAM-B-01', titleKo: '품질관리팀원', titleEn: 'Quality Control Staff 1', companyId: krId, departmentId: qaTeamBId, reportsToPositionId: posM2Id, isFilled: true },
   })
 
   console.log('  ✅ QA positions: 2 managers + 3 employees (with reportsTo)')

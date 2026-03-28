@@ -56,7 +56,6 @@ export const GET = withPermission(
         prisma.hrDocument.findMany({
           where: {
             companyId,
-            isActive: true,
             deletedAt: null,
             title: { contains: q, mode: 'insensitive' },
           },

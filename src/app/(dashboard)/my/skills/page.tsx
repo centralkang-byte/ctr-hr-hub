@@ -18,7 +18,7 @@ export default async function MySkillsPage() {
 
   const [competencies, employee] = await Promise.all([
     prisma.competency.findMany({
-      where: { isActive: true },
+      where: { deletedAt: null },
       include: {
         category: { select: { id: true, name: true, code: true } },
         levels: { orderBy: { level: 'asc' } },

@@ -16,7 +16,7 @@ export const GET = withPermission(
     const plans = await prisma.benefitPlan.findMany({
       where: {
         companyId: user.companyId,
-        isActive: true,
+        deletedAt: null,
         frequency: { in: ['annual', 'monthly'] },
       },
       orderBy: [{ category: 'asc' }, { displayOrder: 'asc' }],

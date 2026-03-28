@@ -69,7 +69,7 @@ export const POST = withPermission(
 
       // 휴직 유형 존재 확인
       const loaType = await prisma.leaveOfAbsenceType.findFirst({
-        where: { id: typeId, companyId: user.companyId, deletedAt: null, isActive: true },
+        where: { id: typeId, companyId: user.companyId, deletedAt: null },
       })
       if (!loaType) throw badRequest('유효하지 않은 휴직 유형입니다.')
 

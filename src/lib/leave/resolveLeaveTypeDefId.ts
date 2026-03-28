@@ -56,7 +56,7 @@ export async function resolveByLeaveType(
 
   // category 또는 code로 검색 (회사 우선, 글로벌 fallback)
   const where = {
-    isActive: true,
+    deletedAt: null,
     OR: [
       { companyId },
       { companyId: null },

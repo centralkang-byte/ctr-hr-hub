@@ -18,7 +18,7 @@ export interface EnumOption {
   icon: string | null
   sortOrder: number
   isSystem: boolean
-  isActive: boolean
+  deletedAt: Date | null
 }
 
 // ─── Cache key builder ───────────────────────────────────
@@ -42,7 +42,7 @@ export async function getEnumOptions(
     where: {
       companyId,
       enumGroup,
-      isActive: true,
+      deletedAt: null,
     },
     orderBy: { sortOrder: 'asc' },
   })
@@ -56,7 +56,7 @@ export async function getEnumOptions(
     icon: opt.icon,
     sortOrder: opt.sortOrder,
     isSystem: opt.isSystem,
-    isActive: opt.isActive,
+    deletedAt: opt.deletedAt,
   }))
 
   // Cache
@@ -88,7 +88,7 @@ export async function getAllEnumOptions(
     icon: opt.icon,
     sortOrder: opt.sortOrder,
     isSystem: opt.isSystem,
-    isActive: opt.isActive,
+    deletedAt: opt.deletedAt,
   }))
 }
 
@@ -118,7 +118,7 @@ export async function getEnumOptionByKey(
     icon: option.icon,
     sortOrder: option.sortOrder,
     isSystem: option.isSystem,
-    isActive: option.isActive,
+    deletedAt: option.deletedAt,
   }
 }
 

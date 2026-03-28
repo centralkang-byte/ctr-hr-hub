@@ -17,7 +17,7 @@ export const GET = withAuth(
         where: {
           employeeId: user.employeeId,
           companyId: user.companyId,
-          isActive: true,
+          deletedAt: null,
         },
         orderBy: { updatedAt: 'desc' },
         take: 20,

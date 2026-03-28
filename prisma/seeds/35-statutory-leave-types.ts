@@ -468,7 +468,6 @@ async function upsertLeaveType(
     maxPerYear: lt.maxPerYear ?? null,
     paidDaysPerYear: lt.paidDaysPerYear ?? null,
     condolenceAmount: lt.condolenceAmount ?? null,
-    isActive: true,
   }
 
   if (existing) {

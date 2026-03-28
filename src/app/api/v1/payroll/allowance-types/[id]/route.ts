@@ -88,7 +88,7 @@ export const DELETE = withPermission(
 
       const result = await prisma.payAllowanceType.update({
         where: { id },
-        data: { isActive: false },
+        data: { deletedAt: new Date() },
       })
 
       const { ip, userAgent } = extractRequestMeta(req.headers)
@@ -102,7 +102,7 @@ export const DELETE = withPermission(
         userAgent,
       })
 
-      return apiSuccess({ id: result.id, isActive: false })
+      return apiSuccess({ id: result.id, deletedAt: new Date() })
     } catch (error) {
       if (isAppError(error)) throw error
       throw handlePrismaError(error)

@@ -60,7 +60,6 @@ async function main() {
         planType: 'CROSSBOARDING_DEPARTURE',
         targetType: 'TRANSFER',
         companyId: null,
-        isActive: true,
       },
     })
     console.log('  ✅ Crossboarding DEPARTURE template created')
@@ -78,7 +77,6 @@ async function main() {
         planType: 'CROSSBOARDING_ARRIVAL',
         targetType: 'TRANSFER',
         companyId: null,
-        isActive: true,
       },
     })
     console.log('  ✅ Crossboarding ARRIVAL template created')
@@ -101,7 +99,7 @@ async function main() {
 
     if (krCompany) {
       const policy = await prisma.leavePolicy.findFirst({
-        where: { companyId: krCompany.id, isActive: true, deletedAt: null },
+        where: { companyId: krCompany.id, deletedAt: null },
         select: { id: true },
       })
 
@@ -128,7 +126,7 @@ async function main() {
 
         // Phase 6: Mirror to LeaveYearBalance
         const annualTypeDef = await prisma.leaveTypeDef.findFirst({
-          where: { companyId: krCompany.id, code: 'annual', isActive: true },
+          where: { companyId: krCompany.id, code: 'annual' },
           select: { id: true },
         })
         if (annualTypeDef) {

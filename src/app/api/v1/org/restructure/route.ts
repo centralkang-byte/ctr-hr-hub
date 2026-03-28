@@ -61,7 +61,7 @@ export const POST = withPermission(
         if (changeType === 'CLOSE' && affectedDepartmentId) {
           await tx.department.update({
             where: { id: affectedDepartmentId, companyId },
-            data: { isActive: false },
+            data: { deletedAt: new Date() },
           })
         } else if (changeType === 'RENAME' && affectedDepartmentId && toData) {
           const newName = (toData as Record<string, unknown>).name

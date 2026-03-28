@@ -56,7 +56,6 @@ export const GET = withCache(withPermission(
         posting: {
           ...companyFilter,
           status: 'OPEN',
-          deletedAt: null,
         },
       },
     })
@@ -103,7 +102,6 @@ export const GET = withCache(withPermission(
         stage: 'HIRED',
         posting: {
           ...companyFilter,
-          deletedAt: null,
         },
       },
     })

@@ -91,7 +91,7 @@ export async function calculateEntitlement(
     where: { id: leaveTypeDefId },
     include: {
       accrualRules: {
-        where: { isActive: true },
+        where: { deletedAt: null },
         take: 1,
       },
     },
@@ -213,11 +213,11 @@ export async function processAnnualAccrual(companyId: string, year: number): Pro
   // 법인 활성 휴가 유형 조회 (법인 전용 + 글로벌 공통)
   const leaveTypeDefs = await prisma.leaveTypeDef.findMany({
     where: {
-      isActive: true,
+      deletedAt: null,
       OR: [{ companyId }, { companyId: null }],
     },
     include: {
-      accrualRules: { where: { isActive: true }, take: 1 },
+      accrualRules: { where: { deletedAt: null }, take: 1 },
     },
   })
 

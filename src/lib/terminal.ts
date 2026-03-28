@@ -40,7 +40,7 @@ export async function verifyTerminal(
     where: {
       id: terminalId,
       apiSecret: terminalSecret,
-      isActive: true,
+      deletedAt: null,
     },
     select: {
       id: true,
@@ -80,7 +80,7 @@ export async function checkTerminalStatus(
     id: string
     locationName: string
     terminalCode: string
-    isActive: boolean
+    deletedAt: Date | null
     isOnline: boolean
     lastHeartbeatAt: Date | null
   }[]
@@ -91,7 +91,7 @@ export async function checkTerminalStatus(
       id: true,
       locationName: true,
       terminalCode: true,
-      isActive: true,
+      deletedAt: true,
       lastHeartbeatAt: true,
     },
   })
@@ -101,7 +101,7 @@ export async function checkTerminalStatus(
 
   return terminals.map((t) => {
     const isOnline =
-      t.isActive &&
+      !t.deletedAt &&
       t.lastHeartbeatAt !== null &&
       now - t.lastHeartbeatAt.getTime() < heartbeatInterval * 3
 
@@ -109,7 +109,7 @@ export async function checkTerminalStatus(
       id: t.id,
       locationName: t.locationName,
       terminalCode: t.terminalCode,
-      isActive: t.isActive,
+      deletedAt: t.deletedAt,
       isOnline,
       lastHeartbeatAt: t.lastHeartbeatAt,
     }
@@ -125,10 +125,10 @@ export async function markOfflineTerminals(): Promise<number> {
 
   const result = await prisma.attendanceTerminal.updateMany({
     where: {
-      isActive: true,
+      deletedAt: null,
       lastHeartbeatAt: { lt: threshold },
     },
-    data: { isActive: false },
+    data: { deletedAt: new Date() },
   })
 
   return result.count

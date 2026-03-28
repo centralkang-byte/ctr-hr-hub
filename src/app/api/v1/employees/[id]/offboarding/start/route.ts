@@ -121,7 +121,7 @@ export const POST = withPermission(
       where: {
         companyId: employeeCompanyId,
         targetType,
-        isActive: true,
+        deletedAt: null,
       },
       include: {
         offboardingTasks: {

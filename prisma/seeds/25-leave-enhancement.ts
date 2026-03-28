@@ -16,7 +16,7 @@ export async function seedLeaveEnhancement(prisma: PrismaClient) {
 
   // 1. Find a company and its employees
   const company = await prisma.company.findFirst({
-    where: { isActive: true, deletedAt: null },
+    where: { deletedAt: null },
     select: { id: true },
   })
   if (!company) {
@@ -60,7 +60,7 @@ export async function seedLeaveEnhancement(prisma: PrismaClient) {
   }
 
   const leavePolicy = await prisma.leavePolicy.findFirst({
-    where: { companyId: company.id, isActive: true, deletedAt: null },
+    where: { companyId: company.id, deletedAt: null },
     select: { id: true },
   })
 

@@ -75,9 +75,8 @@ export const POST = withPermission(
                 { companyId: empCompanyId },
                 { companyId: null },  // global default
               ],
-              isActive: true,
-              planType: 'ONBOARDING',
               deletedAt: null,
+              planType: 'ONBOARDING',
             },
             orderBy: { companyId: 'desc' },  // company-specific first
             include: { onboardingTasks: { orderBy: { sortOrder: 'asc' } } },

@@ -31,7 +31,7 @@ type MandatoryConfig = {
   targetGroup: string
   frequency: string
   deadlineMonth?: number | null
-  isActive: boolean
+  deletedAt: string | null
   course: { id: string; code?: string | null; title: string; durationHours?: number | null }
   company?: { id: string; code: string; name: string } | null
 }
@@ -93,7 +93,7 @@ export default function MandatoryConfigTab() {
     targetGroup: 'all',
     frequency: 'annual',
     deadlineMonth: '',
-    isActive: true,
+    deletedAt: null as string | null,
   })
 
   const fetchConfigs = useCallback(async () => {
@@ -135,7 +135,7 @@ export default function MandatoryConfigTab() {
 
   const openCreate = () => {
     setEditingConfig(null)
-    setForm({ courseId: courseOptions[0]?.id ?? '', targetGroup: 'all', frequency: 'annual', deadlineMonth: '', isActive: true })
+    setForm({ courseId: courseOptions[0]?.id ?? '', targetGroup: 'all', frequency: 'annual', deadlineMonth: '', deletedAt: null })
     setDialogOpen(true)
   }
 
@@ -146,7 +146,7 @@ export default function MandatoryConfigTab() {
       targetGroup: config.targetGroup,
       frequency: config.frequency,
       deadlineMonth: config.deadlineMonth?.toString() ?? '',
-      isActive: config.isActive,
+      deletedAt: config.deletedAt,
     })
     setDialogOpen(true)
   }
@@ -162,7 +162,6 @@ export default function MandatoryConfigTab() {
         courseId: form.courseId,
         targetGroup: form.targetGroup,
         frequency: form.frequency,
-        isActive: form.isActive,
         ...(form.deadlineMonth ? { deadlineMonth: Number(form.deadlineMonth) } : {}),
       }
       if (editingConfig) {
@@ -340,7 +339,7 @@ export default function MandatoryConfigTab() {
                       {config.deadlineMonth ? MONTH_LABELS[config.deadlineMonth - 1] : '-'}
                     </td>
                     <td className="px-4 py-3">
-                      {config.isActive ? (
+                      {!config.deletedAt ? (
                         <Badge className="text-[10px] bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]">활성</Badge>
                       ) : (
                         <Badge variant="outline" className="text-[10px] bg-[#FAFAFA] text-[#555] border-[#E8E8E8]">비활성</Badge>
@@ -428,8 +427,8 @@ export default function MandatoryConfigTab() {
                 type="checkbox"
                 id="isActiveConfig"
                 className="w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4]"
-                checked={form.isActive}
-                onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))}
+                checked={!form.deletedAt}
+                onChange={(e) => setForm((f) => ({ ...f, deletedAt: e.target.checked ? null : new Date().toISOString() }))}
               />
               <label htmlFor="isActiveConfig" className="text-sm text-[#333]">활성화</label>
             </div>

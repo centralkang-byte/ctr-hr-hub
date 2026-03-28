@@ -97,7 +97,7 @@ export const POST = withPermission(
               titleEn: requisition.title,
               companyId: requisition.companyId,
               departmentId: requisition.departmentId,
-              isActive: true,
+              deletedAt: null,
               isFilled: false,
             },
           })

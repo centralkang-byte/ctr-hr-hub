@@ -770,8 +770,6 @@ model Company {
   parentCompanyId    String?            @map("parent_company_id")
   payrollMode        CompanyPayrollMode @default(IMPORT) @map("payroll_mode")
   payrollFrequencies Json               @default("[\"MONTHLY\"]") @map("payroll_frequencies")
-  /// @deprecated — use deletedAt instead. Scheduled for removal 2026 Q3
-  isActive           Boolean            @default(true) @map("is_active")
   locationCity       String?            @map("location_city")
   createdAt          DateTime           @default(now()) @map("created_at")
   deletedAt          DateTime?          @map("deleted_at")
@@ -960,8 +958,6 @@ model Department {
   nameEn    String?   @map("name_en")
   level     Int
   sortOrder Int       @map("sort_order")
-  /// @deprecated — use deletedAt instead. Scheduled for removal 2026 Q3
-  isActive       Boolean   @default(true) @map("is_active")
   deletedAt      DateTime? @map("deleted_at")
   costCenterCode String?   @map("cost_center_code") // B-2e: ERP cost center code, e.g., "CC-1001"
 
@@ -1050,7 +1046,7 @@ model JobCategory {
   code        JobCategoryCode
   name        String
   description String?
-  isActive    Boolean         @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
 
   company     Company              @relation(fields: [companyId], references: [id])
   assignments EmployeeAssignment[]
@@ -1096,7 +1092,7 @@ model Position {
   dottedLineTo         Position?            @relation("DottedLine", fields: [dottedLinePositionId], references: [id])
   dottedLineReports    Position[]           @relation("DottedLine")
   isHeadcount          Boolean              @default(true) @map("is_headcount")
-  isActive             Boolean              @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   isFilled             Boolean              @default(false) @map("is_filled") // B4: 충원 완료 여부
   assignments          EmployeeAssignment[]
   jobPostings          JobPosting[]
@@ -1653,7 +1649,7 @@ model OffboardingChecklist {
   companyId  String                @map("company_id")
   name       String
   targetType OffboardingTargetType @map("target_type")
-  isActive   Boolean               @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt  DateTime              @default(now()) @map("created_at")
 
   company              Company               @relation(fields: [companyId], references: [id])
@@ -1872,8 +1868,6 @@ model OnboardingTemplate {
   description String?
   targetType  OnboardingTargetType @default(NEW_HIRE) @map("target_type")
   planType    OnboardingPlanType   @default(ONBOARDING) @map("plan_type")  // 온보딩/오프보딩/크로스보딩 구분
-  /// @deprecated — use deletedAt instead. Scheduled for removal 2026 Q3
-  isActive    Boolean              @default(true) @map("is_active")
   createdAt   DateTime             @default(now()) @map("created_at")
   deletedAt   DateTime?            @map("deleted_at")
 
@@ -2054,7 +2048,7 @@ model AttendanceTerminal {
   locationName    String       @map("location_name")
   ipAddress       String?      @map("ip_address")
   apiSecret       String       @map("api_secret")
-  isActive        Boolean      @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   lastHeartbeatAt DateTime?    @map("last_heartbeat_at")
   createdAt       DateTime     @default(now()) @map("created_at")
 
@@ -2078,7 +2072,6 @@ model LeavePolicy {
   maxCarryOverDays Decimal?  @map("max_carry_over_days")
   minTenureMonths  Int       @default(0) @map("min_tenure_months")
   minUnit          String    @default("FULL_DAY") @map("min_unit")
-  /// @deprecated — use deletedAt instead. Scheduled for removal 2026 Q3
   isActive         Boolean   @default(true) @map("is_active")
   createdAt        DateTime  @default(now()) @map("created_at")
   deletedAt        DateTime? @map("deleted_at")
@@ -2320,7 +2313,7 @@ model CompetencyLibrary {
   category             String
   description          String?
   behavioralIndicators Json?    @map("behavioral_indicators")
-  isActive             Boolean  @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt            DateTime @default(now()) @map("created_at")
 
   company Company? @relation(fields: [companyId], references: [id])
@@ -2339,7 +2332,7 @@ model CompetencyCategory {
   nameEn       String?      @db.VarChar(100) @map("name_en")
   description  String?      @db.Text
   displayOrder Int          @default(0) @map("display_order")
-  isActive     Boolean      @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   competencies Competency[]
   createdAt    DateTime     @default(now()) @map("created_at")
   updatedAt    DateTime     @updatedAt @map("updated_at")
@@ -2356,7 +2349,7 @@ model Competency {
   nameEn       String?             @db.VarChar(100) @map("name_en")
   description  String?             @db.Text
   displayOrder Int                 @default(0) @map("display_order")
-  isActive     Boolean             @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   levels           CompetencyLevel[]
   indicators       CompetencyIndicator[]
   requirements     CompetencyRequirement[]
@@ -2388,7 +2381,7 @@ model CompetencyIndicator {
   indicatorText   String     @db.Text @map("indicator_text")
   indicatorTextEn String?    @db.Text @map("indicator_text_en")
   displayOrder    Int        @default(0) @map("display_order")
-  isActive        Boolean    @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt       DateTime   @default(now()) @map("created_at")
   updatedAt       DateTime   @updatedAt @map("updated_at")
 
@@ -2546,7 +2539,7 @@ model EmsBlockConfig {
   blockDefinitions      Json     @map("block_definitions")
   performanceThresholds Json     @map("performance_thresholds")
   competencyThresholds  Json     @map("competency_thresholds")
-  isActive              Boolean  @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt             DateTime @default(now()) @map("created_at")
 
   company Company @relation(fields: [companyId], references: [id])
@@ -2786,7 +2779,6 @@ model BenefitPolicy {
   isTaxable        Boolean          @default(true) @map("is_taxable")
   effectiveFrom    DateTime         @map("effective_from")
   effectiveTo      DateTime?        @map("effective_to")
-  /// @deprecated — use deletedAt instead. Scheduled for removal 2026 Q3
   isActive         Boolean          @default(true) @map("is_active")
   createdAt        DateTime         @default(now()) @map("created_at")
   deletedAt        DateTime?        @map("deleted_at")
@@ -2835,6 +2827,7 @@ model BenefitPlan {
   requiresApproval Boolean @default(true) @map("requires_approval")
   requiresProof   Boolean  @default(false) @map("requires_proof")
   isActive        Boolean  @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   displayOrder    Int      @default(0) @map("display_order")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
@@ -3150,6 +3143,7 @@ model NotificationTrigger {
   template  String
   channels  Json
   isActive  Boolean  @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt DateTime @default(now()) @map("created_at")
 
   company   Company? @relation(fields: [companyId], references: [id])
@@ -3208,7 +3202,7 @@ model TeamsWebhookConfig {
   channelName String   @map("channel_name") @db.VarChar(100)
   webhookUrl  String   @map("webhook_url") @db.VarChar(500)
   eventTypes  String[] @default([]) @map("event_types")
-  isActive    Boolean  @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
@@ -3263,8 +3257,6 @@ model TrainingCourse {
   validityMonths      Int?             @map("validity_months")       // 법정교육 유효기간
   provider            String?
   externalUrl         String?          @map("external_url")
-  /// @deprecated — use deletedAt instead. Scheduled for removal 2026 Q3
-  isActive            Boolean          @default(true) @map("is_active")
   createdAt           DateTime         @default(now()) @map("created_at")
   deletedAt           DateTime?        @map("deleted_at")
 
@@ -3547,8 +3539,6 @@ model HrDocument {
   version     String    @default("1.0")
   locale      String    @default("ko")
   uploadedById  String    @map("uploaded_by")
-  /// @deprecated — use deletedAt instead. Scheduled for removal 2026 Q3
-  isActive    Boolean   @default(true) @map("is_active")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
   deletedAt   DateTime? @map("deleted_at")
@@ -3581,7 +3571,7 @@ model HrChatSession {
   employeeId String   @map("employee_id")
   companyId  String   @map("company_id")
   title      String?
-  isActive   Boolean  @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
 
@@ -3719,7 +3709,7 @@ model TenantEnumOption {
   icon      String?
   sortOrder Int      @default(0) @map("sort_order")
   isSystem  Boolean  @default(false) @map("is_system")
-  isActive  Boolean  @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt DateTime @default(now()) @map("created_at")
 
   company Company @relation(fields: [companyId], references: [id])
@@ -3776,7 +3766,6 @@ model WorkflowRule {
   workflowType String    @map("workflow_type")
   name         String
   totalSteps   Int       @map("total_steps")
-  /// @deprecated — use deletedAt instead. Scheduled for removal 2026 Q3
   isActive     Boolean   @default(true) @map("is_active")
   conditions   Json?
   createdAt    DateTime  @default(now()) @map("created_at")
@@ -3819,6 +3808,7 @@ model EmailTemplate {
   body      String
   variables Json
   isActive  Boolean         @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   isSystem  Boolean         @default(false) @map("is_system")
   createdAt DateTime        @default(now()) @map("created_at")
   updatedAt DateTime        @updatedAt @map("updated_at")
@@ -4215,6 +4205,7 @@ model SocialInsuranceConfig {
   effectiveFrom DateTime            @map("effective_from")
   effectiveTo   DateTime?           @map("effective_to")
   isActive      Boolean             @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt     DateTime            @default(now()) @map("created_at")
   updatedAt     DateTime            @updatedAt @map("updated_at")
 
@@ -4299,7 +4290,7 @@ model DataRetentionPolicy {
   autoDelete      Boolean               @default(false) @map("auto_delete")
   anonymize       Boolean               @default(true)
   lastRunAt       DateTime?             @map("last_run_at")
-  isActive        Boolean               @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt       DateTime              @default(now()) @map("created_at")
   updatedAt       DateTime              @updatedAt @map("updated_at")
 
@@ -4362,7 +4353,7 @@ model MandatoryTraining {
   year          Int
   dueDate       DateTime              @map("due_date")
   requiredHours Decimal               @map("required_hours")
-  isActive      Boolean               @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt     DateTime              @default(now()) @map("created_at")
   updatedAt     DateTime              @updatedAt @map("updated_at")
 
@@ -4501,6 +4492,7 @@ model ShiftPattern {
   weeklyHoursLimit Decimal?         @map("weekly_hours_limit")
   description      String?
   isActive         Boolean          @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt        DateTime         @default(now()) @map("created_at")
   updatedAt        DateTime         @updatedAt @map("updated_at")
 
@@ -4518,7 +4510,7 @@ model ShiftGroup {
   shiftPatternId String   @map("shift_pattern_id")
   name           String // A조, B조, C조
   color          String? // UI 색상 코드
-  isActive       Boolean  @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt      DateTime @default(now()) @map("created_at")
 
   company      Company            @relation(fields: [companyId], references: [id])
@@ -4616,6 +4608,7 @@ model PayAllowanceType {
   description        String?
   sortOrder          Int               @default(0) @map("sort_order")
   isActive           Boolean           @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt          DateTime          @default(now()) @map("created_at")
   updatedAt          DateTime          @updatedAt @map("updated_at")
 
@@ -4638,6 +4631,7 @@ model PayDeductionType {
   description       String?
   sortOrder         Int               @default(0) @map("sort_order")
   isActive          Boolean           @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt         DateTime          @default(now()) @map("created_at")
   updatedAt         DateTime          @updatedAt @map("updated_at")
 
@@ -4877,6 +4871,7 @@ model TaxBracket {
   effectiveTo   DateTime? @map("effective_to")
   description   String?
   isActive      Boolean   @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
@@ -5311,6 +5306,7 @@ model ApprovalFlow {
   // 모듈: benefits | recruitment | leave | promotion | general
   module   String             @map("module")
   isActive Boolean            @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   steps    ApprovalFlowStep[]
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -5505,7 +5501,7 @@ model MandatoryTrainingConfig {
   targetGroup   String          @db.VarChar(30) @map("target_group")  // all | manager | new_hire | production
   frequency     String          @db.VarChar(20)                // annual | biennial | once
   deadlineMonth Int?            @map("deadline_month")         // 이수 마감 월 (12 = 12월)
-  isActive      Boolean         @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt     DateTime        @default(now()) @map("created_at")
   updatedAt     DateTime        @updatedAt @map("updated_at")
 
@@ -5579,6 +5575,7 @@ model LeaveTypeDef {
   maxConsecutiveDays Int?     @map("max_consecutive_days")
   minAdvanceDays     Int?     @map("min_advance_days")      // F-3: 최소 N일 전 신청
   isActive           Boolean  @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   displayOrder       Int      @default(0) @map("display_order")
 
   // ── 규정 정합성 필드 (2026-03-26) ──
@@ -5621,6 +5618,7 @@ model LeaveAccrualRule {
   carryOverMaxDays      Int?         @map("carry_over_max_days")
   carryOverExpiryMonths Int?         @map("carry_over_expiry_months")
   isActive              Boolean      @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt             DateTime     @default(now()) @map("created_at")
   updatedAt             DateTime     @updatedAt @map("updated_at")
 
@@ -5715,6 +5713,7 @@ model InsuranceRate {
   lowerLimit   Float?   @map("lower_limit")     // 보수월액 하한 (원)
   notes        String?  @db.Text
   isActive     Boolean  @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt    DateTime @default(now()) @map("created_at")
 
   @@unique([year, type])
@@ -5731,6 +5730,7 @@ model NontaxableLimit {
   monthlyLimit Int      @map("monthly_limit")   // 월 한도 (원)
   annualLimit  Int?     @map("annual_limit")    // 연 한도 (null이면 월×12)
   isActive     Boolean  @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt    DateTime @default(now()) @map("created_at")
 
   @@unique([year, code])
@@ -5775,6 +5775,7 @@ model YearEndDeductionConfig {
   rules        Json
   displayOrder Int      @default(0) @map("display_order")
   isActive     Boolean  @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt    DateTime @default(now()) @map("created_at")
 
   @@unique([year, code])
@@ -5980,6 +5981,7 @@ model AnalyticsConfig {
   configType String   @db.VarChar(30) @map("config_type") // 'turnover_weights' | 'burnout_weights' | 'team_health_weights'
   config     Json // { signals: [{ key, weight, threshold }] }
   isActive   Boolean  @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
 
@@ -6172,7 +6174,7 @@ model WorkLocation {
   timezone     String?  // e.g., "Asia/Seoul", "America/Detroit", "America/Monterrey"
   address      String?
   locationType String?  @map("location_type") // "OFFICE", "PLANT", "WAREHOUSE", "BRANCH_OFFICE"
-  isActive     Boolean  @default(true) @map("is_active")
+  deletedAt      DateTime? @map("deleted_at")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
@@ -6236,7 +6238,6 @@ model LeaveOfAbsenceType {
   advanceNoticeDays        Int?      @map("advance_notice_days") // 사전 신청 기한 (일)
   reinstatementGuaranteed  Boolean   @default(false) @map("reinstatement_guaranteed") // 원직 복귀 보장
   sortOrder                Int       @default(0) @map("sort_order")
-  /// @deprecated — use deletedAt instead. Scheduled for removal 2026 Q3
   isActive                 Boolean   @default(true) @map("is_active")
   deletedAt                DateTime? @map("deleted_at")
 

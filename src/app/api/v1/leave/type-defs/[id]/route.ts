@@ -31,7 +31,7 @@ export const GET = withPermission(
     const typeDef = await prisma.leaveTypeDef.findUnique({
       where: { id },
       include: {
-        accrualRules: { where: { isActive: true } },
+        accrualRules: { where: { deletedAt: null } },
       },
     })
     if (!typeDef) throw notFound('휴가 유형을 찾을 수 없습니다.')
@@ -62,7 +62,7 @@ export const DELETE = withPermission(
     // 소프트 삭제 (잔여 데이터 보존)
     await prisma.leaveTypeDef.update({
       where: { id },
-      data: { isActive: false },
+      data: { deletedAt: new Date() },
     })
     return apiSuccess({ id, deleted: true })
   },

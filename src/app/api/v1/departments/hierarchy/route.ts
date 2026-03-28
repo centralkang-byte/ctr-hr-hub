@@ -18,7 +18,7 @@ export const GET = withPermission(
       const companyId = resolveCompanyId(user, requestedCompanyId)
 
       const departments = await prisma.department.findMany({
-        where: { isActive: true, deletedAt: null, companyId },
+        where: { deletedAt: null, companyId },
         select: {
           id: true,
           name: true,

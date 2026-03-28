@@ -139,18 +139,18 @@ export async function createOnboardingPlan(
 
   if (input.templateId) {
     template = await db.onboardingTemplate.findFirst({
-      where: { id: input.templateId, isActive: true, deletedAt: null },
+      where: { id: input.templateId, deletedAt: null },
       include: { onboardingTasks: { orderBy: { sortOrder: 'asc' } } },
     })
   } else {
     template = await db.onboardingTemplate.findFirst({
-      where: { planType: 'ONBOARDING', isActive: true, deletedAt: null, companyId: input.companyId },
+      where: { planType: 'ONBOARDING', deletedAt: null, companyId: input.companyId },
       include: { onboardingTasks: { orderBy: { sortOrder: 'asc' } } },
     })
 
     if (!template) {
       template = await db.onboardingTemplate.findFirst({
-        where: { planType: 'ONBOARDING', isActive: true, deletedAt: null, companyId: null },
+        where: { planType: 'ONBOARDING', deletedAt: null, companyId: null },
         include: { onboardingTasks: { orderBy: { sortOrder: 'asc' } } },
       })
     }

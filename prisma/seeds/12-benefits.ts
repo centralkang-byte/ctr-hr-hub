@@ -277,7 +277,6 @@ export async function seedBenefits(prisma: PrismaClient): Promise<void> {
                     eligibility: p.eligibility,
                     requiresApproval: p.requiresApproval,
                     requiresProof: p.requiresProof,
-                    isActive: true,
                     displayOrder: p.displayOrder,
                 },
             })

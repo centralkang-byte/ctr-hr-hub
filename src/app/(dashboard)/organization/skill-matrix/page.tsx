@@ -23,7 +23,7 @@ export default async function SkillMatrixPage() {
 
   // 부서 목록 로드 (현재 법인)
   const departments = await prisma.department.findMany({
-    where: { companyId: user.companyId, isActive: true },
+    where: { companyId: user.companyId, deletedAt: null },
     select: { id: true, name: true },
     orderBy: { name: 'asc' },
   })

@@ -52,7 +52,6 @@ export const GET = withPermission(
     const jobRequiredCourses = await prisma.trainingCourse.findMany({
       where: {
         isMandatory: true,
-        isActive: true,
         deletedAt: null,
         OR: [{ companyId }, { companyId: null }],
         id: { notIn: [...enrolledCourseIds] },
@@ -125,7 +124,6 @@ export const GET = withPermission(
     const recommendedCourses = gapCompetencyIds.length > 0
       ? await prisma.trainingCourse.findMany({
           where: {
-            isActive: true,
             deletedAt: null,
             OR: [{ companyId }, { companyId: null }],
             id: { notIn: [...enrolledCourseIds] },

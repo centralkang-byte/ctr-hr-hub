@@ -63,7 +63,6 @@ export const PUT = withPermission(
           ...(data.durationHours !== undefined && { durationHours: data.durationHours }),
           ...(data.provider !== undefined && { provider: data.provider }),
           ...(data.externalUrl !== undefined && { externalUrl: data.externalUrl }),
-          ...(data.isActive !== undefined && { isActive: data.isActive }),
         },
       })
 

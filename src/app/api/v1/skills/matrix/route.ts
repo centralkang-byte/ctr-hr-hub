@@ -60,7 +60,7 @@ export const GET = withPermission(
     // 역량 목록
     const competencies = await prisma.competency.findMany({
       where: {
-        isActive: true,
+        deletedAt: null,
         ...(categoryId ? { categoryId } : {}),
       },
       include: {

@@ -18,7 +18,7 @@ export const GET = withPermission(
     const [totalCourses, activeCourses, totalEnrollments, completedEnrollments, mandatoryCourses, mandatoryCompleted] =
       await Promise.all([
         prisma.trainingCourse.count({ where: { companyId, deletedAt: null } }),
-        prisma.trainingCourse.count({ where: { companyId, deletedAt: null, isActive: true } }),
+        prisma.trainingCourse.count({ where: { companyId, deletedAt: null } }),
         prisma.trainingEnrollment.count({ where: { course: { companyId, deletedAt: null } } }),
         prisma.trainingEnrollment.count({
           where: { course: { companyId, deletedAt: null }, status: 'ENROLLMENT_COMPLETED' },

@@ -127,7 +127,7 @@ export const POST = withPermission(
       const flowName =
         urgency === 'urgent' ? '임원급 채용' : '일반 채용 승인'
       const approvalFlow = await prisma.approvalFlow.findFirst({
-        where: { module: 'recruitment', name: flowName, isActive: true },
+        where: { module: 'recruitment', name: flowName, deletedAt: null },
         include: { steps: { orderBy: { stepOrder: 'asc' } } },
       })
 

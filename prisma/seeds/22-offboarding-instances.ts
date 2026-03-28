@@ -23,12 +23,12 @@ export async function seedOffboardingInstances(prisma: PrismaClient) {
 
     // Find active offboarding checklists — need VOLUNTARY and INVOLUNTARY
     const voluntaryChecklist = await prisma.offboardingChecklist.findFirst({
-        where: { targetType: 'VOLUNTARY', isActive: true },
+        where: { targetType: 'VOLUNTARY' },
         include: { offboardingTasks: { orderBy: { sortOrder: 'asc' } } },
     })
 
     const involuntaryChecklist = await prisma.offboardingChecklist.findFirst({
-        where: { targetType: 'INVOLUNTARY', isActive: true },
+        where: { targetType: 'INVOLUNTARY' },
         include: { offboardingTasks: { orderBy: { sortOrder: 'asc' } } },
     })
 
@@ -41,7 +41,6 @@ export async function seedOffboardingInstances(prisma: PrismaClient) {
                 companyId: ctrKr.id,
                 name: '표준 자발적 퇴직 체크리스트',
                 targetType: 'VOLUNTARY',
-                isActive: true,
             },
         })
         const tasks = [
@@ -74,7 +73,7 @@ export async function seedOffboardingInstances(prisma: PrismaClient) {
 
     // Ensure we have the voluntary checklist now
     const volChecklist = voluntaryChecklist ?? await prisma.offboardingChecklist.findFirst({
-        where: { targetType: 'VOLUNTARY', isActive: true },
+        where: { targetType: 'VOLUNTARY' },
         include: { offboardingTasks: { orderBy: { sortOrder: 'asc' } } },
     })
 
@@ -256,7 +255,6 @@ export async function seedOffboardingInstances(prisma: PrismaClient) {
 
     const salesCandidates = await prisma.employee.findMany({
         where: {
-            deletedAt: null,
             ...(salesDept ? { assignments: { some: { departmentId: salesDept.id, isPrimary: true } } } : {}),
         },
         take: 2,

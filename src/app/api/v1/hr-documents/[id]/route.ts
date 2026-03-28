@@ -112,7 +112,7 @@ export const DELETE = withPermission(
       // Soft delete
       await prisma.hrDocument.update({
         where: { id },
-        data: { deletedAt: new Date(), isActive: false },
+        data: { deletedAt: new Date() },
       })
 
       const meta = extractRequestMeta(req.headers)

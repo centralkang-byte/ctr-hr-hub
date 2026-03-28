@@ -194,7 +194,7 @@ export default function CoursesTab() {
       key: 'isActive',
       header: '상태',
       render: (row) =>
-        row.isActive ? (
+        !row.deletedAt ? (
           <Badge className="bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]">활성</Badge>
         ) : (
           <Badge variant="outline" className="bg-[#FAFAFA] text-[#555] border-[#E8E8E8]">비활성</Badge>

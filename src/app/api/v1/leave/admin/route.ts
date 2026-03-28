@@ -59,7 +59,6 @@ export const GET = withPermission(
       where: {
         ...effectiveCompanyFilter,
         deletedAt: null,
-        isActive: true,
       },
       select: { id: true, name: true },
     })
@@ -67,7 +66,6 @@ export const GET = withPermission(
     // Get all employees grouped by department
     const employees = await prisma.employee.findMany({
       where: {
-        deletedAt: null,
         assignments: {
           some: { companyId, isPrimary: true, endDate: null },
         },

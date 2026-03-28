@@ -31,7 +31,7 @@ export async function resolveApprovalFlow(
   const flow = await prisma.approvalFlow.findFirst({
     where: {
       module,
-      isActive: true,
+      deletedAt: null,
       OR: companyId
         ? [{ companyId }, { companyId: null }]
         : [{ companyId: null }],

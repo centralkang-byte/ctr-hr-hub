@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 import { useTranslations } from 'next-intl'
 
-interface Template { id: string; name: string; targetType: string; isActive: boolean; _count?: { onboardingTasks?: number } }
+interface Template { id: string; name: string; targetType: string; deletedAt: string | null; _count?: { onboardingTasks?: number } }
 interface Props { companyId: string | null }
 
 export function OnboardingTemplatesTab({
@@ -48,7 +48,7 @@ export function OnboardingTemplatesTab({
               <td className={TABLE_STYLES.cell}>{t.name}</td>
               <td className={TABLE_STYLES.cellMuted}>{typeLabels[t.targetType] ?? t.targetType}</td>
               <td className="px-4 py-3 text-center text-sm text-[#8181A5]">{t._count?.onboardingTasks ?? 0}</td>
-              <td className="px-4 py-3 text-center"><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${t.isActive ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'}`}>{t.isActive ? '활성' : '비활성'}</span></td>
+              <td className="px-4 py-3 text-center"><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!t.deletedAt ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'}`}>{!t.deletedAt ? '활성' : '비활성'}</span></td>
             </tr>
           ))}</tbody></table>
         </div>

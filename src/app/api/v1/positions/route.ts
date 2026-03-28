@@ -17,7 +17,7 @@ export const GET = withPermission(
     const companyId = searchParams.get('companyId')
     const departmentId = searchParams.get('departmentId')
 
-    const where: Record<string, unknown> = { isActive: true }
+    const where: Record<string, unknown> = { deletedAt: null }
     if (companyId) where.companyId = companyId
     if (departmentId) where.departmentId = departmentId
 

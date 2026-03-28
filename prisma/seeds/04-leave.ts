@@ -193,11 +193,11 @@ export async function seedLeave(prisma: PrismaClient): Promise<void> {
     const id = deterministicUUID('leavepolicy', `CTR-KR:${p.code}`)
     await prisma.leavePolicy.upsert({
       where:  { id },
-      update: { name: p.name, defaultDays: p.defaultDays, isActive: true },
+      update: { name: p.name, defaultDays: p.defaultDays },
       create: {
         id, companyId: krId, name: p.name, leaveType: p.leaveType,
         defaultDays: p.defaultDays, isPaid: true, carryOverAllowed: false,
-        minUnit: 'FULL_DAY', isActive: true,
+        minUnit: 'FULL_DAY',
       },
     })
     policyMap[p.code] = id
@@ -206,11 +206,11 @@ export async function seedLeave(prisma: PrismaClient): Promise<void> {
     const id = deterministicUUID('leavepolicy', `CTR-CN:${p.code}`)
     await prisma.leavePolicy.upsert({
       where:  { id },
-      update: { name: p.name, defaultDays: p.defaultDays, isActive: true },
+      update: { name: p.name, defaultDays: p.defaultDays },
       create: {
         id, companyId: cnId, name: p.name, leaveType: p.leaveType,
         defaultDays: p.defaultDays, isPaid: true, carryOverAllowed: false,
-        minUnit: 'FULL_DAY', isActive: true,
+        minUnit: 'FULL_DAY',
       },
     })
     policyMap[p.code] = id
@@ -367,7 +367,7 @@ export async function seedLeave(prisma: PrismaClient): Promise<void> {
     const companyId = COMPANY_MAP[policyCode]
     if (!code || !companyId) { typeDefCache[policyCode] = null; return null }
     const td = await prisma.leaveTypeDef.findFirst({
-      where: { companyId, code, isActive: true },
+      where: { companyId, code },
       select: { id: true },
     })
     typeDefCache[policyCode] = td?.id ?? null

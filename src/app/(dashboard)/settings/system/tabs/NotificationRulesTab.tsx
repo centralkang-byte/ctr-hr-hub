@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 import { useTranslations } from 'next-intl'
 
-interface Trigger { id: string; eventType: string; name: string; channels: string[]; isActive: boolean; targetRole?: string }
+interface Trigger { id: string; eventType: string; name: string; channels: string[]; deletedAt: string | null; targetRole?: string }
 interface Props { companyId: string | null }
 
 export function NotificationRulesTab({
@@ -49,7 +49,7 @@ export function NotificationRulesTab({
                 <td className={TABLE_STYLES.cell}><div className="flex gap-1">{(trig.channels ?? []).map((ch) => (
                   <span key={ch} className="rounded bg-[#F5F5FA] px-2 py-0.5 text-xs text-[#8181A5]">{ch}</span>
                 ))}</div></td>
-                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${trig.isActive ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'}`}>{trig.isActive ? '활성' : '비활성'}</span></td>
+                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!trig.deletedAt ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'}`}>{!trig.deletedAt ? '활성' : '비활성'}</span></td>
               </tr>
             ))}</tbody>
           </table>

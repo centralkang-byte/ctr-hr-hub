@@ -138,7 +138,7 @@ export async function batchRenewLeaveBalances(
   })
 
   const policies = await prisma.leavePolicy.findMany({
-    where: { companyId, isActive: true, deletedAt: null },
+    where: { companyId, deletedAt: null },
     select: { id: true },
   })
 

@@ -37,7 +37,6 @@ export const PUT = withPermission(
           ...(data.color !== undefined && { color: data.color }),
           ...(data.icon !== undefined && { icon: data.icon }),
           ...(data.sortOrder !== undefined && { sortOrder: data.sortOrder }),
-          ...(data.isActive !== undefined && { isActive: data.isActive }),
         },
       })
 

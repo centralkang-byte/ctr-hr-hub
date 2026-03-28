@@ -50,7 +50,7 @@ export const GET = withPermission(
         take: limit,
         include: {
           category: { select: { id: true, code: true, name: true } },
-          _count: { select: { indicators: { where: { isActive: true } }, levels: true } },
+          _count: { select: { indicators: { where: { deletedAt: null } }, levels: true } },
         },
       }),
       prisma.competency.count({ where }),

@@ -148,11 +148,11 @@ export const GET = withPermission(
 
     if (evalSettings?.methodology === 'MBO_BEI') {
       const coreValueComps = await prisma.competency.findMany({
-        where: { category: { code: 'core_value' }, isActive: true },
+        where: { category: { code: 'core_value' }, deletedAt: null },
         orderBy: { displayOrder: 'asc' },
         include: {
           indicators: {
-            where: { isActive: true },
+            where: { deletedAt: null },
             orderBy: { displayOrder: 'asc' },
             select: { id: true, indicatorText: true, displayOrder: true },
           },

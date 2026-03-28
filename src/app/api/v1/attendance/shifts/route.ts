@@ -239,7 +239,7 @@ export const POST = withPermission(
 
       // Find the company's first active shift pattern
       const pattern = await prisma.shiftPattern.findFirst({
-        where: { companyId: assignment.companyId, isActive: true },
+        where: { companyId: assignment.companyId, deletedAt: null },
         orderBy: { createdAt: 'asc' },
       })
 

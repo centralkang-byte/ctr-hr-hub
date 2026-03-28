@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 import { useTranslations } from 'next-intl'
 
-interface Checklist { id: string; name: string; targetType: string; isActive: boolean; _count?: { offboardingTasks?: number } }
+interface Checklist { id: string; name: string; targetType: string; deletedAt: string | null; _count?: { offboardingTasks?: number } }
 interface Props { companyId: string | null }
 
 export function OffboardingChecklistTab({
@@ -48,7 +48,7 @@ export function OffboardingChecklistTab({
               <td className={TABLE_STYLES.cell}>{c.name}</td>
               <td className={TABLE_STYLES.cellMuted}>{typeLabels[c.targetType] ?? c.targetType}</td>
               <td className="px-4 py-3 text-center text-sm text-[#8181A5]">{c._count?.offboardingTasks ?? 0}</td>
-              <td className="px-4 py-3 text-center"><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${c.isActive ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'}`}>{c.isActive ? '활성' : '비활성'}</span></td>
+              <td className="px-4 py-3 text-center"><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!c.deletedAt ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'}`}>{!c.deletedAt ? '활성' : '비활성'}</span></td>
             </tr>
           ))}</tbody></table>
         </div>

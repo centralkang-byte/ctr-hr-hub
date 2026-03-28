@@ -27,7 +27,6 @@ export const GET = withPermission(
     const activeEmployees = await prisma.employee.findMany({
       where: {
         assignments: { some: { companyId, status: 'ACTIVE', isPrimary: true, endDate: null } },
-        deletedAt: null,
       },
       select: {
         id: true,

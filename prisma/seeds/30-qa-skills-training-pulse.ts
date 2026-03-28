@@ -51,7 +51,7 @@ export async function seedQASkillsTrainingPulse(prisma: PrismaClient) {
     await prisma.competencyCategory.upsert({
       where: { code: cat.code },
       update: { name: cat.name, nameEn: cat.nameEn, displayOrder: cat.order },
-      create: { id, code: cat.code, name: cat.name, nameEn: cat.nameEn, displayOrder: cat.order, isActive: true },
+      create: { id, code: cat.code, name: cat.name, nameEn: cat.nameEn, displayOrder: cat.order },
     })
     categoryIds[cat.code] = id
   }
@@ -108,7 +108,6 @@ export async function seedQASkillsTrainingPulse(prisma: PrismaClient) {
         name: comp.name,
         nameEn: comp.nameEn,
         displayOrder: comp.order,
-        isActive: true,
       },
     })
     competencyIds[comp.code] = id
@@ -269,7 +268,7 @@ export async function seedQASkillsTrainingPulse(prisma: PrismaClient) {
     const id = deterministicUUID('training-course', c.code)
     await prisma.trainingCourse.upsert({
       where: { id },
-      update: { title: c.title, isActive: true },
+      update: { title: c.title },
       create: {
         id,
         code: c.code,
@@ -283,7 +282,6 @@ export async function seedQASkillsTrainingPulse(prisma: PrismaClient) {
         durationHours: c.hours,
         validityMonths: c.validity ?? null,
         provider: c.provider,
-        isActive: true,
       },
     })
     courseIds[c.code] = id

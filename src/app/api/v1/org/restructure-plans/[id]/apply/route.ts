@@ -85,7 +85,7 @@ export const POST = withPermission(
                   code: change.newDeptCode,
                   level,
                   parentId: change.newDeptParentId ?? null,
-                  isActive: true,
+                  deletedAt: null,
                   sortOrder: 999,
                 },
               })
@@ -153,7 +153,7 @@ export const POST = withPermission(
               // Mark source department inactive
               await tx.department.update({
                 where: { id: change.sourceDeptId, companyId: plan.companyId },
-                data: { isActive: false },
+                data: { deletedAt: new Date() },
               })
               break
             }
@@ -217,7 +217,7 @@ export const POST = withPermission(
 
               await tx.department.update({
                 where: { id: change.closeDeptId, companyId: plan.companyId },
-                data: { isActive: false },
+                data: { deletedAt: new Date() },
               })
               break
             }

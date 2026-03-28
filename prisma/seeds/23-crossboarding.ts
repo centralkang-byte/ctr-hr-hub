@@ -36,7 +36,6 @@ export async function seedCrossboarding(prisma: PrismaClient) {
             planType: 'CROSSBOARDING_DEPARTURE',
             targetType: 'TRANSFER',
             companyId: null, // Global
-            isActive: true,
         },
     })
 
@@ -78,7 +77,6 @@ export async function seedCrossboarding(prisma: PrismaClient) {
             planType: 'CROSSBOARDING_ARRIVAL',
             targetType: 'TRANSFER',
             companyId: null, // Global
-            isActive: true,
         },
     })
 

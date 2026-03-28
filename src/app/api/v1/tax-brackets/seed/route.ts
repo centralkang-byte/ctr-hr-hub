@@ -71,7 +71,7 @@ export const POST = withPermission(
           effectiveFrom: today,
           effectiveTo: null,
           description: bracket.description ?? null,
-          isActive: true,
+          deletedAt: null,
         })),
       })
 

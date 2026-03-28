@@ -45,7 +45,7 @@ export default async function EmployeeNewPage() {
       orderBy: { name: 'asc' },
     }),
     prisma.department.findMany({
-      where: { deletedAt: null, isActive: true, ...deptCompanyFilter },
+      where: { deletedAt: null, ...deptCompanyFilter },
       select: { id: true, name: true, companyId: true },
       orderBy: { name: 'asc' },
     }),
@@ -65,7 +65,7 @@ export default async function EmployeeNewPage() {
       orderBy: { jobGrade: { rankOrder: 'asc' } },
     }),
     prisma.position.findMany({
-      where: { isActive: true, ...positionCompanyFilter },
+      where: { deletedAt: null, ...positionCompanyFilter },
       select: { id: true, titleKo: true, code: true, companyId: true },
       orderBy: { titleKo: 'asc' },
     }),

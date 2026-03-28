@@ -30,7 +30,7 @@ export const GET = withPermission(
 
       const where = {
         ...(shiftPatternId ? { shiftPatternId } : {}),
-        isActive: true,
+        deletedAt: null,
         ...companyFilter,
       }
 

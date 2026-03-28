@@ -29,7 +29,7 @@ export function ApprovalFlowSelect({
     const params = new URLSearchParams({ module })
     if (companyId) params.set('companyId', companyId)
     apiClient.get<ApprovalFlowData[]>(`/api/v1/settings/approval-flows?${params}`).then((res) => {
-      if (res.data) setFlows(res.data.filter((f) => f.isActive))
+      if (res.data) setFlows(res.data.filter((f) => !f.deletedAt))
     })
   }, [module, companyId])
 

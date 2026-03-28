@@ -88,7 +88,7 @@ export const POST = withPermission(
     // Gather current department/headcount data for snapshot
     const [departments, totalHeadcount] = await Promise.all([
       prisma.department.findMany({
-        where: { companyId, deletedAt: null, isActive: true },
+        where: { companyId, deletedAt: null },
         include: {
           _count: {
             select: {

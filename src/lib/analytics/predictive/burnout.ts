@@ -39,7 +39,7 @@ const DEFAULT_BURNOUT_WEIGHTS: Record<string, number> = {
 async function loadBurnoutWeights(companyId: string): Promise<Record<string, number>> {
   try {
     const config = await prisma.analyticsConfig.findFirst({
-      where: { companyId, configType: 'burnout_weights', isActive: true },
+      where: { companyId, configType: 'burnout_weights', deletedAt: null },
     })
     if (config?.config) {
       const c = config.config as { signals?: Array<{ key: string; weight: number }> }

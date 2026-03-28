@@ -72,7 +72,7 @@ export const GET = withPermission(
       prisma.competencyLibrary.findMany({
         where: {
           OR: [{ companyId: user.companyId }, { companyId: null }],
-          isActive: true,
+          deletedAt: null,
         },
         orderBy: { category: 'asc' },
         select: { id: true, name: true, category: true, description: true },

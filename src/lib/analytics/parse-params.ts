@@ -40,7 +40,7 @@ export async function resolveDepartmentFilter(departmentId?: string): Promise<st
   if (!departmentId) return undefined
 
   const children = await prisma.department.findMany({
-    where: { parentId: departmentId, isActive: true, deletedAt: null },
+    where: { parentId: departmentId, deletedAt: null },
     select: { id: true },
   })
 

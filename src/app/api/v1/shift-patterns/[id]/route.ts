@@ -32,7 +32,7 @@ export const GET = withPermission(
         where: { id, ...companyFilter },
         include: {
           shiftGroups: {
-            where: { isActive: true },
+            where: { deletedAt: null },
             include: {
               _count: { select: { members: true } },
             },
@@ -134,7 +134,7 @@ export const DELETE = withPermission(
 
       const updated = await prisma.shiftPattern.update({
         where: { id },
-        data: { isActive: false },
+        data: { deletedAt: new Date() },
       })
 
       return apiSuccess(updated)

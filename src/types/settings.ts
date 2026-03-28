@@ -217,7 +217,7 @@ export interface ApprovalFlowData {
   description: string | null
   companyId: string | null
   module: ApprovalModule
-  isActive: boolean
+  deletedAt: string | null
   steps: ApprovalFlowStepData[]
   createdAt: Date
   updatedAt: Date

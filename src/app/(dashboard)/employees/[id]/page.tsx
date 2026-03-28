@@ -73,7 +73,7 @@ export default async function EmployeeDetailPage({
       orderBy: { name: 'asc' },
     }),
     prisma.department.findMany({
-      where: { deletedAt: null, isActive: true, ...deptFilter },
+      where: { deletedAt: null, ...deptFilter },
       select: { id: true, name: true, companyId: true },
       orderBy: { name: 'asc' },
     }),

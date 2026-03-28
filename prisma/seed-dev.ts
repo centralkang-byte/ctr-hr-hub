@@ -666,7 +666,6 @@ async function seedLeavePolicies(
         isPaid: p.isPaid,
         carryOverAllowed: p.carryOver,
         maxCarryOverDays: (p as any).maxCarry || null,
-        isActive: true,
       },
     })
     krPolicyMap[p.type] = id
@@ -696,7 +695,6 @@ async function seedLeavePolicies(
         isPaid: p.isPaid,
         carryOverAllowed: p.carryOver,
         maxCarryOverDays: (p as any).maxCarry || null,
-        isActive: true,
       },
     })
     cnPolicyMap[p.type] = id
@@ -883,7 +881,6 @@ async function seedAttendanceTerminals(krId: string) {
         terminalType: t.type as any,
         locationName: t.location,
         apiSecret: deterministicUUID('apisec', t.code),
-        isActive: true,
       },
     })
   }
@@ -942,7 +939,6 @@ async function seedShiftSchedules(
         { name: '주간', start: '07:00', end: '19:00', breakMin: 60, nightPremium: false },
         { name: '야간', start: '19:00', end: '07:00', breakMin: 60, nightPremium: true },
       ],
-      isActive: true,
     },
   })
 

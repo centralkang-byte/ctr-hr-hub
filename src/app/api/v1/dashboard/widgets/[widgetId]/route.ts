@@ -384,7 +384,7 @@ async function getPayrollCost(companyId: string | null, year: number) {
 
 async function getTrainingMandatory(companyId: string | null, year: number) {
   const configs = await prisma.mandatoryTrainingConfig.findMany({
-    where: { isActive: true },
+    where: { deletedAt: null },
     include: { course: { select: { id: true, title: true } } },
   })
   if (configs.length === 0) return []

@@ -98,7 +98,7 @@ export const DELETE = withPermission(
 
       const result = await prisma.taxBracket.update({
         where: { id },
-        data: { isActive: false },
+        data: { deletedAt: new Date() },
       })
 
       const { ip, userAgent } = extractRequestMeta(req.headers)

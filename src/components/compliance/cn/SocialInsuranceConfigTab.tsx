@@ -16,7 +16,7 @@ interface SocialInsuranceConfig {
   baseMax: number
   effectiveFrom: string
   effectiveTo: string | null
-  isActive: boolean
+  deletedAt: string | null
 }
 
 const INSURANCE_TYPE_LABELS: Record<string, string> = {
@@ -137,12 +137,12 @@ export default function SocialInsuranceConfigTab() {
                   <td className="px-4 py-3 text-center">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        config.isActive
+                        !config.deletedAt
                           ? 'bg-[#D1FAE5] text-[#047857] border border-[#A7F3D0]'
                           : 'bg-[#FAFAFA] text-[#555] border border-[#E8E8E8]'
                       }`}
                     >
-                      {config.isActive ? '활성' : '비활성'}
+                      {!config.deletedAt ? '활성' : '비활성'}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-center">

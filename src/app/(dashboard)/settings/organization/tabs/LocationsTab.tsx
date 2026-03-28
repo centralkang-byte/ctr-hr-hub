@@ -19,7 +19,7 @@ interface WorkLocation {
   timezone: string | null
   address: string | null
   locationType: string | null
-  isActive: boolean
+  deletedAt: string | null
   company?: { id: string; code: string; name: string }
 }
 
@@ -188,11 +188,11 @@ export function LocationsTab({ companyId }: Props) {
 
   const handleDeactivate = async (loc: WorkLocation) => {
     try {
-      if (loc.isActive) {
+      if (!loc.deletedAt) {
         await apiClient.delete(`/api/v1/locations/${loc.id}`)
         toast({ title: `${loc.name} 비활성화됨` })
       } else {
-        await apiClient.put(`/api/v1/locations/${loc.id}`, { isActive: true })
+        await apiClient.put(`/api/v1/locations/${loc.id}`, { deletedAt: null })
         toast({ title: `${loc.name} 활성화됨` })
       }
       fetchLocations()
@@ -280,12 +280,12 @@ export function LocationsTab({ companyId }: Props) {
                     <button
                       onClick={() => handleDeactivate(loc)}
                       className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                        loc.isActive
+                        !loc.deletedAt
                           ? 'bg-green-50 text-green-700'
                           : 'bg-gray-100 text-gray-500'
                       }`}
                     >
-                      {loc.isActive ? t('active') : t('inactive')}
+                      {!loc.deletedAt ? t('active') : t('inactive')}
                     </button>
                   </td>
                   <td className={TABLE_STYLES.cell}>

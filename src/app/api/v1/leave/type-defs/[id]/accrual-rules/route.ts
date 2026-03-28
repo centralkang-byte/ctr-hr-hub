@@ -36,7 +36,7 @@ export const GET = withPermission(
   async (_req: NextRequest, context, _user: SessionUser) => {
     const { id: leaveTypeDefId } = await context.params
     const rules = await prisma.leaveAccrualRule.findMany({
-      where: { leaveTypeDefId, isActive: true },
+      where: { leaveTypeDefId, deletedAt: null },
     })
     return apiSuccess(rules)
   },
@@ -55,7 +55,7 @@ export const PUT = withPermission(
     const result = await prisma.$transaction(async (tx) => {
       await tx.leaveAccrualRule.updateMany({
         where: { leaveTypeDefId },
-        data: { isActive: false },
+        data: { deletedAt: new Date() },
       })
       const created = await tx.leaveAccrualRule.create({
         data: {
@@ -66,7 +66,7 @@ export const PUT = withPermission(
           carryOverType: data.carryOverType,
           carryOverMaxDays: data.carryOverMaxDays ?? null,
           carryOverExpiryMonths: data.carryOverExpiryMonths ?? null,
-          isActive: true,
+          deletedAt: null,
         },
       })
       return created

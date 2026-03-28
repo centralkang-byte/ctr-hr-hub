@@ -39,7 +39,7 @@ export const GET = withPermission(
         },
       }),
       prisma.company.findMany({
-        where: { isActive: true, deletedAt: null },
+        where: { deletedAt: null },
         select: { id: true, name: true, currency: true },
       }),
     ])

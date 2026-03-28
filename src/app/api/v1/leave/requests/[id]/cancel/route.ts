@@ -169,8 +169,8 @@ export const PUT = withPermission(
           const typeDef = await prisma.leaveTypeDef.findFirst({
             where: {
               OR: [
-                { companyId: policyWithType.companyId, isActive: true },
-                { companyId: null, isActive: true },
+                { companyId: policyWithType.companyId, deletedAt: null },
+                { companyId: null, deletedAt: null },
               ],
             },
             orderBy: { companyId: 'desc' },

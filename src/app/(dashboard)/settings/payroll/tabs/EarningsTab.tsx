@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 import { useTranslations } from 'next-intl'
 
-interface AllowanceType { id: string; code: string; name: string; nameEn?: string; category: string; isTaxable: boolean; isActive: boolean }
+interface AllowanceType { id: string; code: string; name: string; nameEn?: string; category: string; isTaxable: boolean; deletedAt: string | null }
 interface Props { companyId: string | null }
 
 export function EarningsTab({
@@ -49,7 +49,7 @@ export function EarningsTab({
                 <td className={TABLE_STYLES.cell}>{item.name}</td>
                 <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>{item.category}</td>
                 <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${item.isTaxable ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}>{item.isTaxable ? '과세' : '비과세'}</span></td>
-                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${item.isActive ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'}`}>{item.isActive ? '활성' : '비활성'}</span></td>
+                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!item.deletedAt ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'}`}>{!item.deletedAt ? '활성' : '비활성'}</span></td>
               </tr>
             ))}</tbody>
           </table>

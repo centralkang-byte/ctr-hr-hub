@@ -290,7 +290,7 @@ export async function getDirectReports(
   positionId: string
 ): Promise<Array<{ positionId: string; titleKo: string; employeeId: string | null }>> {
   const reports = await prisma.position.findMany({
-    where: { reportsToPositionId: positionId, isActive: true },
+    where: { reportsToPositionId: positionId, deletedAt: null },
     select: {
       id: true,
       titleKo: true,

@@ -20,7 +20,7 @@ export default async function DirectoryPage() {
   })
 
   const departments = await prisma.department.findMany({
-    where: { isActive: true, deletedAt: null },
+    where: { deletedAt: null },
     select: { id: true, name: true, companyId: true },
     orderBy: { name: 'asc' },
   })

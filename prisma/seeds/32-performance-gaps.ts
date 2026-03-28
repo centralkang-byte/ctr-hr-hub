@@ -172,7 +172,7 @@ export async function seedPerformanceGaps(prisma: PrismaClient) {
   console.log('  📌 3/3: Expanding training enrollments...')
 
   const courses = await prisma.trainingCourse.findMany({
-    where: { isActive: true },
+    where: { deletedAt: null },
     select: { id: true, title: true },
     take: 6,
   })

@@ -7,7 +7,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 export const GET = withPermission(
   async () => {
     const companies = await prisma.company.findMany({
-      where: { isActive: true, deletedAt: null },
+      where: { deletedAt: null },
       select: {
         id: true,
         code: true,

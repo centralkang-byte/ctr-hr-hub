@@ -84,7 +84,6 @@ export const GET = withPermission(
       prisma.trainingCourse.findMany({
         where: {
           linkedCompetencyIds: { hasSome: allCompetencyIds },
-          isActive: true,
           deletedAt: null,
           OR: [{ companyId }, { companyId: null }],
         },

@@ -109,7 +109,7 @@ async function dispatchNotification(input: SendNotificationInput): Promise<void>
 
   // 5. Trigger 설정 조회 (전역 채널 설정)
   const trigger = await prisma.notificationTrigger.findFirst({
-    where: { eventType: input.triggerType, isActive: true },
+    where: { eventType: input.triggerType, deletedAt: null },
     select: { channels: true },
   })
   const globalChannels: string[] = (trigger?.channels as string[]) ?? ['IN_APP']
@@ -243,7 +243,7 @@ async function sendTeamsNotification(
     const webhooks = await prisma.teamsWebhookConfig.findMany({
       where: {
         companyId: input.companyId,
-        isActive: true,
+        deletedAt: null,
         eventTypes: { has: input.triggerType },
       },
     })

@@ -32,7 +32,7 @@ export const POST = withPermission(
     const configs = await prisma.socialInsuranceConfig.findMany({
       where: {
         companyId,
-        isActive: true,
+        deletedAt: null,
         effectiveFrom: { lte: today },
         OR: [{ effectiveTo: null }, { effectiveTo: { gte: today } }],
       },

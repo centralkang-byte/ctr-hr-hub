@@ -40,7 +40,7 @@ export const POST = withPermission(
 
       // 1. Load the shift pattern
       const pattern = await prisma.shiftPattern.findFirst({
-        where: { id: shiftPatternId, isActive: true, ...companyFilter },
+        where: { id: shiftPatternId, deletedAt: null, ...companyFilter },
       })
 
       if (!pattern) {
@@ -57,7 +57,7 @@ export const POST = withPermission(
       // 2. Load target groups
       const groupWhere = {
         shiftPatternId,
-        isActive: true,
+        deletedAt: null,
         ...(shiftGroupId ? { id: shiftGroupId } : {}),
       }
 

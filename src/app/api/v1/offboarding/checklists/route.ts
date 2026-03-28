@@ -31,7 +31,7 @@ export const GET = withPermission(
 
     const where = {
       ...(companyId ? { companyId } : {}),
-      isActive: true,
+      deletedAt: null,
     }
 
     const [total, checklists] = await Promise.all([
@@ -65,7 +65,7 @@ export const POST = withPermission(
       user.role === 'SUPER_ADMIN' ? (reqCompanyId ?? user.companyId) : user.companyId
 
     const checklist = await prisma.offboardingChecklist.create({
-      data: { name, targetType, companyId, isActive: true },
+      data: { name, targetType, companyId, deletedAt: null },
     })
 
     return apiSuccess(checklist, 201)

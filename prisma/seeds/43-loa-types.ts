@@ -606,7 +606,6 @@ async function upsertLoaType(
       advanceNoticeDays: lt.advanceNoticeDays,
       reinstatementGuaranteed: lt.reinstatementGuaranteed,
       sortOrder: lt.sortOrder,
-      isActive: true,
     },
   })
   return 'created'

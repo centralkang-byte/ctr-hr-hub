@@ -185,7 +185,7 @@ async function executeTermination(tx: TxClient, row: ValidatedRow) {
 
   // OffboardingChecklist 조회 — 법인의 기본 체크리스트 사용
   const checklist = await tx.offboardingChecklist.findFirst({
-    where: { companyId: current.companyId, isActive: true },
+    where: { companyId: current.companyId, deletedAt: null },
     orderBy: { createdAt: 'asc' },
   })
 

@@ -672,8 +672,8 @@ async function main() {
       const id = deterministicUUID('jobcat', `${code}:${jc.code}`)
       await prisma.jobCategory.upsert({
         where: { id },
-        update: { name: jc.name, isActive: true },
-        create: { id, companyId, code: jc.code, name: jc.name, isActive: true },
+        update: { name: jc.name },
+        create: { id, companyId, code: jc.code, name: jc.name },
       })
       jobCatMap[`${code}:${jc.code}`] = id
       jcCount++
@@ -886,14 +886,13 @@ async function main() {
   const obTplId = deterministicUUID('onbtpl', 'CTR-KR:NEW_HIRE')
   await prisma.onboardingTemplate.upsert({
     where: { id: obTplId },
-    update: { name: '신규입사 온보딩', isActive: true },
+    update: { name: '신규입사 온보딩' },
     create: {
       id: obTplId,
       companyId: ctrKrId,
       name: '신규입사 온보딩',
       description: 'CTR 신규 입사자 기본 온보딩 프로세스',
       targetType: 'NEW_HIRE',
-      isActive: true,
     },
   })
 
@@ -915,7 +914,7 @@ async function main() {
     const usObTplId = deterministicUUID('onbtpl', 'CTR-US:NEW_HIRE')
     await prisma.onboardingTemplate.upsert({
       where: { id: usObTplId },
-      update: { name: 'New Employee Onboarding', isActive: true },
+      update: { name: 'New Employee Onboarding' },
       create: {
         id: usObTplId,
         companyId: ctrUsId,
@@ -923,7 +922,6 @@ async function main() {
         description: 'CTR US standard onboarding process for new hires',
         targetType: 'NEW_HIRE',
         planType: 'ONBOARDING',
-        isActive: true,
       },
     })
     const usTasks = [
@@ -955,7 +953,7 @@ async function main() {
   const globalObTplId = deterministicUUID('onbtpl', 'GLOBAL:NEW_HIRE')
   await prisma.onboardingTemplate.upsert({
     where: { id: globalObTplId },
-    update: { name: '글로벌 표준 온보딩', isActive: true },
+    update: { name: '글로벌 표준 온보딩' },
     create: {
       id: globalObTplId,
       companyId: null,
@@ -963,7 +961,6 @@ async function main() {
       description: '법인 공통 적용 기본 온보딩 템플릿',
       targetType: 'NEW_HIRE',
       planType: 'ONBOARDING',
-      isActive: true,
     },
   })
   const globalObTasks = [
@@ -991,7 +988,7 @@ async function main() {
   const xdepTplId = deterministicUUID('onbtpl', 'GLOBAL:CROSSBOARDING_DEPARTURE')
   await prisma.onboardingTemplate.upsert({
     where: { id: xdepTplId },
-    update: { name: '크로스보딩 출발 체크리스트', isActive: true },
+    update: { name: '크로스보딩 출발 체크리스트' },
     create: {
       id: xdepTplId,
       companyId: null,
@@ -999,7 +996,6 @@ async function main() {
       description: '법인 간 이동 시 출발 법인 처리 절차',
       targetType: 'NEW_HIRE',
       planType: 'CROSSBOARDING_DEPARTURE',
-      isActive: true,
     },
   })
   const xdepTasks = [
@@ -1026,7 +1022,7 @@ async function main() {
   const xarrTplId = deterministicUUID('onbtpl', 'GLOBAL:CROSSBOARDING_ARRIVAL')
   await prisma.onboardingTemplate.upsert({
     where: { id: xarrTplId },
-    update: { name: '크로스보딩 도착 온보딩', isActive: true },
+    update: { name: '크로스보딩 도착 온보딩' },
     create: {
       id: xarrTplId,
       companyId: null,
@@ -1034,7 +1030,6 @@ async function main() {
       description: '법인 간 이동 시 도착 법인 적응 지원 절차',
       targetType: 'NEW_HIRE',
       planType: 'CROSSBOARDING_ARRIVAL',
-      isActive: true,
     },
   })
   const xarrTasks = [
@@ -1063,13 +1058,12 @@ async function main() {
   const offChkId = deterministicUUID('offchk', 'CTR-KR:VOLUNTARY')
   await prisma.offboardingChecklist.upsert({
     where: { id: offChkId },
-    update: { name: '자발적 퇴직 체크리스트', isActive: true },
+    update: { name: '자발적 퇴직 체크리스트' },
     create: {
       id: offChkId,
       companyId: ctrKrId,
       name: '자발적 퇴직 체크리스트',
       targetType: 'VOLUNTARY',
-      isActive: true,
     },
   })
 
@@ -1119,7 +1113,7 @@ async function main() {
     const id = deterministicUUID('benefit', `CTR-KR:${bp.name}`)
     await prisma.benefitPolicy.upsert({
       where: { id },
-      update: { amount: bp.amount, frequency: bp.frequency, isTaxable: bp.isTaxable, isActive: true },
+      update: { amount: bp.amount, frequency: bp.frequency, isTaxable: bp.isTaxable },
       create: {
         id,
         companyId: ctrKrId,
@@ -1130,7 +1124,6 @@ async function main() {
         currency: 'KRW',
         isTaxable: bp.isTaxable,
         effectiveFrom: new Date('2025-01-01'),
-        isActive: true,
       },
     })
   }
@@ -1145,8 +1138,8 @@ async function main() {
     const id = deterministicUUID('nftrig', nt.eventType)
     await prisma.notificationTrigger.upsert({
       where: { eventType: nt.eventType },
-      update: { template: nt.template, channels: nt.channels, isActive: true },
-      create: { id, eventType: nt.eventType, template: nt.template, channels: nt.channels, isActive: true },
+      update: { template: nt.template, channels: nt.channels },
+      create: { id, eventType: nt.eventType, template: nt.template, channels: nt.channels },
     })
   }
   console.log(`  ✅ ${notificationTriggerData.length} notification triggers`)
@@ -1256,8 +1249,8 @@ async function main() {
       const id = deterministicUUID('enumopt', `${c.code}:${eo.group}:${eo.key}`)
       await prisma.tenantEnumOption.upsert({
         where: { companyId_enumGroup_optionKey: { companyId: compId, enumGroup: eo.group, optionKey: eo.key } },
-        update: { label: eo.label, sortOrder: eo.sortOrder, isSystem: true, isActive: true },
-        create: { id, companyId: compId, enumGroup: eo.group, optionKey: eo.key, label: eo.label, sortOrder: eo.sortOrder, isSystem: true, isActive: true },
+        update: { label: eo.label, sortOrder: eo.sortOrder, isSystem: true },
+        create: { id, companyId: compId, enumGroup: eo.group, optionKey: eo.key, label: eo.label, sortOrder: eo.sortOrder, isSystem: true },
       })
       enumCount++
     }
@@ -1273,8 +1266,8 @@ async function main() {
     const ruleId = deterministicUUID('workflow', `CTR-KR:${wf.workflowType}`)
     await prisma.workflowRule.upsert({
       where: { companyId_workflowType_name: { companyId: ctrKrId, workflowType: wf.workflowType, name: wf.name } },
-      update: { totalSteps: wf.totalSteps, isActive: true },
-      create: { id: ruleId, companyId: ctrKrId, workflowType: wf.workflowType, name: wf.name, totalSteps: wf.totalSteps, isActive: true },
+      update: { totalSteps: wf.totalSteps },
+      create: { id: ruleId, companyId: ctrKrId, workflowType: wf.workflowType, name: wf.name, totalSteps: wf.totalSteps },
     })
 
     for (const s of wf.steps) {
@@ -1298,8 +1291,8 @@ async function main() {
     const id = deterministicUUID('emailtpl', `CTR-KR:${et.eventType}:${et.channel}`)
     await prisma.emailTemplate.upsert({
       where: { companyId_eventType_channel_locale: { companyId: ctrKrId, eventType: et.eventType, channel: et.channel, locale: 'ko' } },
-      update: { subject: et.subject, body: et.body, variables: et.variables, isActive: true, isSystem: true },
-      create: { id, companyId: ctrKrId, eventType: et.eventType, channel: et.channel, locale: 'ko', subject: et.subject, body: et.body, variables: et.variables, isActive: true, isSystem: true },
+      update: { subject: et.subject, body: et.body, variables: et.variables, isSystem: true },
+      create: { id, companyId: ctrKrId, eventType: et.eventType, channel: et.channel, locale: 'ko', subject: et.subject, body: et.body, variables: et.variables, isSystem: true },
     })
   }
   console.log(`  ✅ ${emailTemplateData.length} email templates`)
@@ -2175,7 +2168,6 @@ async function main() {
           name: fd.name,
           companyId: null,
           module: fd.module,
-          isActive: true,
           steps: {
             create: fd.steps.map((s, i) => ({
               id: deterministicUUID('flowstep', `${flowId}:${i}`),
@@ -2394,7 +2386,6 @@ async function main() {
       validityMonths: 12,
       provider: 'CTR 안전보건팀',
       description: '산업안전보건법 제29조에 따른 법정 의무교육',
-      isActive: true,
     },
     {
       code: 'LEG-002',
@@ -2407,7 +2398,6 @@ async function main() {
       validityMonths: 12,
       provider: 'CTR HR팀',
       description: '남녀고용평등법 제13조에 따른 법정 의무교육',
-      isActive: true,
     },
     {
       code: 'LEG-003',
@@ -2420,7 +2410,6 @@ async function main() {
       validityMonths: 12,
       provider: 'CTR IT보안팀',
       description: '개인정보보호법에 따른 임직원 의무교육',
-      isActive: true,
     },
   ]
 
@@ -2437,7 +2426,6 @@ async function main() {
       validityMonths: 36,
       provider: 'CTR 인재개발팀',
       description: '신임 관리자 필수 리더십 교육 프로그램',
-      isActive: true,
     },
     {
       code: 'JOB-002',
@@ -2450,7 +2438,6 @@ async function main() {
       validityMonths: 24,
       provider: 'CTR 품질혁신팀',
       description: 'ISO 9001 기반 품질관리 프로세스 교육',
-      isActive: true,
     },
     {
       code: 'JOB-003',
@@ -2463,7 +2450,6 @@ async function main() {
       validityMonths: null,
       provider: 'CTR HR팀',
       description: '입사 후 30일 이내 이수 필수',
-      isActive: true,
     },
     {
       code: 'JOB-004',
@@ -2476,7 +2462,6 @@ async function main() {
       validityMonths: 12,
       provider: 'CTR 생산기술팀',
       description: '용접 작업 전 필수 안전 교육',
-      isActive: true,
     },
     {
       code: 'JOB-005',
@@ -2489,7 +2474,6 @@ async function main() {
       validityMonths: 24,
       provider: 'CTR HR팀',
       description: 'HR 담당자 법적 의무 및 실무 역량 교육',
-      isActive: true,
     },
   ]
 
@@ -2506,7 +2490,6 @@ async function main() {
       validityMonths: null,
       provider: 'Coursera',
       description: 'Excel·Power BI 기반 데이터 분석 실습',
-      isActive: true,
     },
     {
       code: 'DEV-002',
@@ -2519,7 +2502,6 @@ async function main() {
       validityMonths: null,
       provider: 'CTR 교육센터',
       description: '영어 비즈니스 커뮤니케이션 및 이메일 작성',
-      isActive: true,
     },
     {
       code: 'DEV-003',
@@ -2532,7 +2514,6 @@ async function main() {
       validityMonths: null,
       provider: 'CTR 생산기술팀',
       description: 'Siemens S7 기반 PLC 프로그래밍 실무 과정',
-      isActive: true,
     },
     {
       code: 'DEV-004',
@@ -2545,7 +2526,6 @@ async function main() {
       validityMonths: null,
       provider: 'CTR 인재개발팀',
       description: '1:1 코칭 스킬 및 팀 성과관리 리더십 향상',
-      isActive: true,
     },
   ]
 
@@ -2567,7 +2547,6 @@ async function main() {
           validityMonths: c.validityMonths,
           provider: c.provider,
           description: c.description,
-          isActive: c.isActive,
         },
       })
     } else {
@@ -2583,7 +2562,6 @@ async function main() {
           validityMonths: c.validityMonths,
           provider: c.provider,
           description: c.description,
-          isActive: c.isActive,
           companyId: null,
         },
       })
@@ -2614,7 +2592,6 @@ async function main() {
         targetGroup: cfg.targetGroup,
         frequency: cfg.frequency,
         deadlineMonth: cfg.deadlineMonth,
-        isActive: true,
       },
       create: {
         id: `seed-mtc-${cfg.courseCode}-${cfg.targetGroup}`,
@@ -2623,7 +2600,6 @@ async function main() {
         targetGroup: cfg.targetGroup,
         frequency: cfg.frequency,
         deadlineMonth: cfg.deadlineMonth,
-        isActive: true,
       },
     })
   }
@@ -2661,7 +2637,7 @@ async function main() {
     const existing = await prisma.leaveTypeDef.findFirst({ where: { companyId: null, code: lt.code } })
     if (!existing) {
       await prisma.leaveTypeDef.create({
-        data: { ...lt, companyId: null, isActive: true },
+        data: { ...lt, companyId: null },
       })
     }
   }
@@ -2682,7 +2658,7 @@ async function main() {
     for (const lt of krTypes) {
       const existing = await prisma.leaveTypeDef.findFirst({ where: { companyId: krId, code: lt.code } })
       if (!existing) {
-        await prisma.leaveTypeDef.create({ data: { ...lt, companyId: krId, isActive: true } })
+        await prisma.leaveTypeDef.create({ data: { ...lt, companyId: krId } })
       }
     }
     // CTR-KR 연차 부여 규칙 (근로기준법)
@@ -2721,7 +2697,7 @@ async function main() {
     for (const lt of usTypes) {
       const existing = await prisma.leaveTypeDef.findFirst({ where: { companyId: usId, code: lt.code } })
       if (!existing) {
-        await prisma.leaveTypeDef.create({ data: { ...lt, companyId: usId, isActive: true } })
+        await prisma.leaveTypeDef.create({ data: { ...lt, companyId: usId } })
       }
     }
     const usPto = await prisma.leaveTypeDef.findFirst({ where: { companyId: usId, code: 'pto' } })
@@ -2761,7 +2737,7 @@ async function main() {
     for (const lt of cnTypes) {
       const existing = await prisma.leaveTypeDef.findFirst({ where: { companyId: cnId, code: lt.code } })
       if (!existing) {
-        await prisma.leaveTypeDef.create({ data: { ...lt, companyId: cnId, isActive: true } })
+        await prisma.leaveTypeDef.create({ data: { ...lt, companyId: cnId } })
       }
     }
     const cnAnnual = await prisma.leaveTypeDef.findFirst({ where: { companyId: cnId, code: 'annual' } })
@@ -3441,7 +3417,7 @@ async function main() {
     const id = deterministicUUID('benefit-plan', `CTR-KR:${bp.code}`)
     await prisma.benefitPlan.upsert({
       where: { id },
-      update: { name: bp.name, isActive: true },
+      update: { name: bp.name },
       create: {
         id,
         companyId: ctrKrId,
@@ -3456,7 +3432,6 @@ async function main() {
         frequency: bp.frequency,
         requiresApproval: true,
         requiresProof: bp.requiresProof,
-        isActive: true,
         displayOrder: i,
       },
     })
@@ -3477,7 +3452,7 @@ async function main() {
     const id = deterministicUUID('benefit-plan', `CTR-US:${bp.code}`)
     await prisma.benefitPlan.upsert({
       where: { id },
-      update: { name: bp.name, isActive: true },
+      update: { name: bp.name },
       create: {
         id,
         companyId: ctrUsId,
@@ -3492,7 +3467,6 @@ async function main() {
         frequency: bp.frequency,
         requiresApproval: true,
         requiresProof: bp.requiresProof,
-        isActive: true,
         displayOrder: i,
       },
     })
@@ -3527,7 +3501,6 @@ async function main() {
           frequency: 'per_event',
           requiresApproval: true,
           requiresProof: false,
-          isActive: true,
           displayOrder: i,
         },
       })

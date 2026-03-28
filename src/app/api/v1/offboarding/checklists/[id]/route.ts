@@ -80,7 +80,7 @@ export const DELETE = withPermission(
 
     await prisma.offboardingChecklist.update({
       where: { id },
-      data: { isActive: false },
+      data: { deletedAt: new Date() },
     })
     return apiSuccess({ deleted: true })
   },

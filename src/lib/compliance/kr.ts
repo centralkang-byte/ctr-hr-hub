@@ -157,14 +157,13 @@ export async function getEmployeeWorkHours(companyId: string, weekStart: Date, p
  */
 export async function getMandatoryTrainingStatus(companyId: string, year: number) {
   const trainings = await prisma.mandatoryTraining.findMany({
-    where: { companyId, year, isActive: true },
+    where: { companyId, year, deletedAt: null },
     include: {
       course: {
         include: {
           enrollments: {
             where: {
               employee: {
-                deletedAt: null,
                 assignments: {
                   some: {
                     companyId,

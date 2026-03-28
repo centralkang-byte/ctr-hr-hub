@@ -15,7 +15,7 @@ export async function seedOnboardingInstances(prisma: PrismaClient) {
     // ── Find required references ────────────────────────────
 
     const template = await prisma.onboardingTemplate.findFirst({
-        where: { planType: 'ONBOARDING', isActive: true },
+        where: { planType: 'ONBOARDING' },
         include: { onboardingTasks: { orderBy: { sortOrder: 'asc' } } },
     })
 

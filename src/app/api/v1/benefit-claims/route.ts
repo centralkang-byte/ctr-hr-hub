@@ -82,7 +82,7 @@ export const POST = withPermission(
     const { benefitPlanId, claimAmount, eventDate, eventDetail, proofPaths, notes } = parsed.data
 
     const plan = await prisma.benefitPlan.findFirst({
-      where: { id: benefitPlanId, companyId: user.companyId, isActive: true },
+      where: { id: benefitPlanId, companyId: user.companyId, deletedAt: null },
     })
     if (!plan) throw badRequest('복리후생 항목을 찾을 수 없습니다.')
 

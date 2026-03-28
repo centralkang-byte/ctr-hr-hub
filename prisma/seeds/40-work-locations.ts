@@ -122,7 +122,7 @@ export async function seedWorkLocations(p: PrismaClient) {
     if (existing) {
       await p.workLocation.update({
         where: { id: existing.id },
-        data: { name, nameEn, country, city, timezone, locationType, isActive: true },
+        data: { name, nameEn, country, city, timezone, locationType },
       })
       locationMap.set(`${companyCode}:${code}`, existing.id)
       updated++
@@ -137,7 +137,6 @@ export async function seedWorkLocations(p: PrismaClient) {
           city,
           timezone,
           locationType,
-          isActive: true,
         },
       })
       locationMap.set(`${companyCode}:${code}`, loc.id)

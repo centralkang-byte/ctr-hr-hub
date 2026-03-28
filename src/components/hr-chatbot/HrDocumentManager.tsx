@@ -29,7 +29,7 @@ interface HrDocument {
   docType: string
   version: string
   locale: string
-  isActive: boolean
+  deletedAt: string | null
   createdAt: string
   uploader: { name: string }
   _count: { chunks: number }
@@ -315,14 +315,14 @@ export function HrDocumentManager({ user: _user }: HrDocumentManagerProps) {
                   </td>
                   <td className="px-4 py-3">
                     <Badge
-                      variant={doc.isActive ? 'default' : 'secondary'}
+                      variant={!doc.deletedAt ? 'default' : 'secondary'}
                       className={
-                        doc.isActive
+                        !doc.deletedAt
                           ? 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]'
                           : ''
                       }
                     >
-                      {doc.isActive ? '활성' : '비활성'}
+                      {!doc.deletedAt ? '활성' : '비활성'}
                     </Badge>
                   </td>
                   <td className="px-4 py-3">

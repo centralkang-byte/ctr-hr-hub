@@ -44,11 +44,11 @@ export async function triggerCrossboarding(
   // TRANSFER 템플릿 우선 → 없으면 CROSSBOARDING_DEPARTURE/ARRIVAL 폴백
   const [depTemplate, arrTemplate] = await Promise.all([
     prisma.onboardingTemplate.findFirst({
-      where: { planType: 'CROSSBOARDING_DEPARTURE', companyId: null, isActive: true, deletedAt: null },
+      where: { planType: 'CROSSBOARDING_DEPARTURE', companyId: null, deletedAt: null },
       include: { onboardingTasks: { orderBy: { sortOrder: 'asc' } } },
     }),
     prisma.onboardingTemplate.findFirst({
-      where: { planType: 'CROSSBOARDING_ARRIVAL', companyId: null, isActive: true, deletedAt: null },
+      where: { planType: 'CROSSBOARDING_ARRIVAL', companyId: null, deletedAt: null },
       include: { onboardingTasks: { orderBy: { sortOrder: 'asc' } } },
     }),
   ])

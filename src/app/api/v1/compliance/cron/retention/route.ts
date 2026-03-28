@@ -17,7 +17,7 @@ export async function GET(req: Request) {
   }
 
   const policies = await prisma.dataRetentionPolicy.findMany({
-    where: { isActive: true, autoDelete: true },
+    where: { deletedAt: null, autoDelete: true },
   })
 
   const results: Array<{ policyId: string; category: string; processed: number }> = []
