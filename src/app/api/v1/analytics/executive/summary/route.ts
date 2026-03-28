@@ -9,7 +9,7 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
-import { parseAnalyticsParams, generateMonthRange, toYearMonth } from '@/lib/analytics/parse-params'
+import { parseAnalyticsParams, resolveDepartmentFilter, generateMonthRange, toYearMonth } from '@/lib/analytics/parse-params'
 import { convertToKRW, formatCurrency } from '@/lib/analytics/currency'
 import type { ExecutiveSummaryResponse, HeatmapDataPoint, RecruitmentFunnelStage } from '@/lib/analytics/types'
 import type { SessionUser } from '@/types'
@@ -18,8 +18,14 @@ export const GET = withPermission(
   async (req: NextRequest, _ctx, _user: SessionUser) => {
     const params = parseAnalyticsParams(new URL(req.url).searchParams)
     const companyFilter = params.companyId ? { companyId: params.companyId } : {}
+
+    // 부서 필터 — 본부 선택 시 하위 팀 포함
+    const departmentIds = await resolveDepartmentFilter(params.departmentId)
+    const deptFilter = departmentIds ? { departmentId: { in: departmentIds } } : {}
+    // companyFilter + departmentFilter 통합
+    const baseFilter = { ...companyFilter, ...deptFilter }
+
     const now = new Date()
-//     const currentYear = now.getFullYear()
 
     // ── Promise.all: 6 domain queries ─────────────────────
     const [
@@ -34,7 +40,7 @@ export const GET = withPermission(
     ] = await Promise.all([
       // 1. Total active employees
       prisma.employeeAssignment.findMany({
-        where: { ...companyFilter, status: 'ACTIVE', isPrimary: true, endDate: null },
+        where: { ...baseFilter, status: 'ACTIVE', isPrimary: true, endDate: null },
         select: { employeeId: true, companyId: true, employee: { select: { hireDate: true } } },
       }),
       // 2. All companies (for comparison)
@@ -45,7 +51,7 @@ export const GET = withPermission(
       // 3. Recent exits (current month)
       prisma.employeeAssignment.count({
         where: {
-          ...companyFilter,
+          ...baseFilter,
           status: { in: ['RESIGNED', 'TERMINATED'] },
           isPrimary: true,
           endDate: { gte: new Date(now.getFullYear(), now.getMonth(), 1), lte: now },
@@ -54,7 +60,7 @@ export const GET = withPermission(
       // 4. Previous month exits
       prisma.employeeAssignment.count({
         where: {
-          ...companyFilter,
+          ...baseFilter,
           status: { in: ['RESIGNED', 'TERMINATED'] },
           isPrimary: true,
           endDate: {
@@ -63,7 +69,7 @@ export const GET = withPermission(
           },
         },
       }),
-      // 5. Latest payroll runs
+      // 5. Latest payroll runs (PayrollRun에 departmentId 없음 — companyFilter만)
       prisma.payrollRun.findMany({
         where: {
           ...companyFilter,
@@ -74,8 +80,8 @@ export const GET = withPermission(
         select: { companyId: true, totalGross: true, currency: true, yearMonth: true, headcount: true },
       }),
       // 6. Open job postings
-      prisma.jobPosting.count({ where: { ...companyFilter, status: 'OPEN' } }),
-      // 7. Active onboardings
+      prisma.jobPosting.count({ where: { ...baseFilter, status: 'OPEN' } }),
+      // 7. Active onboardings (EmployeeOnboarding에 departmentId 없음 — companyFilter만)
       prisma.employeeOnboarding.findMany({
         where: { ...companyFilter, status: { in: ['NOT_STARTED', 'IN_PROGRESS'] } },
         select: { status: true },
@@ -83,7 +89,7 @@ export const GET = withPermission(
       // 8. Monthly hire trend (TTM)
       prisma.employeeAssignment.findMany({
         where: {
-          ...companyFilter,
+          ...baseFilter,
           isPrimary: true,
           changeType: 'HIRE',
           effectiveDate: { gte: params.startDate, lte: params.endDate },
@@ -144,7 +150,7 @@ export const GET = withPermission(
     // Get monthly exits
     const exitAssignments = await prisma.employeeAssignment.findMany({
       where: {
-        ...companyFilter,
+        ...baseFilter,
         isPrimary: true,
         status: { in: ['RESIGNED', 'TERMINATED'] },
         endDate: { gte: params.startDate, lte: params.endDate },
@@ -192,9 +198,17 @@ export const GET = withPermission(
     if (monthlyTurnoverRate > 5) {
       riskAlerts.push({ type: '높은 이직률', count: recentExits, severity: 'HIGH', link: '/analytics/turnover' })
     }
+    // Attendance에 companyId/departmentId 없음 — employee 릴레이션으로 필터
+    const attendanceEmployeeFilter = {
+      employee: {
+        assignments: {
+          some: { ...baseFilter, isPrimary: true, endDate: null },
+        },
+      },
+    }
     const overtimeViolations = await prisma.attendance.count({
       where: {
-        ...companyFilter,
+        ...attendanceEmployeeFilter,
         workDate: { gte: new Date(now.getFullYear(), now.getMonth(), 1) },
         overtimeMinutes: { gt: 0 },
       },
@@ -238,8 +252,15 @@ export const GET = withPermission(
     }
 
     // ── Phase 2-A: Department Turnover Heatmap (flat array) ──
+    // Department 모델에는 departmentId가 아닌 id 사용
+    const deptWhere = {
+      ...companyFilter,
+      deletedAt: null,
+      parentId: { not: null } as const,
+      ...(departmentIds ? { id: { in: departmentIds } } : {}),
+    }
     const departments = await prisma.department.findMany({
-      where: { ...companyFilter, deletedAt: null, parentId: { not: null } },
+      where: deptWhere,
       select: { id: true, name: true },
       take: 20,
     })
@@ -247,7 +268,7 @@ export const GET = withPermission(
     if (departments.length > 0) {
       const deptExits = await prisma.employeeAssignment.findMany({
         where: {
-          ...companyFilter,
+          ...baseFilter,
           isPrimary: true,
           status: { in: ['RESIGNED', 'TERMINATED'] },
           endDate: { gte: params.startDate, lte: params.endDate },
@@ -257,7 +278,7 @@ export const GET = withPermission(
       })
       const deptActiveCount = await prisma.employeeAssignment.groupBy({
         by: ['departmentId'],
-        where: { ...companyFilter, status: 'ACTIVE', isPrimary: true, endDate: null, departmentId: { in: departments.map((d) => d.id) } },
+        where: { ...baseFilter, status: 'ACTIVE', isPrimary: true, endDate: null, departmentId: { in: departments.map((d) => d.id) } },
         _count: { employeeId: true },
       })
       const deptHcMap = new Map(deptActiveCount.map((d) => [d.departmentId, d._count.employeeId]))
@@ -281,7 +302,7 @@ export const GET = withPermission(
 
     // ── Phase 2-A: Recruitment Funnel ──
     const recruitmentFunnel: RecruitmentFunnelStage[] = []
-    const funnelPostings = await prisma.jobPosting.count({ where: { ...companyFilter, status: { in: ['OPEN', 'CLOSED'] } } })
+    const funnelPostings = await prisma.jobPosting.count({ where: { ...baseFilter, status: { in: ['OPEN', 'CLOSED'] } } })
     if (funnelPostings > 0) {
       const appsByStage = await prisma.application.groupBy({
         by: ['stage'],

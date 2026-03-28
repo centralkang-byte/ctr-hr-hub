@@ -230,6 +230,28 @@ export interface TeamHealthResponse {
   }[]
 }
 
+// --- 8. Company Comparison (Phase 2-B1) ---
+
+export type CompareKpiKey =
+  | 'turnover_rate' | 'leave_usage' | 'training_completion' | 'payroll_cost'
+  | 'headcount' | 'avg_tenure' | 'overtime_rate' | 'training_hours'
+
+export interface CompareCompanyResult {
+  companyId: string
+  company: string  // code
+  name: string
+  values: Partial<Record<CompareKpiKey, number | null>>
+  percentiles: Partial<Record<CompareKpiKey, number | null>>
+}
+
+export interface CompareResponse {
+  results: CompareCompanyResult[]
+  trend: { month: string; companyId: string; company: string; value: number | null }[]
+  kpi: string
+  year: number
+  yoyResults?: CompareCompanyResult[]
+}
+
 // ─── Materialized View Row Types (used by queries.ts) ────
 
 export interface HeadcountRow {

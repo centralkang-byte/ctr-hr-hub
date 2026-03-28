@@ -55,6 +55,33 @@ export const WORK_HOURS_REGULATIONS = {
   VN: { label: '베트남 법정', value: 48, unit: '시간/주' },
 } as const
 
+// ─── 초과근무 비율 벤치마크 ────────────────────────────────────
+
+export const OVERTIME_RATE_BENCHMARKS = {
+  manufacturing: { label: '제조업 평균', value: 15, unit: '%' },
+  recommended: { label: '권장 상한', value: 10, unit: '%' },
+} as const
+
+// ─── 교육시간 벤치마크 ────────────────────────────────────────
+
+export const TRAINING_HOURS_BENCHMARKS = {
+  manufacturing: { label: '제조업 평균', value: 40, unit: '시간/년' },
+  global: { label: '글로벌 평균', value: 47, unit: '시간/년' },
+} as const
+
+// ─── 법인 비교용 KPI 벤치마크 매핑 ────────────────────────────
+
+export const COMPARE_KPI_BENCHMARKS: Record<string, { label: string; value: number; unit: string } | null> = {
+  turnover_rate: TURNOVER_BENCHMARKS.manufacturing,
+  leave_usage: LEAVE_USAGE_BENCHMARKS.korea,
+  training_completion: ONBOARDING_BENCHMARKS.average,
+  payroll_cost: null, // 절대값 — 벤치마크 해당 없음
+  headcount: null,    // 절대값 — 벤치마크 해당 없음
+  avg_tenure: TENURE_BENCHMARKS.manufacturing,
+  overtime_rate: OVERTIME_RATE_BENCHMARKS.manufacturing,
+  training_hours: TRAINING_HOURS_BENCHMARKS.manufacturing,
+} as const
+
 // ─── Compa-Ratio 벤치마크 ────────────────────────────────────
 
 export const COMPA_RATIO_BENCHMARKS = {
