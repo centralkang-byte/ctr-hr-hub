@@ -359,7 +359,7 @@ function getTenantSettings(code: string, locale: string, tz: string): TenantSett
     enabledModules: isKR ? ALL_MODULES : BASIC_MODULES,
     defaultLocale: locale,
     timezone: tz,
-    maxOvertimeWeeklyHours: ['CTR-MX'].includes(code) ? 48 : isKR ? 52 : 45,
+    maxOvertimeWeeklyHours: isKR ? 52 : 45,
   }
 }
 
@@ -1361,10 +1361,10 @@ async function main() {
     { companyCode: 'CTR-ECO', code: 'OPS', name: 'Operations', nameEn: 'Operations', level: 1, sortOrder: 2 },
     { companyCode: 'CTR-ROB', code: 'ENG', name: 'Robotics Engineering', nameEn: 'Robotics Engineering', level: 1, sortOrder: 1 },
     { companyCode: 'CTR-ROB', code: 'MFG', name: 'Manufacturing', nameEn: 'Manufacturing', level: 1, sortOrder: 2 },
-    { companyCode: 'CTR-ENG', code: 'ENG', name: 'Engineering', nameEn: 'Engineering', level: 1, sortOrder: 1 },
-    { companyCode: 'CTR-ENG', code: 'RD', name: 'R&D', nameEn: 'R&D', level: 1, sortOrder: 2 },
-    { companyCode: 'FML', code: 'OPS', name: 'Operations', nameEn: 'Operations', level: 1, sortOrder: 1 },
-    { companyCode: 'FML', code: 'FIN', name: 'Finance', nameEn: 'Finance', level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-ENR', code: 'ENG', name: 'Engineering', nameEn: 'Engineering', level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-ENR', code: 'RD', name: 'R&D', nameEn: 'R&D', level: 1, sortOrder: 2 },
+    { companyCode: 'CTR-FML', code: 'OPS', name: 'Operations', nameEn: 'Operations', level: 1, sortOrder: 1 },
+    { companyCode: 'CTR-FML', code: 'FIN', name: 'Finance', nameEn: 'Finance', level: 1, sortOrder: 2 },
     { companyCode: 'CTR-US', code: 'OPS', name: 'Operations', nameEn: 'Operations', level: 1, sortOrder: 1 },
     { companyCode: 'CTR-US', code: 'SALES', name: 'Sales', nameEn: 'Sales', level: 1, sortOrder: 2 },
     { companyCode: 'CTR-CN', code: 'MFG', name: '生产部', nameEn: 'Manufacturing', level: 1, sortOrder: 1 },
@@ -1375,8 +1375,6 @@ async function main() {
     { companyCode: 'CTR-VN', code: 'ASM', name: 'Lắp ráp', nameEn: 'Assembly', level: 1, sortOrder: 2 },
     { companyCode: 'CTR-EU', code: 'ENG', name: 'Engineering', nameEn: 'Engineering', level: 1, sortOrder: 1 },
     { companyCode: 'CTR-EU', code: 'SALES', name: 'Sales', nameEn: 'Sales', level: 1, sortOrder: 2 },
-    { companyCode: 'CTR-MX', code: 'MFG', name: 'Manufactura', nameEn: 'Manufacturing', level: 1, sortOrder: 1 },
-    { companyCode: 'CTR-MX', code: 'ASM', name: 'Ensamble', nameEn: 'Assembly', level: 1, sortOrder: 2 },
   ]
 
   for (const d of otherDepts) {
@@ -1632,14 +1630,13 @@ async function main() {
     'CTR-MOB': ['ENG', 'MFG'],
     'CTR-ECO': ['ENG', 'OPS'],
     'CTR-ROB': ['ENG', 'MFG'],
-    'CTR-ENG': ['ENG', 'RD'],
-    'FML': ['OPS', 'FIN'],
+    'CTR-ENR': ['ENG', 'RD'],
+    'CTR-FML': ['OPS', 'FIN'],
     'CTR-US': ['OPS', 'SALES'],
     'CTR-CN': ['MFG', 'QA'],
     'CTR-RU': ['MFG', 'ENG'],
     'CTR-VN': ['MFG', 'ASM'],
     'CTR-EU': ['ENG', 'SALES'],
-    'CTR-MX': ['MFG', 'ASM'],
   }
 
   for (const [compCode, deptCodes] of Object.entries(otherCompanyDeptConfig)) {

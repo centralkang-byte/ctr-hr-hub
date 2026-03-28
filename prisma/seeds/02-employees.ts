@@ -265,9 +265,9 @@ export async function seedNewEmployees(prisma: PrismaClient): Promise<void> {
   const krGrade = (code: string) => deterministicUUID('grade', `CTR-KR:${code}`)
 
   // CTR 직무 카테고리
-  const krProductionCatId = deterministicUUID('jobcat', 'CTR-KR:PRODUCTION')
-  const krOfficeCatId     = deterministicUUID('jobcat', 'CTR-KR:OFFICE')
-  const krRndCatId        = deterministicUUID('jobcat', 'CTR-KR:R_AND_D')
+  const krProductionCatId = deterministicUUID('jobcat', 'CTR:PRODUCTION')
+  const krOfficeCatId     = deterministicUUID('jobcat', 'CTR:OFFICE')
+  const krRndCatId        = deterministicUUID('jobcat', 'CTR:R_AND_D')
 
   // 부서 카테고리 매핑
   const deptToCat: Record<string, string> = {
