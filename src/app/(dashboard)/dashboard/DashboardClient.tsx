@@ -17,6 +17,8 @@ import { KpiCard } from '@/components/analytics/KpiCard'
 import { ChartCard } from '@/components/analytics/ChartCard'
 import { EmptyChart } from '@/components/analytics/EmptyChart'
 import { AiInsightBanner } from '@/components/analytics/AiInsightBanner'
+import { InsightSurfacingBanner } from '@/components/analytics/InsightSurfacingBanner'
+import { evaluateInsights } from '@/lib/analytics/insight-surfacing'
 import { AnalyticsFilterBar } from '@/components/analytics/AnalyticsFilterBar'
 import { CHART_COLORS } from '@/components/analytics/chart-colors'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -26,6 +28,7 @@ import { CHART_THEME } from '@/lib/styles/chart'
 import { cn } from '@/lib/utils'
 import { toast } from '@/hooks/use-toast'
 import type { ExecutiveSummaryResponse } from '@/lib/analytics/types'
+import { TURNOVER_BENCHMARKS } from '@/lib/analytics/benchmarks'
 import type { SessionUser } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -104,6 +107,7 @@ export function DashboardClient({ user }: Props) {
   }
 
   const { kpis, charts, riskAlerts, companyComparison } = data
+  const surfacedInsights = evaluateInsights(data)
 
   // ─── Render ─────────────────────────────────────────────
 
@@ -120,8 +124,12 @@ export function DashboardClient({ user }: Props) {
       {/* 글로벌 필터바 */}
       <AnalyticsFilterBar />
 
-      {/* AI Insight Banner */}
-      <AiInsightBanner />
+      {/* 위험 신호 서피싱 */}
+      {surfacedInsights.length > 0 ? (
+        <InsightSurfacingBanner insights={surfacedInsights} />
+      ) : (
+        <AiInsightBanner />
+      )}
 
       {/* KPI 6개 */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
@@ -169,7 +177,7 @@ export function DashboardClient({ user }: Props) {
                 <XAxis dataKey="month" fontSize={11} tickFormatter={(v) => v.split('-')[1] + '월'} />
                 <YAxis fontSize={11} unit="%" />
                 <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
-                <ReferenceLine y={4.5} label={te('industryAvg')} stroke={CHART_COLORS.danger} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
+                <ReferenceLine y={TURNOVER_BENCHMARKS.manufacturing.value} label={TURNOVER_BENCHMARKS.manufacturing.label} stroke={CHART_COLORS.danger} strokeDasharray="5 5" />
                 <Line type="monotone" dataKey="rate" name={te('turnoverRateLabel')} stroke={CHART_COLORS.primary} strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>

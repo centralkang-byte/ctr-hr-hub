@@ -1,7 +1,10 @@
 'use client'
 
-import React from 'react'
-import { RefreshCw } from 'lucide-react'
+import React, { useState } from 'react'
+import { RefreshCw, Maximize2, X } from 'lucide-react'
+import { cn } from '@/lib/utils'
+
+// ─── Types ──────────────────────────────────────────────────
 
 interface ChartCardProps {
   title: string
@@ -12,28 +15,46 @@ interface ChartCardProps {
   className?: string
   badge?: string
   badgeColor?: string
+  expandable?: boolean
 }
 
-export function ChartCard({ title, children, loading, error, onRetry, className = '', badge, badgeColor = 'bg-red-50 text-red-700 border-red-200' }: ChartCardProps) {
-  return (
-    <div className={`bg-white rounded-xl border border-gray-100 p-5 ${className}`}>
+// ─── Component ──────────────────────────────────────────────
+
+export function ChartCard({
+  title, children, loading, error, onRetry,
+  className = '', badge, badgeColor = 'bg-red-50 text-red-700 border-red-200',
+  expandable = true,
+}: ChartCardProps) {
+  const [expanded, setExpanded] = useState(false)
+
+  const content = (
+    <>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-gray-700">{title}</h3>
-        {badge && (
-          <span className={`text-xs px-2 py-0.5 rounded-full border ${badgeColor}`}>{badge}</span>
-        )}
+        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+        <div className="flex items-center gap-2">
+          {badge && (
+            <span className={cn('text-xs px-2 py-0.5 rounded-full border', badgeColor)}>{badge}</span>
+          )}
+          {expandable && !loading && !error && (
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="p-1 rounded-md text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted transition-colors"
+              title={expanded ? '축소' : '확대'}
+            >
+              {expanded ? <X className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+            </button>
+          )}
+        </div>
       </div>
       {loading ? (
         <div className="flex items-center justify-center h-48">
-          <div className="animate-pulse flex flex-col items-center gap-2">
-            <div className="h-32 w-full bg-gray-100 rounded-lg" />
-          </div>
+          <div className="animate-pulse h-32 w-full bg-muted rounded-lg" />
         </div>
       ) : error ? (
         <div className="flex flex-col items-center justify-center h-48 gap-2">
-          <p className="text-sm text-gray-500">데이터를 불러올 수 없습니다</p>
+          <p className="text-sm text-muted-foreground">데이터를 불러올 수 없습니다</p>
           {onRetry && (
-            <button onClick={onRetry} className="flex items-center gap-1 text-xs text-[#5E81F4] hover:text-[#4B6DE0] transition-colors">
+            <button onClick={onRetry} className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors">
               <RefreshCw className="h-3 w-3" /> 다시 시도
             </button>
           )}
@@ -41,6 +62,40 @@ export function ChartCard({ title, children, loading, error, onRetry, className 
       ) : (
         children
       )}
+    </>
+  )
+
+  // 전체화면 Dialog
+  if (expanded) {
+    return (
+      <>
+        {/* 원래 위치 placeholder */}
+        <div className={cn('bg-card rounded-xl border border-border p-5', className)}>
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+            <button
+              onClick={() => setExpanded(false)}
+              className="p-1 rounded-md text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted transition-colors"
+            >
+              <Maximize2 className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="flex items-center justify-center h-48 text-sm text-muted-foreground">
+            확대 모드로 표시 중
+          </div>
+        </div>
+        {/* 오버레이 */}
+        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm" onClick={() => setExpanded(false)} />
+        <div className="fixed inset-4 z-50 bg-card rounded-2xl border border-border shadow-2xl p-8 overflow-auto">
+          {content}
+        </div>
+      </>
+    )
+  }
+
+  return (
+    <div className={cn('bg-card rounded-xl border border-border p-5', className)}>
+      {content}
     </div>
   )
 }
