@@ -9,6 +9,7 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest, notFound, handlePrismaError, isAppError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { sendNotification } from '@/lib/notifications'
 import type { SessionUser } from '@/types'
 
 type RouteContext = { params: Promise<Record<string, string>> }
@@ -73,9 +74,9 @@ export const PATCH = withPermission(
         case 'reject':
           return apiSuccess(await handleReject(id, record, user, body))
         case 'activate':
-          return apiSuccess(await handleActivate(id, record))
+          return apiSuccess(await handleActivate(id, record, user))
         case 'return':
-          return apiSuccess(await handleReturn(id, record))
+          return apiSuccess(await handleReturn(id, record, body))
         case 'complete':
           return apiSuccess(await handleComplete(id, record, body))
         case 'cancel':
@@ -149,12 +150,12 @@ async function handleReject(
   })
 }
 
-// 활성화 (APPROVED → ACTIVE) — EmployeeAssignment 연동
-async function handleActivate(id: string, record: RecordWithType) {
+// 활성화 (APPROVED → ACTIVE) — EmployeeAssignment 연동 + PayrollAdjustment 생성
+async function handleActivate(id: string, record: RecordWithType, user: SessionUser) {
   assertTransition(record.status, 'ACTIVE')
 
   // 트랜잭션: LOA 상태 변경 + 현재 assignment 종료 + ON_LEAVE assignment 생성
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     // 현재 primary assignment 찾기
     const currentAssignment = await tx.employeeAssignment.findFirst({
       where: {
@@ -212,15 +213,100 @@ async function handleActivate(id: string, record: RecordWithType) {
       },
     })
   })
+
+  // Side-effect: PayrollAdjustment 생성 (fire-and-forget)
+  createLoaPayrollAdjustment(record, user).catch(() => {})
+
+  // Side-effect: HR Admin 알림 발송
+  notifyLoaActivation(record)
+
+  return result
+}
+
+// 휴직 활성화 시 급여 조정 플레이스홀더 생성
+async function createLoaPayrollAdjustment(record: RecordWithType, user: SessionUser) {
+  const startDate = new Date(record.startDate)
+  const yearMonth = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}`
+
+  const payrollRun = await prisma.payrollRun.findFirst({
+    where: {
+      companyId: record.companyId,
+      yearMonth,
+      status: { notIn: ['PAID', 'CANCELLED'] },
+    },
+  })
+
+  if (!payrollRun) return
+
+  const payType = record.payType ?? record.type.payType ?? 'UNPAID'
+  const payRate = record.payRate ?? record.type.payRate
+  const startStr = new Date(record.startDate).toLocaleDateString('ko-KR')
+  const endStr = record.expectedEndDate
+    ? new Date(record.expectedEndDate).toLocaleDateString('ko-KR')
+    : '미정'
+
+  await prisma.$transaction([
+    prisma.payrollAdjustment.create({
+      data: {
+        payrollRunId: payrollRun.id,
+        employeeId: record.employeeId,
+        type: 'DEDUCTION',
+        category: 'LOA_PAY_ADJUSTMENT',
+        description: `[휴직 급여 조정] ${record.type.name} (${payType}${payRate ? `, ${payRate}%` : ''}) — 휴직 기간: ${startStr} ~ ${endStr} — 이후 급여 차감/일할 계산 필수`,
+        amount: 0,
+        createdBy: user.employeeId ?? user.id,
+      },
+    }),
+    prisma.payrollRun.update({
+      where: { id: payrollRun.id },
+      data: { adjustmentCount: { increment: 1 } },
+    }),
+  ])
+}
+
+// HR Admin에 휴직 활성화 알림 발송
+function notifyLoaActivation(record: RecordWithType) {
+  // 해당 법인 HR Admin에게 알림 — fire-and-forget
+  prisma.employee.findMany({
+    where: {
+      deletedAt: null,
+      employeeRoles: { some: { role: { code: 'HR_ADMIN' } } },
+      assignments: { some: { companyId: record.companyId, isPrimary: true, endDate: null } },
+    },
+    select: { id: true },
+  }).then((hrAdmins) => {
+    const payType = record.payType ?? record.type.payType ?? 'UNPAID'
+    const payRate = record.payRate ?? record.type.payRate
+    for (const hr of hrAdmins) {
+      sendNotification({
+        employeeId: hr.id,
+        triggerType: 'LOA_ACTIVATED',
+        title: '휴직 활성화 알림',
+        body: `${record.type.name} 휴직이 시작되었습니다 (${payType}${payRate ? `, ${payRate}%` : ''})`,
+        priority: 'normal',
+        link: '/leave-of-absence',
+      })
+    }
+  }).catch(() => {})
 }
 
 // 복직 신청 (ACTIVE → RETURN_REQUESTED)
-async function handleReturn(id: string, record: RecordWithType) {
+// notes → returnNotes에 저장 (expectedEndDate는 절대 수정하지 않음)
+async function handleReturn(
+  id: string,
+  record: RecordWithType,
+  body: Record<string, unknown>,
+) {
   assertTransition(record.status, 'RETURN_REQUESTED')
+
+  const returnNotes = body.notes ? String(body.notes) : null
 
   return prisma.leaveOfAbsence.update({
     where: { id },
-    data: { status: 'RETURN_REQUESTED' },
+    data: {
+      status: 'RETURN_REQUESTED',
+      ...(returnNotes ? { returnNotes } : {}),
+    },
     include: {
       employee: { select: { id: true, name: true, employeeNo: true } },
       type: { select: { id: true, code: true, name: true } },

@@ -101,6 +101,22 @@ export function LoaClient({ user }: Props) {
   const [rejectionReason, setRejectionReason] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
 
+  // 복직 신청 다이얼로그
+  const [returnOpen, setReturnOpen] = useState(false)
+  const [returnTarget, setReturnTarget] = useState<LoaRecord | null>(null)
+  const [returnNotes, setReturnNotes] = useState('')
+  const [returnLoading, setReturnLoading] = useState(false)
+
+  // 복직 완료 다이얼로그
+  const [completeOpen, setCompleteOpen] = useState(false)
+  const [completeTarget, setCompleteTarget] = useState<LoaRecord | null>(null)
+  const [completeForm, setCompleteForm] = useState({
+    actualEndDate: new Date().toISOString().slice(0, 10),
+    returnPositionId: '',
+    returnNotes: '',
+  })
+  const [completeLoading, setCompleteLoading] = useState(false)
+
   // Fetch LOA records
   const fetchRecords = useCallback(async () => {
     setLoading(true)
@@ -215,20 +231,62 @@ export function LoaClient({ user }: Props) {
     }
   }
 
-  // 복직 완료 (RETURN_REQUESTED → COMPLETED)
-  const handleComplete = async (record: LoaRecord) => {
-    if (!confirm(`${record.employee.name}의 복직을 완료하시겠습니까?`)) return
-    const res = await fetch(`/api/v1/leave-of-absence/${record.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'complete' }),
-    })
-    if (res.ok) {
-      toast({ title: '복직이 완료되었습니다' })
-      fetchRecords()
-    } else {
-      const err = await res.json()
-      toast({ title: '처리 실패', description: err.error?.message, variant: 'destructive' })
+  // 복직 신청 (ACTIVE → RETURN_REQUESTED) — 다이얼로그 제출
+  const handleReturnSubmit = async () => {
+    if (!returnTarget) return
+    setReturnLoading(true)
+    try {
+      const res = await fetch(`/api/v1/leave-of-absence/${returnTarget.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'return', notes: returnNotes || undefined }),
+      })
+      if (res.ok) {
+        toast({ title: '복직 신청되었습니다' })
+        setReturnOpen(false)
+        setReturnTarget(null)
+        setReturnNotes('')
+        fetchRecords()
+      } else {
+        const err = await res.json()
+        toast({ title: '처리 실패', description: err.error?.message, variant: 'destructive' })
+      }
+    } finally {
+      setReturnLoading(false)
+    }
+  }
+
+  // 복직 완료 (RETURN_REQUESTED → COMPLETED) — 다이얼로그 제출
+  const handleCompleteSubmit = async () => {
+    if (!completeTarget) return
+    if (!completeForm.actualEndDate) {
+      toast({ title: '실제 복직일을 입력해주세요', variant: 'destructive' })
+      return
+    }
+    setCompleteLoading(true)
+    try {
+      const res = await fetch(`/api/v1/leave-of-absence/${completeTarget.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'complete',
+          actualEndDate: completeForm.actualEndDate,
+          returnPositionId: completeForm.returnPositionId || undefined,
+          returnNotes: completeForm.returnNotes || undefined,
+        }),
+      })
+      if (res.ok) {
+        toast({ title: '복직이 완료되었습니다' })
+        setCompleteOpen(false)
+        setCompleteTarget(null)
+        setCompleteForm({ actualEndDate: new Date().toISOString().slice(0, 10), returnPositionId: '', returnNotes: '' })
+        fetchRecords()
+      } else {
+        const err = await res.json()
+        toast({ title: '처리 실패', description: err.error?.message, variant: 'destructive' })
+      }
+    } finally {
+      setCompleteLoading(false)
     }
   }
 
@@ -381,20 +439,25 @@ export function LoaClient({ user }: Props) {
                       {/* HR: 복직 완료 (RETURN_REQUESTED 상태) */}
                       {isHrAdmin && r.status === 'RETURN_REQUESTED' && (
                         <Button size="sm" variant="outline" className="h-7 text-xs text-green-600 border-green-200 hover:bg-green-50"
-                          onClick={() => handleComplete(r)}>
+                          onClick={() => {
+                            setCompleteTarget(r)
+                            setCompleteForm({
+                              actualEndDate: new Date().toISOString().slice(0, 10),
+                              returnPositionId: '',
+                              returnNotes: '',
+                            })
+                            setCompleteOpen(true)
+                          }}>
                           복직 완료
                         </Button>
                       )}
                       {/* 직원: 복직 신청 (ACTIVE 상태 + 본인) */}
                       {r.status === 'ACTIVE' && r.employee.id === user.employeeId && (
                         <Button size="sm" variant="outline" className="h-7 text-xs"
-                          onClick={async () => {
-                            const res = await fetch(`/api/v1/leave-of-absence/${r.id}`, {
-                              method: 'PATCH',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ action: 'return' }),
-                            })
-                            if (res.ok) { toast({ title: '복직 신청되었습니다' }); fetchRecords() }
+                          onClick={() => {
+                            setReturnTarget(r)
+                            setReturnNotes('')
+                            setReturnOpen(true)
                           }}>
                           복직 신청
                         </Button>
@@ -526,6 +589,103 @@ export function LoaClient({ user }: Props) {
               className={actionType === 'approve' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}
             >
               {actionLoading ? '처리 중...' : actionType === 'approve' ? '승인' : '거부'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 복직 신청 다이얼로그 (직원) */}
+      <Dialog open={returnOpen} onOpenChange={setReturnOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>복직 신청</DialogTitle>
+          </DialogHeader>
+          {returnTarget && (
+            <div className="space-y-4 py-2">
+              <div className="rounded-lg bg-[#FAFAFC] p-3 space-y-1">
+                <p className="text-sm font-medium">{returnTarget.type.name}</p>
+                <p className="text-sm text-[#8181A5]">
+                  휴직 기간: {formatDate(returnTarget.startDate)} ~ {formatDate(returnTarget.expectedEndDate)}
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-[#1C1D21]">특이사항</label>
+                <p className="text-xs text-[#8181A5] mb-1">희망 복직일이나 기타 사항을 입력하세요</p>
+                <Textarea
+                  placeholder="예: 희망 복직일 2026-04-15, 부서 변경 희망 등"
+                  value={returnNotes}
+                  onChange={e => setReturnNotes(e.target.value)}
+                  rows={3}
+                />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setReturnOpen(false); setReturnNotes('') }}>취소</Button>
+            <Button onClick={handleReturnSubmit} disabled={returnLoading}>
+              {returnLoading ? '처리 중...' : '복직 신청'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 복직 완료 다이얼로그 (HR) */}
+      <Dialog open={completeOpen} onOpenChange={setCompleteOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>복직 완료 처리</DialogTitle>
+          </DialogHeader>
+          {completeTarget && (
+            <div className="space-y-4 py-2">
+              <div className="rounded-lg bg-[#FAFAFC] p-3 space-y-1">
+                <p className="text-sm font-medium">{completeTarget.employee.name} ({completeTarget.employee.employeeNo})</p>
+                <p className="text-sm text-[#8181A5]">{completeTarget.type.name}</p>
+                <p className="text-sm text-[#8181A5]">
+                  휴직 기간: {formatDate(completeTarget.startDate)} ~ {formatDate(completeTarget.expectedEndDate)}
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-[#1C1D21]">실제 복직일 (필수)</label>
+                <Input
+                  type="date"
+                  value={completeForm.actualEndDate}
+                  onChange={e => setCompleteForm(f => ({ ...f, actualEndDate: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-[#1C1D21]">복귀 직위</label>
+                <Select
+                  value={completeForm.returnPositionId}
+                  onValueChange={v => setCompleteForm(f => ({ ...f, returnPositionId: v === '__none__' ? '' : v }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="현재 직위 유지" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">현재 직위 유지</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-[#8181A5] mt-1">다른 직위로 복귀 시 직위 변경은 인사 발령에서 처리하세요</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-[#1C1D21]">복직 메모</label>
+                <Textarea
+                  placeholder="복직 관련 메모 (선택)"
+                  value={completeForm.returnNotes}
+                  onChange={e => setCompleteForm(f => ({ ...f, returnNotes: e.target.value }))}
+                  rows={2}
+                />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCompleteOpen(false)}>취소</Button>
+            <Button
+              onClick={handleCompleteSubmit}
+              disabled={completeLoading}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {completeLoading ? '처리 중...' : '복직 완료'}
             </Button>
           </DialogFooter>
         </DialogContent>
