@@ -23,7 +23,6 @@ export const terminalUpdateSchema = z.object({
     .string()
     .regex(/^(\d{1,3}\.){3}\d{1,3}$/, '유효한 IP 주소를 입력하세요')
     .optional(),
-  isActive: z.boolean().optional(),
 })
 
 export type TerminalUpdateInput = z.infer<typeof terminalUpdateSchema>

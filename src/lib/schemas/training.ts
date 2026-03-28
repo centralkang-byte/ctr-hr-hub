@@ -12,7 +12,6 @@ export const courseSearchSchema = z.object({
   limit: z.coerce.number().int().positive().max(100).default(DEFAULT_PAGE_SIZE),
   category: z.enum(['COMPLIANCE', 'TECHNICAL', 'LEADERSHIP', 'SAFETY_TRAINING', 'ONBOARDING_TRAINING', 'OTHER']).optional(),
   isMandatory: z.coerce.boolean().optional(),
-  isActive: z.coerce.boolean().optional(),
 })
 
 export const courseCreateSchema = z.object({
@@ -33,7 +32,6 @@ export const courseUpdateSchema = z.object({
   durationHours: z.number().positive().nullable().optional(),
   provider: z.string().max(200).nullable().optional(),
   externalUrl: z.string().url().nullable().optional(),
-  isActive: z.boolean().optional(),
 })
 
 // ─── Training Enrollment ────────────────────────────────

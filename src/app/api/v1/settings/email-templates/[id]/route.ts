@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Email Template Detail API
-// GET: 단건 조회 / PUT: 수정 / DELETE: 삭제
+// GET: 단건 조회 / PUT: 수정 / DELETE: 소프트 삭제
 // ═══════════════════════════════════════════════════════════
 
 import { NextRequest } from 'next/server'
@@ -80,12 +80,12 @@ export const DELETE = withPermission(
 
     try {
       const existing = await prisma.emailTemplate.findFirst({
-        where: { id, companyId: user.companyId },
+        where: { id, companyId: user.companyId, deletedAt: null },
       })
       if (!existing) throw notFound('이메일 템플릿을 찾을 수 없습니다.')
       if (existing.isSystem) throw badRequest('시스템 템플릿은 삭제할 수 없습니다.')
 
-      await prisma.emailTemplate.delete({ where: { id } })
+      await prisma.emailTemplate.update({ where: { id }, data: { deletedAt: new Date() } })
 
       const { ip, userAgent } = extractRequestMeta(req.headers)
       logAudit({

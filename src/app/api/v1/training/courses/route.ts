@@ -22,14 +22,13 @@ export const GET = withPermission(
       throw badRequest('잘못된 파라미터입니다.', { issues: parsed.error.issues })
     }
 
-    const { page, limit, category, isMandatory, isActive } = parsed.data
+    const { page, limit, category, isMandatory } = parsed.data
 
     const where = {
       companyId: user.companyId,
       deletedAt: null,
       ...(category ? { category } : {}),
       ...(isMandatory !== undefined ? { isMandatory } : {}),
-      ...(isActive !== undefined ? { isActive } : {}),
     }
 
     const [courses, total] = await Promise.all([

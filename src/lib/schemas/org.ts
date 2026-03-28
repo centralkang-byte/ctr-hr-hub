@@ -39,10 +39,6 @@ export type DepartmentUpdateInput = z.infer<typeof departmentUpdateSchema>
 export const departmentSearchSchema = searchSchema.extend({
   companyId: z.string().uuid().optional(),
   parentId: z.string().uuid().optional().nullable(),
-  isActive: z.preprocess(
-    (val) => (val === 'true' ? true : val === 'false' ? false : val),
-    z.boolean().optional(),
-  ),
 })
 
 export type DepartmentSearchInput = z.infer<typeof departmentSearchSchema>

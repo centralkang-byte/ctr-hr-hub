@@ -26,7 +26,7 @@ export const GET = withPermission(
       throw badRequest('잘못된 파라미터입니다.', { issues: parsed.error.issues })
     }
 
-    const { page, limit, search, companyId, parentId, isActive } = parsed.data
+    const { page, limit, search, companyId, parentId } = parsed.data
 
     const companyFilter =
       user.role === 'SUPER_ADMIN'
@@ -39,7 +39,6 @@ export const GET = withPermission(
       deletedAt: null,
       ...companyFilter,
       ...(parentId !== undefined ? { parentId } : {}),
-      ...(isActive !== undefined ? { isActive } : {}),
       ...(search
         ? {
             OR: [

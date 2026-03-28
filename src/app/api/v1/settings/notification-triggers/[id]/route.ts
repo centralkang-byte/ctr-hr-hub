@@ -105,12 +105,13 @@ export const DELETE = withPermission(
       const existing = await prisma.notificationTrigger.findFirst({
         where: {
           id,
+          deletedAt: null,
           OR: [{ companyId: user.companyId }, { companyId: null }],
         },
       })
       if (!existing) throw notFound('알림 트리거를 찾을 수 없습니다.')
 
-      await prisma.notificationTrigger.delete({ where: { id } })
+      await prisma.notificationTrigger.update({ where: { id }, data: { deletedAt: new Date() } })
 
       const { ip, userAgent } = extractRequestMeta(req.headers)
       logAudit({
