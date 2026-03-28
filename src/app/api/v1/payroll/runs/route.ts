@@ -10,6 +10,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { payrollRunListSchema, payrollRunCreateSchema } from '@/lib/schemas/payroll'
+import { injectLoaAdjustmentsForNewRun } from '@/lib/loa/payroll-adjustment'
 import type { Prisma } from '@/generated/prisma/client'
 
 export const GET = withPermission(
@@ -61,6 +62,11 @@ export const POST = withPermission(
         currency: data.currency,
         status: 'DRAFT',
       },
+    })
+
+    // LOA Phase 3: PayrollRun 생성 시 ACTIVE LOA adjustment 자동 주입 (fire-and-forget)
+    injectLoaAdjustmentsForNewRun(run.id, user.companyId, data.yearMonth).catch((err) => {
+      console.error('[LOA Phase 3] PayrollRun 생성 시 LOA adjustment 자동 주입 실패:', err)
     })
 
     const { ip, userAgent } = extractRequestMeta(req.headers)

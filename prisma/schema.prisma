@@ -2993,11 +2993,19 @@ model PayrollAdjustment {
   amount      Decimal          @db.Decimal(15, 0) // 양수=추가, 음수=공제
 
   evidenceUrl String?  @map("evidence_url") // 첨부파일 URL
+
+  // LOA 연동 (Phase 3: 월별 급여 차액 자동 생성)
+  loaId        String?  @map("loa_id")
+  loaYearMonth String?  @map("loa_year_month")  // "YYYY-MM"
+
+  leaveOfAbsence LeaveOfAbsence? @relation(fields: [loaId], references: [id])
+
   createdBy   String   @map("created_by")
   createdAt   DateTime @default(now()) @map("created_at")
 
   @@index([payrollRunId])
   @@index([employeeId])
+  @@index([loaId])
   @@map("payroll_adjustments")
 }
 
@@ -6276,6 +6284,8 @@ model LeaveOfAbsence {
   rejecter  Employee?            @relation("LOARejecter", fields: [rejectedBy], references: [id])
   parent    LeaveOfAbsence?      @relation("LOASplit", fields: [parentId], references: [id])
   splits    LeaveOfAbsence[]     @relation("LOASplit")
+
+  payrollAdjustments PayrollAdjustment[]
 
   @@index([employeeId])
   @@index([companyId, status])

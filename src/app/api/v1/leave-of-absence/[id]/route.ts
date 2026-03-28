@@ -11,6 +11,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { sendNotification } from '@/lib/notifications'
 import type { SessionUser } from '@/types'
+import { createCrossMonthLoaAdjustments, reconcileLoaAdjustments } from '@/lib/loa/payroll-adjustment'
 
 type RouteContext = { params: Promise<Record<string, string>> }
 
@@ -78,7 +79,7 @@ export const PATCH = withPermission(
         case 'return':
           return apiSuccess(await handleReturn(id, record, body))
         case 'complete':
-          return apiSuccess(await handleComplete(id, record, body))
+          return apiSuccess(await handleComplete(id, record, body, user))
         case 'cancel':
           return apiSuccess(await handleCancel(id, record))
         default:
@@ -214,54 +215,15 @@ async function handleActivate(id: string, record: RecordWithType, user: SessionU
     })
   })
 
-  // Side-effect: PayrollAdjustment 생성 (fire-and-forget)
-  createLoaPayrollAdjustment(record, user).catch(() => {})
+  // Side-effect: 월별 급여 조정 생성 (fire-and-forget)
+  createCrossMonthLoaAdjustments(record, user.employeeId ?? user.id).catch((err) => {
+    console.error('[LOA Phase 3] 급여 조정 생성 실패:', err)
+  })
 
   // Side-effect: HR Admin 알림 발송
   notifyLoaActivation(record)
 
   return result
-}
-
-// 휴직 활성화 시 급여 조정 플레이스홀더 생성
-async function createLoaPayrollAdjustment(record: RecordWithType, user: SessionUser) {
-  const startDate = new Date(record.startDate)
-  const yearMonth = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}`
-
-  const payrollRun = await prisma.payrollRun.findFirst({
-    where: {
-      companyId: record.companyId,
-      yearMonth,
-      status: { notIn: ['PAID', 'CANCELLED'] },
-    },
-  })
-
-  if (!payrollRun) return
-
-  const payType = record.payType ?? record.type.payType ?? 'UNPAID'
-  const payRate = record.payRate ?? record.type.payRate
-  const startStr = new Date(record.startDate).toLocaleDateString('ko-KR')
-  const endStr = record.expectedEndDate
-    ? new Date(record.expectedEndDate).toLocaleDateString('ko-KR')
-    : '미정'
-
-  await prisma.$transaction([
-    prisma.payrollAdjustment.create({
-      data: {
-        payrollRunId: payrollRun.id,
-        employeeId: record.employeeId,
-        type: 'DEDUCTION',
-        category: 'LOA_PAY_ADJUSTMENT',
-        description: `[휴직 급여 조정] ${record.type.name} (${payType}${payRate ? `, ${payRate}%` : ''}) — 휴직 기간: ${startStr} ~ ${endStr} — 이후 급여 차감/일할 계산 필수`,
-        amount: 0,
-        createdBy: user.employeeId ?? user.id,
-      },
-    }),
-    prisma.payrollRun.update({
-      where: { id: payrollRun.id },
-      data: { adjustmentCount: { increment: 1 } },
-    }),
-  ])
 }
 
 // HR Admin에 휴직 활성화 알림 발송
@@ -319,6 +281,7 @@ async function handleComplete(
   id: string,
   record: RecordWithType,
   body: Record<string, unknown>,
+  user: SessionUser,
 ) {
   assertTransition(record.status, 'COMPLETED')
 
@@ -370,6 +333,9 @@ async function handleComplete(
       })
       returnAssignmentId = returnAssignment.id
     }
+
+    // 급여 조정 소급 정산 (실제 종료일 기준)
+    await reconcileLoaAdjustments(tx, record, actualEndDate, user.employeeId ?? user.id)
 
     return tx.leaveOfAbsence.update({
       where: { id },
