@@ -4820,7 +4820,8 @@
       "managerEval": "매니저 평가",
       "oneOnOne": "1:1 미팅",
       "skills": "팀원 역량 평가",
-      "delegation": "업무 위임"
+      "delegation": "업무 위임",
+      "time": "팀 근태/휴가"
     },
     "hrMgmt": {
       "label": "인사 관리",
@@ -4832,7 +4833,8 @@
       "loaAdmin": "휴직 관리",
       "onboardingOffboarding": "온보딩/오프보딩",
       "disciplineRewards": "징계/포상",
-      "exitInterviewStats": "퇴직 면담 통계"
+      "exitInterviewStats": "퇴직 면담 통계",
+      "leaveLoaAdmin": "휴가/휴직 관리"
     },
     "hrOps": {
       "label": "인사 운영",
@@ -4858,7 +4860,8 @@
       "posts": "채용 공고",
       "dashboard": "채용 대시보드",
       "board": "칸반 보드",
-      "talentPool": "인재 풀"
+      "talentPool": "인재 풀",
+      "internalJobs": "사내 채용"
     },
     "performance": {
       "label": "성과/보상",
@@ -4934,7 +4937,8 @@
       "dpia": "DPIA",
       "kr": "한국 컴플라이언스",
       "cn": "중국 컴플라이언스",
-      "ru": "러시아 컴플라이언스"
+      "ru": "러시아 컴플라이언스",
+      "hub": "컴플라이언스"
     },
     "settings": {
       "label": "설정",
@@ -4983,6 +4987,13 @@
     "employee": {
       "work": "근태/휴가",
       "org": "조직"
+    },
+    "subGroup": {
+      "work": "업무",
+      "time-off": "근태/휴가",
+      "pay": "급여",
+      "growth": "성장",
+      "etc": "기타"
     }
   },
   "header": {

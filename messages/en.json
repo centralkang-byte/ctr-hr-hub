@@ -4820,7 +4820,8 @@
       "managerEval": "Manager Evaluation",
       "oneOnOne": "1:1 Meetings",
       "skills": "Team Skills",
-      "delegation": "Delegation Settings"
+      "delegation": "Delegation Settings",
+      "time": "Team Time & Leave"
     },
     "hrMgmt": {
       "label": "HR Management",
@@ -4832,7 +4833,8 @@
       "loaAdmin": "Leave of Absence Admin",
       "onboardingOffboarding": "Onboarding/Offboarding",
       "disciplineRewards": "Discipline & Rewards",
-      "exitInterviewStats": "Exit Interview Stats"
+      "exitInterviewStats": "Exit Interview Stats",
+      "leaveLoaAdmin": "Leave & LOA"
     },
     "hrOps": {
       "label": "HR Operations",
@@ -4858,7 +4860,8 @@
       "posts": "Job Postings",
       "dashboard": "Recruitment Dashboard",
       "board": "Kanban Board",
-      "talentPool": "Talent Pool"
+      "talentPool": "Talent Pool",
+      "internalJobs": "Internal Jobs"
     },
     "performance": {
       "label": "Performance & Compensation",
@@ -4934,7 +4937,8 @@
       "dpia": "DPIA",
       "kr": "Korea Compliance",
       "cn": "China Compliance",
-      "ru": "Russia Compliance"
+      "ru": "Russia Compliance",
+      "hub": "Compliance"
     },
     "settings": {
       "label": "Settings",
@@ -4983,6 +4987,13 @@
     "employee": {
       "work": "Attendance & Leave",
       "org": "Organization"
+    },
+    "subGroup": {
+      "work": "Work",
+      "time-off": "Time & Leave",
+      "pay": "Pay",
+      "growth": "Growth",
+      "etc": "Other"
     }
   },
   "header": {

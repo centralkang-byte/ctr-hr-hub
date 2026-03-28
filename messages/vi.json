@@ -4820,7 +4820,8 @@
       "oneOnOne": "Họp 1:1",
       "skills": "Đánh giá năng lực nhóm",
       "delegation": "Delegation Settings",
-      "goalsPerformance": "Nhóm Mục tiêus & Hiệu suất"
+      "goalsPerformance": "Nhóm Mục tiêus & Hiệu suất",
+      "time": "Chấm công/Nghỉ phép nhóm"
     },
     "hrOps": {
       "label": "Vận hành nhân sự",
@@ -4936,14 +4937,16 @@
       "leaveAdmin": "Leave Quản trị viên",
       "loaAdmin": "Quản lý nghỉ phép dài hạn",
       "onboardingOffboarding": "Onboarding/Offboarding",
-      "disciplineRewards": "Discipline & Rewards"
+      "disciplineRewards": "Discipline & Rewards",
+      "leaveLoaAdmin": "Quản lý nghỉ phép"
     },
     "recruitment": {
       "label": "Tuyển dụng",
       "posts": "Job Postings",
       "dashboard": "Recruitment Dashboard",
       "board": "Kanban Board",
-      "talentPool": "Talent Pool"
+      "talentPool": "Talent Pool",
+      "internalJobs": "Việc làm nội bộ"
     },
     "performance": {
       "label": "Hiệu suất & Compensation",
@@ -4975,7 +4978,8 @@
       "dpia": "DPIA",
       "kr": "Korea Tuân thủ",
       "cn": "China Tuân thủ",
-      "ru": "Russia Tuân thủ"
+      "ru": "Russia Tuân thủ",
+      "hub": "Tuân thủ"
     },
     "favorites": {
       "label": "Favorites"
@@ -4983,6 +4987,13 @@
     "employee": {
       "work": "Chấm công & Nghỉ phép",
       "org": "Tổ chức"
+    },
+    "subGroup": {
+      "work": "Công việc",
+      "time-off": "Chấm công/Nghỉ phép",
+      "pay": "Lương",
+      "growth": "Phát triển",
+      "etc": "Khác"
     }
   },
   "myTasks": {

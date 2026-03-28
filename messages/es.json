@@ -4820,7 +4820,8 @@
       "oneOnOne": "Reunión 1:1",
       "skills": "Evaluación de competencias del equipo",
       "delegation": "Delegation Settings",
-      "goalsPerformance": "Equipo Objetivos & Rendimiento"
+      "goalsPerformance": "Equipo Objetivos & Rendimiento",
+      "time": "Asistencia/Vacaciones del equipo"
     },
     "hrOps": {
       "label": "Operaciones de RRHH",
@@ -4936,14 +4937,16 @@
       "leaveAdmin": "Leave Administrador",
       "loaAdmin": "Administración de licencias",
       "onboardingOffboarding": "Onboarding/Offboarding",
-      "disciplineRewards": "Discipline & Rewards"
+      "disciplineRewards": "Discipline & Rewards",
+      "leaveLoaAdmin": "Gestión de permisos"
     },
     "recruitment": {
       "label": "Reclutamiento",
       "posts": "Job Postings",
       "dashboard": "Recruitment Dashboard",
       "board": "Kanban Board",
-      "talentPool": "Talent Pool"
+      "talentPool": "Talent Pool",
+      "internalJobs": "Empleos internos"
     },
     "performance": {
       "label": "Rendimiento & Compensation",
@@ -4975,7 +4978,8 @@
       "dpia": "DPIA",
       "kr": "Korea Cumplimiento",
       "cn": "China Cumplimiento",
-      "ru": "Russia Cumplimiento"
+      "ru": "Russia Cumplimiento",
+      "hub": "Cumplimiento"
     },
     "favorites": {
       "label": "Favorites"
@@ -4983,6 +4987,13 @@
     "employee": {
       "work": "Asistencia y Permisos",
       "org": "Organización"
+    },
+    "subGroup": {
+      "work": "Trabajo",
+      "time-off": "Asistencia/Vacaciones",
+      "pay": "Nómina",
+      "growth": "Crecimiento",
+      "etc": "Otros"
     }
   },
   "myTasks": {

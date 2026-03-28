@@ -4820,7 +4820,8 @@
       "oneOnOne": "1:1会议",
       "skills": "团队能力评估",
       "delegation": "Delegation Settings",
-      "goalsPerformance": "团队 目标s & 绩效"
+      "goalsPerformance": "团队 目标s & 绩效",
+      "time": "团队考勤/假期"
     },
     "hrOps": {
       "label": "人事运营",
@@ -4936,14 +4937,16 @@
       "leaveAdmin": "Leave 管理员",
       "loaAdmin": "休假管理",
       "onboardingOffboarding": "Onboarding/Offboarding",
-      "disciplineRewards": "Discipline & Rewards"
+      "disciplineRewards": "Discipline & Rewards",
+      "leaveLoaAdmin": "休假/休职管理"
     },
     "recruitment": {
       "label": "招聘",
       "posts": "Job Postings",
       "dashboard": "Recruitment Dashboard",
       "board": "Kanban Board",
-      "talentPool": "Talent Pool"
+      "talentPool": "Talent Pool",
+      "internalJobs": "内部招聘"
     },
     "performance": {
       "label": "绩效 & Compensation",
@@ -4975,7 +4978,8 @@
       "dpia": "DPIA",
       "kr": "Korea 合规",
       "cn": "China 合规",
-      "ru": "Russia 合规"
+      "ru": "Russia 合规",
+      "hub": "合规"
     },
     "favorites": {
       "label": "Favorites"
@@ -4983,6 +4987,13 @@
     "employee": {
       "work": "考勤/休假",
       "org": "组织"
+    },
+    "subGroup": {
+      "work": "工作",
+      "time-off": "考勤/假期",
+      "pay": "薪资",
+      "growth": "成长",
+      "etc": "其他"
     }
   },
   "myTasks": {
