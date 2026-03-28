@@ -6,7 +6,7 @@
 // PROTECTED — DO NOT MODIFY without architecture review
 // This file is a core infrastructure component. Changes here
 // can break: sidebar navigation IA — 30+ menu items, role-based visibility, 4 layers
-// Last verified: 2026-03-12 (Q-4 P6)
+// Last verified: 2026-03-28 (Session 49 — IA 리팩터링)
 // ═══════════════════════════════════════════════════════════════
 
 import {
@@ -75,6 +75,12 @@ import { MODULE, ROLE } from '@/lib/constants'
 
 // ─── Types ──────────────────────────────────────────────────
 
+// My Space 내 시각적 서브그룹 (구분선 + 레이블)
+export type SubGroup = 'work' | 'time-off' | 'pay' | 'growth' | 'etc'
+
+// 조건부 표시 아이템 (useNavigation에서 런타임 필터링)
+export type ConditionalItem = 'onboarding' | 'offboarding' | 'year-end'
+
 export interface NavItem {
   key: string
   labelKey: string
@@ -86,6 +92,8 @@ export interface NavItem {
   comingSoon?: boolean
   children?: NavItem[]
   countryFilter?: string[]
+  subGroup?: SubGroup
+  conditional?: ConditionalItem
 }
 
 export interface NavSection {
@@ -163,6 +171,7 @@ export const NAVIGATION: NavSection[] = [
   },
 
   // ══ 2. MY SPACE (나의 공간) ════════════════════════════
+  // 19 → 12 상시 + 3 조건부 (IA 리팩터링 2026-03-28)
   {
     key: 'my-space',
     labelKey: 'nav.mySpace.label',
@@ -170,6 +179,7 @@ export const NAVIGATION: NavSection[] = [
     icon: User,
     visibleTo: ALL_ROLES,
     items: [
+      // ── 업무 ──────────────────────────────────────────
       {
         key: 'my-tasks',
         labelKey: 'nav.mySpace.myTasks',
@@ -178,15 +188,9 @@ export const NAVIGATION: NavSection[] = [
         icon: ListChecks,
         module: MODULE.EMPLOYEES,
         badge: 'new' as const,
+        subGroup: 'work',
       },
-      {
-        key: 'my-profile',
-        labelKey: 'nav.mySpace.profile',
-        label: '내 프로필',
-        href: '/my/profile',
-        icon: UserCircle,
-        module: MODULE.EMPLOYEES,
-      },
+      // ── 근태/휴가 ──────────────────────────────────────
       {
         key: 'my-attendance',
         labelKey: 'nav.mySpace.attendance',
@@ -194,6 +198,7 @@ export const NAVIGATION: NavSection[] = [
         href: '/attendance',
         icon: Clock,
         module: MODULE.ATTENDANCE,
+        subGroup: 'time-off',
       },
       {
         key: 'my-leave',
@@ -202,6 +207,7 @@ export const NAVIGATION: NavSection[] = [
         href: '/leave',
         icon: CalendarDays,
         module: MODULE.LEAVE,
+        subGroup: 'time-off',
       },
       {
         key: 'my-loa',
@@ -210,7 +216,9 @@ export const NAVIGATION: NavSection[] = [
         href: '/leave-of-absence',
         icon: BedDouble,
         module: MODULE.LEAVE,
+        subGroup: 'time-off',
       },
+      // ── 급여 ──────────────────────────────────────────
       {
         key: 'my-payslip',
         labelKey: 'nav.mySpace.payslip',
@@ -218,14 +226,7 @@ export const NAVIGATION: NavSection[] = [
         href: '/payroll/me',
         icon: Wallet,
         module: MODULE.PAYROLL,
-      },
-      {
-        key: 'my-goals',
-        labelKey: 'nav.mySpace.goals',
-        label: '목표/평가',
-        href: '/performance',
-        icon: Target,
-        module: MODULE.PERFORMANCE,
+        subGroup: 'pay',
       },
       {
         key: 'my-benefits',
@@ -234,6 +235,7 @@ export const NAVIGATION: NavSection[] = [
         href: '/my/benefits',
         icon: Gift,
         module: MODULE.BENEFITS,
+        subGroup: 'pay',
       },
       {
         key: 'my-year-end',
@@ -244,22 +246,18 @@ export const NAVIGATION: NavSection[] = [
         module: MODULE.PAYROLL,
         countryFilter: ['KR'],
         badge: 'new' as const,
+        subGroup: 'pay',
+        conditional: 'year-end',
       },
+      // ── 성장 ──────────────────────────────────────────
       {
-        key: 'my-onboarding',
-        labelKey: 'nav.mySpace.myOnboarding',
-        label: '나의 온보딩',
-        href: '/onboarding/me',
-        icon: UserCheck,
-        module: MODULE.ONBOARDING,
-      },
-      {
-        key: 'my-offboarding',
-        labelKey: 'nav.mySpace.myOffboarding',
-        label: '나의 퇴직처리',
-        href: '/my/offboarding',
-        icon: LogOut,
-        module: MODULE.EMPLOYEES,
+        key: 'my-goals',
+        labelKey: 'nav.mySpace.goals',
+        label: '목표/평가',
+        href: '/performance',
+        icon: Target,
+        module: MODULE.PERFORMANCE,
+        subGroup: 'growth',
       },
       {
         key: 'my-skills',
@@ -268,6 +266,7 @@ export const NAVIGATION: NavSection[] = [
         href: '/my/skills',
         icon: Sparkles,
         module: MODULE.EMPLOYEES,
+        subGroup: 'growth',
       },
       {
         key: 'my-training',
@@ -276,6 +275,7 @@ export const NAVIGATION: NavSection[] = [
         href: '/my/training',
         icon: Briefcase,
         module: MODULE.TRAINING,
+        subGroup: 'growth',
       },
       {
         key: 'my-recognition',
@@ -284,15 +284,9 @@ export const NAVIGATION: NavSection[] = [
         href: '/performance/recognition',
         icon: Heart,
         module: MODULE.PERFORMANCE,
+        subGroup: 'growth',
       },
-      {
-        key: 'my-internal-jobs',
-        labelKey: 'nav.mySpace.internalJobs',
-        label: '사내 채용',
-        href: '/my/internal-jobs',
-        icon: Briefcase,
-        module: MODULE.RECRUITMENT,
-      },
+      // ── 기타 ──────────────────────────────────────────
       {
         key: 'my-documents',
         labelKey: 'nav.mySpace.documents',
@@ -301,35 +295,43 @@ export const NAVIGATION: NavSection[] = [
         icon: FileText,
         module: MODULE.EMPLOYEES,
         badge: 'new' as const,
+        subGroup: 'etc',
       },
       {
-        key: 'my-notification-settings',
-        labelKey: 'nav.mySpace.notificationSettings',
-        label: '알림 설정',
-        href: '/my/settings/notifications',
-        icon: Bell,
+        key: 'my-profile',
+        labelKey: 'nav.mySpace.profile',
+        label: '내 프로필',
+        href: '/my/profile',
+        icon: UserCircle,
         module: MODULE.EMPLOYEES,
+        subGroup: 'etc',
       },
+      // ── 조건부 (런타임 필터) ───────────────────────────
       {
-        key: 'my-directory',
-        labelKey: 'nav.mySpace.directory',
-        label: '구성원 검색',
-        href: '/directory',
+        key: 'my-onboarding',
+        labelKey: 'nav.mySpace.myOnboarding',
+        label: '나의 온보딩',
+        href: '/onboarding/me',
         icon: UserCheck,
-        module: MODULE.EMPLOYEES,
+        module: MODULE.ONBOARDING,
+        subGroup: 'etc',
+        conditional: 'onboarding',
       },
       {
-        key: 'my-org',
-        labelKey: 'nav.mySpace.orgChart',
-        label: '조직도',
-        href: '/org',
-        icon: Network,
-        module: MODULE.ORG,
+        key: 'my-offboarding',
+        labelKey: 'nav.mySpace.myOffboarding',
+        label: '나의 퇴직처리',
+        href: '/my/offboarding',
+        icon: LogOut,
+        module: MODULE.EMPLOYEES,
+        subGroup: 'etc',
+        conditional: 'offboarding',
       },
     ],
   },
 
   // ══ 3. TEAM (팀 관리) — MANAGER+ ══════════════════════
+  // 7 → 5 (매니저 평가 제거, 팀 근태/휴가 통합)
   {
     key: 'team',
     labelKey: 'nav.team.label',
@@ -346,20 +348,12 @@ export const NAVIGATION: NavSection[] = [
         module: MODULE.EMPLOYEES,
       },
       {
-        key: 'team-attendance',
-        labelKey: 'nav.team.attendance',
-        label: '팀 근태',
+        key: 'team-time',
+        labelKey: 'nav.team.time',
+        label: '팀 근태/휴가',
         href: '/attendance/team',
         icon: Clock,
         module: MODULE.ATTENDANCE,
-      },
-      {
-        key: 'team-leave',
-        labelKey: 'nav.team.leave',
-        label: '팀 휴가',
-        href: '/leave/team',
-        icon: CalendarDays,
-        module: MODULE.LEAVE,
       },
       {
         key: 'team-goals-performance',
@@ -367,14 +361,6 @@ export const NAVIGATION: NavSection[] = [
         label: '팀 목표/성과',
         href: '/performance/team-goals',
         icon: Target,
-        module: MODULE.PERFORMANCE,
-      },
-      {
-        key: 'manager-eval',
-        labelKey: 'nav.team.managerEval',
-        label: '매니저 평가',
-        href: '/performance/manager-eval',
-        icon: ClipboardCheck,
         module: MODULE.PERFORMANCE,
       },
       {
@@ -398,6 +384,7 @@ export const NAVIGATION: NavSection[] = [
   },
 
   // ══ 4. HR MANAGEMENT (인사 관리) — HR_ADMIN+ ══════════
+  // 9 → 6 (구성원 디렉토리 제거, 휴가/휴직 통합, 퇴직면담 제거)
   {
     key: 'hr-mgmt',
     labelKey: 'nav.hrMgmt.label',
@@ -411,14 +398,6 @@ export const NAVIGATION: NavSection[] = [
         label: '직원 관리',
         href: '/employees',
         icon: Users,
-        module: MODULE.EMPLOYEES,
-      },
-      {
-        key: 'people-directory',
-        labelKey: 'nav.hrMgmt.directory',
-        label: '구성원 디렉토리',
-        href: '/directory',
-        icon: UserCheck,
         module: MODULE.EMPLOYEES,
       },
       {
@@ -438,19 +417,11 @@ export const NAVIGATION: NavSection[] = [
         module: MODULE.ATTENDANCE,
       },
       {
-        key: 'leave-admin',
-        labelKey: 'nav.hrMgmt.leaveAdmin',
-        label: '휴가 관리',
+        key: 'leave-loa-admin',
+        labelKey: 'nav.hrMgmt.leaveLoaAdmin',
+        label: '휴가/휴직 관리',
         href: '/leave/admin',
         icon: CalendarDays,
-        module: MODULE.LEAVE,
-      },
-      {
-        key: 'loa-admin',
-        labelKey: 'nav.hrMgmt.loaAdmin',
-        label: '휴직 관리',
-        href: '/leave-of-absence',
-        icon: BedDouble,
         module: MODULE.LEAVE,
       },
       {
@@ -459,14 +430,6 @@ export const NAVIGATION: NavSection[] = [
         label: '온보딩/오프보딩',
         href: '/onboarding',
         icon: UserCheck,
-        module: MODULE.ONBOARDING,
-      },
-      {
-        key: 'exit-interview-stats',
-        labelKey: 'nav.hrMgmt.exitInterviewStats',
-        label: '퇴직 면담 분석',
-        href: '/offboarding/exit-interviews',
-        icon: BarChart3,
         module: MODULE.ONBOARDING,
       },
       {
@@ -481,6 +444,7 @@ export const NAVIGATION: NavSection[] = [
   },
 
   // ══ 5. RECRUITMENT (채용) — HR_ADMIN+ ═════════════════
+  // 4 → 5 (사내 채용 My Space에서 이동)
   {
     key: 'recruitment',
     labelKey: 'nav.recruitment.label',
@@ -521,10 +485,19 @@ export const NAVIGATION: NavSection[] = [
         icon: Crown,
         module: MODULE.SUCCESSION,
       },
+      {
+        key: 'internal-jobs',
+        labelKey: 'nav.recruitment.internalJobs',
+        label: '사내 채용',
+        href: '/my/internal-jobs',
+        icon: Briefcase,
+        module: MODULE.RECRUITMENT,
+      },
     ],
   },
 
   // ══ 6. PERFORMANCE & COMPENSATION (성과/보상) — HR_ADMIN+ ══
+  // 7 → 4 (목표/결과/동료평가 성과 허브 탭으로 흡수)
   {
     key: 'performance',
     labelKey: 'nav.performance.label',
@@ -541,35 +514,11 @@ export const NAVIGATION: NavSection[] = [
         module: MODULE.PERFORMANCE,
       },
       {
-        key: 'performance-goals',
-        labelKey: 'nav.performance.goals',
-        label: '목표 관리',
-        href: '/performance/goals',
-        icon: ClipboardCheck,
-        module: MODULE.PERFORMANCE,
-      },
-      {
         key: 'calibration',
         labelKey: 'nav.performance.calibration',
         label: '캘리브레이션',
         href: '/performance/calibration',
         icon: Scale,
-        module: MODULE.PERFORMANCE,
-      },
-      {
-        key: 'performance-results',
-        labelKey: 'nav.performance.results',
-        label: '성과 결과',
-        href: '/performance/results',
-        icon: BarChart3,
-        module: MODULE.PERFORMANCE,
-      },
-      {
-        key: 'peer-review',
-        labelKey: 'nav.performance.peerReview',
-        label: '동료 평가',
-        href: '/performance/peer-review',
-        icon: Users,
         module: MODULE.PERFORMANCE,
       },
       {
@@ -746,6 +695,7 @@ export const NAVIGATION: NavSection[] = [
   },
 
   // ══ 9. COMPLIANCE (컴플라이언스) — HR_ADMIN+ ══════════
+  // 7 → 1 (허브 페이지 내 탭으로 통합)
   {
     key: 'compliance',
     labelKey: 'nav.compliance.label',
@@ -754,63 +704,12 @@ export const NAVIGATION: NavSection[] = [
     visibleTo: HR_UP,
     items: [
       {
-        key: 'compliance-gdpr',
-        labelKey: 'nav.compliance.gdpr',
-        label: 'GDPR/개인정보',
-        href: '/compliance/gdpr',
+        key: 'compliance-hub',
+        labelKey: 'nav.compliance.hub',
+        label: '컴플라이언스',
+        href: '/compliance',
         icon: Shield,
         module: MODULE.COMPLIANCE,
-      },
-      {
-        key: 'data-retention',
-        labelKey: 'nav.compliance.dataRetention',
-        label: '데이터 보관',
-        href: '/compliance/data-retention',
-        icon: Database,
-        module: MODULE.COMPLIANCE,
-      },
-      {
-        key: 'pii-audit',
-        labelKey: 'nav.compliance.piiAudit',
-        label: 'PII 감사',
-        href: '/compliance/pii-audit',
-        icon: Eye,
-        module: MODULE.COMPLIANCE,
-      },
-      {
-        key: 'dpia',
-        labelKey: 'nav.compliance.dpia',
-        label: 'DPIA',
-        href: '/compliance/dpia',
-        icon: FileSearch,
-        module: MODULE.COMPLIANCE,
-      },
-      {
-        key: 'compliance-kr',
-        labelKey: 'nav.compliance.kr',
-        label: '한국 컴플라이언스',
-        href: '/compliance/kr',
-        icon: ClipboardCheck,
-        module: MODULE.COMPLIANCE,
-        countryFilter: ['KR'],
-      },
-      {
-        key: 'compliance-cn',
-        labelKey: 'nav.compliance.cn',
-        label: '중국 컴플라이언스',
-        href: '/compliance/cn',
-        icon: Scale,
-        module: MODULE.COMPLIANCE,
-        countryFilter: ['CN'],
-      },
-      {
-        key: 'compliance-ru',
-        labelKey: 'nav.compliance.ru',
-        label: '러시아 컴플라이언스',
-        href: '/compliance/ru',
-        icon: FileText,
-        module: MODULE.COMPLIANCE,
-        countryFilter: ['RU'],
       },
     ],
   },
