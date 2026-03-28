@@ -32,23 +32,23 @@ export const PUT = withPermission(
     }
 
     // F-2: Delegation check — if current user is not direct approver, check delegation
-    let delegatedBy: string | null = null
+    let delegatedById: string | null = null
     const isDirectApprover =
-      !request.approvedBy ||
-      request.approvedBy === user.employeeId ||
+      !request.approvedById ||
+      request.approvedById === user.employeeId ||
       ['HR_ADMIN', 'SUPER_ADMIN'].includes(user.role)
 
     if (!isDirectApprover) {
       const delegationResult = await checkDelegation(
         user.employeeId,
-        request.approvedBy!,
+        request.approvedById!,
         user.companyId,
         'LEAVE_ONLY',
       )
       if (!delegationResult.isDelegatee) {
         throw badRequest('이 휴가 신청에 대한 승인 권한이 없습니다.')
       }
-      delegatedBy = user.employeeId
+      delegatedById = user.employeeId
     }
 
     // 3. Resolve leaveTypeDefId (직접 또는 policyId 경유)
@@ -98,9 +98,9 @@ export const PUT = withPermission(
       where: { id },
       data: {
         status:      'APPROVED',
-        approvedBy:  request.approvedBy ?? user.employeeId,
+        approvedById:  request.approvedById ?? user.employeeId,
         approvedAt:  new Date(),
-        delegatedBy: delegatedBy,
+        delegatedById: delegatedById,
       },
     })
 
@@ -126,7 +126,7 @@ export const PUT = withPermission(
       companyId:    request.companyId,
       changes: {
         status:     'APPROVED',
-        approvedBy: user.employeeId,
+        approvedById: user.employeeId,
       },
       ...meta,
     })

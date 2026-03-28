@@ -216,7 +216,7 @@ class OffboardingTaskMapper
         lastWorkingDate: offboarding.lastWorkingDate.toISOString(),
         handoverToId: offboarding.handoverToId ?? null,
         daysUntilDue,
-        completedBy: source.completedBy ?? null,
+        completedById: source.completedById ?? null,
       },
     }
   }

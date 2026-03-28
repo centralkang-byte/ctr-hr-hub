@@ -78,7 +78,7 @@ export const delegationNotSetRule: NudgeRule = {
       where: {
         companyId,
         status: 'PENDING',
-        approvedBy: assigneeId,
+        approvedById: assigneeId,
       },
     })
 

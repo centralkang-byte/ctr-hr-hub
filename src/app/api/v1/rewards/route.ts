@@ -107,7 +107,7 @@ export const POST = withPermission(
           description: data.description ?? null,
           amount: data.amount ?? null,
           awardedDate: new Date(data.awardedDate),
-          awardedBy: user.employeeId,
+          awardedById: user.employeeId,
           documentKey: data.documentKey ?? null,
           ctrValue: data.ctrValue ?? null,
           serviceYears: data.serviceYears ?? null,

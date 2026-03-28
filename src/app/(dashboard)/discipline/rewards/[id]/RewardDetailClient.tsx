@@ -171,7 +171,7 @@ export default function RewardDetailClient({ user, id }: Props) {
                     : '-'
                 }
               />
-              {data.issuer && <InfoItem label={t('awardedBy')} value={data.issuer.name} />}
+              {data.issuer && <InfoItem label={t('awardedById')} value={data.issuer.name} />}
               {data.serviceYears !== null && data.serviceYears !== undefined && (
                 <InfoItem label={t('serviceYears')} value={t('serviceYearsValue', { years: data.serviceYears })} />
               )}

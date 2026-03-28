@@ -465,7 +465,7 @@ export async function seedQASkillsTrainingPulse(prisma: PrismaClient) {
               openAt: s.openAt,
               closeAt: s.closeAt,
               status: s.status,
-              createdBy: hrAdmin.id,
+              createdById: hrAdmin.id,
               minRespondentsForReport: 5,
             },
           })

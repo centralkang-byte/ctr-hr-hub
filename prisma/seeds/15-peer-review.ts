@@ -110,7 +110,7 @@ export async function seedPeerReview(prisma: PrismaClient): Promise<void> {
                     nominationSource: source,
                     collaborationTotalScore: collabScore,
                     status,
-                    approvedBy: isApproved ? hrId : null,
+                    approvedById: isApproved ? hrId : null,
                     approvedAt: isApproved ? new Date('2025-12-15') : null,
                 },
             })

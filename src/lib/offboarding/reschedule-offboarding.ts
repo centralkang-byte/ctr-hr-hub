@@ -74,7 +74,7 @@ export async function rescheduleOffboarding(
                 changeType: 'RESIGN',
                 effectiveDate: newLastWorkingDate,
                 reason: `퇴직일 변경: ${oldDate.toISOString().split('T')[0]} → ${newLastWorkingDate.toISOString().split('T')[0]}. 사유: ${reason}`,
-                approvedBy: actorId,
+                approvedById: actorId,
             },
         })
     })

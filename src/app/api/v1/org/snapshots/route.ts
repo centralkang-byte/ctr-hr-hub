@@ -133,11 +133,11 @@ export const POST = withPermission(
           companyId,
           snapshotDate: today,
           snapshotData,
-          createdBy: user.employeeId,
+          createdById: user.employeeId,
         },
         update: {
           snapshotData,
-          createdBy: user.employeeId,
+          createdById: user.employeeId,
         },
       })
 

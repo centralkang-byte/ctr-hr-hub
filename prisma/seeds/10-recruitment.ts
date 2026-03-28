@@ -185,7 +185,7 @@ export async function seedRecruitment(prisma: PrismaClient): Promise<void> {
     const krId = krCo.id
     const cnId = cnCo?.id
 
-    // ── HR creator employee (used as createdBy) ──────────────
+    // ── HR creator employee (used as createdById) ──────────────
     const hrEmp = await prisma.employee.findFirst({ where: { employeeNo: 'CTR-KR-0001' } })
     if (!hrEmp) { console.error('  ❌ HR employee CTR-KR-0001 not found'); return }
     const hrId = hrEmp.id
@@ -243,7 +243,7 @@ export async function seedRecruitment(prisma: PrismaClient): Promise<void> {
                     salaryHidden: false,
                     workMode: 'OFFICE',
                     status: p.status,
-                    createdBy: p.companyCode === 'CTR-CN' ? cnCreatorId : hrId,
+                    createdById: p.companyCode === 'CTR-CN' ? cnCreatorId : hrId,
                     postedAt,
                     closedAt,
                     deadlineDate,

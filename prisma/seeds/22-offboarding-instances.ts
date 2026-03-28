@@ -167,7 +167,7 @@ export async function seedOffboardingInstances(prisma: PrismaClient) {
             resignReasonDetail: '급여 불만족',
             status: 'IN_PROGRESS',
             startedAt: new Date(now.getTime() - 27 * 86_400_000),
-            exitInterviewCompleted: true,
+            isExitInterviewCompleted: true,
         },
     })
 

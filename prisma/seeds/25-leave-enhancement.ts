@@ -136,7 +136,7 @@ export async function seedLeaveEnhancement(prisma: PrismaClient) {
       days: 2,
       reason: '시드: 시작 전 취소 테스트용 (APPROVED)',
       status: 'APPROVED',
-      approvedBy: employees[0].id,
+      approvedById: employees[0].id,
       approvedAt: new Date(now.getTime() - 86400000),
     },
   })
@@ -160,7 +160,7 @@ export async function seedLeaveEnhancement(prisma: PrismaClient) {
       days: 4,
       reason: '시드: 시작 후 취소 테스트용 (APPROVED, HR만 가능)',
       status: 'APPROVED',
-      approvedBy: employees[0].id,
+      approvedById: employees[0].id,
       approvedAt: new Date(now.getTime() - 86400000 * 3),
     },
   })

@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma'
 
 export async function buildOrgSnapshot(
   companyId: string,
-  createdBy?: string,
+  createdById?: string,
 ) {
   const [departments, totalHeadcount] = await Promise.all([
     prisma.department.findMany({
@@ -75,11 +75,11 @@ export async function buildOrgSnapshot(
       companyId,
       snapshotDate: today,
       snapshotData,
-      createdBy: createdBy ?? null,
+      createdById: createdById ?? null,
     },
     update: {
       snapshotData,
-      createdBy: createdBy ?? undefined,
+      createdById: createdById ?? undefined,
     },
   })
 }

@@ -138,7 +138,7 @@ export const PUT = withPermission(
                                     performanceGradeAtTime: review.finalGrade,
                                     isException: check.isException,
                                     exceptionReason: check.isException ? adj.exceptionReason : null,
-                                    approvedBy: user.employeeId,
+                                    approvedById: user.employeeId,
                                     reason: check.isException
                                         ? `보상 예외: ${adj.exceptionReason}`
                                         : `성과 기반 인상 (${review.finalGrade})`,
@@ -159,7 +159,7 @@ export const PUT = withPermission(
                                     performanceGradeAtTime: review.finalGrade,
                                     isException: check.isException,
                                     exceptionReason: check.isException ? adj.exceptionReason : null,
-                                    approvedBy: user.employeeId,
+                                    approvedById: user.employeeId,
                                     reason: check.isException
                                         ? `보상 예외: ${adj.exceptionReason}`
                                         : `성과 기반 인상 (${review.finalGrade})`,

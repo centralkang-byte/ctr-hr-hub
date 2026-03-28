@@ -274,7 +274,7 @@ export async function seedLifecycle(prisma: PrismaClient): Promise<void> {
             employeeOnboardingId: planId,
             taskId:               task.id,
             status:               taskStatus,
-            completedBy:          taskStatus === 'DONE' ? empRow.id : undefined,
+            completedById:          taskStatus === 'DONE' ? empRow.id : undefined,
             completedAt:          taskStatus === 'DONE' ? completedAt : undefined,
           },
         })
@@ -332,7 +332,7 @@ export async function seedLifecycle(prisma: PrismaClient): Promise<void> {
             employeeOffboardingId: offProcId1,
             taskId,
             status:               ts,
-            completedBy:          ts === 'DONE' ? hrId || undefined : undefined,
+            completedById:          ts === 'DONE' ? hrId || undefined : undefined,
             completedAt:          ts === 'DONE' ? new Date('2026-03-06') : undefined,
           },
         })
@@ -359,9 +359,9 @@ export async function seedLifecycle(prisma: PrismaClient): Promise<void> {
         lastWorkingDate:            lwDate2,
         startedAt:                  new Date('2025-11-01'),
         completedAt:                new Date('2025-12-10'),
-        severanceCalculated:        true,
-        itAccountDeactivated:       true,
-        exitInterviewCompleted:     true,
+        isSeveranceCalculated:        true,
+        isItAccountDeactivated:       true,
+        isExitInterviewCompleted:     true,
       },
     })
     offProcCount++
@@ -378,7 +378,7 @@ export async function seedLifecycle(prisma: PrismaClient): Promise<void> {
           employeeOffboardingId: offProcId2,
           taskId:                offTemplateTasks[ti].id,
           status:                'DONE',
-          completedBy:           hrId || undefined,
+          completedById:           hrId || undefined,
           completedAt:           addDays(lwDate2, -(8 - ti)),
         },
       })

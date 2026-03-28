@@ -11,7 +11,7 @@ type TransactionClient = Omit<
 
 /**
  * 퇴직 완료 시 IT 계정 비활성화
- * - itAccountDeactivated = true
+ * - isItAccountDeactivated = true
  * - ssoSession 모두 revoke
  * - employeeAuth lockedUntil = 영구 (2099-12-31)
  */
@@ -21,7 +21,7 @@ export async function deactivateItAccount(
 ): Promise<void> {
   await tx.employeeOffboarding.updateMany({
     where: { employeeId },
-    data: { itAccountDeactivated: true },
+    data: { isItAccountDeactivated: true },
   })
 
   await tx.ssoSession.updateMany({

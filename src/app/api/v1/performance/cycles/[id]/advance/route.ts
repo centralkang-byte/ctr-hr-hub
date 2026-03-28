@@ -378,7 +378,7 @@ export const PUT = withPermission(
 
         void eventBus.publish(DOMAIN_EVENTS.CALIBRATION_APPROVED, {
           ctx, cycleId: id, companyId: cycle.companyId,
-          approvedBy: user.employeeId,
+          approvedById: user.employeeId,
           totalEmployees: result.updated._count.performanceReviews,
           adjustedCount,
         })

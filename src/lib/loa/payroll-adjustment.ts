@@ -160,7 +160,7 @@ async function createAdjustmentForRange(
       amount,
       loaId: opts.loaId,
       loaYearMonth: opts.yearMonth,
-      createdBy: opts.userId,
+      createdById: opts.userId,
     },
   })
   await client.payrollRun.update({
@@ -248,7 +248,7 @@ async function createSingleMonthPlaceholder(
         amount: 0,
         loaId: record.id,
         loaYearMonth: yearMonth,
-        createdBy: userId,
+        createdById: userId,
       },
     }),
     prisma.payrollRun.update({
@@ -463,7 +463,7 @@ async function createCorrectionInNextRun(
       amount: correctionAmount,
       loaId: record.id,
       loaYearMonth: originalAdj.loaYearMonth,
-      createdBy: userId,
+      createdById: userId,
     },
   })
   await tx.payrollRun.update({
@@ -536,7 +536,7 @@ export async function injectLoaAdjustmentsForNewRun(
           amount,
           loaId: loa.id,
           loaYearMonth: yearMonth,
-          createdBy: 'system',
+          createdById: 'system',
         },
       }),
       prisma.payrollRun.update({

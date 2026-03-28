@@ -52,7 +52,7 @@ export const PUT = withPermission(
           where: { id },
           data: {
             status: 'SCR_REJECTED',
-            approvedBy: user.employeeId,
+            approvedById: user.employeeId,
             approvedAt: new Date(),
             rejectionReason: parsed.data.rejectionReason ?? null,
           },
@@ -73,7 +73,7 @@ export const PUT = withPermission(
           where: { id },
           data: {
             status: 'SCR_APPROVED',
-            approvedBy: user.employeeId,
+            approvedById: user.employeeId,
             approvedAt: new Date(),
           },
         })

@@ -88,7 +88,7 @@ export const PUT = withPermission(
           employmentType: 'FULL_TIME',
           endDate: null,
           changeType: 'CONTRACT_CHANGE',
-          approvedBy: user.employeeId,
+          approvedById: user.employeeId,
           reason: body.comment ?? '계약직→정규직 전환',
         },
       })
@@ -99,7 +99,7 @@ export const PUT = withPermission(
         data: {
           endDate: new Date(body.newEndDate!),
           changeType: 'CONTRACT_CHANGE',
-          approvedBy: user.employeeId,
+          approvedById: user.employeeId,
           reason: body.comment ?? '계약 갱신',
         },
       })
@@ -111,7 +111,7 @@ export const PUT = withPermission(
           endDate: now,
           status: 'COMPLETED',
           changeType: 'CONTRACT_CHANGE',
-          approvedBy: user.employeeId,
+          approvedById: user.employeeId,
           reason: body.comment ?? '계약 만료 종료',
         },
       })

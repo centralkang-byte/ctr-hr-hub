@@ -78,7 +78,7 @@ export const PATCH = withPermission(
       if (status !== undefined) {
         data.status = status
         if (status === 'approved') {
-          data.approvedBy = user.employeeId
+          data.approvedById = user.employeeId
           data.approvedAt = new Date()
         }
       }

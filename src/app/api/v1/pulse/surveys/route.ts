@@ -92,7 +92,7 @@ export const POST = withPermission(
             closeAt: new Date(surveyData.closeAt),
             targetIds: surveyData.targetIds ?? undefined,
             companyId: user.companyId,
-            createdBy: user.id,
+            createdById: user.id,
             status: 'PULSE_DRAFT',
           },
         })

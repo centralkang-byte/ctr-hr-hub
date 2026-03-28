@@ -65,7 +65,7 @@ export async function seedDiscipline(prisma: PrismaClient) {
       appealStatus: 'NONE' as const,
       validMonths: 3,
       expiresAt: new Date('2026-04-17'),
-      issuedBy: mgrEmp!.id,
+      issuedById: mgrEmp!.id,
     },
     {
       key: 'disc-2',
@@ -80,7 +80,7 @@ export async function seedDiscipline(prisma: PrismaClient) {
       appealStatus: 'NONE' as const,
       validMonths: 6,
       expiresAt: new Date('2026-08-05'),
-      issuedBy: hrEmp.id,
+      issuedById: hrEmp.id,
     },
     {
       key: 'disc-3',
@@ -97,7 +97,7 @@ export async function seedDiscipline(prisma: PrismaClient) {
       appealStatus: 'NONE' as const,
       validMonths: 6,
       expiresAt: new Date('2026-06-05'),
-      issuedBy: hrEmp.id,
+      issuedById: hrEmp.id,
     },
     {
       key: 'disc-4',
@@ -118,7 +118,7 @@ export async function seedDiscipline(prisma: PrismaClient) {
       appealText: '개인정보 열람은 업무 목적이었으며 외부 유출 시도는 사실과 다릅니다.',
       validMonths: 12,
       expiresAt: new Date('2027-03-03'),
-      issuedBy: hrEmp.id,
+      issuedById: hrEmp.id,
     },
     {
       key: 'disc-5',
@@ -135,7 +135,7 @@ export async function seedDiscipline(prisma: PrismaClient) {
       appealResult: '측정 장비 오류로 인한 오판정 확인, 징계 철회',
       validMonths: 6,
       expiresAt: new Date('2026-08-01'),
-      issuedBy: mgrEmp!.id,
+      issuedById: mgrEmp!.id,
     },
     {
       key: 'disc-6',
@@ -150,7 +150,7 @@ export async function seedDiscipline(prisma: PrismaClient) {
       appealStatus: 'NONE' as const,
       validMonths: 3,
       expiresAt: new Date('2026-06-07'),
-      issuedBy: mgrEmp!.id,
+      issuedById: mgrEmp!.id,
     },
   ]
 
@@ -181,7 +181,7 @@ export async function seedDiscipline(prisma: PrismaClient) {
           appealResult: a.appealResult ?? null,
           validMonths: a.validMonths,
           expiresAt: a.expiresAt,
-          issuedBy: a.issuedBy,
+          issuedById: a.issuedById,
         },
       })
       discCount++
@@ -198,7 +198,7 @@ export async function seedDiscipline(prisma: PrismaClient) {
       title: '2025년 하반기 우수사원 표창',
       description: '프로젝트 납기 준수 및 품질 개선 기여',
       awardedDate: new Date('2026-01-10'),
-      awardedBy: hrEmp.id,
+      awardedById: hrEmp.id,
     },
     {
       key: 'reward-2',
@@ -208,7 +208,7 @@ export async function seedDiscipline(prisma: PrismaClient) {
       description: '재고 관리 자동화 시스템 도입으로 연간 2억원 절감',
       amount: 3000000,
       awardedDate: new Date('2026-02-15'),
-      awardedBy: hrEmp.id,
+      awardedById: hrEmp.id,
     },
     {
       key: 'reward-3',
@@ -218,7 +218,7 @@ export async function seedDiscipline(prisma: PrismaClient) {
       description: '입사 10주년 장기근속 포상',
       amount: 1000000,
       awardedDate: new Date('2026-03-01'),
-      awardedBy: hrEmp.id,
+      awardedById: hrEmp.id,
       serviceYears: 10,
     },
     {
@@ -228,7 +228,7 @@ export async function seedDiscipline(prisma: PrismaClient) {
       title: '무재해 500일 달성 공로상',
       description: '생산팀 무재해 500일 달성 기여',
       awardedDate: new Date('2026-01-20'),
-      awardedBy: mgrEmp!.id,
+      awardedById: mgrEmp!.id,
     },
     {
       key: 'reward-5',
@@ -237,7 +237,7 @@ export async function seedDiscipline(prisma: PrismaClient) {
       title: 'CTR Value Champion — 혁신',
       description: 'CTR 핵심 가치 "혁신" 부문 분기 수상자',
       awardedDate: new Date('2026-03-10'),
-      awardedBy: hrEmp.id,
+      awardedById: hrEmp.id,
       ctrValue: 'INNOVATION',
     },
   ]
@@ -257,7 +257,7 @@ export async function seedDiscipline(prisma: PrismaClient) {
           description: r.description ?? null,
           amount: r.amount ?? null,
           awardedDate: r.awardedDate,
-          awardedBy: r.awardedBy,
+          awardedById: r.awardedById,
           serviceYears: r.serviceYears ?? null,
           ctrValue: r.ctrValue ?? null,
         },

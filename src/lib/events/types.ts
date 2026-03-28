@@ -227,7 +227,7 @@ export interface OnboardingTaskCompletedPayload {
   employeeOnboardingId: string
   employeeId: string
   companyId: string
-  completedBy: string        // 완료 처리한 actorId
+  completedById: string        // 완료 처리한 actorId
   taskCategory: string       // OnboardingTaskCategory enum value
   allRequiredDone: boolean   // 전체 필수 태스크 완료 여부 (ONBOARDING_COMPLETED 체인 신호)
 }
@@ -272,7 +272,7 @@ export interface OffboardingTaskCompletedPayload {
   companyId: string
   offboardingId: string
   taskId: string         // EmployeeOffboardingTask.id
-  completedBy: string
+  completedById: string
   taskTitle: string
   allRequiredDone: boolean
 }
@@ -454,7 +454,7 @@ export interface CalibrationApprovedPayload {
   ctx: EventContext
   cycleId: string
   companyId: string
-  approvedBy: string
+  approvedById: string
   totalEmployees: number
   adjustedCount: number
 }
@@ -498,7 +498,7 @@ export interface CompApprovedPayload {
   ctx: EventContext
   cycleId: string
   companyId: string
-  approvedBy: string
+  approvedById: string
   totalEmployees: number
   totalBudgetImpact?: number
   exceptionCount?: number

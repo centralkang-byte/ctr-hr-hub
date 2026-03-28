@@ -72,7 +72,7 @@ export const POST = withPermission(
           dataScope: data.dataScope,
           status: 'DRAFT',
           config: data.config ?? undefined,
-          createdBy: user.employeeId,
+          createdById: user.employeeId,
         },
         include: {
           _count: { select: { logs: true } },

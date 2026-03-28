@@ -268,7 +268,7 @@ export async function seedPayrollPipeline(prisma: PrismaClient): Promise<void> {
                 status: opts.status as any,
                 currency: opts.currency,
                 headcount: opts.emps.length, totalGross, totalDeductions: totalDed, totalNet,
-                paidAt: opts.paidAt ?? null, createdBy: opts.actor,
+                paidAt: opts.paidAt ?? null, createdById: opts.actor,
                 attendanceClosedAt: opts.status !== 'DRAFT' ? new Date(`${opts.ym}-20T09:00:00Z`) : null,
                 attendanceClosedBy: opts.status !== 'DRAFT' ? opts.actor : null,
                 adjustmentCount: opts.adjCount ?? 0, anomalyCount: opts.anomCount ?? 0,
@@ -439,7 +439,7 @@ export async function seedPayrollPipeline(prisma: PrismaClient): Promise<void> {
             data: {
                 payrollRunId: runId, employeeId: adjEmps[a.ei].id,
                 type: a.type as 'RETROACTIVE' | 'BONUS' | 'CORRECTION' | 'DEDUCTION' | 'OTHER',
-                category: a.cat, description: a.desc, amount: a.amount, createdBy: actorKR,
+                category: a.cat, description: a.desc, amount: a.amount, createdById: actorKR,
             }
         }).catch(() => { })
     }

@@ -319,7 +319,7 @@ export async function seedPerformance(prisma: PrismaClient): Promise<void> {
             targetMetric:     t.metric,
             status:           'APPROVED',
             achievementScore: Math.round(score * 100) / 100,
-            approvedBy:       fallbackMgrId || undefined,
+            approvedById:       fallbackMgrId || undefined,
             approvedAt:       new Date('2025-08-20'),
           },
         })
@@ -451,7 +451,7 @@ export async function seedPerformance(prisma: PrismaClient): Promise<void> {
             weight:      weight,
             targetMetric:t.metric,
             status:      goalStatus,
-            approvedBy:  goalStatus === 'APPROVED' ? (fallbackMgrId || undefined) : undefined,
+            approvedById:  goalStatus === 'APPROVED' ? (fallbackMgrId || undefined) : undefined,
             approvedAt:  goalStatus === 'APPROVED' ? new Date('2026-02-10') : undefined,
           },
         })
@@ -478,7 +478,7 @@ export async function seedPerformance(prisma: PrismaClient): Promise<void> {
           companyId:    krId,
           name:         '2025 H2 전체 캘리브레이션',
           status:       'CALIBRATION_COMPLETED',
-          createdBy:    creatorId,
+          createdById:    creatorId,
           completedAt:  new Date('2025-12-28'),
           blockDistribution: {
             SS: gradeCount['S'],

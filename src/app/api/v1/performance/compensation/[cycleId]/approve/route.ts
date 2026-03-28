@@ -96,7 +96,7 @@ export const POST = withPermission(
                 },
                 cycleId,
                 companyId: cycle.companyId,
-                approvedBy: user.employeeId,
+                approvedById: user.employeeId,
                 totalEmployees: processedCount,
                 exceptionCount,
                 approverComment: approverComment ?? '',

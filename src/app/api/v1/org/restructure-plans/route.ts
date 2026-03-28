@@ -56,8 +56,8 @@ export const GET = withPermission(
           description: true,
           effectiveDate: true,
           status: true,
-          createdBy: true,
-          approvedBy: true,
+          createdById: true,
+          approvedById: true,
           approvedAt: true,
           appliedAt: true,
           createdAt: true,
@@ -98,7 +98,7 @@ export const POST = withPermission(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           changes: changes as any,
           status,
-          createdBy: user.employeeId,
+          createdById: user.employeeId,
         },
       })
 

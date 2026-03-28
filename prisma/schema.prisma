@@ -770,6 +770,7 @@ model Company {
   parentCompanyId    String?            @map("parent_company_id")
   payrollMode        CompanyPayrollMode @default(IMPORT) @map("payroll_mode")
   payrollFrequencies Json               @default("[\"MONTHLY\"]") @map("payroll_frequencies")
+  /// @deprecated — use deletedAt instead. Scheduled for removal 2026 Q3
   isActive           Boolean            @default(true) @map("is_active")
   locationCity       String?            @map("location_city")
   createdAt          DateTime           @default(now()) @map("created_at")
@@ -959,6 +960,7 @@ model Department {
   nameEn    String?   @map("name_en")
   level     Int
   sortOrder Int       @map("sort_order")
+  /// @deprecated — use deletedAt instead. Scheduled for removal 2026 Q3
   isActive       Boolean   @default(true) @map("is_active")
   deletedAt      DateTime? @map("deleted_at")
   costCenterCode String?   @map("cost_center_code") // B-2e: ERP cost center code, e.g., "CC-1001"
@@ -1191,12 +1193,12 @@ model OrgChangeHistory {
   toData               Json?         @map("to_data")
   effectiveDate        DateTime      @map("effective_date")
   reason               String?
-  approvedBy           String?       @map("approved_by")
+  approvedById           String?       @map("approved_by")
   documentKey          String?       @map("document_key")
   createdAt            DateTime      @default(now()) @map("created_at")
 
   company  Company   @relation(fields: [companyId], references: [id])
-  approver Employee? @relation("OrgChangeApprover", fields: [approvedBy], references: [id])
+  approver Employee? @relation("OrgChangeApprover", fields: [approvedById], references: [id])
 
   @@map("org_change_history")
 }
@@ -1210,8 +1212,8 @@ model OrgRestructurePlan {
   effectiveDate DateTime  @map("effective_date") @db.Date
   status        String    @default("draft") @db.VarChar(20)
   changes       Json
-  createdBy     String    @map("created_by")
-  approvedBy    String?   @map("approved_by")
+  createdById     String    @map("created_by")
+  approvedById    String?   @map("approved_by")
   approvedAt    DateTime? @map("approved_at")
   appliedAt     DateTime? @map("applied_at")
   createdAt     DateTime  @default(now()) @map("created_at")
@@ -1522,7 +1524,7 @@ model EmployeeAssignment {
   titleId        String?   @map("title_id") // 호칭 (직급과 독립)
   reason         String?
   orderNumber    String?   @map("order_number")
-  approvedBy     String?   @map("approved_by")
+  approvedById     String?   @map("approved_by")
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime  @updatedAt @map("updated_at")
 
@@ -1532,7 +1534,7 @@ model EmployeeAssignment {
   jobGrade    JobGrade?    @relation(fields: [jobGradeId], references: [id])
   jobCategory JobCategory? @relation(fields: [jobCategoryId], references: [id])
   position     Position?     @relation(fields: [positionId], references: [id])
-  approver     Employee?     @relation("AssignmentApprover", fields: [approvedBy], references: [id])
+  approver     Employee?     @relation("AssignmentApprover", fields: [approvedById], references: [id])
   workLocation WorkLocation? @relation(fields: [workLocationId], references: [id], onDelete: SetNull)
   title        EmployeeTitle? @relation(fields: [titleId], references: [id])
 
@@ -1548,7 +1550,7 @@ model EmployeeAuth {
   id               String    @id @default(uuid())
   employeeId       String    @unique @map("employee_id")
   passwordHash     String?   @map("password_hash")
-  mfaEnabled       Boolean   @default(false) @map("mfa_enabled")
+  isMfaEnabled     Boolean   @default(false) @map("mfa_enabled")
   mfaSecret        String?   @map("mfa_secret")
   lastLoginAt      DateTime? @map("last_login_at")
   failedLoginCount Int       @default(0) @map("failed_login_count")
@@ -1606,7 +1608,7 @@ model EmployeeHistory {
   toGradeId     String?           @map("to_grade_id")
   effectiveDate DateTime          @map("effective_date")
   reason        String?
-  approvedBy    String?           @map("approved_by")
+  approvedById    String?           @map("approved_by")
   createdAt     DateTime          @default(now()) @map("created_at")
 
   employee    Employee    @relation(fields: [employeeId], references: [id])
@@ -1616,7 +1618,7 @@ model EmployeeHistory {
   toDept      Department? @relation("HistoryToDept", fields: [toDeptId], references: [id])
   fromGrade   JobGrade?   @relation("HistoryFromGrade", fields: [fromGradeId], references: [id])
   toGrade     JobGrade?   @relation("HistoryToGrade", fields: [toGradeId], references: [id])
-  approver    Employee?   @relation("HistoryApprover", fields: [approvedBy], references: [id])
+  approver    Employee?   @relation("HistoryApprover", fields: [approvedById], references: [id])
 
   @@map("employee_histories")
 }
@@ -1630,13 +1632,13 @@ model EmployeeDocument {
   fileKey    String    @map("file_key")
   fileSize   Int?      @map("file_size")
   mimeType   String?   @map("mime_type")
-  uploadedBy String?   @map("uploaded_by")
+  uploadedById String?   @map("uploaded_by")
   createdAt  DateTime  @default(now()) @map("created_at")
   deletedAt  DateTime? @map("deleted_at")
 
   employee Employee  @relation(fields: [employeeId], references: [id])
   company  Company   @relation(fields: [companyId], references: [id])
-  uploader Employee? @relation("DocumentUploader", fields: [uploadedBy], references: [id])
+  uploader Employee? @relation("DocumentUploader", fields: [uploadedById], references: [id])
 
   @@map("employee_documents")
 }
@@ -1645,6 +1647,7 @@ model EmployeeDocument {
 // 3. Offboarding
 // ================================================================
 
+/// 오프보딩 마스터 체크리스트 템플릿 (퇴직 유형별: 자발/비자발/정년/계약만료)
 model OffboardingChecklist {
   id         String                @id @default(uuid())
   companyId  String                @map("company_id")
@@ -1660,6 +1663,7 @@ model OffboardingChecklist {
   @@map("offboarding_checklists")
 }
 
+/// 오프보딩 작업 템플릿 (OffboardingChecklist 하위)
 model OffboardingTask {
   id            String              @id @default(uuid())
   checklistId   String              @map("checklist_id")
@@ -1676,6 +1680,7 @@ model OffboardingTask {
   @@map("offboarding_tasks")
 }
 
+/// 직원별 오프보딩 인스턴스 (OffboardingChecklist 기반)
 model EmployeeOffboarding {
   id                     String            @id @default(uuid())
   employeeId             String            @map("employee_id")
@@ -1686,9 +1691,9 @@ model EmployeeOffboarding {
   resignReasonDetail     String?           @map("resign_reason_detail")
   handoverToId           String?           @map("handover_to_id")
   status                 OffboardingStatus
-  severanceCalculated    Boolean           @default(false) @map("severance_calculated")
-  itAccountDeactivated   Boolean           @default(false) @map("it_account_deactivated")
-  exitInterviewCompleted Boolean           @default(false) @map("exit_interview_completed")
+  isSeveranceCalculated    Boolean           @default(false) @map("severance_calculated")
+  isItAccountDeactivated   Boolean           @default(false) @map("it_account_deactivated")
+  isExitInterviewCompleted Boolean           @default(false) @map("exit_interview_completed")
   startedAt              DateTime          @map("started_at")
   completedAt            DateTime?         @map("completed_at")
   createdAt              DateTime          @default(now()) @map("created_at")
@@ -1703,12 +1708,13 @@ model EmployeeOffboarding {
   @@map("employee_offboarding")
 }
 
+/// 직원별 오프보딩 작업 인스턴스 (OffboardingTask 기반)
 model EmployeeOffboardingTask {
   id                    String             @id @default(uuid())
   employeeOffboardingId String             @map("employee_offboarding_id")
   taskId                String             @map("task_id")
   status                TaskProgressStatus @default(PENDING)
-  completedBy           String?            @map("completed_by")
+  completedById           String?            @map("completed_by")
   completedAt           DateTime?          @map("completed_at")
   note                  String?
 
@@ -1721,7 +1727,7 @@ model EmployeeOffboardingTask {
 
   employeeOffboarding EmployeeOffboarding @relation(fields: [employeeOffboardingId], references: [id])
   task                OffboardingTask     @relation(fields: [taskId], references: [id])
-  completer           Employee?           @relation("OffboardingTaskCompleter", fields: [completedBy], references: [id])
+  completer           Employee?           @relation("OffboardingTaskCompleter", fields: [completedById], references: [id])
   assignee            Employee?           @relation("OffboardingTaskAssignee", fields: [assigneeId], references: [id])
 
   @@map("employee_offboarding_tasks")
@@ -1739,7 +1745,7 @@ model AssetReturn {
   residualValue     Decimal?          @db.Decimal(15, 2) @map("residual_value")
   status            AssetReturnStatus @default(PENDING)
   returnedAt        DateTime?         @map("returned_at")
-  deductionApproved Boolean           @default(false) @map("deduction_approved")
+  isDeductionApproved Boolean           @default(false) @map("deduction_approved")
   deductionAmount   Decimal?          @db.Decimal(15, 2) @map("deduction_amount")
   consentDocExists  Boolean           @default(false) @map("consent_doc_exists")
   companyId         String            @map("company_id")
@@ -1818,13 +1824,13 @@ model DisciplinaryAction {
   demotionGradeId       String?              @map("demotion_grade_id")
   salaryReductionRate   Decimal?             @map("salary_reduction_rate")
   salaryReductionMonths Int?                 @map("salary_reduction_months")
-  issuedBy              String               @map("issued_by")
+  issuedById              String               @map("issued_by")
   createdAt             DateTime             @default(now()) @map("created_at")
   deletedAt             DateTime?            @map("deleted_at")
 
   employee      Employee  @relation("DisciplinaryEmployee", fields: [employeeId], references: [id])
   company       Company   @relation(fields: [companyId], references: [id])
-  issuer        Employee  @relation("DisciplinaryIssuer", fields: [issuedBy], references: [id])
+  issuer        Employee  @relation("DisciplinaryIssuer", fields: [issuedById], references: [id])
   demotionGrade JobGrade? @relation("DisciplinaryDemotionGrade", fields: [demotionGradeId], references: [id])
 
   @@index([companyId, employeeId])
@@ -1841,7 +1847,7 @@ model RewardRecord {
   description  String?
   amount       Decimal?
   awardedDate  DateTime   @map("awarded_date")
-  awardedBy    String     @map("awarded_by")
+  awardedById    String     @map("awarded_by")
   documentKey  String?    @map("document_key")
   ctrValue     String?    @map("ctr_value")
   serviceYears Int?       @map("service_years")
@@ -1849,7 +1855,7 @@ model RewardRecord {
 
   employee Employee @relation("RewardEmployee", fields: [employeeId], references: [id])
   company  Company  @relation(fields: [companyId], references: [id])
-  issuer   Employee @relation("RewardIssuer", fields: [awardedBy], references: [id])
+  issuer   Employee @relation("RewardIssuer", fields: [awardedById], references: [id])
 
   @@map("reward_records")
 }
@@ -1858,6 +1864,7 @@ model RewardRecord {
 // 5. Onboarding
 // ================================================================
 
+/// 온보딩 마스터 템플릿 (시나리오별: 신입/전보/내부이동/크로스보딩)
 model OnboardingTemplate {
   id          String               @id @default(uuid())
   companyId   String?              @map("company_id")     // NULL = 글로벌 기본 템플릿
@@ -1865,6 +1872,7 @@ model OnboardingTemplate {
   description String?
   targetType  OnboardingTargetType @default(NEW_HIRE) @map("target_type")
   planType    OnboardingPlanType   @default(ONBOARDING) @map("plan_type")  // 온보딩/오프보딩/크로스보딩 구분
+  /// @deprecated — use deletedAt instead. Scheduled for removal 2026 Q3
   isActive    Boolean              @default(true) @map("is_active")
   createdAt   DateTime             @default(now()) @map("created_at")
   deletedAt   DateTime?            @map("deleted_at")
@@ -1876,6 +1884,7 @@ model OnboardingTemplate {
   @@map("onboarding_templates")
 }
 
+/// 온보딩 작업 템플릿 (OnboardingTemplate 하위)
 model OnboardingTask {
   id           String                 @id @default(uuid())
   templateId   String                 @map("template_id")
@@ -1893,6 +1902,7 @@ model OnboardingTask {
   @@map("onboarding_tasks")
 }
 
+/// 직원별 온보딩 인스턴스 (OnboardingTemplate 기반)
 model EmployeeOnboarding {
   id              String                   @id @default(uuid())
   employeeId      String                   @map("employee_id")
@@ -1925,12 +1935,13 @@ model EmployeeOnboarding {
   @@map("employee_onboarding")
 }
 
+/// 직원별 온보딩 작업 인스턴스 (OnboardingTask 기반)
 model EmployeeOnboardingTask {
   id                   String             @id @default(uuid())
   employeeOnboardingId String             @map("employee_onboarding_id")
   taskId               String             @map("task_id")
   status               TaskProgressStatus
-  completedBy          String?            @map("completed_by")
+  completedById          String?            @map("completed_by")
   completedAt          DateTime?          @map("completed_at")
   note                 String?
 
@@ -1943,7 +1954,7 @@ model EmployeeOnboardingTask {
 
   employeeOnboarding EmployeeOnboarding @relation(fields: [employeeOnboardingId], references: [id])
   task               OnboardingTask     @relation(fields: [taskId], references: [id])
-  completer          Employee?          @relation("OnboardingTaskCompleter", fields: [completedBy], references: [id])
+  completer          Employee?          @relation("OnboardingTaskCompleter", fields: [completedById], references: [id])
   assignee           Employee?          @relation("OnboardingTaskAssignee", fields: [assigneeId], references: [id])
 
   @@map("employee_onboarding_tasks")
@@ -2067,6 +2078,7 @@ model LeavePolicy {
   maxCarryOverDays Decimal?  @map("max_carry_over_days")
   minTenureMonths  Int       @default(0) @map("min_tenure_months")
   minUnit          String    @default("FULL_DAY") @map("min_unit")
+  /// @deprecated — use deletedAt instead. Scheduled for removal 2026 Q3
   isActive         Boolean   @default(true) @map("is_active")
   createdAt        DateTime  @default(now()) @map("created_at")
   deletedAt        DateTime? @map("deleted_at")
@@ -2107,11 +2119,11 @@ model LeaveRequest {
   halfDayType     String?            @map("half_day_type")
   reason          String?
   status          LeaveRequestStatus
-  approvedBy      String?            @map("approved_by")
+  approvedById      String?            @map("approved_by")
   approvedAt      DateTime?          @map("approved_at")
   rejectionReason String?            @map("rejection_reason")
-  delegatedBy     String?            @map("delegated_by")
-  cancelledBy     String?            @map("cancelled_by")     // F-3: 취소 처리자
+  delegatedById     String?            @map("delegated_by")
+  cancelledById     String?            @map("cancelled_by")     // F-3: 취소 처리자
   cancelNote      String?            @map("cancel_note")      // F-3: 취소 사유/메모
   leaveTypeDefId  String?            @map("leave_type_def_id") // Phase 5: 규정 기반 연결
   createdAt       DateTime           @default(now()) @map("created_at")
@@ -2119,9 +2131,9 @@ model LeaveRequest {
 
   employee     Employee      @relation("LeaveRequester", fields: [employeeId], references: [id])
   policy       LeavePolicy   @relation(fields: [policyId], references: [id])
-  approver     Employee?     @relation("LeaveApprover", fields: [approvedBy], references: [id])
-  delegatee    Employee?     @relation("LeaveDelegatee", fields: [delegatedBy], references: [id])
-  canceller    Employee?     @relation("LeaveCanceller", fields: [cancelledBy], references: [id])
+  approver     Employee?     @relation("LeaveApprover", fields: [approvedById], references: [id])
+  delegatee    Employee?     @relation("LeaveDelegatee", fields: [delegatedById], references: [id])
+  canceller    Employee?     @relation("LeaveCanceller", fields: [cancelledById], references: [id])
   company      Company       @relation(fields: [companyId], references: [id])
   companyId    String         @map("company_id")
   leaveTypeDef LeaveTypeDef? @relation(fields: [leaveTypeDefId], references: [id])
@@ -2188,7 +2200,7 @@ model JobPosting {
   status               PostingStatus
   postedAt             DateTime?      @map("posted_at")
   closedAt             DateTime?      @map("closed_at")
-  createdBy            String         @map("created_by")
+  createdById            String         @map("created_by")
   createdAt            DateTime       @default(now()) @map("created_at")
   deletedAt            DateTime?      @map("deleted_at")
   // B4: ATS 고도화 확장 필드
@@ -2200,7 +2212,7 @@ model JobPosting {
   department        Department?       @relation(fields: [departmentId], references: [id])
   jobGrade          JobGrade?         @relation(fields: [jobGradeId], references: [id])
   jobCategory       JobCategory?      @relation(fields: [jobCategoryId], references: [id])
-  creator           Employee          @relation("JobPostingCreator", fields: [createdBy], references: [id])
+  creator           Employee          @relation("JobPostingCreator", fields: [createdById], references: [id])
   recruiter         Employee?         @relation("JobPostingRecruiter", fields: [recruiterId], references: [id])
   position          Position?         @relation(fields: [positionId], references: [id])
   requisition       Requisition?      @relation(fields: [requisitionId], references: [id])
@@ -2453,7 +2465,7 @@ model MboGoal {
   targetValue      String?    @map("target_value")
   status           GoalStatus
   achievementScore Decimal?   @map("achievement_score")
-  approvedBy       String?    @map("approved_by")
+  approvedById       String?    @map("approved_by")
   approvedAt       DateTime?  @map("approved_at")
   aiGenerated      Boolean    @default(false) @map("ai_generated")
   createdAt        DateTime   @default(now()) @map("created_at")
@@ -2465,7 +2477,7 @@ model MboGoal {
 
   cycle     PerformanceCycle @relation(fields: [cycleId], references: [id])
   employee  Employee         @relation("MboGoalEmployee", fields: [employeeId], references: [id])
-  approver  Employee?        @relation("MboGoalApprover", fields: [approvedBy], references: [id])
+  approver  Employee?        @relation("MboGoalApprover", fields: [approvedById], references: [id])
   company   Company          @relation(fields: [companyId], references: [id])
   companyId String           @map("company_id")
   progress  MboProgress[]
@@ -2479,11 +2491,11 @@ model MboProgress {
   goalId      String   @map("goal_id")
   progressPct Int      @map("progress_pct")
   note        String?
-  createdBy   String   @map("created_by")
+  createdById   String   @map("created_by")
   createdAt   DateTime @default(now()) @map("created_at")
 
   goal    MboGoal  @relation(fields: [goalId], references: [id])
-  creator Employee @relation(fields: [createdBy], references: [id])
+  creator Employee @relation(fields: [createdById], references: [id])
 
   @@map("mbo_progress")
 }
@@ -2525,6 +2537,7 @@ model PerformanceEvaluation {
   @@map("performance_evaluations")
 }
 
+/// 성과 평가 블록 매트릭스 설정 (EMS = Employee Management System)
 model EmsBlockConfig {
   id                    String   @id @default(uuid())
   companyId             String   @map("company_id")
@@ -2619,12 +2632,12 @@ model CalibrationRule {
   recommendedPct Decimal  @map("recommended_pct")
   minPct         Decimal? @map("min_pct")
   maxPct         Decimal? @map("max_pct")
-  createdBy      String   @map("created_by")
+  createdById      String   @map("created_by")
   createdAt      DateTime @default(now()) @map("created_at")
 
   company Company           @relation(fields: [companyId], references: [id])
   cycle   PerformanceCycle? @relation(fields: [cycleId], references: [id])
-  creator Employee          @relation(fields: [createdBy], references: [id])
+  creator Employee          @relation(fields: [createdById], references: [id])
 
   @@unique([companyId, cycleId, emsBlock])
   @@map("calibration_rules")
@@ -2639,14 +2652,14 @@ model CalibrationSession {
   status            CalibrationStatus
   blockDistribution Json?             @map("block_distribution")
   notes             String?
-  createdBy         String            @map("created_by")
+  createdById         String            @map("created_by")
   completedAt       DateTime?         @map("completed_at")
   createdAt         DateTime          @default(now()) @map("created_at")
 
   cycle       PerformanceCycle        @relation(fields: [cycleId], references: [id])
   company     Company                 @relation(fields: [companyId], references: [id])
   department  Department?             @relation(fields: [departmentId], references: [id])
-  creator     Employee                @relation("CalibrationCreator", fields: [createdBy], references: [id])
+  creator     Employee                @relation("CalibrationCreator", fields: [createdById], references: [id])
   adjustments CalibrationAdjustment[]
 
   @@map("calibration_sessions")
@@ -2715,7 +2728,7 @@ model CompensationHistory {
   changePct          Decimal                @map("change_pct")
   effectiveDate      DateTime               @map("effective_date")
   reason             String?
-  approvedBy         String?                @map("approved_by")
+  approvedById         String?                @map("approved_by")
   emsBlockAtTime     String?                @map("ems_block_at_time")
   compaRatio         Decimal?               @map("compa_ratio")
   createdAt          DateTime               @default(now()) @map("created_at")
@@ -2729,7 +2742,7 @@ model CompensationHistory {
 
   employee Employee  @relation("CompensationEmployee", fields: [employeeId], references: [id])
   company  Company   @relation(fields: [companyId], references: [id])
-  approver Employee? @relation("CompensationApprover", fields: [approvedBy], references: [id])
+  approver Employee? @relation("CompensationApprover", fields: [approvedById], references: [id])
 
   @@map("compensation_history")
 }
@@ -2773,6 +2786,7 @@ model BenefitPolicy {
   isTaxable        Boolean          @default(true) @map("is_taxable")
   effectiveFrom    DateTime         @map("effective_from")
   effectiveTo      DateTime?        @map("effective_to")
+  /// @deprecated — use deletedAt instead. Scheduled for removal 2026 Q3
   isActive         Boolean          @default(true) @map("is_active")
   createdAt        DateTime         @default(now()) @map("created_at")
   deletedAt        DateTime?        @map("deleted_at")
@@ -2842,7 +2856,7 @@ model BenefitClaim {
   eventDetail    String?     @db.Text @map("event_detail")
   proofPaths     String[]    @default([]) @map("proof_paths")
   status         String      @default("pending") @db.VarChar(20)
-  approvedBy     String?     @map("approved_by")
+  approvedById     String?     @map("approved_by")
   approvedAt     DateTime?   @map("approved_at")
   rejectedReason String?     @db.Text @map("rejected_reason")
   paidAt         DateTime?   @map("paid_at")
@@ -2851,7 +2865,7 @@ model BenefitClaim {
   updatedAt      DateTime    @updatedAt @map("updated_at")
 
   employee       Employee    @relation("EmployeeBenefitClaims", fields: [employeeId], references: [id])
-  approver       Employee?   @relation("BenefitClaimApprover", fields: [approvedBy], references: [id])
+  approver       Employee?   @relation("BenefitClaimApprover", fields: [approvedById], references: [id])
 
   @@index([employeeId, status])
   @@map("benefit_claims")
@@ -2885,8 +2899,8 @@ model AllowanceRecord {
 
   employee   Employee  @relation("AllowanceEmployee", fields: [employeeId], references: [id])
   company    Company   @relation(fields: [companyId], references: [id])
-  approvedBy String?   @map("approved_by")
-  approver   Employee? @relation("AllowanceApprover", fields: [approvedBy], references: [id])
+  approvedById String?   @map("approved_by")
+  approver   Employee? @relation("AllowanceApprover", fields: [approvedById], references: [id])
 
   @@map("allowance_records")
 }
@@ -2914,12 +2928,12 @@ model PayrollRun {
   headcount       Int              @default(0)
   currency        String           @default("KRW")
   importedFileKey String?          @map("imported_file_key")
-  approvedBy      String?          @map("approved_by")
+  approvedById      String?          @map("approved_by")
   approvedAt      DateTime?        @map("approved_at")
   paidAt          DateTime?        @map("paid_at")
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @updatedAt @map("updated_at")
-  createdBy       String?          @map("created_by")
+  createdById       String?          @map("created_by")
 
   // GP#3-A: 근태 마감 (STEP 1)
   attendanceClosedAt  DateTime?  @map("attendance_closed_at")
@@ -2939,7 +2953,7 @@ model PayrollRun {
   notes              String?
 
   company      Company            @relation(fields: [companyId], references: [id])
-  approver     Employee?          @relation("PayrollApprover", fields: [approvedBy], references: [id])
+  approver     Employee?          @relation("PayrollApprover", fields: [approvedById], references: [id])
   payrollItems PayrollItem[]
   adjustments  PayrollAdjustment[]
   anomalies    PayrollAnomaly[]
@@ -3000,7 +3014,7 @@ model PayrollAdjustment {
 
   leaveOfAbsence LeaveOfAbsence? @relation(fields: [loaId], references: [id])
 
-  createdBy   String   @map("created_by")
+  createdById   String   @map("created_by")
   createdAt   DateTime @default(now()) @map("created_at")
 
   @@index([payrollRunId])
@@ -3249,6 +3263,7 @@ model TrainingCourse {
   validityMonths      Int?             @map("validity_months")       // 법정교육 유효기간
   provider            String?
   externalUrl         String?          @map("external_url")
+  /// @deprecated — use deletedAt instead. Scheduled for removal 2026 Q3
   isActive            Boolean          @default(true) @map("is_active")
   createdAt           DateTime         @default(now()) @map("created_at")
   deletedAt           DateTime?        @map("deleted_at")
@@ -3301,12 +3316,12 @@ model PulseSurvey {
   openAt                  DateTime       @map("open_at")
   closeAt                 DateTime       @map("close_at")
   status                  PulseStatus
-  createdBy               String         @map("created_by")
+  createdById               String         @map("created_by")
   createdAt               DateTime       @default(now()) @map("created_at")
   deletedAt               DateTime?      @map("deleted_at")
 
   company   Company         @relation(fields: [companyId], references: [id])
-  creator   Employee        @relation(fields: [createdBy], references: [id])
+  creator   Employee        @relation(fields: [createdById], references: [id])
   questions PulseQuestion[]
   responses PulseResponse[]
 
@@ -3439,14 +3454,14 @@ model SuccessionPlan {
   criticality     Criticality
   status          PlanStatus
   notes           String?
-  createdBy       String      @map("created_by")
+  createdById       String      @map("created_by")
   createdAt       DateTime    @default(now()) @map("created_at")
   updatedAt       DateTime    @updatedAt @map("updated_at")
 
   department    Department?           @relation(fields: [departmentId], references: [id])
   company       Company               @relation(fields: [companyId], references: [id])
   currentHolder Employee?             @relation("SuccessionHolder", fields: [currentHolderId], references: [id])
-  creator       Employee              @relation("SuccessionCreator", fields: [createdBy], references: [id])
+  creator       Employee              @relation("SuccessionCreator", fields: [createdById], references: [id])
   candidates    SuccessionCandidate[]
 
   @@map("succession_plans")
@@ -3531,14 +3546,15 @@ model HrDocument {
   contentText String    @map("content_text")
   version     String    @default("1.0")
   locale      String    @default("ko")
-  uploadedBy  String    @map("uploaded_by")
+  uploadedById  String    @map("uploaded_by")
+  /// @deprecated — use deletedAt instead. Scheduled for removal 2026 Q3
   isActive    Boolean   @default(true) @map("is_active")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
   deletedAt   DateTime? @map("deleted_at")
 
   company  Company           @relation(fields: [companyId], references: [id])
-  uploader Employee          @relation(fields: [uploadedBy], references: [id])
+  uploader Employee          @relation(fields: [uploadedById], references: [id])
   chunks   HrDocumentChunk[]
 
   @@map("hr_documents")
@@ -3628,14 +3644,14 @@ model PeerReviewNomination {
   nominationSource        NominationSource @map("nomination_source")
   collaborationTotalScore Decimal?         @map("collaboration_total_score")
   status                  NominationStatus
-  approvedBy              String?          @map("approved_by")
+  approvedById              String?          @map("approved_by")
   approvedAt              DateTime?        @map("approved_at")
   createdAt               DateTime         @default(now()) @map("created_at")
 
   cycle    PerformanceCycle @relation(fields: [cycleId], references: [id])
   employee Employee         @relation("PeerReviewEmployee", fields: [employeeId], references: [id])
   nominee  Employee         @relation("PeerReviewNominee", fields: [nomineeId], references: [id])
-  approver Employee?        @relation("PeerReviewApprover", fields: [approvedBy], references: [id])
+  approver Employee?        @relation("PeerReviewApprover", fields: [approvedById], references: [id])
   answer   PeerReviewAnswer?
 
   @@unique([cycleId, employeeId, nomineeId])
@@ -3675,6 +3691,7 @@ model TenantSetting {
   @@map("tenant_settings")
 }
 
+/// HR 용어 커스터마이징 — 회사별 라벨 오버라이드 ("Manager" → "팀장")
 model TermOverride {
   id         String   @id @default(uuid())
   companyId  String   @map("company_id")
@@ -3691,6 +3708,7 @@ model TermOverride {
   @@map("term_overrides")
 }
 
+/// 테넌트별 커스텀 드롭다운 옵션 (enum 확장 — 퇴직 사유, 평가 등급 등)
 model TenantEnumOption {
   id        String   @id @default(uuid())
   companyId String   @map("company_id")
@@ -3758,6 +3776,7 @@ model WorkflowRule {
   workflowType String    @map("workflow_type")
   name         String
   totalSteps   Int       @map("total_steps")
+  /// @deprecated — use deletedAt instead. Scheduled for removal 2026 Q3
   isActive     Boolean   @default(true) @map("is_active")
   conditions   Json?
   createdAt    DateTime  @default(now()) @map("created_at")
@@ -3818,13 +3837,13 @@ model ExportTemplate {
   columns    Json
   fileFormat ExportFormat @default(XLSX) @map("file_format")
   isDefault  Boolean      @default(false) @map("is_default")
-  createdBy  String?      @map("created_by")
+  createdById  String?      @map("created_by")
   createdAt  DateTime     @default(now()) @map("created_at")
   updatedAt  DateTime     @updatedAt @map("updated_at")
   deletedAt  DateTime?    @map("deleted_at")
 
   company Company   @relation(fields: [companyId], references: [id])
-  creator Employee? @relation(fields: [createdBy], references: [id])
+  creator Employee? @relation(fields: [createdById], references: [id])
 
   @@unique([companyId, entityType, name])
   @@map("export_templates")
@@ -3873,14 +3892,14 @@ model WorkPermit {
   status           WorkPermitStatus @default(ACTIVE)
   documentKey      String?          @map("document_key")
   notes            String?
-  createdBy        String?          @map("created_by")
+  createdById        String?          @map("created_by")
   createdAt        DateTime         @default(now()) @map("created_at")
   updatedAt        DateTime         @updatedAt @map("updated_at")
   deletedAt        DateTime?        @map("deleted_at")
 
   employee Employee  @relation("WorkPermitEmployee", fields: [employeeId], references: [id])
   company  Company   @relation(fields: [companyId], references: [id])
-  creator  Employee? @relation("WorkPermitCreator", fields: [createdBy], references: [id])
+  creator  Employee? @relation("WorkPermitCreator", fields: [createdById], references: [id])
 
   @@index([employeeId])
   @@index([expiryDate])
@@ -3892,11 +3911,11 @@ model OrgSnapshot {
   companyId    String   @map("company_id")
   snapshotDate DateTime @map("snapshot_date")
   snapshotData Json     @map("snapshot_data")
-  createdBy    String?  @map("created_by")
+  createdById    String?  @map("created_by")
   createdAt    DateTime @default(now()) @map("created_at")
 
   company Company   @relation(fields: [companyId], references: [id])
-  creator Employee? @relation(fields: [createdBy], references: [id])
+  creator Employee? @relation(fields: [createdById], references: [id])
 
   @@unique([companyId, snapshotDate])
   @@map("org_snapshots")
@@ -4152,6 +4171,7 @@ model MilitaryRegistration {
   @@map("military_registrations")
 }
 
+/// 러시아 전자문서 관리 (KEDO = Кадровый электронный документооборот, 전자 인사문서 교환)
 model KedoDocument {
   id              String              @id @default(uuid())
   companyId       String              @map("company_id")
@@ -4563,7 +4583,7 @@ model ShiftChangeRequest {
   requestedSlotIndex Int?                     @map("requested_slot_index")
   reason             String
   status             ShiftChangeRequestStatus @default(SCR_PENDING)
-  approvedBy         String?                  @map("approved_by")
+  approvedById         String?                  @map("approved_by")
   approvedAt         DateTime?                @map("approved_at")
   rejectionReason    String?                  @map("rejection_reason")
   createdAt          DateTime                 @default(now()) @map("created_at")
@@ -4572,7 +4592,7 @@ model ShiftChangeRequest {
   company        Company   @relation(fields: [companyId], references: [id])
   requester      Employee  @relation("ShiftChangeRequester", fields: [requesterId], references: [id])
   targetEmployee Employee? @relation("ShiftChangeTarget", fields: [targetEmployeeId], references: [id])
-  approver       Employee? @relation("ShiftChangeApprover", fields: [approvedBy], references: [id])
+  approver       Employee? @relation("ShiftChangeApprover", fields: [approvedById], references: [id])
 
   @@index([companyId, status])
   @@map("shift_change_requests")
@@ -4804,7 +4824,7 @@ model BankTransferBatch {
   generatedAt   DateTime?               @map("generated_at")
   submittedAt   DateTime?               @map("submitted_at")
   completedAt   DateTime?               @map("completed_at")
-  createdBy     String                  @map("created_by")
+  createdById     String                  @map("created_by")
   note          String?
   createdAt     DateTime                @default(now()) @map("created_at")
   updatedAt     DateTime                @updatedAt @map("updated_at")
@@ -4886,7 +4906,7 @@ model MigrationJob {
   validationErrors Json?              @map("validation_errors")
   startedAt        DateTime?          @map("started_at")
   completedAt      DateTime?          @map("completed_at")
-  createdBy        String             @map("created_by")
+  createdById        String             @map("created_by")
   createdAt        DateTime           @default(now()) @map("created_at")
   updatedAt        DateTime           @updatedAt @map("updated_at")
 
@@ -4981,7 +5001,7 @@ model RecruitmentCost {
   description     String?
   vendorName      String?             @map("vendor_name")
   invoiceDate     DateTime?           @map("invoice_date")
-  createdBy       String              @map("created_by")
+  createdById       String              @map("created_by")
   createdAt       DateTime            @default(now()) @map("created_at")
   updatedAt       DateTime            @updatedAt @map("updated_at")
 
@@ -5252,7 +5272,7 @@ model PayrollImportLog {
   currency      String   @map("currency")
   status        String   @default("uploaded") @map("status")
   errorDetails  Json?    @map("error_details")
-  uploadedBy    String   @map("uploaded_by")
+  uploadedById    String   @map("uploaded_by")
   confirmedAt   DateTime? @map("confirmed_at")
   createdAt     DateTime @default(now()) @map("created_at")
 
@@ -5266,7 +5286,7 @@ model PayrollImportLog {
 // ─── 7-D. 급여 시뮬레이션 ─────────────────────────────────────
 model PayrollSimulation {
   id         String   @id @default(uuid())
-  createdBy  String   @map("created_by")
+  createdById  String   @map("created_by")
   type       String   @map("type")
   title      String   @map("title")
   employeeId String   @map("employee_id")
@@ -5973,6 +5993,7 @@ model AnalyticsConfig {
 // === TRACK A: B10-2 KPI Dashboard ===
 // ═══════════════════════════════════════════════════════════
 
+/// 사용자별 KPI 대시보드 레이아웃/필터 설정
 model KpiDashboardConfig {
   id        String   @id @default(uuid())
   userId    String
@@ -6178,11 +6199,11 @@ model CertificateRequest {
   requestedAt    DateTime                  @default(now()) @map("requested_at")
   approvedAt     DateTime?                 @map("approved_at")
   issuedAt       DateTime?                 @map("issued_at")
-  approvedBy     String?                   @map("approved_by")
+  approvedById     String?                   @map("approved_by")
 
   employee Employee  @relation("CertRequestEmployee", fields: [employeeId], references: [id])
   company  Company   @relation(fields: [companyId], references: [id])
-  approver Employee? @relation("CertRequestApprover", fields: [approvedBy], references: [id])
+  approver Employee? @relation("CertRequestApprover", fields: [approvedById], references: [id])
 
   @@index([employeeId])
   @@index([companyId, status])
@@ -6215,6 +6236,7 @@ model LeaveOfAbsenceType {
   advanceNoticeDays        Int?      @map("advance_notice_days") // 사전 신청 기한 (일)
   reinstatementGuaranteed  Boolean   @default(false) @map("reinstatement_guaranteed") // 원직 복귀 보장
   sortOrder                Int       @default(0) @map("sort_order")
+  /// @deprecated — use deletedAt instead. Scheduled for removal 2026 Q3
   isActive                 Boolean   @default(true) @map("is_active")
   deletedAt                DateTime? @map("deleted_at")
 
@@ -6253,7 +6275,7 @@ model LeaveOfAbsence {
 
   // 승인
   requestedAt        DateTime  @default(now()) @map("requested_at")
-  approvedBy         String?   @map("approved_by")
+  approvedById         String?   @map("approved_by")
   approvedAt         DateTime? @map("approved_at")
   rejectedBy         String?   @map("rejected_by")
   rejectedAt         DateTime? @map("rejected_at")
@@ -6280,7 +6302,7 @@ model LeaveOfAbsence {
   employee  Employee             @relation("LOAEmployee", fields: [employeeId], references: [id])
   company   Company              @relation(fields: [companyId], references: [id])
   type      LeaveOfAbsenceType   @relation(fields: [typeId], references: [id])
-  approver  Employee?            @relation("LOAApprover", fields: [approvedBy], references: [id])
+  approver  Employee?            @relation("LOAApprover", fields: [approvedById], references: [id])
   rejecter  Employee?            @relation("LOARejecter", fields: [rejectedBy], references: [id])
   parent    LeaveOfAbsence?      @relation("LOASplit", fields: [parentId], references: [id])
   splits    LeaveOfAbsence[]     @relation("LOASplit")

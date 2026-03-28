@@ -127,7 +127,7 @@ export const POST = withPermission(
           deadlineDate: data.deadlineDate ? new Date(data.deadlineDate) : null,
           requiredCompetencies: data.requiredCompetencies ?? undefined,
           companyId: user.companyId,
-          createdBy: user.employeeId,
+          createdById: user.employeeId,
           status: 'DRAFT',
         },
         include: {

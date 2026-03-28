@@ -62,7 +62,7 @@ export const PUT = withPermission(
             }
 
             if (targetStatus === 'DONE') {
-                updateData.completedBy = user.employeeId
+                updateData.completedById = user.employeeId
                 updateData.completedAt = new Date()
             }
 

@@ -10,7 +10,7 @@
 // ═══════════════════════════════════════════════════════════════
 //
 // 조건: LeaveRequest.status = 'PENDING' AND createdAt < cutoffDate
-// 대상: request.approvedBy (매니저) — 미지정이면 HR_ADMINs
+// 대상: request.approvedById (매니저) — 미지정이면 HR_ADMINs
 // 임계값: triggerAfterDays=3, repeatEveryDays=2, maxNudges=3
 // ═══════════════════════════════════════════════════════════
 
@@ -57,8 +57,8 @@ export const leavePendingRule: NudgeRule = {
         status: 'PENDING',
         createdAt: { lt: cutoffDate },
         OR: [
-          { approvedBy: assigneeId },
-          { approvedBy: null },         // 미지정 — HR에게 fallback
+          { approvedById: assigneeId },
+          { approvedById: null },         // 미지정 — HR에게 fallback
         ],
       },
       include: {

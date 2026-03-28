@@ -63,7 +63,7 @@ interface OffboardingTaskRow {
   id: string
   status: string
   completedAt: string | null
-  completedBy: string | null
+  completedById: string | null
   note: string | null
   task: {
     isRequired: boolean
@@ -84,7 +84,7 @@ interface OffboardingDetail {
   resignReasonDetail: string | null
   handoverToId: string | null
   status: string
-  exitInterviewCompleted: boolean
+  isExitInterviewCompleted: boolean
   startedAt: string
   completedAt: string | null
   employee: { id: string; name: string; companyId: string }

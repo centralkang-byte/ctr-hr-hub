@@ -80,7 +80,7 @@ export const GET = withRateLimit(withPermission(
                     status: 'DRAFT',
                     totalAmount: totalNet,
                     totalCount: items.length,
-                    createdBy: user.employeeId,
+                    createdById: user.employeeId,
                     note: TRANSFER_NOTE_FORMAT(run.yearMonth),
                     items: {
                         create: items.map((item) => {

@@ -271,7 +271,7 @@ export async function GET(req: NextRequest) {
 
         // Resolve requester names
         const requesterIds = [...new Set(
-          runs.map((r) => r.payrollApproval?.requestedBy ?? r.createdBy).filter(Boolean) as string[],
+          runs.map((r) => r.payrollApproval?.requestedBy ?? r.createdById).filter(Boolean) as string[],
         )]
         const requesters = await prisma.employee.findMany({
           where: { id: { in: requesterIds } },
@@ -286,7 +286,7 @@ export async function GET(req: NextRequest) {
               : rawStatus === 'APPROVED' || rawStatus === 'PAID' ? 'APPROVED'
                 : 'REJECTED'
 
-          const requestedBy = run.payrollApproval?.requestedBy ?? run.createdBy ?? ''
+          const requestedBy = run.payrollApproval?.requestedBy ?? run.createdById ?? ''
           const requesterName = requesterMap.get(requestedBy) ?? '급여팀'
           const stepLabel = run.payrollApproval
             ? `${run.payrollApproval.currentStep}/${run.payrollApproval.totalSteps}단계`

@@ -97,7 +97,7 @@ export async function seedGP4PeerReview(prisma: PrismaClient): Promise<void> {
                         nomineeId: reviewer.id,
                         nominationSource: 'MANAGER_ASSIGNED' as NominationSource,
                         status: (isPending ? 'NOMINATION_APPROVED' : 'NOMINATION_COMPLETED') as NominationStatus,
-                        approvedBy: hrManager.id,
+                        approvedById: hrManager.id,
                         approvedAt: new Date('2025-12-05'),
                     },
                 })

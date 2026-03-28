@@ -51,7 +51,7 @@ export async function PUT(_req: NextRequest, context: Context) {
       where: { id: taskId },
       data: {
         status:      'DONE',
-        completedBy: user.employeeId,
+        completedById: user.employeeId,
         completedAt: new Date(),
       },
     })

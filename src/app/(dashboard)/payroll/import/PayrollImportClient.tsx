@@ -132,7 +132,7 @@ export default function PayrollImportClient({ user, companies }: {
         totalGross: 0,
         totalNet: 0,
         currency: selectedCompany.currency ?? 'USD',
-        uploadedBy: user.id,
+        uploadedById: user.id,
       })
       showToast(`${selectedFile.name} 업로드 완료`)
       setSelectedFile(null)

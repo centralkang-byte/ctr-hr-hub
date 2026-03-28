@@ -120,7 +120,7 @@ export const POST = withPermission(
             totalAmount,
             totalCount,
             note: note ?? null,
-            createdBy: user.employeeId,
+            createdById: user.employeeId,
           },
         })
 

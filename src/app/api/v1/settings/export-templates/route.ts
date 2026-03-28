@@ -60,7 +60,7 @@ export const POST = withPermission(
           columns: parsed.data.columns,
           fileFormat: parsed.data.fileFormat,
           isDefault: parsed.data.isDefault,
-          createdBy: user.employeeId,
+          createdById: user.employeeId,
         },
       })
 

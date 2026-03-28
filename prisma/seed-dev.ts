@@ -805,7 +805,7 @@ async function seedLeavePolicies(
           days: s.endOffset + 1,
           reason: s.status === 'REJECTED' ? '성수기 인원부족' : '개인 사유',
           status: s.status as any,
-          approvedBy: s.status === 'APPROVED' ? hrApprover : undefined,
+          approvedById: s.status === 'APPROVED' ? hrApprover : undefined,
           approvedAt: s.status === 'APPROVED' ? new Date() : undefined,
           rejectionReason: s.status === 'REJECTED' ? '업무 연속성 문제로 불가' : undefined,
         },
@@ -839,7 +839,7 @@ async function seedLeavePolicies(
           days: 3,
           reason: '个人原因',
           status: status as any,
-          approvedBy: status === 'APPROVED' ? cnApprover : undefined,
+          approvedById: status === 'APPROVED' ? cnApprover : undefined,
           approvedAt: status === 'APPROVED' ? new Date() : undefined,
           rejectionReason: status === 'REJECTED' ? '生产计划冲突' : undefined,
         },
@@ -1362,7 +1362,7 @@ async function seedPerformance(
             weight: g === 0 ? 40 : g === 1 ? 35 : 25,
             status: 'APPROVED',
             achievementScore: Math.round(score * 10) / 10,
-            approvedBy: adminId,
+            approvedById: adminId,
             approvedAt: dateOnly(2025, 7, 20),
           },
         })
@@ -1385,7 +1385,7 @@ async function seedPerformance(
             title: goalTitles[(i + g + 2) % goalTitles.length],
             weight: g === 0 ? 40 : g === 1 ? 35 : 25,
             status: 'APPROVED',
-            approvedBy: adminId,
+            approvedById: adminId,
             approvedAt: dateOnly(2026, 1, 25),
           },
         })
@@ -1600,7 +1600,7 @@ async function seedCalibration(
           recommendedPct: r.pct,
           minPct: Math.max(0, r.pct - 5),
           maxPct: r.pct + 5,
-          createdBy: adminId,
+          createdById: adminId,
         },
       })
     } catch (e) { /* 무시 */ }
@@ -1619,7 +1619,7 @@ async function seedCalibration(
       status: 'CALIBRATION_COMPLETED',
       blockDistribution: { A1: 2, A2: 4, A3: 2, B1: 4, B2: 14, B3: 6, C1: 2, C2: 4, C3: 2 },
       notes: '전체 40명 대상, 9블록 분포 확정',
-      createdBy: adminId,
+      createdById: adminId,
       completedAt: dateOnly(2026, 1, 10),
     },
   })
@@ -1710,7 +1710,7 @@ async function seedRewardsAndDiscipline(
           description: r.desc,
           amount: r.amount || undefined,
           awardedDate: r.date,
-          awardedBy: adminId,
+          awardedById: adminId,
           ctrValue: r.ctrValue,
         },
       })
@@ -1736,7 +1736,7 @@ async function seedRewardsAndDiscipline(
           status: 'DISCIPLINE_ACTIVE',
           validMonths: 12,
           expiresAt: dateOnly(2026, 11, 1),
-          issuedBy: adminId,
+          issuedById: adminId,
         },
       })
     } catch (e) { /* 무시 */ }

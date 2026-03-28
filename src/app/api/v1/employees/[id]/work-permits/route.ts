@@ -121,7 +121,7 @@ export const POST = withPermission(
           expiryDate: expiryDate ? new Date(expiryDate) : null,
           documentKey: documentKey ?? null,
           notes: notes ?? null,
-          createdBy: user.employeeId,
+          createdById: user.employeeId,
         },
       })
 

@@ -30,7 +30,7 @@ export type EmployeeAssignment = {
   isPrimary:      boolean
   reason:         string | null
   orderNumber:    string | null
-  approvedBy:     string | null
+  approvedById:     string | null
   createdAt:      string
   updatedAt:      string
 }
@@ -78,7 +78,7 @@ export type CreateAssignmentParams = {
   isPrimary?:     boolean
   reason?:        string
   orderNumber?:   string
-  approvedBy?:    string
+  approvedById?:    string
 }
 
 // current_employee_view에서 반환되는 타입 (기존 Employee 호환)

@@ -35,7 +35,7 @@ async function findGoal(id: string, user: SessionUser) {
       cycle: { select: { id: true, name: true, year: true, half: true, status: true } },
       progress: {
         orderBy: { createdAt: 'desc' },
-        select: { id: true, progressPct: true, note: true, createdBy: true, createdAt: true },
+        select: { id: true, progressPct: true, note: true, createdById: true, createdAt: true },
       },
     },
   })

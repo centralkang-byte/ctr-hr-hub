@@ -56,7 +56,7 @@ export async function PUT(_req: NextRequest, ctx: { params: Promise<{ id: string
         data: {
           status:      'DONE',
           completedAt: new Date(),
-          completedBy: user.employeeId,
+          completedById: user.employeeId,
         },
       })
 
@@ -101,7 +101,7 @@ export async function PUT(_req: NextRequest, ctx: { params: Promise<{ id: string
           employeeOnboardingId:     task.employeeOnboardingId,
           employeeId:               onboarding.employeeId,
           companyId,
-          completedBy:              user.employeeId,
+          completedById:              user.employeeId,
           taskCategory:             task.task?.category ?? 'OTHER',
           allRequiredDone:          updatedTasks
             .filter((t) => t.task.isRequired)

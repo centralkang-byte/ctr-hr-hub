@@ -168,7 +168,7 @@ export async function seedSuccession(prisma: PrismaClient): Promise<void> {
                     status: p.status,
                     currentHolderId,
                     notes: p.notes,
-                    createdBy: p.companyCode === 'CTR-CN' ? cnCreatorId : hrId,
+                    createdById: p.companyCode === 'CTR-CN' ? cnCreatorId : hrId,
                 },
             })
             planCount++

@@ -65,7 +65,7 @@ export const POST = withPermission(
       const plan = await prisma.successionPlan.create({
         data: {
           companyId: user.companyId,
-          createdBy: user.employeeId,
+          createdById: user.employeeId,
           status: 'PLAN_DRAFT',
           ...parsed.data,
         },

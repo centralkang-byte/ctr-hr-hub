@@ -13,7 +13,7 @@
 // 권한이 있는지 판단한다.
 //
 // 규칙:
-//   1. 원래 승인권자(approvedBy) = 위임자(delegator)
+//   1. 원래 승인권자(approvedById) = 위임자(delegator)
 //   2. 현재 사용자 = delegatee
 //   3. delegation.status = ACTIVE
 //   4. now() between startDate and endDate

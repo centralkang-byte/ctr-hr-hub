@@ -30,7 +30,7 @@ export const POST = withPermission(
       fromData,
       toData,
       reason,
-      approvedBy,
+      approvedById,
       documentKey,
     } = parsed.data
 
@@ -52,7 +52,7 @@ export const POST = withPermission(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             toData: toData ? (JSON.parse(JSON.stringify(toData)) as any) : undefined,
             reason: reason ?? null,
-            approvedBy: approvedBy ?? null,
+            approvedById: approvedById ?? null,
             documentKey: documentKey ?? null,
           },
         })

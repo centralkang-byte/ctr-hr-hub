@@ -41,7 +41,7 @@ interface Adjustment {
     description: string
     amount: number
     evidenceUrl: string | null
-    createdBy: string
+    createdById: string
     createdAt: string
 }
 

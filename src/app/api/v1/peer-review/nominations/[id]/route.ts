@@ -42,7 +42,7 @@ export const PUT = withPermission(
         where: { id },
         data: {
           status: parsed.data.status,
-          approvedBy: user.employeeId,
+          approvedById: user.employeeId,
           approvedAt: new Date(),
         },
       })

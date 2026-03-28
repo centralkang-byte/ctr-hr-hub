@@ -121,7 +121,7 @@ export const POST = withPermission(
                     where: { id: runId },
                     data: {
                         status: 'APPROVED',
-                        approvedBy: user.employeeId,
+                        approvedById: user.employeeId,
                         approvedAt: now,
                     },
                 })

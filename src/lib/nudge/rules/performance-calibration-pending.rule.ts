@@ -18,7 +18,7 @@
 // 대상:
 //   - HR_ADMIN / SUPER_ADMIN 역할 직원
 //   - 현재 코드베이스 패턴: employee.assignments active → 최대 10명
-//   - CalibrationSession.createdBy → 세션 생성자에게도 직접 nudge
+//   - CalibrationSession.createdById → 세션 생성자에게도 직접 nudge
 //
 // 임계값:
 //   - first: 3일 경과 후
@@ -103,7 +103,7 @@ export const performanceCalibrationPendingRule: NudgeRule = {
         id:        true,
         name:      true,
         status:    true,
-        createdBy: true,
+        createdById: true,
         createdAt: true,
       },
       orderBy: { createdAt: 'asc' },
@@ -116,15 +116,15 @@ export const performanceCalibrationPendingRule: NudgeRule = {
     //   Now: any active HR_ADMIN or SUPER_ADMIN in the company receives it // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma where clause dynamic type
     const hrAdminIds = await getHrAndSuperAdminIds(prisma, companyId)
     const isHrAdmin = hrAdminIds.includes(assigneeId)
-    const isSessionCreator = pendingSessions.some((s) => s.createdBy === assigneeId)
+    const isSessionCreator = pendingSessions.some((s) => s.createdById === assigneeId)
 
     if (!isHrAdmin && !isSessionCreator) return []
 
     const items: OverdueItem[] = []
 
     for (const session of pendingSessions) {
-      // 이 세션의 createdBy가 자신이 아니면 skip
-      if (session.createdBy !== assigneeId) continue
+      // 이 세션의 createdById가 자신이 아니면 skip
+      if (session.createdById !== assigneeId) continue
 
       // 3일 후부터 trigger → session.createdAt + 3d 기준
       const triggerDate = new Date(

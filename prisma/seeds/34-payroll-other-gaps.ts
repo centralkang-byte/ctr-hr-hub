@@ -78,7 +78,7 @@ export async function seedPayrollOtherGaps(prisma: PrismaClient) {
         totalCount: itemCount,
         successCount: b.status === 'COMPLETED' ? itemCount : 0,
         failCount: 0,
-        createdBy: hrEmp.id,
+        createdById: hrEmp.id,
         generatedAt: b.status !== 'DRAFT' ? new Date('2026-02-25') : null,
         submittedAt: b.status === 'COMPLETED' ? new Date('2026-02-26') : null,
         completedAt: b.status === 'COMPLETED' ? new Date('2026-02-27') : null,
@@ -135,7 +135,7 @@ export async function seedPayrollOtherGaps(prisma: PrismaClient) {
         contentText: d.content,
         version: '1.0',
         locale: 'ko',
-        uploadedBy: hrEmp.id,
+        uploadedById: hrEmp.id,
         isActive: true,
       },
     })
@@ -184,7 +184,7 @@ export async function seedPayrollOtherGaps(prisma: PrismaClient) {
         description: c.desc,
         vendorName: c.vendor,
         invoiceDate: new Date('2026-02-15'),
-        createdBy: hrEmp.id,
+        createdById: hrEmp.id,
       },
     })
     costCount++

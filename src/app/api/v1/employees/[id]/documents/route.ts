@@ -107,7 +107,7 @@ export const POST = withPermission(
           fileKey: parsed.data.fileKey,
           fileSize: parsed.data.fileSize ?? null,
           mimeType: parsed.data.mimeType ?? null,
-          uploadedBy: user.employeeId,
+          uploadedById: user.employeeId,
         },
       })
 

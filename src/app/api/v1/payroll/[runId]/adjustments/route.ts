@@ -82,7 +82,7 @@ export const POST = withPermission(
                     description: data.description,
                     amount: data.amount,
                     evidenceUrl: data.evidenceUrl,
-                    createdBy: user.employeeId,
+                    createdById: user.employeeId,
                 },
                 include: { employee: { select: { id: true, name: true, email: true } } },
             })

@@ -227,7 +227,7 @@ export const GET = withPermission(
               : isManager && teamScope
                 ? { employeeId: { in: teamScope } }
                 : {
-                    ...(assigneeId ? { approvedBy: assigneeId } : {}),
+                    ...(assigneeId ? { approvedById: assigneeId } : {}),
                     ...(requesterId ? { employeeId: requesterId } : {}),
                   }),
           },
@@ -244,7 +244,7 @@ export const GET = withPermission(
         ? prisma.payrollRun.findMany({
           where: {
             ...companyFilter,
-            ...(assigneeId ? { approvedBy: assigneeId } : {}),
+            ...(assigneeId ? { approvedById: assigneeId } : {}),
           },
           include: PAYROLL_INCLUDE,
           orderBy: { createdAt: 'desc' },
@@ -339,7 +339,7 @@ export const GET = withPermission(
         ? prisma.benefitClaim.findMany({
           where: {
             status: 'pending',
-            ...(assigneeId ? { approvedBy: assigneeId } : {}),
+            ...(assigneeId ? { approvedById: assigneeId } : {}),
             ...(requesterId ? { employeeId: requesterId } : {}),
             employee: {
               assignments: {
@@ -395,7 +395,7 @@ export const GET = withPermission(
             where: {
               companyId: user.companyId,
               status: 'PENDING',
-              approvedBy: { in: delegatorIds },
+              approvedById: { in: delegatorIds },
             },
             include: LEAVE_INCLUDE,
             orderBy: { createdAt: 'desc' },

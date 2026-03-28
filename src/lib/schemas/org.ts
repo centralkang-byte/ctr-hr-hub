@@ -61,7 +61,7 @@ export const restructureSchema = z.object({
   fromData: z.record(z.string(), z.unknown()).optional(),
   toData: z.record(z.string(), z.unknown()).optional(),
   reason: z.string().max(500).optional(),
-  approvedBy: z.string().uuid().optional().nullable(),
+  approvedById: z.string().uuid().optional().nullable(),
   documentKey: z.string().max(500).optional().nullable(),
 })
 

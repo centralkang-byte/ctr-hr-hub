@@ -114,7 +114,7 @@ export const POST = withPermission(
                         nomineeId,
                         nominationSource: 'MANAGER_ASSIGNED',
                         status: 'NOMINATION_APPROVED',
-                        approvedBy: user.employeeId,
+                        approvedById: user.employeeId,
                         approvedAt: new Date(),
                     },
                 })

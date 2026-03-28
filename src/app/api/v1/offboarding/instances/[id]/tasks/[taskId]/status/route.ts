@@ -101,7 +101,7 @@ export const PUT = withPermission(
 
             // Handle DONE
             if (targetStatus === 'DONE') {
-                updateData.completedBy = user.employeeId
+                updateData.completedById = user.employeeId
                 updateData.completedAt = new Date()
             }
 
@@ -127,7 +127,7 @@ export const PUT = withPermission(
                     // Just flag it as ready
                     await tx.employeeOffboarding.update({
                         where: { id: offboardingId },
-                        data: { severanceCalculated: true }, // signal that completion check passed
+                        data: { isSeveranceCalculated: true }, // signal that completion check passed
                     })
                 }
             }
@@ -141,7 +141,7 @@ export const PUT = withPermission(
             blockedReason: result.blockedReason,
             blockedAt: result.blockedAt,
             unblockedAt: result.unblockedAt,
-            completedBy: result.completedBy,
+            completedById: result.completedById,
             completedAt: result.completedAt,
         })
     },

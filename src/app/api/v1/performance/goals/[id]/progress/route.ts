@@ -94,7 +94,7 @@ export const POST = withPermission(
             goalId: id,
             progressPct,
             note,
-            createdBy: user.employeeId,
+            createdById: user.employeeId,
           },
           include: {
             creator: { select: { id: true, name: true } },

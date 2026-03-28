@@ -70,7 +70,7 @@ export const PATCH = withPermission(
         where: { id },
         data: {
           status: action === 'approve' ? 'approved' : 'rejected',
-          approvedBy: action === 'approve' ? (user.employeeId ?? null) : null,
+          approvedById: action === 'approve' ? (user.employeeId ?? null) : null,
           approvedAt: action === 'approve' ? now : null,
           approvedAmount: action === 'approve' ? (approvedAmount ?? claim.claimAmount) : null,
           rejectedReason: action === 'reject' ? rejectedReason : null,

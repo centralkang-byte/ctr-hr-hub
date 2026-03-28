@@ -83,7 +83,7 @@ export const GET = withPermission(
       // Aggregate summary stats
       totalBlocked += blocked
       if (isD7 && ob.status === 'IN_PROGRESS') totalUrgent++
-      if (!ob.exitInterviewCompleted && ob.status === 'IN_PROGRESS') exitInterviewPending++
+      if (!ob.isExitInterviewCompleted && ob.status === 'IN_PROGRESS') exitInterviewPending++
       resignTypeBreakdown[ob.resignType] = (resignTypeBreakdown[ob.resignType] ?? 0) + 1
 
       return {

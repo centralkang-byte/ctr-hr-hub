@@ -336,7 +336,7 @@ export async function seedBenefits(prisma: PrismaClient): Promise<void> {
                             ? [`receipts/${planCode}/${claimId}.jpg`]
                             : [],
                         status: statusStr,
-                        approvedBy: isApproved ? hrId : null,
+                        approvedById: isApproved ? hrId : null,
                         approvedAt: isApproved ? daysAgo(2 + ci) : null,
                         rejectedReason: statusStr === 'rejected' ? '증빙서류 미비' : null,
                         paidAt: isApproved ? daysAgo(1) : null,

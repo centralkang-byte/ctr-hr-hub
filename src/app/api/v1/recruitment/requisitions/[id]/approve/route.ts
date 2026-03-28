@@ -126,7 +126,7 @@ export const POST = withPermission(
             employmentType: (empTypeMap[requisition.employmentType] ?? 'FULL_TIME') as any,
             headcount: requisition.headcount,
             status: 'DRAFT',
-            createdBy: requisition.requesterId,
+            createdById: requisition.requesterId,
             positionId,
             requisitionId: id,
           },

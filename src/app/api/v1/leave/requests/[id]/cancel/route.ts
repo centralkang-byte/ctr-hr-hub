@@ -68,7 +68,7 @@ export const PUT = withPermission(
           where: { id },
           data: {
             status: 'CANCELLED',
-            cancelledBy: user.employeeId,
+            cancelledById: user.employeeId,
             cancelNote: cancelReason,
           },
         })
@@ -110,7 +110,7 @@ export const PUT = withPermission(
           where: { id },
           data: {
             status: 'CANCELLED',
-            cancelledBy: user.employeeId,
+            cancelledById: user.employeeId,
             cancelNote: cancelReason ?? `시작 전 취소: ${daysToRestore}일 전액 복구`,
           },
         })
@@ -198,7 +198,7 @@ export const PUT = withPermission(
           where: { id },
           data: {
             status: 'CANCELLED',
-            cancelledBy: user.employeeId,
+            cancelledById: user.employeeId,
             cancelNote: cancelReason ?? `시작 후 취소: ${actualUsed}일 사용, ${unusedDays}일 복구`,
           },
         })
@@ -291,7 +291,7 @@ async function auditCancel(
       status: 'CANCELLED',
       cancelType,
       balanceRestored,
-      cancelledBy: user.employeeId,
+      cancelledById: user.employeeId,
     },
     ...meta,
   })

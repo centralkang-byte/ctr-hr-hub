@@ -45,23 +45,23 @@ export const PUT = withPermission(
     }
 
     // F-2: Delegation check
-    let delegatedBy: string | null = null
+    let delegatedById: string | null = null
     const isDirectApprover =
-      !request.approvedBy ||
-      request.approvedBy === user.employeeId ||
+      !request.approvedById ||
+      request.approvedById === user.employeeId ||
       ['HR_ADMIN', 'SUPER_ADMIN'].includes(user.role)
 
     if (!isDirectApprover) {
       const delegationResult = await checkDelegation(
         user.employeeId,
-        request.approvedBy!,
+        request.approvedById!,
         user.companyId,
         'LEAVE_ONLY',
       )
       if (!delegationResult.isDelegatee) {
         throw badRequest('이 휴가 신청에 대한 반려 권한이 없습니다.')
       }
-      delegatedBy = user.employeeId
+      delegatedById = user.employeeId
     }
 
     // 3. Resolve leaveTypeDefId + find balance (LeaveYearBalance)
@@ -93,9 +93,9 @@ export const PUT = withPermission(
         data: {
           status:          'REJECTED',
           rejectionReason: parsed.data.rejectionReason,
-          approvedBy:      request.approvedBy ?? user.employeeId,
+          approvedById:      request.approvedById ?? user.employeeId,
           approvedAt:      new Date(),
-          delegatedBy:     delegatedBy,
+          delegatedById:     delegatedById,
         },
       })
 
@@ -131,7 +131,7 @@ export const PUT = withPermission(
       changes: {
         status:          'REJECTED',
         rejectionReason: parsed.data.rejectionReason,
-        approvedBy:      user.employeeId,
+        approvedById:      user.employeeId,
       },
       ...meta,
     })

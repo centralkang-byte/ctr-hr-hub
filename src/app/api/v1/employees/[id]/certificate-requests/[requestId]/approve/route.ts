@@ -111,7 +111,7 @@ export const POST = withPermission(
         status: 'ISSUED',
         approvedAt: new Date(),
         issuedAt: new Date(),
-        approvedBy: user.employeeId,
+        approvedById: user.employeeId,
         issuedFileKey: s3Key,
       },
     })

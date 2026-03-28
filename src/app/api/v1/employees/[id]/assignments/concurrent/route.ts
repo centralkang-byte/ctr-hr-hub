@@ -97,7 +97,7 @@ export const POST = withPermission(
         isPrimary: false,
         changeType: 'CONCURRENT',
         status: 'ACTIVE',
-        approvedBy: user.employeeId,
+        approvedById: user.employeeId,
       },
       include: {
         company: { select: { id: true, name: true } },

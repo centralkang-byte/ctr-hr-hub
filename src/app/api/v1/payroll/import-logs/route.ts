@@ -22,7 +22,7 @@ const createSchema = z.object({
   totalGross: z.number().default(0),
   totalNet: z.number().default(0),
   currency: z.string().length(3),
-  uploadedBy: z.string(),
+  uploadedById: z.string(),
 })
 
 export const GET = withPermission(
@@ -60,7 +60,7 @@ export const POST = withPermission(
         id: crypto.randomUUID(),
         ...data,
         status: 'uploaded',
-        uploadedBy: data.uploadedBy || user.id,
+        uploadedById: data.uploadedById || user.id,
       },
     })
     return apiSuccess(log, 201)

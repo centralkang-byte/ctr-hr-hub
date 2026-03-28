@@ -96,7 +96,7 @@ export async function seedGP4CompReview(prisma: PrismaClient): Promise<void> {
                 performanceGradeAtTime: rec.grade,
                 isException: rec.isException,
                 exceptionReason: rec.exceptionReason ?? null,
-                approvedBy: hrManager.id,
+                approvedById: hrManager.id,
                 reason: rec.isException
                     ? `보상 예외: ${rec.exceptionReason}`
                     : `성과 기반 인상 (${rec.grade})`,

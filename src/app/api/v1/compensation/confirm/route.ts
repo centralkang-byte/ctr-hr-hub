@@ -132,7 +132,7 @@ export const POST = withPermission(
             changePct: adj.changePct,
             effectiveDate: effectiveDateObj,
             reason: adj.reason ?? null,
-            approvedBy: user.employeeId,
+            approvedById: user.employeeId,
             emsBlockAtTime: emsBlock,
             compaRatio,
           }

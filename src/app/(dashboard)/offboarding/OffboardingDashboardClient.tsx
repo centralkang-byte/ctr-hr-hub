@@ -57,7 +57,7 @@ interface OffboardingTaskRow {
   id: string
   status: string
   completedAt: string | null
-  completedBy: string | null
+  completedById: string | null
   note: string | null
   task: {
     isRequired: boolean

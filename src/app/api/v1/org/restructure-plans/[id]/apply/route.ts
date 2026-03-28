@@ -273,7 +273,7 @@ export const POST = withPermission(
             changeType: 'RESTRUCTURE',
             effectiveDate,
             reason: plan.title,
-            approvedBy: user.employeeId,
+            approvedById: user.employeeId,
           },
         })
 
@@ -283,7 +283,7 @@ export const POST = withPermission(
           data: {
             status: 'applied',
             appliedAt: new Date(),
-            approvedBy: plan.approvedBy ?? user.employeeId,
+            approvedById: plan.approvedById ?? user.employeeId,
             approvedAt: plan.approvedAt ?? new Date(),
           },
         })

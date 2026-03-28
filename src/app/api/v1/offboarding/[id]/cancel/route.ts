@@ -83,7 +83,7 @@ export const PUT = withPermission(
           changeType: 'RESIGN',
           effectiveDate: new Date(),
           reason: '퇴직 처리 취소',
-          approvedBy: user.employeeId,
+          approvedById: user.employeeId,
           toCompanyId: (extractPrimaryAssignment(offboarding.employee.assignments ?? []) as Record<string, any>)?.companyId ?? undefined,
         },
       })

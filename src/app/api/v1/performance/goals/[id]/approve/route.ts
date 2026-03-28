@@ -38,7 +38,7 @@ export const PUT = withPermission(
         where: { id },
         data: {
           status: 'APPROVED' as GoalStatus,
-          approvedBy: user.employeeId,
+          approvedById: user.employeeId,
           approvedAt: new Date(),
         },
         include: {
@@ -54,7 +54,7 @@ export const PUT = withPermission(
         resourceType: 'mboGoal',
         resourceId: updated.id,
         companyId: updated.companyId,
-        changes: { status: 'APPROVED', approvedBy: user.employeeId },
+        changes: { status: 'APPROVED', approvedById: user.employeeId },
         ip,
         userAgent,
       })

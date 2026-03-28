@@ -85,7 +85,7 @@ export const POST = withPermission(
           contentText,
           version,
           locale,
-          uploadedBy: user.employeeId,
+          uploadedById: user.employeeId,
         },
       })
 

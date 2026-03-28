@@ -94,7 +94,7 @@ export const PUT = withPermission(
             positionId: currentAsgn?.positionId ?? null,
             isPrimary: true,
             reason: `Cross-company transfer from ${transfer.fromCompanyId} to ${transfer.toCompanyId}`,
-            approvedBy: user.employeeId,
+            approvedById: user.employeeId,
           },
         })
 
@@ -111,7 +111,7 @@ export const PUT = withPermission(
             toGradeId: transfer.newJobGradeId ?? currentAsgn?.jobGradeId ?? null,
             effectiveDate: transfer.transferDate,
             reason: `Cross-company transfer from ${transfer.fromCompanyId} to ${transfer.toCompanyId}`,
-            approvedBy: user.employeeId,
+            approvedById: user.employeeId,
           },
         })
 

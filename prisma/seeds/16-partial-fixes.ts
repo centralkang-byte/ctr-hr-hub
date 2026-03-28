@@ -295,7 +295,7 @@ export async function seedPartialFixes(prisma: PrismaClient): Promise<void> {
             await prisma.payrollSimulation.create({
                 data: {
                     id: simId,
-                    createdBy: simEmp.id,
+                    createdById: simEmp.id,
                     employeeId: simEmp.id,  // required field per schema
                     type: sim.type,
                     title: sim.title,

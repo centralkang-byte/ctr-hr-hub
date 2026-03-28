@@ -491,7 +491,7 @@ export async function seedLeave(prisma: PrismaClient): Promise<void> {
             days,
             reason:        isSick ? '몸이 좋지 않아 휴가 신청합니다' : `${persona} 개인 사유`,
             status,
-            approvedBy:    status === 'APPROVED' ? krApproverId : undefined,
+            approvedById:    status === 'APPROVED' ? krApproverId : undefined,
             approvedAt:    status === 'APPROVED' ? addDays(submittedAt, 1) : undefined,
             rejectionReason: status === 'REJECTED'
               ? REJECTION_REASONS[Math.floor(sr(seed + 7) * REJECTION_REASONS.length)]
@@ -557,7 +557,7 @@ export async function seedLeave(prisma: PrismaClient): Promise<void> {
             days,
             reason:        isSick ? '身体不适' : '个人假期',
             status,
-            approvedBy:    status === 'APPROVED' ? cnApproverId : undefined,
+            approvedById:    status === 'APPROVED' ? cnApproverId : undefined,
             approvedAt:    status === 'APPROVED' ? addDays(submittedAt, 1) : undefined,
             rejectionReason: status === 'REJECTED'
               ? REJECTION_REASONS[Math.floor(sr(seed + 7) * REJECTION_REASONS.length)]

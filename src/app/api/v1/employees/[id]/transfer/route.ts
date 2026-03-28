@@ -30,7 +30,7 @@ const transferSchema = z.object({
   toCompanyId: z.string().uuid().optional(),
   effectiveDate: z.string().date(),
   reason: z.string().optional(),
-  approvedBy: z.string().uuid().optional(),
+  approvedById: z.string().uuid().optional(),
 })
 
 // ─── POST /api/v1/employees/[id]/transfer ────────────────
@@ -59,7 +59,7 @@ export const POST = withPermission(
       toCompanyId,
       effectiveDate,
       reason,
-      approvedBy,
+      approvedById,
     } = parsed.data
 
     const assignmentFilter =
@@ -113,7 +113,7 @@ export const POST = withPermission(
             toCompanyId: toCompanyId ?? null,
             effectiveDate: new Date(effectiveDate),
             reason: reason ?? null,
-            approvedBy: approvedBy ?? null,
+            approvedById: approvedById ?? null,
           },
         })
 

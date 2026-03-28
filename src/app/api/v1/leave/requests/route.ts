@@ -292,7 +292,7 @@ export const POST = withPermission(
           startDate: { lte: endDate },
           endDate: { gte: startDate },
           // Same approver = same team
-          approvedBy: {
+          approvedById: {
             not: null,
           },
         },

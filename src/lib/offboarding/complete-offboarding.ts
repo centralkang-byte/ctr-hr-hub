@@ -95,7 +95,7 @@ export async function executeOffboardingCompletion(offboardingId: string): Promi
                     where: { id: asset.id },
                     data: {
                         status: 'DEDUCTED',
-                        deductionApproved: true,
+                        isDeductionApproved: true,
                         deductionAmount: deductionAmount,
                     },
                 })

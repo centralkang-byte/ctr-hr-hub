@@ -73,7 +73,7 @@ async function handleLeaveApproval(
     where: { id: requestId },
     data: {
       status: newStatus,
-      approvedBy: approverId,
+      approvedById: approverId,
       approvedAt: new Date(),
     },
   })
@@ -102,7 +102,7 @@ async function handleLeaveApproval(
 async function handleOnboardingTaskComplete(
   taskId: string,
   action: string,
-  completedBy: string,
+  completedById: string,
 ): Promise<CardActionResult> {
   if (action !== 'complete') {
     return { success: false, message: '알 수 없는 액션입니다.' }
@@ -125,7 +125,7 @@ async function handleOnboardingTaskComplete(
     data: {
       status: 'DONE',
       completedAt: new Date(),
-      completedBy,
+      completedById,
     },
   })
 

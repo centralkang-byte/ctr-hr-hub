@@ -3351,7 +3351,7 @@ async function main() {
           totalNet: def.employees.reduce((s, e) => s + e.net, 0),
           currency: def.currency,
           status: 'confirmed',
-          uploadedBy: uploadedById,
+          uploadedById: uploadedById,
           confirmedAt: new Date(`${def.yearMonth}-20`),
         },
       })

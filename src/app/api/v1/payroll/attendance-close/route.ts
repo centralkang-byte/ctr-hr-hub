@@ -85,7 +85,7 @@ export const POST = withPermission(
                 excludedEmployeeIds: excludeEmployeeIds,
                 periodStart: firstDay,
                 periodEnd: lastDay,
-                createdBy: user.employeeId,
+                createdById: user.employeeId,
             }
 
             if (existing) {

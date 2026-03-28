@@ -157,7 +157,7 @@ export const POST = withPermission(
 
       await tx.employeeOffboarding.update({
         where: { id },
-        data: { exitInterviewCompleted: true },
+        data: { isExitInterviewCompleted: true },
       })
 
       return created

@@ -188,7 +188,7 @@ export const POST = withPermission(
           changeType,
           effectiveDate: new Date(lastWorkingDate),
           reason: resignReasonDetail ?? resignReasonCode ?? `퇴직 유형: ${resignType}`,
-          approvedBy: user.employeeId,
+          approvedById: user.employeeId,
         },
       })
 

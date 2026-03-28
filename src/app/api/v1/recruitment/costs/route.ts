@@ -81,7 +81,7 @@ export const POST = withPermission(
           vendorName: data.vendorName ?? null,
           invoiceDate: data.invoiceDate ? new Date(data.invoiceDate) : null,
           companyId: user.companyId,
-          createdBy: user.employeeId,
+          createdById: user.employeeId,
         },
         include: {
           posting: { select: { id: true, title: true } },

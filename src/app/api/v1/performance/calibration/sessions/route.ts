@@ -89,7 +89,7 @@ export const POST = withPermission(
           departmentId: departmentId ?? null,
           name,
           status: 'CALIBRATION_DRAFT' as CalibrationStatus,
-          createdBy: user.employeeId,
+          createdById: user.employeeId,
         },
         include: {
           cycle: { select: { id: true, name: true } },

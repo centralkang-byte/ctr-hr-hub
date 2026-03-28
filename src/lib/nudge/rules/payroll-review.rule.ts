@@ -11,7 +11,7 @@
 //
 // 조건: PayrollRun.status = 'REVIEW' AND updatedAt < cutoffDate
 //       (REVIEW 진입 시각 기준 — updatedAt이 최선)
-// 대상: PayrollRun.approvedBy (담당 HR) — 미지정이면 PAYROLL 권한자
+// 대상: PayrollRun.approvedById (담당 HR) — 미지정이면 PAYROLL 권한자
 // 임계값: triggerAfterDays=1, repeatEveryDays=1, maxNudges=5
 //          (급여는 지급일이 있어 더 촉박한 임계값 적용)
 // ═══════════════════════════════════════════════════════════
@@ -53,8 +53,8 @@ export const payrollReviewRule: NudgeRule = {
         status:    'REVIEW',
         updatedAt: { lt: cutoffDate },
         OR: [
-          { approvedBy: assigneeId },
-          { approvedBy: null },          // 미지정 — PAYROLL 권한자에게 fallback
+          { approvedById: assigneeId },
+          { approvedById: null },          // 미지정 — PAYROLL 권한자에게 fallback
         ],
       },
       select: {

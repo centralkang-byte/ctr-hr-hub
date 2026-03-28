@@ -140,7 +140,7 @@ export const POST = withPermission(
           demotionGradeId: data.demotionGradeId ?? null,
           salaryReductionRate: data.salaryReductionRate ?? null,
           salaryReductionMonths: data.salaryReductionMonths ?? null,
-          issuedBy: user.employeeId,
+          issuedById: user.employeeId,
           status: 'DISCIPLINE_ACTIVE',
         },
         include: {

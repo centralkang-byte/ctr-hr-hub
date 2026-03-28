@@ -163,7 +163,7 @@ export async function executeSignOff(
                 where: { id: signOffTask.id },
                 data: {
                     status: 'DONE',
-                    completedBy: managerId,
+                    completedById: managerId,
                     completedAt: new Date(),
                 },
             })

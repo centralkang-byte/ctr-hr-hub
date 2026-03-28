@@ -101,7 +101,7 @@ export async function createAssignment(params: CreateAssignmentParams) {
     isPrimary = true,
     reason,
     orderNumber,
-    approvedBy,
+    approvedById,
   } = params
 
   // parseDateOnly로 YYYY-MM-DD 문자열을 UTC 자정으로 안전하게 변환.
@@ -142,7 +142,7 @@ export async function createAssignment(params: CreateAssignmentParams) {
         isPrimary,
         reason,
         orderNumber,
-        approvedBy,
+        approvedById,
       },
       include: {
         company:     true,
@@ -242,7 +242,7 @@ export async function recordStatusChange(params: {
   employmentType: string
   contractType?:  string
   reason?:       string
-  approvedBy?:   string
+  approvedById?:   string
 }) {
   return createAssignment({
     ...params,

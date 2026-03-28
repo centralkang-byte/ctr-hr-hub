@@ -84,7 +84,7 @@ export const POST = withPermission(
               recommendedPct: rule.recommendedPct,
               minPct: rule.minPct ?? null,
               maxPct: rule.maxPct ?? null,
-              createdBy: user.employeeId,
+              createdById: user.employeeId,
             },
           }),
         ),

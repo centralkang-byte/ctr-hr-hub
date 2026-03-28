@@ -213,7 +213,7 @@ export async function seedCompensation(prisma: PrismaClient): Promise<void> {
                     changePct: 0,
                     effectiveDate: hireDate,
                     reason: '신규 입사',
-                    approvedBy: hrId,
+                    approvedById: hrId,
                 },
             })
             histCount++
@@ -245,7 +245,7 @@ export async function seedCompensation(prisma: PrismaClient): Promise<void> {
                         changePct: Math.round(raisePct * 100) / 100,
                         effectiveDate: raiseDate.getFullYear() < 2025 ? new Date('2025-01-01') : raiseDate,
                         reason: '2025년 연봉 인상',
-                        approvedBy: hrId,
+                        approvedById: hrId,
                     },
                 })
                 histCount++

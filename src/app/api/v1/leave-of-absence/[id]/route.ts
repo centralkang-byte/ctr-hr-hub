@@ -114,7 +114,7 @@ async function handleApprove(id: string, record: RecordWithType, user: SessionUs
     where: { id },
     data: {
       status: 'APPROVED',
-      approvedBy: user.employeeId,
+      approvedById: user.employeeId,
       approvedAt: new Date(),
     },
     include: {
