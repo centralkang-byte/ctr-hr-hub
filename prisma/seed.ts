@@ -197,10 +197,10 @@ const emsBlockDefinitions = [
 // 7. TEST ACCOUNTS
 // ================================================================
 const testAccounts = [
-  { email: 'admin@ctr.co.kr', name: '이시스템', nameEn: 'System Lee', employeeNo: 'CTR-HQ-0001', roleCode: 'SUPER_ADMIN', companyCode: 'CTR-HQ' },
-  { email: 'hr@ctr.co.kr', name: '김인사', nameEn: 'HR Kim', employeeNo: 'CTR-KR-0001', roleCode: 'HR_ADMIN', companyCode: 'CTR-KR' },
-  { email: 'manager@ctr.co.kr', name: '박매니저', nameEn: 'Manager Park', employeeNo: 'CTR-KR-0002', roleCode: 'MANAGER', companyCode: 'CTR-KR' },
-  { email: 'employee@ctr.co.kr', name: '최사원', nameEn: 'Employee Choi', employeeNo: 'CTR-KR-0003', roleCode: 'EMPLOYEE', companyCode: 'CTR-KR' },
+  { email: 'admin@ctr.co.kr', name: '이시스템', nameEn: 'System Lee', employeeNo: 'CTR-HQ-0001', roleCode: 'SUPER_ADMIN', companyCode: 'CTR-HOLD' },
+  { email: 'hr@ctr.co.kr', name: '김인사', nameEn: 'HR Kim', employeeNo: 'CTR-KR-0001', roleCode: 'HR_ADMIN', companyCode: 'CTR' },
+  { email: 'manager@ctr.co.kr', name: '박매니저', nameEn: 'Manager Park', employeeNo: 'CTR-KR-0002', roleCode: 'MANAGER', companyCode: 'CTR' },
+  { email: 'employee@ctr.co.kr', name: '최사원', nameEn: 'Employee Choi', employeeNo: 'CTR-KR-0003', roleCode: 'EMPLOYEE', companyCode: 'CTR' },
 ]
 
 // Bcrypt hash for 'test1234' (pre-computed, cost factor 10)
@@ -350,7 +350,7 @@ interface TenantSettingInput {
 }
 
 function getTenantSettings(code: string, locale: string, tz: string): TenantSettingInput {
-  const isKR = ['CTR-HQ', 'CTR-KR', 'CTR-MOB', 'CTR-ECO', 'CTR-ROB', 'CTR-ENG', 'FML'].includes(code)
+  const isKR = ['CTR-HOLD', 'CTR', 'CTR-MOB', 'CTR-ECO', 'CTR-ROB', 'CTR-ENR', 'CTR-FML'].includes(code)
   return {
     primaryColor: '#1B3A5C',
     secondaryColor: '#4A90D9',
@@ -592,6 +592,13 @@ async function main() {
   }
   console.log(`  ✅ ${Object.keys(companyMap).length} companies`)
 
+  // Legacy aliases: old seed code references CTR-KR (now CTR) and CTR-HQ (now CTR-HOLD)
+  // Added AFTER the company loop so they don't create duplicate records in subsequent loops
+  const LEGACY_ALIASES: Record<string, string> = { 'CTR-KR': 'CTR', 'CTR-HQ': 'CTR-HOLD' }
+  for (const [alias, real] of Object.entries(LEGACY_ALIASES)) {
+    companyMap[alias] = companyMap[real]
+  }
+
   // ----------------------------------------------------------
   // STEP 2: Seed Roles
   // ----------------------------------------------------------
@@ -660,6 +667,7 @@ async function main() {
   let jcCount = 0
 
   for (const [code, companyId] of Object.entries(companyMap)) {
+    if (LEGACY_ALIASES[code]) continue  // skip aliases to avoid unique constraint violations
     for (const jc of jobCategoryEntries) {
       const id = deterministicUUID('jobcat', `${code}:${jc.code}`)
       await prisma.jobCategory.upsert({
@@ -669,6 +677,12 @@ async function main() {
       })
       jobCatMap[`${code}:${jc.code}`] = id
       jcCount++
+    }
+  }
+  // Populate alias entries in jobCatMap for downstream lookups
+  for (const [alias, real] of Object.entries(LEGACY_ALIASES)) {
+    for (const jc of jobCategoryEntries) {
+      jobCatMap[`${alias}:${jc.code}`] = jobCatMap[`${real}:${jc.code}`]
     }
   }
   console.log(`  ✅ ${jcCount} job categories`)
@@ -1751,10 +1765,10 @@ async function main() {
 
   // ── Per-company overrides ──
   const companyOverrides = [
-    // CTR-KR: Korean labor law (52h weekly limit, extended maternity, 4대보험)
-    { companyCode: 'CTR-KR', type: 'ATTENDANCE', key: 'config', value: { work_hours_per_day: 8, work_days_per_week: 5, weekly_hour_limit: 52, overtime_requires_approval: true, shift_enabled: false } },
-    { companyCode: 'CTR-KR', type: 'LEAVE', key: 'config', value: { leave_types: [{ code: 'ANNUAL', name: '연차', paid: true, default_days: 15 }, { code: 'SICK', name: '병가', paid: false, default_days: 5 }, { code: 'MATERNITY', name: '출산휴가', paid: true, default_days: 90 }], accrual_rules: [{ tenure_years: 0, annual_days: 11 }, { tenure_years: 1, annual_days: 15 }, { tenure_years: 3, annual_days: 16 }], carryover_max_days: 10, carryover_expiry_months: 6 } },
-    { companyCode: 'CTR-KR', type: 'ONBOARDING', key: 'config', value: { probation_period_months: 3, required_documents: ['ID', 'DEGREE', 'BANK_ACCOUNT', 'HEALTH_INSURANCE', 'EMPLOYMENT_INSURANCE'], buddy_assignment: true } },
+    // CTR: Korean labor law (52h weekly limit, extended maternity, 4대보험)
+    { companyCode: 'CTR', type: 'ATTENDANCE', key: 'config', value: { work_hours_per_day: 8, work_days_per_week: 5, weekly_hour_limit: 52, overtime_requires_approval: true, shift_enabled: false } },
+    { companyCode: 'CTR', type: 'LEAVE', key: 'config', value: { leave_types: [{ code: 'ANNUAL', name: '연차', paid: true, default_days: 15 }, { code: 'SICK', name: '병가', paid: false, default_days: 5 }, { code: 'MATERNITY', name: '출산휴가', paid: true, default_days: 90 }], accrual_rules: [{ tenure_years: 0, annual_days: 11 }, { tenure_years: 1, annual_days: 15 }, { tenure_years: 3, annual_days: 16 }], carryover_max_days: 10, carryover_expiry_months: 6 } },
+    { companyCode: 'CTR', type: 'ONBOARDING', key: 'config', value: { probation_period_months: 3, required_documents: ['ID', 'DEGREE', 'BANK_ACCOUNT', 'HEALTH_INSURANCE', 'EMPLOYMENT_INSURANCE'], buddy_assignment: true } },
     // CTR-CN: Chinese labor law (44h/week, 春节 bonus leave)
     { companyCode: 'CTR-CN', type: 'ATTENDANCE', key: 'config', value: { work_hours_per_day: 8, work_days_per_week: 5, weekly_hour_limit: 44, overtime_requires_approval: true, shift_enabled: true } },
     { companyCode: 'CTR-CN', type: 'LEAVE', key: 'config', value: { leave_types: [{ code: 'ANNUAL', name: '年假', paid: true, default_days: 5 }, { code: 'SPRING_FESTIVAL', name: '春节', paid: true, default_days: 7 }, { code: 'SICK', name: '病假', paid: false, default_days: 7 }], accrual_rules: [{ tenure_years: 0, annual_days: 5 }, { tenure_years: 10, annual_days: 10 }, { tenure_years: 20, annual_days: 15 }], carryover_max_days: 5, carryover_expiry_months: 12 } },
@@ -2633,6 +2647,8 @@ async function main() {
     select: { id: true, code: true },
   })
   const companyByCode = Object.fromEntries(companies.map(c => [c.code, c.id]))
+  companyByCode['CTR-KR'] = companyByCode['CTR']  // legacy alias
+  companyByCode['CTR-HQ'] = companyByCode['CTR-HOLD']  // legacy alias
 
   // ── 글로벌 공통 휴가 유형 (companyId = null) ───────────────
   const globalLeaveTypes = [
