@@ -244,20 +244,20 @@ const NAMED: NamedEmp[] = [
   ['조기영', 'Kiyoung Jo', 'CTR-FML', 'POS-FML-TL-SALES', 'G-EL', 'MANAGER'],
 
   // ──── CTR-CN (16) ────
-  ['리밍', 'Ming Li', 'CTR-CN', 'POS-CN-CEO', 'G-CN-DIR', 'MANAGER'],
+  ['Ming Li', 'Ming Li', 'CTR-CN', 'POS-CN-CEO', 'G-CN-DIR', 'MANAGER'],
   ['류지훈', 'Jihun Ryu', 'CTR-CN', 'POS-CN-TL-MGMTSUP', 'G-CN-MGR', 'HR_ADMIN'],
   ['임현묵', 'Hyunmuk Im', 'CTR-CN', 'POS-CN-TL-MGMT', 'G-CN-MGR', 'MANAGER'],
   ['정원석', 'Wonseok Jeong', 'CTR-CN', 'POS-CN-TL-TEST', 'G-CN-MGR', 'MANAGER'],
   ['박정철', 'Jungcheol Park', 'CTR-CN', 'POS-CN-TL-DESIGN', 'G-CN-MGR', 'MANAGER'],
-  ['우하이잉', 'Haiying Wu', 'CTR-CN', 'POS-CN-TL-PM', 'G-CN-MGR', 'MANAGER'],
-  ['조천', 'Tian Zhao', 'CTR-CN', 'POS-CN-TL-SALES', 'G-CN-MGR', 'MANAGER'],
+  ['Haiying Wu', 'Haiying Wu', 'CTR-CN', 'POS-CN-TL-PM', 'G-CN-MGR', 'MANAGER'],
+  ['Tian Zhao', 'Tian Zhao', 'CTR-CN', 'POS-CN-TL-SALES', 'G-CN-MGR', 'MANAGER'],
   ['지용범', 'Yongbeom Ji', 'CTR-CN', 'POS-CN-TL-PURCHASE', 'G-CN-MGR', 'MANAGER'],
   ['김성훈', 'Sunghun Kim', 'CTR-CN', 'POS-CN-TL-SQ', 'G-CN-MGR', 'MANAGER'],
-  ['롱꾸이린', 'Guilin Long', 'CTR-CN', 'POS-CN-DIR-QUALITY', 'G-CN-DIR', 'MANAGER'],
-  ['쪼우쟝홍', 'Jianghong Zhou', 'CTR-CN', 'POS-CN-TL-QC', 'G-CN-MGR', 'MANAGER'],
+  ['Guilin Long', 'Guilin Long', 'CTR-CN', 'POS-CN-DIR-QUALITY', 'G-CN-DIR', 'MANAGER'],
+  ['Jianghong Zhou', 'Jianghong Zhou', 'CTR-CN', 'POS-CN-TL-QC', 'G-CN-MGR', 'MANAGER'],
   ['김상석', 'Sangseok Kim', 'CTR-CN', 'POS-CN-PM-ZJG', 'G-CN-DIR', 'MANAGER'],
   ['최동춘', 'Dongchun Choi', 'CTR-CN', 'POS-CN-TL-ZJG-PROD', 'G-CN-SR', 'MANAGER'],
-  ['리덕룡', 'Delong Li', 'CTR-CN', 'POS-CN-TL-ZJG-MAINT', 'G-CN-SR', 'MANAGER'],
+  ['Delong Li', 'Delong Li', 'CTR-CN', 'POS-CN-TL-ZJG-MAINT', 'G-CN-SR', 'MANAGER'],
   ['김해웅', 'Haewoong Kim', 'CTR-CN', 'POS-CN-TL-ZJG-OE', 'G-CN-SR', 'MANAGER'],
   ['서대원', 'Daewon Seo', 'CTR-CN', 'POS-CN-TL-ZJG-PRODTECH', 'G-CN-SR', 'MANAGER'],
 
@@ -277,12 +277,12 @@ const NAMED: NamedEmp[] = [
   ['김영규', 'Younggyu Kim', 'CTR-VN', 'POS-VN-TL-MGMT', 'G-VN-MGR', 'HR_ADMIN'],
   ['하상원', 'Sangwon Ha', 'CTR-VN', 'POS-VN-TL-PROCTECH', 'G-VN-MGR', 'MANAGER'],
   ['심동민', 'Dongmin Sim', 'CTR-VN', 'POS-VN-TL-QC', 'G-VN-MGR', 'MANAGER'],
-  ['부티니으항', 'Bui Thi Nhu Hang', 'CTR-VN', 'POS-VN-TL-PURSCM', 'G-VN-MGR', 'MANAGER'],
+  ['Bui Thi Nhu Hang', 'Bui Thi Nhu Hang', 'CTR-VN', 'POS-VN-TL-PURSCM', 'G-VN-MGR', 'MANAGER'],
 
   // ──── CTR-RU (3) ────
-  ['로만', 'Roman Ivanov', 'CTR-RU', 'POS-RU-HEAD', 'G-RU-DIR', 'MANAGER'],
-  ['스베틀라나', 'Svetlana Petrova', 'CTR-RU', 'POS-RU-TL-MKT', 'G-RU-MGR', 'MANAGER'],
-  ['마랏', 'Marat Suleimanov', 'CTR-RU', 'POS-RU-TL-SALES', 'G-RU-MGR', 'MANAGER'],
+  ['Roman Ivanov', 'Roman Ivanov', 'CTR-RU', 'POS-RU-HEAD', 'G-RU-DIR', 'MANAGER'],
+  ['Svetlana Petrova', 'Svetlana Petrova', 'CTR-RU', 'POS-RU-TL-MKT', 'G-RU-MGR', 'MANAGER'],
+  ['Marat Suleimanov', 'Marat Suleimanov', 'CTR-RU', 'POS-RU-TL-SALES', 'G-RU-MGR', 'MANAGER'],
 
   // ──── CTR-EU (1) ────
   ['김민준', 'Minjun Kim', 'CTR-EU', 'POS-EU-HEAD', 'G-EU-DIR', 'MANAGER'],
@@ -312,9 +312,9 @@ const AUTO_GEN: Array<[string, number, number, number, number]> = [
 // Name generation utilities
 // ================================================================
 const KR_SUR = ['김','이','박','최','정','강','조','윤','장','임','한','오','서','신','권','황','안','송','류','홍']
-const KR_GIV = ['민준','서준','예준','도윤','시우','하준','주원','지호','지훈','준서','수빈','지우','서연','민서','하은','지민','수진','예진','다은','채원','현우','승현','태영','재현','동혁','성민','우진','영호','병철','광수']
+const KR_GIV = ['민준','서준','예준','도윤','시우','하준','주원','지호','지훈','준서','수빈','지우','서연','민서','하은','지민','수진','예진','다은','채원','현우','승현','태영','재현','동혁','성민','우진','영호','병철','광수','도현','유찬','건우','지원','은서','소율','하린','서윤','수아','지안','현서','도경','진우','승우','태민','세준','규민','정훈','상윤','재원']
 const KR_SUR_EN = ['Kim','Lee','Park','Choi','Jung','Kang','Jo','Yun','Jang','Im','Han','Oh','Seo','Shin','Kwon','Hwang','An','Song','Ryu','Hong']
-const KR_GIV_EN = ['Minjun','Seojun','Yejun','Doyun','Siwoo','Hajun','Juwon','Jiho','Jihun','Junseo','Subin','Jiwoo','Seoyeon','Minseo','Haeun','Jimin','Sujin','Yejin','Daeun','Chaewon','Hyunwoo','Seunghyun','Taeyoung','Jaehyun','Donghyuk','Sungmin','Woojin','Youngho','Byungchul','Kwangsu']
+const KR_GIV_EN = ['Minjun','Seojun','Yejun','Doyun','Siwoo','Hajun','Juwon','Jiho','Jihun','Junseo','Subin','Jiwoo','Seoyeon','Minseo','Haeun','Jimin','Sujin','Yejin','Daeun','Chaewon','Hyunwoo','Seunghyun','Taeyoung','Jaehyun','Donghyuk','Sungmin','Woojin','Youngho','Byungchul','Kwangsu','Dohyun','Yuchan','Gunwoo','Jiwon','Eunseo','Soyul','Harin','Seoyun','Sua','Jian','Hyunseo','Dokyung','Jinwoo','Seungwoo','Taemin','Sejun','Gyumin','Junghoon','Sangyun','Jaewon']
 const CN_SUR = ['王','李','张','刘','陈','杨','赵','黄','周','吴']
 const CN_GIV = ['伟','芳','娜','敏','静','强','磊','洋','勇','艳','杰','娟','涛','明','超','秀英','华','丽','军','平']
 const CN_SUR_EN = ['Wang','Li','Zhang','Liu','Chen','Yang','Zhao','Huang','Zhou','Wu']
@@ -330,9 +330,8 @@ const US_GIV = ['James','John','Robert','Michael','David','Chris','Daniel','Mark
 
 function genName(co: string, idx: number) {
   if (co === 'CTR-CN') {
-    const s = CN_SUR[idx % CN_SUR.length], g = CN_GIV[(idx * 3 + 7) % CN_GIV.length]
     const se = CN_SUR_EN[idx % CN_SUR_EN.length], ge = CN_GIV_EN[(idx * 3 + 7) % CN_GIV_EN.length]
-    return { name: `${s}${g}`, nameEn: `${ge} ${se}` }
+    return { name: `${ge} ${se}`, nameEn: `${ge} ${se}` }
   }
   if (co === 'CTR-VN') {
     const s = VN_SUR[idx % VN_SUR.length], g = VN_GIV[(idx * 3 + 5) % VN_GIV.length]
@@ -354,8 +353,11 @@ function genName(co: string, idx: number) {
     }
   }
   // Default: Korean names (for all Korean companies + CTR-US Korean)
-  const s = KR_SUR[(idx * 7 + 3) % KR_SUR.length], g = KR_GIV[(idx * 11 + 5) % KR_GIV.length]
-  const se = KR_SUR_EN[(idx * 7 + 3) % KR_SUR_EN.length], ge = KR_GIV_EN[(idx * 11 + 5) % KR_GIV_EN.length]
+  // Use coprime multipliers to maximize spread across 20 surnames × 50 given names = 1000 combos
+  const si = ((idx * 13 + 7) ^ (idx >> 2)) % KR_SUR.length
+  const gi = ((idx * 31 + 17) ^ (idx >> 3)) % KR_GIV.length
+  const s = KR_SUR[si], g = KR_GIV[gi]
+  const se = KR_SUR_EN[si], ge = KR_GIV_EN[gi]
   return { name: `${s}${g}`, nameEn: `${ge} ${se}` }
 }
 
