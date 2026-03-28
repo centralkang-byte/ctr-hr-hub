@@ -17,18 +17,24 @@ interface KpiCardProps {
   icon?: LucideIcon
   tooltip?: string
   sparkline?: number[]
+  onClick?: () => void
 }
 
 // ─── Component ──────────────────────────────────────────────
 
-export function KpiCard({ label, value, unit, change, changeLabel, severity = 'neutral', icon: Icon, tooltip, sparkline }: KpiCardProps) {
+export function KpiCard({ label, value, unit, change, changeLabel, severity = 'neutral', icon: Icon, tooltip, sparkline, onClick }: KpiCardProps) {
   const borderColor = severity === 'positive' ? 'border-l-emerald-500' : severity === 'negative' ? 'border-l-red-500' : 'border-l-[#4F46E5]'
   const changeColor = severity === 'positive' ? 'text-emerald-600' : severity === 'negative' ? 'text-red-600' : 'text-muted-foreground'
   const ChangeIcon = change !== undefined && change > 0 ? TrendingUp : change !== undefined && change < 0 ? TrendingDown : Minus
   const sparkColor = severity === 'positive' ? CHART_COLORS.success : severity === 'negative' ? CHART_COLORS.danger : CHART_COLORS.primary
 
+  const Wrapper = onClick ? 'button' : 'div'
+
   return (
-    <div className={`bg-card rounded-xl border border-border border-l-4 ${borderColor} p-5 hover:shadow-md transition-shadow`}>
+    <Wrapper
+      onClick={onClick}
+      className={`bg-card rounded-xl border border-border border-l-4 ${borderColor} p-5 transition-all text-left w-full ${onClick ? 'cursor-pointer hover:shadow-md hover:border-border/80' : 'hover:shadow-md transition-shadow'}`}
+    >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-1.5">
           <span className="text-sm font-medium text-muted-foreground">{label}</span>
@@ -68,6 +74,6 @@ export function KpiCard({ label, value, unit, change, changeLabel, severity = 'n
           </div>
         )}
       </div>
-    </div>
+    </Wrapper>
   )
 }

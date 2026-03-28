@@ -11,7 +11,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { parseAnalyticsParams, generateMonthRange, toYearMonth } from '@/lib/analytics/parse-params'
 import { convertToKRW, formatCurrency } from '@/lib/analytics/currency'
-import type { ExecutiveSummaryResponse } from '@/lib/analytics/types'
+import type { ExecutiveSummaryResponse, HeatmapDataPoint, RecruitmentFunnelStage } from '@/lib/analytics/types'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
@@ -237,7 +237,80 @@ export const GET = withPermission(
       })
     }
 
-    // ── Company Comparison ──
+    // ── Phase 2-A: Department Turnover Heatmap (flat array) ──
+    const departments = await prisma.department.findMany({
+      where: { ...companyFilter, deletedAt: null, parentId: { not: null } },
+      select: { id: true, name: true },
+      take: 20,
+    })
+    const departmentTurnoverHeatmap: HeatmapDataPoint[] = []
+    if (departments.length > 0) {
+      const deptExits = await prisma.employeeAssignment.findMany({
+        where: {
+          ...companyFilter,
+          isPrimary: true,
+          status: { in: ['RESIGNED', 'TERMINATED'] },
+          endDate: { gte: params.startDate, lte: params.endDate },
+          departmentId: { in: departments.map((d) => d.id) },
+        },
+        select: { departmentId: true, endDate: true },
+      })
+      const deptActiveCount = await prisma.employeeAssignment.groupBy({
+        by: ['departmentId'],
+        where: { ...companyFilter, status: 'ACTIVE', isPrimary: true, endDate: null, departmentId: { in: departments.map((d) => d.id) } },
+        _count: { employeeId: true },
+      })
+      const deptHcMap = new Map(deptActiveCount.map((d) => [d.departmentId, d._count.employeeId]))
+      const deptNameMap = new Map(departments.map((d) => [d.id, d.name]))
+
+      for (const dept of departments) {
+        const hc = deptHcMap.get(dept.id) || 0
+        if (hc === 0) continue
+        for (const m of months) {
+          const exitCount = deptExits.filter((e) => e.departmentId === dept.id && e.endDate && toYearMonth(new Date(e.endDate)) === m).length
+          const rate = Math.round((exitCount / hc) * 1000) / 10
+          departmentTurnoverHeatmap.push({
+            department: deptNameMap.get(dept.id) || dept.id,
+            month: m,
+            turnoverRate: rate,
+            headcount: hc,
+          })
+        }
+      }
+    }
+
+    // ── Phase 2-A: Recruitment Funnel ──
+    const recruitmentFunnel: RecruitmentFunnelStage[] = []
+    const funnelPostings = await prisma.jobPosting.count({ where: { ...companyFilter, status: { in: ['OPEN', 'CLOSED'] } } })
+    if (funnelPostings > 0) {
+      const appsByStage = await prisma.application.groupBy({
+        by: ['stage'],
+        _count: { _all: true },
+        where: { posting: { ...companyFilter } },
+      })
+      const statusCounts = new Map(appsByStage.map((a) => [a.stage, a._count._all]))
+      const totalApps = Array.from(statusCounts.values()).reduce((s, c) => s + c, 0)
+
+      const interviewCount = (statusCounts.get('INTERVIEW_1') || 0) + (statusCounts.get('INTERVIEW_2') || 0)
+      const stages = [
+        { stage: '지원', count: totalApps },
+        { stage: '서류통과', count: (statusCounts.get('SCREENING') || 0) + interviewCount + (statusCounts.get('FINAL') || 0) + (statusCounts.get('OFFER') || 0) + (statusCounts.get('HIRED') || 0) },
+        { stage: '면접', count: interviewCount + (statusCounts.get('FINAL') || 0) + (statusCounts.get('OFFER') || 0) + (statusCounts.get('HIRED') || 0) },
+        { stage: '합격', count: (statusCounts.get('OFFER') || 0) + (statusCounts.get('HIRED') || 0) },
+        { stage: '입사', count: statusCounts.get('HIRED') || 0 },
+      ]
+
+      for (let i = 0; i < stages.length; i++) {
+        const prev = i > 0 ? stages[i - 1].count : stages[0].count
+        recruitmentFunnel.push({
+          stage: stages[i].stage,
+          count: stages[i].count,
+          conversionRate: prev > 0 ? Math.round((stages[i].count / prev) * 1000) / 10 : undefined,
+        })
+      }
+    }
+
+    // ── Company Comparison ─��
     const companyComparison = companies.map((c) => {
       const headcount = companyCount.get(c.id) || 0
       const companyPayrolls = latestPayrolls.filter((p) => p.companyId === c.id)
@@ -295,6 +368,8 @@ export const GET = withPermission(
       charts: { headcountTrend, turnoverTrend, companyDistribution },
       riskAlerts,
       companyComparison,
+      departmentTurnoverHeatmap,
+      recruitmentFunnel,
     }
 
     return apiSuccess(response)

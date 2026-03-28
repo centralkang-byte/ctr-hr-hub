@@ -43,6 +43,50 @@ export interface ExecutiveSummaryResponse {
     laborCostKRW: number
     onboardingInProgress: number
   }[]
+  // Phase 2-A: Heatmap + Funnel
+  departmentTurnoverHeatmap?: HeatmapDataPoint[]
+  recruitmentFunnel?: RecruitmentFunnelStage[]
+}
+
+// --- 1-A. KPI Drilldown (Phase 2-A) ---
+export type KpiDrilldownType = 'headcount' | 'turnover' | 'tenure' | 'laborCost' | 'recruitment' | 'onboarding'
+
+export interface KpiDrilldownData {
+  kpiType: KpiDrilldownType
+  currentValue: number | string
+  unit?: string
+  change?: number
+  benchmark?: { label: string; value: number }
+  companyBreakdown: {
+    companyId: string
+    companyName: string
+    value: number
+    subValue?: string
+  }[]
+  monthlyTrend: { month: string; value: number }[]
+  details?: {
+    tenureDistribution?: { range: string; count: number }[]
+    totalHires?: number
+    totalExits?: number
+    totalApplications?: number
+    byStage?: Record<string, number>
+    completedCount?: number
+    totalCount?: number
+    completionRate?: number
+  }
+}
+
+export interface HeatmapDataPoint {
+  department: string
+  month: string
+  turnoverRate: number
+  headcount: number
+}
+
+export interface RecruitmentFunnelStage {
+  stage: string
+  count: number
+  conversionRate?: number
 }
 
 // --- 2. Workforce ---

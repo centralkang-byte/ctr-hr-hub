@@ -10,7 +10,7 @@ import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import {
   AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  ResponsiveContainer, PieChart, Pie, Cell, ReferenceLine,
+  ResponsiveContainer, ReferenceLine,
 } from 'recharts'
 import { AlertTriangle } from 'lucide-react'
 import { KpiCard } from '@/components/analytics/KpiCard'
@@ -18,6 +18,10 @@ import { ChartCard } from '@/components/analytics/ChartCard'
 import { EmptyChart } from '@/components/analytics/EmptyChart'
 import { AiInsightBanner } from '@/components/analytics/AiInsightBanner'
 import { InsightSurfacingBanner } from '@/components/analytics/InsightSurfacingBanner'
+import { OrgTreemap } from '@/components/analytics/OrgTreemap'
+import { TurnoverHeatmap } from '@/components/analytics/TurnoverHeatmap'
+import { RecruitmentFunnel } from '@/components/analytics/RecruitmentFunnel'
+import { KpiDrilldownSheet } from '@/components/analytics/KpiDrilldownSheet'
 import { evaluateInsights } from '@/lib/analytics/insight-surfacing'
 import { AnalyticsFilterBar } from '@/components/analytics/AnalyticsFilterBar'
 import { CHART_COLORS } from '@/components/analytics/chart-colors'
@@ -27,7 +31,7 @@ import { TABLE_STYLES } from '@/lib/styles'
 import { CHART_THEME } from '@/lib/styles/chart'
 import { cn } from '@/lib/utils'
 import { toast } from '@/hooks/use-toast'
-import type { ExecutiveSummaryResponse } from '@/lib/analytics/types'
+import type { ExecutiveSummaryResponse, KpiDrilldownType } from '@/lib/analytics/types'
 import { TURNOVER_BENCHMARKS } from '@/lib/analytics/benchmarks'
 import type { SessionUser } from '@/types'
 
@@ -47,6 +51,7 @@ export function DashboardClient({ user }: Props) {
   const [data, setData] = useState<ExecutiveSummaryResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [drilldownType, setDrilldownType] = useState<KpiDrilldownType | null>(null)
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -131,14 +136,14 @@ export function DashboardClient({ user }: Props) {
         <AiInsightBanner />
       )}
 
-      {/* KPI 6개 */}
+      {/* KPI 6개 — 클릭 시 드릴다운 Sheet */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-        <KpiCard {...kpis.totalEmployees} tooltip={te('tooltipTotalEmp')} />
-        <KpiCard {...kpis.monthlyTurnoverRate} tooltip={te('tooltipTurnover')} />
-        <KpiCard {...kpis.avgTenureYears} tooltip={te('tooltipTenure')} />
-        <KpiCard {...kpis.monthlyLaborCost} tooltip={te('tooltipLaborCost')} />
-        <KpiCard {...kpis.recruitmentPipeline} tooltip={te('tooltipRecruitment')} />
-        <KpiCard {...kpis.onboardingCompletionRate} tooltip={te('tooltipOnboarding')} />
+        <KpiCard {...kpis.totalEmployees} tooltip={te('tooltipTotalEmp')} onClick={() => setDrilldownType('headcount')} />
+        <KpiCard {...kpis.monthlyTurnoverRate} tooltip={te('tooltipTurnover')} onClick={() => setDrilldownType('turnover')} />
+        <KpiCard {...kpis.avgTenureYears} tooltip={te('tooltipTenure')} onClick={() => setDrilldownType('tenure')} />
+        <KpiCard {...kpis.monthlyLaborCost} tooltip={te('tooltipLaborCost')} onClick={() => setDrilldownType('laborCost')} />
+        <KpiCard {...kpis.recruitmentPipeline} tooltip={te('tooltipRecruitment')} onClick={() => setDrilldownType('recruitment')} />
+        <KpiCard {...kpis.onboardingCompletionRate} tooltip={te('tooltipOnboarding')} onClick={() => setDrilldownType('onboarding')} />
       </div>
 
       {/* 차트 2×2 그리드 */}
@@ -184,31 +189,26 @@ export function DashboardClient({ user }: Props) {
           )}
         </ChartCard>
 
-        {/* 법인별 인원 분포 */}
+        {/* 법인별 인력 분포 — Treemap */}
         <ChartCard title={te('companyDistribution')}>
-          {charts.companyDistribution.length === 0 ? (
-            <EmptyChart />
+          <OrgTreemap data={charts.companyDistribution} />
+        </ChartCard>
+
+        {/* 부서×월 이직률 Heatmap */}
+        <ChartCard title="부서별 이직률 히트맵">
+          {data.departmentTurnoverHeatmap && data.departmentTurnoverHeatmap.length > 0 ? (
+            <TurnoverHeatmap data={data.departmentTurnoverHeatmap} />
           ) : (
-            <ResponsiveContainer width="100%" height={280}>
-              <PieChart>
-                <Pie
-                  data={charts.companyDistribution}
-                  dataKey="count"
-                  nameKey="company"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  label={(entry: any) => `${entry.company} ${entry.percentage}%`}
-                  labelLine={{ strokeWidth: 1 }}
-                >
-                  {charts.companyDistribution.map((_, i) => (
-                    <Cell key={i} fill={[CHART_COLORS.primary, ...CHART_COLORS.secondary][i % 8]} />
-                  ))}
-                </Pie>
-                <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
-              </PieChart>
-            </ResponsiveContainer>
+            <EmptyChart />
+          )}
+        </ChartCard>
+
+        {/* 채용 파이프라인 Funnel */}
+        <ChartCard title="채용 파이프라인">
+          {data.recruitmentFunnel && data.recruitmentFunnel.length > 0 ? (
+            <RecruitmentFunnel data={data.recruitmentFunnel} />
+          ) : (
+            <EmptyChart />
           )}
         </ChartCard>
 
@@ -246,6 +246,18 @@ export function DashboardClient({ user }: Props) {
           )}
         </ChartCard>
       </div>
+
+      {/* KPI 드릴다운 Sheet */}
+      <KpiDrilldownSheet
+        open={!!drilldownType}
+        onOpenChange={(open) => !open && setDrilldownType(null)}
+        kpiType={drilldownType}
+        filterParams={{
+          companyId: searchParams.get('companyId') || undefined,
+          startDate: searchParams.get('startDate') || undefined,
+          endDate: searchParams.get('endDate') || undefined,
+        }}
+      />
 
       {/* 법인 비교 테이블 */}
       {companyComparison.length > 0 && (
