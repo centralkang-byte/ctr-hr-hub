@@ -272,14 +272,14 @@ function SidebarSection({
 
   return (
     <>
-      {showDivider && <div className="mx-3 mt-4 border-t border-[#F0F0F3] pt-4" />}
+      {showDivider && <div className="mx-3 mt-3 border-t border-[#F0F0F3] pt-3" />}
 
       {/* Section header — skip for Home */}
       {!isHome && (
         <button
           type="button"
           onClick={onToggle}
-          className="flex w-full items-center justify-between px-4 py-2 hover:bg-[#F5F5FA]"
+          className="flex w-full items-center justify-between px-4 py-1.5 hover:bg-[#F5F5FA]"
         >
           <div className="flex items-center gap-2">
             <section.icon className="h-[18px] w-[18px] text-[#8181A5]" />
@@ -311,7 +311,7 @@ function SidebarSection({
                   <div
                     className={cn(
                       'px-5 pb-1 text-[10px] font-semibold uppercase tracking-wider text-[#8181A5]/60',
-                      idx > 0 && 'pt-3',
+                      idx > 0 && 'pt-2',
                     )}
                   >
                     {getLabel(`subGroup.${item.subGroup}`, item.subGroup ?? '')}
@@ -378,7 +378,7 @@ function ExpandedNavItem({
         href={item.href}
         onClick={onItemClick}
         className={cn(
-          'flex flex-1 items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
+          'flex flex-1 items-center gap-3 rounded-lg px-3 py-1.5 text-sm transition-colors',
           isActive
             ? 'bg-[#F5F5FA] text-[#5E81F4] font-bold'
             : 'text-[#8181A5] hover:bg-[#F5F5FA] hover:text-[#1C1D21]',
