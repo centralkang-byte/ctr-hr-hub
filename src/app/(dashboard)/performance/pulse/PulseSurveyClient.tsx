@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation'
 import { BarChart3, Plus, Eye, Trash2, Play, Square, Calendar } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { CARD_STYLES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
+import type { SessionUser } from '@/types'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -110,13 +111,13 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
         })),
       })
       onCreated()
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '설문 생성 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setSaving(false)
   }
 
   return (
     <div className={MODAL_STYLES.container}>
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-[#E8E8E8]">
           <h2 className="text-lg font-semibold text-[#1A1A1A]">{'새 펄스 서베이'}</h2>
         </div>
@@ -173,7 +174,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
               </button>
             </div>
             <div className="space-y-3">
-              {!questions?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+              {!questions?.length && <EmptyState />}
               {questions?.map((q, i) => (
                 <div key={i} className="bg-[#FAFAFA] rounded-lg p-3 space-y-2">
                   <div className="flex items-center gap-2">
@@ -220,7 +221,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
 
 // ─── Component ───────────────────────────────────────────
 
-export default function PulseSurveyClient() {
+export default function PulseSurveyClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
 
@@ -241,7 +242,7 @@ export default function PulseSurveyClient() {
       ])
       setSurveys(surveyRes.data.items ?? [])
       setPending(pendingRes.data ?? [])
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '설문 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setLoading(false)
   }, [statusFilter])
 
@@ -251,14 +252,14 @@ export default function PulseSurveyClient() {
     try {
       await apiClient.put(`/api/v1/pulse/surveys/${id}`, { status: newStatus })
       fetchAll()
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '설문 상태 변경 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
   }
 
   const handleDelete = async (id: string) => {
     try {
       await apiClient.delete(`/api/v1/pulse/surveys/${id}`)
       fetchAll()
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '설문 삭제 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
   }
 
   const TABS = [

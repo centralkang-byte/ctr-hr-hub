@@ -8,6 +8,7 @@ import type { SessionUser } from '@/types'
 import type { EvaluationSettings } from '@/types/settings'
 import AiDraftModal from '@/components/performance/AiDraftModal'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 import { toast } from '@/hooks/use-toast'
 
@@ -42,9 +43,9 @@ interface EvalPayload {
 const SCORE_LABELS = ['', '매우 부족', '부족', '보통', '우수', '탁월']
 
 const STATUS_BADGE: Record<string, string> = {
-  DRAFT: 'bg-[#F5F5F5] text-[#666]',
-  SUBMITTED: 'bg-[#D1FAE5] text-[#047857]',
-  CONFIRMED: 'bg-[#EDF1FE] text-[#4B6DE0]',
+  DRAFT: STATUS_VARIANT.neutral,
+  SUBMITTED: STATUS_VARIANT.info,
+  CONFIRMED: STATUS_VARIANT.success,
 }
 
 // ─── Component ────────────────────────────────────────────
@@ -85,7 +86,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
         const evalCycles = res.data.filter((c) => c.status === 'EVAL_OPEN' || c.status === 'CLOSED')
         setCycles(evalCycles)
         if (evalCycles.length > 0) setSelectedCycleId(evalCycles[0].id)
-      } catch { /* ignore */ }
+      } catch (err) { toast({ title: '평가 주기 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     }
     fetchCycles()
   }, [])
@@ -100,7 +101,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
       setTeamMembers(res.data.members ?? [])
       setEvalSettings(res.data.evalSettings)
       setBeiIndicators(res.data.beiIndicators ?? [])
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '평가 설정 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     finally { setLoading(false) }
   }, [selectedCycleId])
 
@@ -134,7 +135,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
       if (tm?.managerEval?.id) {
         setCurrentEvaluationId(tm.managerEval.id)
       }
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '팀원 평가 데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     finally { setFormLoading(false) }
   }, [selectedCycleId, teamMembers])
 

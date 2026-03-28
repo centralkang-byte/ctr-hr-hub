@@ -15,6 +15,7 @@ import {
   Loader2,
 } from 'lucide-react'
 import { format } from 'date-fns'
+import { toast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_SIZES, BUTTON_VARIANTS,  MODAL_STYLES } from '@/lib/styles'
@@ -147,8 +148,8 @@ export default function PipelineClient({ user, postingId }: Props) {
         { limit: 200 },
       )
       setApplications(res.data)
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: '파이프라인 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -443,7 +444,7 @@ export default function PipelineClient({ user, postingId }: Props) {
               setRejectionModal({ open: false, applicationId: '', reason: '' })
             }
           />
-          <div className="relative bg-white border border-[#E8E8E8] rounded-2xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
+          <div className="relative bg-white border border-[#E8E8E8] rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <h2
                 className="text-lg font-bold text-[#333]"
@@ -504,7 +505,7 @@ export default function PipelineClient({ user, postingId }: Props) {
               })
             }
           />
-          <div className="relative bg-white border border-[#E8E8E8] rounded-2xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
+          <div className="relative bg-white border border-[#E8E8E8] rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <h2
                 className="text-lg font-bold text-[#333]"

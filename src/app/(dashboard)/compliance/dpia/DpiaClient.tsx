@@ -10,6 +10,7 @@ import { FileSearch, Plus, Pencil, Eye, AlertTriangle } from 'lucide-react'
 import DpiaForm from '@/components/compliance/gdpr/DpiaForm'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 import { cn } from '@/lib/utils'
+import type { SessionUser } from '@/types'
 
 interface Dpia {
   id: string
@@ -51,7 +52,7 @@ function StatusBadge({ status }: { status: string }) {
   )
 }
 
-export default function DpiaClient() {
+export default function DpiaClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
 
   const t = useTranslations('compliance')
@@ -160,7 +161,7 @@ export default function DpiaClient() {
                 </tr>
               </thead>
               <tbody>
-                {!dpias?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+                {!dpias?.length && <EmptyState />}
               {dpias?.map((d) => (
                   <tr key={d.id} className={TABLE_STYLES.row}>
                     <td className={TABLE_STYLES.cell}>

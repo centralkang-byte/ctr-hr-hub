@@ -176,3 +176,10 @@ export const CACHE_TTL = {
 // ─── CTR Values (simple string array, STEP3 spec) ─────────
 export const CTR_VALUES = ['CHALLENGE', 'TRUST', 'RESPONSIBILITY', 'RESPECT'] as const
 export type CtrValue = (typeof CTR_VALUES)[number]
+
+// ─── Domestic Company Codes (Gemini Patch #3: hardcoded for payroll safety) ──
+// DB codes: CTR-HQ(지주), CTR-KR(본사), CTR-MOB, CTR-ECO, CTR-ROB, CTR-ENG, FML
+export const DOMESTIC_COMPANY_CODES = [
+  'CTR-HQ', 'CTR-KR', 'CTR-MOB', 'CTR-ECO', 'CTR-ROB', 'CTR-ENG', 'FML',
+] as const
+export type DomesticCompanyCode = (typeof DOMESTIC_COMPANY_CODES)[number]

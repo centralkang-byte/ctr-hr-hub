@@ -8,6 +8,7 @@ import { toast } from '@/hooks/use-toast'
 import { useCallback, useEffect, useState } from 'react'
 import { Star, Send, Save, CheckCircle2, Clock, AlertCircle, ArrowLeft, Users, X } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 import type { SessionUser } from '@/types'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
@@ -32,8 +33,8 @@ const EMPTY_FORM: ReviewForm = {
 }
 
 const STATUS_BADGE: Record<string, { label: string; icon: typeof CheckCircle2; cls: string }> = {
-    SUBMITTED: { label: '제출 완료', icon: CheckCircle2, cls: 'bg-[#D1FAE5] text-[#047857]' },
-    DRAFT: { label: '작성 중', icon: Clock, cls: 'bg-[#FEF3C7] text-[#92400E]' },
+    SUBMITTED: { label: '제출 완료', icon: CheckCircle2, cls: STATUS_VARIANT.info },
+    DRAFT: { label: '작성 중', icon: Clock, cls: STATUS_VARIANT.neutral },
 }
 
 // ─── Star Rating ──────────────────────────────────────────
@@ -224,7 +225,7 @@ export default function MyPeerReviewClient({user }: {
                 ) : assignments.length === 0 ? (
                     <div className="rounded-xl border border-[#F0F0F3] bg-white p-16 text-center">
                         <Users className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                        <EmptyState />
                     </div>
                 ) : (
                     <div className="space-y-3">
@@ -262,7 +263,7 @@ export default function MyPeerReviewClient({user }: {
             {/* Review Form Slide-over */}
             {activeReview && (
                 <div className="fixed inset-0 z-50 flex items-start justify-end bg-black/30" onClick={() => setActiveReview(null)}>
-                    <div className="h-full w-full max-w-xl overflow-y-auto bg-white shadow-xl" onClick={(e) => e.stopPropagation()}>
+                    <div className="h-full w-full max-w-xl overflow-y-auto bg-white shadow-lg" onClick={(e) => e.stopPropagation()}>
                         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[#F0F0F3] bg-white px-6 py-4">
                             <h2 className="text-lg font-bold text-[#1C1D21]">{activeReview.employeeName} 님에 대한 동료평가</h2>
                             <button onClick={() => setActiveReview(null)} className="text-[#8181A5] hover:text-[#1C1D21]"><X className="h-5 w-5" /></button>

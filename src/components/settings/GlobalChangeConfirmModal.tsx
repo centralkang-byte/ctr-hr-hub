@@ -43,7 +43,7 @@ export function GlobalChangeConfirmModal({
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl animate-in fade-in-0 zoom-in-95 duration-200">
+      <div className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-lg animate-in fade-in-0 zoom-in-95 duration-200">
         {/* Close */}
         <button
           type="button"

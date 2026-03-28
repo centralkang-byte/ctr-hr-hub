@@ -24,6 +24,7 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { CARD_STYLES } from '@/lib/styles'
+import type { SessionUser } from '@/types'
 
 interface GdprStats {
   activeConsents: number
@@ -32,7 +33,7 @@ interface GdprStats {
   dpiaRecords: number
 }
 
-export default function ComplianceClient() {
+export default function ComplianceClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
 
   const t = useTranslations('compliance')
@@ -88,21 +89,21 @@ export default function ComplianceClient() {
     },
     {
       title: t('gdpr.piiAudit'),
-      description: 'PII access monitoring and audit trail',
+      description: t('gdpr.piiAuditDesc'),
       href: '/compliance/pii-audit',
       icon: Eye,
       color: 'bg-[#EDF1FE] text-[#5E81F4]',
     },
     {
       title: t('gdpr.retention'),
-      description: 'Data retention policies and enforcement',
+      description: t('gdpr.retentionDesc'),
       href: '/compliance/data-retention',
       icon: Database,
       color: 'bg-[#FAF5FF] text-[#9333EA]',
     },
     {
       title: t('gdpr.dpia'),
-      description: 'Data Protection Impact Assessments',
+      description: t('gdpr.dpiaDesc'),
       href: '/compliance/dpia',
       icon: FileSearch,
       color: 'bg-[#E0E7FF] text-[#5E81F4]',
@@ -112,21 +113,21 @@ export default function ComplianceClient() {
   const countryCards = [
     {
       title: t('ru.title'),
-      description: 'Military registration, KEDO documents, statutory reports',
+      description: t('ru.description'),
       href: '/compliance/ru',
       icon: FileText,
       flag: '🇷🇺',
     },
     {
       title: t('cn.title'),
-      description: 'Social insurance (五险一金), employee registry',
+      description: t('cn.description'),
       href: '/compliance/cn',
       icon: Scale,
       flag: '🇨🇳',
     },
     {
       title: t('kr.title'),
-      description: '52-hour monitoring, mandatory training, severance',
+      description: t('kr.description'),
       href: '/compliance/kr',
       icon: ClipboardCheck,
       flag: '🇰🇷',

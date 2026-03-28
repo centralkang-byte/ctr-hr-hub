@@ -36,6 +36,7 @@ export const GET = withPermission(
         department:  { select: { id: true, name: true } },
         jobGrade:    { select: { id: true, name: true, code: true } },
         jobCategory: { select: { id: true, name: true } },
+        position:    { select: { id: true, titleKo: true, titleEn: true } },
         approver:    { select: { id: true, name: true, photoUrl: true } },
       },
       orderBy: { effectiveDate: 'desc' },

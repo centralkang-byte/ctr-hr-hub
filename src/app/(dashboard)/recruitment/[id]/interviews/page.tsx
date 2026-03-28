@@ -1,8 +1,10 @@
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import { InterviewListClient } from './InterviewListClient'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export default async function InterviewListPage({
   params,
@@ -13,5 +15,9 @@ export default async function InterviewListPage({
   if (!session?.user) redirect('/login')
   const { id } = await params
   const user = session.user as SessionUser
-  return <InterviewListClient user={user} postingId={id} />
+  return (
+    <Suspense fallback={<ListPageSkeleton />}>
+      <InterviewListClient user={user} postingId={id} />
+    </Suspense>
+  )
 }

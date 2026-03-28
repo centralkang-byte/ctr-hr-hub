@@ -71,9 +71,18 @@ export async function cacheDel(key: string): Promise<void> {
 
 export async function cacheDelPattern(pattern: string): Promise<void> {
   try {
-    const keys = await redis.keys(pattern)
-    if (keys.length > 0) {
-      await redis.del(...keys)
+    // SCAN 기반 — KEYS 대비 O(N) 블로킹 방지
+    const stream = redis.scanStream({ match: pattern, count: 100 })
+    const pipeline = redis.pipeline()
+    let count = 0
+    for await (const keys of stream) {
+      if (keys.length > 0) {
+        pipeline.del(...keys)
+        count += keys.length
+      }
+    }
+    if (count > 0) {
+      await pipeline.exec()
     }
   } catch {
     // Graceful degradation

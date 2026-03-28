@@ -6,11 +6,12 @@ import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useSearchParams, useRouter } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Users, Sparkles } from 'lucide-react'
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts'
 import { apiClient } from '@/lib/api'
 import { CHART_THEME } from '@/lib/styles'
+import type { SessionUser } from '@/types'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -54,11 +55,9 @@ const COMPETENCY_LABELS: Record<string, string> = {
 
 // ─── Component ───────────────────────────────────────────
 
-export default function PeerReviewResultsClient() {
+export default function PeerReviewResultsClient({ user, cycleId }: { user: SessionUser; cycleId: string }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
-
-  const { cycleId } = useParams<{ cycleId: string }>()
   const searchParams = useSearchParams()
   const employeeId = searchParams.get('employeeId') ?? ''
   const router = useRouter()
@@ -75,7 +74,7 @@ export default function PeerReviewResultsClient() {
         `/api/v1/peer-review/results?cycleId=${cycleId}&employeeId=${employeeId}`
       )
       setResults(res.data)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '동료 평가 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setLoading(false)
   }, [cycleId, employeeId])
 
@@ -86,12 +85,12 @@ export default function PeerReviewResultsClient() {
     try {
       const res = await apiClient.post<AiSummary>('/api/v1/ai/peer-review-summary', { cycleId, employeeId })
       setAiSummary(res.data)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '동료 평가 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setAiLoading(false)
   }
 
   if (loading) return <div className="p-6 text-center text-[#999]">{tCommon('loading')}</div>
-  if (!results || !results.summary) return <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+  if (!results || !results.summary) return <EmptyState />
 
   const radarData = Object.entries(results.summary.competencyAvg).map(([key, value]) => ({
     competency: COMPETENCY_LABELS[key] ?? key,

@@ -15,7 +15,7 @@
 //
 // 대상:
 //   EMPLOYEE  → 퇴직 본인
-//   MANAGER   → TODO: Position 계층 미구현 → skip
+//   MANAGER   → Position 계층 기반 매니저 조회 (getManagerByPosition)
 //   HR/IT/FINANCE → skip (system actor — real employeeId 없음)
 //
 // 동적 임계값 (lastWorkingDate까지 남은 일수 기반):
@@ -28,6 +28,8 @@
 
 import { prisma } from '@/lib/prisma'
 import type { NudgeRule, NudgeThresholds, OverdueItem } from '../types'
+import { getManagerByPosition } from '@/lib/assignments'
+import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── 동적 임계값: 최종 근무일까지 남은 일수 기반 ──────────
 
@@ -52,20 +54,27 @@ function getThresholdsForOffboarding(
 }
 
 // ─── Recipient Resolution ──────────────────────────────────
-// EMPLOYEE만 처리 (MANAGER: Position 계층 미구현, HR/IT/FINANCE: system actor)
+// EMPLOYEE + MANAGER 처리 (HR/IT/FINANCE: system actor → skip)
 
-function resolveOffboardingRecipient(
+async function resolveOffboardingRecipient(
   assigneeType: string,
   employeeId:   string,
   assigneeId:   string,  // 현재 로그인 사용자
-): string | null {
+  positionId?:  string | null,
+): Promise<string | null> {
   switch (assigneeType) {
     case 'EMPLOYEE':
       return employeeId === assigneeId ? employeeId : null
 
     case 'MANAGER':
-      // TODO: Position 계층 기반 매니저 조회 미구현 → skip
-      return null
+      // Position 계층 기반 매니저 조회 (getManagerByPosition)
+      if (!positionId) return null
+      try {
+        const mgrInfo = await getManagerByPosition(positionId)
+        return mgrInfo?.managerId === assigneeId ? mgrInfo.managerId : null
+      } catch {
+        return null
+      }
 
     case 'HR':
     case 'IT':
@@ -114,13 +123,12 @@ export const offboardingOverdueRule: NudgeRule = {
     const now = new Date()
 
     // ── 진행 중인 오프보딩의 PENDING 태스크 조회 ─────────
-    // 로그인 사용자가 퇴직 본인인 경우만 처리
+    // EMPLOYEE + MANAGER 태스크 모두 조회 후 resolveOffboardingRecipient로 판단
     const pendingTasks = await prisma.employeeOffboardingTask.findMany({
       where: {
         status: 'PENDING',
         employeeOffboarding: {
           status:   'IN_PROGRESS',
-          employeeId: assigneeId,   // 퇴직 본인만
           employee: {
             assignments: {
               some: {
@@ -151,7 +159,15 @@ export const offboardingOverdueRule: NudgeRule = {
             lastWorkingDate: true,
             resignType:      true,
             employee: {
-              select: { id: true, name: true },
+              select: {
+                id:   true,
+                name: true,
+                assignments: {
+                  where:  { isPrimary: true, endDate: null },
+                  select: { positionId: true },
+                  take:   1,
+                },
+              },
             },
           },
         },
@@ -188,10 +204,12 @@ export const offboardingOverdueRule: NudgeRule = {
       if (now < taskCutoff) continue
 
       // Recipient 판별
-      const recipientId = resolveOffboardingRecipient(
+      const positionId = (extractPrimaryAssignment(offboarding.employee.assignments ?? []) as Record<string, any>)?.positionId
+      const recipientId = await resolveOffboardingRecipient(
         task.assigneeType,
         offboarding.employeeId,
         assigneeId,
+        positionId,
       )
       if (!recipientId) continue
 

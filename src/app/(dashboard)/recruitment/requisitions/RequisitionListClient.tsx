@@ -164,7 +164,7 @@ export default function RequisitionListClient({user }: {
       ) : items.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-48 text-[#999]">
           <FileText size={40} className="mb-3 text-[#E8E8E8]" />
-          <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+          <EmptyState />
         </div>
       ) : (
         <div className="space-y-3">
@@ -186,7 +186,7 @@ export default function RequisitionListClient({user }: {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-mono text-[#999]">{item.reqNumber}</span>
+                      <span className="text-xs font-mono tabular-nums text-[#999]">{item.reqNumber}</span>
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${urgency.color}`}>
                         {urgency.label}
                       </span>

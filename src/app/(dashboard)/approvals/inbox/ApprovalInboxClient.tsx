@@ -107,7 +107,7 @@ function RejectionModal({ item, onClose, onConfirm }: RejectionModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+      <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
         {/* Header */}
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-semibold text-[#1C1D21]">반려 사유 입력</h2>
@@ -181,7 +181,7 @@ function ApproveConfirmModal({ item, onClose, onConfirm }: ApproveConfirmModalPr
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+      <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-lg">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-semibold text-[#1C1D21]">승인 확인</h2>
           <button type="button" onClick={onClose} className="rounded p-1 text-[#8181A5] hover:bg-[#F5F5FA]">
@@ -234,7 +234,7 @@ function BulkConfirmModal({ count, onClose, onConfirm }: BulkConfirmModalProps) 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+      <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-lg">
         <h2 className="mb-3 text-base font-semibold text-[#1C1D21]">일괄 승인 확인</h2>
         <p className="text-sm text-[#8181A5]">
           선택한 <span className="font-semibold text-[#1C1D21]">{count}건</span>을 모두 승인하시겠습니까?
@@ -395,11 +395,16 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [processing,  setProcessing]  = useState<string | null>(null)
   const [showHistory, setShowHistory] = useState(false)
+  const [pendingVisible, setPendingVisible] = useState(20)
+  const [historyVisible, setHistoryVisible] = useState(20)
 
   // Modals
   const [rejectTarget,    setRejectTarget]    = useState<ApprovalItem | null>(null)
   const [approveTarget,   setApproveTarget]   = useState<ApprovalItem | null>(null)
   const [showBulkConfirm, setShowBulkConfirm] = useState(false)
+
+  // Bulk progress
+  const [bulkProgress,    setBulkProgress]    = useState<{ total: number; done: number; failed: number } | null>(null)
 
   // ─── Fetch ───────────────────────────────────────────────
 
@@ -478,9 +483,20 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
   const doBulkApprove = async () => {
     setShowBulkConfirm(false)
     const toApprove = [...selectedItems]
-    for (const item of toApprove) {
-      await doApprove(item)
-    }
+    setBulkProgress({ total: toApprove.length, done: 0, failed: 0 })
+
+    const results = await Promise.allSettled(
+      toApprove.map(async (item) => {
+        await doApprove(item)
+        setBulkProgress(prev => prev ? { ...prev, done: prev.done + 1 } : null)
+      })
+    )
+
+    const failCount = results.filter(r => r.status === 'rejected').length
+    setBulkProgress(prev => prev ? { ...prev, done: prev.total, failed: failCount } : null)
+
+    // 2초 후 진행률 바 숨김
+    setTimeout(() => setBulkProgress(null), 2000)
     setSelectedIds(new Set())
   }
 
@@ -516,13 +532,33 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
         )}
       </div>
 
+      {/* ── Bulk progress bar ── */}
+      {bulkProgress && (
+        <div className="rounded-lg border border-[#F0F0F3] bg-white p-3 space-y-2">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-[#1C1D21] font-medium">
+              일괄 승인 진행 중... ({bulkProgress.done}/{bulkProgress.total})
+            </span>
+            {bulkProgress.failed > 0 && (
+              <span className="text-sm text-destructive">{bulkProgress.failed}건 실패</span>
+            )}
+          </div>
+          <div className="h-2 bg-[#F0F0F3] rounded-full overflow-hidden">
+            <div
+              className="h-full bg-ctr-primary rounded-full transition-all duration-300"
+              style={{ width: `${(bulkProgress.done / bulkProgress.total) * 100}%` }}
+            />
+          </div>
+        </div>
+      )}
+
       {/* ── Module tabs ── */}
       <div className="flex flex-wrap gap-1.5">
         {TABS.map(t => (
           <button
             key={t.key}
             type="button"
-            onClick={() => { setTab(t.key); setSelectedIds(new Set()) }}
+            onClick={() => { setTab(t.key); setSelectedIds(new Set()); setPendingVisible(20) }}
             className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
               tab === t.key
                 ? 'bg-[#5E81F4] text-white'
@@ -552,13 +588,13 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
         <Card className="border-[#F0F0F3] shadow-none">
           <CardContent className="flex flex-col items-center py-16 text-center">
             <CheckCircle2 className="mb-3 h-12 w-12 text-[#5E81F4] opacity-60" />
-            <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+            <EmptyState />
             <p className="mt-1 text-xs text-[#8181A5]">모든 요청이 처리되었습니다.</p>
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-2">
-          {filtered.map(item => (
+          {filtered.slice(0, pendingVisible).map(item => (
             <ApprovalRow
               key={item.id}
               item={item}
@@ -569,6 +605,15 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
               processing={processing}
             />
           ))}
+          {filtered.length > pendingVisible && (
+            <button
+              type="button"
+              onClick={() => setPendingVisible(v => v + 20)}
+              className="w-full py-2 text-sm text-[#5E81F4] hover:underline"
+            >
+              더 보기 ({filtered.length - pendingVisible}건 남음)
+            </button>
+          )}
         </div>
       )}
 
@@ -593,7 +638,7 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
 
           {showHistory && (
             <div className="space-y-2">
-              {historyItems.map(item => (
+              {historyItems.slice(0, historyVisible).map(item => (
                 <ApprovalRow
                   key={item.id}
                   item={item}
@@ -604,6 +649,15 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
                   processing={null}
                 />
               ))}
+              {historyItems.length > historyVisible && (
+                <button
+                  type="button"
+                  onClick={() => setHistoryVisible(v => v + 20)}
+                  className="w-full py-2 text-sm text-[#8181A5] hover:underline"
+                >
+                  더 보기 ({historyItems.length - historyVisible}건 남음)
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -612,7 +666,7 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
       {/* ── Bulk floating action bar ── */}
       {selectedIds.size > 0 && (
         <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2">
-          <div className="flex items-center gap-3 rounded-2xl bg-[#1C1D21] px-5 py-3 text-white shadow-2xl">
+          <div className="flex items-center gap-3 rounded-xl bg-[#1C1D21] px-5 py-3 text-white shadow-lg">
             <CheckSquare className="h-4 w-4 text-[#5E81F4]" />
             <span className="text-sm font-medium">{selectedIds.size}건 선택됨</span>
             <Button

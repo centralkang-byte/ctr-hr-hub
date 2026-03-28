@@ -3,13 +3,15 @@
 // 조직도: React Flow + Dagre 레이아웃
 // ═══════════════════════════════════════════════════════════
 
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser, RefOption } from '@/types'
-import { OrgClient } from './OrgClient'
+import { ChartSkeleton } from '@/components/shared/PageSkeleton'
+import { OrgClientWrapper } from './OrgClientWrapper'
 
 export default async function OrgPage() {
   const session = await getServerSession(authOptions)
@@ -26,5 +28,9 @@ export default async function OrgPage() {
         })
       : []
 
-  return <OrgClient user={user} companies={companies} />
+  return (
+    <Suspense fallback={<ChartSkeleton className="h-[600px]" />}>
+      <OrgClientWrapper user={user} companies={companies} />
+    </Suspense>
+  )
 }

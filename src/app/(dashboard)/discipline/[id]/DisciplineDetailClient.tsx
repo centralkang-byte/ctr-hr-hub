@@ -14,22 +14,23 @@ import { useTranslations } from 'next-intl'
 import { ChevronLeft, Gavel, User, FileText, AlertTriangle } from 'lucide-react'
 import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 import type { SessionUser } from '@/types'
 
 // ─── Badge Styles ────────────────────────────────────────
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
-  DISCIPLINE_ACTIVE: 'bg-[#EDF1FE] text-[#2E7D32]',
-  DISCIPLINE_EXPIRED: 'bg-[#F5F5F5] text-[#999]',
-  DISCIPLINE_OVERTURNED: 'bg-[#FFF3E0] text-[#E65100]',
+  DISCIPLINE_ACTIVE: STATUS_VARIANT.error,
+  DISCIPLINE_EXPIRED: STATUS_VARIANT.neutral,
+  DISCIPLINE_OVERTURNED: STATUS_VARIANT.success,
 }
 
 const APPEAL_BADGE_STYLES: Record<string, string> = {
-  NONE: 'bg-[#F5F5F5] text-[#999]',
-  FILED: 'bg-[#E3F2FD] text-[#1565C0]',
-  UNDER_REVIEW: 'bg-[#FFF3E0] text-[#E65100]',
-  UPHELD: 'bg-[#FFEBEE] text-[#C62828]',
-  OVERTURNED: 'bg-[#EDF1FE] text-[#2E7D32]',
+  NONE: STATUS_VARIANT.neutral,
+  FILED: STATUS_VARIANT.warning,
+  UNDER_REVIEW: STATUS_VARIANT.info,
+  UPHELD: STATUS_VARIANT.error,
+  OVERTURNED: STATUS_VARIANT.success,
 }
 
 // ─── Types ───────────────────────────────────────────────
@@ -90,8 +91,8 @@ export default function DisciplineDetailClient({ user, id }: Props) {
     try {
       const res = await apiClient.get<DisciplinaryDetail>(`/api/v1/disciplinary/${id}`)
       setData(res.data)
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: '징계 상세 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -108,8 +109,8 @@ export default function DisciplineDetailClient({ user, id }: Props) {
       })
       await fetchData()
       setAppealText('')
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: '징계 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setAppealSubmitting(false)
     }
@@ -157,7 +158,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
               {t('title')}
             </h1>
             <div className="flex items-center gap-2 mt-0.5">
-              <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${STATUS_BADGE_STYLES[data.status] ?? 'bg-[#F5F5F5] text-[#999]'}`}>
+              <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${STATUS_BADGE_STYLES[data.status] ?? STATUS_VARIANT.neutral}`}>
                 {tPage(`statusLabels.${data.status}`, { defaultValue: data.status })}
               </span>
               <span className="text-xs text-[#999]">

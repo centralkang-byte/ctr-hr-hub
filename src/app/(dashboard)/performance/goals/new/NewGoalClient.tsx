@@ -62,8 +62,8 @@ export default function NewGoalClient({
           { page: 1, limit: 100 },
         )
         setCycles(res.data)
-      } catch {
-        console.error(t('cycleListLoadFailed'))
+      } catch (err) {
+        toast({ title: '데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
       }
     }
     fetchCycles()
@@ -124,7 +124,7 @@ export default function NewGoalClient({
               className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
             >
               <option value="">{t('selectCycle')}</option>
-              {!cycles?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+              {!cycles?.length && <EmptyState />}
               {cycles?.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}

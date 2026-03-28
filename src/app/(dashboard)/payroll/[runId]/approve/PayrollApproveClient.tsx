@@ -141,7 +141,9 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             ])
             setRun(runRes.data)
             setApproval(approvalRes.data)
-        } catch { /* silent */ } finally {
+        } catch (err) {
+            toast({ title: '결재 정보 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+        } finally {
             setLoading(false)
         }
     }, [runId])
@@ -158,7 +160,9 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             if (newApproval.data.approval?.status === 'APPROVED') {
                 router.push('/payroll')
             }
-        } catch { /* silent */ } finally {
+        } catch (err) {
+            toast({ title: '승인 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+        } finally {
             setSubmitting(false)
         }
     }
@@ -179,7 +183,9 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
         try {
             await apiClient.post(`/api/v1/payroll/${runId}/reject`, { comment: rejectComment })
             router.push('/approvals/inbox')
-        } catch { /* silent */ } finally {
+        } catch (err) {
+            toast({ title: '반려 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+        } finally {
             setSubmitting(false)
             setShowReject(false)
         }
@@ -187,7 +193,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
 
     if (loading || !run || !approval) {
         return (
-            <div className="p-6 flex items-center justify-center min-h-[400px]">
+            <div className="p-4 flex items-center justify-center min-h-[400px]">
                 <Loader2 className="h-8 w-8 animate-spin text-[#5E81F4]" />
             </div>
         )
@@ -200,7 +206,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
     const isPending = run.status === 'PENDING_APPROVAL'
 
     return (
-        <div className="p-6 max-w-3xl mx-auto space-y-5">
+        <div className="p-4 max-w-3xl mx-auto space-y-4">
             {/* Header */}
             <div className="flex items-center gap-3">
                 <button onClick={() => router.push('/approvals/inbox')} className="text-[#999] hover:text-[#333]">
@@ -334,7 +340,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             {/* Reject Modal */}
             {showReject && (
                 <div className={MODAL_STYLES.container}>
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+                    <div className="bg-white rounded-xl shadow-lg w-full max-w-md">
                         <div className="p-5 border-b border-[#E8E8E8] flex items-center justify-between">
                             <h3 className="font-bold text-lg text-[#1A1A1A]">{t('reject_kec82acec_kec9e85eb')}</h3>
                             <button onClick={() => setShowReject(false)} className="text-[#999] hover:text-[#333]">

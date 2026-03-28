@@ -28,23 +28,23 @@ interface DpiaFormProps {
   onSaved: () => void
 }
 
-const RISK_LEVELS = [
-  { value: 'low', label: 'Low' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'high', label: 'High' },
-  { value: 'critical', label: 'Critical' },
-]
-
-const STATUS_OPTIONS = [
-  { value: 'draft', label: 'Draft' },
-  { value: 'in_review', label: 'In Review' },
-  { value: 'approved', label: 'Approved' },
-  { value: 'rejected', label: 'Rejected' },
-]
-
 export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps) {
   const t = useTranslations('compliance')
   const tc = useTranslations('common')
+
+  const RISK_LEVELS = [
+    { value: 'low', label: t('gdpr.riskLow') },
+    { value: 'medium', label: t('gdpr.riskMedium') },
+    { value: 'high', label: t('gdpr.riskHigh') },
+    { value: 'critical', label: t('gdpr.riskCritical') },
+  ]
+
+  const STATUS_OPTIONS = [
+    { value: 'draft', label: t('gdpr.statusDraft') },
+    { value: 'in_review', label: t('gdpr.statusInReview') },
+    { value: 'approved', label: t('gdpr.statusApproved') },
+    { value: 'rejected', label: t('gdpr.statusRejected') },
+  ]
 
   const isEdit = Boolean(dpia)
 

@@ -86,7 +86,7 @@ export default function LoginPageContent() {
       {/* ─── Left: CTR Branding ─── */}
       <div className="hidden flex-1 flex-col items-center justify-center bg-ctr-primary p-12 lg:flex">
         <div className="max-w-md text-center">
-          <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-2xl bg-white/10">
+          <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-xl bg-white/10">
             <span className="text-3xl font-bold text-white">CTR</span>
           </div>
           <h1 className="mb-4 text-3xl font-bold text-white">CTR HR Hub</h1>
@@ -100,7 +100,7 @@ export default function LoginPageContent() {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="mb-8 text-center lg:hidden">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-ctr-primary">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-ctr-primary">
               <span className="text-2xl font-bold text-white">CTR</span>
             </div>
             <h1 className="text-xl font-bold text-ctr-primary">CTR HR Hub</h1>

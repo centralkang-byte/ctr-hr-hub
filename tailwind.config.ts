@@ -57,33 +57,37 @@ const config: Config = {
 					'4': 'hsl(var(--chart-4))',
 					'5': 'hsl(var(--chart-5))'
 				},
-				// CTR Brand Colors (Slate Indigo Design System)
-				'ctr-primary': '#4F46E5',
-				'ctr-primary-dark': '#4338CA',
+				// CTR Design System — DESIGN.md 기준 (Slate Indigo)
+				'ctr-primary': '#6159E7',
+				'ctr-primary-dark': '#4F46E5',
 				'ctr-primary-light': '#EEF2FF',
 				'ctr-secondary': '#64748B',
-				'ctr-accent': '#F59E0B',
-				'ctr-success': '#10B981',
-				'ctr-warning': '#F59E0B',
-				'ctr-info': '#6366F1',
-				// Grayscale
-				'ctr-gray': {
-					50: '#FAFAFA',
-					100: '#F5F5F5',
-					200: '#E8E8E8',
-					300: '#D4D4D4',
-					400: '#999999',
-					500: '#666666',
-					600: '#555555',
-					700: '#333333',
-					800: '#1A1A1A',
-					900: '#111111',
+				// Semantic
+				'ctr-success': '#059669',
+				'ctr-warning': '#D97706',
+				'ctr-error': '#DC2626',
+				'ctr-info': '#2563EB',
+				// Semantic backgrounds (light)
+				'ctr-success-bg': '#ECFDF5',
+				'ctr-warning-bg': '#FFFBEB',
+				'ctr-error-bg': '#FEF2F2',
+				'ctr-info-bg': '#EFF6FF',
+				// Slate neutral scale
+				'ctr-slate': {
+					50: '#F8FAFC',
+					100: '#F1F5F9',
+					200: '#E2E8F0',
+					300: '#CBD5E1',
+					400: '#94A3B8',
+					500: '#64748B',
+					600: '#475569',
+					700: '#334155',
+					800: '#1E293B',
+					900: '#0F172A',
 				},
-				brand: {
-					primary: 'var(--brand-primary)',
-					secondary: 'var(--brand-secondary)',
-					accent: 'var(--brand-accent)',
-				},
+			},
+			fontSize: {
+				'2xs': ['0.6875rem', { lineHeight: '1.4' }],  // 11px — table headers
 			},
 			letterSpacing: {
 				'ctr': '-0.02em',
@@ -92,7 +96,12 @@ const config: Config = {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
-			}
+			},
+			boxShadow: {
+				'sm': '0 1px 2px rgba(15,23,42,0.06)',
+				'md': '0 4px 12px rgba(15,23,42,0.08)',
+				'lg': '0 12px 32px rgba(15,23,42,0.12)',
+			},
 		}
 	},
 	plugins: [tailwindcssAnimate],

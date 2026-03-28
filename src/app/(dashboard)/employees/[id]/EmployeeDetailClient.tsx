@@ -17,10 +17,12 @@ import {
   TrendingUp,
   User,
   X,
+  Shield,
 } from 'lucide-react'
 import { AssignmentHistoryTab } from '@/components/employees/tabs/AssignmentHistoryTab'
 import { AttendanceTab } from '@/components/employees/tabs/AttendanceTab'
 import { CompensationTab } from '@/components/employees/tabs/CompensationTab'
+import { LoaTab } from '@/components/employees/tabs/LoaTab'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -70,28 +72,40 @@ type EmployeeDetail = {
   locale: string | null
   timezone: string | null
   company: { id: string; name: string } | null
-  department: { id: string; name: string } | null
+  department: { id: string; name: string; level: number; parent?: { id: string; name: string; level: number; parent?: { id: string; name: string; level: number } | null } | null } | null
   jobGrade: { id: string; name: string } | null
+  title: { id: string; name: string } | null
   jobCategory: { id: string; name: string } | null
+  position: { id: string; titleKo: string; titleEn: string | null; code: string } | null
+  workLocation: { country: string; city: string | null; name: string } | null
   manager: {
     id: string
     name: string
     photoUrl: string | null
-    employeeNo: string
-    department: { name: string } | null
-    jobGrade: { name: string } | null
+    title: string | null
+    department: string | null
   } | null
   companyId: string
 }
 
+
+// Grade↔Title 매핑 (서버에서 전달)
+interface GradeTitleMappingItem {
+  id: string
+  jobGrade: { id: string; code: string; name: string; gradeType: string; rankOrder: number; companyId: string }
+  employeeTitle: { id: string; name: string }
+}
 
 interface EmployeeDetailClientProps {
   user: SessionUser
   employee: EmployeeDetail
   companies: RefOption[]
   departments: DeptOption[]
-  jobGrades: RefOption[]
   jobCategories: RefOption[]
+  gradeTitleMappings: GradeTitleMappingItem[]
+  division: string | null
+  canViewGrade: boolean
+  canViewSensitive: boolean
 }
 
 // ─── Constants ──────────────────────────────────────────────
@@ -149,7 +163,7 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="py-2.5">
       <p className="text-xs text-[#999] font-medium mb-1">{label}</p>
-      <p className="text-sm text-[#1A1A1A]">{value ?? '-'}</p>
+      <div className="text-sm text-[#1A1A1A]">{value ?? '-'}</div>
     </div>
   )
 }
@@ -161,8 +175,11 @@ export function EmployeeDetailClient({
   employee: initialEmployee,
   companies,
   departments,
-  jobGrades,
   jobCategories,
+  gradeTitleMappings,
+  division,
+  canViewGrade,
+  canViewSensitive,
 }: EmployeeDetailClientProps) {
   const router = useRouter()
   const t = useTranslations('employee')
@@ -277,6 +294,7 @@ export function EmployeeDetailClient({
         emergencyContactPhone: editData.emergencyContactPhone || null,
         departmentId: editData.departmentId,
         jobGradeId: editData.jobGradeId,
+        titleId: mappedTitle?.employeeTitle.id ?? null,
         jobCategoryId: editData.jobCategoryId,
         employmentType: editData.employmentType,
         status: editData.status,
@@ -296,6 +314,10 @@ export function EmployeeDetailClient({
     () => departments.filter((d) => d.companyId === employee.companyId),
     [departments, employee.companyId],
   )
+
+  // Grade↔Title 매핑: 해당 법인만 필터
+  const companyMappings = gradeTitleMappings.filter((m) => m.jobGrade.companyId === employee.companyId)
+  const mappedTitle = companyMappings.find((m) => m.jobGrade.id === editData.jobGradeId) ?? null
 
   // ─── Tab 1: 기본정보 ────────────────────────────────────────
 
@@ -370,10 +392,20 @@ export function EmployeeDetailClient({
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
-                  {jobGrades.map((g) => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
+                  {companyMappings.map((m) => (
+                    <SelectItem key={m.jobGrade.id} value={m.jobGrade.id}>
+                      {m.jobGrade.code} ({m.employeeTitle.name})
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
+            {mappedTitle && (
+              <div className="space-y-1.5">
+                <Label>호칭</Label>
+                <Input value={mappedTitle.employeeTitle.name} readOnly className="bg-muted" />
+              </div>
+            )}
             <div className="space-y-1.5">
               <Label>{t('jobCategory')}</Label>
               <Select value={editData.jobCategoryId || '__NONE__'} onValueChange={(v) => setEditData((p) => ({ ...p, jobCategoryId: v === '__NONE__' ? '' : v }))}>
@@ -429,20 +461,22 @@ export function EmployeeDetailClient({
             <InfoRow label={t('nationality')} value={employee.nationality} />
             <InfoRow label={t('email')} value={employee.email} />
             <InfoRow label={t('phone')} value={employee.phone} />
-            <InfoRow label={t('emergencyContactName')} value={employee.emergencyContact} />
-            <InfoRow label={t('emergencyContactPhone')} value={employee.emergencyContactPhone} />
+            {canViewSensitive && <InfoRow label={t('emergencyContactName')} value={employee.emergencyContact} />}
+            {canViewSensitive && <InfoRow label={t('emergencyContactPhone')} value={employee.emergencyContactPhone} />}
           </dl>
         </div>
         <Separator />
         <div>
           <h3 className="mb-3 text-base font-bold text-[#1A1A1A] tracking-ctr">{t('employmentInfo')}</h3>
           <dl className="grid grid-cols-1 gap-x-8 gap-y-0 md:grid-cols-2">
-            <InfoRow label={t('employeeCode')} value={<span className="font-mono">{employee.employeeNo}</span>} />
+            <InfoRow label={t('employeeCode')} value={<span className="font-mono tabular-nums">{employee.employeeNo}</span>} />
             <InfoRow label={t('companyEntity')} value={employee.company?.name} />
             <InfoRow label={t('department')} value={employee.department?.name} />
-            <InfoRow label={t('jobGrade')} value={employee.jobGrade?.name} />
+            {employee.title && <InfoRow label="호칭" value={employee.title.name} />}
+            {employee.position && <InfoRow label="직위" value={employee.position.titleKo} />}
+            {canViewGrade && <InfoRow label={t('jobGrade')} value={employee.jobGrade?.name} />}
             <InfoRow label={t('jobCategory')} value={employee.jobCategory?.name} />
-            <InfoRow label={t('employmentType')} value={EMPLOYMENT_TYPE_LABELS[employee.employmentType] ?? employee.employmentType} />
+            {canViewSensitive && <InfoRow label={t('employmentType')} value={EMPLOYMENT_TYPE_LABELS[employee.employmentType] ?? employee.employmentType} />}
             <InfoRow label={tc('status')} value={<Badge variant={STATUS_VARIANTS[employee.status] ?? 'outline'}>{STATUS_LABELS[employee.status] ?? employee.status}</Badge>} />
             <InfoRow label={t('hireDate')} value={formatDate(employee.hireDate)} />
             <InfoRow label={t('resignDate')} value={formatDate(employee.resignDate)} />
@@ -461,29 +495,36 @@ export function EmployeeDetailClient({
         name={employee.name}
         nameEn={employee.nameEn}
         photoUrl={employee.photoUrl}
-        department={employee.department?.name ?? null}
-        jobGrade={employee.jobGrade?.name ?? null}
+        title={employee.title?.name ?? null}
+        position={employee.position?.titleKo ?? null}
+        company={employee.company?.name ?? null}
+        division={division}
+        team={employee.department?.name ?? null}
+        locationName={
+          employee.workLocation
+            ? [employee.workLocation.country, employee.workLocation.city].filter(Boolean).join(', ')
+            : null
+        }
         email={employee.email}
         phone={employee.phone}
+        birthDate={employee.birthDate}
         hireDate={employee.hireDate}
+        tenureText={calcTenure(employee.hireDate)}
         status={employee.status}
         statusLabel={STATUS_LABELS[employee.status] ?? employee.status}
-        tenureText={calcTenure(employee.hireDate)}
-        company={employee.company?.name ?? null}
-        manager={employee.manager ? {
-          id: employee.manager.id,
-          name: employee.manager.name,
-          photoUrl: employee.manager.photoUrl,
-          department: employee.manager.department?.name ?? null,
-          jobGrade: employee.manager.jobGrade?.name ?? null,
-        } : null}
+        canViewGrade={canViewGrade}
+        grade={employee.jobGrade?.name ?? null}
+        canViewSensitive={canViewSensitive}
+        emergencyContact={employee.emergencyContact}
+        emergencyContactPhone={employee.emergencyContactPhone}
+        manager={employee.manager ?? null}
         onManagerClick={(id) => router.push(`/employees/${id}`)}
       />
 
       {/* ─── Right: Main Content ─── */}
       <div className="flex-1 min-w-0 overflow-auto">
         {/* Mobile profile header (shown on small screens) */}
-        <div className="lg:hidden p-6 pb-0">
+        <div className="lg:hidden p-8 pb-0">
           <div className="flex items-center gap-4">
             <Avatar name={employee.name} photoUrl={employee.photoUrl} size="lg" />
             <div>
@@ -498,7 +539,7 @@ export function EmployeeDetailClient({
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-8">
         <div className="flex-1 min-w-0">
           <Tabs defaultValue="profile">
             <TabsList className="mb-4">
@@ -519,6 +560,10 @@ export function EmployeeDetailClient({
               <TabsTrigger value="attendance">
                 <Clock className="mr-1.5 h-4 w-4" />
                 근태현황
+              </TabsTrigger>
+              <TabsTrigger value="loa">
+                <Shield className="mr-1.5 h-4 w-4" />
+                휴직
               </TabsTrigger>
               <TabsTrigger value="performance">
                 <TrendingUp className="mr-1.5 h-4 w-4" />
@@ -571,7 +616,12 @@ export function EmployeeDetailClient({
               <AttendanceTab employeeId={employee.id} />
             </TabsContent>
 
-            {/* Tab 5: 평가결과 (comingSoon - B3) */}
+            {/* Tab 5: 휴직 이력 */}
+            <TabsContent value="loa" className="mt-0">
+              <LoaTab employeeId={employee.id} />
+            </TabsContent>
+
+            {/* Tab 6: 평가결과 (comingSoon - B3) */}
             <TabsContent value="performance" className="mt-0">
               <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
                 <div className="flex flex-col items-center py-12 text-[#999]">
@@ -710,7 +760,7 @@ export function EmployeeDetailClient({
                     {offboardingData.handoverToId && (
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">{t('handoverToId')}</span>
-                        <span className="font-mono text-xs font-medium">{offboardingData.handoverToId}</span>
+                        <span className="font-mono tabular-nums text-xs font-medium">{offboardingData.handoverToId}</span>
                       </div>
                     )}
                   </div>

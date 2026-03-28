@@ -25,10 +25,11 @@ import { AnalyticsKpiCard } from '@/components/analytics/AnalyticsKpiCard'
 import type { CompensationData } from '@/lib/analytics/types'
 import { Banknote } from 'lucide-react'
 import { TABLE_STYLES, CHART_THEME } from '@/lib/styles'
+import type { SessionUser } from '@/types'
 
 const BAND_COLORS = ['#EF4444', '#10B981', '#F59E0B']
 
-export default function CompensationAnalyticsClient() {
+export default function CompensationAnalyticsClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('analytics.compensationPage')
 
@@ -74,9 +75,9 @@ export default function CompensationAnalyticsClient() {
 
   const total = data.bandFit.under + data.bandFit.in_band + data.bandFit.over
   const bandPieData = [
-    { name: 'Under Band', value: data.bandFit.under },
-    { name: 'In Band', value: data.bandFit.in_band },
-    { name: 'Over Band', value: data.bandFit.over },
+    { name: t('underBand'), value: data.bandFit.under },
+    { name: t('inBand'), value: data.bandFit.in_band },
+    { name: t('overBand'), value: data.bandFit.over },
   ]
 
   return (
@@ -84,19 +85,19 @@ export default function CompensationAnalyticsClient() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <AnalyticsKpiCard
-          label="Under Band"
+          label={t('underBand')}
           value={total > 0 ? `${Math.round((data.bandFit.under / total) * 100)}%` : '-'}
           icon={Banknote}
           color="danger"
         />
         <AnalyticsKpiCard
-          label="In Band"
+          label={t('inBand')}
           value={total > 0 ? `${Math.round((data.bandFit.in_band / total) * 100)}%` : '-'}
           icon={Banknote}
           color="success"
         />
         <AnalyticsKpiCard
-          label="Over Band"
+          label={t('overBand')}
           value={total > 0 ? `${Math.round((data.bandFit.over / total) * 100)}%` : '-'}
           icon={Banknote}
           color="warning"
@@ -113,7 +114,7 @@ export default function CompensationAnalyticsClient() {
                 <XAxis dataKey="grade_name" tick={{ fontSize: 12 }} />
                 <YAxis domain={[0.5, 1.5]} />
                 <Tooltip formatter={(v) => typeof v === 'number' ? v.toFixed(3) : v} />
-                <Bar dataKey="avg_compa_ratio" fill="#8B5CF6" radius={[4, 4, 0, 0]} name="Compa-Ratio" />
+                <Bar dataKey="avg_compa_ratio" fill="#8B5CF6" radius={[4, 4, 0, 0]} name={t('compaRatio')} />
               </BarChart>
             </ResponsiveContainer>
           ) : (

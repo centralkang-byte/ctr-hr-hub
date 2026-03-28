@@ -8,7 +8,8 @@ import { useTranslations } from 'next-intl'
 import { useState, useCallback } from 'react'
 import {
   User, Briefcase, DollarSign, FileText, Camera, CheckCircle2, XCircle,
-  Edit3, Save, X, Plus, Trash2, Globe, Building, AlertCircle
+  Edit3, Save, X, Plus, Trash2, Globe, Building, AlertCircle,
+  Calendar, Clock, Award
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
@@ -22,6 +23,8 @@ interface Assignment {
   department: { id: string; name: string } | null
   jobGrade: { id: string; name: string; code: string } | null
   company: { id: string; code: string; name: string } | null
+  title: { id: string; name: string } | null
+  position: { id: string; titleKo: string } | null
 }
 
 interface EmergencyContact {
@@ -100,6 +103,7 @@ interface EmployeeData {
 interface MyProfileClientProps {
   user: SessionUser
   employee: EmployeeData
+  division: string | null
 }
 
 // ─── Constants ──────────────────────────────────────────────
@@ -176,7 +180,7 @@ function VisibilityBadge({ level }: { level: string }) {
 
 // ─── Main Component ─────────────────────────────────────────
 
-export function MyProfileClient({ user: _user, employee }: MyProfileClientProps) {
+export function MyProfileClient({ user: _user, employee, division }: MyProfileClientProps) {
   const tCommon = useTranslations('common')
   const t = useTranslations('mySpace')
 
@@ -279,11 +283,11 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#5E81F4]/5 rounded-full blur-3xl pointer-events-none" />
         
         <div className="relative shrink-0">
-          <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#5E81F4] to-[#4B6DE0] flex items-center justify-center text-white text-3xl font-bold shadow-md">
+          <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-[#5E81F4] to-[#4B6DE0] flex items-center justify-center text-white text-3xl font-bold shadow-md">
             {employee.name.slice(0, 1)}
           </div>
           <button
-            onClick={() => toast({ title: 'Coming soon', description: '아바타 업로드는 곧 지원됩니다.' })}
+            onClick={() => toast({ title: '준비 중', description: '아바타 업로드는 곧 지원됩니다.' })}
             className="absolute -bottom-2 -right-2 w-8 h-8 bg-white border border-[#E8E8E8] rounded-full flex items-center justify-center shadow-sm hover:bg-[#FAFAFA] text-[#555] hover:text-[#5E81F4] transition-colors"
           >
             <Camera className="w-4 h-4" />
@@ -296,7 +300,12 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
                 {employee.name}
                 {employee.nameEn && <span className="text-sm font-normal text-[#666]">({employee.nameEn})</span>}
               </h1>
-              <p className="text-[#5E81F4] font-medium mt-1">{asgn?.jobGrade?.name ?? '-'} · {asgn?.department?.name ?? '-'}</p>
+              <p className="text-[#5E81F4] font-medium mt-1">
+                {[asgn?.title?.name, asgn?.position?.titleKo].filter(Boolean).join(' · ') || (asgn?.jobGrade?.name ?? '-')}
+              </p>
+              <p className="text-sm text-[#999] mt-0.5">
+                {[asgn?.company?.name, division, asgn?.department?.name].filter(Boolean).join(' · ')}
+              </p>
             </div>
             <div className="text-right">
               <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-[#EDF1FE] text-[#4B6DE0]">
@@ -305,7 +314,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
             </div>
           </div>
           <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-[#666]">
-            <span className="flex items-center gap-1.5"><Building className="w-4 h-4 text-[#999]" /> {asgn?.company?.name ?? '-'}</span>
+            <span className="flex items-center gap-1.5"><Building className="w-4 h-4 text-[#999]" /> {asgn?.jobGrade?.name ?? '-'}</span>
             <span className="flex items-center gap-1.5"><User className="w-4 h-4 text-[#999]" /> {employee.employeeNo}</span>
             <span className="flex items-center gap-1.5"><Globe className="w-4 h-4 text-[#999]" /> {employee.email}</span>
           </div>
@@ -335,6 +344,64 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
 
       {/* ── Tab: Overview ── */}
       {activeTab === 'overview' && (
+        <div className="space-y-6">
+          {/* At a Glance 위젯 */}
+          {(() => {
+            const primary = employee.assignments[0]
+            const hireDateObj = new Date(employee.hireDate)
+            const tenure = Math.floor((Date.now() - hireDateObj.getTime()) / (365.25 * 24 * 60 * 60 * 1000))
+            const certCount = Array.isArray(ext.certifications) ? ext.certifications.length : 0
+            const langCount = Array.isArray(ext.languages) ? ext.languages.length : 0
+
+            return (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className={CARD_STYLES.padded}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                      <Building className="h-4 w-4" />
+                    </div>
+                    <span className="text-xs text-muted-foreground">{t('atGlance.team')}</span>
+                  </div>
+                  <p className="text-sm font-semibold text-foreground truncate">{primary?.department?.name ?? '-'}</p>
+                  <p className="text-xs text-muted-foreground truncate">{primary?.jobGrade?.name ?? '-'}</p>
+                </div>
+
+                <div className={CARD_STYLES.padded}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-50 text-green-600">
+                      <Calendar className="h-4 w-4" />
+                    </div>
+                    <span className="text-xs text-muted-foreground">{t('atGlance.tenure')}</span>
+                  </div>
+                  <p className="text-sm font-semibold text-foreground">{tenure}{t('atGlance.years')}</p>
+                  <p className="text-xs text-muted-foreground">{formatDate(employee.hireDate)} {t('atGlance.joined')}</p>
+                </div>
+
+                <div className={CARD_STYLES.padded}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                      <Award className="h-4 w-4" />
+                    </div>
+                    <span className="text-xs text-muted-foreground">{t('atGlance.certLang')}</span>
+                  </div>
+                  <p className="text-sm font-semibold text-foreground">{t('atGlance.certCount', { count: certCount })}</p>
+                  <p className="text-xs text-muted-foreground">{t('atGlance.langCount', { count: langCount })}</p>
+                </div>
+
+                <div className={CARD_STYLES.padded}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-50 text-purple-600">
+                      <Clock className="h-4 w-4" />
+                    </div>
+                    <span className="text-xs text-muted-foreground">{t('atGlance.skills')}</span>
+                  </div>
+                  <p className="text-sm font-semibold text-foreground">{ext.skills.length}{t('atGlance.skillCount')}</p>
+                  <p className="text-xs text-muted-foreground">{ext.skills.slice(0, 2).join(', ') || '-'}</p>
+                </div>
+              </div>
+            )
+          })()}
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2 space-y-6">
             {/* 기본 정보 / 인사 정보 */}
@@ -496,6 +563,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
             </div>
           </div>
         </div>
+        </div>
       )}
 
       {/* ── Tab: Career (직무 및 발령 이력) ── */}
@@ -652,7 +720,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
       {/* ── Modal: Emergency Contact ── */}
       {showEcForm && (
         <div className={MODAL_STYLES.container}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-[#1A1A1A]">비상연락처 추가</h3>
               <button onClick={() => setShowEcForm(false)} className="text-[#999] hover:text-[#333]"><X className="w-5 h-5" /></button>
@@ -695,7 +763,7 @@ export function MyProfileClient({ user: _user, employee }: MyProfileClientProps)
       {/* ── Modal: Change Request ── */}
       {changeReqField && (
         <div className={MODAL_STYLES.container}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-[#1A1A1A]">정보 변경 요청</h3>
               <button onClick={() => setChangeReqField(null)} className="text-[#999] hover:text-[#333]"><X className="w-5 h-5" /></button>

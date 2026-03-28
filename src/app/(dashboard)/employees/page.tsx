@@ -2,11 +2,13 @@
 // CTR HR Hub — /employees (Server Page)
 // ═══════════════════════════════════════════════════════════
 
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import { EmployeeListClient } from './EmployeeListClient'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export default async function EmployeesPage() {
   const session = await getServerSession(authOptions)
@@ -16,5 +18,9 @@ export default async function EmployeesPage() {
 
   const user = session.user as SessionUser
 
-  return <EmployeeListClient user={user} />
+  return (
+    <Suspense fallback={<ListPageSkeleton />}>
+      <EmployeeListClient user={user} />
+    </Suspense>
+  )
 }

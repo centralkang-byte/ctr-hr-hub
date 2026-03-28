@@ -100,7 +100,7 @@ export function ShiftPatternsTab({
             <tbody className="divide-y divide-[#F0F0F3]">
               {patterns.map((pattern) => (
                 <tr key={pattern.id} className={TABLE_STYLES.rowClickable}>
-                  <td className="px-4 py-3 text-sm font-mono text-[#5E81F4]">{pattern.code}</td>
+                  <td className="px-4 py-3 text-sm font-mono tabular-nums text-[#5E81F4]">{pattern.code}</td>
                   <td className={TABLE_STYLES.cell}>{pattern.name}</td>
                   <td className={TABLE_STYLES.cellMuted}>
                     {pattern.patternType === 'FIXED' ? '고정' : pattern.patternType === 'ROTATING' ? '순환' : pattern.patternType}

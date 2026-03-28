@@ -137,7 +137,7 @@ export default function CloseAttendanceClient({ user }: Props) {
     const handleReopen = async (payrollRunId: string, companyId: string) => {
         confirm({ 
             title: tCommon('confirmReopen'), 
-            description: t('kr_keab889ec_keab7bced_reopen_ked95a0_keca11deb'), // Assuming a translation key for description exists or is optional, confirm type requires it implicitly if not typed well, but type says `variant?:... title: string, description?: string, ...`. Let's just fix the type by adding a dummy description OR by matching the type exactly. Wait, TS says `Argument of type '{ title: string; onConfirm: () => Promise<void>; }' is not assignable to parameter of type 'string'`. Ah! `confirm` takes a string FIRST argument in the previous implementation, OR maybe the new hook takes an options object but the previous took string?
+            description: t('reopenDescription'),
             onConfirm: async () => {
             setReopening(companyId)
             try {

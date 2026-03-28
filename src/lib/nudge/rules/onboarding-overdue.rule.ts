@@ -16,7 +16,7 @@
 // 대상:
 //   EMPLOYEE  → 신입 본인
 //   BUDDY     → onboarding.buddyId
-//   MANAGER   → TODO: Position 계층 미구현 → 현재 skip
+//   MANAGER   → Position 계층 기반 매니저 조회 (getManagerByPosition)
 //   HR/IT/FINANCE → skip (system actor — real employeeId 없음)
 //
 // 동적 임계값 (dueDaysAfter 기반):
@@ -47,8 +47,8 @@ function getThresholdsForTask(dueDaysAfter: number): NudgeThresholds {
 }
 
 // ─── Assignee Resolve ──────────────────────────────────────
-// NOTE: MANAGER는 Position 계층 구조(미구현)가 필요하므로 현재 skip.
-//       HR/IT/FINANCE는 система actor → skip.
+// EMPLOYEE + BUDDY + MANAGER 처리 (MANAGER: Position 계층 기반 조회).
+// HR/IT/FINANCE는 system actor → skip.
 
 // FIX: Issue #4 — resolveRecipientId is now async to support MANAGER lookup
 //   via Position hierarchy (getManagerByPosition).

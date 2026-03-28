@@ -6,10 +6,11 @@ import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { MessageSquare, ArrowLeft, Plus, Trash2, Sparkles, Calendar, CheckCircle2, Save } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import type { SessionUser } from '@/types'
 
 
 // ─── Types ───────────────────────────────────────────────
@@ -54,11 +55,9 @@ const MEETING_TYPE_LABELS: Record<string, string> = {
 
 // ─── Component ───────────────────────────────────────────
 
-export default function OneOnOneDetailClient() {
+export default function OneOnOneDetailClient({ user, id }: { user: SessionUser; id: string }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
-
-  const { id } = useParams<{ id: string }>()
   const router = useRouter()
 
   const [meeting, setMeeting] = useState<MeetingDetail | null>(null)
@@ -87,7 +86,7 @@ export default function OneOnOneDetailClient() {
         if (pm.actionItems) prev.push(...pm.actionItems)
       }
       setPrevActions(prev)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '미팅 정보 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setLoading(false)
   }, [id])
 
@@ -107,7 +106,7 @@ export default function OneOnOneDetailClient() {
       } else {
         fetchMeeting()
       }
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '미팅 저장 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setSaving(false)
   }
 
@@ -133,7 +132,7 @@ export default function OneOnOneDetailClient() {
       await apiClient.put(`/api/v1/cfr/one-on-ones/${id}`, {
         aiSummary: res.data.coaching_tip,
       })
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: 'AI 분석 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setAiLoading(false)
   }
 
@@ -299,7 +298,7 @@ export default function OneOnOneDetailClient() {
             </div>
           ))}
           {actionItems.length === 0 && (
-            <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+            <EmptyState />
           )}
         </div>
       </div>

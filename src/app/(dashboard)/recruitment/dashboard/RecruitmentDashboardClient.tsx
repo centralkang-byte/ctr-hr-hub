@@ -194,7 +194,7 @@ function CustomTooltip({
         border: '1px solid #E8E8E8',
         borderRadius: 8,
         padding: '8px 12px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+        boxShadow: '0 2px 8px rgba(15,23,42,0.08)',
       }}
     >
       <p style={{ fontSize: 13, fontWeight: 600, color: '#1A1A1A' }}>
@@ -458,7 +458,7 @@ export function RecruitmentDashboardClient(_props: {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#F0F0F3]">
-                  {!vacancyByCompany?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+                  {!vacancyByCompany?.length && <EmptyState />}
                 {vacancyByCompany?.map((row) => (
                     <tr key={row.companyId} className="hover:bg-[#FAFAFA] transition-colors">
                       <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">{row.companyName}</td>

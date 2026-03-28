@@ -24,10 +24,11 @@ import { EmptyChart } from '@/components/analytics/EmptyChart'
 import type { RecruitmentData } from '@/lib/analytics/types'
 import { TABLE_STYLES, CHART_THEME } from '@/lib/styles'
 import { cn } from '@/lib/utils'
+import type { SessionUser } from '@/types'
 
 const STAGE_ORDER = ['APPLIED', 'SCREENING', 'INTERVIEW', 'OFFER', 'HIRED']
 
-export default function RecruitmentAnalyticsClient() {
+export default function RecruitmentAnalyticsClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('analytics.recruitmentPage')
 

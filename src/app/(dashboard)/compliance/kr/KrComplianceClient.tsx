@@ -15,6 +15,7 @@ import { ShieldCheck } from 'lucide-react'
 import WorkHoursMonitorTab from '@/components/compliance/kr/WorkHoursMonitorTab'
 import MandatoryTrainingTab from '@/components/compliance/kr/MandatoryTrainingTab'
 import SeveranceInterimTab from '@/components/compliance/kr/SeveranceInterimTab'
+import type { SessionUser } from '@/types'
 
 type TabKey = 'workHours' | 'mandatoryTraining' | 'severanceInterim'
 
@@ -24,7 +25,7 @@ const TABS: { key: TabKey; labelKey: string }[] = [
   { key: 'severanceInterim', labelKey: 'kr.severanceInterim' },
 ]
 
-export default function KrComplianceClient() {
+export default function KrComplianceClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
 
   const t = useTranslations('compliance')

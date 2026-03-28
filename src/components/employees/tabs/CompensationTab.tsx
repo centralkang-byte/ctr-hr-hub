@@ -190,7 +190,7 @@ export function CompensationTab({ employeeId }: CompensationTabProps) {
             {/* 기본급 */}
             <tr className={TABLE_STYLES.row}>
               <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">기본급</td>
-              <td className="px-4 py-3 text-right text-sm font-mono text-[#1A1A1A]">
+              <td className="px-4 py-3 text-right text-sm font-mono tabular-nums text-[#1A1A1A]">
                 {formatCurrency(latestComp.newBaseSalary, currency)}
               </td>
               <td className="px-4 py-3 text-center">
@@ -206,7 +206,7 @@ export function CompensationTab({ employeeId }: CompensationTabProps) {
                 <td className="px-4 py-3 text-sm text-[#555]">
                   {getAllowanceLabel(a.allowanceType)}
                 </td>
-                <td className="px-4 py-3 text-right text-sm font-mono text-[#555]">
+                <td className="px-4 py-3 text-right text-sm font-mono tabular-nums text-[#555]">
                   {formatCurrency(a.amount, a.currency)}
                 </td>
                 <td className="px-4 py-3 text-center">
@@ -220,7 +220,7 @@ export function CompensationTab({ employeeId }: CompensationTabProps) {
             {/* 합계 */}
             <tr className="border-t-2 border-[#E8E8E8] bg-[#FAFAFA]">
               <td className="px-4 py-3 text-sm font-bold text-[#1A1A1A]">연봉 합계</td>
-              <td className="px-4 py-3 text-right text-base font-bold font-mono text-[#1A1A1A]">
+              <td className="px-4 py-3 text-right text-base font-bold font-mono tabular-nums text-[#1A1A1A]">
                 {formatCurrency(latestComp.newBaseSalary + totalAllowances, currency)}
               </td>
               <td />

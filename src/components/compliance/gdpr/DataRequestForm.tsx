@@ -35,25 +35,25 @@ interface DataRequestFormProps {
   onSaved: () => void
 }
 
-const REQUEST_TYPES = [
-  { value: 'ACCESS', label: 'Right to Access' },
-  { value: 'ERASURE', label: 'Right to Erasure' },
-  { value: 'PORTABILITY', label: 'Data Portability' },
-  { value: 'RECTIFICATION', label: 'Rectification' },
-  { value: 'RESTRICTION', label: 'Restriction' },
-  { value: 'OBJECTION', label: 'Objection' },
-]
-
-const STATUS_OPTIONS = [
-  { value: 'pending', label: 'Pending' },
-  { value: 'in_progress', label: 'In Progress' },
-  { value: 'completed', label: 'Completed' },
-  { value: 'rejected', label: 'Rejected' },
-]
-
 export default function DataRequestForm({ open, request, onClose, onSaved }: DataRequestFormProps) {
   const t = useTranslations('compliance')
   const tc = useTranslations('common')
+
+  const REQUEST_TYPES = [
+    { value: 'ACCESS', label: t('gdpr.requestAccess') },
+    { value: 'ERASURE', label: t('gdpr.requestErasure') },
+    { value: 'PORTABILITY', label: t('gdpr.requestPortability') },
+    { value: 'RECTIFICATION', label: t('gdpr.requestRectification') },
+    { value: 'RESTRICTION', label: t('gdpr.requestRestriction') },
+    { value: 'OBJECTION', label: t('gdpr.requestObjection') },
+  ]
+
+  const STATUS_OPTIONS = [
+    { value: 'pending', label: t('gdpr.statusPending') },
+    { value: 'in_progress', label: t('gdpr.statusInProgress') },
+    { value: 'completed', label: t('gdpr.statusCompleted') },
+    { value: 'rejected', label: t('gdpr.statusRejected') },
+  ]
 
   const isEdit = Boolean(request)
 

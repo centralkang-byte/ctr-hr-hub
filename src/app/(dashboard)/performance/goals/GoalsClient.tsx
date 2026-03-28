@@ -66,8 +66,9 @@ export default function GoalsClient({
         if (res.data.length > 0) {
           setSelectedCycleId(res.data[0].id)
         }
-      } catch {
-        console.error(t('cycleListLoadFailed'))
+      } catch (err) {
+        toast({ title: '목표 데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+        setLoading(false)
       }
     }
     fetchCycles()
@@ -76,7 +77,7 @@ export default function GoalsClient({
   // ─── Fetch goals ──────────────────────────────────────
 
   const fetchGoals = useCallback(async () => {
-    if (!selectedCycleId) return
+    if (!selectedCycleId) { setLoading(false); return }
     setLoading(true)
     try {
       const res = await apiClient.getList<MboGoal>(
@@ -84,8 +85,8 @@ export default function GoalsClient({
         { cycleId: selectedCycleId, page: 1, limit: 50 },
       )
       setGoals(res.data)
-    } catch {
-      console.error(t('goalListLoadFailed'))
+    } catch (err) {
+      toast({ title: '목표 데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setLoading(false)
     }

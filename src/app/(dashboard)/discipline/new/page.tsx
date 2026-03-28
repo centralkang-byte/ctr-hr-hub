@@ -2,11 +2,13 @@
 // CTR HR Hub — /discipline/new (Server Page)
 // ═══════════════════════════════════════════════════════════
 
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import DisciplineFormClient from './DisciplineFormClient'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export default async function DisciplineNewPage() {
   const session = await getServerSession(authOptions)
@@ -16,5 +18,9 @@ export default async function DisciplineNewPage() {
 
   const user = session.user as SessionUser
 
-  return <DisciplineFormClient user={user} />
+  return (
+    <Suspense fallback={<ListPageSkeleton />}>
+      <DisciplineFormClient user={user} />
+    </Suspense>
+  )
 }

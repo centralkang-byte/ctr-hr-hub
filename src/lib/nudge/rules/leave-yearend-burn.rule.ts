@@ -21,7 +21,7 @@ import type { NudgeRule, OverdueItem } from '../types'
 export const leaveYearendBurnRule: NudgeRule = {
   ruleId: 'leave-yearend-burn',
   description: '연말 연차 소진 유도 — 잔여 3일+ 직원에게 리마인더',
-  sourceModel: 'EmployeeLeaveBalance',
+  sourceModel: 'LeaveYearBalance',
 
   thresholds: {
     triggerAfterDays: 0,     // immediate when conditions met
@@ -56,19 +56,15 @@ export const leaveYearendBurnRule: NudgeRule = {
 
     const year = now.getFullYear()
 
-    // Get all leave balances for the assignee
-    const balances = await prisma.employeeLeaveBalance.findMany({
+    // Get all leave balances for the assignee (LeaveYearBalance)
+    const balances = await prisma.leaveYearBalance.findMany({
       where: {
         employeeId: assigneeId,
         year,
       },
       include: {
-        policy: {
-          select: {
-            name: true,
-            carryOverAllowed: true,
-            maxCarryOverDays: true,
-          },
+        leaveTypeDef: {
+          select: { name: true, category: true },
         },
       },
     })
@@ -76,31 +72,28 @@ export const leaveYearendBurnRule: NudgeRule = {
     const items: OverdueItem[] = []
 
     for (const b of balances) {
-      const remaining =
-        Number(b.grantedDays) +
-        Number(b.carryOverDays) -
-        Number(b.usedDays) -
-        Number(b.pendingDays)
+      // 연차(annual) 카테고리만 소진 유도 대상
+      if (b.leaveTypeDef.category !== 'annual') continue
+
+      const remaining = b.entitled + b.carriedOver + b.adjusted - b.used - b.pending
 
       if (remaining >= 3) {
-        const carryOverMax = b.policy?.carryOverAllowed
-          ? Number(b.policy.maxCarryOverDays ?? 0)
-          : 0
+        const carryOverMax = 0 // 이월 한도는 LeaveAccrualRule에서 조회 가능 (별도 확장)
         const wouldExpire = Math.max(remaining - carryOverMax, 0)
 
         if (wouldExpire > 0) {
           items.push({
             sourceId: b.id,
-            sourceModel: 'EmployeeLeaveBalance',
+            sourceModel: 'LeaveYearBalance',
             recipientIds: [assigneeId],
-            createdAt: new Date(year, 10, 1), // November 1 as reference date
-            displayTitle: `${b.policy?.name ?? '연차'} 잔여 ${remaining}일 — 소멸 예상 ${wouldExpire}일`,
+            createdAt: new Date(year, 10, 1),
+            displayTitle: `${b.leaveTypeDef.name ?? '연차'} 잔여 ${remaining}일 — 소멸 예상 ${wouldExpire}일`,
             actionUrl: '/leave/my',
             meta: {
               remainingDays: remaining,
               carryOverMax,
               wouldExpire,
-              policyName: b.policy?.name,
+              policyName: b.leaveTypeDef.name,
             },
           })
         }

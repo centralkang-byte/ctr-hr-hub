@@ -62,7 +62,7 @@ export const selfEvalSubmittedHandler: DomainEventHandler<'PERFORMANCE_SELF_EVAL
 
       // ── 2. 포지션 기반 매니저 조회 ─────────────────────────────
       if (!positionId) {
-        // TODO: 포지션 없는 직원(최상위 임원 등)은 매니저 조회 불가 → skip
+        // 포지션 없는 직원(최상위 임원 등)은 매니저 조회 불가 → skip
         console.warn(
           `[selfEvalSubmittedHandler] Employee ${payload.employeeId} has no positionId. Skipping manager notification.`,
         )
@@ -72,7 +72,7 @@ export const selfEvalSubmittedHandler: DomainEventHandler<'PERFORMANCE_SELF_EVAL
       const managerInfo = await getManagerByPosition(positionId)
 
       if (!managerInfo?.managerId) {
-        // TODO: 최상위 포지션이거나 reportsTo 미설정 → skip
+        // 최상위 포지션이거나 reportsTo 미설정 → skip
         console.warn(
           `[selfEvalSubmittedHandler] No manager found for positionId ${positionId}. Skipping notification.`,
         )
@@ -85,6 +85,9 @@ export const selfEvalSubmittedHandler: DomainEventHandler<'PERFORMANCE_SELF_EVAL
         triggerType: 'performance_self_eval_submitted',
         title:       `${employeeName}님이 자기평가를 제출했습니다`,
         body:        '성과관리에서 팀원 평가를 진행해주세요.',
+        titleKey:    'notifications.selfEvalSubmitted.title',
+        bodyKey:     'notifications.selfEvalSubmitted.body',
+        bodyParams:  { name: employeeName },
         link:        `/performance/evaluations/manager?cycleId=${payload.cycleId}`,
         priority:    'normal',
         companyId:   payload.companyId,

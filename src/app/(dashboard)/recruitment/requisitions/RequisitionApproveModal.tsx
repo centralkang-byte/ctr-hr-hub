@@ -62,7 +62,7 @@ export default function RequisitionApproveModal({ requisition, onClose, onSucces
         <div className="p-6 space-y-4">
           <div className="bg-[#FAFAFA] rounded-lg p-4 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono text-[#999]">{requisition.reqNumber}</span>
+              <span className="text-xs font-mono tabular-nums text-[#999]">{requisition.reqNumber}</span>
               <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                 requisition.urgency === 'urgent' ? 'bg-[#FEE2E2] text-[#B91C1C]' :
                 requisition.urgency === 'normal' ? 'bg-[#FEF3C7] text-[#B45309]' :

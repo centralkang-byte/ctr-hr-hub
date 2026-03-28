@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Check, ChevronLeft, ChevronRight, User, Briefcase, Building2, ClipboardCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import StickyActionBar from '@/components/shared/StickyActionBar'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -51,6 +52,7 @@ interface WizardData {
   departmentId: string
   jobGradeId: string
   jobCategoryId: string
+  positionId: string
   managerId: string
   managerName: string
 }
@@ -63,12 +65,27 @@ interface ManagerSearchResult {
   jobGrade: { name: string } | null
 }
 
+// Grade↔Title 매핑 (서버에서 전달)
+interface GradeTitleMappingItem {
+  id: string
+  jobGrade: { id: string; code: string; name: string; gradeType: string; rankOrder: number; companyId: string }
+  employeeTitle: { id: string; name: string }
+}
+
+interface PositionOption {
+  id: string
+  titleKo: string
+  code: string
+  companyId: string
+}
+
 interface EmployeeNewClientProps {
   user: SessionUser
   companies: RefOption[]
   departments: DeptOption[]
-  jobGrades: RefOption[]
   jobCategories: RefOption[]
+  gradeTitleMappings: GradeTitleMappingItem[]
+  positions: PositionOption[]
 }
 
 // ─── Constants ──────────────────────────────────────────────
@@ -90,6 +107,7 @@ const INITIAL_DATA: WizardData = {
   departmentId: '',
   jobGradeId: '',
   jobCategoryId: '',
+  positionId: '',
   managerId: '',
   managerName: '',
 }
@@ -122,8 +140,9 @@ export function EmployeeNewClient({
   user,
   companies,
   departments,
-  jobGrades,
   jobCategories,
+  gradeTitleMappings,
+  positions,
 }: EmployeeNewClientProps) {
   const router = useRouter()
   const t = useTranslations('employee')
@@ -161,6 +180,13 @@ export function EmployeeNewClient({
 
   // Filtered departments by selected company
   const filteredDepts = departments.filter((d) => d.companyId === data.companyId)
+
+  // Filtered positions by selected company
+  const filteredPositions = positions.filter((p) => p.companyId === data.companyId)
+
+  // Grade↔Title 매핑: 선택된 법인의 매핑만 필터
+  const companyMappings = gradeTitleMappings.filter((m) => m.jobGrade.companyId === data.companyId)
+  const mappedTitle = companyMappings.find((m) => m.jobGrade.id === data.jobGradeId) ?? null
 
   // ─── Validation per step ───
   function validateStep(stepNum: number, wizardData: WizardData): string | null {
@@ -252,6 +278,8 @@ export function EmployeeNewClient({
         ...(data.emergencyContact ? { emergencyContact: data.emergencyContact } : {}),
         ...(data.emergencyContactPhone ? { emergencyContactPhone: data.emergencyContactPhone } : {}),
         ...(data.managerId ? { managerId: data.managerId } : {}),
+        ...(data.positionId ? { positionId: data.positionId } : {}),
+        ...(mappedTitle ? { titleId: mappedTitle.employeeTitle.id } : {}),
       }
       const res = await apiClient.post<{ id: string }>('/api/v1/employees', payload)
       router.push(`/employees/${res.data.id}`)
@@ -395,8 +423,10 @@ export function EmployeeNewClient({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
-            {jobGrades.map((g) => (
-              <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>
+            {companyMappings.map((m) => (
+              <SelectItem key={m.jobGrade.id} value={m.jobGrade.id}>
+                {m.jobGrade.code} ({m.employeeTitle.name})
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -410,6 +440,28 @@ export function EmployeeNewClient({
             <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
             {jobCategories.map((c) => (
               <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </Field>
+      {mappedTitle && (
+        <Field label="호칭">
+          <Input value={mappedTitle.employeeTitle.name} readOnly className="bg-muted" />
+        </Field>
+      )}
+      <Field label="직위 (선택)">
+        <Select
+          value={data.positionId || '__NONE__'}
+          onValueChange={(v) => set('positionId', v === '__NONE__' ? '' : v)}
+          disabled={!data.companyId}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="직위 선택" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__NONE__">선택 안 함</SelectItem>
+            {filteredPositions.map((p) => (
+              <SelectItem key={p.id} value={p.id}>{p.titleKo} ({p.code})</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -448,7 +500,7 @@ export function EmployeeNewClient({
                 {managerSearching && (
                   <p className="px-3 py-2 text-sm text-muted-foreground">{t('searching')}</p>
                 )}
-                {!managerResults?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+                {!managerResults?.length && <EmptyState />}
               {managerResults?.map((emp) => (
                   <button
                     key={emp.id}
@@ -480,7 +532,7 @@ export function EmployeeNewClient({
   const renderStep4 = () => {
     const company = companies.find((c) => c.id === data.companyId)
     const dept = departments.find((d) => d.id === data.departmentId)
-    const grade = jobGrades.find((g) => g.id === data.jobGradeId)
+    const gradeMapping = companyMappings.find((m) => m.jobGrade.id === data.jobGradeId)
     const category = jobCategories.find((c) => c.id === data.jobCategoryId)
 
     const GENDER_LABELS: Record<string, string> = { M: t('male'), F: t('female') }
@@ -500,7 +552,7 @@ export function EmployeeNewClient({
       [t('hireDate'), data.hireDate],
       [t('companyEntity'), company?.name ?? '-'],
       [t('department'), dept?.name ?? '-'],
-      [t('jobGrade'), grade?.name ?? '-'],
+      [t('jobGrade'), gradeMapping ? `${gradeMapping.jobGrade.code} (${gradeMapping.employeeTitle.name})` : '-'],
       [t('jobCategory'), category?.name ?? '-'],
       [t('manager'), data.managerName || '-'],
     ]
@@ -576,7 +628,7 @@ export function EmployeeNewClient({
       {/* ─── Step content ─── */}
       <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
         <h2 className="mb-5 text-base font-bold text-[#1A1A1A] tracking-ctr">
-          Step {step + 1}: {STEPS[step]!.label}
+          {step + 1}단계: {STEPS[step]!.label}
         </h2>
         {step === 0 && renderStep1()}
         {step === 1 && renderStep2()}
@@ -592,7 +644,7 @@ export function EmployeeNewClient({
       )}
 
       {/* ─── Navigation buttons ─── */}
-      <div className="flex justify-between">
+      <StickyActionBar className="flex justify-between">
         <Button
           variant="outline"
           onClick={step === 0 ? () => router.push('/employees') : goBack}
@@ -616,7 +668,7 @@ export function EmployeeNewClient({
             <Check className="ml-1 h-4 w-4" />
           </Button>
         )}
-      </div>
+      </StickyActionBar>
     </div>
   )
 }

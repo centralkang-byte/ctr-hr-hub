@@ -5,11 +5,13 @@
 // 브레드크럼 + CompanySelector + 언어전환 + 알림 + 사용자 메뉴
 // ═══════════════════════════════════════════════════════════
 
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
+import { NAVIGATION } from '@/config/navigation'
 import { User, Settings, LogOut, Users, Menu } from 'lucide-react'
 import { NotificationBell } from '@/components/layout/NotificationBell'
 import { QuickActionsMenu } from '@/components/layout/QuickActionsMenu'
@@ -41,122 +43,26 @@ interface HeaderProps {
 
 // ─── Breadcrumb helper ──────────────────────────────────────
 
-const BREADCRUMB_KEYS: Record<string, string> = {
-  // Main modules
-  home: 'home',
-  my: 'my',
-  dashboard: 'dashboard',
-  employees: 'employees',
-  org: 'org',
-  attendance: 'attendance',
-  leave: 'leave',
-  recruitment: 'recruitment',
-  performance: 'performance',
-  payroll: 'payroll',
-  compensation: 'compensation',
-  analytics: 'analytics',
-  onboarding: 'onboarding',
-  offboarding: 'offboarding',
-  discipline: 'discipline',
-  benefits: 'benefits',
-  training: 'training',
-  settings: 'settings',
-  notifications: 'notifications',
-  compliance: 'compliance',
-  directory: 'directory',
-  // Payroll sub-routes
-  'year-end': 'year-end',
-  'close-attendance': 'close-attendance',
-  adjustments: 'adjustments',
-  anomalies: 'anomalies',
-  approve: 'approve',
-  publish: 'publish',
-  'bank-transfers': 'bank-transfers',
-  global: 'global',
-  simulation: 'simulation',
-  import: 'import',
-  // Analytics sub-routes
-  turnover: 'turnover',
-  workforce: 'workforce',
-  'team-health': 'team-health',
-  'gender-pay-gap': 'gender-pay-gap',
-  predictive: 'predictive',
-  compare: 'compare',
-  report: 'report',
-  // Performance sub-routes
-  'peer-review': 'peer-review',
-  'self-eval': 'self-eval',
-  'comp-review': 'comp-review',
-  recognition: 'recognition',
-  'one-on-one': 'one-on-one',
-  pulse: 'pulse',
-  cycles: 'cycles',
-  // Other sub-routes
-  admin: 'admin',
-  team: 'team',
-  profile: 'profile',
-  tasks: 'tasks',
-  rewards: 'rewards',
-  new: 'new',
-  edit: 'edit',
-  review: 'review',
-  me: 'me',
-  // Approvals
-  approvals: 'approvals',
-  inbox: 'inbox',
-  // Goals & Organization
-  goals: 'goals',
-  organization: 'organization',
-  succession: 'succession',
-  // Skill / Training sub-routes
-  'skill-matrix': 'skill-matrix',
-  enrollments: 'enrollments',
-  skills: 'skills',
-  // Recruitment sub-routes
-  'cost-analysis': 'cost-analysis',
-  applicants: 'applicants',
-  'talent-pool': 'talent-pool',
-  pipeline: 'pipeline',
-  interviews: 'interviews',
-  board: 'board',
-  requisitions: 'requisitions',
-  // Compliance sub-routes
-  'data-retention': 'data-retention',
-  dpia: 'dpia',
-  'pii-audit': 'pii-audit',
-  gdpr: 'gdpr',
-  cn: 'cn',
-  ru: 'ru',
-  kr: 'kr',
-  // Attendance sub-routes
-  'shift-calendar': 'shift-calendar',
-  'shift-roster': 'shift-roster',
-  // Offboarding sub-routes
-  'exit-interviews': 'exit-interviews',
-  // Delegation
-  delegation: 'delegation',
-  // Manager hub
-  'manager-hub': 'manager-hub',
-  // My sub-routes
-  'internal-jobs': 'internal-jobs',
-  'my-goals': 'my-goals',
-  'my-evaluation': 'my-evaluation',
-  'my-peer-review': 'my-peer-review',
-  'my-checkins': 'my-checkins',
-  'my-result': 'my-result',
-  // Performance sub-routes (additional)
-  'manager-eval': 'manager-eval',
-  'manager-evaluation': 'manager-evaluation',
-  'team-goals': 'team-goals',
-  'team-results': 'team-results',
-  results: 'results',
-  calibration: 'calibration',
-  // Analytics sub-routes (additional)
-  'ai-report': 'ai-report',
-  attrition: 'attrition',
+// Build href→label map from NAVIGATION config (사이드바와 동일한 이름 사용)
+function buildRouteMap(): Map<string, string> {
+  const map = new Map<string, string>()
+  for (const section of NAVIGATION) {
+    for (const item of section.items) {
+      map.set(item.href, item.label)
+    }
+  }
+  return map
 }
 
-// UUID pattern: detects 8-4-4-4-12 hex or any 32+ char hex string
+const ROUTE_LABEL_MAP = buildRouteMap()
+
+// Segment-level fallback for routes not in navigation (e.g. /settings/*)
+const SEGMENT_KEYS: Record<string, string> = {
+  home: 'home', settings: 'settings', new: 'new', edit: 'edit',
+  admin: 'admin', team: 'team', me: 'me', profile: 'profile',
+}
+
+// UUID pattern
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 // ─── Component ──────────────────────────────────────────────
@@ -172,15 +78,41 @@ export function Header({ user, companies, onMenuClick }: HeaderProps) {
   const currentCompany = companies.find((c) => c.id === user.companyId)
   const countryCode = currentCompany?.countryCode ?? 'KR'
 
-  const breadcrumbs = pathname
-    .split('/')
-    .filter(Boolean)
-    .filter((seg) => !UUID_RE.test(seg))  // Hide UUID segments
-    .map((seg) => {
-      const key = BREADCRUMB_KEYS[seg]
-      return key ? t(key) : seg
+  // 라우트 기반 브레드크럼: NAVIGATION href→label 매핑 우선, 없으면 세그먼트 번역
+  const breadcrumbs = useMemo(() => {
+    const segments = pathname.split('/').filter(Boolean).filter((seg) => !UUID_RE.test(seg))
+    const crumbs: { label: string; href: string | null }[] = []
+
+    // 전체 경로부터 매칭 시도 (가장 구체적인 라우트 먼저)
+    let accumulated = ''
+    for (const seg of segments) {
+      accumulated += `/${seg}`
+      const routeLabel = ROUTE_LABEL_MAP.get(accumulated)
+      if (routeLabel) {
+        // 이전 크럼이 있고, 이 라우트가 전체를 덮으면 이전 것 대체
+        crumbs.push({ label: routeLabel, href: accumulated })
+      } else {
+        // NAVIGATION에 없는 경로 — 세그먼트 번역 fallback
+        const segKey = SEGMENT_KEYS[seg]
+        const label = segKey ? t(segKey) : seg
+        crumbs.push({ label, href: accumulated })
+      }
+    }
+
+    // 중복 제거: 부모 경로가 자식과 같은 이름이면 부모 제거
+    const filtered = crumbs.filter((crumb, idx) => {
+      if (idx < crumbs.length - 1) {
+        const next = crumbs[idx + 1]
+        // 부모 경로의 라벨이 자식에 포함되면 스킵
+        if (next.href?.startsWith(crumb.href ?? '') && next.label.includes(crumb.label)) {
+          return false
+        }
+      }
+      return true
     })
-    .slice(0, 3)
+
+    return filtered.slice(0, 3)
+  }, [pathname, t])
 
   const handleSignOut = useCallback(() => {
     void signOut({ callbackUrl: '/login' })
@@ -206,19 +138,21 @@ export function Header({ user, companies, onMenuClick }: HeaderProps) {
 
         {/* Breadcrumb — desktop only */}
         <nav className="hidden md:flex items-center gap-1.5 text-sm text-muted-foreground">
-          <span className="font-medium text-foreground">{t('home')}</span>
+          <Link href="/home" className="font-medium text-foreground hover:text-ctr-primary transition-colors">
+            {t('home')}
+          </Link>
           {breadcrumbs.map((crumb, idx) => (
             <span key={idx} className="flex items-center gap-1.5">
               <span className="text-muted-foreground/50">/</span>
-              <span
-                className={
-                  idx === breadcrumbs.length - 1
-                    ? 'font-medium text-foreground'
-                    : ''
-                }
-              >
-                {crumb}
-              </span>
+              {idx === breadcrumbs.length - 1 ? (
+                <span className="font-medium text-foreground">{crumb.label}</span>
+              ) : crumb.href ? (
+                <Link href={crumb.href} className="hover:text-ctr-primary transition-colors">
+                  {crumb.label}
+                </Link>
+              ) : (
+                <span>{crumb.label}</span>
+              )}
             </span>
           ))}
         </nav>

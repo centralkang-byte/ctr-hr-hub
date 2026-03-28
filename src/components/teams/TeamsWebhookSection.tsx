@@ -149,7 +149,7 @@ export function TeamsWebhookSection() {
           <div className="flex items-start justify-between mb-3">
             <div>
               <p className="text-sm font-semibold text-[#1A1A1A]">{wh.channelName}</p>
-              <p className="text-xs text-[#999] mt-0.5 font-mono break-all">{wh.webhookUrl}</p>
+              <p className="text-xs text-[#999] mt-0.5 font-mono tabular-nums break-all">{wh.webhookUrl}</p>
             </div>
             <div className="flex items-center gap-2 ml-4 flex-shrink-0">
               <button
@@ -222,7 +222,7 @@ export function TeamsWebhookSection() {
             placeholder="Webhook URL (https://outlook.office.com/...)"
             value={newUrl}
             onChange={(e) => setNewUrl(e.target.value)}
-            className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm font-mono focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 focus:outline-none"
+            className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm font-mono tabular-nums focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 focus:outline-none"
           />
           <div>
             <p className="text-xs font-medium text-[#666] mb-2">전송할 이벤트</p>

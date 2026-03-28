@@ -12,6 +12,7 @@ import SimulationTab from '@/components/compensation/SimulationTab'
 import ConfirmTab from '@/components/compensation/ConfirmTab'
 import HistoryTab from '@/components/compensation/HistoryTab'
 import { apiClient } from '@/lib/api'
+import type { SessionUser } from '@/types'
 
 interface CycleOption {
   id: string
@@ -19,7 +20,7 @@ interface CycleOption {
   year: number
 }
 
-export default function CompensationClient() {
+export default function CompensationClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
 
   const t = useTranslations('compensation')
@@ -46,8 +47,8 @@ export default function CompensationClient() {
       if (res.data.length > 0 && !selectedCycleId) {
         setSelectedCycleId(res.data[0].id)
       }
-    } catch {
-      // ignore
+    } catch (err) {
+      toast({ title: '보상 데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     }
   }, [selectedCycleId])
 

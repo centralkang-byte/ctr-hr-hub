@@ -183,7 +183,7 @@ export function ScheduleAdjustmentModal({
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
-          className="relative w-full max-w-lg rounded-2xl bg-white shadow-xl"
+          className="relative w-full max-w-lg rounded-xl bg-white shadow-lg"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}

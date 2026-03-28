@@ -44,10 +44,12 @@ export interface ApprovalItem {
 }
 
 // ─── Helper: get direct report employeeIds ────────────────
+// B-3h: 겸직자도 Primary Assignment 기준으로만 직속 부하 조회
 
 async function getDirectReportIds(employeeId: string): Promise<string[]> {
+  const now = new Date()
   const asgn = await prisma.employeeAssignment.findFirst({
-    where: { employeeId, isPrimary: true, endDate: null },
+    where: { employeeId, isPrimary: true, endDate: null, effectiveDate: { lte: now } },
     select: { positionId: true },
   })
   if (!asgn?.positionId) return []
@@ -57,6 +59,7 @@ async function getDirectReportIds(employeeId: string): Promise<string[]> {
       position: { reportsToPositionId: asgn.positionId },
       isPrimary: true,
       endDate: null,
+      effectiveDate: { lte: now },
     },
     select: { employeeId: true },
   })
@@ -117,7 +120,7 @@ export async function GET(req: NextRequest) {
               select: {
                 name: true,
                 assignments: {
-                  where: { isPrimary: true, endDate: null },
+                  where: { isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
                   select: { department: { select: { name: true } } },
                   take: 1,
                 },
@@ -130,7 +133,8 @@ export async function GET(req: NextRequest) {
         })
 
         for (const lr of leaves) {
-          const dept = (extractPrimaryAssignment(lr.employee.assignments ?? []) as Record<string, any>)?.department?.name ?? '-'
+          const primary = extractPrimaryAssignment(lr.employee.assignments ?? [])
+          const dept = (primary as { department?: { name?: string } } | undefined)?.department?.name ?? '-'
           const start = new Date(lr.startDate).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
           const end = new Date(lr.endDate).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
           const days = Number(lr.days)
@@ -190,7 +194,7 @@ export async function GET(req: NextRequest) {
               select: {
                 name: true,
                 assignments: {
-                  where: { isPrimary: true, endDate: null },
+                  where: { isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
                   select: { department: { select: { name: true } } },
                   take: 1,
                 },
@@ -203,7 +207,8 @@ export async function GET(req: NextRequest) {
         })
 
         for (const g of goals) {
-          const dept = (extractPrimaryAssignment(g.employee.assignments ?? []) as Record<string, any>)?.department?.name ?? '-'
+          const primaryG = extractPrimaryAssignment(g.employee.assignments ?? [])
+          const dept = (primaryG as { department?: { name?: string } } | undefined)?.department?.name ?? '-'
           const rawStatus = g.status as string
           const mappedStatus: 'PENDING' | 'APPROVED' | 'REJECTED' =
             rawStatus === 'PENDING_APPROVAL' ? 'PENDING'

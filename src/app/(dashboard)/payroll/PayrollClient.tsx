@@ -136,7 +136,9 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
     try {
       const res = await apiClient.get<DashboardData>(`/api/v1/payroll/dashboard?year=${year}&month=${month}`)
       setData(res.data)
-    } catch { /* silent */ } finally {
+    } catch (err) {
+      toast({ title: '급여 대시보드 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    } finally {
       setLoading(false)
     }
   }, [year, month])
@@ -166,7 +168,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
   }))
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="p-4 max-w-7xl mx-auto space-y-4">
 
       {/* ── Header ─────────────────────────────────────────── */}
       <div className="flex items-center justify-between flex-wrap gap-3">
@@ -265,7 +267,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
           </div>
 
           {/* ── Pipeline Visualization ──────────────────────── */}
-          <div className="bg-white rounded-2xl border border-[#E8E8E8] p-5">
+          <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
             <div className="flex items-center gap-2 mb-4">
               <LayoutGrid className="h-4 w-4 text-[#5E81F4]" />
               <h2 className="font-semibold text-[#1A1A1A]">{'파이프라인 현황'}</h2>
@@ -283,7 +285,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
           </div>
 
           {/* ── Payroll Calendar ────────────────────────────── */}
-          <div className="bg-white rounded-2xl border border-[#E8E8E8] p-5">
+          <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
             <PayrollCalendar
               entries={calendarEntries}
               yearMonth={`${year}-${String(month).padStart(2, '0')}`}

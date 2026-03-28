@@ -280,7 +280,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
           ) : requests.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-[#8181A5]">
               <Inbox className="w-10 h-10 mb-2 opacity-40" />
-              <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+              <EmptyState />
             </div>
           ) : (
             <div className="overflow-y-auto divide-y divide-[#F5F5FA]">
@@ -478,7 +478,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
 
       {/* ── Floating Bulk Action Bar ────────────────────────── */}
       {showBulkBar && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 px-5 py-3 bg-white rounded-2xl shadow-xl border border-[#F0F0F3]">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 px-5 py-3 bg-white rounded-xl shadow-lg border border-[#F0F0F3]">
           <span className="text-sm font-semibold text-[#1C1D21]">
             {selectedIds.size}건 선택됨
           </span>

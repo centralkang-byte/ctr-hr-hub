@@ -23,11 +23,11 @@ export const leaveRejectedHandler: DomainEventHandler<'LEAVE_REJECTED'> = {
 
   async handle(payload: LeaveRejectedPayload, tx?: TxClient): Promise<void> {
     if (tx) {
-      // 1. [TX] Restore pendingDays (usedDays 미변경) — only inside transaction
-      await tx.employeeLeaveBalance.update({
+      // 1. [TX] Restore pending (used 미변경) — LeaveYearBalance
+      await tx.leaveYearBalance.update({
         where: { id: payload.balanceId },
         data: {
-          pendingDays: { decrement: payload.days },
+          pending: { decrement: payload.days },
         },
       })
     } else {
@@ -37,6 +37,9 @@ export const leaveRejectedHandler: DomainEventHandler<'LEAVE_REJECTED'> = {
         triggerType: 'leave_rejected',
         title:       '휴가 신청이 반려되었습니다',
         body:        `반려 사유: ${payload.rejectionReason}`,
+        titleKey:    'notifications.leaveRejected.title',
+        bodyKey:     'notifications.leaveRejected.body',
+        bodyParams:  { reason: payload.rejectionReason },
         link:        '/my/leave',
         priority:    'normal',
       })

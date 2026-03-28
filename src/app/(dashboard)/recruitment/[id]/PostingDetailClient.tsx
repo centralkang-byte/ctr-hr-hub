@@ -19,6 +19,7 @@ import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS, BUTTON_SIZES } from '@/lib/styles'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 
 // ─── Label Maps ──────────────────────────────────────────
 
@@ -30,10 +31,10 @@ const STATUS_KEYS: Record<string, string> = {
 }
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
-  DRAFT: 'bg-[#F5F5F5] text-[#999]',
-  OPEN: 'bg-[#EDF1FE] text-[#2E7D32]',
-  CLOSED: 'bg-[#FFF3E0] text-[#E65100]',
-  CANCELLED: 'bg-[#FFEBEE] text-[#C62828]',
+  DRAFT: STATUS_VARIANT.neutral,
+  OPEN: STATUS_VARIANT.success,
+  CLOSED: STATUS_VARIANT.warning,
+  CANCELLED: STATUS_VARIANT.error,
 }
 
 const EMPLOYMENT_TYPE_KEYS: Record<string, string> = {
@@ -99,8 +100,8 @@ export default function PostingDetailClient({
     try {
       const res = await apiClient.get<PostingDetail>(`/api/v1/recruitment/postings/${id}`)
       setData(res.data)
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: '채용 공고 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -113,8 +114,8 @@ export default function PostingDetailClient({
     try {
       await apiClient.put(`/api/v1/recruitment/postings/${id}/publish`)
       fetchDetail()
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: '채용 공고 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setActionLoading(false)
     }
@@ -125,8 +126,8 @@ export default function PostingDetailClient({
     try {
       await apiClient.put(`/api/v1/recruitment/postings/${id}/close`)
       fetchDetail()
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: '채용 공고 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setActionLoading(false)
     }
@@ -288,7 +289,7 @@ export default function PostingDetailClient({
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-[#999]">{t('statusLabel')}</span>
-                <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${STATUS_BADGE_STYLES[data.status] ?? 'bg-[#F5F5F5] text-[#999]'}`}>
+                <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${STATUS_BADGE_STYLES[data.status] ?? STATUS_VARIANT.neutral}`}>
                   {STATUS_KEYS[data.status] ? t(STATUS_KEYS[data.status]) : data.status}
                 </span>
               </div>

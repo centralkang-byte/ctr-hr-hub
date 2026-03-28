@@ -1,9 +1,11 @@
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { Settings } from 'lucide-react'
 import { SETTINGS_CATEGORIES } from '@/components/settings/settings-config'
 import { SettingsHubClient } from './SettingsHubClient'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export const dynamic = 'force-dynamic'
 
@@ -28,7 +30,9 @@ export default async function SettingsHubPage() {
         </div>
 
         {/* Client part: search + cards */}
-        <SettingsHubClient />
+        <Suspense fallback={<ListPageSkeleton />}>
+          <SettingsHubClient />
+        </Suspense>
       </div>
     </div>
   )

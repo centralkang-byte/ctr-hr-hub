@@ -8,9 +8,11 @@ import { Users, Settings, ClipboardList, BarChart3 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 import { CARD_STYLES, BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 import { cn } from '@/lib/utils'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import type { SessionUser } from '@/types'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 // ─── Types ───────────────────────────────────────────────
@@ -49,14 +51,14 @@ interface TeamResult {
 }
 
 const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
-  DRAFT: { label: '미작성', cls: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' },
-  SUBMITTED: { label: '제출 완료', cls: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
-  CONFIRMED: { label: '확정됨', cls: 'bg-[#EDF1FE] text-[#4B6DE0] border-[#EDF1FE]' },
+  DRAFT: { label: '미작성', cls: STATUS_VARIANT.neutral },
+  SUBMITTED: { label: '제출 완료', cls: STATUS_VARIANT.info },
+  CONFIRMED: { label: '확정됨', cls: STATUS_VARIANT.success },
 }
 
 // ─── Component ───────────────────────────────────────────
 
-export default function PeerReviewClient() {
+export default function PeerReviewClient({ user }: { user: SessionUser }) {
   // ✅ ALL hooks at top — before any conditions
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')

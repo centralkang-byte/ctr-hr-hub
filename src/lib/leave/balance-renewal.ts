@@ -2,18 +2,17 @@
 // CTR HR Hub — Leave Balance Renewal (연초 잔액 갱신)
 // src/lib/leave/balance-renewal.ts
 //
+// @deprecated Phase 6 — accrualEngine.processAnnualAccrual()로 대체됨.
+// LeaveYearBalance 기반 accrualEngine이 동일 기능을 수행합니다.
+// negative repayment 로직은 accrualEngine에 이식 예정 (별도 작업).
+// 이 파일은 하위호환용으로 유지 후 다음 메이저에서 삭제합니다.
+//
 // F-3: Annual balance renewal logic with negative repayment
 //   1. Calculate carry-over from previous year
 //   2. Deduct negative balance (auto-repayment)
 //   3. Grant new year entitlement (via accrualEngine)
-//   4. Update EmployeeLeaveBalance
+//   4. Update EmployeeLeaveBalance (legacy)
 // ═══════════════════════════════════════════════════════════
-// ═══════════════════════════════════════════════════════════════
-// PROTECTED — DO NOT MODIFY without architecture review
-// This file is a core infrastructure component. Changes here
-// can break: annual leave balance renewal — carry-over, expiration, adjustment
-// Last verified: 2026-03-12 (Q-4 P6)
-// ═══════════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
 

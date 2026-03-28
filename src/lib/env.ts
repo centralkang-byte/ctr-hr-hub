@@ -32,7 +32,8 @@ export const env = {
   DATABASE_URL: getRequired('DATABASE_URL'),
 
   // NextAuth
-  NEXTAUTH_URL: getRequired('NEXTAUTH_URL'),
+  NEXTAUTH_URL: process.env.NEXTAUTH_URL
+    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : ''),
   NEXTAUTH_SECRET: getRequired('NEXTAUTH_SECRET'),
 
   // Microsoft Entra ID (M365 SSO)

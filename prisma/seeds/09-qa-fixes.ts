@@ -256,6 +256,15 @@ export async function seedQAFixes(prisma: PrismaClient): Promise<void> {
     console.log('  ⏭ Work schedule already exists')
   }
 
+  // ── PART F: 전체 알림 읽음 처리 ──────────────────────────
+  console.log('📌 PART F: Mark all notifications as read...')
+
+  const readResult = await prisma.notification.updateMany({
+    where: { isRead: false },
+    data: { isRead: true, readAt: new Date() },
+  })
+  console.log(`  ✅ ${readResult.count} notifications marked as read`)
+
   // ── Summary ───────────────────────────────────────────────
   console.log('\n======================================')
   console.log('🔧 QA Fixes Complete!')
@@ -264,5 +273,6 @@ export async function seedQAFixes(prisma: PrismaClient): Promise<void> {
   console.log(`  Payslips:              ${payslipCount}`)
   console.log(`  Profile Extensions:    ${profExtCount}`)
   console.log(`  Recognitions:          ${recogCount}`)
+  console.log(`  Notifications Read:    ${readResult.count}`)
   console.log('======================================\n')
 }

@@ -9,6 +9,8 @@
 import { prisma } from '@/lib/prisma'
 import { canDeductUnreturnedAsset, calculateDeductionAmount } from '@/lib/labor/asset-deduction'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { calculateSeverance } from '@/lib/payroll/severance'
+import { differenceInDays, startOfMonth } from 'date-fns'
 
 export interface SettlementItem {
     type: string
@@ -118,18 +120,62 @@ export async function executeOffboardingCompletion(offboardingId: string): Promi
                     deductionAmount: 0,
                     reason: check.reason,
                 })
-                // TODO: Create notification for HR "민사 청구 필요"
+                // Phase 4: sendNotification({ type: 'CIVIL_CLAIM_REQUIRED', ... }) 연동 예정
             }
         }
 
-        // 4. Settlement items (placeholder — actual calculation is GP#1/GP#3 territory)
-        settlementItems.push(
-            { type: 'UNUSED_LEAVE', amount: 0, note: 'TODO: 미사용 연차 수당 (GP#1 balance × daily wage)' },
-            { type: 'NEGATIVE_LEAVE', amount: 0, note: 'TODO: 마이너스 연차 공제 (if applicable)' },
-            { type: 'SEVERANCE', amount: 0, note: 'TODO: 퇴직금 (KR: 30일 × avg wage × years/365, if tenure ≥ 1yr)' },
-            { type: 'FINAL_SALARY', amount: 0, note: 'TODO: 최종 급여 일할 계산' },
-            { type: 'INSURANCE_LOSS', amount: 0, note: 'TODO: 4대보험 상실 처리' },
-        )
+        // 4. Settlement Phase A — 연차 잔여분 + 보상 이력 조회 (tx 내부)
+        const employeeId = offboarding.employee!.id
+        const lastWorkingDate = offboarding.lastWorkingDate
+        const companyIdForSettlement = (extractPrimaryAssignment(offboarding.employee!.assignments ?? []) as Record<string, any>)?.companyId ?? ''
+
+        // 4a. Leave balance settlement (unused leave pay / negative leave deduction)
+        const currentYear = lastWorkingDate.getFullYear()
+        const leaveBalances = await tx.employeeLeaveBalance.findMany({
+            where: { employeeId, year: currentYear },
+        })
+
+        // Daily wage from latest compensation (tx 내부 조회)
+        const latestComp = await tx.compensationHistory.findFirst({
+            where: { employeeId, companyId: companyIdForSettlement, effectiveDate: { lte: lastWorkingDate } },
+            orderBy: { effectiveDate: 'desc' },
+        })
+        const annualSalary = latestComp ? Number(latestComp.newBaseSalary) : 0
+        const dailyWage = annualSalary > 0 ? Math.round(annualSalary / 365) : 0
+
+        let unusedLeaveDays = 0
+        let negativeLeaveDays = 0
+        for (const bal of leaveBalances) {
+            const granted = Number(bal.grantedDays) + Number(bal.carryOverDays)
+            const used = Number(bal.usedDays)
+            const remaining = granted - used
+            if (remaining > 0) {
+                unusedLeaveDays += remaining
+            } else if (remaining < 0) {
+                negativeLeaveDays += Math.abs(remaining)
+            }
+        }
+
+        settlementItems.push({
+            type: 'UNUSED_LEAVE',
+            amount: unusedLeaveDays * dailyWage,
+            note: `미사용 연차 ${unusedLeaveDays}일 × 일급 ${dailyWage.toLocaleString()}원`,
+        })
+
+        if (negativeLeaveDays > 0) {
+            settlementItems.push({
+                type: 'NEGATIVE_LEAVE',
+                amount: -(negativeLeaveDays * dailyWage),
+                note: `초과사용 연차 ${negativeLeaveDays}일 × 일급 ${dailyWage.toLocaleString()}원 (공제)`,
+            })
+        }
+
+        // 4d. Insurance loss (4대보험 상실) — flag only, actual filing is external
+        settlementItems.push({
+            type: 'INSURANCE_LOSS',
+            amount: 0,
+            note: '4대보험 상실신고 필요 (외부 처리)',
+        })
 
         // 5. Update offboarding status to COMPLETED
         await tx.employeeOffboarding.update({
@@ -149,6 +195,67 @@ export async function executeOffboardingCompletion(offboardingId: string): Promi
             data: { status: 'SKIPPED' },
         })
     })
+
+    // Settlement Phase B — 퇴직금 + 최종 급여 (tx 외부, 전역 prisma 사용)
+    // ⚠️ calculateSeverance는 전역 prisma 인스턴스를 사용하므로 반드시 tx 밖에서 호출
+    const offboardingData = await prisma.employeeOffboarding.findUnique({
+        where: { id: offboardingId },
+        select: {
+            lastWorkingDate: true,
+            employee: {
+                select: {
+                    id: true,
+                    assignments: {
+                        where: { isPrimary: true, endDate: null },
+                        select: { companyId: true },
+                        take: 1,
+                    },
+                },
+            },
+        },
+    })
+
+    if (offboardingData?.employee) {
+        const empId = offboardingData.employee.id
+        const lwDate = offboardingData.lastWorkingDate
+        const compId = (extractPrimaryAssignment(offboardingData.employee.assignments ?? []) as Record<string, any>)?.companyId ?? ''
+
+        // Severance (퇴직금)
+        try {
+            const severance = await calculateSeverance(empId, lwDate)
+            settlementItems.push({
+                type: 'SEVERANCE',
+                amount: severance.isEligible ? severance.netSeverancePay : 0,
+                note: severance.isEligible
+                    ? `퇴직금 ${severance.severancePay.toLocaleString()}원 (세후 ${severance.netSeverancePay.toLocaleString()}원, 재직 ${severance.tenureYears}년)`
+                    : `퇴직금 미대상 (재직 ${severance.tenureDays}일 < 365일)`,
+            })
+        } catch {
+            settlementItems.push({
+                type: 'SEVERANCE',
+                amount: 0,
+                note: '퇴직금 산출 불가 (급여 데이터 부족)',
+            })
+        }
+
+        // Final salary pro-rata (최종 급여 일할 계산)
+        const latestCompPhaseB = await prisma.compensationHistory.findFirst({
+            where: { employeeId: empId, companyId: compId, effectiveDate: { lte: lwDate } },
+            orderBy: { effectiveDate: 'desc' },
+        })
+        const annualSalaryB = latestCompPhaseB ? Number(latestCompPhaseB.newBaseSalary) : 0
+        const monthStart = startOfMonth(lwDate)
+        const workedDaysInMonth = differenceInDays(lwDate, monthStart) + 1
+        const daysInMonth = new Date(lwDate.getFullYear(), lwDate.getMonth() + 1, 0).getDate()
+        const monthlySalary = annualSalaryB > 0 ? Math.round(annualSalaryB / 12) : 0
+        const proRataSalary = Math.round(monthlySalary * (workedDaysInMonth / daysInMonth))
+
+        settlementItems.push({
+            type: 'FINAL_SALARY',
+            amount: proRataSalary,
+            note: `최종월 일할 급여: ${workedDaysInMonth}/${daysInMonth}일 × 월급 ${monthlySalary.toLocaleString()}원`,
+        })
+    }
 
     return {
         status: 'COMPLETED',

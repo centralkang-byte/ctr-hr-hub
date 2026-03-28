@@ -162,8 +162,8 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
     try {
       await apiClient.put(`/api/v1/payroll/${runId}/anomalies/${anomaly.id}/resolve`, { resolution, note })
       onResolved()
-    } catch (e) {
-      console.error(e)
+    } catch (err) {
+      toast({ title: '이상 항목 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -237,7 +237,7 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
 
       {showWhitelistModal && (
         <div className={MODAL_STYLES.container}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-md">
             <div className="p-5 border-b border-[#E8E8E8] flex items-center justify-between">
               <h3 className="font-semibold text-[#1A1A1A]">{'예외 등록'}</h3>
               <button onClick={() => setShowWhitelistModal(false)} className="text-[#999] hover:text-[#333]">
@@ -306,7 +306,7 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
   return (
     <div className="fixed inset-0 z-40 flex">
       <div className="flex-1 bg-black/20" onClick={onClose} />
-      <div className="w-80 bg-white shadow-2xl flex flex-col h-full overflow-y-auto">
+      <div className="w-80 bg-white shadow-lg flex flex-col h-full overflow-y-auto">
         <div className="sticky top-0 bg-white p-4 border-b border-[#E8E8E8] flex items-center justify-between">
           <div>
             <p className="font-bold text-[#1A1A1A]">{row.employeeName}</p>
@@ -470,7 +470,9 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
     try {
       const res = await apiClient.get<PayrollRunInfo>(`/api/v1/payroll/runs/${runId}`)
       setRun(res.data)
-    } catch { /* silent */ }
+    } catch (err) {
+      toast({ title: '급여 실행 정보 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
   }, [runId])
 
   const fetchAnomalies = useCallback(async () => {
@@ -480,7 +482,9 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       )
       setAnomalies(res.data.anomalies)
       setAnomalySummary(res.data.summary)
-    } catch { /* silent */ }
+    } catch (err) {
+      toast({ title: '이상 항목 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
   }, [runId])
 
   const fetchComparison = useCallback(async () => {
@@ -493,7 +497,9 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       )
       setComparisonRows(res.data.rows)
       setComparisonSummary(res.data.summary)
-    } catch { /* silent */ }
+    } catch (err) {
+      toast({ title: '비교 데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
   }, [runId, sortBy, sortOrder, deptFilter, anomalyOnly])
 
   const fetchWhitelist = useCallback(async () => {
@@ -504,7 +510,9 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
         `/api/v1/payroll/whitelist`, { companyId: run.id }
       )
       setWhitelistEntries(res.data.items ?? [])
-    } catch { /* silent */ }
+    } catch (err) {
+      toast({ title: '화이트리스트 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
   }, [run?.id])
 
   useEffect(() => {
@@ -537,7 +545,9 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       })
       await fetchAnomalies()
       await fetchRun()
-    } catch { /* silent */ } finally {
+    } catch (err) {
+      toast({ title: '일괄 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    } finally {
       setBulkResolving(false)
     }
   }
@@ -548,7 +558,9 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       await apiClient.post(`/api/v1/payroll/${runId}/submit-for-approval`, { note: submitNote })
       setShowSubmitModal(false)
       router.push('/payroll')
-    } catch { /* silent */ } finally {
+    } catch (err) {
+      toast({ title: '결재 요청 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    } finally {
       setSubmitting(false)
     }
   }
@@ -557,7 +569,9 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
     try {
       await apiClient.delete(`/api/v1/payroll/whitelist/${anomalyId}`)
       await fetchWhitelist()
-    } catch { /* silent */ }
+    } catch (err) {
+      toast({ title: '화이트리스트 삭제 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
   }
 
   const triggerDownload = (url: string) => {
@@ -578,14 +592,14 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
 
   if (loading || !run) {
     return (
-      <div className="p-6 flex items-center justify-center min-h-[400px]">
+      <div className="p-4 flex items-center justify-center min-h-[400px]">
         <div className="animate-spin h-8 w-8 border-4 border-[#5E81F4] border-t-transparent rounded-full" />
       </div>
     )
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -715,7 +729,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
           {openAnomalies.length === 0 ? (
             <div className="bg-white rounded-xl border border-[#E8E8E8] p-12 text-center">
               <CheckCircle2 className="h-12 w-12 text-[#059669] mx-auto mb-3" />
-              <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+              <EmptyState />
             </div>
           ) : (
             openAnomalies
@@ -915,7 +929,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                 <tr>
                   <td colSpan={5} className="py-16 text-center">
                     <ShieldCheck className="h-10 w-10 text-[#E8E8E8] mx-auto mb-3" />
-                    <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                    <EmptyState />
                   </td>
                 </tr>
               ) : (
@@ -923,7 +937,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                   <tr key={entry.id} className={TABLE_STYLES.row}>
                     <td className={cn(TABLE_STYLES.cell, "font-medium")}>{entry.employee.name}</td>
                     <td className={TABLE_STYLES.cell}>
-                      <span className="px-2 py-1 bg-[#F5F5F5] rounded text-xs font-mono text-[#555]">{entry.ruleCode}</span>
+                      <span className="px-2 py-1 bg-[#F5F5F5] rounded text-xs font-mono tabular-nums text-[#555]">{entry.ruleCode}</span>
                     </td>
                     <td className={TABLE_STYLES.cellMuted}>{entry.whitelistReason ?? '—'}</td>
                     <td className={cn(TABLE_STYLES.cellMuted, "text-xs")}>{entry.payrollRun?.yearMonth}</td>

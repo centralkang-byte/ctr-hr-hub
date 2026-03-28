@@ -85,25 +85,26 @@ export const GET = withPermission(
     const totalKRW = companyStats.reduce((s, c) => s + c.totalGrossKRW, 0)
     const totalHeadcount = companyStats.reduce((s, c) => s + c.headcount, 0)
 
-    // 6) 월별 트렌드 (최근 6개월)
-    const trend: Array<{ year: number; month: number; totalKRW: number; headcount: number }> = []
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date(year, month - 1 - i, 1)
-      const y = d.getFullYear()
-      const m = d.getMonth() + 1
-      const ym = `${y}-${String(m).padStart(2, '0')}`
-      const rates = await prisma.exchangeRate.findMany({ where: { year: y, month: m, toCurrency: 'KRW' } })
-      const rm: Record<string, number> = { KRW: 1 }
-      for (const r of rates) rm[r.fromCurrency] = Number(r.rate)
+    // 6) 월별 트렌드 (최근 6개월) — 병렬 처리
+    const trendMonths = Array.from({ length: 6 }, (_, i) => {
+      const d = new Date(year, month - 1 - (5 - i), 1)
+      return { y: d.getFullYear(), m: d.getMonth() + 1 }
+    })
 
-      const runs = await prisma.payrollRun.findMany({
-        where: { yearMonth: ym },
-        select: { currency: true, totalGross: true },
+    const trend = await Promise.all(
+      trendMonths.map(async ({ y, m }) => {
+        const ym = `${y}-${String(m).padStart(2, '0')}`
+        const [rates, runs, hc] = await Promise.all([
+          prisma.exchangeRate.findMany({ where: { year: y, month: m, toCurrency: 'KRW' } }),
+          prisma.payrollRun.findMany({ where: { yearMonth: ym }, select: { currency: true, totalGross: true } }),
+          prisma.payrollItem.count({ where: { run: { yearMonth: ym } } }),
+        ])
+        const rm: Record<string, number> = { KRW: 1 }
+        for (const r of rates) rm[r.fromCurrency] = Number(r.rate)
+        const totalKRW = runs.reduce((s, r) => s + Number(r.totalGross ?? 0) * (rm[r.currency ?? 'KRW'] ?? 1), 0)
+        return { year: y, month: m, totalKRW, headcount: hc }
       })
-      const monthKRW = runs.reduce((s, r) => s + Number(r.totalGross ?? 0) * (rm[r.currency ?? 'KRW'] ?? 1), 0)
-      const hc = await prisma.payrollItem.count({ where: { run: { yearMonth: ym } } })
-      trend.push({ year: y, month: m, totalKRW: monthKRW, headcount: hc })
-    }
+    )
 
     // 7) 정렬: COMPANY_ORDER 기준
     companyStats.sort((a, b) => {

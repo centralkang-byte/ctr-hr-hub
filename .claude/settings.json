@@ -4,6 +4,11 @@
       {
         "command": ".claude/hooks/session-start.sh"
       }
+    ],
+    "PreCommit": [
+      {
+        "command": ".claude/hooks/pre-commit.sh"
+      }
     ]
   }
 }

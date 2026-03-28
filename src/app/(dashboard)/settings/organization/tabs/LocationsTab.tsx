@@ -256,7 +256,7 @@ export function LocationsTab({ companyId }: Props) {
               {locations.map((loc) => (
                 <tr key={loc.id} className={TABLE_STYLES.row}>
                   <td className={TABLE_STYLES.cell}>
-                    <span className="font-mono text-xs">{loc.code}</span>
+                    <span className="font-mono tabular-nums text-xs">{loc.code}</span>
                   </td>
                   <td className={TABLE_STYLES.cell}>
                     <div>{loc.name}</div>
@@ -313,7 +313,7 @@ export function LocationsTab({ companyId }: Props) {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
+          <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-semibold text-[#1C1D21]">
                 {editingId ? '근무지 수정' : '근무지 추가'}

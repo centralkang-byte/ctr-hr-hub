@@ -47,6 +47,7 @@ const RULE_ICONS: Record<string, string> = {
 
 export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
+  const tPayroll = useTranslations('payrollPage')
   const now = new Date()
   const [year, setYear] = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth() + 1)
@@ -113,7 +114,7 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
   }
 
   return (
-    <div className="p-6">
+    <div className="p-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
@@ -154,13 +155,13 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
           {/* Summary KPI */}
           <div className="grid grid-cols-4 gap-4 mb-6">
             <div className={CARD_STYLES.padded}>
-              <p className="text-xs text-[#666] mb-1">{'총 이상 건수'}</p>
+              <p className="text-xs text-[#666] mb-1">{tPayroll('totalAnomalies')}</p>
               <p className={`text-3xl font-bold ${data.totalAnomalies > 0 ? 'text-[#DC2626]' : 'text-[#059669]'}`}>
                 {data.totalAnomalies}
               </p>
             </div>
             <div className={CARD_STYLES.padded}>
-              <p className="text-xs text-[#666] mb-1">{'High 이상'}</p>
+              <p className="text-xs text-[#666] mb-1">{tPayroll('highOrAbove')}</p>
               <p className="text-3xl font-bold text-[#DC2626]">
                 {data.anomalies.filter(a => a.severity === 'high').reduce((s, a) => s + a.affectedCount, 0)}
               </p>
@@ -179,7 +180,7 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
             <div className="flex items-center gap-3 p-6 bg-[#D1FAE5] rounded-xl text-[#047857]">
               <CheckCircle2 className="w-6 h-6 shrink-0" />
               <div>
-                <p className="font-semibold">{'이상 없음'}</p>
+                <p className="font-semibold">{tPayroll('noAnomalies')}</p>
                 <p className="text-sm mt-0.5">{year}년 {month}월 급여 데이터에서 이상 징후가 발견되지 않았습니다.</p>
               </div>
             </div>

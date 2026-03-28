@@ -2,11 +2,13 @@
 // CTR HR Hub — /recruitment/[id]/applicants/new (Server Page)
 // ═══════════════════════════════════════════════════════════
 
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import ApplicantFormClient from './ApplicantFormClient'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export default async function NewApplicantPage({
   params,
@@ -21,5 +23,9 @@ export default async function NewApplicantPage({
   const user = session.user as SessionUser
   const { id } = await params
 
-  return <ApplicantFormClient user={user} postingId={id} />
+  return (
+    <Suspense fallback={<ListPageSkeleton />}>
+      <ApplicantFormClient user={user} postingId={id} />
+    </Suspense>
+  )
 }

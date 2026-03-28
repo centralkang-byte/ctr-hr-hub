@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { DataTable } from '@/components/shared/DataTable'
 import type { DataTableColumn } from '@/components/shared/DataTable'
 import { apiClient } from '@/lib/api'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 import { useToast } from '@/hooks/use-toast'
 import type { PaginationInfo } from '@/types'
 
@@ -24,9 +25,9 @@ type EnrollmentRow = {
 }
 
 const STATUS_BADGE: Record<string, { label: string; className: string }> = {
-  ACTIVE: { label: '활성', className: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
-  SUSPENDED: { label: '일시중지', className: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]' },
-  EXPIRED: { label: '만료', className: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' },
+  ACTIVE: { label: '활성', className: STATUS_VARIANT.success },
+  SUSPENDED: { label: '일시중지', className: STATUS_VARIANT.warning },
+  EXPIRED: { label: '만료', className: STATUS_VARIANT.error },
 }
 
 // ─── Component ───────────────────────────────────────────

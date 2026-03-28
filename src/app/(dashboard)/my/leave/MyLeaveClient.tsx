@@ -23,8 +23,40 @@ interface LeaveTypeDef {
   id: string
   code: string
   name: string
+  nameEn?: string
   isPaid: boolean
   allowHalfDay: boolean
+  category: string | null
+  subcategory: string | null
+  displayOrder: number
+}
+
+// 카테고리 표시 순서 및 라벨
+const CATEGORY_ORDER = ['annual', 'health', 'family_event', 'maternity', 'military', 'other'] as const
+const CATEGORY_LABELS: Record<string, { ko: string; icon: string }> = {
+  annual:       { ko: '연차', icon: '📅' },
+  health:       { ko: '보건/건강', icon: '🏥' },
+  family_event: { ko: '경조', icon: '🎊' },
+  maternity:    { ko: '모성보호', icon: '👶' },
+  military:     { ko: '병역', icon: '🎖️' },
+  other:        { ko: '기타', icon: '📋' },
+}
+
+function groupByCategory(balances: YearBalance[]): { category: string; label: string; icon: string; items: YearBalance[] }[] {
+  const groups: Record<string, YearBalance[]> = {}
+  for (const b of balances) {
+    const cat = b.leaveTypeDef.category ?? 'other'
+    if (!groups[cat]) groups[cat] = []
+    groups[cat].push(b)
+  }
+  return CATEGORY_ORDER
+    .filter(cat => groups[cat]?.length)
+    .map(cat => ({
+      category: cat,
+      label: CATEGORY_LABELS[cat]?.ko ?? cat,
+      icon: CATEGORY_LABELS[cat]?.icon ?? '📋',
+      items: groups[cat],
+    }))
 }
 
 interface YearBalance {
@@ -70,6 +102,7 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
   const [year, setYear] = useState(new Date().getFullYear())
   const [balances, setBalances] = useState<YearBalance[]>([])
   const [requests, setRequests] = useState<LeaveRequest[]>([])
+  const [designatedCount, setDesignatedCount] = useState(0)
   const [loadingBalances, setLoadingBalances] = useState(true)
   const [loadingRequests, setLoadingRequests] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -100,8 +133,19 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
     }
   }, [])
 
+  // 지정연차 일수 로드
+  const loadDesignated = useCallback(async () => {
+    try {
+      const res = await apiClient.get<{ id: string }[]>('/api/v1/leave/designated-days', { year: String(year) })
+      setDesignatedCount((res.data ?? []).length)
+    } catch {
+      setDesignatedCount(0)
+    }
+  }, [year])
+
   useEffect(() => { loadBalances() }, [loadBalances])
   useEffect(() => { loadRequests() }, [loadRequests])
+  useEffect(() => { loadDesignated() }, [loadDesignated])
 
   const totalEntitled = balances.reduce((sum, b) => sum + b.entitled + b.carriedOver + b.adjusted, 0)
   const totalUsed = balances.reduce((sum, b) => sum + b.used, 0)
@@ -143,11 +187,12 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
       )}
 
       {/* KPI 카드 */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-5 gap-4">
         {[
           { label: t('totalEntitled'), value: totalEntitled, unit: tCommon('unit.day'), color: 'text-[#1A1A1A]' },
           { label: tCommon('used'), value: totalUsed, unit: tCommon('unit.day'), color: 'text-[#059669]' },
           { label: tCommon('pending'), value: totalPending, unit: tCommon('unit.day'), color: 'text-[#B45309]' },
+          { label: '지정연차', value: designatedCount, unit: tCommon('unit.day'), color: 'text-[#7C3AED]' },
           { label: tCommon('remaining'), value: totalRemaining, unit: tCommon('unit.day'), color: 'text-[#5E81F4]' },
         ].map((kpi) => (
           <div key={kpi.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
@@ -174,67 +219,81 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
               description={t('emptyLeaveBalanceDesc')}
             />
         ) : (
-          <div className="p-5 space-y-4">
-            {balances.map((b) => {
-              const total = b.entitled + b.carriedOver + b.adjusted
-              const usedPct = total > 0 ? Math.min(100, (b.used / total) * 100) : 0
-              const pendingPct = total > 0 ? Math.min(100 - usedPct, (b.pending / total) * 100) : 0
-
-              return (
-                <div key={b.id} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-[#1A1A1A]">{b.leaveTypeDef.name}</span>
-                      {b.leaveTypeDef.isPaid
-                        ? <span className="text-xs text-[#047857] bg-[#D1FAE5] px-1.5 py-0.5 rounded-full">{t('paid')}</span>
-                        : <span className="text-xs text-[#B45309] bg-[#FEF3C7] px-1.5 py-0.5 rounded-full">{t('unpaid')}</span>
-                      }
-                      {b.carriedOver > 0 && (
-                        <span className="text-xs text-[#4B6DE0] bg-[#E0E7FF] px-1.5 py-0.5 rounded-full">{t('carriedOver', { days: b.carriedOver })}</span>
-                      )}
-                    </div>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-lg font-bold text-[#5E81F4]">{b.remaining}</span>
-                      <span className="text-xs text-[#999]">/ {total}{tCommon('unitDay')}</span>
-                    </div>
-                  </div>
-
-                  {/* 사용률 바 */}
-                  <div className="h-2 bg-[#F5F5F5] rounded-full overflow-hidden">
-                    <div className="h-full flex">
-                      <div
-                        className="bg-[#059669] rounded-full transition-all"
-                        style={{ width: `${usedPct}%` }}
-                      />
-                      {pendingPct > 0 && (
-                        <div
-                          className="bg-[#FCD34D] rounded-full transition-all"
-                          style={{ width: `${pendingPct}%` }}
-                        />
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4 text-xs text-[#999]">
-                    <span className="flex items-center gap-1">
-                      <span className="w-2 h-2 bg-[#059669] rounded-full inline-block" />
-                      {t('usedDays', { days: b.used })}
-                    </span>
-                    {b.pending > 0 && (
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 bg-[#FCD34D] rounded-full inline-block" />
-                        {t('pendingDays', { days: b.pending })}
-                      </span>
-                    )}
-                    {b.expiresAt && (
-                      <span className="text-[#DC2626]">
-                        {t('expiresOn', { date: format(new Date(b.expiresAt), 'M/d', { locale: ko }) })}
-                      </span>
-                    )}
-                  </div>
+          <div className="p-5 space-y-6">
+            {groupByCategory(balances).map((group) => (
+              <div key={group.category}>
+                {/* 카테고리 헤더 */}
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-base">{group.icon}</span>
+                  <h3 className="text-sm font-semibold text-[#555]">{group.label}</h3>
+                  <span className="text-xs text-[#999]">({group.items.length})</span>
+                  <div className="flex-1 border-b border-[#F0F0F0]" />
                 </div>
-              )
-            })}
+
+                <div className="space-y-3 pl-1">
+                  {group.items.map((b) => {
+                    const total = b.entitled + b.carriedOver + b.adjusted
+                    const usedPct = total > 0 ? Math.min(100, (b.used / total) * 100) : 0
+                    const pendingPct = total > 0 ? Math.min(100 - usedPct, (b.pending / total) * 100) : 0
+
+                    return (
+                      <div key={b.id} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-[#1A1A1A]">{b.leaveTypeDef.name}</span>
+                            {b.leaveTypeDef.isPaid
+                              ? <span className="text-xs text-[#047857] bg-[#D1FAE5] px-1.5 py-0.5 rounded-full">{t('paid')}</span>
+                              : <span className="text-xs text-[#B45309] bg-[#FEF3C7] px-1.5 py-0.5 rounded-full">{t('unpaid')}</span>
+                            }
+                            {b.carriedOver > 0 && (
+                              <span className="text-xs text-[#4B6DE0] bg-[#E0E7FF] px-1.5 py-0.5 rounded-full">{t('carriedOver', { days: b.carriedOver })}</span>
+                            )}
+                          </div>
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-lg font-bold text-[#5E81F4]">{b.remaining}</span>
+                            <span className="text-xs text-[#999]">/ {total}{tCommon('unitDay')}</span>
+                          </div>
+                        </div>
+
+                        {/* 사용률 바 */}
+                        <div className="h-2 bg-[#F5F5F5] rounded-full overflow-hidden">
+                          <div className="h-full flex">
+                            <div
+                              className="bg-[#059669] rounded-full transition-all"
+                              style={{ width: `${usedPct}%` }}
+                            />
+                            {pendingPct > 0 && (
+                              <div
+                                className="bg-[#FCD34D] rounded-full transition-all"
+                                style={{ width: `${pendingPct}%` }}
+                              />
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-4 text-xs text-[#999]">
+                          <span className="flex items-center gap-1">
+                            <span className="w-2 h-2 bg-[#059669] rounded-full inline-block" />
+                            {t('usedDays', { days: b.used })}
+                          </span>
+                          {b.pending > 0 && (
+                            <span className="flex items-center gap-1">
+                              <span className="w-2 h-2 bg-[#FCD34D] rounded-full inline-block" />
+                              {t('pendingDays', { days: b.pending })}
+                            </span>
+                          )}
+                          {b.expiresAt && (
+                            <span className="text-[#DC2626]">
+                              {t('expiresOn', { date: format(new Date(b.expiresAt), 'M/d', { locale: ko }) })}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>

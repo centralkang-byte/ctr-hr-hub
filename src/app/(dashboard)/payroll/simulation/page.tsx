@@ -1,9 +1,11 @@
+import { Suspense } from 'react'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import PayrollSimulationClient from './PayrollSimulationClient'
 import type { SessionUser } from '@/types'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export const metadata = { title: '급여 시뮬레이션 | CTR HR Hub' }
 
@@ -24,10 +26,12 @@ export default async function PayrollSimulationPage() {
   ])
 
   return (
-    <PayrollSimulationClient
-      user={user}
-      companies={companies}
-      departments={departments}
-    />
+    <Suspense fallback={<ListPageSkeleton />}>
+      <PayrollSimulationClient
+        user={user}
+        companies={companies}
+        departments={departments}
+      />
+    </Suspense>
   )
 }

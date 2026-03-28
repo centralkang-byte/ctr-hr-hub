@@ -15,6 +15,7 @@ import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { TYPOGRAPHY } from '@/lib/styles/typography'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 import { apiClient } from '@/lib/api'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable } from '@/components/shared/DataTable'
@@ -89,10 +90,10 @@ interface CorrectionForm {
 // ─── Status variant map ─────────────────────────────────────
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
-  NORMAL: 'bg-[#EDF1FE] text-[#2E7D32]',
-  LATE: 'bg-[#FFEBEE] text-[#E53935]',
-  EARLY_OUT: 'bg-[#FFF3E0] text-[#E65100]',
-  ABSENT: 'bg-[#FFEBEE] text-[#F44336]',
+  NORMAL: STATUS_VARIANT.success,
+  LATE: STATUS_VARIANT.error,
+  EARLY_OUT: STATUS_VARIANT.warning,
+  ABSENT: STATUS_VARIANT.error,
 }
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -251,7 +252,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
       key: 'status',
       header: t('status'),
       render: (row) => (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_BADGE_STYLES[row.status] ?? 'bg-[#F5F5F5] text-[#666]'}`}>
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_BADGE_STYLES[row.status] ?? STATUS_VARIANT.neutral}`}>
           {STATUS_LABELS[row.status] ?? row.status}
         </span>
       ),
@@ -265,35 +266,35 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
   // ─── Render ───
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader title={t('adminAttendance')} />
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white border border-[#E8E8E8] rounded-xl p-4">
           <p className="text-xs text-[#999] font-medium mb-2">{t('totalEmployees')}</p>
           <p className={TYPOGRAPHY.stat}><AnimatedNumber value={kpi?.totalEmployees ?? 0} /></p>
         </div>
 
-        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+        <div className="bg-white border border-[#E8E8E8] rounded-xl p-4">
           <p className="text-xs text-[#999] font-medium mb-2">{t('clockIn')}</p>
           <p className={TYPOGRAPHY.stat}><AnimatedNumber value={kpi?.presentCount ?? 0} /></p>
           <span className="text-xs font-semibold text-[#5E81F4]">{presentPct}%</span>
         </div>
 
-        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+        <div className="bg-white border border-[#E8E8E8] rounded-xl p-4">
           <p className="text-xs text-[#999] font-medium mb-2">{t('late')}</p>
           <p className={`text-3xl font-bold tabular-nums ${(kpi?.lateCount ?? 0) > 0 ? 'text-[#F44336]' : 'text-[#1A1A1A]'}`}><AnimatedNumber value={kpi?.lateCount ?? 0} /></p>
         </div>
 
-        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+        <div className="bg-white border border-[#E8E8E8] rounded-xl p-4">
           <p className="text-xs text-[#999] font-medium mb-2">{t('absent')}</p>
           <p className={`text-3xl font-bold tabular-nums ${(kpi?.absentCount ?? 0) > 0 ? 'text-[#F44336]' : 'text-[#1A1A1A]'}`}><AnimatedNumber value={kpi?.absentCount ?? 0} /></p>
         </div>
       </div>
 
       {/* Average work hours */}
-      <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+      <div className="bg-white border border-[#E8E8E8] rounded-xl p-4">
         <p className="text-xs text-[#999] font-medium mb-2">{t('averageWorkHours')}</p>
         <p className={TYPOGRAPHY.stat}>{kpi ? formatMinutes(kpi.avgTotalMinutes) : '—'}</p>
       </div>
@@ -324,7 +325,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
             </div>
           </div>
           <div className="divide-y divide-[#F5F5F5]">
-            {!alerts?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+            {!alerts?.length && <EmptyState />}
               {alerts?.map((alert) => (
               <div key={alert.id} className="flex items-center justify-between px-5 py-3">
                 <div className="flex items-center gap-3">

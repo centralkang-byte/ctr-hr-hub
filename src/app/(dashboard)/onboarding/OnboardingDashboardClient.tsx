@@ -26,6 +26,7 @@ import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser, PaginationInfo } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 import { toast } from '@/hooks/use-toast'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -71,8 +72,8 @@ interface OnboardingDashboardClientProps {
 // ─── Constants ──────────────────────────────────────────────
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
-  IN_PROGRESS: 'bg-[#EDF1FE] text-[#5E81F4]',
-  COMPLETED: 'bg-[#DCFCE7] text-[#16A34A]',
+  IN_PROGRESS: STATUS_VARIANT.info,
+  COMPLETED: STATUS_VARIANT.success,
 }
 
 const MOOD_CONFIG: Record<string, { icon: typeof Smile; color: string; label: string }> = {
@@ -162,23 +163,31 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
     fetchData()
   }, [fetchData])
 
-  // ─── Force complete handler ───
+  // ─── Force complete handler (optimistic UI) ───
   const handleForceComplete = useCallback(async () => {
     if (!forceTarget || !forceReason.trim()) return
     setForceLoading(true)
+    const targetId = forceTarget.id
+    const prevData = data
+    // 낙관적 업데이트: 즉시 완료 상태로 전환
+    setData(prev => prev.map(row =>
+      row.id === targetId
+        ? { ...row, status: 'COMPLETED', progress: { ...row.progress, completed: row.progress.total }, isDelayed: false }
+        : row
+    ))
+    setForceTarget(null)
+    setForceReason('')
     try {
-      await apiClient.put(`/api/v1/onboarding/${forceTarget.id}/force-complete`, {
+      await apiClient.put(`/api/v1/onboarding/${targetId}/force-complete`, {
         reason: forceReason.trim(),
       })
-      setForceTarget(null)
-      setForceReason('')
-      fetchData()
+      fetchData() // 서버 데이터로 동기화
     } catch {
-      // Error handled by apiClient
+      setData(prevData) // 롤백
     } finally {
       setForceLoading(false)
     }
-  }, [forceTarget, forceReason, fetchData])
+  }, [forceTarget, forceReason, fetchData, data])
 
   // ─── Pagination ───
   const totalPages = pagination?.totalPages ?? 1
@@ -369,7 +378,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                     </td>
                     <td className={TABLE_STYLES.cell}>
                       <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_BADGE_STYLES[row.status] ?? 'bg-[#F5F5FA] text-[#8181A5]'}`}
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_BADGE_STYLES[row.status] ?? STATUS_VARIANT.neutral}`}
                       >
                         {row.status === 'IN_PROGRESS' && (
                           <Clock className="mr-1 h-3 w-3" />

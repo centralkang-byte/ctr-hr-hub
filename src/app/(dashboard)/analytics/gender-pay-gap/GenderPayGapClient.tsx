@@ -71,6 +71,7 @@ const GROUP_BY_LABELS: Record<string, string> = {
 // ─── Component ──────────────────────────────────────────────
 
 export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
+  const tAnalytics = useTranslations('analytics.compensationPage')
   const [loading, setLoading] = useState(true)
   const [groupBy, setGroupBy] = useState<string>('jobGrade')
   const [year, setYear] = useState<string>('')
@@ -85,7 +86,9 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
       if (year) params.year = year
       const res = await apiClient.get<GapData>('/api/v1/analytics/gender-pay-gap', params)
       setData(res.data)
-    } catch { /* ignore */ }
+    } catch (err) {
+      toast({ title: '성별 급여 격차 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
     setLoading(false)
   }, [groupBy, year])
 
@@ -108,7 +111,9 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
       a.download = `gender-pay-gap-${groupBy}${year ? `-${year}` : ''}.csv`
       a.click()
       URL.revokeObjectURL(url)
-    } catch { /* ignore */ }
+    } catch (err) {
+      toast({ title: '성별 급여 격차 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
     setExporting(false)
   }
 
@@ -236,7 +241,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
             </CardHeader>
             <CardContent>
               {data.breakdown.length === 0 ? (
-                <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                <EmptyState />
               ) : (
                 <div className="overflow-x-auto">
                   <table className={TABLE_STYLES.table}>
@@ -304,7 +309,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
           {data.breakdown.some((b) => b.maleAvgCompaRatio != null || b.femaleAvgCompaRatio != null) && (
             <Card className="">
               <CardHeader>
-                <CardTitle className="text-base font-semibold">{'Compa-Ratio 비교'}</CardTitle>
+                <CardTitle className="text-base font-semibold">{tAnalytics('compaRatioComparison')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">

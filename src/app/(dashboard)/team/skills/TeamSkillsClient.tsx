@@ -146,7 +146,7 @@ export default function TeamSkillsClient({user: _user }: {
       <div className="p-6">
         <div className="bg-white rounded-xl border border-[#E8E8E8] p-12 text-center">
           <Users className="w-12 h-12 text-[#E8E8E8] mx-auto mb-3" />
-          <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+          <EmptyState />
         </div>
       </div>
     )

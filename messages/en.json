@@ -248,7 +248,10 @@
     "unitYear": "year",
     "unitPerson": " people",
     "unitCount": " items",
-    "unitMonth": " month(s)"
+    "unitMonth": " month(s)",
+    "noDataDesc": "No data matches the current filters. Try adjusting the filters or check back later.",
+    "completionRate": "Completion Rate",
+    "employee": "Employee"
   },
   "auth": {
     "login": "Login",
@@ -259,7 +262,10 @@
     "forbidden": "Access denied.",
     "notRegistered": "Unregistered user. Please contact HR.",
     "slogan": "Central to your safe mobility",
-    "myProfile": "My Profile"
+    "myProfile": "My Profile",
+    "sessionExpiring": "Session Expiring Soon",
+    "sessionExpiringDesc": "Your session is about to expire. Unsaved work may be lost. Would you like to extend?",
+    "extendSession": "Extend Session"
   },
   "menu": {
     "home": "Home",
@@ -463,8 +469,7 @@
     "gdpr": "GDPR",
     "ai-report": "AI Report",
     "attrition": "Attrition Risk",
-    "results": "Results",
-    "calibration": "Calibration"
+    "results": "Results"
   },
   "employee": {
     "title": "Employee Management",
@@ -1234,6 +1239,7 @@
     "pulseSurveyTitle": "Pulse Survey",
     "teamGoalsTitle": "Team Goals",
     "recognitionTitle": "Recognition",
+    "recognitionCount": "Recognition Count",
     "compReviewTitle": "Compensation Review",
     "oneOnOneTitle": "1:1 Meeting",
     "notificationsTitle": "Notifications",
@@ -2199,7 +2205,18 @@
     "selfServiceDesc": "View offboarding tasks and required information.",
     "pageTitle": "Offboarding",
     "emptyTitle": "No active offboarding",
-    "emptyDesc": "No employees need exit processing."
+    "emptyDesc": "No employees need exit processing.",
+    "satisfactionDetail": "Satisfaction Detail",
+    "satisfactionCompensation": "Compensation Satisfaction",
+    "satisfactionCulture": "Culture Satisfaction",
+    "satisfactionManagement": "Management Satisfaction",
+    "satisfactionGrowth": "Growth Satisfaction",
+    "suggestions": "Suggestions",
+    "suggestionsPlaceholder": "Enter improvement suggestions",
+    "detailedReason": "Detailed Reason",
+    "detailedReasonPlaceholder": "Enter detailed reason for departure",
+    "isConfidential": "Confidential",
+    "isConfidentialDesc": "This interview content will be treated as confidential"
   },
   "salary": {
     "title": "Compensation Management",
@@ -2626,7 +2643,9 @@
     "applyWarning": "This action cannot be undone. All changes in the plan will take effect immediately.",
     "restructureSuccess": "Restructuring completed successfully.",
     "draftSaved": "Draft saved successfully.",
-    "searchDepts": "Search departments..."
+    "searchDepts": "Search departments...",
+    "name": "Name",
+    "searchResult": "Search Results"
   },
   "payroll": {
     "title": "Payroll",
@@ -2975,7 +2994,8 @@
     "average": "Medium",
     "shinhanBank": "Shinhan Bank",
     "start": "Start",
-    "hours": "Hours"
+    "hours": "Hours",
+    "reopenDescription": "Reopening closed attendance will reset payroll calculations. Do you want to continue?"
   },
   "analytics": {
     "title": "Analytics",
@@ -3050,6 +3070,28 @@
       "report": "AI Report",
       "reportDesc": "Auto-generate AI executive report"
     },
+    "executive": {
+      "headcountTrend": "Headcount Trend",
+      "turnoverTrend": "Turnover Trend",
+      "companyDistribution": "Company Distribution",
+      "riskAlerts": "Risk Alerts",
+      "companyComparison": "Company Comparison",
+      "hires": "Hires",
+      "exits": "Exits",
+      "netChange": "Net Change",
+      "industryAvg": "Industry Avg.",
+      "turnoverRateLabel": "Turnover Rate",
+      "detected": "{count} detected",
+      "noRiskDetected": "No risk alerts detected.",
+      "loadFailed": "Failed to load data",
+      "loadFailedDesc": "An error occurred while loading insights. Please refresh or try again later.",
+      "tooltipTotalEmp": "Total active employees",
+      "tooltipTurnover": "Monthly exits ÷ end-of-month headcount × 100",
+      "tooltipTenure": "Average years of service for all active employees",
+      "tooltipLaborCost": "Sum of confirmed payroll across entities (KRW)",
+      "tooltipRecruitment": "Active job postings",
+      "tooltipOnboarding": "Completed onboardings ÷ total onboardings × 100"
+    },
     "turnoverPage": {
       "title": "Turnover Analysis",
       "description": "Monthly resignation trends, reason analysis, dept. turnover rates",
@@ -3082,7 +3124,8 @@
       "issuesTrend": "Late/Absent/Early-out Trend",
       "late": "Late",
       "absent": "Absent",
-      "earlyOut": "Early Out"
+      "earlyOut": "Early Out",
+      "retry": "Retry"
     },
     "recruitmentPage": {
       "title": "Recruitment Analysis",
@@ -3159,7 +3202,12 @@
       "jobCategory": "Job Category",
       "headcount": "Headcount",
       "average": "Average",
-      "median": "Median"
+      "median": "Median",
+      "underBand": "Under Band",
+      "inBand": "In Band",
+      "overBand": "Over Band",
+      "compaRatio": "Compa-Ratio",
+      "compaRatioComparison": "Compa-Ratio Comparison"
     },
     "attritionPage": {
       "title": "Attrition Risk Analysis",
@@ -3386,6 +3434,7 @@
       "EMAIL": "Email",
       "TEAMS": "Teams"
     },
+    "viewAll": "View All",
     "preference": {
       "title": "Notification Settings",
       "quietHours": "Quiet Hours",
@@ -4201,7 +4250,13 @@
     "chatbotLowConfidence": "I'm not confident in this answer. Would you like me to forward this to an HR representative?",
     "chatbotUnavailable": "AI assistant is currently unavailable.",
     "feedbackPositive": "Helpful",
-    "feedbackNegative": "Not Helpful"
+    "feedbackNegative": "Not Helpful",
+    "chatbotWelcome": "Hello! I'm the CTR HR Chatbot. Ask me about attendance, leave, payroll, or HR policies.",
+    "chatbotNewSession": "New Chat",
+    "chatbotError": "Sorry, an error occurred while generating a response.",
+    "chatbotDefaultTitle": "Chat",
+    "chatbotNoHistory": "No chat history.",
+    "chatbotEscalated": "Forwarded to HR representative."
   },
   "error": {
     "notFound": "Resource not found.",
@@ -4345,6 +4400,9 @@
     "totalNet": "Total Net",
     "allStatus": "All Statuses",
     "emptyMessage": "No payroll runs found.",
+    "highOrAbove": "High or above",
+    "totalAnomalies": "Total anomalies",
+    "noAnomalies": "No anomalies",
     "runType": {
       "MONTHLY": "Monthly",
       "BONUS": "Bonus",
@@ -4366,7 +4424,10 @@
     "paid": "Paid",
     "grossPay": "Gross Pay",
     "deductions": "Deductions",
-    "netPay": "Net Pay"
+    "netPay": "Net Pay",
+    "unreadCount": "{count} unread pay stub(s)",
+    "momSame": "Same as last month",
+    "newBadge": "NEW"
   },
   "payStubDetail": {
     "titleWithMonth": "{month} Pay Stub",
@@ -4579,6 +4640,9 @@
       "retention": "Data Retention",
       "dpia": "DPIA",
       "piiAudit": "PII Access Log",
+      "piiAuditDesc": "PII access monitoring and audit trail",
+      "retentionDesc": "Data retention policies and enforcement",
+      "dpiaDesc": "Data Protection Impact Assessments",
       "consentForm": "Collect Consent",
       "revokeConsent": "Revoke Consent",
       "newRequest": "New Request",
@@ -4605,10 +4669,28 @@
       "legalBasis": "Legal Basis",
       "consentedAt": "Consented At",
       "revokedAt": "Revoked At",
-      "expiresAt": "Expires At"
+      "expiresAt": "Expires At",
+      "riskLow": "Low",
+      "riskMedium": "Medium",
+      "riskHigh": "High",
+      "riskCritical": "Critical",
+      "statusDraft": "Draft",
+      "statusInReview": "In Review",
+      "statusApproved": "Approved",
+      "statusRejected": "Rejected",
+      "statusPending": "Pending",
+      "statusInProgress": "In Progress",
+      "statusCompleted": "Completed",
+      "requestAccess": "Right to Access",
+      "requestErasure": "Right to Erasure",
+      "requestPortability": "Data Portability",
+      "requestRectification": "Rectification",
+      "requestRestriction": "Restriction",
+      "requestObjection": "Objection"
     },
     "ru": {
       "title": "Russia Compliance",
+      "description": "Military registration, KEDO documents, statutory reports",
       "military": "Military Registration",
       "kedo": "Electronic Documents (KEDO)",
       "reports": "Statutory Reports",
@@ -4630,6 +4712,7 @@
     },
     "cn": {
       "title": "China Compliance",
+      "description": "Social insurance, employee registry management",
       "socialInsurance": "Social Insurance",
       "config": "Rate Configuration",
       "records": "Monthly Records",
@@ -4646,6 +4729,7 @@
     },
     "kr": {
       "title": "Korea Compliance",
+      "description": "52-hour monitoring, mandatory training, severance",
       "subtitle": "Korean Labor Standards Act compliance management",
       "workHours": "52-Hour Monitoring",
       "mandatoryTraining": "Mandatory Training",
@@ -4704,6 +4788,7 @@
       "profile": "My Profile",
       "attendance": "Clock In/Out",
       "leave": "Leave Request",
+      "loa": "Leave of Absence",
       "goals": "Goals & Evaluation",
       "payslip": "My Payslips",
       "benefits": "Benefits",
@@ -4717,7 +4802,12 @@
       "approvalsInbox": "Approval Inbox",
       "myOnboarding": "My Onboarding",
       "myOffboarding": "My Offboarding",
-      "myTasks": "My Tasks"
+      "myTasks": "My Tasks",
+      "documents": "Documents",
+      "internalJobs": "Internal Jobs",
+      "notificationSettings": "Notification Settings",
+      "directory": "People Directory",
+      "orgChart": "Org Chart"
     },
     "team": {
       "label": "Team",
@@ -4730,7 +4820,8 @@
       "managerEval": "Manager Evaluation",
       "oneOnOne": "1:1 Meetings",
       "skills": "Team Skills",
-      "delegation": "Delegation Settings"
+      "delegation": "Delegation Settings",
+      "time": "Team Time & Leave"
     },
     "hrMgmt": {
       "label": "HR Management",
@@ -4739,9 +4830,11 @@
       "org": "Org Management",
       "attendanceAdmin": "Attendance Admin",
       "leaveAdmin": "Leave Admin",
+      "loaAdmin": "Leave of Absence Admin",
       "onboardingOffboarding": "Onboarding/Offboarding",
       "disciplineRewards": "Discipline & Rewards",
-      "exitInterviewStats": "Exit Interview Stats"
+      "exitInterviewStats": "Exit Interview Stats",
+      "leaveLoaAdmin": "Leave & LOA"
     },
     "hrOps": {
       "label": "HR Operations",
@@ -4767,7 +4860,8 @@
       "posts": "Job Postings",
       "dashboard": "Recruitment Dashboard",
       "board": "Kanban Board",
-      "talentPool": "Talent Pool"
+      "talentPool": "Talent Pool",
+      "internalJobs": "Internal Jobs"
     },
     "performance": {
       "label": "Performance & Compensation",
@@ -4843,7 +4937,8 @@
       "dpia": "DPIA",
       "kr": "Korea Compliance",
       "cn": "China Compliance",
-      "ru": "Russia Compliance"
+      "ru": "Russia Compliance",
+      "hub": "Compliance"
     },
     "settings": {
       "label": "Settings",
@@ -4888,6 +4983,17 @@
     },
     "favorites": {
       "label": "Favorites"
+    },
+    "employee": {
+      "work": "Attendance & Leave",
+      "org": "Organization"
+    },
+    "subGroup": {
+      "work": "Work",
+      "time-off": "Time & Leave",
+      "pay": "Pay",
+      "growth": "Growth",
+      "etc": "Other"
     }
   },
   "header": {
@@ -4959,7 +5065,8 @@
     "emptyTitle": "No skill data",
     "emptyDesc": "No skills have been added yet",
     "skillMatrixTitle": "Skill Matrix",
-    "teamSkillsTitle": "Team Skills"
+    "teamSkillsTitle": "Team Skills",
+    "enterComment": "Enter a comment"
   },
   "lms": {
     "pageTitle": "Learning Management",
@@ -4978,7 +5085,11 @@
       "performance": "Performance Status",
       "payroll": "Payroll Status",
       "onboarding": "Onboarding Status",
-      "compliance": "Compliance"
+      "compliance": "Compliance",
+      "summary": "Summary",
+      "workforce": "Workforce",
+      "recruit": "Recruitment",
+      "training": "Training"
     },
     "kpi": {
       "totalEmployees": "All Headcount",
@@ -5000,7 +5111,40 @@
       "payroll_cost": "인item(s)비"
     },
     "noData": "No 데이터 available.",
-    "noDataDesc": "Please 변경하거나 new로운 데이터를 additional해 보 조item(s)."
+    "noDataDesc": "Try adjusting your filters or add new data.",
+    "kpiDashboardTitle": "KPI Dashboard",
+    "kpiDashboardSubtitle": "Overview of your organization's HR metrics",
+    "globalCompare": "Global Compare",
+    "allCompanies": "All Companies",
+    "kpiHeadcount": "Headcount",
+    "kpiTurnoverRate": "Turnover Rate",
+    "kpiRecruitActive": "Open Positions",
+    "kpiAttritionRisk": "Attrition Risk",
+    "kpiLeaveUsage": "Leave Usage",
+    "kpiTrainingCompletion": "Training Completion",
+    "unitPerson": "people",
+    "unitCase": "cases",
+    "prevMonth": "vs. prev month",
+    "avgDays": "Avg {days} days",
+    "attritionBreakdown": "High {high} · Critical {critical}",
+    "trainingBreakdown": "{completed}/{total} completed",
+    "widget": {
+      "gradeDistribution": "Grade Distribution",
+      "companyDistribution": "Company Distribution",
+      "hireTrend": "Hiring Trend",
+      "tenureDistribution": "Tenure Distribution",
+      "recruitPipeline": "Recruitment Pipeline",
+      "avgTimeToFill": "Avg. Time to Fill",
+      "talentPool": "Talent Pool",
+      "performanceGrade": "Performance Grade",
+      "skillGapTop5": "Skill Gap Top 5",
+      "overtime52h": "52h Overtime Risk",
+      "leaveTrend": "Leave Usage Trend",
+      "burnoutRisk": "Burnout Risk",
+      "payrollCost": "Payroll Cost",
+      "mandatoryTraining": "Mandatory Training",
+      "benefitsUsage": "Benefits Usage"
+    }
   },
   "mySpace": {
     "tasksTitle": "My Tasks",
@@ -5084,7 +5228,18 @@
       "period": "Period",
       "days": "day(s)수",
       "status": "Status",
-      "requestedAt": "신청day(s)"
+      "requestedAt": "Requested"
+    },
+    "atGlance": {
+      "team": "Team",
+      "tenure": "Tenure",
+      "years": " yrs",
+      "joined": "joined",
+      "certLang": "Cert/Lang",
+      "certCount": "{count} certs",
+      "langCount": "{count} langs",
+      "skills": "Skills",
+      "skillCount": " skills"
     }
   },
   "directory": {
@@ -5103,6 +5258,106 @@
   "notifications": {
     "pageTitle": "Notifications",
     "emptyTitle": "No new notifications",
-    "emptyDesc": "Notifications will appear here."
+    "emptyDesc": "Notifications will appear here.",
+    "leaveApproved": {
+      "title": "Leave Approved",
+      "body": "Leave approved: {startDate} ~ {endDate}"
+    },
+    "leaveRejected": {
+      "title": "Leave Rejected",
+      "body": "Rejected: {reason}"
+    },
+    "overtimeWarning48h": {
+      "title": "Weekly Hours Exceed 48h",
+      "body": "Weekly work hours exceeded 48 hours. Please be careful with additional overtime."
+    },
+    "overtimeBlocked52h": {
+      "title": "Maximum Work Hours Reached",
+      "body": "Reached the legal maximum work hours (52 hours). Additional work is restricted."
+    },
+    "turnoverRiskCritical": {
+      "title": "Critical Turnover Risk",
+      "body": "Employee turnover risk is at critical level."
+    },
+    "mboGoalSubmitted": {
+      "title": "MBO Goals Submitted",
+      "body": "{name} submitted MBO goals. {goalCount} goals, total weight {totalWeight}%"
+    },
+    "selfEvalSubmitted": {
+      "title": "Self-Evaluation Submitted",
+      "body": "{name} submitted self-evaluation. Please proceed with team member evaluation."
+    },
+    "managerEvalSubmitted": {
+      "title": "Manager Evaluation Complete",
+      "body": "Manager evaluation is complete. Results available after cycle finalization."
+    },
+    "mboGoalApproved": {
+      "title": "MBO Goals Approved",
+      "body": "MBO goals have been approved."
+    },
+    "mboGoalRejected": {
+      "title": "MBO Goals Need Revision",
+      "body": "MBO goals need revision. Please check feedback and resubmit."
+    },
+    "goalOverdue": {
+      "title": "MBO Goals Overdue",
+      "body": "{name} has not submitted {cycleName} MBO goals. {daysOverdue} days overdue."
+    },
+    "evalOverdue": {
+      "title": "Evaluation Overdue",
+      "body": "{cycleName} evaluation period is {daysOverdue} days overdue. Follow-up needed."
+    },
+    "payrollAttendanceClosed": {
+      "title": "Attendance Closed",
+      "body": "{yearMonth} attendance closed. {confirmedCount}/{totalEmployees} confirmed. Proceed with payroll calculation."
+    },
+    "payrollReviewReady": {
+      "title": "Payroll Anomaly Review Ready",
+      "body": "{yearMonth} payroll anomaly review ready."
+    },
+    "payrollPendingApproval": {
+      "title": "Payroll Approval Requested",
+      "body": "{yearMonth} payroll ({headcount} employees, {totalNet}) approval requested."
+    },
+    "payrollApprovalRejected": {
+      "title": "Payroll Approval Rejected",
+      "body": "Rejection reason: {reason}"
+    },
+    "payrollApprovalNeeded": {
+      "title": "Payroll Approval Needed",
+      "body": "Please proceed with {yearMonth} payroll approval."
+    },
+    "benefitApproved": {
+      "title": "Benefit Claim Approved",
+      "body": "{planName} benefit claim has been approved."
+    },
+    "profileChangeApproved": {
+      "title": "Profile Change Approved",
+      "body": "{fieldLabel} change request has been approved."
+    },
+    "profileChangeRejected": {
+      "title": "Profile Change Rejected",
+      "body": "{fieldLabel} change request has been rejected. Reason: {reason}"
+    },
+    "recognitionReceived": {
+      "title": "Recognition Received",
+      "body": "{senderName} sent you a recognition."
+    },
+    "hrChatbotEscalation": {
+      "title": "HR Escalation Request",
+      "body": "{userName} requested HR representative connection."
+    },
+    "evalReminder": {
+      "title": "Evaluation Deadline Reminder",
+      "body": "{name}, {cycleName} {type} deadline is {label}. Please submit."
+    },
+    "evalEscalation": {
+      "title": "Evaluation Overdue Escalation",
+      "body": "{cycleName} {type} deadline has passed. {count} employees have not yet submitted."
+    },
+    "leavePromotion": {
+      "title": "Use Your Leave",
+      "body": "{name}, you have {remainingDays} days of leave remaining. {daysUntilAnniversary} days until your anniversary. We recommend using your leave."
+    }
   }
 }

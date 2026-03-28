@@ -6,11 +6,12 @@ import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { ArrowLeft, BarChart3, Sparkles } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { apiClient } from '@/lib/api'
 import { CHART_THEME } from '@/lib/styles'
+import type { SessionUser } from '@/types'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -44,11 +45,9 @@ const CHART_COLORS = ['#5E81F4', '#059669', '#F59E0B', '#8B5CF6', '#EC4899', '#0
 
 // ─── Component ───────────────────────────────────────────
 
-export default function PulseResultsClient() {
+export default function PulseResultsClient({ user, id }: { user: SessionUser; id: string }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
-
-  const { id } = useParams<{ id: string }>()
   const router = useRouter()
 
   const [results, setResults] = useState<SurveyResults | null>(null)
@@ -60,7 +59,9 @@ export default function PulseResultsClient() {
     try {
       const res = await apiClient.get<SurveyResults>(`/api/v1/pulse/surveys/${id}/results`)
       setResults(res.data)
-    } catch { /* ignore */ }
+    } catch (err) {
+      toast({ title: '설문 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
     setLoading(false)
   }, [id])
 
@@ -71,7 +72,9 @@ export default function PulseResultsClient() {
     try {
       const res = await apiClient.post<AiAnalysis>('/api/v1/ai/pulse-analysis', { surveyId: id })
       setAiAnalysis(res.data)
-    } catch { /* ignore */ }
+    } catch (err) {
+      toast({ title: '설문 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
     setAiLoading(false)
   }
 

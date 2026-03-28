@@ -14,10 +14,11 @@ import { Shield } from 'lucide-react'
 import MilitaryRegistrationTab from '@/components/compliance/ru/MilitaryRegistrationTab'
 import KedoDocumentsTab from '@/components/compliance/ru/KedoDocumentsTab'
 import RuReportsTab from '@/components/compliance/ru/RuReportsTab'
+import type { SessionUser } from '@/types'
 
 type TabKey = 'military' | 'kedo' | 'reports'
 
-export default function RuComplianceClient() {
+export default function RuComplianceClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
 
   const t = useTranslations('compliance')

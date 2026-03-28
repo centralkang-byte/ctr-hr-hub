@@ -1,7 +1,5 @@
 'use client'
 
-import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 
 
@@ -19,6 +17,7 @@ import { ChevronLeft, Briefcase, Sparkles, Loader2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS, BUTTON_SIZES } from '@/lib/styles'
+import StickyActionBar from '@/components/shared/StickyActionBar'
 
 // ─── Reference Types ─────────────────────────────────────
 
@@ -125,8 +124,8 @@ export default function PostingFormClient({
       setGrades(gradeRes.data)
       setCategories(catRes.data)
       setEmployees(empRes.data)
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: '데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     }
   }, [])
 
@@ -162,8 +161,8 @@ export default function PostingFormClient({
       setValue('description', res.data.description)
       setValue('requirements', res.data.qualifications)
       setValue('preferred', res.data.preferred)
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: 'AI 생성 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setAiLoading(false)
     }
@@ -198,8 +197,8 @@ export default function PostingFormClient({
 
       const res = await apiClient.post<{ id: string }>('/api/v1/recruitment/postings', payload)
       router.push(`/recruitment/${res.data.id}`)
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: '채용 공고 등록 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setSubmitting(false)
     }
@@ -234,7 +233,6 @@ export default function PostingFormClient({
       </div>
 
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       <form onSubmit={handleSubmit(onSubmit as any)}>
         {/* 기본정보 */}
         <div className="bg-white border border-[#E8E8E8] rounded-xl p-6 mb-6">
@@ -252,8 +250,7 @@ export default function PostingFormClient({
               <label className={labelClass}>{t('departmentLabel')}</label>
               <select {...register('departmentId')} className={inputClass}>
                 <option value="">{t('noSelect')}</option>
-                {!departments?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
-              {departments?.map((d) => (
+                {departments?.map((d) => (
                   <option key={d.id} value={d.id}>{d.name}</option>
                 ))}
               </select>
@@ -418,8 +415,8 @@ export default function PostingFormClient({
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center justify-end gap-3">
+        {/* Actions — Sticky */}
+        <StickyActionBar>
           <button
             type="button"
             onClick={() => router.back()}
@@ -434,7 +431,7 @@ export default function PostingFormClient({
           >
             {submitting ? t('saving') : t('registerButton')}
           </button>
-        </div>
+        </StickyActionBar>
       </form>
     </div>
   )

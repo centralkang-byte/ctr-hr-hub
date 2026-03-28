@@ -85,7 +85,7 @@ export function TeamsConnectionStatus({
           <div className="rounded-xl border border-[#E8E8E8] p-4 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-[#666]">Tenant ID</span>
-              <span className="font-mono text-xs">{config.tenantId}</span>
+              <span className="font-mono tabular-nums text-xs">{config.tenantId}</span>
             </div>
             {config.connectedAt && (
               <div className="flex justify-between text-sm">

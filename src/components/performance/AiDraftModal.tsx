@@ -59,7 +59,7 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
 
   return (
     <div className={MODAL_STYLES.container}>
-      <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-[#E8E8E8]">
           <div className="flex items-center gap-2">

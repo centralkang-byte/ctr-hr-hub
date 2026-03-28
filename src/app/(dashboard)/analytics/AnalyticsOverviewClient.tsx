@@ -96,7 +96,7 @@ export default function AnalyticsOverviewClient() {
 
   return (
     <AnalyticsPageLayout
-      title="HR Analytics"
+      title={t('title')}
       description={t('hrAnalyticsDescription')}
     >
       {/* KPI Cards */}
@@ -107,15 +107,15 @@ export default function AnalyticsOverviewClient() {
       ) : timedOut && loading ? (
         <EmptyState
           icon={BarChart3}
-          title="데이터를 불러오지 못했습니다"
-          description="새로고침하거나 잠시 후 다시 시도해주세요."
+          title={t('dataLoadFailed')}
+          description={t('dataLoadFailed')}
           action={{ label: t('kr_kec8388eb'), onClick: () => fetchData() }}
         />
       ) : error ? (
         <EmptyState
           icon={AlertTriangle}
-          title="인사이트 데이터 로드 실패"
-          description="데이터를 불러올 수 없습니다. 잠시 후 다시 시도해주세요."
+          title={t('dataLoadFailed')}
+          description={t('dataLoadFailed')}
           action={{ label: t('retry'), onClick: () => fetchData() }}
         />
       ) : kpi ? (

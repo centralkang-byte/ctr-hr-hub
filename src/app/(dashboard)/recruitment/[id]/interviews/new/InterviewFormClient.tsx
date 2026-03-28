@@ -279,7 +279,7 @@ export function InterviewFormClient({
                 />
               </SelectTrigger>
               <SelectContent>
-                {!applicants?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+                {!applicants?.length && <EmptyState />}
               {applicants?.map((a) => (
                   <SelectItem key={a.applicationId} value={a.applicationId}>
                     {a.applicantName} ({STAGE_KEYS[a.stage] ? t(STAGE_KEYS[a.stage]) : a.stage})
@@ -363,7 +363,7 @@ export function InterviewFormClient({
                       backgroundColor: '#FFFFFF',
                       border: '1px solid #E8E8E8',
                       borderRadius: 8,
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                      boxShadow: '0 4px 12px rgba(15,23,42,0.08)',
                       maxHeight: 200,
                       overflowY: 'auto',
                       marginTop: 4,

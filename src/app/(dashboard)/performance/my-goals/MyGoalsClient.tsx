@@ -8,6 +8,7 @@ import { toast } from '@/hooks/use-toast'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Plus, Pencil, Trash2, Lock, AlertTriangle, Target, X } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 import type { SessionUser } from '@/types'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
@@ -21,10 +22,10 @@ interface GoalItem {
 }
 
 const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
-    DRAFT: { label: '임시저장', cls: 'bg-[#F5F5FA] text-[#8181A5]' },
-    PENDING_APPROVAL: { label: '승인 대기', cls: 'bg-[#FFF8E1] text-[#F57F17]' },
-    APPROVED: { label: '승인됨', cls: 'bg-[#EDF1FE] text-[#2E7D32]' },
-    REJECTED: { label: '반려', cls: 'bg-[#FFEBEE] text-[#C62828]' },
+    DRAFT: { label: '임시저장', cls: STATUS_VARIANT.neutral },
+    PENDING_APPROVAL: { label: '승인 대기', cls: STATUS_VARIANT.warning },
+    APPROVED: { label: '승인됨', cls: STATUS_VARIANT.success },
+    REJECTED: { label: '반려', cls: STATUS_VARIANT.error },
 }
 
 // ─── Goal Modal ───────────────────────────────────────────
@@ -272,7 +273,7 @@ export default function MyGoalsClient({user }: {
         {goals.map((goal) => {
                             const pct = Number(goal.achievementScore ?? 0)
                             const locked = goal.isLocked || goal.status === 'APPROVED'
-                            const badge = STATUS_BADGE[goal.status] ?? { label: goal.status, cls: 'bg-[#F5F5FA] text-[#8181A5]' }
+                            const badge = STATUS_BADGE[goal.status] ?? { label: goal.status, cls: STATUS_VARIANT.neutral }
 
                             return (
                                 <div key={goal.id} className="rounded-xl border border-[#F0F0F3] bg-white p-5 transition-colors hover:border-[#5E81F4]/30">

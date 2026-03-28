@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, ChevronRight, Settings2, Clock, ShieldAlert } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 import type { SessionUser } from '@/types'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
@@ -23,16 +24,28 @@ interface Cycle {
     participantCount?: number
 }
 
-const STATUS_BADGE: Record<string, { label: string; color: string }> = {
-    DRAFT: { label: '임시저장', color: 'bg-[#F5F5FA] text-[#8181A5]' },
-    ACTIVE: { label: '진행 중', color: 'bg-[#DBEAFE] text-[#1D4ED8]' },
-    CHECK_IN: { label: '체크인', color: 'bg-[#FEF3C7] text-[#92400E]' },
-    EVAL_OPEN: { label: '평가 실시', color: 'bg-[#D1FAE5] text-[#047857]' },
-    CALIBRATION: { label: '캘리브레이션', color: 'bg-[#EDE9FE] text-[#6D28D9]' },
-    FINALIZED: { label: '확정됨', color: 'bg-[#D1FAE5] text-[#047857]' },
-    CLOSED: { label: '종료', color: 'bg-[#F5F5FA] text-[#8181A5]' },
-    COMP_REVIEW: { label: '보상 검토', color: 'bg-[#FEF3C7] text-[#92400E]' },
-    COMP_COMPLETED: { label: '보상 완료', color: 'bg-[#D1FAE5] text-[#047857]' },
+const STATUS_COLORS: Record<string, string> = {
+    DRAFT: STATUS_VARIANT.neutral,
+    ACTIVE: STATUS_VARIANT.info,
+    CHECK_IN: STATUS_VARIANT.warning,
+    EVAL_OPEN: STATUS_VARIANT.success,
+    CALIBRATION: STATUS_VARIANT.primary,
+    FINALIZED: STATUS_VARIANT.success,
+    CLOSED: STATUS_VARIANT.neutral,
+    COMP_REVIEW: STATUS_VARIANT.warning,
+    COMP_COMPLETED: STATUS_VARIANT.success,
+}
+
+const STATUS_LABEL_KEYS: Record<string, string> = {
+    DRAFT: 'draft',
+    ACTIVE: 'goals_settings',
+    CHECK_IN: 'kr_kecb2b4ed',
+    EVAL_OPEN: 'evaluation_kec8ba4ec',
+    CALIBRATION: 'calibration',
+    FINALIZED: 'confirmed',
+    CLOSED: 'ended',
+    COMP_REVIEW: 'kr_kebb3b4ec_keab280ed',
+    COMP_COMPLETED: 'kr_kebb3b4ec_complete',
 }
 
 // ─── Component ────────────────────────────────────────────
@@ -106,14 +119,15 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
                 ) : cycles.length === 0 ? (
                     <div className="rounded-xl border border-[#F0F0F3] bg-white p-16 text-center">
                         <Settings2 className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                        <EmptyState />
                         <button onClick={() => setShowCreateForm(true)}
                             className="mt-3 text-sm font-medium text-[#5E81F4] hover:underline">{t('kr_kecb2ab_cycle_keba78ceb')}</button>
                     </div>
                 ) : (
                     <div className="space-y-4">
                         {cycles.map((cycle) => {
-                            const badge = STATUS_BADGE[cycle.status] ?? { label: cycle.status, color: 'bg-[#F5F5FA] text-[#8181A5]' }
+                            const badgeColor = STATUS_COLORS[cycle.status] ?? STATUS_VARIANT.neutral
+                            const badgeLabel = STATUS_LABEL_KEYS[cycle.status] ? t(STATUS_LABEL_KEYS[cycle.status]) : cycle.status
                             return (
                                 <button key={cycle.id} onClick={() => router.push(`/performance/cycles/${cycle.id}`)}
                                     className="group w-full rounded-xl border border-[#F0F0F3] bg-white p-5 text-left transition-colors hover:border-[#5E81F4]/30">
@@ -121,7 +135,7 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3">
                                                 <h3 className="text-base font-semibold text-[#1C1D21]">{cycle.name}</h3>
-                                                <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${badge.color}`}>{badge.label}</span>
+                                                <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${badgeColor}`}>{badgeLabel}</span>
                                             </div>
                                             <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-[#8181A5]">
                                                 <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{cycle.startDate?.slice(0, 10)} ~ {cycle.endDate?.slice(0, 10)}</span>

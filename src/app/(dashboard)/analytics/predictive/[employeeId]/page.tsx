@@ -1,7 +1,9 @@
+import { Suspense } from 'react'
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions } from '@/lib/auth'
 import EmployeeRiskDetailClient from './EmployeeRiskDetailClient'
+import { ChartSkeleton } from '@/components/shared/PageSkeleton'
 
 export default async function EmployeeRiskDetailPage({
   params,
@@ -17,5 +19,9 @@ export default async function EmployeeRiskDetailPage({
   }
 
   const { employeeId } = await params
-  return <EmployeeRiskDetailClient employeeId={employeeId} />
+  return (
+    <Suspense fallback={<ChartSkeleton />}>
+      <EmployeeRiskDetailClient employeeId={employeeId} />
+    </Suspense>
+  )
 }

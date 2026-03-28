@@ -3,12 +3,14 @@
 // /(dashboard)/approvals/inbox
 // ═══════════════════════════════════════════════════════════
 
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { ApprovalInboxClient } from './ApprovalInboxClient'
+import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export const metadata = {
   title: '승인함 — CTR HR Hub',
@@ -29,8 +31,10 @@ export default async function ApprovalInboxPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6">
-      <ApprovalInboxClient user={user} />
-    </div>
+    <Suspense fallback={<ListPageSkeleton />}>
+      <div className="mx-auto max-w-3xl px-4 py-6">
+        <ApprovalInboxClient user={user} />
+      </div>
+    </Suspense>
   )
 }

@@ -421,6 +421,8 @@ export async function calculateTurnoverRisk(
       triggerType: 'turnover_risk_critical',
       title: '이탈 위험 경보',
       body: '직원의 이탈 위험도가 위험 수준입니다.',
+      titleKey: 'notifications.turnoverRiskCritical.title',
+      bodyKey: 'notifications.turnoverRiskCritical.body',
       link: `/insights/retention`,
       priority: 'high',
       metadata: { riskScore: Math.round(overallScore), riskLevel },

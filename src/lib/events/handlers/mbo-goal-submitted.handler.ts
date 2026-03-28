@@ -67,7 +67,7 @@ export const mboGoalSubmittedHandler: DomainEventHandler<'PERFORMANCE_MBO_GOAL_S
 
       // ── 2. 포지션 기반 매니저 조회 ─────────────────────────────
       if (!positionId) {
-        // TODO: 포지션이 없는 직원(HQ 임원 등)은 매니저 조회 불가 — 알림 skip
+        // 포지션이 없는 직원(HQ 임원 등)은 매니저 조회 불가 — 알림 skip
         console.warn(
           `[mboGoalSubmittedHandler] Employee ${payload.employeeId} has no positionId. Skipping manager notification.`,
         )
@@ -77,7 +77,7 @@ export const mboGoalSubmittedHandler: DomainEventHandler<'PERFORMANCE_MBO_GOAL_S
       const managerInfo = await getManagerByPosition(positionId)
 
       if (!managerInfo?.managerId) {
-        // TODO: 최상위 포지션이거나 reportsTo 미설정 — 알림 skip
+        // 최상위 포지션이거나 reportsTo 미설정 — 알림 skip
         console.warn(
           `[mboGoalSubmittedHandler] No manager found for positionId ${positionId} (employeeId: ${payload.employeeId}). Skipping notification.`,
         )
@@ -90,6 +90,9 @@ export const mboGoalSubmittedHandler: DomainEventHandler<'PERFORMANCE_MBO_GOAL_S
         triggerType: 'performance_mbo_goal_submitted',
         title:       `${employeeName}님이 MBO 목표를 제출했습니다`,
         body:        `${payload.goalCount}개 목표, 총 가중치 ${payload.totalWeight}%`,
+        titleKey:    'notifications.mboGoalSubmitted.title',
+        bodyKey:     'notifications.mboGoalSubmitted.body',
+        bodyParams:  { name: employeeName, goalCount: payload.goalCount, totalWeight: payload.totalWeight },
         link:        `/performance/team-goals?cycleId=${payload.cycleId}`,
         priority:    'normal',
         companyId:   payload.companyId,

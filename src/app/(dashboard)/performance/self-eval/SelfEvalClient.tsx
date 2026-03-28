@@ -90,8 +90,8 @@ export default function SelfEvalClient({
         const evalOpenCycles = res.data.filter((c) => c.status === 'EVAL_OPEN' || c.status === 'CLOSED')
         setCycles(evalOpenCycles)
         if (evalOpenCycles.length > 0) setSelectedCycleId(evalOpenCycles[0].id)
-      } catch {
-        /* ignore */
+      } catch (err) {
+        toast({ title: '자기 평가 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
       }
     }
     fetchCycles()
@@ -133,8 +133,8 @@ export default function SelfEvalClient({
       setCompScores(cs)
 
       setOverallComment(res.data.evaluation?.comment ?? '')
-    } catch {
-      /* ignore */
+    } catch (err) {
+      toast({ title: '자기 평가 저장 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -240,7 +240,7 @@ export default function SelfEvalClient({
           onChange={(e) => setSelectedCycleId(e.target.value)}
           className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
         >
-          {!cycles?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+          {!cycles?.length && <EmptyState />}
               {cycles?.map((c) => (
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}

@@ -111,14 +111,18 @@ export default function DisciplineFormClient({ user }: Props) {
     try {
       const res = await apiClient.getList<EmployeeOption>('/api/v1/employees', { limit: 100 })
       setEmployees(res.data)
-    } catch { /* silently handle */ }
+    } catch (err) {
+      toast({ title: '징계 양식 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
   }, [])
 
   const fetchGrades = useCallback(async () => {
     try {
       const res = await apiClient.getList<GradeOption>('/api/v1/org/grades', { limit: 100 })
       setGrades(res.data)
-    } catch { /* silently handle */ }
+    } catch (err) {
+      toast({ title: '징계 양식 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
   }, [])
 
   useEffect(() => {
@@ -155,8 +159,8 @@ export default function DisciplineFormClient({ user }: Props) {
         salaryReductionMonths: values.salaryReductionMonths !== '' ? Number(values.salaryReductionMonths) : undefined,
       })
       router.push('/discipline')
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: '징계 저장 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setSubmitting(false)
     }
@@ -202,7 +206,7 @@ export default function DisciplineFormClient({ user }: Props) {
                 className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 bg-white"
               >
                 <option value="">{t('selectEmployee')}</option>
-                {!employees?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+                {!employees?.length && <EmptyState />}
               {employees?.map((emp) => (
                   <option key={emp.id} value={emp.id}>
                     {emp.name} ({emp.employeeNo})

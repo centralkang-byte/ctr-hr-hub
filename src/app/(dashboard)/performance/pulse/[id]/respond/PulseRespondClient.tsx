@@ -5,10 +5,11 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { ArrowLeft, Send, CheckCircle2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import type { SessionUser } from '@/types'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -34,11 +35,9 @@ const LIKERT_LABELS = ['매우 부정', '부정', '보통', '긍정', '매우 �
 
 // ─── Component ───────────────────────────────────────────
 
-export default function PulseRespondClient() {
+export default function PulseRespondClient({ user, id }: { user: SessionUser; id: string }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
-
-  const { id } = useParams<{ id: string }>()
   const router = useRouter()
 
   const [survey, setSurvey] = useState<SurveyDetail | null>(null)
@@ -51,7 +50,9 @@ export default function PulseRespondClient() {
     try {
       const res = await apiClient.get<SurveyDetail>(`/api/v1/pulse/surveys/${id}`)
       setSurvey(res.data)
-    } catch { /* ignore */ }
+    } catch (err) {
+      toast({ title: '설문 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
     setLoading(false)
   }, [id])
 
@@ -71,7 +72,9 @@ export default function PulseRespondClient() {
       }))
       await apiClient.post(`/api/v1/pulse/surveys/${id}/respond`, { answers: answerList })
       setSubmitted(true)
-    } catch { /* ignore */ }
+    } catch (err) {
+      toast({ title: '응답 제출 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
     setSubmitting(false)
   }
 

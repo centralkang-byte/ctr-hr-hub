@@ -259,7 +259,7 @@ export default function AdjustmentsClient({user }: Props) {
                             {runs.length === 0 ? (
                                 <div className="px-4 py-8 text-center">
                                     <Layers size={24} className="text-[#D4D4D4] mx-auto mb-2" />
-                                    <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                                    <EmptyState />
                                 </div>
                             ) : (
                                 runs.map((run) => (
@@ -369,7 +369,7 @@ export default function AdjustmentsClient({user }: Props) {
                                 ) : filteredAdj.length === 0 ? (
                                     <div className="flex flex-col items-center justify-center h-40">
                                         <FileText size={28} className="text-[#D4D4D4] mb-2" />
-                                        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                                        <EmptyState />
                                     </div>
                                 ) : (
                                     <div className={TABLE_STYLES.wrapper}>
@@ -444,7 +444,7 @@ export default function AdjustmentsClient({user }: Props) {
             {/* Add Adjustment Modal */}
             {showForm && (
                 <div className={MODAL_STYLES.container}>
-                    <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full mx-4 overflow-hidden">
+                    <div className="bg-white rounded-xl shadow-lg max-w-lg w-full mx-4 overflow-hidden">
                         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8E8E8]">
                             <h2 className="text-lg font-bold text-[#1A1A1A]">{t('kr_keca1b0ec_add')}</h2>
                             <button onClick={() => setShowForm(false)} className="p-1 hover:bg-[#F5F5F5] rounded-lg">

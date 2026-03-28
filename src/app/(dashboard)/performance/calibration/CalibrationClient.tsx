@@ -122,7 +122,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
         const calibCycles = res.data.filter((c) => c.status === 'CALIBRATION' || c.status === 'CLOSED')
         setCycles(calibCycles)
         if (calibCycles.length > 0) setSelectedCycleId(calibCycles[0].id)
-      } catch { /* ignore */ }
+      } catch (err) { toast({ title: '평가 주기 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }); setLoading(false) }
     }
     fetchCycles()
   }, [])
@@ -130,12 +130,12 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
   // ─── Fetch sessions ─────────────────────────────────
 
   const fetchSessions = useCallback(async () => {
-    if (!selectedCycleId) return
+    if (!selectedCycleId) { setLoading(false); return }
     setLoading(true)
     try {
       const res = await apiClient.getList<CalibSession>('/api/v1/performance/calibration/sessions', { cycleId: selectedCycleId })
       setSessions(res.data)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '캘리브레이션 세션 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     finally { setLoading(false) }
   }, [selectedCycleId])
 
@@ -172,7 +172,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
       if (res.data.evaluations && res.data.evaluations.length > 0) {
         loadReadinessData(res.data.evaluations.map((e: EvalItem) => e.employeeId))
       }
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '세션 상세 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     finally { setDetailLoading(false) }
   }, [loadReadinessData])
 
@@ -335,12 +335,12 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
   }
 
   if (loading) {
-    return <div className="p-6 flex items-center justify-center h-64 text-[#666]">{tc('loading')}...</div>
+    return <div className="p-4 flex items-center justify-center h-64 text-[#666]">{tc('loading')}...</div>
   }
 
   return (
     <>
-    <div className="p-6 space-y-6">
+    <div className="p-4 space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -392,7 +392,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Sessions list */}
         <div className="rounded-xl border border-[#E8E8E8] bg-white">
           <div className="px-5 py-4 border-b border-[#E8E8E8]">

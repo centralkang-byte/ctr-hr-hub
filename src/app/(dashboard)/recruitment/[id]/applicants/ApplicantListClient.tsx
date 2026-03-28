@@ -140,8 +140,8 @@ export default function ApplicantListClient({
       )
       setData(res.data)
       setTotal(res.pagination.total)
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: '지원자 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -292,7 +292,7 @@ export default function ApplicantListClient({
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#F0F0F3]">
-                {!data?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+                {!data?.length && <EmptyState />}
               {data?.map((app) => (
                   <tr
                     key={app.id}

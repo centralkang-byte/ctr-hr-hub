@@ -100,6 +100,9 @@ export async function POST(req: NextRequest) {
           triggerType: 'LEAVE_PROMOTION',
           title: `연차 사용 촉진 안내 (${threshold.label})`,
           body: `${emp.name}님, 잔여 연차가 ${remainingDays}일 남아있습니다. 입사 기념일까지 ${daysUntilAnniversary}일 남았습니다. 연차 사용을 권장드립니다.`,
+          titleKey: 'notifications.leavePromotion.title',
+          bodyKey: 'notifications.leavePromotion.body',
+          bodyParams: { name: emp.name, remainingDays, daysUntilAnniversary },
           link: '/leave',
         })
 

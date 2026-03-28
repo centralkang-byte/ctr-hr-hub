@@ -11,6 +11,7 @@ import RetentionPolicyForm from '@/components/compliance/gdpr/RetentionPolicyFor
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import type { SessionUser } from '@/types'
 
 interface RetentionPolicy {
   id: string
@@ -22,7 +23,7 @@ interface RetentionPolicy {
   last_run_at: string | null
 }
 
-export default function DataRetentionClient() {
+export default function DataRetentionClient({ user }: { user: SessionUser }) {
   const t = useTranslations('compliance')
   const tc = useTranslations('common')
 
@@ -120,7 +121,7 @@ export default function DataRetentionClient() {
                 </tr>
               </thead>
               <tbody>
-                {!policies?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+                {!policies?.length && <EmptyState />}
               {policies?.map((p) => (
                   <tr key={p.id} className={TABLE_STYLES.row}>
                     <td className={cn(TABLE_STYLES.cell, 'font-medium text-[#1A1A1A]')}>{p.category}</td>

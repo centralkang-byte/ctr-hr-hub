@@ -248,7 +248,10 @@
     "unitYear": "년",
     "unitPerson": "명",
     "unitCount": "건",
-    "unitMonth": "개월"
+    "unitMonth": "개월",
+    "noDataDesc": "조건에 맞는 데이터가 없습니다. 필터를 변경하거나 나중에 다시 확인해 주세요.",
+    "completionRate": "완료율",
+    "employee": "직원"
   },
   "auth": {
     "login": "로그인",
@@ -259,7 +262,10 @@
     "forbidden": "접근 권한이 없습니다.",
     "notRegistered": "등록되지 않은 사용자입니다. HR 담당자에게 문의하세요.",
     "slogan": "Central to your safe mobility",
-    "myProfile": "내 프로필"
+    "myProfile": "내 프로필",
+    "sessionExpiring": "세션이 곧 만료됩니다",
+    "sessionExpiringDesc": "작업 중인 데이터가 사라질 수 있습니다. 세션을 연장하시겠습니까?",
+    "extendSession": "세션 연장"
   },
   "menu": {
     "home": "홈",
@@ -463,8 +469,7 @@
     "gdpr": "GDPR",
     "ai-report": "AI 보고서",
     "attrition": "이탈 위험",
-    "results": "성과 결과",
-    "calibration": "캘리브레이션"
+    "results": "성과 결과"
   },
   "employee": {
     "title": "직원 관리",
@@ -1234,6 +1239,7 @@
     "pulseSurveyTitle": "펄스 서베이",
     "teamGoalsTitle": "팀 목표",
     "recognitionTitle": "칭찬/인정",
+    "recognitionCount": "칭찬 건수",
     "compReviewTitle": "보상 검토",
     "oneOnOneTitle": "1:1 미팅",
     "notificationsTitle": "알림",
@@ -2199,7 +2205,18 @@
     "selfServiceDesc": "퇴직 과정에서 필요한 정보와 태스크를 확인합니다.",
     "pageTitle": "오프보딩 관리",
     "emptyTitle": "진행 중인 오프보딩이 없습니다",
-    "emptyDesc": "퇴직 처리가 필요한 직원이 없습니다."
+    "emptyDesc": "퇴직 처리가 필요한 직원이 없습니다.",
+    "satisfactionDetail": "만족도 상세",
+    "satisfactionCompensation": "보상 만족도",
+    "satisfactionCulture": "문화 만족도",
+    "satisfactionManagement": "경영진 만족도",
+    "satisfactionGrowth": "성장 만족도",
+    "suggestions": "건의 사항",
+    "suggestionsPlaceholder": "개선 건의 사항을 입력해 주세요",
+    "detailedReason": "상세 사유",
+    "detailedReasonPlaceholder": "상세 퇴직 사유를 입력해 주세요",
+    "isConfidential": "비공개",
+    "isConfidentialDesc": "이 면담 내용은 비공개로 처리됩니다"
   },
   "salary": {
     "title": "보상 관리",
@@ -2626,7 +2643,9 @@
     "applyWarning": "이 작업은 되돌릴 수 없습니다. 계획의 모든 변경 사항이 즉시 반영됩니다.",
     "restructureSuccess": "조직 개편이 완료되었습니다.",
     "draftSaved": "초안이 저장되었습니다.",
-    "searchDepts": "부서 검색..."
+    "searchDepts": "부서 검색...",
+    "name": "이름",
+    "searchResult": "검색 결과"
   },
   "payroll": {
     "title": "급여 관리",
@@ -2975,7 +2994,8 @@
     "average": "보통",
     "shinhanBank": "신한은행",
     "start": "시작",
-    "hours": "시간"
+    "hours": "시간",
+    "reopenDescription": "마감된 근태를 다시 열면 급여 계산이 초기화됩니다. 계속하시겠습니까?"
   },
   "analytics": {
     "title": "분석/리포트",
@@ -3050,6 +3070,28 @@
       "report": "AI 보고서",
       "reportDesc": "AI 경영진 보고서 자동 생성"
     },
+    "executive": {
+      "headcountTrend": "인원 추이",
+      "turnoverTrend": "이직률 추이",
+      "companyDistribution": "법인별 인원 분포",
+      "riskAlerts": "위험 신호",
+      "companyComparison": "법인 비교",
+      "hires": "입사",
+      "exits": "퇴사",
+      "netChange": "순증감",
+      "industryAvg": "업계 평균",
+      "turnoverRateLabel": "이직률",
+      "detected": "{count}건 감지됨",
+      "noRiskDetected": "감지된 위험 신호가 없습니다.",
+      "loadFailed": "데이터를 불러올 수 없습니다",
+      "loadFailedDesc": "인사이트 데이터를 불러오는 중 오류가 발생했습니다. 새로고침하거나 잠시 후 다시 시도해주세요.",
+      "tooltipTotalEmp": "현재 ACTIVE 상태인 전체 직원 수",
+      "tooltipTurnover": "당월 퇴사자 ÷ 전월 말 재직자 × 100",
+      "tooltipTenure": "전체 재직자의 입사일 기준 평균 근속 연수",
+      "tooltipLaborCost": "최근 확정된 급여의 법인별 합산 (KRW 변환)",
+      "tooltipRecruitment": "현재 진행 중인 채용 공고 수",
+      "tooltipOnboarding": "완료된 온보딩 ÷ 전체 온보딩 × 100"
+    },
     "turnoverPage": {
       "title": "이직 분석",
       "description": "월별 퇴사 트렌드, 사유 분석, 부서별 이직률",
@@ -3082,7 +3124,8 @@
       "issuesTrend": "지각/결근/조퇴 트렌드",
       "late": "지각",
       "absent": "결근",
-      "earlyOut": "조퇴"
+      "earlyOut": "조퇴",
+      "retry": "다시 시도"
     },
     "recruitmentPage": {
       "title": "채용 분석",
@@ -3159,7 +3202,12 @@
       "jobCategory": "직군",
       "headcount": "인원",
       "average": "평균",
-      "median": "중간값"
+      "median": "중간값",
+      "underBand": "밴드 하한 미달",
+      "inBand": "밴드 이내",
+      "overBand": "밴드 상한 초과",
+      "compaRatio": "Compa-Ratio",
+      "compaRatioComparison": "Compa-Ratio 비교"
     },
     "attritionPage": {
       "title": "이탈 위험 분석",
@@ -3386,6 +3434,7 @@
       "EMAIL": "이메일",
       "TEAMS": "Teams"
     },
+    "viewAll": "전체 보기",
     "preference": {
       "title": "알림 설정",
       "quietHours": "방해금지 시간",
@@ -4201,7 +4250,13 @@
     "chatbotLowConfidence": "정확한 답변이 어렵습니다. HR 담당자에게 문의를 전달할까요?",
     "chatbotUnavailable": "현재 AI 답변이 불가합니다.",
     "feedbackPositive": "도움이 됐어요",
-    "feedbackNegative": "도움이 안 됐어요"
+    "feedbackNegative": "도움이 안 됐어요",
+    "chatbotWelcome": "안녕하세요! CTR HR 챗봇입니다. 근태, 휴가, 급여, 인사 정책 등에 대해 질문해 주세요.",
+    "chatbotNewSession": "새 대화",
+    "chatbotError": "죄송합니다. 응답을 생성하는 중 오류가 발생했습니다.",
+    "chatbotDefaultTitle": "대화",
+    "chatbotNoHistory": "대화 내역이 없습니다.",
+    "chatbotEscalated": "HR 담당자에게 전달되었습니다."
   },
   "error": {
     "notFound": "리소스를 찾을 수 없습니다.",
@@ -4345,6 +4400,9 @@
     "totalNet": "총실지급액",
     "allStatus": "전체 상태",
     "emptyMessage": "급여 실행 내역이 없습니다.",
+    "highOrAbove": "High 이상",
+    "totalAnomalies": "총 이상 건수",
+    "noAnomalies": "이상 없음",
     "runType": {
       "MONTHLY": "월급",
       "BONUS": "상여금",
@@ -4366,7 +4424,10 @@
     "paid": "지급완료",
     "grossPay": "총 지급액",
     "deductions": "공제액",
-    "netPay": "실수령액"
+    "netPay": "실수령액",
+    "unreadCount": "미열람 명세서 {count}건",
+    "momSame": "전월 동일",
+    "newBadge": "NEW"
   },
   "payStubDetail": {
     "titleWithMonth": "{month} 급여명세서",
@@ -4579,6 +4640,9 @@
       "retention": "데이터 보관",
       "dpia": "영향평가 (DPIA)",
       "piiAudit": "개인정보 접근 로그",
+      "piiAuditDesc": "PII 접근 모니터링 및 감사 추적",
+      "retentionDesc": "데이터 보관 정책 및 실행 관리",
+      "dpiaDesc": "데이터 보호 영향 평가 관리",
       "consentForm": "동의 수집",
       "revokeConsent": "동의 철회",
       "newRequest": "새 요청",
@@ -4605,10 +4669,28 @@
       "legalBasis": "법적 근거",
       "consentedAt": "동의일",
       "revokedAt": "철회일",
-      "expiresAt": "만료일"
+      "expiresAt": "만료일",
+      "riskLow": "낮음",
+      "riskMedium": "보통",
+      "riskHigh": "높음",
+      "riskCritical": "심각",
+      "statusDraft": "초안",
+      "statusInReview": "검토 중",
+      "statusApproved": "승인됨",
+      "statusRejected": "반려됨",
+      "statusPending": "대기 중",
+      "statusInProgress": "처리 중",
+      "statusCompleted": "완료됨",
+      "requestAccess": "열람권",
+      "requestErasure": "삭제권",
+      "requestPortability": "이동권",
+      "requestRectification": "정정권",
+      "requestRestriction": "처리 제한권",
+      "requestObjection": "반대권"
     },
     "ru": {
       "title": "러시아 컴플라이언스",
+      "description": "군복무 등록, 전자문서(KEDO), 법정 보고서",
       "military": "군복무 기록",
       "kedo": "전자문서 (КЭДО)",
       "reports": "법정 보고서",
@@ -4630,6 +4712,7 @@
     },
     "cn": {
       "title": "중국 컴플라이언스",
+      "description": "사회보험(五险一金), 직원 등록 관리",
       "socialInsurance": "사회보험 (五险一金)",
       "config": "요율 설정",
       "records": "월별 기록",
@@ -4646,6 +4729,7 @@
     },
     "kr": {
       "title": "한국 컴플라이언스",
+      "description": "52시간 모니터링, 법정 교육, 퇴직금 관리",
       "subtitle": "근로기준법 준수 현황 관리",
       "workHours": "52시간 모니터링",
       "mandatoryTraining": "법정의무교육",
@@ -4704,6 +4788,7 @@
       "profile": "내 프로필",
       "attendance": "출퇴근",
       "leave": "휴가 신청",
+      "loa": "휴직 신청",
       "goals": "목표/평가",
       "payslip": "급여명세서",
       "benefits": "복리후생",
@@ -4717,7 +4802,12 @@
       "approvalsInbox": "승인함",
       "myOnboarding": "나의 온보딩",
       "myOffboarding": "나의 퇴직처리",
-      "myTasks": "나의 업무"
+      "myTasks": "나의 업무",
+      "documents": "문서/증명서",
+      "internalJobs": "사내 채용",
+      "notificationSettings": "알림 설정",
+      "directory": "구성원 검색",
+      "orgChart": "조직도"
     },
     "team": {
       "label": "팀 관리",
@@ -4730,7 +4820,8 @@
       "managerEval": "매니저 평가",
       "oneOnOne": "1:1 미팅",
       "skills": "팀원 역량 평가",
-      "delegation": "업무 위임"
+      "delegation": "업무 위임",
+      "time": "팀 근태/휴가"
     },
     "hrMgmt": {
       "label": "인사 관리",
@@ -4739,9 +4830,11 @@
       "org": "조직 관리",
       "attendanceAdmin": "근태 관리",
       "leaveAdmin": "휴가 관리",
+      "loaAdmin": "휴직 관리",
       "onboardingOffboarding": "온보딩/오프보딩",
       "disciplineRewards": "징계/포상",
-      "exitInterviewStats": "퇴직 면담 통계"
+      "exitInterviewStats": "퇴직 면담 통계",
+      "leaveLoaAdmin": "휴가/휴직 관리"
     },
     "hrOps": {
       "label": "인사 운영",
@@ -4767,7 +4860,8 @@
       "posts": "채용 공고",
       "dashboard": "채용 대시보드",
       "board": "칸반 보드",
-      "talentPool": "인재 풀"
+      "talentPool": "인재 풀",
+      "internalJobs": "사내 채용"
     },
     "performance": {
       "label": "성과/보상",
@@ -4843,7 +4937,8 @@
       "dpia": "DPIA",
       "kr": "한국 컴플라이언스",
       "cn": "중국 컴플라이언스",
-      "ru": "러시아 컴플라이언스"
+      "ru": "러시아 컴플라이언스",
+      "hub": "컴플라이언스"
     },
     "settings": {
       "label": "설정",
@@ -4888,6 +4983,17 @@
     },
     "favorites": {
       "label": "즐겨찾기"
+    },
+    "employee": {
+      "work": "근태/휴가",
+      "org": "조직"
+    },
+    "subGroup": {
+      "work": "업무",
+      "time-off": "근태/휴가",
+      "pay": "급여",
+      "growth": "성장",
+      "etc": "기타"
     }
   },
   "header": {
@@ -4959,7 +5065,8 @@
     "emptyTitle": "스킬 데이터가 없습니다",
     "emptyDesc": "아직 등록된 스킬이 없습니다",
     "skillMatrixTitle": "스킬 매트릭스",
-    "teamSkillsTitle": "팀 스킬"
+    "teamSkillsTitle": "팀 스킬",
+    "enterComment": "코멘트를 입력하세요"
   },
   "lms": {
     "pageTitle": "교육 관리",
@@ -4978,7 +5085,11 @@
       "performance": "성과 현황",
       "payroll": "급여 현황",
       "onboarding": "온보딩 현황",
-      "compliance": "컴플라이언스"
+      "compliance": "컴플라이언스",
+      "summary": "종합",
+      "workforce": "인력 현황",
+      "recruit": "채용",
+      "training": "교육"
     },
     "kpi": {
       "totalEmployees": "전체 인원",
@@ -5000,7 +5111,40 @@
       "payroll_cost": "인건비"
     },
     "noData": "데이터가 없습니다",
-    "noDataDesc": "조건을 변경하거나 새로운 데이터를 추가해 보세요"
+    "noDataDesc": "조건을 변경하거나 새로운 데이터를 추가해 보세요",
+    "kpiDashboardTitle": "KPI 대시보드",
+    "kpiDashboardSubtitle": "전사 인사 현황을 한눈에 확인하세요",
+    "globalCompare": "글로벌 비교",
+    "allCompanies": "전체 법인",
+    "kpiHeadcount": "전사 인원",
+    "kpiTurnoverRate": "이직률",
+    "kpiRecruitActive": "채용 진행",
+    "kpiAttritionRisk": "이탈 위험",
+    "kpiLeaveUsage": "연차 사용률",
+    "kpiTrainingCompletion": "교육 이수율",
+    "unitPerson": "명",
+    "unitCase": "건",
+    "prevMonth": "전월 대비",
+    "avgDays": "평균 {days}일",
+    "attritionBreakdown": "High {high}명 · Critical {critical}명",
+    "trainingBreakdown": "{completed}/{total}명 이수",
+    "widget": {
+      "gradeDistribution": "직급별 분포",
+      "companyDistribution": "법인별 분포",
+      "hireTrend": "채용 추이",
+      "tenureDistribution": "근속연수 분포",
+      "recruitPipeline": "채용 파이프라인",
+      "avgTimeToFill": "평균 충원 소요일",
+      "talentPool": "인재 풀",
+      "performanceGrade": "성과 등급",
+      "skillGapTop5": "Skill Gap Top 5",
+      "overtime52h": "52시간 초과 위험",
+      "leaveTrend": "휴가 사용 추이",
+      "burnoutRisk": "번아웃 위험",
+      "payrollCost": "급여 비용",
+      "mandatoryTraining": "필수 교육",
+      "benefitsUsage": "복리후생 사용 현황"
+    }
   },
   "mySpace": {
     "tasksTitle": "나의 업무",
@@ -5085,6 +5229,17 @@
       "days": "일수",
       "status": "상태",
       "requestedAt": "신청일"
+    },
+    "atGlance": {
+      "team": "소속",
+      "tenure": "근속",
+      "years": "년",
+      "joined": "입사",
+      "certLang": "자격/언어",
+      "certCount": "자격증 {count}개",
+      "langCount": "언어 {count}개",
+      "skills": "스킬",
+      "skillCount": "개 보유"
     }
   },
   "directory": {
@@ -5103,6 +5258,106 @@
   "notifications": {
     "pageTitle": "알림",
     "emptyTitle": "새로운 알림이 없습니다",
-    "emptyDesc": "알림이 발생하면 여기에 표시됩니다."
+    "emptyDesc": "알림이 발생하면 여기에 표시됩니다.",
+    "leaveApproved": {
+      "title": "휴가 승인 완료",
+      "body": "휴가가 승인되었습니다: {startDate} ~ {endDate}"
+    },
+    "leaveRejected": {
+      "title": "휴가 반려",
+      "body": "반려 사유: {reason}"
+    },
+    "overtimeWarning48h": {
+      "title": "주간 근무시간 48시간 초과",
+      "body": "주간 근무시간이 48시간을 초과했습니다. 추가 연장근무에 유의해 주세요."
+    },
+    "overtimeBlocked52h": {
+      "title": "법정 최대 근무시간 도달",
+      "body": "법정 최대 근무시간(52시간)에 도달했습니다. 추가 근무가 제한됩니다."
+    },
+    "turnoverRiskCritical": {
+      "title": "이직 위험도 심각",
+      "body": "직원 이직 위험도가 심각 수준입니다."
+    },
+    "mboGoalSubmitted": {
+      "title": "MBO 목표 제출",
+      "body": "{name}님이 MBO 목표를 제출했습니다. {goalCount}개 목표, 총 가중치 {totalWeight}%"
+    },
+    "selfEvalSubmitted": {
+      "title": "자기평가 제출",
+      "body": "{name}님이 자기평가를 제출했습니다. 팀원 평가를 진행해 주세요."
+    },
+    "managerEvalSubmitted": {
+      "title": "관리자 평가 완료",
+      "body": "관리자 평가가 완료되었습니다. 사이클 확정 후 결과를 확인할 수 있습니다."
+    },
+    "mboGoalApproved": {
+      "title": "MBO 목표 승인",
+      "body": "MBO 목표가 승인되었습니다."
+    },
+    "mboGoalRejected": {
+      "title": "MBO 목표 수정 요청",
+      "body": "MBO 목표 수정이 필요합니다. 피드백을 확인하고 다시 제출해 주세요."
+    },
+    "goalOverdue": {
+      "title": "MBO 목표 미제출",
+      "body": "{name}님이 {cycleName} MBO 목표를 미제출 상태입니다. {daysOverdue}일 초과."
+    },
+    "evalOverdue": {
+      "title": "평가 기한 초과",
+      "body": "{cycleName} 평가 기간이 {daysOverdue}일 초과되었습니다. 후속 조치가 필요합니다."
+    },
+    "payrollAttendanceClosed": {
+      "title": "근태 마감 완료",
+      "body": "{yearMonth} 근태가 마감되었습니다. {confirmedCount}/{totalEmployees}명 확인 완료. 급여 산정을 진행하세요."
+    },
+    "payrollReviewReady": {
+      "title": "급여 이상항목 검토 준비",
+      "body": "{yearMonth} 급여 이상항목 검토가 준비되었습니다."
+    },
+    "payrollPendingApproval": {
+      "title": "급여 승인 요청",
+      "body": "{yearMonth} 급여({headcount}명, {totalNet}) 승인이 요청되었습니다."
+    },
+    "payrollApprovalRejected": {
+      "title": "급여 승인 반려",
+      "body": "반려 사유: {reason}"
+    },
+    "payrollApprovalNeeded": {
+      "title": "급여 승인 필요",
+      "body": "{yearMonth} 급여 승인을 진행해 주세요."
+    },
+    "benefitApproved": {
+      "title": "복리후생 승인",
+      "body": "{planName} 복리후생 청구가 승인되었습니다."
+    },
+    "profileChangeApproved": {
+      "title": "인사정보 변경 승인",
+      "body": "{fieldLabel} 변경 요청이 승인되었습니다."
+    },
+    "profileChangeRejected": {
+      "title": "인사정보 변경 반려",
+      "body": "{fieldLabel} 변경 요청이 반려되었습니다. 사유: {reason}"
+    },
+    "recognitionReceived": {
+      "title": "칭찬 수신",
+      "body": "{senderName}님이 칭찬을 보냈습니다."
+    },
+    "hrChatbotEscalation": {
+      "title": "HR 상담 요청",
+      "body": "{userName}님이 HR 담당자 연결을 요청했습니다."
+    },
+    "evalReminder": {
+      "title": "평가 마감 임박",
+      "body": "{name}님, {cycleName} {type} 마감이 {label}입니다. 제출해 주세요."
+    },
+    "evalEscalation": {
+      "title": "평가 미제출 에스컬레이션",
+      "body": "{cycleName} {type} 마감이 지났습니다. {count}명이 아직 미제출 상태입니다."
+    },
+    "leavePromotion": {
+      "title": "연차 사용 권장",
+      "body": "{name}님, 잔여 연차가 {remainingDays}일입니다. 입사일까지 {daysUntilAnniversary}일 남았습니다. 연차 사용을 권장드립니다."
+    }
   }
 }

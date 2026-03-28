@@ -9,6 +9,7 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { getDirectReportIds } from '@/lib/employee/direct-reports'
 import type { SessionUser } from '@/types'
 
 const searchSchema = z.object({
@@ -25,10 +26,11 @@ export const GET = withPermission(
 
     const { cycleId } = parsed.data
 
-    // Get direct reports
-    // TODO: implement proper manager hierarchy via position reportsTo
+    // Get direct reports via position hierarchy
+    const reportIds = await getDirectReportIds(user.employeeId)
     const teamMembers = await prisma.employee.findMany({
       where: {
+        id: { in: reportIds },
         assignments: {
           some: { companyId: user.companyId, status: 'ACTIVE', isPrimary: true, endDate: null },
         },

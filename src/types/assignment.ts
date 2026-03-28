@@ -69,6 +69,7 @@ export type CreateAssignmentParams = {
   companyId:      string
   departmentId?:  string
   jobGradeId?:    string
+  titleId?:       string
   jobCategoryId?: string
   employmentType: string
   contractType?:  string

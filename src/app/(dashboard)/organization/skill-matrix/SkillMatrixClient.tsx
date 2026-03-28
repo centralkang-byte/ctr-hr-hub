@@ -155,13 +155,13 @@ function RadarModal({
     setLoading(true)
     apiClient.get<RadarData>(`/api/v1/skills/radar?employeeId=${employeeId}&period=${period}`)
       .then((res) => setData(res.data))
-      .catch(() => {})
+      .catch((err: unknown) => { toast({ title: '스킬 매트릭스 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) })
       .finally(() => setLoading(false))
   }, [employeeId, period])
 
   return (
     <div className={MODAL_STYLES.container}>
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl">
+      <div className="bg-white rounded-xl shadow-lg w-full max-w-xl">
         <div className="flex items-center justify-between p-5 border-b border-[#E8E8E8]">
           <div>
             <h2 className="text-lg font-semibold text-[#1A1A1A]">
@@ -185,7 +185,7 @@ function RadarModal({
               <div className="animate-spin w-6 h-6 border-2 border-[#5E81F4] border-t-transparent rounded-full" />
             </div>
           ) : !data?.radarData.length ? (
-            <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+            <EmptyState />
           ) : (
             <>
               {/* KPI 요약 */}
@@ -272,8 +272,8 @@ export default function SkillMatrixClient({user,
       ])
       setMatrixData(matrix.data)
       setGapReport(report.data)
-    } catch {
-      // 에러 무시
+    } catch (err) {
+      toast({ title: '스킬 매트릭스 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -384,7 +384,7 @@ export default function SkillMatrixClient({user,
                   {matrixData.matrix.length === 0 ? (
                     <div className="text-center py-12 text-[#666]">
                       <Users className="w-10 h-10 text-[#E8E8E8] mx-auto mb-3" />
-                      <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                      <EmptyState />
                     </div>
                   ) : (
                     <div className={`${TABLE_STYLES.wrapper} overflow-x-auto overflow-y-visible`}>
@@ -524,7 +524,7 @@ export default function SkillMatrixClient({user,
                     </h3>
                     <div className="space-y-2">
                       {gapReport.topGaps.length === 0 ? (
-                        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                        <EmptyState />
                       ) : gapReport.topGaps.map((g, i) => (
                         <div key={g.competencyId} className="flex items-center gap-3 p-3 bg-[#FAFAFA] rounded-lg">
                           <span className="text-sm font-bold text-[#999] w-5">{i + 1}</span>
@@ -550,7 +550,7 @@ export default function SkillMatrixClient({user,
                     </h3>
                     <div className="space-y-2">
                       {gapReport.topStrengths.length === 0 ? (
-                        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                        <EmptyState />
                       ) : gapReport.topStrengths.map((g, i) => (
                         <div key={g.competencyId} className="flex items-center gap-3 p-3 bg-[#FAFAFA] rounded-lg">
                           <span className="text-sm font-bold text-[#999] w-5">{i + 1}</span>
@@ -588,7 +588,7 @@ export default function SkillMatrixClient({user,
                         </div>
                       ))}
                       {gapReport.topGaps.length === 0 && (
-                        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                        <EmptyState />
                       )}
                     </div>
                   </div>

@@ -47,7 +47,7 @@ export default function TeamResultsClient({
         const res = await apiClient.getList<CycleOption>('/api/v1/performance/cycles', { page: 1, limit: 100 })
         setCycles(res.data)
         if (res.data.length > 0) setSelectedCycleId(res.data[0].id)
-      } catch { /* ignore */ }
+      } catch (err) { toast({ title: '팀 평가 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     }
     fetchCycles()
   }, [])
@@ -58,7 +58,7 @@ export default function TeamResultsClient({
     try {
       const res = await apiClient.get<TeamResult[]>('/api/v1/performance/results/team', { cycleId: selectedCycleId })
       setResults(res.data)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '팀 평가 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     finally { setLoading(false) }
   }, [selectedCycleId])
 
@@ -87,7 +87,7 @@ export default function TeamResultsClient({
           onChange={(e) => setSelectedCycleId(e.target.value)}
           className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
         >
-          {!cycles?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+          {!cycles?.length && <EmptyState />}
               {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
       </div>

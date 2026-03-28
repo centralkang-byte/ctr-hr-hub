@@ -248,7 +248,10 @@
     "unitYear": "year",
     "unitPerson": " people",
     "unitCount": " items",
-    "unitMonth": " month(s)"
+    "unitMonth": " month(s)",
+    "noDataDesc": "Không có dữ liệu phù hợp. Vui lòng thay đổi bộ lọc hoặc kiểm tra lại sau.",
+    "completionRate": "Tỷ lệ hoàn thành",
+    "employee": "Nhân viên"
   },
   "auth": {
     "login": "Login",
@@ -259,7 +262,10 @@
     "forbidden": "Access denied.",
     "notRegistered": "Unregistered user. Please contact HR.",
     "slogan": "Central to your safe mobility",
-    "myProfile": "My Profile"
+    "myProfile": "My Profile",
+    "sessionExpiring": "Phiên sắp hết hạn",
+    "sessionExpiringDesc": "Phiên làm việc của bạn sắp hết hạn. Dữ liệu chưa lưu có thể bị mất. Bạn có muốn gia hạn không?",
+    "extendSession": "Gia hạn phiên"
   },
   "menu": {
     "home": "Home",
@@ -384,7 +390,7 @@
     "krCompliance": "Tuân thủ Hàn Quốc",
     "selfEval": "Self Đánh giá",
     "managerEval": "Quản lý Đánh giá",
-    "calibration": "Calibration",
+    "calibration": "Hiệu chuẩn",
     "teamResults": "Nhóm Kết quảs",
     "adminResults": "Công ty Kết quảs",
     "pulseSurvey": "Pulse Survey",
@@ -463,8 +469,7 @@
     "gdpr": "GDPR",
     "ai-report": "Báo cáo AI",
     "attrition": "Rủi ro nghỉ việc",
-    "results": "Kết quả",
-    "calibration": "Hiệu chuẩn"
+    "results": "Kết quả"
   },
   "employee": {
     "title": "Employee Management",
@@ -1608,7 +1613,8 @@
     "targetEmployees": "Target Nhân viêns",
     "totalNominations": "Tổng cộng Nominations",
     "nominationCount": "# Nominations",
-    "avgScore": "Avg Điểm"
+    "avgScore": "Avg Điểm",
+    "recognitionCount": "Số lần khen thưởng"
   },
   "recruitment": {
     "title": "Recruitment",
@@ -2199,7 +2205,18 @@
     "myOffboardingTitle": "My Offboarding",
     "myOffboardingEmpty": "No active offboarding process.",
     "selfServiceTitle": "Offboarding Self-Service",
-    "selfServiceDesc": "Xem offboarding tasks and required information."
+    "selfServiceDesc": "Xem offboarding tasks and required information.",
+    "satisfactionDetail": "Chi tiết mức độ hài lòng",
+    "satisfactionCompensation": "Hài lòng về lương thưởng",
+    "satisfactionCulture": "Hài lòng về văn hóa",
+    "satisfactionManagement": "Hài lòng về quản lý",
+    "satisfactionGrowth": "Hài lòng về phát triển",
+    "suggestions": "Đề xuất",
+    "suggestionsPlaceholder": "Nhập đề xuất cải thiện",
+    "detailedReason": "Lý do chi tiết",
+    "detailedReasonPlaceholder": "Nhập lý do nghỉ việc chi tiết",
+    "isConfidential": "Bảo mật",
+    "isConfidentialDesc": "Nội dung phỏng vấn này sẽ được bảo mật"
   },
   "salary": {
     "title": "Compensation Management",
@@ -2626,7 +2643,9 @@
     "confirmApply": "Xác nhận Apply",
     "applyWarning": "This action cannot be undone. All changes in the plan will take effect immediately.",
     "restructureSuccess": "Restructuring completed successfully.",
-    "draftSaved": "Bản nháp saved successfully."
+    "draftSaved": "Bản nháp saved successfully.",
+    "name": "Tên",
+    "searchResult": "Kết quả tìm kiếm"
   },
   "payroll": {
     "title": "Payroll",
@@ -2975,7 +2994,8 @@
     "kpiDeductionChange": "Tổng cộng Khấu trừs Change",
     "kpiNetChange": "Lương thực nhận Change",
     "current": "Current",
-    "simulated": "Simulated"
+    "simulated": "Simulated",
+    "reopenDescription": "Mở lại chấm công đã đóng sẽ đặt lại tính toán lương. Bạn có muốn tiếp tục?"
   },
   "analytics": {
     "title": "Analytics",
@@ -3082,7 +3102,8 @@
       "issuesTrend": "Late/Absent/Early-out Trend",
       "late": "Late",
       "absent": "Absent",
-      "earlyOut": "Early Out"
+      "earlyOut": "Early Out",
+      "retry": "Thử lại"
     },
     "recruitmentPage": {
       "title": "Recruitment Analysis",
@@ -3159,7 +3180,12 @@
       "jobCategory": "Job Category",
       "headcount": "Headcount",
       "average": "Average",
-      "median": "Median"
+      "median": "Median",
+      "underBand": "Dưới mức tối thiểu",
+      "inBand": "Trong phạm vi",
+      "overBand": "Vượt mức tối đa",
+      "compaRatio": "Compa-Ratio",
+      "compaRatioComparison": "So sánh Compa-Ratio"
     },
     "attritionPage": {
       "title": "Attrition Risk Analysis",
@@ -3335,7 +3361,29 @@
     "calculating": "계산...",
     "caution": "Chú ý",
     "warning": "Cảnh báo",
-    "company_id": "Pháp nhân"
+    "company_id": "Pháp nhân",
+    "executive": {
+      "headcountTrend": "Xu hướng nhân sự",
+      "turnoverTrend": "Xu hướng tỷ lệ nghỉ việc",
+      "companyDistribution": "Phân bổ nhân sự theo pháp nhân",
+      "riskAlerts": "Tín hiệu rủi ro",
+      "companyComparison": "So sánh pháp nhân",
+      "hires": "Tuyển dụng",
+      "exits": "Nghỉ việc",
+      "netChange": "Thay đổi ròng",
+      "industryAvg": "Trung bình ngành",
+      "turnoverRateLabel": "Tỷ lệ nghỉ việc",
+      "detected": "Phát hiện {count} vấn đề",
+      "noRiskDetected": "Không phát hiện tín hiệu rủi ro.",
+      "loadFailed": "Không thể tải dữ liệu",
+      "loadFailedDesc": "Đã xảy ra lỗi khi tải dữ liệu. Vui lòng làm mới trang hoặc thử lại sau.",
+      "tooltipTotalEmp": "Tổng số nhân viên đang làm việc",
+      "tooltipTurnover": "Số nghỉ việc tháng này ÷ Số nhân viên cuối tháng trước × 100",
+      "tooltipTenure": "Thâm niên trung bình tính từ ngày vào làm",
+      "tooltipLaborCost": "Tổng lương đã xác nhận theo pháp nhân (quy đổi KRW)",
+      "tooltipRecruitment": "Số tin tuyển dụng đang mở",
+      "tooltipOnboarding": "Hoàn thành onboarding ÷ Tổng onboarding × 100"
+    }
   },
   "notification": {
     "title": "Notifications",
@@ -3395,7 +3443,8 @@
       "saved": "Lưud"
     },
     "noNotificationsDesc": "Thông báos will appear here.",
-    "allMarkedRead": "All notifications marked as read"
+    "allMarkedRead": "All notifications marked as read",
+    "viewAll": "Xem tất cả"
   },
   "succession": {
     "title": "Succession Planning",
@@ -4201,7 +4250,13 @@
     "chatbotLowConfidence": "I'm not confident in this answer. Would you like me to forward this to an HR representative?",
     "chatbotUnavailable": "AI assistant is currently unavailable.",
     "feedbackPositive": "Helpful",
-    "feedbackNegative": "Not Helpful"
+    "feedbackNegative": "Not Helpful",
+    "chatbotWelcome": "Xin chào! Tôi là chatbot HR của CTR. Hãy hỏi tôi về chấm công, nghỉ phép, lương hoặc chính sách nhân sự.",
+    "chatbotNewSession": "Cuộc trò chuyện mới",
+    "chatbotError": "Xin lỗi, đã xảy ra lỗi khi tạo phản hồi.",
+    "chatbotDefaultTitle": "Cuộc trò chuyện",
+    "chatbotNoHistory": "Không có lịch sử trò chuyện.",
+    "chatbotEscalated": "Đã chuyển đến người phụ trách HR."
   },
   "error": {
     "notFound": "Resource not found.",
@@ -4358,7 +4413,10 @@
       "approved": "Approved",
       "paid": "Paid",
       "cancelled": "Cancelled"
-    }
+    },
+    "highOrAbove": "High trở lên",
+    "totalAnomalies": "Tổng số bất thường",
+    "noAnomalies": "Không có bất thường"
   },
   "payrollMe": {
     "title": "My Pay Stubs",
@@ -4366,7 +4424,10 @@
     "paid": "Paid",
     "grossPay": "Gross Pay",
     "deductions": "Deductions",
-    "netPay": "Net Pay"
+    "netPay": "Net Pay",
+    "unreadCount": "{count} phiếu lương chưa đọc",
+    "momSame": "Như tháng trước",
+    "newBadge": "MỚI"
   },
   "payStubDetail": {
     "titleWithMonth": "{month} Pay Stub",
@@ -4605,7 +4666,27 @@
       "legalBasis": "Cơ sở pháp lý",
       "consentedAt": "Thời điểm đồng ý",
       "revokedAt": "Thời điểm thu hồi",
-      "expiresAt": "Ngày hết hạn"
+      "expiresAt": "Ngày hết hạn",
+      "piiAuditDesc": "Giám sát truy cập PII và theo dõi kiểm toán",
+      "retentionDesc": "Chính sách lưu trữ dữ liệu và quản lý thực thi",
+      "dpiaDesc": "Quản lý đánh giá tác động bảo vệ dữ liệu",
+      "riskLow": "Thấp",
+      "riskMedium": "Trung bình",
+      "riskHigh": "Cao",
+      "riskCritical": "Nghiêm trọng",
+      "statusDraft": "Bản nháp",
+      "statusInReview": "Đang xem xét",
+      "statusApproved": "Đã duyệt",
+      "statusRejected": "Đã từ chối",
+      "statusPending": "Đang chờ",
+      "statusInProgress": "Đang xử lý",
+      "statusCompleted": "Hoàn thành",
+      "requestAccess": "Quyền truy cập",
+      "requestErasure": "Quyền xóa",
+      "requestPortability": "Quyền di chuyển",
+      "requestRectification": "Quyền chỉnh sửa",
+      "requestRestriction": "Quyền hạn chế xử lý",
+      "requestObjection": "Quyền phản đối"
     },
     "ru": {
       "title": "Tuân thủ Nga",
@@ -4626,7 +4707,8 @@
       "rejectDocument": "Từ chối",
       "rejectionReason": "Lý do từ chối",
       "generateP4": "Tạo báo cáo P-4",
-      "generate57T": "Tạo báo cáo 57-T"
+      "generate57T": "Tạo báo cáo 57-T",
+      "description": "Đăng ký nghĩa vụ quân sự, tài liệu điện tử (KEDO), báo cáo pháp định"
     },
     "cn": {
       "title": "Tuân thủ Trung Quốc",
@@ -4642,7 +4724,8 @@
       "baseMax": "Mức tối đa",
       "calculate": "Tính bảo hiểm hàng tháng",
       "exportReport": "Xuất báo cáo",
-      "exportRegistry": "Xuất danh sách"
+      "exportRegistry": "Xuất danh sách",
+      "description": "Bảo hiểm xã hội (五险一金), quản lý đăng ký nhân viên"
     },
     "kr": {
       "title": "Tuân thủ Hàn Quốc",
@@ -4665,7 +4748,8 @@
       "requestDate": "Ngày yêu cầu",
       "approvedAt": "Ngày phê duyệt",
       "paidAt": "Ngày thanh toán",
-      "calculateSeverance": "Tính trợ cấp thôi việc"
+      "calculateSeverance": "Tính trợ cấp thôi việc",
+      "description": "Giám sát 52 giờ, đào tạo pháp định, quản lý trợ cấp thôi việc"
     },
     "status": {
       "DRAFT": "Bản nháp",
@@ -4704,6 +4788,7 @@
       "profile": "Hồ sơ của tôi",
       "attendance": "Chấm công",
       "leave": "Nghỉ phép",
+      "loa": "Nghỉ phép dài hạn",
       "goals": "Mục tiêu/Đánh giá",
       "payslip": "Phiếu lương của tôi",
       "benefits": "Phúc lợi",
@@ -4717,7 +4802,12 @@
       "approvalsInbox": "Hộp thư phê duyệt",
       "myOffboarding": "Quy trình nghỉ việc",
       "myTasks": "My Tasks",
-      "myOnboarding": "My Onboarding"
+      "myOnboarding": "My Onboarding",
+      "documents": "Tài liệu/Chứng nhận",
+      "internalJobs": "Tuyển dụng nội bộ",
+      "notificationSettings": "Cài đặt thông báo",
+      "directory": "Danh bạ nhân viên",
+      "orgChart": "Sơ đồ tổ chức"
     },
     "team": {
       "label": "Quản lý nhóm",
@@ -4730,7 +4820,8 @@
       "oneOnOne": "Họp 1:1",
       "skills": "Đánh giá năng lực nhóm",
       "delegation": "Delegation Settings",
-      "goalsPerformance": "Nhóm Mục tiêus & Hiệu suất"
+      "goalsPerformance": "Nhóm Mục tiêus & Hiệu suất",
+      "time": "Chấm công/Nghỉ phép nhóm"
     },
     "hrOps": {
       "label": "Vận hành nhân sự",
@@ -4844,15 +4935,18 @@
       "org": "Org Management",
       "attendanceAdmin": "Attendance Quản trị viên",
       "leaveAdmin": "Leave Quản trị viên",
+      "loaAdmin": "Quản lý nghỉ phép dài hạn",
       "onboardingOffboarding": "Onboarding/Offboarding",
-      "disciplineRewards": "Discipline & Rewards"
+      "disciplineRewards": "Discipline & Rewards",
+      "leaveLoaAdmin": "Quản lý nghỉ phép"
     },
     "recruitment": {
       "label": "Tuyển dụng",
       "posts": "Job Postings",
       "dashboard": "Recruitment Dashboard",
       "board": "Kanban Board",
-      "talentPool": "Talent Pool"
+      "talentPool": "Talent Pool",
+      "internalJobs": "Việc làm nội bộ"
     },
     "performance": {
       "label": "Hiệu suất & Compensation",
@@ -4884,10 +4978,22 @@
       "dpia": "DPIA",
       "kr": "Korea Tuân thủ",
       "cn": "China Tuân thủ",
-      "ru": "Russia Tuân thủ"
+      "ru": "Russia Tuân thủ",
+      "hub": "Tuân thủ"
     },
     "favorites": {
       "label": "Favorites"
+    },
+    "employee": {
+      "work": "Chấm công & Nghỉ phép",
+      "org": "Tổ chức"
+    },
+    "subGroup": {
+      "work": "Công việc",
+      "time-off": "Chấm công/Nghỉ phép",
+      "pay": "Lương",
+      "growth": "Phát triển",
+      "etc": "Khác"
     }
   },
   "myTasks": {
@@ -4941,7 +5047,8 @@
     "emptyTitle": "No skills data",
     "emptyDesc": "Register employee skills.",
     "skillMatrixTitle": "Skill Matrix",
-    "teamSkillsTitle": "Team Skills"
+    "teamSkillsTitle": "Team Skills",
+    "enterComment": "Nhập bình luận"
   },
   "lms": {
     "pageTitle": "Learning Management",
@@ -4960,7 +5067,11 @@
       "performance": "Hiệu suất Trạng thái",
       "payroll": "Thanh toánroll Trạng thái",
       "onboarding": "Onboarding Trạng thái",
-      "compliance": "Tuân thủ"
+      "compliance": "Tuân thủ",
+      "summary": "Tổng hợp",
+      "workforce": "Nhân lực",
+      "recruit": "Tuyển dụng",
+      "training": "Đào tạo"
     },
     "kpi": {
       "totalEmployees": "All Headcount",
@@ -4982,7 +5093,40 @@
       "payroll_cost": "인item(s)비"
     },
     "noData": "No 데이터 available.",
-    "noDataDesc": "Please 변경하거나 new로운 데이터를 additional해 보 조item(s)."
+    "noDataDesc": "Hãy thay đổi điều kiện hoặc thêm dữ liệu mới.",
+    "kpiDashboardTitle": "Bảng điều khiển KPI",
+    "kpiDashboardSubtitle": "Tổng quan chỉ số nhân sự",
+    "globalCompare": "So sánh toàn cầu",
+    "allCompanies": "Tất cả công ty",
+    "kpiHeadcount": "Tổng nhân sự",
+    "kpiTurnoverRate": "Tỷ lệ nghỉ việc",
+    "kpiRecruitActive": "Tuyển dụng",
+    "kpiAttritionRisk": "Rủi ro rời bỏ",
+    "kpiLeaveUsage": "Sử dụng phép",
+    "kpiTrainingCompletion": "Hoàn thành đào tạo",
+    "unitPerson": "người",
+    "unitCase": "vụ",
+    "prevMonth": "so với tháng trước",
+    "avgDays": "TB {days} ngày",
+    "attritionBreakdown": "Cao {high} · Nguy cấp {critical}",
+    "trainingBreakdown": "{completed}/{total} hoàn thành",
+    "widget": {
+      "gradeDistribution": "Phân bổ chức danh",
+      "companyDistribution": "Phân bổ pháp nhân",
+      "hireTrend": "Xu hướng tuyển dụng",
+      "tenureDistribution": "Phân bổ thâm niên",
+      "recruitPipeline": "Quy trình tuyển dụng",
+      "avgTimeToFill": "Thời gian tuyển TB",
+      "talentPool": "Nguồn nhân tài",
+      "performanceGrade": "Xếp hạng hiệu suất",
+      "skillGapTop5": "Khoảng cách kỹ năng Top 5",
+      "overtime52h": "Rủi ro tăng ca 52h",
+      "leaveTrend": "Xu hướng nghỉ phép",
+      "burnoutRisk": "Rủi ro kiệt sức",
+      "payrollCost": "Chi phí lương",
+      "mandatoryTraining": "Đào tạo bắt buộc",
+      "benefitsUsage": "Sử dụng phúc lợi"
+    }
   },
   "mySpace": {
     "tasksTitle": "My Tasks",
@@ -5067,7 +5211,18 @@
     "emptyBenefitClaim": "No claims yet",
     "emptyBenefitClaimDesc": "You haven't submitted any benefit claims yet.",
     "emptyTitle": "No data",
-    "emptyDesc": "Nothing has been added yet"
+    "emptyDesc": "Nothing has been added yet",
+    "atGlance": {
+      "team": "Phòng ban",
+      "tenure": "Thâm niên",
+      "years": "năm",
+      "joined": "Tuyển dụng",
+      "certLang": "Chứng chỉ/Ngôn ngữ",
+      "certCount": "{count} chứng chỉ",
+      "langCount": "{count} ngôn ngữ",
+      "skills": "Kỹ năng",
+      "skillCount": "kỹ năng"
+    }
   },
   "directory": {
     "pageTitle": "People Directory",
@@ -5085,7 +5240,107 @@
   "notifications": {
     "pageTitle": "Notifications",
     "emptyTitle": "No new notifications",
-    "emptyDesc": "Notifications will appear here."
+    "emptyDesc": "Notifications will appear here.",
+    "leaveApproved": {
+      "title": "Nghỉ phép đã duyệt",
+      "body": "Nghỉ phép đã được duyệt: {startDate} ~ {endDate}"
+    },
+    "leaveRejected": {
+      "title": "Nghỉ phép bị từ chối",
+      "body": "Lý do từ chối: {reason}"
+    },
+    "overtimeWarning48h": {
+      "title": "Vượt quá 48 giờ/tuần",
+      "body": "Giờ làm việc tuần đã vượt quá 48 giờ. Vui lòng lưu ý khi làm thêm giờ."
+    },
+    "overtimeBlocked52h": {
+      "title": "Đạt giới hạn giờ làm tối đa",
+      "body": "Đã đạt giới hạn giờ làm việc tối đa theo quy định (52 giờ). Không được làm thêm."
+    },
+    "turnoverRiskCritical": {
+      "title": "Rủi ro nghỉ việc nghiêm trọng",
+      "body": "Rủi ro nghỉ việc của nhân viên ở mức nghiêm trọng."
+    },
+    "mboGoalSubmitted": {
+      "title": "Mục tiêu MBO đã nộp",
+      "body": "{name} đã nộp mục tiêu MBO. {goalCount} mục tiêu, tổng trọng số {totalWeight}%"
+    },
+    "selfEvalSubmitted": {
+      "title": "Tự đánh giá đã nộp",
+      "body": "{name} đã nộp tự đánh giá. Vui lòng tiến hành đánh giá nhân viên."
+    },
+    "managerEvalSubmitted": {
+      "title": "Đánh giá quản lý hoàn tất",
+      "body": "Đánh giá quản lý đã hoàn tất. Kết quả sẽ có sau khi xác nhận chu kỳ."
+    },
+    "mboGoalApproved": {
+      "title": "Mục tiêu MBO đã duyệt",
+      "body": "Mục tiêu MBO đã được phê duyệt."
+    },
+    "mboGoalRejected": {
+      "title": "Mục tiêu MBO cần sửa đổi",
+      "body": "Mục tiêu MBO cần sửa đổi. Vui lòng kiểm tra phản hồi và nộp lại."
+    },
+    "goalOverdue": {
+      "title": "Mục tiêu MBO chưa nộp",
+      "body": "{name} chưa nộp mục tiêu MBO {cycleName}. Quá hạn {daysOverdue} ngày."
+    },
+    "evalOverdue": {
+      "title": "Đánh giá quá hạn",
+      "body": "Kỳ đánh giá {cycleName} đã quá hạn {daysOverdue} ngày. Cần theo dõi."
+    },
+    "payrollAttendanceClosed": {
+      "title": "Chấm công đã đóng",
+      "body": "Chấm công {yearMonth} đã đóng. {confirmedCount}/{totalEmployees} đã xác nhận. Vui lòng tính lương."
+    },
+    "payrollReviewReady": {
+      "title": "Sẵn sàng kiểm tra bất thường lương",
+      "body": "Kiểm tra bất thường lương {yearMonth} đã sẵn sàng."
+    },
+    "payrollPendingApproval": {
+      "title": "Yêu cầu duyệt lương",
+      "body": "Yêu cầu duyệt lương {yearMonth} ({headcount} nhân viên, {totalNet})."
+    },
+    "payrollApprovalRejected": {
+      "title": "Duyệt lương bị từ chối",
+      "body": "Lý do từ chối: {reason}"
+    },
+    "payrollApprovalNeeded": {
+      "title": "Cần duyệt lương",
+      "body": "Vui lòng tiến hành duyệt lương {yearMonth}."
+    },
+    "benefitApproved": {
+      "title": "Phúc lợi đã duyệt",
+      "body": "Yêu cầu phúc lợi {planName} đã được phê duyệt."
+    },
+    "profileChangeApproved": {
+      "title": "Thay đổi thông tin đã duyệt",
+      "body": "Yêu cầu thay đổi {fieldLabel} đã được phê duyệt."
+    },
+    "profileChangeRejected": {
+      "title": "Thay đổi thông tin bị từ chối",
+      "body": "Yêu cầu thay đổi {fieldLabel} bị từ chối. Lý do: {reason}"
+    },
+    "recognitionReceived": {
+      "title": "Nhận được ghi nhận",
+      "body": "{senderName} đã gửi lời ghi nhận cho bạn."
+    },
+    "hrChatbotEscalation": {
+      "title": "Yêu cầu tư vấn HR",
+      "body": "{userName} yêu cầu kết nối với nhân viên HR."
+    },
+    "evalReminder": {
+      "title": "Nhắc nhở hạn đánh giá",
+      "body": "{name}, hạn {type} {cycleName} là {label}. Vui lòng nộp."
+    },
+    "evalEscalation": {
+      "title": "Đánh giá quá hạn cần xử lý",
+      "body": "Hạn {type} {cycleName} đã qua. {count} nhân viên chưa nộp."
+    },
+    "leavePromotion": {
+      "title": "Khuyến nghị sử dụng phép",
+      "body": "{name}, bạn còn {remainingDays} ngày phép. Còn {daysUntilAnniversary} ngày đến ngày kỷ niệm. Khuyến nghị sử dụng phép."
+    }
   },
   "header": {
     "directory": "People Directory",

@@ -165,8 +165,8 @@ export default function PostingEditClient({
         recruiterId: p.recruiterId ?? '',
         requiredCompetencies: p.requiredCompetencies ? p.requiredCompetencies.join(', ') : '',
       })
-    } catch {
-      /* silently handle */
+    } catch (err) {
+      toast({ title: '채용 공고 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setDataLoading(false)
     }
@@ -191,7 +191,9 @@ export default function PostingEditClient({
       setValue('description', res.data.description)
       setValue('requirements', res.data.qualifications)
       setValue('preferred', res.data.preferred)
-    } catch { /* silently handle */ } finally { setAiLoading(false) }
+    } catch (err) {
+      toast({ title: 'AI 생성 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    } finally { setAiLoading(false) }
   }
 
   const onSubmit = async (formData: FormData) => {
@@ -220,7 +222,9 @@ export default function PostingEditClient({
       }
       await apiClient.put(`/api/v1/recruitment/postings/${id}`, payload)
       router.push(`/recruitment/${id}`)
-    } catch { /* silently handle */ } finally { setSubmitting(false) }
+    } catch (err) {
+      toast({ title: '채용 공고 수정 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    } finally { setSubmitting(false) }
   }
 
   void user
@@ -269,7 +273,7 @@ export default function PostingEditClient({
               <label className={labelClass}>{t('departmentLabel')}</label>
               <select {...register('departmentId')} className={inputClass}>
                 <option value="">{t('noSelect')}</option>
-                {!departments?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+                {!departments?.length && <EmptyState />}
               {departments?.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
               </select>
             </div>

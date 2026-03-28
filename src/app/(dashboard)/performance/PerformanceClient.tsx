@@ -125,8 +125,8 @@ export default function PerformanceClient({
           res.data.find((c) => c.status === 'GOAL_SETTING') ??
           res.data[0] ?? null
         setActiveCycle(active)
-      } catch {
-        console.error(t('cycleLoadFailed'))
+      } catch (err) {
+        toast({ title: '평가 주기 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
       }
     }
     fetchCycles()
@@ -154,8 +154,8 @@ export default function PerformanceClient({
         { cycleId: activeCycle.id, page: 1, limit: 50 },
       )
       setGoals(goalsRes.data)
-    } catch {
-      console.error(t('dataLoadFailed'))
+    } catch (err) {
+      toast({ title: '데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -488,7 +488,7 @@ export default function PerformanceClient({
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-                      {!cycles?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+                      {!cycles?.length && <EmptyState />}
               {cycles?.map((cycle) => (
                         <div
                           key={cycle.id}

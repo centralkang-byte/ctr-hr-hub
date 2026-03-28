@@ -1,61 +1,221 @@
 'use client'
 
-import { useState } from 'react'
-import { AlertTriangle } from 'lucide-react'
-// import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
-// import { Input } from '@/components/ui/input'
-// import { Button } from '@/components/ui/button'
+import { useState, useEffect, useCallback } from 'react'
+import { Plus, Pencil, Trash2, GripVertical } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { TABLE_STYLES } from '@/lib/styles'
-import { useTranslations } from 'next-intl'
+import { toast } from '@/hooks/use-toast'
+import { cn } from '@/lib/utils'
 
 interface Props { companyId: string | null }
 
-export function JobGradesTab({}: Props) {
-  const t = useTranslations('settings')
-  const [grades] = useState([
-    { code: 'S1', name: t('kr_kec82acec'), nameEn: 'Staff', minYears: 0, promoYears: 3 },
-    { code: 'S2', name: t('kr_keca3bcec'), nameEn: 'Senior Staff', minYears: 3, promoYears: 3 },
-    { code: 'S3', name: t('kr_keb8c80eb'), nameEn: 'Assistant Manager', minYears: 4, promoYears: 4 },
-    { code: 'M1', name: t('kr_keab3bcec'), nameEn: 'Manager', minYears: 4, promoYears: 5 },
-    { code: 'M2', name: t('kr_kecb0a8ec'), nameEn: 'Deputy GM', minYears: 5, promoYears: 5 },
-    { code: 'D1', name: t('kr_kebb680ec'), nameEn: 'General Manager', minYears: 5, promoYears: null },
-    { code: 'D2', name: t('kr_kec9db4ec'), nameEn: 'Director', minYears: 5, promoYears: null },
-    { code: 'E1', name: t('kr_kec8381eb'), nameEn: 'Senior Director', minYears: null, promoYears: null },
-    { code: 'E2', name: t('kr_keca084eb'), nameEn: 'EVP', minYears: null, promoYears: null },
-    { code: 'C1', name: t('kr_keb8c80ed'), nameEn: 'CEO', minYears: null, promoYears: null },
-  ])
+interface JobGrade {
+  id: string
+  code: string
+  name: string
+  nameEn: string | null
+  rankOrder: number
+  gradeType: string
+  minPromotionYears: number | null
+  companyId: string
+}
+
+const GRADE_TYPE_LABELS: Record<string, string> = {
+  STAFF: '일반직',
+  SPECIALIST: '전문직',
+  EXECUTIVE: '임원',
+}
+
+const GRADE_TYPE_COLORS: Record<string, string> = {
+  STAFF: 'bg-blue-100 text-blue-700',
+  SPECIALIST: 'bg-purple-100 text-purple-700',
+  EXECUTIVE: 'bg-amber-100 text-amber-700',
+}
+
+export function JobGradesTab({ companyId }: Props) {
+  const [grades, setGrades] = useState<JobGrade[]>([])
+  const [loading, setLoading] = useState(true)
+  const [filter, setFilter] = useState<string>('all')
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editForm, setEditForm] = useState<Partial<JobGrade>>({})
+  const [showAdd, setShowAdd] = useState(false)
+  const [addForm, setAddForm] = useState({ code: '', name: '', nameEn: '', gradeType: 'STAFF', minPromotionYears: '' })
+
+  const fetchGrades = useCallback(async () => {
+    setLoading(true)
+    const params = new URLSearchParams()
+    if (filter !== 'all') params.set('gradeType', filter)
+    const res = await fetch(`/api/v1/settings/job-grades?${params}`)
+    const json = await res.json()
+    if (json.data) setGrades(json.data)
+    setLoading(false)
+  }, [filter])
+
+  useEffect(() => { fetchGrades() }, [fetchGrades])
+
+  const handleAdd = async () => {
+    if (!addForm.code || !addForm.name) {
+      toast({ title: '코드와 이름은 필수입니다', variant: 'destructive' })
+      return
+    }
+    const maxRank = grades.length > 0 ? Math.max(...grades.map(g => g.rankOrder)) + 1 : 1
+    const res = await fetch('/api/v1/settings/job-grades', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...addForm,
+        rankOrder: maxRank,
+        minPromotionYears: addForm.minPromotionYears ? Number(addForm.minPromotionYears) : null,
+      }),
+    })
+    if (res.ok) {
+      toast({ title: '직급이 추가되었습니다' })
+      setShowAdd(false)
+      setAddForm({ code: '', name: '', nameEn: '', gradeType: 'STAFF', minPromotionYears: '' })
+      fetchGrades()
+    } else {
+      const err = await res.json()
+      toast({ title: '추가 실패', description: err.error?.message, variant: 'destructive' })
+    }
+  }
+
+  const handleUpdate = async (id: string) => {
+    const res = await fetch(`/api/v1/settings/job-grades?id=${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(editForm),
+    })
+    if (res.ok) {
+      toast({ title: '수정되었습니다' })
+      setEditingId(null)
+      fetchGrades()
+    } else {
+      const err = await res.json()
+      toast({ title: '수정 실패', description: err.error?.message, variant: 'destructive' })
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('이 직급을 삭제하시겠습니까?')) return
+    const res = await fetch(`/api/v1/settings/job-grades?id=${id}`, { method: 'DELETE' })
+    if (res.ok) {
+      toast({ title: '삭제되었습니다' })
+      fetchGrades()
+    } else {
+      const err = await res.json()
+      toast({ title: '삭제 실패', description: err.error?.message, variant: 'destructive' })
+    }
+  }
+
+  const startEdit = (g: JobGrade) => {
+    setEditingId(g.id)
+    setEditForm({ name: g.name, nameEn: g.nameEn, gradeType: g.gradeType, minPromotionYears: g.minPromotionYears })
+  }
 
   return (
     <div className="space-y-4">
-      <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">{t('grade_kecb2b4ea')}</h3>
-        <p className="text-sm text-[#8181A5]">{grades.length}개 직급 등록</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-base font-semibold text-[#1C1D21]">직급 체계</h3>
+          <p className="text-sm text-[#8181A5]">{grades.length}개 직급 등록 · 법인별 가변 설정</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Select value={filter} onValueChange={setFilter}>
+            <SelectTrigger className="w-[120px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">전체</SelectItem>
+              <SelectItem value="STAFF">일반직</SelectItem>
+              <SelectItem value="SPECIALIST">전문직</SelectItem>
+              <SelectItem value="EXECUTIVE">임원</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button size="sm" onClick={() => setShowAdd(true)}>
+            <Plus className="mr-1 h-4 w-4" /> 추가
+          </Button>
+        </div>
       </div>
 
-      <div className="flex items-start gap-3 rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4">
-        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
-        <p className="text-xs text-[#8181A5]">{t('grade_kecb2b4ea_ked9884ec_kec8b9cec_keab480eb_api_kec97b0ea_ked9b84_ked8eb8ec_keab080eb')}</p>
-      </div>
+      {showAdd && (
+        <div className="rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4 space-y-3">
+          <p className="text-sm font-medium">새 직급 추가</p>
+          <div className="grid grid-cols-5 gap-2">
+            <Input placeholder="코드 (예: L3)" value={addForm.code} onChange={e => setAddForm(p => ({ ...p, code: e.target.value }))} />
+            <Input placeholder="이름 (예: 매니저)" value={addForm.name} onChange={e => setAddForm(p => ({ ...p, name: e.target.value }))} />
+            <Input placeholder="영문명" value={addForm.nameEn} onChange={e => setAddForm(p => ({ ...p, nameEn: e.target.value }))} />
+            <Select value={addForm.gradeType} onValueChange={v => setAddForm(p => ({ ...p, gradeType: v }))}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="STAFF">일반직</SelectItem>
+                <SelectItem value="SPECIALIST">전문직</SelectItem>
+                <SelectItem value="EXECUTIVE">임원</SelectItem>
+              </SelectContent>
+            </Select>
+            <Input placeholder="최소 승진연한" type="number" value={addForm.minPromotionYears} onChange={e => setAddForm(p => ({ ...p, minPromotionYears: e.target.value }))} />
+          </div>
+          <div className="flex gap-2">
+            <Button size="sm" onClick={handleAdd}>저장</Button>
+            <Button size="sm" variant="outline" onClick={() => setShowAdd(false)}>취소</Button>
+          </div>
+        </div>
+      )}
 
       <div className={TABLE_STYLES.wrapper}>
         <table className={TABLE_STYLES.table}>
           <thead className={TABLE_STYLES.header}>
             <tr>
-              <th className={TABLE_STYLES.headerCell}>{t('kr_kecbd94eb')}</th>
-              <th className={TABLE_STYLES.headerCell}>{t('grade_persons')}</th>
-              <th className={TABLE_STYLES.headerCell}>{t('kr_kec9881eb')}</th>
-              <th className={TABLE_STYLES.headerCell}>{t('kr_kecb59cec_kec97b0ec')}</th>
-              <th className={TABLE_STYLES.headerCell}>{t('kr_kec8ab9ec_kec868cec')}</th>
+              <th className={TABLE_STYLES.headerCell} style={{ width: 40 }}></th>
+              <th className={TABLE_STYLES.headerCell}>코드</th>
+              <th className={TABLE_STYLES.headerCell}>이름</th>
+              <th className={TABLE_STYLES.headerCell}>영문명</th>
+              <th className={TABLE_STYLES.headerCell}>구분</th>
+              <th className={TABLE_STYLES.headerCell}>최소 승진연한</th>
+              <th className={TABLE_STYLES.headerCell} style={{ width: 80 }}></th>
             </tr>
           </thead>
           <tbody>
-            {grades.map((g) => (
-              <tr key={g.code} className={TABLE_STYLES.row}>
+            {loading ? (
+              <tr><td colSpan={7} className="py-8 text-center text-sm text-[#8181A5]">로딩 중...</td></tr>
+            ) : grades.length === 0 ? (
+              <tr><td colSpan={7} className="py-8 text-center text-sm text-[#8181A5]">등록된 직급이 없습니다</td></tr>
+            ) : grades.map((g) => (
+              <tr key={g.id} className={TABLE_STYLES.row}>
+                <td className={TABLE_STYLES.cell}><GripVertical className="h-4 w-4 text-[#8181A5]" /></td>
                 <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{g.code}</td>
-                <td className={TABLE_STYLES.cell}>{g.name}</td>
-                <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>{g.nameEn}</td>
-                <td className={`${TABLE_STYLES.cell} text-center text-[#8181A5]`}>{g.minYears != null ? `${g.minYears}년` : '—'}</td>
-                <td className={`${TABLE_STYLES.cell} text-center text-[#8181A5]`}>{g.promoYears != null ? `${g.promoYears}년` : '—'}</td>
+                <td className={TABLE_STYLES.cell}>
+                  {editingId === g.id ? (
+                    <Input className="h-7 text-sm" value={editForm.name ?? ''} onChange={e => setEditForm(p => ({ ...p, name: e.target.value }))} />
+                  ) : g.name}
+                </td>
+                <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>
+                  {editingId === g.id ? (
+                    <Input className="h-7 text-sm" value={editForm.nameEn ?? ''} onChange={e => setEditForm(p => ({ ...p, nameEn: e.target.value }))} />
+                  ) : g.nameEn ?? '—'}
+                </td>
+                <td className={TABLE_STYLES.cell}>
+                  <span className={cn('inline-block rounded px-2 py-0.5 text-xs font-medium', GRADE_TYPE_COLORS[g.gradeType] ?? 'bg-gray-100 text-gray-600')}>
+                    {GRADE_TYPE_LABELS[g.gradeType] ?? g.gradeType}
+                  </span>
+                </td>
+                <td className={`${TABLE_STYLES.cell} text-center text-[#8181A5]`}>
+                  {g.minPromotionYears != null ? `${g.minPromotionYears}년` : '—'}
+                </td>
+                <td className={TABLE_STYLES.cell}>
+                  {editingId === g.id ? (
+                    <div className="flex gap-1">
+                      <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => handleUpdate(g.id)}>저장</Button>
+                      <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setEditingId(null)}>취소</Button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-1">
+                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => startEdit(g)}><Pencil className="h-3.5 w-3.5" /></Button>
+                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-500" onClick={() => handleDelete(g.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                    </div>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

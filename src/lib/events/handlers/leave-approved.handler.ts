@@ -26,12 +26,12 @@ export const leaveApprovedHandler: DomainEventHandler<'LEAVE_APPROVED'> = {
 
   async handle(payload: LeaveApprovedPayload, tx?: TxClient): Promise<void> {
     if (tx) {
-      // 1. [TX] Balance deduction: pending → used (only inside transaction)
-      await tx.employeeLeaveBalance.update({
+      // 1. [TX] Balance deduction: pending → used (LeaveYearBalance)
+      await tx.leaveYearBalance.update({
         where: { id: payload.balanceId },
         data: {
-          usedDays:    { increment: payload.days },
-          pendingDays: { decrement: payload.days },
+          used:    { increment: payload.days },
+          pending: { decrement: payload.days },
         },
       })
     } else {
@@ -41,6 +41,9 @@ export const leaveApprovedHandler: DomainEventHandler<'LEAVE_APPROVED'> = {
         triggerType: 'leave_approved',
         title:       '휴가 신청이 승인되었습니다',
         body:        `${payload.startDate.toISOString().slice(0, 10)} ~ ${payload.endDate.toISOString().slice(0, 10)} 휴가가 승인되었습니다.`,
+        titleKey:    'notifications.leaveApproved.title',
+        bodyKey:     'notifications.leaveApproved.body',
+        bodyParams:  { startDate: payload.startDate.toISOString().slice(0, 10), endDate: payload.endDate.toISOString().slice(0, 10) },
         link:        '/my/leave',
         priority:    'normal',
       })

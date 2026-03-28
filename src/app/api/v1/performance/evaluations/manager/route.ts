@@ -15,6 +15,7 @@ import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
 import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
 import { withRLS, buildRLSContext } from '@/lib/api/withRLS'
+import { getDirectReportIds } from '@/lib/employee/direct-reports'
 import type { SessionUser } from '@/types'
 import type { EvalType, EvalStatus, Prisma } from '@/generated/prisma/client'
 
@@ -66,14 +67,14 @@ export const GET = withPermission(
 
     const { cycleId, page, limit } = parsed.data
 
-    // RLS: DB-level isolation + app-level companyId filter as redundant safety net
-    // TODO: re-enable withRLS wrapper when RLS is fully configured
-    // const { teamMembers, evaluations, total } = await withRLS(buildRLSContext(user), async (tx) => { ... })
+    // RLS bypass: Manager routes use getDirectReportIds() for security instead of withRLS.
+    // withRLS company isolation conflicts with cross-company READ (Session 11, B-3n).
 
-    // Get team members (direct reports — companyId filter kept as redundant layer)
-    // TODO: implement proper manager hierarchy via position reportsTo
+    // Get team members (direct reports via position hierarchy)
+    const reportIds = await getDirectReportIds(user.employeeId)
     const teamMembers = await prisma.employee.findMany({
       where: {
+        id: { in: reportIds },
         assignments: {
           some: { companyId: user.companyId, status: 'ACTIVE', isPrimary: true, endDate: null },
         },
@@ -189,14 +190,19 @@ export const POST = withPermission(
     if (!cycle) throw notFound('유효하지 않은 성과 주기입니다.')
     if (cycle.status !== 'EVAL_OPEN') throw badRequest('현재 평가 기간이 아닙니다.')
 
-    // Verify the target employee is in the same company
-    // TODO: implement proper manager hierarchy via position reportsTo
+    // Verify the target employee is a direct report
+    const reportIds = await getDirectReportIds(user.employeeId)
+    const isDirectReport = reportIds.includes(employeeId)
     const employee = await prisma.employee.findFirst({
       where: {
         id: employeeId,
-        assignments: {
-          some: { companyId: user.companyId, isPrimary: true, endDate: null },
-        },
+        ...(isDirectReport
+          ? {}
+          : {
+              assignments: {
+                some: { companyId: user.companyId, isPrimary: true, endDate: null },
+              },
+            }),
       },
     })
     if (!employee) throw forbidden('해당 직원의 매니저가 아닙니다.')

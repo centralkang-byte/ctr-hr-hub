@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog'
 import PlanDetailDialog from '@/components/succession/PlanDetailDialog'
 import { apiClient } from '@/lib/api'
+import { STATUS_VARIANT } from '@/lib/styles/status'
 import { useToast } from '@/hooks/use-toast'
 import type { PaginationInfo } from '@/types'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
@@ -34,16 +35,16 @@ type PlanRow = {
 }
 
 const CRITICALITY_BADGE: Record<string, { label: string; className: string }> = {
-  LOW: { label: '낮음', className: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' },
-  MEDIUM: { label: '보통', className: 'bg-[#EDF1FE] text-[#4B6DE0] border-[#EDF1FE]' },
-  HIGH: { label: '높음', className: 'bg-[#FFF7ED] text-[#C2410C] border-[#FED7AA]' },
-  CRITICAL: { label: '핵심', className: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]' },
+  LOW: { label: '낮음', className: STATUS_VARIANT.success },
+  MEDIUM: { label: '보통', className: STATUS_VARIANT.warning },
+  HIGH: { label: '높음', className: STATUS_VARIANT.error },
+  CRITICAL: { label: '핵심', className: STATUS_VARIANT.error },
 }
 
 const STATUS_BADGE: Record<string, { label: string; className: string }> = {
-  PLAN_DRAFT: { label: '초안', className: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' },
-  PLAN_ACTIVE: { label: '활성', className: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
-  ARCHIVED: { label: '보관', className: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]' },
+  PLAN_DRAFT: { label: '초안', className: STATUS_VARIANT.neutral },
+  PLAN_ACTIVE: { label: '활성', className: STATUS_VARIANT.success },
+  ARCHIVED: { label: '보관', className: STATUS_VARIANT.neutral },
 }
 
 // ─── Component ───────────────────────────────────────────

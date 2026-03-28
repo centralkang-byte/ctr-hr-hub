@@ -18,6 +18,7 @@ import { RolesTab } from './tabs/RolesTab'
 import { AuditLogTab } from './tabs/AuditLogTab'
 import { DataRetentionTab } from './tabs/DataRetentionTab'
 import { IntegrationsTab } from './tabs/IntegrationsTab'
+import { ApprovalFlowsTab } from './tabs/ApprovalFlowsTab'
 
 const config = getCategoryConfig('system')
 
@@ -35,6 +36,8 @@ function SystemSettingsContent() {
         return <LocaleTab companyId={companyId} />
       case 'roles':
         return <RolesTab companyId={companyId} />
+      case 'approval-flows':
+        return <ApprovalFlowsTab companyId={companyId} />
       case 'audit':
         return <AuditLogTab companyId={companyId} />
       case 'data-retention':

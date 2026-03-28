@@ -248,7 +248,10 @@
     "unitYear": "year",
     "unitPerson": " people",
     "unitCount": " items",
-    "unitMonth": " month(s)"
+    "unitMonth": " month(s)",
+    "noDataDesc": "当前筛选条件下无数据。请调整筛选条件或稍后再试。",
+    "completionRate": "完成率",
+    "employee": "员工"
   },
   "auth": {
     "login": "Login",
@@ -259,7 +262,10 @@
     "forbidden": "Access denied.",
     "notRegistered": "Unregistered user. Please contact HR.",
     "slogan": "Central to your safe mobility",
-    "myProfile": "My Profile"
+    "myProfile": "My Profile",
+    "sessionExpiring": "会话即将过期",
+    "sessionExpiringDesc": "您的会话即将过期，未保存的数据可能会丢失。是否要延长会话？",
+    "extendSession": "延长会话"
   },
   "menu": {
     "home": "Home",
@@ -384,7 +390,7 @@
     "krCompliance": "韩国合规",
     "selfEval": "Self 评估",
     "managerEval": "经理 评估",
-    "calibration": "Calibration",
+    "calibration": "校准",
     "teamResults": "团队 结果s",
     "adminResults": "公司 结果s",
     "pulseSurvey": "Pulse Survey",
@@ -463,8 +469,7 @@
     "gdpr": "GDPR",
     "ai-report": "AI报告",
     "attrition": "流失风险",
-    "results": "结果",
-    "calibration": "校准"
+    "results": "结果"
   },
   "employee": {
     "title": "Employee Management",
@@ -1608,7 +1613,8 @@
     "targetEmployees": "Target 员工s",
     "totalNominations": "合计 Nominations",
     "nominationCount": "# Nominations",
-    "avgScore": "Avg 分数"
+    "avgScore": "Avg 分数",
+    "recognitionCount": "表彰次数"
   },
   "recruitment": {
     "title": "Recruitment",
@@ -2199,7 +2205,18 @@
     "myOffboardingTitle": "My Offboarding",
     "myOffboardingEmpty": "No active offboarding process.",
     "selfServiceTitle": "Offboarding Self-Service",
-    "selfServiceDesc": "查看 offboarding tasks and required information."
+    "selfServiceDesc": "查看 offboarding tasks and required information.",
+    "satisfactionDetail": "满意度详情",
+    "satisfactionCompensation": "薪酬满意度",
+    "satisfactionCulture": "文化满意度",
+    "satisfactionManagement": "管理满意度",
+    "satisfactionGrowth": "成长满意度",
+    "suggestions": "建议",
+    "suggestionsPlaceholder": "请输入改进建议",
+    "detailedReason": "详细原因",
+    "detailedReasonPlaceholder": "请输入详细离职原因",
+    "isConfidential": "保密",
+    "isConfidentialDesc": "此面谈内容将被保密处理"
   },
   "salary": {
     "title": "Compensation Management",
@@ -2626,7 +2643,9 @@
     "confirmApply": "确认 Apply",
     "applyWarning": "This action cannot be undone. All changes in the plan will take effect immediately.",
     "restructureSuccess": "Restructuring completed successfully.",
-    "draftSaved": "草稿 saved successfully."
+    "draftSaved": "草稿 saved successfully.",
+    "name": "姓名",
+    "searchResult": "搜索结果"
   },
   "payroll": {
     "title": "Payroll",
@@ -2975,7 +2994,8 @@
     "kpiDeductionChange": "合计 扣除s Change",
     "kpiNetChange": "实发工资 Change",
     "current": "Current",
-    "simulated": "Simulated"
+    "simulated": "Simulated",
+    "reopenDescription": "重新打开已关闭的考勤将重置薪资计算。是否继续？"
   },
   "analytics": {
     "title": "Analytics",
@@ -3082,7 +3102,8 @@
       "issuesTrend": "Late/Absent/Early-out Trend",
       "late": "Late",
       "absent": "Absent",
-      "earlyOut": "Early Out"
+      "earlyOut": "Early Out",
+      "retry": "重试"
     },
     "recruitmentPage": {
       "title": "Recruitment Analysis",
@@ -3159,7 +3180,12 @@
       "jobCategory": "Job Category",
       "headcount": "Headcount",
       "average": "Average",
-      "median": "Median"
+      "median": "Median",
+      "underBand": "低于薪酬带下限",
+      "inBand": "薪酬带范围内",
+      "overBand": "超出薪酬带上限",
+      "compaRatio": "Compa-Ratio",
+      "compaRatioComparison": "Compa-Ratio 比较"
     },
     "attritionPage": {
       "title": "Attrition Risk Analysis",
@@ -3335,7 +3361,29 @@
     "calculating": "계산...",
     "caution": "注意",
     "warning": "警告",
-    "company_id": "法人"
+    "company_id": "法人",
+    "executive": {
+      "headcountTrend": "人员趋势",
+      "turnoverTrend": "离职率趋势",
+      "companyDistribution": "各法人人员分布",
+      "riskAlerts": "风险信号",
+      "companyComparison": "法人比较",
+      "hires": "入职",
+      "exits": "离职",
+      "netChange": "净增减",
+      "industryAvg": "行业平均",
+      "turnoverRateLabel": "离职率",
+      "detected": "检测到 {count} 项",
+      "noRiskDetected": "未检测到风险信号。",
+      "loadFailed": "无法加载数据",
+      "loadFailedDesc": "加载分析数据时发生错误，请刷新页面或稍后再试。",
+      "tooltipTotalEmp": "当前在职员工总数",
+      "tooltipTurnover": "当月离职人数 ÷ 上月末在职人数 × 100",
+      "tooltipTenure": "全体员工入职日起平均工龄",
+      "tooltipLaborCost": "最近确认的各法人薪资合计（KRW换算）",
+      "tooltipRecruitment": "当前进行中的招聘公告数",
+      "tooltipOnboarding": "已完成入职 ÷ 总入职数 × 100"
+    }
   },
   "notification": {
     "title": "Notifications",
@@ -3395,7 +3443,8 @@
       "saved": "保存d"
     },
     "noNotificationsDesc": "通知s will appear here.",
-    "allMarkedRead": "All notifications marked as read"
+    "allMarkedRead": "All notifications marked as read",
+    "viewAll": "查看全部"
   },
   "succession": {
     "title": "Succession Planning",
@@ -4201,7 +4250,13 @@
     "chatbotLowConfidence": "I'm not confident in this answer. Would you like me to forward this to an HR representative?",
     "chatbotUnavailable": "AI assistant is currently unavailable.",
     "feedbackPositive": "Helpful",
-    "feedbackNegative": "Not Helpful"
+    "feedbackNegative": "Not Helpful",
+    "chatbotWelcome": "你好！我是CTR HR聊天机器人。请向我咨询考勤、休假、薪资或人事政策。",
+    "chatbotNewSession": "新对话",
+    "chatbotError": "抱歉，生成回复时出现错误。",
+    "chatbotDefaultTitle": "对话",
+    "chatbotNoHistory": "没有对话记录。",
+    "chatbotEscalated": "已转交HR负责人。"
   },
   "error": {
     "notFound": "Resource not found.",
@@ -4358,7 +4413,10 @@
       "approved": "Approved",
       "paid": "Paid",
       "cancelled": "Cancelled"
-    }
+    },
+    "highOrAbove": "High 以上",
+    "totalAnomalies": "异常总数",
+    "noAnomalies": "无异常"
   },
   "payrollMe": {
     "title": "My Pay Stubs",
@@ -4366,7 +4424,10 @@
     "paid": "Paid",
     "grossPay": "Gross Pay",
     "deductions": "Deductions",
-    "netPay": "Net Pay"
+    "netPay": "Net Pay",
+    "unreadCount": "未阅读工资条 {count} 条",
+    "momSame": "与上月相同",
+    "newBadge": "NEW"
   },
   "payStubDetail": {
     "titleWithMonth": "{month} Pay Stub",
@@ -4605,7 +4666,27 @@
       "legalBasis": "法律依据",
       "consentedAt": "同意时间",
       "revokedAt": "撤销时间",
-      "expiresAt": "到期时间"
+      "expiresAt": "到期时间",
+      "piiAuditDesc": "PII 访问监控及审计追踪",
+      "retentionDesc": "数据保留策略及执行管理",
+      "dpiaDesc": "数据保护影响评估管理",
+      "riskLow": "低",
+      "riskMedium": "中",
+      "riskHigh": "高",
+      "riskCritical": "严重",
+      "statusDraft": "草稿",
+      "statusInReview": "审核中",
+      "statusApproved": "已批准",
+      "statusRejected": "已驳回",
+      "statusPending": "等待中",
+      "statusInProgress": "处理中",
+      "statusCompleted": "已完成",
+      "requestAccess": "查阅权",
+      "requestErasure": "删除权",
+      "requestPortability": "转移权",
+      "requestRectification": "更正权",
+      "requestRestriction": "限制处理权",
+      "requestObjection": "反对权"
     },
     "ru": {
       "title": "俄罗斯合规",
@@ -4626,7 +4707,8 @@
       "rejectDocument": "拒绝",
       "rejectionReason": "拒绝原因",
       "generateP4": "生成P-4报告",
-      "generate57T": "生成57-T报告"
+      "generate57T": "生成57-T报告",
+      "description": "兵役登记、电子文档(KEDO)、法定报告"
     },
     "cn": {
       "title": "中国合规",
@@ -4642,7 +4724,8 @@
       "baseMax": "基数上限",
       "calculate": "计算月度社保",
       "exportReport": "导出报告",
-      "exportRegistry": "导出花名册"
+      "exportRegistry": "导出花名册",
+      "description": "社会保险（五险一金）、员工登记管理"
     },
     "kr": {
       "title": "韩国合规",
@@ -4665,7 +4748,8 @@
       "requestDate": "申请日期",
       "approvedAt": "批准时间",
       "paidAt": "支付时间",
-      "calculateSeverance": "计算退职金"
+      "calculateSeverance": "计算退职金",
+      "description": "52小时监控、法定培训、退职金管理"
     },
     "status": {
       "DRAFT": "草稿",
@@ -4704,6 +4788,7 @@
       "profile": "我的档案",
       "attendance": "考勤",
       "leave": "假期",
+      "loa": "休假申请",
       "goals": "我的目标/绩效",
       "payslip": "我的工资单",
       "benefits": "福利",
@@ -4717,7 +4802,12 @@
       "approvalsInbox": "审批收件箱",
       "myOffboarding": "我的离职流程",
       "myTasks": "My Tasks",
-      "myOnboarding": "My Onboarding"
+      "myOnboarding": "My Onboarding",
+      "documents": "文件/证明书",
+      "internalJobs": "内部招聘",
+      "notificationSettings": "通知设置",
+      "directory": "员工目录",
+      "orgChart": "组织架构"
     },
     "team": {
       "label": "团队管理",
@@ -4730,7 +4820,8 @@
       "oneOnOne": "1:1会议",
       "skills": "团队能力评估",
       "delegation": "Delegation Settings",
-      "goalsPerformance": "团队 目标s & 绩效"
+      "goalsPerformance": "团队 目标s & 绩效",
+      "time": "团队考勤/假期"
     },
     "hrOps": {
       "label": "人事运营",
@@ -4844,15 +4935,18 @@
       "org": "Org Management",
       "attendanceAdmin": "Attendance 管理员",
       "leaveAdmin": "Leave 管理员",
+      "loaAdmin": "休假管理",
       "onboardingOffboarding": "Onboarding/Offboarding",
-      "disciplineRewards": "Discipline & Rewards"
+      "disciplineRewards": "Discipline & Rewards",
+      "leaveLoaAdmin": "休假/休职管理"
     },
     "recruitment": {
       "label": "招聘",
       "posts": "Job Postings",
       "dashboard": "Recruitment Dashboard",
       "board": "Kanban Board",
-      "talentPool": "Talent Pool"
+      "talentPool": "Talent Pool",
+      "internalJobs": "内部招聘"
     },
     "performance": {
       "label": "绩效 & Compensation",
@@ -4884,10 +4978,22 @@
       "dpia": "DPIA",
       "kr": "Korea 合规",
       "cn": "China 合规",
-      "ru": "Russia 合规"
+      "ru": "Russia 合规",
+      "hub": "合规"
     },
     "favorites": {
       "label": "Favorites"
+    },
+    "employee": {
+      "work": "考勤/休假",
+      "org": "组织"
+    },
+    "subGroup": {
+      "work": "工作",
+      "time-off": "考勤/假期",
+      "pay": "薪资",
+      "growth": "成长",
+      "etc": "其他"
     }
   },
   "myTasks": {
@@ -4941,7 +5047,8 @@
     "emptyTitle": "No skills data",
     "emptyDesc": "Register employee skills.",
     "skillMatrixTitle": "Skill Matrix",
-    "teamSkillsTitle": "Team Skills"
+    "teamSkillsTitle": "Team Skills",
+    "enterComment": "请输入评论"
   },
   "lms": {
     "pageTitle": "Learning Management",
@@ -4960,7 +5067,11 @@
       "performance": "绩效 状态",
       "payroll": "工资roll 状态",
       "onboarding": "Onboarding 状态",
-      "compliance": "合规"
+      "compliance": "合规",
+      "summary": "综合",
+      "workforce": "人力状况",
+      "recruit": "招聘",
+      "training": "培训"
     },
     "kpi": {
       "totalEmployees": "All Headcount",
@@ -4982,7 +5093,40 @@
       "payroll_cost": "인item(s)비"
     },
     "noData": "No 데이터 available.",
-    "noDataDesc": "Please 변경하거나 new로운 데이터를 additional해 보 조item(s)."
+    "noDataDesc": "请更改条件或添加新数据。",
+    "kpiDashboardTitle": "KPI 仪表板",
+    "kpiDashboardSubtitle": "查看全公司人事指标",
+    "globalCompare": "全球比较",
+    "allCompanies": "全部法人",
+    "kpiHeadcount": "总人数",
+    "kpiTurnoverRate": "离职率",
+    "kpiRecruitActive": "招聘进行",
+    "kpiAttritionRisk": "流失风险",
+    "kpiLeaveUsage": "休假使用率",
+    "kpiTrainingCompletion": "培训完成率",
+    "unitPerson": "人",
+    "unitCase": "件",
+    "prevMonth": "环比",
+    "avgDays": "平均 {days} 天",
+    "attritionBreakdown": "高 {high} 人 · 危急 {critical} 人",
+    "trainingBreakdown": "{completed}/{total} 人完成",
+    "widget": {
+      "gradeDistribution": "职级分布",
+      "companyDistribution": "法人分布",
+      "hireTrend": "招聘趋势",
+      "tenureDistribution": "工龄分布",
+      "recruitPipeline": "招聘流程",
+      "avgTimeToFill": "平均招聘周期",
+      "talentPool": "人才库",
+      "performanceGrade": "绩效等级",
+      "skillGapTop5": "技能差距 Top 5",
+      "overtime52h": "52小时加班风险",
+      "leaveTrend": "休假使用趋势",
+      "burnoutRisk": "倦怠风险",
+      "payrollCost": "薪资成本",
+      "mandatoryTraining": "必修培训",
+      "benefitsUsage": "福利使用情况"
+    }
   },
   "mySpace": {
     "tasksTitle": "My Tasks",
@@ -5067,7 +5211,18 @@
     "emptyBenefitClaim": "No claims yet",
     "emptyBenefitClaimDesc": "You haven't submitted any benefit claims yet.",
     "emptyTitle": "No data",
-    "emptyDesc": "Nothing has been added yet"
+    "emptyDesc": "Nothing has been added yet",
+    "atGlance": {
+      "team": "所属",
+      "tenure": "工龄",
+      "years": "年",
+      "joined": "入职",
+      "certLang": "资格/语言",
+      "certCount": "资格证 {count} 个",
+      "langCount": "语言 {count} 种",
+      "skills": "技能",
+      "skillCount": "项"
+    }
   },
   "directory": {
     "pageTitle": "People Directory",
@@ -5085,7 +5240,107 @@
   "notifications": {
     "pageTitle": "Notifications",
     "emptyTitle": "No new notifications",
-    "emptyDesc": "Notifications will appear here."
+    "emptyDesc": "Notifications will appear here.",
+    "leaveApproved": {
+      "title": "休假已批准",
+      "body": "休假已批准：{startDate} ~ {endDate}"
+    },
+    "leaveRejected": {
+      "title": "休假被驳回",
+      "body": "驳回原因：{reason}"
+    },
+    "overtimeWarning48h": {
+      "title": "周工时超过48小时",
+      "body": "周工作时间已超过48小时，请注意控制加班时间。"
+    },
+    "overtimeBlocked52h": {
+      "title": "已达法定最高工时",
+      "body": "已达法定最高工作时间（52小时），禁止继续加班。"
+    },
+    "turnoverRiskCritical": {
+      "title": "离职风险严重",
+      "body": "员工离职风险已达严重级别。"
+    },
+    "mboGoalSubmitted": {
+      "title": "MBO目标已提交",
+      "body": "{name}提交了MBO目标。共{goalCount}个目标，总权重{totalWeight}%"
+    },
+    "selfEvalSubmitted": {
+      "title": "自评已提交",
+      "body": "{name}已提交自评，请进行团队成员评估。"
+    },
+    "managerEvalSubmitted": {
+      "title": "主管评估完成",
+      "body": "主管评估已完成，周期确定后可查看结果。"
+    },
+    "mboGoalApproved": {
+      "title": "MBO目标已批准",
+      "body": "MBO目标已获批准。"
+    },
+    "mboGoalRejected": {
+      "title": "MBO目标需修改",
+      "body": "MBO目标需要修改，请查看反馈后重新提交。"
+    },
+    "goalOverdue": {
+      "title": "MBO目标未提交",
+      "body": "{name}未提交{cycleName} MBO目标，已逾期{daysOverdue}天。"
+    },
+    "evalOverdue": {
+      "title": "评估已逾期",
+      "body": "{cycleName}评估期限已逾期{daysOverdue}天，需要跟进处理。"
+    },
+    "payrollAttendanceClosed": {
+      "title": "考勤已截止",
+      "body": "{yearMonth}考勤已截止。{confirmedCount}/{totalEmployees}人已确认，请进行薪资核算。"
+    },
+    "payrollReviewReady": {
+      "title": "薪资异常审核就绪",
+      "body": "{yearMonth}薪资异常审核已准备就绪。"
+    },
+    "payrollPendingApproval": {
+      "title": "薪资待审批",
+      "body": "{yearMonth}薪资（{headcount}人，{totalNet}）已提交审批。"
+    },
+    "payrollApprovalRejected": {
+      "title": "薪资审批被驳回",
+      "body": "驳回原因：{reason}"
+    },
+    "payrollApprovalNeeded": {
+      "title": "需要薪资审批",
+      "body": "请进行{yearMonth}薪资审批。"
+    },
+    "benefitApproved": {
+      "title": "福利申请已批准",
+      "body": "{planName}福利申请已获批准。"
+    },
+    "profileChangeApproved": {
+      "title": "信息变更已批准",
+      "body": "{fieldLabel}变更申请已获批准。"
+    },
+    "profileChangeRejected": {
+      "title": "信息变更被驳回",
+      "body": "{fieldLabel}变更申请被驳回。原因：{reason}"
+    },
+    "recognitionReceived": {
+      "title": "收到表彰",
+      "body": "{senderName}向您发送了表彰。"
+    },
+    "hrChatbotEscalation": {
+      "title": "HR咨询请求",
+      "body": "{userName}请求连接HR专员。"
+    },
+    "evalReminder": {
+      "title": "评估截止提醒",
+      "body": "{name}，{cycleName} {type}截止日期为{label}，请尽快提交。"
+    },
+    "evalEscalation": {
+      "title": "评估逾期升级",
+      "body": "{cycleName} {type}截止日期已过，{count}名员工尚未提交。"
+    },
+    "leavePromotion": {
+      "title": "建议休假",
+      "body": "{name}，您还有{remainingDays}天年假未使用，距入职周年还有{daysUntilAnniversary}天，建议您安排休假。"
+    }
   },
   "header": {
     "directory": "People Directory",

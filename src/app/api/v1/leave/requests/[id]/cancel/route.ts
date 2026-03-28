@@ -15,28 +15,17 @@ import { badRequest, notFound, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
+import { invalidateMultiple, CACHE_STRATEGY } from '@/lib/cache'
+import { calculateLeaveDays } from '@/lib/leave/calculateLeaveDays'
+import { fetchCompanyHolidays } from '@/lib/leave/fetchHolidays'
+import { resolveLeaveTypeDefId } from '@/lib/leave/resolveLeaveTypeDefId'
+import type { CountingMethod } from '@/lib/leave/calculateLeaveDays'
 import type { SessionUser } from '@/types'
 
 // ─── Helper: HR_ADMIN or above ───────────────────────────
 
 function isHrOrAbove(role: string): boolean {
   return (['HR_ADMIN', 'EXECUTIVE', 'SUPER_ADMIN'] as string[]).includes(role)
-}
-
-// ─── Helper: Calculate business days used (for partial cancel) ───
-
-function calculateActualUsedDays(startDate: Date, untilDate: Date): number {
-  let count = 0
-  const current = new Date(startDate)
-  const end = new Date(untilDate)
-  // Don't count today (partially used)
-  end.setDate(end.getDate() - 1)
-  while (current <= end) {
-    const day = current.getDay()
-    if (day !== 0 && day !== 6) count++
-    current.setDate(current.getDate() + 1)
-  }
-  return Math.max(count, 0)
 }
 
 // ─── PUT Handler ─────────────────────────────────────────
@@ -73,7 +62,7 @@ export const PUT = withPermission(
         throw forbidden('본인의 신청만 취소할 수 있습니다.')
       }
 
-      // PENDING → no usedDays change, only pendingDays decrement
+      // PENDING → no used change, only pending decrement
       const updated = await prisma.$transaction(async (tx) => {
         const cancelled = await tx.leaveRequest.update({
           where: { id },
@@ -84,12 +73,12 @@ export const PUT = withPermission(
           },
         })
 
-        // Restore pendingDays
+        // Restore pending
         const balance = await findBalance(tx, request)
         if (balance) {
-          await tx.employeeLeaveBalance.update({
+          await tx.leaveYearBalance.update({
             where: { id: balance.id },
-            data: { pendingDays: { decrement: Number(request.days) } },
+            data: { pending: { decrement: Number(request.days) } },
           })
         }
 
@@ -97,6 +86,7 @@ export const PUT = withPermission(
       })
 
       await auditCancel(req, user, request, 'PENDING_CANCEL', 0)
+      void invalidateMultiple([CACHE_STRATEGY.DASHBOARD_KPI, CACHE_STRATEGY.SIDEBAR], request.companyId)
 
       return apiSuccess({
         ...updated,
@@ -125,12 +115,12 @@ export const PUT = withPermission(
           },
         })
 
-        // Restore full usedDays
+        // Restore full used
         const balance = await findBalance(tx, request)
         if (balance) {
-          await tx.employeeLeaveBalance.update({
+          await tx.leaveYearBalance.update({
             where: { id: balance.id },
-            data: { usedDays: { decrement: daysToRestore } },
+            data: { used: { decrement: daysToRestore } },
           })
         }
 
@@ -138,6 +128,7 @@ export const PUT = withPermission(
       })
 
       await auditCancel(req, user, request, 'PRE_START_CANCEL', daysToRestore)
+      void invalidateMultiple([CACHE_STRATEGY.DASHBOARD_KPI, CACHE_STRATEGY.SIDEBAR], request.companyId)
 
       return apiSuccess({
         ...updated,
@@ -154,7 +145,51 @@ export const PUT = withPermission(
         throw forbidden('휴가 시작 후에는 HR 관리자만 취소할 수 있습니다.')
       }
 
-      const actualUsed = calculateActualUsedDays(requestStart, now)
+      // LeaveTypeDef 기반 countingMethod 조회 (직접 또는 policy 경유)
+      let countingMethod: CountingMethod = 'business_day'
+      let includesHolidays = false
+
+      if (request.leaveTypeDefId) {
+        // Phase 5: 직접 연결된 LeaveTypeDef 사용
+        const typeDef = await prisma.leaveTypeDef.findUnique({
+          where: { id: request.leaveTypeDefId },
+          select: { countingMethod: true, includesHolidays: true },
+        })
+        if (typeDef) {
+          countingMethod = (typeDef.countingMethod as CountingMethod) ?? 'business_day'
+          includesHolidays = typeDef.includesHolidays ?? false
+        }
+      } else {
+        // 하위호환: 기존 요청은 policy 경유 lookup
+        const policyWithType = await prisma.leavePolicy.findUnique({
+          where: { id: request.policyId },
+          select: { companyId: true },
+        })
+        if (policyWithType) {
+          const typeDef = await prisma.leaveTypeDef.findFirst({
+            where: {
+              OR: [
+                { companyId: policyWithType.companyId, isActive: true },
+                { companyId: null, isActive: true },
+              ],
+            },
+            orderBy: { companyId: 'desc' },
+            select: { countingMethod: true, includesHolidays: true },
+          })
+          if (typeDef) {
+            countingMethod = (typeDef.countingMethod as CountingMethod) ?? 'business_day'
+            includesHolidays = typeDef.includesHolidays ?? false
+          }
+        }
+      }
+
+      // 어제까지 실제 사용일 계산 (오늘 미포함)
+      const yesterday = new Date(now)
+      yesterday.setDate(yesterday.getDate() - 1)
+      const holidays = await fetchCompanyHolidays(request.companyId, requestStart, yesterday)
+      const actualUsed = yesterday >= requestStart
+        ? calculateLeaveDays({ startDate: requestStart, endDate: yesterday, countingMethod, includesHolidays, holidays })
+        : 0
       const totalDays = Number(request.days)
       const unusedDays = Math.max(totalDays - actualUsed, 0)
 
@@ -172,9 +207,9 @@ export const PUT = withPermission(
         if (unusedDays > 0) {
           const balance = await findBalance(tx, request)
           if (balance) {
-            await tx.employeeLeaveBalance.update({
+            await tx.leaveYearBalance.update({
               where: { id: balance.id },
-              data: { usedDays: { decrement: unusedDays } },
+              data: { used: { decrement: unusedDays } },
             })
           }
         }
@@ -183,6 +218,7 @@ export const PUT = withPermission(
       })
 
       await auditCancel(req, user, request, 'POST_START_CANCEL', unusedDays)
+      void invalidateMultiple([CACHE_STRATEGY.DASHBOARD_KPI, CACHE_STRATEGY.SIDEBAR], request.companyId)
 
       return apiSuccess({
         ...updated,
@@ -204,24 +240,30 @@ type TxPrisma = Parameters<Parameters<typeof prisma.$transaction>[0]>[0]
 
 async function findBalance(
   tx: TxPrisma,
-  request: { employeeId: string; policyId: string; startDate: Date; endDate: Date },
+  request: { employeeId: string; policyId: string; leaveTypeDefId: string | null; startDate: Date; endDate: Date },
 ) {
+  // leaveTypeDefId 결정 (직접 또는 policyId 경유)
+  const leaveTypeDefId = request.leaveTypeDefId
+    ?? await resolveLeaveTypeDefId(request.policyId, tx)
+
+  if (!leaveTypeDefId) return null
+
   const startYear = new Date(request.startDate).getFullYear()
   const endYear = new Date(request.endDate).getFullYear()
 
-  let balance = await tx.employeeLeaveBalance.findFirst({
+  let balance = await tx.leaveYearBalance.findFirst({
     where: {
       employeeId: request.employeeId,
-      policyId: request.policyId,
+      leaveTypeDefId,
       year: startYear,
     },
   })
 
   if (!balance && endYear !== startYear) {
-    balance = await tx.employeeLeaveBalance.findFirst({
+    balance = await tx.leaveYearBalance.findFirst({
       where: {
         employeeId: request.employeeId,
-        policyId: request.policyId,
+        leaveTypeDefId,
         year: endYear,
       },
     })

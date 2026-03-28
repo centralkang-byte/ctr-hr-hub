@@ -18,8 +18,9 @@ import type { TurnoverResponse } from '@/lib/analytics/types'
 import { TABLE_STYLES } from '@/lib/styles'
 import { CHART_THEME } from '@/lib/styles/chart'
 import { cn } from '@/lib/utils'
+import type { SessionUser } from '@/types'
 
-export default function TurnoverClient() {
+export default function TurnoverClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('analytics')
   const [data, setData] = useState<TurnoverResponse | null>(null)
@@ -101,7 +102,7 @@ export default function TurnoverClient() {
               <PieChart>
                 <Pie data={charts.exitReasons} dataKey="count" nameKey="reason" cx="50%" cy="50%" outerRadius={90} innerRadius={50}
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  label={(entry: any) => `${entry.reason} ${entry.percentage}%`} labelLine={{ strokeWidth: 1 }}> // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma result mapping callback
+                  label={(entry: any) => `${entry.reason} ${entry.percentage}%`} labelLine={{ strokeWidth: 1 }}>
                   {charts.exitReasons.map((_, i) => (
                     <Cell key={i} fill={[CHART_COLORS.primary, ...CHART_COLORS.secondary][i % 8]} />
                   ))}
@@ -187,7 +188,7 @@ export default function TurnoverClient() {
                               style={{ width: `${emp.score}%` }}
                             />
                           </div>
-                          <span className="text-xs font-mono text-gray-700 w-6 text-right">{emp.score}</span>
+                          <span className="text-xs font-mono tabular-nums text-gray-700 w-6 text-right">{emp.score}</span>
                         </div>
                       </td>
                       <td className={TABLE_STYLES.cell}>

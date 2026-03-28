@@ -6,10 +6,11 @@ import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { ArrowLeft, Users, Sparkles, Plus, CheckCircle2, XCircle, Search } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import type { SessionUser } from '@/types'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -56,11 +57,9 @@ const STATUS_MAP: Record<string, { label: string; cls: string }> = {
 
 // ─── Component ───────────────────────────────────────────
 
-export default function PeerNominationSetupClient() {
+export default function PeerNominationSetupClient({ user, cycleId }: { user: SessionUser; cycleId: string }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
-
-  const { cycleId } = useParams<{ cycleId: string }>()
   const router = useRouter()
 
   const [nominations, setNominations] = useState<Nomination[]>([])
@@ -79,7 +78,7 @@ export default function PeerNominationSetupClient() {
         `/api/v1/peer-review/nominations?cycleId=${cycleId}&size=100`
       )
       setNominations(res.data.items ?? [])
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '후보자 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setLoading(false)
   }, [cycleId])
 
@@ -89,7 +88,7 @@ export default function PeerNominationSetupClient() {
     try {
       const res = await apiClient.get<{ items: Employee[] }>(`/api/v1/employees?search=${encodeURIComponent(searchQuery)}&size=10`)
       setEmployees(res.data.items ?? [])
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '직원 검색 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setEmpLoading(false)
   }, [searchQuery])
 
@@ -108,7 +107,7 @@ export default function PeerNominationSetupClient() {
         `/api/v1/peer-review/recommend?employeeId=${employeeId}&cycleId=${cycleId}&limit=5`
       )
       setCandidates(res.data ?? [])
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '추천 후보 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
   }
 
   const handleNominate = async (nomineeId: string, source: string, score?: number) => {
@@ -124,7 +123,7 @@ export default function PeerNominationSetupClient() {
       if (selectedEmployeeId) {
         fetchRecommendations(selectedEmployeeId)
       }
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '후보 추천 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
   }
 
   const handleApproveReject = (nomId: string, status: string) => {
@@ -138,13 +137,13 @@ export default function PeerNominationSetupClient() {
           try {
             await apiClient.put(`/api/v1/peer-review/nominations/${nomId}`, { status })
             fetchNominations()
-          } catch { /* ignore */ }
+          } catch (err) { toast({ title: '후보 상태 변경 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
         },
       })
     } else {
       void apiClient.put(`/api/v1/peer-review/nominations/${nomId}`, { status })
         .then(() => fetchNominations())
-        .catch(() => { /* ignore */ })
+        .catch((err: unknown) => { toast({ title: '후보 상태 변경 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) })
     }
   }
 
@@ -218,7 +217,7 @@ export default function PeerNominationSetupClient() {
           {loading ? (
             <p className="text-sm text-[#999] text-center py-4">{tCommon('loading')}</p>
           ) : nominations.length === 0 ? (
-            <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+            <EmptyState />
           ) : (
             <div className="space-y-3 max-h-[60vh] overflow-y-auto">
               {nominations.map((n) => (

@@ -12,8 +12,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const companyId = searchParams.get('companyId')
 
-  // TODO: 추후 DB에서 회사별 브랜딩 컬러 조회
-  // 현재는 기본값 반환
+  // Phase 4: DB CompanySetting에서 회사별 브랜딩 컬러 조회 예정 (현재 기본값)
   if (!companyId) {
     return apiSuccess(DEFAULT_BRAND_COLORS)
   }

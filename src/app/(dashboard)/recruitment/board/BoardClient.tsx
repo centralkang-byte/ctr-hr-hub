@@ -563,7 +563,7 @@ export default function BoardClient({ user }: Props) {
               })
             }
           />
-          <div className="relative bg-white border border-[#F0F0F3] rounded-2xl p-6 w-full max-w-md shadow-xl animate-in fade-in zoom-in-95">
+          <div className="relative bg-white border border-[#F0F0F3] rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-bold text-[#1C1D21]" style={{ letterSpacing: '-0.02em' }}>
                 {t('offerModal')}
@@ -674,7 +674,7 @@ export default function BoardClient({ user }: Props) {
               setRejectionModal({ open: false, applicationId: '', postingId: '', reason: '' })
             }
           />
-          <div className="relative bg-white border border-[#F0F0F3] rounded-2xl p-6 w-full max-w-md shadow-xl animate-in fade-in zoom-in-95">
+          <div className="relative bg-white border border-[#F0F0F3] rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-bold text-[#1C1D21]" style={{ letterSpacing: '-0.02em' }}>
                 {t('rejectionModal')}

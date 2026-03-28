@@ -10,8 +10,8 @@ import { useRouter } from 'next/navigation'
 import { MessageSquare, Plus, Calendar, AlertTriangle, CheckCircle2, Clock, Users } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { apiClient } from '@/lib/api'
-import { useSession } from 'next-auth/react'
 import { ROLE } from '@/lib/constants'
+import type { SessionUser } from '@/types'
 import { CARD_STYLES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES, CHART_THEME } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
@@ -68,13 +68,12 @@ const MEETING_TYPE_LABELS: Record<string, string> = {
 
 // ─── Component ───────────────────────────────────────────
 
-export default function OneOnOneClient() {
+export default function OneOnOneClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
 
-  const { data: session } = useSession()
   const router = useRouter()
-  const isManager = session?.user?.role === ROLE.MANAGER || session?.user?.role === ROLE.HR_ADMIN || session?.user?.role === ROLE.EXECUTIVE
+  const isManager = user.role === ROLE.MANAGER || user.role === ROLE.HR_ADMIN || user.role === ROLE.EXECUTIVE
 
   const [meetings, setMeetings] = useState<Meeting[]>([])
   const [dashboard, setDashboard] = useState<DashboardData | null>(null)
@@ -92,7 +91,7 @@ export default function OneOnOneClient() {
     try {
       const res = await apiClient.getList<Meeting>('/api/v1/cfr/one-on-ones', { status: statusFilter })
       setMeetings(res.data)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '미팅 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setLoading(false)
   }, [statusFilter])
 
@@ -101,7 +100,7 @@ export default function OneOnOneClient() {
     try {
       const res = await apiClient.get<DashboardData>('/api/v1/cfr/one-on-ones/dashboard')
       setDashboard(res.data)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '대시보드 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
   }, [isManager])
 
   useEffect(() => { fetchMeetings() }, [fetchMeetings])
@@ -109,9 +108,9 @@ export default function OneOnOneClient() {
 
   const openCreateModal = async () => {
     try {
-      const res = await apiClient.getList<TeamMember>('/api/v1/employees', { managerId: session?.user?.employeeId, status: 'ACTIVE', limit: 100 })
+      const res = await apiClient.getList<TeamMember>('/api/v1/employees', { managerId: user.employeeId, status: 'ACTIVE', limit: 100 })
       setTeamMembers(res.data)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '팀원 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setShowCreateModal(true)
   }
 
@@ -128,7 +127,7 @@ export default function OneOnOneClient() {
       setShowCreateModal(false)
       setNewMeeting({ employeeId: '', scheduledAt: '', meetingType: 'REGULAR', agenda: '' })
       fetchMeetings()
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '미팅 생성 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setCreating(false)
   }
 
@@ -293,7 +292,7 @@ export default function OneOnOneClient() {
           {meetings.length === 0 && (
             <div className="text-center py-12 text-[#999]">
               <MessageSquare className="w-12 h-12 mx-auto mb-3 text-[#D4D4D4]" />
-              <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+              <EmptyState />
             </div>
           )}
 
@@ -362,7 +361,7 @@ export default function OneOnOneClient() {
       {/* Create Modal */}
       {showCreateModal && (
         <div className={MODAL_STYLES.container}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-md">
             <div className="p-6 border-b border-[#E8E8E8]">
               <h3 className="text-lg font-semibold text-[#1A1A1A]">{t('kr_kec8388_1_1_kec9888ec')}</h3>
             </div>

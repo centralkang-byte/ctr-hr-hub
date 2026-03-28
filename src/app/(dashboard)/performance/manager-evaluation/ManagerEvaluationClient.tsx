@@ -151,7 +151,7 @@ export default function ManagerEvaluationClient({user }: {
                 ) : teamMembers.length === 0 ? (
                     <div className="rounded-xl border border-[#F0F0F3] bg-white p-16 text-center">
                         <Users className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                        <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                        <EmptyState />
                     </div>
                 ) : (
                     <div className="space-y-4">
@@ -251,7 +251,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
         // Fetch peer results
         apiClient.get<{ reviews: typeof peerResults }>(`/api/v1/performance/peer-review/results/${member.employeeId}`, { cycleId })
             .then((res) => setPeerResults(res.data.reviews ?? []))
-            .catch(() => { /* no peer results */ })
+            .catch((err) => { toast({ title: '동료 평가 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) })
     }, [member, cycleId]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const mboAvg = Object.values(goalScores).length > 0
@@ -286,7 +286,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
 
     return (
         <div className="fixed inset-0 z-50 flex items-start justify-end bg-black/30" onClick={onClose}>
-            <div className="h-full w-full max-w-2xl overflow-y-auto bg-white shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="h-full w-full max-w-2xl overflow-y-auto bg-white shadow-lg" onClick={(e) => e.stopPropagation()}>
                 <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[#F0F0F3] bg-white px-6 py-4">
                     <h2 className="text-lg font-bold text-[#1C1D21]">{member.name} 평가</h2>
                     <button onClick={onClose} className="text-[#8181A5] hover:text-[#1C1D21]"><X className="h-5 w-5" /></button>
@@ -346,7 +346,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                     {tab === 'peer' && (
                         <div className="space-y-4">
                             {peerResults.length === 0 ? (
-                                <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                                <EmptyState />
                             ) : peerResults.map((r, i) => (
                                 <div key={i} className="rounded-xl border border-[#F0F0F3] p-4">
                                     <p className="mb-2 text-sm font-medium text-[#1C1D21]">평가자: {r.reviewerName}</p>
@@ -424,7 +424,7 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
             try {
                 const res = await apiClient.get<PeerCandidate[]>('/api/v1/performance/peer-review/candidates', { employeeId: member.employeeId, cycleId })
                 setCandidates(res.data ?? [])
-            } catch { /* ignore */ }
+            } catch (err) { toast({ title: '동료평가 후보 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
             finally { setLoading(false) }
         }
         load()

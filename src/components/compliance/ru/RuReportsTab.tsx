@@ -276,7 +276,7 @@ export default function RuReportsTab() {
                   <tbody>
                     {report57tData.jobCategories.map((cat) => (
                       <tr key={cat.categoryCode} className={TABLE_STYLES.row}>
-                        <td className="px-4 py-2 text-xs text-[#666] font-mono">
+                        <td className="px-4 py-2 text-xs text-[#666] font-mono tabular-nums">
                           {cat.categoryCode}
                         </td>
                         <td className="px-4 py-2 text-sm text-[#1A1A1A]">{cat.categoryName}</td>

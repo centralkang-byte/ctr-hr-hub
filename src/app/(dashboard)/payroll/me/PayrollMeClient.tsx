@@ -38,13 +38,13 @@ interface PayrollMeClientProps {
 
 // ─── MoM Delta ─────────────────────────────────────────
 
-function MoMDelta({ current, previous }: { current: number; previous: number | null }) {
+function MoMDelta({ current, previous, sameLabel }: { current: number; previous: number | null; sameLabel: string }) {
   if (!previous || previous === 0) return null
   const diff = current - previous
   const pct = Math.round((diff / previous) * 100)
   if (diff === 0) return (
     <span className="text-xs text-[#999] flex items-center gap-0.5">
-      <Minus className="h-3 w-3" /> {'전월 동일'}
+      <Minus className="h-3 w-3" /> {sameLabel}
     </span>
   )
   if (diff > 0) return (
@@ -94,7 +94,7 @@ export default function PayrollMeClient({
           {newCount > 0 && (
             <p className="text-xs text-[#D97706] mt-0.5 flex items-center gap-1">
               <Sparkles className="h-3 w-3" />
-              미열람 명세서 {newCount}건
+              {t('unreadCount', { count: newCount })}
             </p>
           )}
         </div>
@@ -107,7 +107,7 @@ export default function PayrollMeClient({
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {!items?.length && <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />}
+          {!items?.length && <EmptyState />}
               {items?.map((item, idx) => {
             const prevItem = items[idx + 1]  // sorted desc — next item is previous month
             const isNew = !item.isViewed
@@ -153,7 +153,7 @@ export default function PayrollMeClient({
                   {/* MoM comparison mini-widget */}
                   {prevItem && (
                     <div className="pt-1.5 flex justify-end">
-                      <MoMDelta current={Number(item.netPay)} previous={Number(prevItem.netPay)} />
+                      <MoMDelta current={Number(item.netPay)} previous={Number(prevItem.netPay)} sameLabel={t('momSame')} />
                     </div>
                   )}
                 </div>

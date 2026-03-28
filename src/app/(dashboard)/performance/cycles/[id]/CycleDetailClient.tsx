@@ -133,7 +133,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
         return (
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
-                    <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                    <EmptyState />
                     <a href="/performance/cycles" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">{t('kr_keb8f8cec')}</a>
                 </div>
             </div>

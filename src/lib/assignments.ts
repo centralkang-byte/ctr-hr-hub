@@ -92,6 +92,7 @@ export async function createAssignment(params: CreateAssignmentParams) {
     companyId,
     departmentId,
     jobGradeId,
+    titleId,
     jobCategoryId,
     employmentType,
     contractType,
@@ -132,6 +133,7 @@ export async function createAssignment(params: CreateAssignmentParams) {
         companyId,
         departmentId,
         jobGradeId,
+        titleId,
         jobCategoryId,
         employmentType,
         contractType,
@@ -146,6 +148,7 @@ export async function createAssignment(params: CreateAssignmentParams) {
         company:     true,
         department:  true,
         jobGrade:    true,
+        title:       true,
         jobCategory: true,
       },
     })

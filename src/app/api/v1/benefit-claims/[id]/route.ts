@@ -101,6 +101,9 @@ export const PATCH = withPermission(
         triggerType: 'benefit_approved',
         title: '복리후생 신청이 승인되었습니다',
         body: `${claim.benefitPlan.name} 신청이 승인되었습니다.`,
+        titleKey: 'notifications.benefitApproved.title',
+        bodyKey: 'notifications.benefitApproved.body',
+        bodyParams: { planName: claim.benefitPlan.name },
         link: `/my/benefits`,
         priority: 'normal',
       })

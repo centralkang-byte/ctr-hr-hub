@@ -80,6 +80,19 @@ enum DocType {
   OTHER
 }
 
+enum CertificateRequestType {
+  EMPLOYMENT_CERT
+  CAREER_CERT
+  INCOME_CERT
+}
+
+enum CertificateRequestStatus {
+  REQUESTED
+  APPROVED
+  ISSUED
+  REJECTED
+}
+
 enum OffboardingTargetType {
   VOLUNTARY
   INVOLUNTARY
@@ -780,6 +793,7 @@ model Company {
   attendanceTerminals    AttendanceTerminal[]
   leavePolicies          LeavePolicy[]
   holidays               Holiday[]
+  designatedLeaveDays    DesignatedLeaveDay[]
   jobPostings            JobPosting[]
   competencyLibrary      CompetencyLibrary[]
   competencyRequirements CompetencyRequirement[]
@@ -919,8 +933,19 @@ model Company {
   // G-2: AI Reports
   aiReports              AiReport[]
 
+  // 직급 리팩터링: 호칭 관리
+  employeeTitles         EmployeeTitle[]
+  gradeTitleMappings     GradeTitleMapping[]
+
   // B-2a: Work Locations
   workLocations          WorkLocation[]
+
+  // Certificate Requests
+  certificateRequests    CertificateRequest[]
+
+  // B1: Leave of Absence (휴직)
+  leaveOfAbsenceTypes    LeaveOfAbsenceType[]
+  leaveOfAbsences        LeaveOfAbsence[]
 
   @@map("companies")
 }
@@ -964,6 +989,10 @@ model JobGrade {
   name      String
   rankOrder Int       @map("rank_order")
   deletedAt DateTime? @map("deleted_at")
+  // 직급 리팩터링: 법인별 가변 직급 체계
+  gradeType         String  @default("STAFF") @map("grade_type") // STAFF | SPECIALIST | EXECUTIVE
+  nameEn            String? @map("name_en")
+  minPromotionYears Int?    @map("min_promotion_years")
 
   company               Company              @relation(fields: [companyId], references: [id])
   assignments           EmployeeAssignment[]
@@ -974,8 +1003,43 @@ model JobGrade {
   disciplinaryDemotions DisciplinaryAction[] @relation("DisciplinaryDemotionGrade")
   entityTransfers       EntityTransfer[]
   positions             Position[]
+  gradeTitleMappings    GradeTitleMapping[]
 
   @@map("job_grades")
+}
+
+// 호칭 모델 — 직급(Grade)과 독립적으로 관리 (국가별 다른 호칭명)
+model EmployeeTitle {
+  id          String    @id @default(uuid())
+  companyId   String    @map("company_id")
+  code        String
+  name        String
+  nameEn      String?   @map("name_en")
+  rankOrder   Int       @map("rank_order")
+  isExecutive Boolean   @default(false) @map("is_executive")
+  deletedAt   DateTime? @map("deleted_at")
+
+  company            Company              @relation(fields: [companyId], references: [id])
+  assignments        EmployeeAssignment[]
+  gradeTitleMappings GradeTitleMapping[]
+
+  @@unique([companyId, code])
+  @@map("employee_titles")
+}
+
+// Grade↔Title 매핑 — 법인별 직급→호칭 1:1 매핑 (국가별 다른 체계 지원)
+model GradeTitleMapping {
+  id              String @id @default(uuid())
+  companyId       String @map("company_id")
+  jobGradeId      String @map("job_grade_id")
+  employeeTitleId String @map("employee_title_id")
+
+  company       Company       @relation(fields: [companyId], references: [id])
+  jobGrade      JobGrade      @relation(fields: [jobGradeId], references: [id])
+  employeeTitle EmployeeTitle @relation(fields: [employeeTitleId], references: [id])
+
+  @@unique([companyId, jobGradeId])
+  @@map("grade_title_mappings")
 }
 
 model JobCategory {
@@ -1421,6 +1485,15 @@ model Employee {
   leaveApprovalsDelegated LeaveRequest[]          @relation("LeaveDelegatee")
   leaveCancelled          LeaveRequest[]          @relation("LeaveCanceller")
 
+  // Certificate Requests
+  certificateRequests         CertificateRequest[] @relation("CertRequestEmployee")
+  certificateRequestApprovals CertificateRequest[] @relation("CertRequestApprover")
+
+  // B1: Leave of Absence (휴직)
+  leaveOfAbsences            LeaveOfAbsence[]  @relation("LOAEmployee")
+  leaveOfAbsenceApprovals    LeaveOfAbsence[]  @relation("LOAApprover")
+  leaveOfAbsenceRejections   LeaveOfAbsence[]  @relation("LOARejecter")
+
   @@index([deletedAt])
   @@index([hireDate])
   @@map("employees")
@@ -1446,6 +1519,7 @@ model EmployeeAssignment {
   positionId     String?   @map("position_id")
   isPrimary      Boolean   @default(true) @map("is_primary")
   workLocationId String?   @map("work_location_id") // B-2b: nullable FK to WorkLocation
+  titleId        String?   @map("title_id") // 호칭 (직급과 독립)
   reason         String?
   orderNumber    String?   @map("order_number")
   approvedBy     String?   @map("approved_by")
@@ -1460,6 +1534,7 @@ model EmployeeAssignment {
   position     Position?     @relation(fields: [positionId], references: [id])
   approver     Employee?     @relation("AssignmentApprover", fields: [approvedBy], references: [id])
   workLocation WorkLocation? @relation(fields: [workLocationId], references: [id], onDelete: SetNull)
+  title        EmployeeTitle? @relation(fields: [titleId], references: [id])
 
   @@index([employeeId])
   @@index([effectiveDate])
@@ -2038,16 +2113,18 @@ model LeaveRequest {
   delegatedBy     String?            @map("delegated_by")
   cancelledBy     String?            @map("cancelled_by")     // F-3: 취소 처리자
   cancelNote      String?            @map("cancel_note")      // F-3: 취소 사유/메모
+  leaveTypeDefId  String?            @map("leave_type_def_id") // Phase 5: 규정 기반 연결
   createdAt       DateTime           @default(now()) @map("created_at")
   updatedAt       DateTime           @updatedAt @map("updated_at")
 
-  employee  Employee    @relation("LeaveRequester", fields: [employeeId], references: [id])
-  policy    LeavePolicy @relation(fields: [policyId], references: [id])
-  approver  Employee?   @relation("LeaveApprover", fields: [approvedBy], references: [id])
-  delegatee Employee?   @relation("LeaveDelegatee", fields: [delegatedBy], references: [id])
-  canceller Employee?   @relation("LeaveCanceller", fields: [cancelledBy], references: [id])
-  company   Company     @relation(fields: [companyId], references: [id])
-  companyId String      @map("company_id")
+  employee     Employee      @relation("LeaveRequester", fields: [employeeId], references: [id])
+  policy       LeavePolicy   @relation(fields: [policyId], references: [id])
+  approver     Employee?     @relation("LeaveApprover", fields: [approvedBy], references: [id])
+  delegatee    Employee?     @relation("LeaveDelegatee", fields: [delegatedBy], references: [id])
+  canceller    Employee?     @relation("LeaveCanceller", fields: [cancelledBy], references: [id])
+  company      Company       @relation(fields: [companyId], references: [id])
+  companyId    String         @map("company_id")
+  leaveTypeDef LeaveTypeDef? @relation(fields: [leaveTypeDefId], references: [id])
 
   @@index([employeeId, status])
   @@map("leave_requests")
@@ -2066,6 +2143,22 @@ model Holiday {
 
   @@unique([companyId, date])
   @@map("holidays")
+}
+
+// 지정연차 (회사가 지정한 연차 사용일)
+model DesignatedLeaveDay {
+  id        String   @id @default(uuid())
+  companyId String   @map("company_id")
+  date      DateTime
+  name      String   @db.VarChar(100)  // 예: "여름 집단휴가", "설 연휴 사이"
+  year      Int
+  createdAt DateTime @default(now()) @map("created_at")
+
+  company Company @relation(fields: [companyId], references: [id])
+
+  @@unique([companyId, date])
+  @@index([companyId, year])
+  @@map("designated_leave_days")
 }
 
 // ================================================================
@@ -5459,12 +5552,25 @@ model LeaveTypeDef {
   minAdvanceDays     Int?     @map("min_advance_days")      // F-3: 최소 N일 전 신청
   isActive           Boolean  @default(true) @map("is_active")
   displayOrder       Int      @default(0) @map("display_order")
+
+  // ── 규정 정합성 필드 (2026-03-26) ──
+  category          String?  @db.VarChar(30) @map("category")           // annual, family_event, maternity, health, military, other
+  subcategory       String?  @db.VarChar(30) @map("subcategory")        // celebration, condolence
+  countingMethod    String   @default("business_day") @db.VarChar(20) @map("counting_method") // business_day, calendar_day
+  includesHolidays  Boolean  @default(false) @map("includes_holidays")  // true: 공휴일 포함 통산 (경조)
+  isSplittable      Boolean  @default(false) @map("is_splittable")      // 분할사용 가능 (배우자출산 등)
+  splitDeadlineDays Int?     @map("split_deadline_days")                // 분할사용 기한 (일)
+  maxPerYear        Int?     @map("max_per_year")                       // 연간 최대 사용 횟수
+  paidDaysPerYear   Int?     @map("paid_days_per_year")                 // 부분유급 시 유급일수
+  condolenceAmount  Int?     @map("condolence_amount")                  // 경조금 (KRW)
+
   createdAt          DateTime @default(now()) @map("created_at")
   updatedAt          DateTime @updatedAt @map("updated_at")
 
-  company      Company?           @relation("CompanyLeaveTypeDefs", fields: [companyId], references: [id])
-  accrualRules LeaveAccrualRule[]
-  yearBalances LeaveYearBalance[]
+  company       Company?           @relation("CompanyLeaveTypeDefs", fields: [companyId], references: [id])
+  accrualRules  LeaveAccrualRule[]
+  yearBalances  LeaveYearBalance[]
+  leaveRequests LeaveRequest[]
 
   @@unique([companyId, code])
   @@map("leave_type_defs")
@@ -6046,4 +6152,133 @@ model WorkLocation {
 
   @@unique([companyId, code])
   @@map("work_locations")
+}
+
+// ================================================================
+// Certificate Request (증명서 발급 요청)
+// ================================================================
+
+model CertificateRequest {
+  id             String                    @id @default(uuid())
+  employeeId     String                    @map("employee_id")
+  companyId      String                    @map("company_id")
+  type           CertificateRequestType
+  purpose        String?
+  status         CertificateRequestStatus  @default(REQUESTED)
+  rejectedReason String?                   @map("rejected_reason")
+  issuedFileKey  String?                   @map("issued_file_key")
+  requestedAt    DateTime                  @default(now()) @map("requested_at")
+  approvedAt     DateTime?                 @map("approved_at")
+  issuedAt       DateTime?                 @map("issued_at")
+  approvedBy     String?                   @map("approved_by")
+
+  employee Employee  @relation("CertRequestEmployee", fields: [employeeId], references: [id])
+  company  Company   @relation(fields: [companyId], references: [id])
+  approver Employee? @relation("CertRequestApprover", fields: [approvedBy], references: [id])
+
+  @@index([employeeId])
+  @@index([companyId, status])
+  @@map("certificate_requests")
+}
+
+// ================================================================
+// B1: Leave of Absence (휴직) — 육아/질병/가족돌봄/병역 등
+// ================================================================
+
+/// 법인별 휴직 유형 정의
+model LeaveOfAbsenceType {
+  id                       String    @id @default(uuid())
+  companyId                String    @map("company_id")
+  code                     String                          // PARENTAL, MATERNITY, FAMILY_CARE, MEDICAL, WORK_INJURY, MILITARY, PERSONAL, STUDY, ...
+  name                     String                          // "육아휴직"
+  nameEn                   String?   @map("name_en")       // "Parental Leave"
+  category                 String                          // STATUTORY | CONTRACTUAL
+  maxDurationDays          Int?      @map("max_duration_days")   // null = 무제한 (산재 등)
+  payType                  String    @default("UNPAID") @map("pay_type")    // PAID | UNPAID | PARTIAL | INSURANCE | MIXED
+  payRate                  Int?      @map("pay_rate")            // 급여 비율 % (null = N/A)
+  paySource                String?   @map("pay_source")          // EMPLOYER | GOVERNMENT | INSURANCE | MIXED
+  eligibilityMonths        Int?      @map("eligibility_months")  // 최소 근속 요건 (개월)
+  countsAsService          Boolean   @default(true)  @map("counts_as_service")     // 근속기간 산입
+  countsAsAttendance       Boolean   @default(false) @map("counts_as_attendance")  // 연차 출근일수 산입
+  splittable               Boolean   @default(false)             // 분할 사용 가능
+  maxSplitCount            Int?      @map("max_split_count")
+  requiresProof            Boolean   @default(false) @map("requires_proof")
+  proofDescription         String?   @map("proof_description")   // "의사 진단서, 출생증명서"
+  advanceNoticeDays        Int?      @map("advance_notice_days") // 사전 신청 기한 (일)
+  reinstatementGuaranteed  Boolean   @default(false) @map("reinstatement_guaranteed") // 원직 복귀 보장
+  sortOrder                Int       @default(0) @map("sort_order")
+  isActive                 Boolean   @default(true) @map("is_active")
+  deletedAt                DateTime? @map("deleted_at")
+
+  company  Company            @relation(fields: [companyId], references: [id])
+  records  LeaveOfAbsence[]
+
+  @@unique([companyId, code])
+  @@map("leave_of_absence_types")
+}
+
+/// 휴직 기록 (6-state 워크플로: REQUESTED → APPROVED → ACTIVE → RETURN_REQUESTED → COMPLETED)
+model LeaveOfAbsence {
+  id                 String    @id @default(uuid())
+  employeeId         String    @map("employee_id")
+  companyId          String    @map("company_id")
+  typeId             String    @map("type_id")
+
+  // 기간
+  startDate          DateTime  @map("start_date") @db.Date
+  expectedEndDate    DateTime? @map("expected_end_date") @db.Date   // 예정 복귀일
+  actualEndDate      DateTime? @map("actual_end_date") @db.Date     // 실제 복귀일
+
+  // 상태
+  status             String    @default("REQUESTED")
+  // REQUESTED → APPROVED → ACTIVE → RETURN_REQUESTED → COMPLETED
+  //                                                   ↘ CANCELLED
+  //           → REJECTED
+
+  // 급여 (유형 기본값 오버라이드)
+  payType            String?   @map("pay_type")
+  payRate            Int?      @map("pay_rate")
+
+  // 사유 & 증빙
+  reason             String?
+  proofFileUrl       String?   @map("proof_file_url")
+
+  // 승인
+  requestedAt        DateTime  @default(now()) @map("requested_at")
+  approvedBy         String?   @map("approved_by")
+  approvedAt         DateTime? @map("approved_at")
+  rejectedBy         String?   @map("rejected_by")
+  rejectedAt         DateTime? @map("rejected_at")
+  rejectionReason    String?   @map("rejection_reason")
+
+  // 복직
+  returnPositionId   String?   @map("return_position_id")  // 복귀 직위 (null = 원직)
+  returnNotes        String?   @map("return_notes")
+
+  // Assignment 연동
+  loaAssignmentId    String?   @map("loa_assignment_id")    // ON_LEAVE 발령 ID
+  returnAssignmentId String?   @map("return_assignment_id") // 복직 발령 ID
+
+  // 분할 사용 (splittable인 경우)
+  splitSequence      Int       @default(1) @map("split_sequence")
+  parentId           String?   @map("parent_id")
+
+  // 메타
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+  deletedAt          DateTime? @map("deleted_at")
+
+  // Relations
+  employee  Employee             @relation("LOAEmployee", fields: [employeeId], references: [id])
+  company   Company              @relation(fields: [companyId], references: [id])
+  type      LeaveOfAbsenceType   @relation(fields: [typeId], references: [id])
+  approver  Employee?            @relation("LOAApprover", fields: [approvedBy], references: [id])
+  rejecter  Employee?            @relation("LOARejecter", fields: [rejectedBy], references: [id])
+  parent    LeaveOfAbsence?      @relation("LOASplit", fields: [parentId], references: [id])
+  splits    LeaveOfAbsence[]     @relation("LOASplit")
+
+  @@index([employeeId])
+  @@index([companyId, status])
+  @@index([startDate])
+  @@map("leave_of_absences")
 }

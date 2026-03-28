@@ -1,7 +1,7 @@
 # SHARED.md — Project State (Single Source of Truth)
 
 > **Last Updated:** 2026-03-20 (Track B Phase 3 Session 7 — Assignment pattern patch complete)
-> **Project Path:** `/Users/sangwoo/VibeCoding/HR_Hub/ctr-hr-hub`
+> **Project Path:** `/Users/sangwoo/VibeCoding.nosync/HR_Hub/ctr-hr-hub`
 
 ---
 

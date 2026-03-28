@@ -5,7 +5,7 @@
 // 역할 기반 섹션 그루핑 + 단일 아코디언 + 즐겨찾기 + 뱃지
 // ═══════════════════════════════════════════════════════════
 
-import { useCallback, useState } from 'react'
+import { Fragment, useCallback, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -77,7 +77,7 @@ export function Sidebar({ user, onSignOut, countryCode, mode = 'desktop', onItem
   const [collapsed, setCollapsed]     = useState(false)
   const isDrawer = mode === 'drawer'
   const isCollapsed = isDrawer ? false : collapsed
-  const [openSection, setOpenSection] = useState<string | null>('my-space')
+  const [openSection, setOpenSection] = useState<string | null>(null)
   const pathname  = usePathname()
   const t         = useTranslations('nav')
   const tAuth     = useTranslations('auth')
@@ -119,7 +119,7 @@ export function Sidebar({ user, onSignOut, countryCode, mode = 'desktop', onItem
         )}
       >
         {/* ─── Logo ─── */}
-        <div className={cn('flex items-center gap-3 px-4 py-5', isCollapsed && 'justify-center px-2')}>
+        <Link href="/home" className={cn('flex items-center gap-3 px-4 py-5 hover:bg-[#F5F5FA] transition-colors rounded-lg mx-1', isCollapsed && 'justify-center px-2')}>
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-ctr-primary font-bold text-white">
             C
           </div>
@@ -128,7 +128,7 @@ export function Sidebar({ user, onSignOut, countryCode, mode = 'desktop', onItem
               <h1 className="truncate text-sm font-bold tracking-tight text-[#1C1D21]">CTR HR Hub</h1>
             </div>
           )}
-        </div>
+        </Link>
 
         {/* ─── Navigation ─── */}
         <ScrollArea className="flex-1">
@@ -272,14 +272,14 @@ function SidebarSection({
 
   return (
     <>
-      {showDivider && <div className="mx-3 mt-4 border-t border-[#F0F0F3] pt-4" />}
+      {showDivider && <div className="mx-3 mt-3 border-t border-[#F0F0F3] pt-3" />}
 
       {/* Section header — skip for Home */}
       {!isHome && (
         <button
           type="button"
           onClick={onToggle}
-          className="flex w-full items-center justify-between px-4 py-2 hover:bg-[#F5F5FA]"
+          className="flex w-full items-center justify-between px-4 py-1.5 hover:bg-[#F5F5FA]"
         >
           <div className="flex items-center gap-2">
             <section.icon className="h-[18px] w-[18px] text-[#8181A5]" />
@@ -296,23 +296,38 @@ function SidebarSection({
       {/* Items */}
       {(isHome || expanded) && (
         <div className={cn('space-y-0.5', !isHome && 'mt-1')}>
-          {section.items.map((item) => {
+          {section.items.map((item, idx) => {
+            const prevItem = idx > 0 ? section.items[idx - 1] : null
+            // subGroup이 바뀌는 시점에 구분선 + 레이블 삽입
+            const isNewGroup = item.subGroup != null && item.subGroup !== prevItem?.subGroup
             const badgeInfo = BADGE_MAP[item.key]
             const count = badgeInfo
               ? (counts[badgeInfo.countKey as keyof typeof counts] ?? 0)
               : 0
             return (
-              <ExpandedNavItem
-                key={item.key}
-                item={item}
-                pathname={pathname}
-                getLabel={getLabel}
-                isFavorite={isFavorite(item.key)}
-                onToggleFavorite={onToggleFavorite}
-                badgeCount={count}
-                badgeColor={badgeInfo?.color}
-                onItemClick={onItemClick}
-              />
+              // Fragment에 key를 부여해 구분선과 아이템이 함께 반환될 때 경고 방지
+              <Fragment key={item.key}>
+                {isNewGroup && (
+                  <div
+                    className={cn(
+                      'px-5 pb-1 text-[10px] font-semibold uppercase tracking-wider text-[#8181A5]/60',
+                      idx > 0 && 'pt-2',
+                    )}
+                  >
+                    {getLabel(`subGroup.${item.subGroup}`, item.subGroup ?? '')}
+                  </div>
+                )}
+                <ExpandedNavItem
+                  item={item}
+                  pathname={pathname}
+                  getLabel={getLabel}
+                  isFavorite={isFavorite(item.key)}
+                  onToggleFavorite={onToggleFavorite}
+                  badgeCount={count}
+                  badgeColor={badgeInfo?.color}
+                  onItemClick={onItemClick}
+                />
+              </Fragment>
             )
           })}
         </div>
@@ -363,7 +378,7 @@ function ExpandedNavItem({
         href={item.href}
         onClick={onItemClick}
         className={cn(
-          'flex flex-1 items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
+          'flex flex-1 items-center gap-3 rounded-lg px-3 py-1.5 text-sm transition-colors',
           isActive
             ? 'bg-[#F5F5FA] text-[#5E81F4] font-bold'
             : 'text-[#8181A5] hover:bg-[#F5F5FA] hover:text-[#1C1D21]',

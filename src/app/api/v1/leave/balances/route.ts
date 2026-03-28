@@ -13,17 +13,19 @@ export const GET = withPermission(
     const yearParam = req.nextUrl.searchParams.get('year')
     const year = yearParam ? parseInt(yearParam, 10) : new Date().getFullYear()
 
-    const balances = await prisma.employeeLeaveBalance.findMany({
+    const balances = await prisma.leaveYearBalance.findMany({
       where: {
         employeeId: user.employeeId,
         year,
       },
       include: {
-        policy: {
+        leaveTypeDef: {
           select: {
             id: true,
             name: true,
-            leaveType: true,
+            nameEn: true,
+            code: true,
+            category: true,
             isPaid: true,
           },
         },
@@ -31,7 +33,13 @@ export const GET = withPermission(
       orderBy: { createdAt: 'asc' },
     })
 
-    return apiSuccess(balances)
+    // remaining 계산 추가
+    const result = balances.map(b => ({
+      ...b,
+      remaining: b.entitled + b.carriedOver + b.adjusted - b.used - b.pending,
+    }))
+
+    return apiSuccess(result)
   },
   perm(MODULE.LEAVE, ACTION.VIEW),
 )

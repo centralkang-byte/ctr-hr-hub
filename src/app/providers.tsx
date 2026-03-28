@@ -2,11 +2,12 @@
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Root Providers
-// SessionProvider + Toaster
+// SessionProvider + ThemeProvider + Toaster
 // ═══════════════════════════════════════════════════════════
 
 import type { ReactNode } from 'react'
 import { SessionProvider } from 'next-auth/react'
+import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/toaster'
 
 interface ProvidersProps {
@@ -16,8 +17,10 @@ interface ProvidersProps {
 export function Providers({ children }: ProvidersProps) {
   return (
     <SessionProvider>
-      {children}
-      <Toaster />
+      <ThemeProvider>
+        {children}
+        <Toaster />
+      </ThemeProvider>
     </SessionProvider>
   )
 }

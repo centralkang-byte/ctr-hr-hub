@@ -48,6 +48,9 @@ export const GET = withPermission(
               jobGrade: { select: { id: true, name: true, code: true } },
               jobCategory: { select: { id: true, name: true } },
               company: { select: { id: true, name: true, code: true } },
+              title: { select: { id: true, name: true } },
+              position: { select: { id: true, titleKo: true } },
+              workLocation: { select: { id: true, name: true } },
             },
           },
           employeeHistories: {
@@ -77,6 +80,10 @@ export const GET = withPermission(
       department: a?.department ?? null,
       jobGrade: a?.jobGrade ?? null,
       jobCategory: a?.jobCategory ?? null,
+      title: a?.title ?? null,
+      position: a?.position ?? null,
+      workLocation: a?.workLocation ?? null,
+      company: a?.company ?? null,
       employmentType: a?.employmentType ?? null,
       status: a?.status ?? 'ACTIVE',
     }
@@ -120,6 +127,7 @@ export const PUT = withPermission(
       companyId: _companyId,
       departmentId: _departmentId,
       jobGradeId: _jobGradeId,
+      titleId: _titleId,
       jobCategoryId: _jobCategoryId,
       employmentType: _employmentType,
       status: _status,

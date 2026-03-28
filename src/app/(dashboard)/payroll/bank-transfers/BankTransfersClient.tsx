@@ -318,7 +318,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
         <Card>
           <CardContent className="py-16 text-center text-[#666]">
             <FileSpreadsheet className="h-12 w-12 mx-auto mb-3 text-[#D4D4D4]" />
-            <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+            <EmptyState />
           </CardContent>
         </Card>
       ) : (
@@ -578,9 +578,9 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                         const ist = ITEM_STATUS_MAP[item.status] ?? ITEM_STATUS_MAP.PENDING
                         return (
                           <tr key={item.id} className={TABLE_STYLES.row}>
-                            <td className={cn(TABLE_STYLES.cell, "font-mono text-xs")}>{item.employeeNo}</td>
+                            <td className={cn(TABLE_STYLES.cell, "font-mono tabular-nums text-xs")}>{item.employeeNo}</td>
                             <td className={cn(TABLE_STYLES.cell, "font-medium")}>{item.employeeName}</td>
-                            <td className={cn(TABLE_STYLES.cell, "font-mono text-xs")}>{item.accountNumber}</td>
+                            <td className={cn(TABLE_STYLES.cell, "font-mono tabular-nums text-xs")}>{item.accountNumber}</td>
                             <td className={TABLE_STYLES.cell}>{item.accountHolder}</td>
                             <td className={cn(TABLE_STYLES.cell, "text-right font-medium")}>{formatAmount(item.amount)}</td>
                             <td className={cn(TABLE_STYLES.cell, "text-center")}>

@@ -94,13 +94,23 @@ export const GET = withPermission(
     const [employees, total] = await Promise.all([
       prisma.employee.findMany({
         where,
-        include: {
+        select: {
+          id: true,
+          name: true,
+          nameEn: true,
+          email: true,
+          phone: true,
+          employeeNo: true,
+          hireDate: true,
           assignments: {
             where: { isPrimary: true, endDate: null },
             take: 1,
-            include: {
+            select: {
+              status: true,
+              employmentType: true,
               department: { select: { id: true, name: true } },
               jobGrade: { select: { id: true, name: true } },
+              title: { select: { id: true, name: true } },
               jobCategory: { select: { id: true, name: true } },
             },
           },
@@ -120,6 +130,7 @@ export const GET = withPermission(
         ...emp,
         department: a?.department ?? null,
         jobGrade: a?.jobGrade ?? null,
+        title: a?.title ?? null,
         jobCategory: a?.jobCategory ?? null,
         employmentType: a?.employmentType ?? null,
         status: a?.status ?? 'ACTIVE',
@@ -153,6 +164,7 @@ export const POST = withPermission(
         companyId: empCompanyId,
         departmentId,
         jobGradeId,
+        titleId,
         jobCategoryId,
         employmentType,
         status,
@@ -177,6 +189,7 @@ export const POST = withPermission(
         companyId: empCompanyId,
         departmentId,
         jobGradeId,
+        titleId: titleId ?? undefined,
         jobCategoryId,
         employmentType,
         status,

@@ -9,8 +9,8 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { Heart, ThumbsUp, Search, Send, Sparkles } from 'lucide-react'
 import { PieChart, Pie, Cell, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { apiClient } from '@/lib/api'
-import { useSession } from 'next-auth/react'
 import { ROLE } from '@/lib/constants'
+import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS, MODAL_STYLES, CHART_THEME } from '@/lib/styles'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
 
@@ -57,12 +57,11 @@ const CHART_COLORS = ['#EF4444', '#5E81F4', '#F59E0B', '#3B82F6']
 
 // ─── Component ───────────────────────────────────────────
 
-export default function RecognitionClient() {
+export default function RecognitionClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
 
-  const { data: session } = useSession()
-  const isAdmin = session?.user?.role === ROLE.HR_ADMIN || session?.user?.role === ROLE.SUPER_ADMIN
+  const isAdmin = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
 
   const [activeTab, setActiveTab] = useState<'feed' | 'stats'>('feed')
   const [feed, setFeed] = useState<FeedItem[]>([])
@@ -94,7 +93,7 @@ export default function RecognitionClient() {
         setFeed(res.data.items)
       }
       setNextCursor(res.data.nextCursor)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '리코그니션 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setLoading(false)
   }, [valueFilter])
 
@@ -103,7 +102,7 @@ export default function RecognitionClient() {
     try {
       const res = await apiClient.get<Stats>('/api/v1/cfr/recognitions/stats')
       setStats(res.data)
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '통계 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
   }, [isAdmin])
 
   useEffect(() => { fetchFeed() }, [fetchFeed])
@@ -117,7 +116,7 @@ export default function RecognitionClient() {
           ? { ...item, likedByMe: res.data.liked, likeCount: res.data.likeCount }
           : item,
       ))
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '반응 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
   }
 
   const searchEmployees = (query: string) => {
@@ -127,8 +126,8 @@ export default function RecognitionClient() {
     searchTimeout.current = setTimeout(async () => {
       try {
         const res = await apiClient.getList<Employee>('/api/v1/employees', { search: query, limit: 10 })
-        setSearchResults(res.data.filter((emp: Employee) => emp.id !== session?.user?.employeeId))
-      } catch { /* ignore */ }
+        setSearchResults(res.data.filter((emp: Employee) => emp.id !== user.employeeId))
+      } catch (err) { toast({ title: '직원 검색 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     }, 200)
   }
 
@@ -147,7 +146,7 @@ export default function RecognitionClient() {
       setMessage('')
       setSearchQuery('')
       fetchFeed()
-    } catch { /* ignore */ }
+    } catch (err) { toast({ title: '리코그니션 등록 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
     setCreating(false)
   }
 
@@ -220,7 +219,7 @@ export default function RecognitionClient() {
           ) : feed.length === 0 ? (
             <div className="text-center py-12 text-[#999]">
               <Heart className="w-12 h-12 mx-auto mb-3 text-[#D4D4D4]" />
-              <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+              <EmptyState />
             </div>
           ) : (
             <>
@@ -334,7 +333,7 @@ export default function RecognitionClient() {
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#666' }} />
                   <YAxis tick={{ fontSize: 12, fill: '#666' }} allowDecimals={false} />
                   <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
-                  <Line type="monotone" dataKey="count" name="Recognition 수" stroke={CHART_THEME.colors[3]} strokeWidth={2} dot={{ fill: '#5E81F4' }} />
+                  <Line type="monotone" dataKey="count" name={t('recognitionCount')} stroke={CHART_THEME.colors[3]} strokeWidth={2} dot={{ fill: '#5E81F4' }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -382,7 +381,7 @@ export default function RecognitionClient() {
       {/* Create Modal */}
       {showCreateModal && (
         <div className={MODAL_STYLES.container}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-md">
             <div className="p-6 border-b border-[#E8E8E8]">
               <h3 className="text-lg font-semibold text-[#1A1A1A]">{t('kr_kecb9adec_kebb3b4eb')}</h3>
             </div>

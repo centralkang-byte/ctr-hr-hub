@@ -225,7 +225,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                 {/* LEFT: Info Panel (30%) */}
                 <div className="w-80 flex-shrink-0 space-y-4">
                     {/* Progress Ring Card */}
-                    <div className="rounded-2xl border border-[#F0F0F3] bg-white p-5">
+                    <div className="rounded-xl border border-[#F0F0F3] bg-white p-5">
                         <div className="mb-4 flex items-center justify-center">
                             <div className="relative h-28 w-28">
                                 <svg className="h-28 w-28 -rotate-90" viewBox="0 0 100 100">
@@ -256,7 +256,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                     </div>
 
                     {/* Employee Info Card */}
-                    <div className="rounded-2xl border border-[#F0F0F3] bg-white p-5 space-y-3">
+                    <div className="rounded-xl border border-[#F0F0F3] bg-white p-5 space-y-3">
                         <h3 className="text-sm font-semibold text-[#1C1D21]">직원 정보</h3>
                         <InfoRow label="입사일" value={data.employee.hireDate ? new Date(data.employee.hireDate).toLocaleDateString('ko-KR') : '-'} />
                         <InfoRow label="부서" value={data.employee.department ?? '-'} />
@@ -269,7 +269,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
 
                     {/* Sign-off Section */}
                     {data.status !== 'COMPLETED' && (
-                        <div className={`rounded-2xl border p-5 ${data.signOffEligibility.eligible ? 'border-[#5E81F4] bg-[#EDF1FE]' : 'border-[#F0F0F3] bg-white'}`}>
+                        <div className={`rounded-xl border p-5 ${data.signOffEligibility.eligible ? 'border-[#5E81F4] bg-[#EDF1FE]' : 'border-[#F0F0F3] bg-white'}`}>
                             <h3 className="mb-2 text-sm font-semibold text-[#1C1D21]">🖊️ Sign-off</h3>
                             {data.signOffEligibility.eligible ? (
                                 <>
@@ -302,7 +302,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                     )}
 
                     {data.status === 'COMPLETED' && data.signOff.signedOffBy && (
-                        <div className="rounded-2xl border border-[#DCFCE7] bg-[#F0FDF4] p-5">
+                        <div className="rounded-xl border border-[#DCFCE7] bg-[#F0FDF4] p-5">
                             <h3 className="mb-2 text-sm font-semibold text-[#16A34A]">✅ 온보딩 완료</h3>
                             <InfoRow label="승인자" value={data.signOff.signedOffBy.name} />
                             <InfoRow label="승인일" value={data.signOff.signedOffAt ? new Date(data.signOff.signedOffAt).toLocaleDateString('ko-KR') : '-'} />
@@ -335,7 +335,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                                 const done = tasks.filter((t) => t.status === 'DONE').length
 
                                 return (
-                                    <div key={milestone} className="rounded-2xl border border-[#F0F0F3] bg-white">
+                                    <div key={milestone} className="rounded-xl border border-[#F0F0F3] bg-white">
                                         <div className="flex items-center justify-between border-b border-[#F0F0F3] px-5 py-3">
                                             <h3 className="text-sm font-semibold text-[#1C1D21]">{milestoneLabels[milestone]}</h3>
                                             <div className="flex items-center gap-2">
@@ -367,7 +367,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                             ) : (
                                 <>
                                     {/* Mini Trend */}
-                                    <div className="rounded-2xl border border-[#F0F0F3] bg-white p-5">
+                                    <div className="rounded-xl border border-[#F0F0F3] bg-white p-5">
                                         <h3 className="mb-3 text-sm font-semibold text-[#1C1D21]">감정 추이</h3>
                                         <div className="flex items-end justify-around gap-4 h-28">
                                             {data.checkins.map((c, i) => (
@@ -384,7 +384,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                                     </div>
                                     {/* Checkin Cards */}
                                     {data.checkins.map((c) => (
-                                        <div key={c.id} className="rounded-2xl border border-[#F0F0F3] bg-white p-5">
+                                        <div key={c.id} className="rounded-xl border border-[#F0F0F3] bg-white p-5">
                                             <div className="mb-2 flex items-center justify-between">
                                                 <span className="text-sm font-semibold text-[#1C1D21]">
                                                     {c.milestone ? milestoneLabels[c.milestone] ?? c.milestone : `Week ${c.checkinWeek}`}
@@ -411,7 +411,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
 
                     {/* Timeline Tab */}
                     {tab === 'timeline' && (
-                        <div className="rounded-2xl border border-[#F0F0F3] bg-white p-5">
+                        <div className="rounded-xl border border-[#F0F0F3] bg-white p-5">
                             <h3 className="mb-4 text-sm font-semibold text-[#1C1D21]">차단 이력</h3>
                             {data.blockedHistory.length === 0 ? (
                                 <p className="text-sm text-[#8181A5]">{t('emptyBlockedHistory')}</p>

@@ -21,6 +21,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { getActiveDelegators } from '@/lib/delegation/resolve-delegatee'
+import { getDirectReportIds } from '@/lib/employee/direct-reports'
 import {
   UnifiedTaskType,
   UnifiedTaskStatus,
@@ -191,27 +192,44 @@ export const GET = withPermission(
 
     // SUPER_ADMIN은 모든 법인 데이터를 볼 수 있음 (CTR-HOLD에는 파이프라인 데이터가 없음)
     const isSuperAdmin = user.role === 'SUPER_ADMIN'
+    const isEmployee = user.role === 'EMPLOYEE'
+    const isManager = user.role === 'MANAGER' || user.role === 'EXECUTIVE'
     const companyFilter = isSuperAdmin ? {} : { companyId: user.companyId }
+
+    // MANAGER: 본인 + 직속 팀원 ID 목록 (position hierarchy)
+    const teamScope = isManager
+      ? await getDirectReportIds(user.employeeId).then(
+          (ids) => [user.employeeId, ...ids],
+        )
+      : undefined
 
     // 어떤 타입을 조회할지 결정
     const fetchLeave = !types || types.includes(UnifiedTaskType.LEAVE_APPROVAL)
-    const fetchPayroll = !types || types.includes(UnifiedTaskType.PAYROLL_REVIEW)
+    // 급여 관리 태스크는 HR_ADMIN/SUPER_ADMIN만 조회 (본인 급여명세서는 /payroll/me)
+    const fetchPayroll = !isEmployee && !isManager && (!types || types.includes(UnifiedTaskType.PAYROLL_REVIEW))
     const fetchOnboarding = !types || types.includes(UnifiedTaskType.ONBOARDING_TASK)
     const fetchOffboarding = !types || types.includes(UnifiedTaskType.OFFBOARDING_TASK)
     const fetchPerformance = !types || types.includes(UnifiedTaskType.PERFORMANCE_REVIEW)
-    const fetchBenefit = !types || types.includes(UnifiedTaskType.BENEFIT_REQUEST)
+    // EMPLOYEE는 복리후생 승인 태스크 조회 불필요
+    const fetchBenefit = !isEmployee && (!types || types.includes(UnifiedTaskType.BENEFIT_REQUEST))
 
     // ── 소스별 병렬 조회 ────────────────────────────────────
 
     const [leaveRaw, payrollRaw, onboardingRaw, offboardingRaw, performanceTasks, benefitRaw] = await Promise.all([
       // 1. LeaveRequest
+      // EMPLOYEE: 본인 휴가 신청만 조회
       (fetchLeave
         ? prisma.leaveRequest.findMany({
           where: {
             ...companyFilter,
-            // 매니저는 자기 팀 신청 조회, SUPER_ADMIN/HR_ADMIN은 전체
-            ...(assigneeId ? { approvedBy: assigneeId } : {}),
-            ...(requesterId ? { employeeId: requesterId } : {}),
+            ...(isEmployee
+              ? { employeeId: user.employeeId }
+              : isManager && teamScope
+                ? { employeeId: { in: teamScope } }
+                : {
+                    ...(assigneeId ? { approvedBy: assigneeId } : {}),
+                    ...(requesterId ? { employeeId: requesterId } : {}),
+                  }),
           },
           include: LEAVE_INCLUDE,
           orderBy: { createdAt: 'desc' },
@@ -236,39 +254,33 @@ export const GET = withPermission(
       ).catch(err => { console.error('[unified-tasks] payroll query failed:', err); return [] as never[] }),
 
       // 3. EmployeeOnboardingTask
-      // 로그인 사용자가 담당자인 PENDING 타스크만 조회
-      // assigneeType 기반으로 EMPLOYEE/BUDDY/MANAGER/HR/IT/FINANCE 분기
+      // EMPLOYEE: 본인 온보딩 태스크만, 그 외: 담당자 기반 조회
       (fetchOnboarding
         ? prisma.employeeOnboardingTask.findMany({
           where: {
             status: 'PENDING',
             employeeOnboarding: {
               status: { in: ['NOT_STARTED', 'IN_PROGRESS'] },
-              // 담당자 필터: EMPLOYEE(new hire 본인) OR BUDDY OR MANAGER
-              // HR/IT/FINANCE는 해당 assigneeType로 필터
-              ...(isSuperAdmin
-                ? {}  // SUPER_ADMIN: 전체 법인
-                : {
-                  OR: [
-                    { employeeId: user.employeeId, companyId: user.companyId },
-                    { companyId: user.companyId },
-                  ],
-                }
+              ...(isEmployee
+                ? { employeeId: user.employeeId }
+                : isManager && teamScope
+                  ? { employeeId: { in: teamScope } }
+                  : isSuperAdmin
+                    ? {}
+                    : { companyId: user.companyId }
               ),
             },
-            // 담당자가 로그인 사용자인 타스크를 우선 노출
-            ...(assigneeId
-              ? {
-                OR: [
-                  // 매니저인 경우: MANAGER 타스크 + assignment.managerId 일치
-                  { task: { assigneeType: 'MANAGER' } },
-                  // 버디인 경우
-                  { task: { assigneeType: 'BUDDY' }, employeeOnboarding: { buddyId: assigneeId } },
-                  // HR/IT/FINANCE 담당
-                  { task: { assigneeType: { in: ['HR', 'IT', 'FINANCE'] } } },
-                ],
-              }
-              : {}),
+            ...(isEmployee
+              ? {}
+              : assigneeId
+                ? {
+                  OR: [
+                    { task: { assigneeType: 'MANAGER' } },
+                    { task: { assigneeType: 'BUDDY' }, employeeOnboarding: { buddyId: assigneeId } },
+                    { task: { assigneeType: { in: ['HR', 'IT', 'FINANCE'] } } },
+                  ],
+                }
+                : {}),
           },
           include: ONBOARDING_INCLUDE,
           orderBy: { employeeOnboarding: { createdAt: 'desc' } },
@@ -278,25 +290,31 @@ export const GET = withPermission(
       ).catch(err => { console.error('[unified-tasks] onboarding query failed:', err); return [] as never[] }),
 
       // 4. EmployeeOffboardingTask
+      // EMPLOYEE: 본인 퇴직 태스크만
       (fetchOffboarding
         ? prisma.employeeOffboardingTask.findMany({
           where: {
             status: { in: ['PENDING', 'BLOCKED'] },
             employeeOffboarding: {
               status: 'IN_PROGRESS',
-              employee: {
-                assignments: {
-                  some: {
-                    ...companyFilter,
-                    isPrimary: true,
-                    ...(isSuperAdmin ? {} : { endDate: null }),
-                  },
-                },
-              },
-              // 로그인 사용자가 퇴직자 본인이거나 법인 전체 조회
-              ...(assigneeId ? { employeeId: assigneeId } : {}),
+              ...(isEmployee
+                ? { employeeId: user.employeeId }
+                : isManager && teamScope
+                  ? { employeeId: { in: teamScope } }
+                  : {
+                    employee: {
+                      assignments: {
+                        some: {
+                          ...companyFilter,
+                          isPrimary: true,
+                          ...(isSuperAdmin ? {} : { endDate: null }),
+                        },
+                      },
+                    },
+                    ...(assigneeId ? { employeeId: assigneeId } : {}),
+                  }),
             },
-            ...(requesterId ? { employeeOffboarding: { employeeId: requesterId } } : {}),
+            ...(isEmployee ? {} : requesterId ? { employeeOffboarding: { employeeId: requesterId } } : {}),
           },
           include: OFFBOARDING_TASK_INCLUDE,
           orderBy: { employeeOffboarding: { lastWorkingDate: 'asc' } },   // 마감 임박 순
@@ -368,8 +386,8 @@ export const GET = withPermission(
       ...benefitTasks,
     ]
 
-    // ── F-2: 대결(위임)된 휴가 건 추가 조회 ──────────────────
-    if (fetchLeave) {
+    // ── F-2: 대결(위임)된 휴가 건 추가 조회 (MANAGER+ only) ──
+    if (fetchLeave && !isEmployee) {
       try {
         const delegatorIds = await getActiveDelegators(user.employeeId, user.companyId)
         if (delegatorIds.length > 0) {

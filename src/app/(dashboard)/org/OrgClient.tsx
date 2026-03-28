@@ -247,7 +247,7 @@ function ListView({ depts, onSelect, selectedId }: ListViewProps) {
                 selectedId === dept.id ? 'bg-[#EDF1FE]' : ''
               }`}
             >
-              <td className="px-4 py-3 font-mono text-xs text-[#666]">{dept.code}</td>
+              <td className="px-4 py-3 font-mono tabular-nums text-xs text-[#666]">{dept.code}</td>
               <td className="px-4 py-3 font-medium text-[#1A1A1A]" style={{ paddingLeft: `${1 + dept.level * 1.5}rem` }}>
                 {dept.level > 0 && <span className="text-[#CCC] mr-1">{'└'}</span>}
                 {dept.name}
@@ -305,7 +305,7 @@ function GridView({ depts, onSelect, selectedId }: GridViewProps) {
             } ${!dept.isActive ? 'opacity-60' : ''}`}
           >
             <div className="flex items-start justify-between mb-2">
-              <span className="text-[10px] font-mono text-[#999] bg-[#FAFAFA] px-1.5 py-0.5 rounded">{dept.code}</span>
+              <span className="text-[10px] font-mono tabular-nums text-[#999] bg-[#FAFAFA] px-1.5 py-0.5 rounded">{dept.code}</span>
               {!dept.isActive && (
                 <span className="text-[10px] text-[#999]">{tc('inactive')}</span>
               )}

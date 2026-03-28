@@ -133,7 +133,9 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
     try {
       const res = await apiClient.get<CostAnalysis>('/api/v1/recruitment/cost-analysis', { year })
       setAnalysis(res.data)
-    } catch { /* ignore */ }
+    } catch (err) {
+      toast({ title: '채용 비용 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
   }, [year])
 
   const fetchCosts = useCallback(async () => {
@@ -142,7 +144,9 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
       if (costFilter !== 'ALL') params.costType = costFilter
       const res = await apiClient.get<RecruitmentCost[]>('/api/v1/recruitment/costs', params)
       setCosts(res.data)
-    } catch { /* ignore */ }
+    } catch (err) {
+      toast({ title: '채용 비용 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
   }, [costFilter])
 
   useEffect(() => {
@@ -168,7 +172,9 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
       setForm({ applicantSource: 'DIRECT', costType: 'AD_FEE', amount: '', currency: 'KRW', description: '', vendorName: '', invoiceDate: '' })
       fetchCosts()
       fetchAnalysis()
-    } catch { /* ignore */ }
+    } catch (err) {
+      toast({ title: '채용 비용 등록 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+    }
     setCreating(false)
   }
 
@@ -179,7 +185,9 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
         await apiClient.delete(`/api/v1/recruitment/costs/${id}`)
         fetchCosts()
         fetchAnalysis()
-      } catch { /* ignore */ }
+      } catch (err) {
+        toast({ title: '채용 비용 삭제 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      }
     }})
   }
 
@@ -282,7 +290,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
             </div>
             <div className="p-6">
               {analysis.bySource.length === 0 ? (
-                <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                <EmptyState />
               ) : (
                 <div className={TABLE_STYLES.wrapper}>
                   <table className={TABLE_STYLES.table}>
@@ -336,7 +344,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
             </div>
             <div className="p-6">
               {analysis.byCostType.length === 0 ? (
-                <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+                <EmptyState />
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {analysis.byCostType.map((ct) => (
@@ -415,7 +423,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
           {/* Cost List */}
           <div className="bg-white border border-[#E8E8E8] rounded-xl overflow-hidden">
             {costs.length === 0 ? (
-              <EmptyState title="데이터가 없습니다" description="조건을 변경하거나 새로운 데이터를 추가해보세요." />
+              <EmptyState />
             ) : (
               <div className={TABLE_STYLES.wrapper}>
                 <table className={TABLE_STYLES.table}>
