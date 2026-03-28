@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — Navigation Configuration (10-Section IA)
+// CTR HR Hub — Navigation Configuration (9-Section IA)
 // HR 라이프사이클: People → Hire → Develop → Perform → Reward → Analyze
 // ═══════════════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════════════════
@@ -694,13 +694,13 @@ export const NAVIGATION: NavSection[] = [
     ],
   },
 
-  // ══ 9. COMPLIANCE (컴플라이언스) — HR_ADMIN+ ══════════
-  // 7 → 1 (허브 페이지 내 탭으로 통합)
+  // ══ 9. SETTINGS (설정) — HR_ADMIN+ ═══════════════════
+  // 컴플라이언스: 독립 섹션 → Settings 하위로 이동 (아이템 1개짜리 섹션 제거)
   {
-    key: 'compliance',
-    labelKey: 'nav.compliance.label',
-    label: '컴플라이언스',
-    icon: Shield,
+    key: 'settings',
+    labelKey: 'nav.settings.label',
+    label: '설정',
+    icon: Settings,
     visibleTo: HR_UP,
     items: [
       {
@@ -711,17 +711,6 @@ export const NAVIGATION: NavSection[] = [
         icon: Shield,
         module: MODULE.COMPLIANCE,
       },
-    ],
-  },
-
-  // ══ 10. SETTINGS (설정) — HR_ADMIN+ ═══════════════════
-  {
-    key: 'settings',
-    labelKey: 'nav.settings.label',
-    label: '설정',
-    icon: Settings,
-    visibleTo: HR_UP,
-    items: [
       {
         key: 'settings-hub',
         labelKey: 'nav.settings.hub',
