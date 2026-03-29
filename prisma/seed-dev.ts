@@ -276,72 +276,72 @@ interface EmpDef {
 
 const KR_EMPLOYEES: EmpDef[] = [
   // 경영지원본부
-  { no: 'EMP-KR-001', name: '김대표', nameEn: 'Kim Daepyo', email: 'ceo.kim@ctr.co.kr', dept: 'MGMT', grade: 'G1', cat: 'MANAGEMENT', hireDate: dateOnly(2015, 3, 2), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0001' },
-  { no: 'EMP-KR-002', name: '박부장', nameEn: 'Park Bujang', email: 'park.bj@ctr.co.kr', dept: 'MGMT', grade: 'G2', cat: 'OFFICE', hireDate: dateOnly(2017, 5, 10), role: 'MANAGER', gender: 'M', phone: '010-1001-0002' },
+  { no: 'EMP-KR-001', name: '김대표', nameEn: 'Kim Daepyo', email: 'ceo.kim@ctr.co.kr', dept: 'MGMT', grade: 'E1', cat: 'MANAGEMENT', hireDate: dateOnly(2015, 3, 2), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0001' },
+  { no: 'EMP-KR-002', name: '박부장', nameEn: 'Park Bujang', email: 'park.bj@ctr.co.kr', dept: 'MGMT', grade: 'S1', cat: 'OFFICE', hireDate: dateOnly(2017, 5, 10), role: 'MANAGER', gender: 'M', phone: '010-1001-0002' },
 
   // HR팀 (기존 hr@ctr.co.kr는 유지)
-  { no: 'EMP-KR-003', name: '최인사', nameEn: 'Choi Insa', email: 'choi.hr@ctr.co.kr', dept: 'HR', grade: 'G5', cat: 'OFFICE', hireDate: dateOnly(2021, 3, 15), role: 'EMPLOYEE', gender: 'F', phone: '010-1001-0003' },
-  { no: 'EMP-KR-004', name: '정사원', nameEn: 'Jung Sawon', email: 'jung.hr@ctr.co.kr', dept: 'HR', grade: 'G6', cat: 'OFFICE', hireDate: dateOnly(2024, 2, 5), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0004' },
+  { no: 'EMP-KR-003', name: '최인사', nameEn: 'Choi Insa', email: 'choi.hr@ctr.co.kr', dept: 'HR', grade: 'L2', cat: 'OFFICE', hireDate: dateOnly(2021, 3, 15), role: 'EMPLOYEE', gender: 'F', phone: '010-1001-0003' },
+  { no: 'EMP-KR-004', name: '정사원', nameEn: 'Jung Sawon', email: 'jung.hr@ctr.co.kr', dept: 'HR', grade: 'L1', cat: 'OFFICE', hireDate: dateOnly(2024, 2, 5), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0004' },
 
   // 재무팀
-  { no: 'EMP-KR-005', name: '이재무', nameEn: 'Lee Jaemu', email: 'lee.fin@ctr.co.kr', dept: 'FIN', grade: 'G3', cat: 'OFFICE', hireDate: dateOnly(2018, 7, 1), role: 'MANAGER', gender: 'M', phone: '010-1001-0005' },
-  { no: 'EMP-KR-006', name: '한과장', nameEn: 'Han Gwajang', email: 'han.fin@ctr.co.kr', dept: 'FIN', grade: 'G4', cat: 'OFFICE', hireDate: dateOnly(2020, 1, 6), role: 'EMPLOYEE', gender: 'F', phone: '010-1001-0006' },
-  { no: 'EMP-KR-007', name: '윤대리', nameEn: 'Yoon Daeri', email: 'yoon.fin@ctr.co.kr', dept: 'FIN', grade: 'G5', cat: 'OFFICE', hireDate: dateOnly(2022, 4, 4), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0007' },
-  { no: 'EMP-KR-008', name: '장신입', nameEn: 'Jang Sinip', email: 'jang.fin@ctr.co.kr', dept: 'FIN', grade: 'G6', cat: 'OFFICE', hireDate: dateOnly(2024, 2, 26), role: 'EMPLOYEE', gender: 'F', phone: '010-1001-0008' },
+  { no: 'EMP-KR-005', name: '이재무', nameEn: 'Lee Jaemu', email: 'lee.fin@ctr.co.kr', dept: 'FIN', grade: 'L2', cat: 'OFFICE', hireDate: dateOnly(2018, 7, 1), role: 'MANAGER', gender: 'M', phone: '010-1001-0005' },
+  { no: 'EMP-KR-006', name: '한과장', nameEn: 'Han Gwajang', email: 'han.fin@ctr.co.kr', dept: 'FIN', grade: 'L2', cat: 'OFFICE', hireDate: dateOnly(2020, 1, 6), role: 'EMPLOYEE', gender: 'F', phone: '010-1001-0006' },
+  { no: 'EMP-KR-007', name: '윤대리', nameEn: 'Yoon Daeri', email: 'yoon.fin@ctr.co.kr', dept: 'FIN', grade: 'L2', cat: 'OFFICE', hireDate: dateOnly(2022, 4, 4), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0007' },
+  { no: 'EMP-KR-008', name: '장신입', nameEn: 'Jang Sinip', email: 'jang.fin@ctr.co.kr', dept: 'FIN', grade: 'L1', cat: 'OFFICE', hireDate: dateOnly(2024, 2, 26), role: 'EMPLOYEE', gender: 'F', phone: '010-1001-0008' },
 
   // 법무팀
-  { no: 'EMP-KR-009', name: '노법무', nameEn: 'Noh Beopmu', email: 'noh.legal@ctr.co.kr', dept: 'LEGAL', grade: 'G3', cat: 'OFFICE', hireDate: dateOnly(2019, 6, 3), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0009' },
-  { no: 'EMP-KR-010', name: '강주임', nameEn: 'Kang Juim', email: 'kang.legal@ctr.co.kr', dept: 'LEGAL', grade: 'G6', cat: 'OFFICE', hireDate: dateOnly(2023, 8, 1), role: 'EMPLOYEE', gender: 'F', phone: '010-1001-0010' },
+  { no: 'EMP-KR-009', name: '노법무', nameEn: 'Noh Beopmu', email: 'noh.legal@ctr.co.kr', dept: 'LEGAL', grade: 'L2', cat: 'OFFICE', hireDate: dateOnly(2019, 6, 3), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0009' },
+  { no: 'EMP-KR-010', name: '강주임', nameEn: 'Kang Juim', email: 'kang.legal@ctr.co.kr', dept: 'LEGAL', grade: 'L1', cat: 'OFFICE', hireDate: dateOnly(2023, 8, 1), role: 'EMPLOYEE', gender: 'F', phone: '010-1001-0010' },
 
   // 생산사업본부
-  { no: 'EMP-KR-011', name: '오생산', nameEn: 'Oh Saengsan', email: 'oh.mfg@ctr.co.kr', dept: 'MFG_HQ', grade: 'G2', cat: 'MANAGEMENT', hireDate: dateOnly(2016, 9, 1), role: 'MANAGER', gender: 'M', phone: '010-1001-0011' },
+  { no: 'EMP-KR-011', name: '오생산', nameEn: 'Oh Saengsan', email: 'oh.mfg@ctr.co.kr', dept: 'MFG_HQ', grade: 'S1', cat: 'MANAGEMENT', hireDate: dateOnly(2016, 9, 1), role: 'MANAGER', gender: 'M', phone: '010-1001-0011' },
 
   // 생산팀 (생산직)
-  { no: 'EMP-KR-012', name: '임차장', nameEn: 'Im Chajang', email: 'im.mfg@ctr.co.kr', dept: 'MFG', grade: 'G3', cat: 'PRODUCTION', hireDate: dateOnly(2017, 3, 6), role: 'MANAGER', gender: 'M', phone: '010-1001-0012' },
-  { no: 'EMP-KR-013', name: '서과장', nameEn: 'Seo Gwajang', email: 'seo.mfg@ctr.co.kr', dept: 'MFG', grade: 'G4', cat: 'PRODUCTION', hireDate: dateOnly(2019, 7, 15), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0013' },
-  { no: 'EMP-KR-014', name: '권과장', nameEn: 'Kwon Gwajang', email: 'kwon.mfg@ctr.co.kr', dept: 'MFG', grade: 'G4', cat: 'PRODUCTION', hireDate: dateOnly(2020, 2, 10), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0014' },
-  { no: 'EMP-KR-015', name: '황대리', nameEn: 'Hwang Daeri', email: 'hwang.mfg@ctr.co.kr', dept: 'MFG', grade: 'G5', cat: 'PRODUCTION', hireDate: dateOnly(2021, 11, 1), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0015' },
-  { no: 'EMP-KR-016', name: '문대리', nameEn: 'Moon Daeri', email: 'moon.mfg@ctr.co.kr', dept: 'MFG', grade: 'G5', cat: 'PRODUCTION', hireDate: dateOnly(2022, 3, 7), role: 'EMPLOYEE', gender: 'F', phone: '010-1001-0016' },
-  { no: 'EMP-KR-017', name: '배대리', nameEn: 'Bae Daeri', email: 'bae.mfg@ctr.co.kr', dept: 'MFG', grade: 'G5', cat: 'PRODUCTION', hireDate: dateOnly(2022, 9, 5), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0017' },
-  { no: 'EMP-KR-018', name: '안사원', nameEn: 'Ahn Sawon', email: 'ahn.mfg@ctr.co.kr', dept: 'MFG', grade: 'G6', cat: 'PRODUCTION', hireDate: dateOnly(2023, 3, 2), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0018' },
-  { no: 'EMP-KR-019', name: '전사원', nameEn: 'Jeon Sawon', email: 'jeon.mfg@ctr.co.kr', dept: 'MFG', grade: 'G6', cat: 'PRODUCTION', hireDate: dateOnly(2023, 8, 14), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0019' },
-  { no: 'EMP-KR-020', name: '곽신입', nameEn: 'Gwak Sinip', email: 'gwak.mfg@ctr.co.kr', dept: 'MFG', grade: 'G6', cat: 'PRODUCTION', hireDate: dateOnly(2024, 3, 4), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0020' },
+  { no: 'EMP-KR-012', name: '임차장', nameEn: 'Im Chajang', email: 'im.mfg@ctr.co.kr', dept: 'MFG', grade: 'L2', cat: 'PRODUCTION', hireDate: dateOnly(2017, 3, 6), role: 'MANAGER', gender: 'M', phone: '010-1001-0012' },
+  { no: 'EMP-KR-013', name: '서과장', nameEn: 'Seo Gwajang', email: 'seo.mfg@ctr.co.kr', dept: 'MFG', grade: 'L2', cat: 'PRODUCTION', hireDate: dateOnly(2019, 7, 15), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0013' },
+  { no: 'EMP-KR-014', name: '권과장', nameEn: 'Kwon Gwajang', email: 'kwon.mfg@ctr.co.kr', dept: 'MFG', grade: 'L2', cat: 'PRODUCTION', hireDate: dateOnly(2020, 2, 10), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0014' },
+  { no: 'EMP-KR-015', name: '황대리', nameEn: 'Hwang Daeri', email: 'hwang.mfg@ctr.co.kr', dept: 'MFG', grade: 'L2', cat: 'PRODUCTION', hireDate: dateOnly(2021, 11, 1), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0015' },
+  { no: 'EMP-KR-016', name: '문대리', nameEn: 'Moon Daeri', email: 'moon.mfg@ctr.co.kr', dept: 'MFG', grade: 'L2', cat: 'PRODUCTION', hireDate: dateOnly(2022, 3, 7), role: 'EMPLOYEE', gender: 'F', phone: '010-1001-0016' },
+  { no: 'EMP-KR-017', name: '배대리', nameEn: 'Bae Daeri', email: 'bae.mfg@ctr.co.kr', dept: 'MFG', grade: 'L2', cat: 'PRODUCTION', hireDate: dateOnly(2022, 9, 5), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0017' },
+  { no: 'EMP-KR-018', name: '안사원', nameEn: 'Ahn Sawon', email: 'ahn.mfg@ctr.co.kr', dept: 'MFG', grade: 'L1', cat: 'PRODUCTION', hireDate: dateOnly(2023, 3, 2), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0018' },
+  { no: 'EMP-KR-019', name: '전사원', nameEn: 'Jeon Sawon', email: 'jeon.mfg@ctr.co.kr', dept: 'MFG', grade: 'L1', cat: 'PRODUCTION', hireDate: dateOnly(2023, 8, 14), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0019' },
+  { no: 'EMP-KR-020', name: '곽신입', nameEn: 'Gwak Sinip', email: 'gwak.mfg@ctr.co.kr', dept: 'MFG', grade: 'L1', cat: 'PRODUCTION', hireDate: dateOnly(2024, 3, 4), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0020' },
 
   // 품질관리팀
-  { no: 'EMP-KR-021', name: '조품질', nameEn: 'Cho Pumjil', email: 'cho.qa@ctr.co.kr', dept: 'QA', grade: 'G4', cat: 'PRODUCTION', hireDate: dateOnly(2019, 4, 8), role: 'MANAGER', gender: 'F', phone: '010-1001-0021' },
-  { no: 'EMP-KR-022', name: '유대리', nameEn: 'Yu Daeri', email: 'yu.qa@ctr.co.kr', dept: 'QA', grade: 'G5', cat: 'PRODUCTION', hireDate: dateOnly(2021, 6, 14), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0022' },
-  { no: 'EMP-KR-023', name: '류사원', nameEn: 'Ryu Sawon', email: 'ryu.qa@ctr.co.kr', dept: 'QA', grade: 'G6', cat: 'PRODUCTION', hireDate: dateOnly(2023, 2, 20), role: 'EMPLOYEE', gender: 'F', phone: '010-1001-0023' },
+  { no: 'EMP-KR-021', name: '조품질', nameEn: 'Cho Pumjil', email: 'cho.qa@ctr.co.kr', dept: 'QA', grade: 'L2', cat: 'PRODUCTION', hireDate: dateOnly(2019, 4, 8), role: 'MANAGER', gender: 'F', phone: '010-1001-0021' },
+  { no: 'EMP-KR-022', name: '유대리', nameEn: 'Yu Daeri', email: 'yu.qa@ctr.co.kr', dept: 'QA', grade: 'L2', cat: 'PRODUCTION', hireDate: dateOnly(2021, 6, 14), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0022' },
+  { no: 'EMP-KR-023', name: '류사원', nameEn: 'Ryu Sawon', email: 'ryu.qa@ctr.co.kr', dept: 'QA', grade: 'L1', cat: 'PRODUCTION', hireDate: dateOnly(2023, 2, 20), role: 'EMPLOYEE', gender: 'F', phone: '010-1001-0023' },
 
   // 기술연구본부
-  { no: 'EMP-KR-024', name: '신기술', nameEn: 'Shin Gisul', email: 'shin.tech@ctr.co.kr', dept: 'TECH_HQ', grade: 'G2', cat: 'MANAGEMENT', hireDate: dateOnly(2016, 1, 4), role: 'MANAGER', gender: 'M', phone: '010-1001-0024' },
+  { no: 'EMP-KR-024', name: '신기술', nameEn: 'Shin Gisul', email: 'shin.tech@ctr.co.kr', dept: 'TECH_HQ', grade: 'S1', cat: 'MANAGEMENT', hireDate: dateOnly(2016, 1, 4), role: 'MANAGER', gender: 'M', phone: '010-1001-0024' },
 
   // 연구개발팀
-  { no: 'EMP-KR-025', name: '고연구', nameEn: 'Ko Yeongu', email: 'ko.rd@ctr.co.kr', dept: 'RANDD', grade: 'G3', cat: 'R_AND_D', hireDate: dateOnly(2018, 5, 7), role: 'MANAGER', gender: 'M', phone: '010-1001-0025' },
-  { no: 'EMP-KR-026', name: '홍과장', nameEn: 'Hong Gwajang', email: 'hong.rd@ctr.co.kr', dept: 'RANDD', grade: 'G4', cat: 'R_AND_D', hireDate: dateOnly(2020, 8, 3), role: 'EMPLOYEE', gender: 'F', phone: '010-1001-0026' },
-  { no: 'EMP-KR-027', name: '남대리', nameEn: 'Nam Daeri', email: 'nam.rd@ctr.co.kr', dept: 'RANDD', grade: 'G5', cat: 'R_AND_D', hireDate: dateOnly(2022, 7, 4), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0027' },
-  { no: 'EMP-KR-028', name: '심사원', nameEn: 'Sim Sawon', email: 'sim.rd@ctr.co.kr', dept: 'RANDD', grade: 'G6', cat: 'R_AND_D', hireDate: dateOnly(2024, 2, 26), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0028' },
+  { no: 'EMP-KR-025', name: '고연구', nameEn: 'Ko Yeongu', email: 'ko.rd@ctr.co.kr', dept: 'RANDD', grade: 'L2', cat: 'R_AND_D', hireDate: dateOnly(2018, 5, 7), role: 'MANAGER', gender: 'M', phone: '010-1001-0025' },
+  { no: 'EMP-KR-026', name: '홍과장', nameEn: 'Hong Gwajang', email: 'hong.rd@ctr.co.kr', dept: 'RANDD', grade: 'L2', cat: 'R_AND_D', hireDate: dateOnly(2020, 8, 3), role: 'EMPLOYEE', gender: 'F', phone: '010-1001-0026' },
+  { no: 'EMP-KR-027', name: '남대리', nameEn: 'Nam Daeri', email: 'nam.rd@ctr.co.kr', dept: 'RANDD', grade: 'L2', cat: 'R_AND_D', hireDate: dateOnly(2022, 7, 4), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0027' },
+  { no: 'EMP-KR-028', name: '심사원', nameEn: 'Sim Sawon', email: 'sim.rd@ctr.co.kr', dept: 'RANDD', grade: 'L1', cat: 'R_AND_D', hireDate: dateOnly(2024, 2, 26), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0028' },
 
   // 개발팀 (기존 manager@ctr.co.kr이 DEV 소속)
-  { no: 'EMP-KR-029', name: '하과장', nameEn: 'Ha Gwajang', email: 'ha.dev@ctr.co.kr', dept: 'DEV', grade: 'G4', cat: 'R_AND_D', hireDate: dateOnly(2020, 11, 2), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0029' },
-  { no: 'EMP-KR-030', name: '선대리', nameEn: 'Sun Daeri', email: 'sun.dev@ctr.co.kr', dept: 'DEV', grade: 'G5', cat: 'R_AND_D', hireDate: dateOnly(2022, 5, 16), role: 'EMPLOYEE', gender: 'F', phone: '010-1001-0030' },
+  { no: 'EMP-KR-029', name: '하과장', nameEn: 'Ha Gwajang', email: 'ha.dev@ctr.co.kr', dept: 'DEV', grade: 'L2', cat: 'R_AND_D', hireDate: dateOnly(2020, 11, 2), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0029' },
+  { no: 'EMP-KR-030', name: '선대리', nameEn: 'Sun Daeri', email: 'sun.dev@ctr.co.kr', dept: 'DEV', grade: 'L2', cat: 'R_AND_D', hireDate: dateOnly(2022, 5, 16), role: 'EMPLOYEE', gender: 'F', phone: '010-1001-0030' },
 
   // 영업마케팅본부
-  { no: 'EMP-KR-031', name: '방영업', nameEn: 'Bang Yeongup', email: 'bang.sales@ctr.co.kr', dept: 'SALES_HQ', grade: 'G2', cat: 'MANAGEMENT', hireDate: dateOnly(2015, 9, 7), role: 'MANAGER', gender: 'M', phone: '010-1001-0031' },
+  { no: 'EMP-KR-031', name: '방영업', nameEn: 'Bang Yeongup', email: 'bang.sales@ctr.co.kr', dept: 'SALES_HQ', grade: 'S1', cat: 'MANAGEMENT', hireDate: dateOnly(2015, 9, 7), role: 'MANAGER', gender: 'M', phone: '010-1001-0031' },
 
   // 영업팀 (기존 employee@ctr.co.kr은 SALES 소속)
-  { no: 'EMP-KR-032', name: '복과장', nameEn: 'Bok Gwajang', email: 'bok.sales@ctr.co.kr', dept: 'SALES', grade: 'G4', cat: 'OFFICE', hireDate: dateOnly(2019, 10, 14), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0032' },
-  { no: 'EMP-KR-033', name: '탁과장', nameEn: 'Tak Gwajang', email: 'tak.sales@ctr.co.kr', dept: 'SALES', grade: 'G4', cat: 'OFFICE', hireDate: dateOnly(2020, 6, 1), role: 'EMPLOYEE', gender: 'F', phone: '010-1001-0033' },
-  { no: 'EMP-KR-034', name: '도대리', nameEn: 'Do Daeri', email: 'do.sales@ctr.co.kr', dept: 'SALES', grade: 'G5', cat: 'OFFICE', hireDate: dateOnly(2022, 1, 10), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0034' },
-  { no: 'EMP-KR-035', name: '길사원', nameEn: 'Gil Sawon', email: 'gil.sales@ctr.co.kr', dept: 'SALES', grade: 'G6', cat: 'OFFICE', hireDate: dateOnly(2023, 5, 22), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0035' },
+  { no: 'EMP-KR-032', name: '복과장', nameEn: 'Bok Gwajang', email: 'bok.sales@ctr.co.kr', dept: 'SALES', grade: 'L2', cat: 'OFFICE', hireDate: dateOnly(2019, 10, 14), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0032' },
+  { no: 'EMP-KR-033', name: '탁과장', nameEn: 'Tak Gwajang', email: 'tak.sales@ctr.co.kr', dept: 'SALES', grade: 'L2', cat: 'OFFICE', hireDate: dateOnly(2020, 6, 1), role: 'EMPLOYEE', gender: 'F', phone: '010-1001-0033' },
+  { no: 'EMP-KR-034', name: '도대리', nameEn: 'Do Daeri', email: 'do.sales@ctr.co.kr', dept: 'SALES', grade: 'L2', cat: 'OFFICE', hireDate: dateOnly(2022, 1, 10), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0034' },
+  { no: 'EMP-KR-035', name: '길사원', nameEn: 'Gil Sawon', email: 'gil.sales@ctr.co.kr', dept: 'SALES', grade: 'L1', cat: 'OFFICE', hireDate: dateOnly(2023, 5, 22), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0035' },
 
   // 마케팅팀
-  { no: 'EMP-KR-036', name: '표마케팅', nameEn: 'Pyo Marketing', email: 'pyo.mkt@ctr.co.kr', dept: 'MKT', grade: 'G4', cat: 'OFFICE', hireDate: dateOnly(2020, 3, 2), role: 'MANAGER', gender: 'F', phone: '010-1001-0036' },
-  { no: 'EMP-KR-037', name: '구대리', nameEn: 'Gu Daeri', email: 'gu.mkt@ctr.co.kr', dept: 'MKT', grade: 'G5', cat: 'OFFICE', hireDate: dateOnly(2022, 8, 22), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0037' },
+  { no: 'EMP-KR-036', name: '표마케팅', nameEn: 'Pyo Marketing', email: 'pyo.mkt@ctr.co.kr', dept: 'MKT', grade: 'L2', cat: 'OFFICE', hireDate: dateOnly(2020, 3, 2), role: 'MANAGER', gender: 'F', phone: '010-1001-0036' },
+  { no: 'EMP-KR-037', name: '구대리', nameEn: 'Gu Daeri', email: 'gu.mkt@ctr.co.kr', dept: 'MKT', grade: 'L2', cat: 'OFFICE', hireDate: dateOnly(2022, 8, 22), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0037' },
 
   // 구매조달팀
-  { no: 'EMP-KR-038', name: '마구매', nameEn: 'Ma Gumat', email: 'ma.pur@ctr.co.kr', dept: 'PUR', grade: 'G4', cat: 'OFFICE', hireDate: dateOnly(2019, 2, 11), role: 'MANAGER', gender: 'M', phone: '010-1001-0038' },
-  { no: 'EMP-KR-039', name: '나대리', nameEn: 'Na Daeri', email: 'na.pur@ctr.co.kr', dept: 'PUR', grade: 'G5', cat: 'OFFICE', hireDate: dateOnly(2021, 10, 4), role: 'EMPLOYEE', gender: 'F', phone: '010-1001-0039' },
-  { no: 'EMP-KR-040', name: '다사원', nameEn: 'Da Sawon', email: 'da.pur@ctr.co.kr', dept: 'PUR', grade: 'G6', cat: 'OFFICE', hireDate: dateOnly(2023, 12, 4), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0040' },
+  { no: 'EMP-KR-038', name: '마구매', nameEn: 'Ma Gumat', email: 'ma.pur@ctr.co.kr', dept: 'PUR', grade: 'L2', cat: 'OFFICE', hireDate: dateOnly(2019, 2, 11), role: 'MANAGER', gender: 'M', phone: '010-1001-0038' },
+  { no: 'EMP-KR-039', name: '나대리', nameEn: 'Na Daeri', email: 'na.pur@ctr.co.kr', dept: 'PUR', grade: 'L2', cat: 'OFFICE', hireDate: dateOnly(2021, 10, 4), role: 'EMPLOYEE', gender: 'F', phone: '010-1001-0039' },
+  { no: 'EMP-KR-040', name: '다사원', nameEn: 'Da Sawon', email: 'da.pur@ctr.co.kr', dept: 'PUR', grade: 'L1', cat: 'OFFICE', hireDate: dateOnly(2023, 12, 4), role: 'EMPLOYEE', gender: 'M', phone: '010-1001-0040' },
 ]
 
 async function seedKrEmployees(
@@ -437,31 +437,31 @@ async function seedKrEmployees(
 
 const CN_EMPLOYEES: EmpDef[] = [
   // 생산팀
-  { no: 'EMP-CN-001', name: '张生产', nameEn: 'Zhang Shengchan', email: 'zhang.mfg@ctr-cn.com', dept: 'CN_MFG', grade: 'G3', cat: 'PRODUCTION', hireDate: dateOnly(2018, 4, 1), role: 'MANAGER', gender: 'M', phone: '138-0001-0001' },
-  { no: 'EMP-CN-002', name: '李工人', nameEn: 'Li Gongren', email: 'li.mfg@ctr-cn.com', dept: 'CN_MFG', grade: 'G5', cat: 'PRODUCTION', hireDate: dateOnly(2020, 3, 2), role: 'EMPLOYEE', gender: 'M', phone: '138-0001-0002' },
-  { no: 'EMP-CN-003', name: '王制造', nameEn: 'Wang Zhizao', email: 'wang.mfg@ctr-cn.com', dept: 'CN_MFG', grade: 'G5', cat: 'PRODUCTION', hireDate: dateOnly(2021, 6, 7), role: 'EMPLOYEE', gender: 'M', phone: '138-0001-0003' },
-  { no: 'EMP-CN-004', name: '赵工作', nameEn: 'Zhao Gongzuo', email: 'zhao.mfg@ctr-cn.com', dept: 'CN_MFG', grade: 'G6', cat: 'PRODUCTION', hireDate: dateOnly(2022, 9, 5), role: 'EMPLOYEE', gender: 'M', phone: '138-0001-0004' },
-  { no: 'EMP-CN-005', name: '刘操作', nameEn: 'Liu Caozuo', email: 'liu.mfg@ctr-cn.com', dept: 'CN_MFG', grade: 'G6', cat: 'PRODUCTION', hireDate: dateOnly(2023, 5, 8), role: 'EMPLOYEE', gender: 'F', phone: '138-0001-0005' },
+  { no: 'EMP-CN-001', name: '张生产', nameEn: 'Zhang Shengchan', email: 'zhang.mfg@ctr-cn.com', dept: 'CN_MFG', grade: 'L2', cat: 'PRODUCTION', hireDate: dateOnly(2018, 4, 1), role: 'MANAGER', gender: 'M', phone: '138-0001-0001' },
+  { no: 'EMP-CN-002', name: '李工人', nameEn: 'Li Gongren', email: 'li.mfg@ctr-cn.com', dept: 'CN_MFG', grade: 'L2', cat: 'PRODUCTION', hireDate: dateOnly(2020, 3, 2), role: 'EMPLOYEE', gender: 'M', phone: '138-0001-0002' },
+  { no: 'EMP-CN-003', name: '王制造', nameEn: 'Wang Zhizao', email: 'wang.mfg@ctr-cn.com', dept: 'CN_MFG', grade: 'L2', cat: 'PRODUCTION', hireDate: dateOnly(2021, 6, 7), role: 'EMPLOYEE', gender: 'M', phone: '138-0001-0003' },
+  { no: 'EMP-CN-004', name: '赵工作', nameEn: 'Zhao Gongzuo', email: 'zhao.mfg@ctr-cn.com', dept: 'CN_MFG', grade: 'L1', cat: 'PRODUCTION', hireDate: dateOnly(2022, 9, 5), role: 'EMPLOYEE', gender: 'M', phone: '138-0001-0004' },
+  { no: 'EMP-CN-005', name: '刘操作', nameEn: 'Liu Caozuo', email: 'liu.mfg@ctr-cn.com', dept: 'CN_MFG', grade: 'L1', cat: 'PRODUCTION', hireDate: dateOnly(2023, 5, 8), role: 'EMPLOYEE', gender: 'F', phone: '138-0001-0005' },
   // 품질팀
-  { no: 'EMP-CN-006', name: '陈品质', nameEn: 'Chen Pinzhi', email: 'chen.qa@ctr-cn.com', dept: 'CN_QA', grade: 'G4', cat: 'PRODUCTION', hireDate: dateOnly(2019, 7, 1), role: 'MANAGER', gender: 'F', phone: '138-0001-0006' },
-  { no: 'EMP-CN-007', name: '杨质量', nameEn: 'Yang Zhiliang', email: 'yang.qa@ctr-cn.com', dept: 'CN_QA', grade: 'G5', cat: 'PRODUCTION', hireDate: dateOnly(2021, 4, 12), role: 'EMPLOYEE', gender: 'M', phone: '138-0001-0007' },
-  { no: 'EMP-CN-008', name: '孙检查', nameEn: 'Sun Jiancha', email: 'sun.qa@ctr-cn.com', dept: 'CN_QA', grade: 'G6', cat: 'PRODUCTION', hireDate: dateOnly(2022, 11, 14), role: 'EMPLOYEE', gender: 'M', phone: '138-0001-0008' },
+  { no: 'EMP-CN-006', name: '陈品质', nameEn: 'Chen Pinzhi', email: 'chen.qa@ctr-cn.com', dept: 'CN_QA', grade: 'L2', cat: 'PRODUCTION', hireDate: dateOnly(2019, 7, 1), role: 'MANAGER', gender: 'F', phone: '138-0001-0006' },
+  { no: 'EMP-CN-007', name: '杨质量', nameEn: 'Yang Zhiliang', email: 'yang.qa@ctr-cn.com', dept: 'CN_QA', grade: 'L2', cat: 'PRODUCTION', hireDate: dateOnly(2021, 4, 12), role: 'EMPLOYEE', gender: 'M', phone: '138-0001-0007' },
+  { no: 'EMP-CN-008', name: '孙检查', nameEn: 'Sun Jiancha', email: 'sun.qa@ctr-cn.com', dept: 'CN_QA', grade: 'L1', cat: 'PRODUCTION', hireDate: dateOnly(2022, 11, 14), role: 'EMPLOYEE', gender: 'M', phone: '138-0001-0008' },
   // 인사행정팀
-  { no: 'EMP-CN-009', name: '周人事', nameEn: 'Zhou Renshi', email: 'zhou.hr@ctr-cn.com', dept: 'CN_HR', grade: 'G4', cat: 'OFFICE', hireDate: dateOnly(2019, 3, 4), role: 'MANAGER', gender: 'F', phone: '138-0001-0009' },
-  { no: 'EMP-CN-010', name: '吴行政', nameEn: 'Wu Xingzheng', email: 'wu.hr@ctr-cn.com', dept: 'CN_HR', grade: 'G5', cat: 'OFFICE', hireDate: dateOnly(2021, 9, 13), role: 'EMPLOYEE', gender: 'F', phone: '138-0001-0010' },
-  { no: 'EMP-CN-011', name: '郑专员', nameEn: 'Zheng Zhuanyuan', email: 'zheng.hr@ctr-cn.com', dept: 'CN_HR', grade: 'G6', cat: 'OFFICE', hireDate: dateOnly(2023, 3, 6), role: 'EMPLOYEE', gender: 'M', phone: '138-0001-0011' },
+  { no: 'EMP-CN-009', name: '周人事', nameEn: 'Zhou Renshi', email: 'zhou.hr@ctr-cn.com', dept: 'CN_HR', grade: 'L2', cat: 'OFFICE', hireDate: dateOnly(2019, 3, 4), role: 'MANAGER', gender: 'F', phone: '138-0001-0009' },
+  { no: 'EMP-CN-010', name: '吴行政', nameEn: 'Wu Xingzheng', email: 'wu.hr@ctr-cn.com', dept: 'CN_HR', grade: 'L2', cat: 'OFFICE', hireDate: dateOnly(2021, 9, 13), role: 'EMPLOYEE', gender: 'F', phone: '138-0001-0010' },
+  { no: 'EMP-CN-011', name: '郑专员', nameEn: 'Zheng Zhuanyuan', email: 'zheng.hr@ctr-cn.com', dept: 'CN_HR', grade: 'L1', cat: 'OFFICE', hireDate: dateOnly(2023, 3, 6), role: 'EMPLOYEE', gender: 'M', phone: '138-0001-0011' },
   // 재무팀
-  { no: 'EMP-CN-012', name: '冯财务', nameEn: 'Feng Caiwu', email: 'feng.fin@ctr-cn.com', dept: 'CN_FIN', grade: 'G4', cat: 'OFFICE', hireDate: dateOnly(2019, 5, 6), role: 'MANAGER', gender: 'M', phone: '138-0001-0012' },
-  { no: 'EMP-CN-013', name: '褚会计', nameEn: 'Chu Kuaiji', email: 'chu.fin@ctr-cn.com', dept: 'CN_FIN', grade: 'G5', cat: 'OFFICE', hireDate: dateOnly(2021, 2, 1), role: 'EMPLOYEE', gender: 'F', phone: '138-0001-0013' },
-  { no: 'EMP-CN-014', name: '卫出纳', nameEn: 'Wei Chuna', email: 'wei.fin@ctr-cn.com', dept: 'CN_FIN', grade: 'G6', cat: 'OFFICE', hireDate: dateOnly(2023, 7, 17), role: 'EMPLOYEE', gender: 'M', phone: '138-0001-0014' },
+  { no: 'EMP-CN-012', name: '冯财务', nameEn: 'Feng Caiwu', email: 'feng.fin@ctr-cn.com', dept: 'CN_FIN', grade: 'L2', cat: 'OFFICE', hireDate: dateOnly(2019, 5, 6), role: 'MANAGER', gender: 'M', phone: '138-0001-0012' },
+  { no: 'EMP-CN-013', name: '褚会计', nameEn: 'Chu Kuaiji', email: 'chu.fin@ctr-cn.com', dept: 'CN_FIN', grade: 'L2', cat: 'OFFICE', hireDate: dateOnly(2021, 2, 1), role: 'EMPLOYEE', gender: 'F', phone: '138-0001-0013' },
+  { no: 'EMP-CN-014', name: '卫出纳', nameEn: 'Wei Chuna', email: 'wei.fin@ctr-cn.com', dept: 'CN_FIN', grade: 'L1', cat: 'OFFICE', hireDate: dateOnly(2023, 7, 17), role: 'EMPLOYEE', gender: 'M', phone: '138-0001-0014' },
   // 기술팀
-  { no: 'EMP-CN-015', name: '蒋技术', nameEn: 'Jiang Jishu', email: 'jiang.tech@ctr-cn.com', dept: 'CN_TECH', grade: 'G4', cat: 'R_AND_D', hireDate: dateOnly(2020, 1, 6), role: 'MANAGER', gender: 'M', phone: '138-0001-0015' },
-  { no: 'EMP-CN-016', name: '沈工程', nameEn: 'Shen Gongcheng', email: 'shen.tech@ctr-cn.com', dept: 'CN_TECH', grade: 'G5', cat: 'R_AND_D', hireDate: dateOnly(2021, 8, 9), role: 'EMPLOYEE', gender: 'M', phone: '138-0001-0016' },
-  { no: 'EMP-CN-017', name: '韩开发', nameEn: 'Han Kaifa', email: 'han.tech@ctr-cn.com', dept: 'CN_TECH', grade: 'G5', cat: 'R_AND_D', hireDate: dateOnly(2022, 4, 11), role: 'EMPLOYEE', gender: 'F', phone: '138-0001-0017' },
-  { no: 'EMP-CN-018', name: '杜设计', nameEn: 'Du Sheji', email: 'du.tech@ctr-cn.com', dept: 'CN_TECH', grade: 'G6', cat: 'R_AND_D', hireDate: dateOnly(2023, 10, 16), role: 'EMPLOYEE', gender: 'M', phone: '138-0001-0018' },
+  { no: 'EMP-CN-015', name: '蒋技术', nameEn: 'Jiang Jishu', email: 'jiang.tech@ctr-cn.com', dept: 'CN_TECH', grade: 'L2', cat: 'R_AND_D', hireDate: dateOnly(2020, 1, 6), role: 'MANAGER', gender: 'M', phone: '138-0001-0015' },
+  { no: 'EMP-CN-016', name: '沈工程', nameEn: 'Shen Gongcheng', email: 'shen.tech@ctr-cn.com', dept: 'CN_TECH', grade: 'L2', cat: 'R_AND_D', hireDate: dateOnly(2021, 8, 9), role: 'EMPLOYEE', gender: 'M', phone: '138-0001-0016' },
+  { no: 'EMP-CN-017', name: '韩开发', nameEn: 'Han Kaifa', email: 'han.tech@ctr-cn.com', dept: 'CN_TECH', grade: 'L2', cat: 'R_AND_D', hireDate: dateOnly(2022, 4, 11), role: 'EMPLOYEE', gender: 'F', phone: '138-0001-0017' },
+  { no: 'EMP-CN-018', name: '杜设计', nameEn: 'Du Sheji', email: 'du.tech@ctr-cn.com', dept: 'CN_TECH', grade: 'L1', cat: 'R_AND_D', hireDate: dateOnly(2023, 10, 16), role: 'EMPLOYEE', gender: 'M', phone: '138-0001-0018' },
   // 경영지원본부 (법인장)
-  { no: 'EMP-CN-019', name: '秦总经理', nameEn: 'Qin Zongjingli', email: 'qin.gm@ctr-cn.com', dept: 'CN_MGMT_HQ', grade: 'G1', cat: 'MANAGEMENT', hireDate: dateOnly(2016, 7, 4), role: 'MANAGER', gender: 'M', phone: '138-0001-0019' },
-  { no: 'EMP-CN-020', name: '尤助理', nameEn: 'You Zhuli', email: 'you.mgmt@ctr-cn.com', dept: 'CN_MGMT_HQ', grade: 'G4', cat: 'OFFICE', hireDate: dateOnly(2020, 10, 26), role: 'EMPLOYEE', gender: 'F', phone: '138-0001-0020' },
+  { no: 'EMP-CN-019', name: '秦总经理', nameEn: 'Qin Zongjingli', email: 'qin.gm@ctr-cn.com', dept: 'CN_MGMT_HQ', grade: 'E1', cat: 'MANAGEMENT', hireDate: dateOnly(2016, 7, 4), role: 'MANAGER', gender: 'M', phone: '138-0001-0019' },
+  { no: 'EMP-CN-020', name: '尤助理', nameEn: 'You Zhuli', email: 'you.mgmt@ctr-cn.com', dept: 'CN_MGMT_HQ', grade: 'L2', cat: 'OFFICE', hireDate: dateOnly(2020, 10, 26), role: 'EMPLOYEE', gender: 'F', phone: '138-0001-0020' },
 ]
 
 async function seedCnEmployees(

@@ -217,15 +217,13 @@ const departmentData = [
 ]
 
 // ================================================================
-// 9. JOB GRADES (CTR-KR, 6 grades)
+// 9. JOB GRADES (CTR-KR, Session 45 확정: E1/S1/L2/L1)
 // ================================================================
 const jobGradeData = [
-  { code: 'G1', name: '임원', rankOrder: 1 },
-  { code: 'G2', name: '부장', rankOrder: 2 },
-  { code: 'G3', name: '차장', rankOrder: 3 },
-  { code: 'G4', name: '과장', rankOrder: 4 },
-  { code: 'G5', name: '대리', rankOrder: 5 },
-  { code: 'G6', name: '사원', rankOrder: 6 },
+  { code: 'E1', name: '경영리더', rankOrder: 1 },
+  { code: 'S1', name: '전문리더', rankOrder: 2 },
+  { code: 'L2', name: '책임매니저', rankOrder: 3 },
+  { code: 'L1', name: '매니저', rankOrder: 4 },
 ]
 
 // ================================================================
@@ -255,15 +253,14 @@ const offboardingTasks = [
 ]
 
 // ================================================================
-// 12. SALARY BANDS (CTR-KR, 6 grades, OFFICE category)
+// 12. SALARY BANDS (CTR-KR, Session 45 확정: E1/S1/L2/L1)
+// ⚠️ L2 밴드가 넓음 (G3~G5 합산) — 추후 L2~L5 세분화 검토
 // ================================================================
 const salaryBandData = [
-  { gradeCode: 'G1', min: 120_000_000, mid: 160_000_000, max: 200_000_000 },
-  { gradeCode: 'G2', min: 80_000_000, mid: 105_000_000, max: 130_000_000 },
-  { gradeCode: 'G3', min: 65_000_000, mid: 80_000_000, max: 95_000_000 },
-  { gradeCode: 'G4', min: 50_000_000, mid: 62_500_000, max: 75_000_000 },
-  { gradeCode: 'G5', min: 40_000_000, mid: 49_000_000, max: 58_000_000 },
-  { gradeCode: 'G6', min: 32_000_000, mid: 38_500_000, max: 45_000_000 },
+  { gradeCode: 'E1', min: 120_000_000, mid: 160_000_000, max: 200_000_000 },
+  { gradeCode: 'S1', min: 80_000_000, mid: 120_000_000, max: 160_000_000 },
+  { gradeCode: 'L2', min: 40_000_000, mid: 75_000_000, max: 130_000_000 },
+  { gradeCode: 'L1', min: 32_000_000, mid: 38_500_000, max: 45_000_000 },
 ]
 
 // ================================================================
@@ -757,10 +754,10 @@ async function main() {
 
   // Map employee to their department / grade / category
   const empConfig: Record<string, { deptCode: string; gradeCode: string; catCode: string }> = {
-    'admin@ctr.co.kr': { deptCode: 'MGMT', gradeCode: 'G1', catCode: 'OFFICE' },
-    'hr@ctr.co.kr': { deptCode: 'HR', gradeCode: 'G4', catCode: 'OFFICE' },
-    'manager@ctr.co.kr': { deptCode: 'DEV', gradeCode: 'G3', catCode: 'OFFICE' },
-    'employee@ctr.co.kr': { deptCode: 'DEV', gradeCode: 'G6', catCode: 'OFFICE' },
+    'admin@ctr.co.kr': { deptCode: 'MGMT', gradeCode: 'E1', catCode: 'OFFICE' },
+    'hr@ctr.co.kr': { deptCode: 'HR', gradeCode: 'L2', catCode: 'OFFICE' },
+    'manager@ctr.co.kr': { deptCode: 'DEV', gradeCode: 'L2', catCode: 'OFFICE' },
+    'employee@ctr.co.kr': { deptCode: 'DEV', gradeCode: 'L1', catCode: 'OFFICE' },
   }
 
   const employeeMap: Record<string, string> = {} // email -> id
@@ -1441,73 +1438,73 @@ async function main() {
 
   const krPositions = [
     // ── MGMT (6) ─────────────────────────────────────────────
-    { code: 'CTR-KR-MGMT-001', titleKo: '대표이사', titleEn: 'CEO', deptId: d.MGMT, jobCode: 'ADMIN_MGR', gradeCode: 'G1' },
-    { code: 'CTR-KR-MGMT-002', titleKo: '경영지원본부장', titleEn: 'Head of Management', deptId: d.MGMT, jobCode: 'ADMIN_MGR', gradeCode: 'G2' },
-    { code: 'CTR-KR-MGMT-003', titleKo: '경영지원팀장', titleEn: 'Management Team Lead', deptId: d.MGMT, jobCode: 'ADMIN_MGR', gradeCode: 'G3' },
-    { code: 'CTR-KR-MGMT-004', titleKo: '경영지원선임', titleEn: 'Senior Admin Specialist', deptId: d.MGMT, jobCode: 'ADMIN_MGR', gradeCode: 'G4' },
-    { code: 'CTR-KR-MGMT-005', titleKo: '경영지원담당', titleEn: 'Admin Specialist', deptId: d.MGMT, jobCode: 'EXEC_ASST', gradeCode: 'G5' },
-    { code: 'CTR-KR-MGMT-006', titleKo: '총무사원', titleEn: 'Admin Staff', deptId: d.MGMT, jobCode: 'EXEC_ASST', gradeCode: 'G6' },
+    { code: 'CTR-KR-MGMT-001', titleKo: '대표이사', titleEn: 'CEO', deptId: d.MGMT, jobCode: 'ADMIN_MGR', gradeCode: 'E1' },
+    { code: 'CTR-KR-MGMT-002', titleKo: '경영지원본부장', titleEn: 'Head of Management', deptId: d.MGMT, jobCode: 'ADMIN_MGR', gradeCode: 'S1' },
+    { code: 'CTR-KR-MGMT-003', titleKo: '경영지원팀장', titleEn: 'Management Team Lead', deptId: d.MGMT, jobCode: 'ADMIN_MGR', gradeCode: 'L2' },
+    { code: 'CTR-KR-MGMT-004', titleKo: '경영지원선임', titleEn: 'Senior Admin Specialist', deptId: d.MGMT, jobCode: 'ADMIN_MGR', gradeCode: 'L2' },
+    { code: 'CTR-KR-MGMT-005', titleKo: '경영지원담당', titleEn: 'Admin Specialist', deptId: d.MGMT, jobCode: 'EXEC_ASST', gradeCode: 'L2' },
+    { code: 'CTR-KR-MGMT-006', titleKo: '총무사원', titleEn: 'Admin Staff', deptId: d.MGMT, jobCode: 'EXEC_ASST', gradeCode: 'L1' },
     // ── HR (4) ───────────────────────────────────────────────
-    { code: 'CTR-KR-HR-001', titleKo: '인사팀장', titleEn: 'HR Team Lead', deptId: d.HR, jobCode: 'HR_MGR', gradeCode: 'G3' },
-    { code: 'CTR-KR-HR-002', titleKo: '인사담당선임', titleEn: 'Senior HR Specialist', deptId: d.HR, jobCode: 'HR_SPEC', gradeCode: 'G4' },
-    { code: 'CTR-KR-HR-003', titleKo: '인사담당', titleEn: 'HR Specialist', deptId: d.HR, jobCode: 'HR_SPEC', gradeCode: 'G5' },
-    { code: 'CTR-KR-HR-004', titleKo: '인사사원', titleEn: 'HR Staff', deptId: d.HR, jobCode: 'HR_SPEC', gradeCode: 'G6' },
+    { code: 'CTR-KR-HR-001', titleKo: '인사팀장', titleEn: 'HR Team Lead', deptId: d.HR, jobCode: 'HR_MGR', gradeCode: 'L2' },
+    { code: 'CTR-KR-HR-002', titleKo: '인사담당선임', titleEn: 'Senior HR Specialist', deptId: d.HR, jobCode: 'HR_SPEC', gradeCode: 'L2' },
+    { code: 'CTR-KR-HR-003', titleKo: '인사담당', titleEn: 'HR Specialist', deptId: d.HR, jobCode: 'HR_SPEC', gradeCode: 'L2' },
+    { code: 'CTR-KR-HR-004', titleKo: '인사사원', titleEn: 'HR Staff', deptId: d.HR, jobCode: 'HR_SPEC', gradeCode: 'L1' },
     // ── DEV (7) ──────────────────────────────────────────────
-    { code: 'CTR-KR-DEV-001', titleKo: '개발팀장', titleEn: 'Dev Team Lead', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'G3' },
-    { code: 'CTR-KR-DEV-002', titleKo: '수석개발자A', titleEn: 'Senior Developer A', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'G4' },
-    { code: 'CTR-KR-DEV-003', titleKo: '수석개발자B', titleEn: 'Senior Developer B', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'G4' },
-    { code: 'CTR-KR-DEV-004', titleKo: '개발자A', titleEn: 'Developer A', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'G5' },
-    { code: 'CTR-KR-DEV-005', titleKo: '개발자B', titleEn: 'Developer B', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'G5' },
-    { code: 'CTR-KR-DEV-006', titleKo: '개발사원A', titleEn: 'Dev Staff A', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'G6' },
-    { code: 'CTR-KR-DEV-007', titleKo: '개발사원B', titleEn: 'Dev Staff B', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'G6' },
+    { code: 'CTR-KR-DEV-001', titleKo: '개발팀장', titleEn: 'Dev Team Lead', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'L2' },
+    { code: 'CTR-KR-DEV-002', titleKo: '수석개발자A', titleEn: 'Senior Developer A', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'L2' },
+    { code: 'CTR-KR-DEV-003', titleKo: '수석개발자B', titleEn: 'Senior Developer B', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'L2' },
+    { code: 'CTR-KR-DEV-004', titleKo: '개발자A', titleEn: 'Developer A', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'L2' },
+    { code: 'CTR-KR-DEV-005', titleKo: '개발자B', titleEn: 'Developer B', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'L2' },
+    { code: 'CTR-KR-DEV-006', titleKo: '개발사원A', titleEn: 'Dev Staff A', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'L1' },
+    { code: 'CTR-KR-DEV-007', titleKo: '개발사원B', titleEn: 'Dev Staff B', deptId: d.DEV, jobCode: 'SW_ENG', gradeCode: 'L1' },
     // ── SALES (7) ────────────────────────────────────────────
-    { code: 'CTR-KR-SALES-001', titleKo: '영업팀장', titleEn: 'Sales Team Lead', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G3' },
-    { code: 'CTR-KR-SALES-002', titleKo: '영업선임A', titleEn: 'Senior Sales A', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G4' },
-    { code: 'CTR-KR-SALES-003', titleKo: '영업선임B', titleEn: 'Senior Sales B', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G4' },
-    { code: 'CTR-KR-SALES-004', titleKo: '영업담당A', titleEn: 'Sales Specialist A', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G5' },
-    { code: 'CTR-KR-SALES-005', titleKo: '영업담당B', titleEn: 'Sales Specialist B', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G5' },
-    { code: 'CTR-KR-SALES-006', titleKo: '영업사원A', titleEn: 'Sales Staff A', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G6' },
-    { code: 'CTR-KR-SALES-007', titleKo: '영업사원B', titleEn: 'Sales Staff B', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'G6' },
+    { code: 'CTR-KR-SALES-001', titleKo: '영업팀장', titleEn: 'Sales Team Lead', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'L2' },
+    { code: 'CTR-KR-SALES-002', titleKo: '영업선임A', titleEn: 'Senior Sales A', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'L2' },
+    { code: 'CTR-KR-SALES-003', titleKo: '영업선임B', titleEn: 'Senior Sales B', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'L2' },
+    { code: 'CTR-KR-SALES-004', titleKo: '영업담당A', titleEn: 'Sales Specialist A', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'L2' },
+    { code: 'CTR-KR-SALES-005', titleKo: '영업담당B', titleEn: 'Sales Specialist B', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'L2' },
+    { code: 'CTR-KR-SALES-006', titleKo: '영업사원A', titleEn: 'Sales Staff A', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'L1' },
+    { code: 'CTR-KR-SALES-007', titleKo: '영업사원B', titleEn: 'Sales Staff B', deptId: d.SALES, jobCode: 'SALES_MGR', gradeCode: 'L1' },
     // ── MFG (10) ─────────────────────────────────────────────
-    { code: 'CTR-KR-MFG-001', titleKo: '생산팀장', titleEn: 'Manufacturing Team Lead', deptId: d.MFG, jobCode: 'PLANT_MGR', gradeCode: 'G3' },
-    { code: 'CTR-KR-MFG-002', titleKo: '생산감독A', titleEn: 'Production Supervisor A', deptId: d.MFG, jobCode: 'MFG_SUP', gradeCode: 'G4' },
-    { code: 'CTR-KR-MFG-003', titleKo: '생산감독B', titleEn: 'Production Supervisor B', deptId: d.MFG, jobCode: 'MFG_SUP', gradeCode: 'G4' },
-    { code: 'CTR-KR-MFG-004', titleKo: '생산반장A', titleEn: 'Line Leader A', deptId: d.MFG, jobCode: 'MFG_SUP', gradeCode: 'G5' },
-    { code: 'CTR-KR-MFG-005', titleKo: '생산반장B', titleEn: 'Line Leader B', deptId: d.MFG, jobCode: 'MFG_SUP', gradeCode: 'G5' },
-    { code: 'CTR-KR-MFG-006', titleKo: '생산반장C', titleEn: 'Line Leader C', deptId: d.MFG, jobCode: 'MFG_SUP', gradeCode: 'G5' },
-    { code: 'CTR-KR-MFG-007', titleKo: '생산사원A', titleEn: 'Operator A', deptId: d.MFG, jobCode: 'MFG_OPS', gradeCode: 'G6' },
-    { code: 'CTR-KR-MFG-008', titleKo: '생산사원B', titleEn: 'Operator B', deptId: d.MFG, jobCode: 'MFG_OPS', gradeCode: 'G6' },
-    { code: 'CTR-KR-MFG-009', titleKo: '생산사원C', titleEn: 'Operator C', deptId: d.MFG, jobCode: 'MFG_OPS', gradeCode: 'G6' },
-    { code: 'CTR-KR-MFG-010', titleKo: '생산사원D', titleEn: 'Operator D', deptId: d.MFG, jobCode: 'MFG_OPS', gradeCode: 'G6' },
+    { code: 'CTR-KR-MFG-001', titleKo: '생산팀장', titleEn: 'Manufacturing Team Lead', deptId: d.MFG, jobCode: 'PLANT_MGR', gradeCode: 'L2' },
+    { code: 'CTR-KR-MFG-002', titleKo: '생산감독A', titleEn: 'Production Supervisor A', deptId: d.MFG, jobCode: 'MFG_SUP', gradeCode: 'L2' },
+    { code: 'CTR-KR-MFG-003', titleKo: '생산감독B', titleEn: 'Production Supervisor B', deptId: d.MFG, jobCode: 'MFG_SUP', gradeCode: 'L2' },
+    { code: 'CTR-KR-MFG-004', titleKo: '생산반장A', titleEn: 'Line Leader A', deptId: d.MFG, jobCode: 'MFG_SUP', gradeCode: 'L2' },
+    { code: 'CTR-KR-MFG-005', titleKo: '생산반장B', titleEn: 'Line Leader B', deptId: d.MFG, jobCode: 'MFG_SUP', gradeCode: 'L2' },
+    { code: 'CTR-KR-MFG-006', titleKo: '생산반장C', titleEn: 'Line Leader C', deptId: d.MFG, jobCode: 'MFG_SUP', gradeCode: 'L2' },
+    { code: 'CTR-KR-MFG-007', titleKo: '생산사원A', titleEn: 'Operator A', deptId: d.MFG, jobCode: 'MFG_OPS', gradeCode: 'L1' },
+    { code: 'CTR-KR-MFG-008', titleKo: '생산사원B', titleEn: 'Operator B', deptId: d.MFG, jobCode: 'MFG_OPS', gradeCode: 'L1' },
+    { code: 'CTR-KR-MFG-009', titleKo: '생산사원C', titleEn: 'Operator C', deptId: d.MFG, jobCode: 'MFG_OPS', gradeCode: 'L1' },
+    { code: 'CTR-KR-MFG-010', titleKo: '생산사원D', titleEn: 'Operator D', deptId: d.MFG, jobCode: 'MFG_OPS', gradeCode: 'L1' },
     // ── QA (7) ───────────────────────────────────────────────
-    { code: 'CTR-KR-QA-001', titleKo: '품질팀장', titleEn: 'QA Team Lead', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'G3' },
-    { code: 'CTR-KR-QA-002', titleKo: '품질감독A', titleEn: 'QA Supervisor A', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'G4' },
-    { code: 'CTR-KR-QA-003', titleKo: '품질감독B', titleEn: 'QA Supervisor B', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'G4' },
-    { code: 'CTR-KR-QA-004', titleKo: '품질담당A', titleEn: 'QA Specialist A', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'G5' },
-    { code: 'CTR-KR-QA-005', titleKo: '품질담당B', titleEn: 'QA Specialist B', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'G5' },
-    { code: 'CTR-KR-QA-006', titleKo: '품질사원A', titleEn: 'QA Staff A', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'G6' },
-    { code: 'CTR-KR-QA-007', titleKo: '품질사원B', titleEn: 'QA Staff B', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'G6' },
+    { code: 'CTR-KR-QA-001', titleKo: '품질팀장', titleEn: 'QA Team Lead', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'L2' },
+    { code: 'CTR-KR-QA-002', titleKo: '품질감독A', titleEn: 'QA Supervisor A', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'L2' },
+    { code: 'CTR-KR-QA-003', titleKo: '품질감독B', titleEn: 'QA Supervisor B', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'L2' },
+    { code: 'CTR-KR-QA-004', titleKo: '품질담당A', titleEn: 'QA Specialist A', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'L2' },
+    { code: 'CTR-KR-QA-005', titleKo: '품질담당B', titleEn: 'QA Specialist B', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'L2' },
+    { code: 'CTR-KR-QA-006', titleKo: '품질사원A', titleEn: 'QA Staff A', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'L1' },
+    { code: 'CTR-KR-QA-007', titleKo: '품질사원B', titleEn: 'QA Staff B', deptId: d.QA, jobCode: 'QA_ENG', gradeCode: 'L1' },
     // ── FIN (5) ──────────────────────────────────────────────
-    { code: 'CTR-KR-FIN-001', titleKo: '재무팀장', titleEn: 'Finance Team Lead', deptId: d.FIN, jobCode: 'FIN_MGR', gradeCode: 'G3' },
-    { code: 'CTR-KR-FIN-002', titleKo: '재무선임', titleEn: 'Senior Finance Specialist', deptId: d.FIN, jobCode: 'FIN_MGR', gradeCode: 'G4' },
-    { code: 'CTR-KR-FIN-003', titleKo: '재무담당A', titleEn: 'Finance Specialist A', deptId: d.FIN, jobCode: 'FIN_MGR', gradeCode: 'G5' },
-    { code: 'CTR-KR-FIN-004', titleKo: '재무담당B', titleEn: 'Finance Specialist B', deptId: d.FIN, jobCode: 'FIN_MGR', gradeCode: 'G5' },
-    { code: 'CTR-KR-FIN-005', titleKo: '재무사원', titleEn: 'Finance Staff', deptId: d.FIN, jobCode: 'FIN_MGR', gradeCode: 'G6' },
+    { code: 'CTR-KR-FIN-001', titleKo: '재무팀장', titleEn: 'Finance Team Lead', deptId: d.FIN, jobCode: 'FIN_MGR', gradeCode: 'L2' },
+    { code: 'CTR-KR-FIN-002', titleKo: '재무선임', titleEn: 'Senior Finance Specialist', deptId: d.FIN, jobCode: 'FIN_MGR', gradeCode: 'L2' },
+    { code: 'CTR-KR-FIN-003', titleKo: '재무담당A', titleEn: 'Finance Specialist A', deptId: d.FIN, jobCode: 'FIN_MGR', gradeCode: 'L2' },
+    { code: 'CTR-KR-FIN-004', titleKo: '재무담당B', titleEn: 'Finance Specialist B', deptId: d.FIN, jobCode: 'FIN_MGR', gradeCode: 'L2' },
+    { code: 'CTR-KR-FIN-005', titleKo: '재무사원', titleEn: 'Finance Staff', deptId: d.FIN, jobCode: 'FIN_MGR', gradeCode: 'L1' },
     // ── PUR (5) ──────────────────────────────────────────────
-    { code: 'CTR-KR-PUR-001', titleKo: '구매팀장', titleEn: 'Procurement Team Lead', deptId: d.PUR, jobCode: 'PUR_SPEC', gradeCode: 'G3' },
-    { code: 'CTR-KR-PUR-002', titleKo: '구매선임', titleEn: 'Senior Procurement Spec', deptId: d.PUR, jobCode: 'PUR_SPEC', gradeCode: 'G4' },
-    { code: 'CTR-KR-PUR-003', titleKo: '구매담당A', titleEn: 'Procurement Specialist A', deptId: d.PUR, jobCode: 'PUR_SPEC', gradeCode: 'G5' },
-    { code: 'CTR-KR-PUR-004', titleKo: '구매담당B', titleEn: 'Procurement Specialist B', deptId: d.PUR, jobCode: 'PUR_SPEC', gradeCode: 'G5' },
-    { code: 'CTR-KR-PUR-005', titleKo: '구매사원', titleEn: 'Procurement Staff', deptId: d.PUR, jobCode: 'PUR_SPEC', gradeCode: 'G6' },
+    { code: 'CTR-KR-PUR-001', titleKo: '구매팀장', titleEn: 'Procurement Team Lead', deptId: d.PUR, jobCode: 'PUR_SPEC', gradeCode: 'L2' },
+    { code: 'CTR-KR-PUR-002', titleKo: '구매선임', titleEn: 'Senior Procurement Spec', deptId: d.PUR, jobCode: 'PUR_SPEC', gradeCode: 'L2' },
+    { code: 'CTR-KR-PUR-003', titleKo: '구매담당A', titleEn: 'Procurement Specialist A', deptId: d.PUR, jobCode: 'PUR_SPEC', gradeCode: 'L2' },
+    { code: 'CTR-KR-PUR-004', titleKo: '구매담당B', titleEn: 'Procurement Specialist B', deptId: d.PUR, jobCode: 'PUR_SPEC', gradeCode: 'L2' },
+    { code: 'CTR-KR-PUR-005', titleKo: '구매사원', titleEn: 'Procurement Staff', deptId: d.PUR, jobCode: 'PUR_SPEC', gradeCode: 'L1' },
     // ── RANDD (8) ────────────────────────────────────────────
-    { code: 'CTR-KR-RANDD-001', titleKo: '연구소장', titleEn: 'R&D Director', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'G2' },
-    { code: 'CTR-KR-RANDD-002', titleKo: '연구팀장', titleEn: 'R&D Team Lead', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'G3' },
-    { code: 'CTR-KR-RANDD-003', titleKo: '선임연구원A', titleEn: 'Senior Researcher A', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'G4' },
-    { code: 'CTR-KR-RANDD-004', titleKo: '선임연구원B', titleEn: 'Senior Researcher B', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'G4' },
-    { code: 'CTR-KR-RANDD-005', titleKo: '연구원A', titleEn: 'Researcher A', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'G5' },
-    { code: 'CTR-KR-RANDD-006', titleKo: '연구원B', titleEn: 'Researcher B', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'G5' },
-    { code: 'CTR-KR-RANDD-007', titleKo: '연구사원A', titleEn: 'Research Staff A', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'G6' },
-    { code: 'CTR-KR-RANDD-008', titleKo: '연구사원B', titleEn: 'Research Staff B', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'G6' },
+    { code: 'CTR-KR-RANDD-001', titleKo: '연구소장', titleEn: 'R&D Director', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'S1' },
+    { code: 'CTR-KR-RANDD-002', titleKo: '연구팀장', titleEn: 'R&D Team Lead', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'L2' },
+    { code: 'CTR-KR-RANDD-003', titleKo: '선임연구원A', titleEn: 'Senior Researcher A', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'L2' },
+    { code: 'CTR-KR-RANDD-004', titleKo: '선임연구원B', titleEn: 'Senior Researcher B', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'L2' },
+    { code: 'CTR-KR-RANDD-005', titleKo: '연구원A', titleEn: 'Researcher A', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'L2' },
+    { code: 'CTR-KR-RANDD-006', titleKo: '연구원B', titleEn: 'Researcher B', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'L2' },
+    { code: 'CTR-KR-RANDD-007', titleKo: '연구사원A', titleEn: 'Research Staff A', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'L1' },
+    { code: 'CTR-KR-RANDD-008', titleKo: '연구사원B', titleEn: 'Research Staff B', deptId: d.RANDD, jobCode: 'RND_ENG', gradeCode: 'L1' },
   ]
 
   // First pass: create all positions without reportsToPositionId
@@ -1962,18 +1959,15 @@ async function main() {
     await b1Create('promotionSetting', krCompanyId, {
       id: deterministicUUID('promsetting', 'CTR-KR'),
       jobLevels: [
-        { code: 'G6', label: '사원', order: 1 },
-        { code: 'G5', label: '대리', order: 2 },
-        { code: 'G4', label: '과장', order: 3 },
-        { code: 'G3', label: '차장', order: 4 },
-        { code: 'G2', label: '부장', order: 5 },
-        { code: 'G1', label: '임원', order: 6 },
+        { code: 'L1', label: '매니저', order: 1 },
+        { code: 'L2', label: '책임매니저', order: 2 },
+        { code: 'S1', label: '전문리더', order: 3 },
+        { code: 'E1', label: '경영리더', order: 4 },
       ],
       promotionRules: [
-        { fromLevel: 'G6', toLevel: 'G5', minMonths: 36, requiredGrade: 'B' },
-        { fromLevel: 'G5', toLevel: 'G4', minMonths: 48, requiredGrade: 'A' },
-        { fromLevel: 'G4', toLevel: 'G3', minMonths: 48, requiredGrade: 'A' },
-        { fromLevel: 'G3', toLevel: 'G2', minMonths: 60, requiredGrade: 'S' },
+        { fromLevel: 'L1', toLevel: 'L2', minMonths: 48, requiredGrade: 'B' },
+        { fromLevel: 'L2', toLevel: 'S1', minMonths: 60, requiredGrade: 'A' },
+        { fromLevel: 'S1', toLevel: 'E1', minMonths: 60, requiredGrade: 'S' },
       ],
       promotionCycle: 'ANNUAL',
       promotionMonth: 1,
@@ -3030,27 +3024,27 @@ async function main() {
   // ── 2. CTR-KR 생산팀 직원 6명 생성 ─────────────────────────
   const mfgEmployees = [
     {
-      no: 'CTR-KR-2001', name: '김현식', nameEn: 'Kim Hyunshik', grade: 'G4', email: 'kim.hyunshik@ctr.co.kr',
+      no: 'CTR-KR-2001', name: '김현식', nameEn: 'Kim Hyunshik', grade: 'L2', email: 'kim.hyunshik@ctr.co.kr',
       scores: { challenge: 5, trust: 4, responsibility: 4, respect: 3, welding: 4, quality_mgmt: 4, mold_design: 3, injection_molding: 3, plc_programming: 2 }
     },
     {
-      no: 'CTR-KR-2002', name: '이태준', nameEn: 'Lee Taejun', grade: 'G4', email: 'lee.taejun@ctr.co.kr',
+      no: 'CTR-KR-2002', name: '이태준', nameEn: 'Lee Taejun', grade: 'L2', email: 'lee.taejun@ctr.co.kr',
       scores: { challenge: 4, trust: 3, responsibility: 3, respect: 4, welding: 4, quality_mgmt: 3, mold_design: 2, injection_molding: 3, plc_programming: 1 }
     },
     {
-      no: 'CTR-KR-2003', name: '박재홍', nameEn: 'Park Jaehong', grade: 'G5', email: 'park.jaehong@ctr.co.kr',
+      no: 'CTR-KR-2003', name: '박재홍', nameEn: 'Park Jaehong', grade: 'L2', email: 'park.jaehong@ctr.co.kr',
       scores: { challenge: 4, trust: 3, responsibility: 3, respect: 3, welding: 3, quality_mgmt: 3, mold_design: 2, injection_molding: 2, plc_programming: 2 }
     },
     {
-      no: 'CTR-KR-2004', name: '최민준', nameEn: 'Choi Minjun', grade: 'G5', email: 'choi.minjun@ctr.co.kr',
+      no: 'CTR-KR-2004', name: '최민준', nameEn: 'Choi Minjun', grade: 'L2', email: 'choi.minjun@ctr.co.kr',
       scores: { challenge: 3, trust: 4, responsibility: 3, respect: 3, welding: 4, quality_mgmt: 3, mold_design: 1, injection_molding: 3, plc_programming: 1 }
     },
     {
-      no: 'CTR-KR-2005', name: '정수현', nameEn: 'Jeong Suhyun', grade: 'G6', email: 'jeong.suhyun@ctr.co.kr',
+      no: 'CTR-KR-2005', name: '정수현', nameEn: 'Jeong Suhyun', grade: 'L1', email: 'jeong.suhyun@ctr.co.kr',
       scores: { challenge: 3, trust: 3, responsibility: 3, respect: 2, welding: 3, quality_mgmt: 2, mold_design: 1, injection_molding: 2, plc_programming: 1 }
     },
     {
-      no: 'CTR-KR-2006', name: '홍기영', nameEn: 'Hong Giyeong', grade: 'G6', email: 'hong.giyeong@ctr.co.kr',
+      no: 'CTR-KR-2006', name: '홍기영', nameEn: 'Hong Giyeong', grade: 'L1', email: 'hong.giyeong@ctr.co.kr',
       scores: { challenge: 3, trust: 3, responsibility: 2, respect: 3, welding: 2, quality_mgmt: 2, mold_design: 1, injection_molding: 2, plc_programming: 2 }
     },
   ]
