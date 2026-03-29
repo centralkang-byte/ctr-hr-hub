@@ -14,6 +14,7 @@ import { resolveCompanyId } from '@/lib/api/companyFilter'
 import { z } from 'zod'
 import { calculateDeductionsByCountry } from '@/lib/payroll/globalDeductions'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { EXCHANGE_RATES_TO_KRW } from '@/lib/analytics/currency'
 import type { SimulationDeductions } from '@/lib/payroll/globalDeductions'
 
 // ─── Validation Schemas ──────────────────────────────────
@@ -55,6 +56,28 @@ const differentialParamsSchema = z.object({
   capAtBandMax: z.boolean().optional().default(true),
 })
 
+const plannedHireSchema = z.object({
+  gradeCode: z.string().min(1),
+  headcount: z.number().int().min(1).max(100),
+  salaryAnchor: z.enum(['Q1', 'MID', 'Q3', 'CUSTOM']).default('Q1'),
+  monthlySalary: z.number().min(0).optional(), // CUSTOM일 때만 필수
+})
+
+const hiringParamsSchema = z.object({
+  companyId: z.string().uuid(),
+  hires: z.array(plannedHireSchema).min(1).max(20),
+  includeRecruitmentCosts: z.boolean().optional().default(false),
+})
+
+const fxRateOverrideSchema = z.object({
+  currency: z.string().length(3),
+  adjustedRate: z.number().positive(),
+})
+
+const fxParamsSchema = z.object({
+  rateOverrides: z.array(fxRateOverrideSchema).min(1).max(7),
+})
+
 const simulateBodySchema = z.discriminatedUnion('mode', [
   z.object({
     mode: z.literal('SINGLE'),
@@ -69,6 +92,14 @@ const simulateBodySchema = z.discriminatedUnion('mode', [
   z.object({
     mode: z.literal('DIFFERENTIAL'),
     parameters: differentialParamsSchema,
+  }),
+  z.object({
+    mode: z.literal('HIRING'),
+    parameters: hiringParamsSchema,
+  }),
+  z.object({
+    mode: z.literal('FX'),
+    parameters: fxParamsSchema,
   }),
 ])
 
@@ -588,6 +619,298 @@ export const POST = withPermission(
           },
           employees: results,
         })
+      } else if (input.mode === 'HIRING') {
+        // ── HIRING mode ─────────────────────────────────
+        const { parameters } = input
+        const { companyId, hires, includeRecruitmentCosts } = parameters
+
+        // 1. 법인 조회
+        const company = await prisma.company.findUnique({
+          where: { id: companyId },
+          select: { id: true, code: true, currency: true },
+        })
+        if (!company) return apiError(badRequest('법인을 찾을 수 없습니다.'))
+        const companyCode = company.code
+        const currency = company.currency || 'KRW'
+
+        // 2. SalaryBand 조회 (Q1/MID/Q3 계산용)
+        const gradeCodes = [...new Set(hires.map((h) => h.gradeCode))]
+        const salaryBands = await prisma.salaryBand.findMany({
+          where: {
+            companyId, deletedAt: null, effectiveTo: null,
+            jobGrade: { code: { in: gradeCodes }, deletedAt: null },
+          },
+          select: {
+            minSalary: true, midSalary: true, maxSalary: true,
+            jobGrade: { select: { code: true } },
+          },
+        })
+        const bandMap = new Map(
+          salaryBands.map((b) => {
+            const min = Number(b.minSalary)
+            const mid = Number(b.midSalary)
+            const max = Number(b.maxSalary)
+            return [b.jobGrade.code, {
+              min, mid, max,
+              q1: Math.round(min + (mid - min) * 0.5),
+              q3: Math.round(mid + (max - mid) * 0.5),
+            }]
+          })
+        )
+
+        // 3. 신규 채용자 급여 계산 (최대 20행 — computePayDetail 안전)
+        const byGrade: Array<{
+          grade: string; headcount: number; salaryAnchor: string
+          monthlySalaryPerPerson: number; grossPerPerson: number
+          deductionsPerPerson: number; netPerPerson: number
+          totalMonthlyGross: number; totalMonthlyNet: number
+        }> = []
+        let totalNewGross = 0
+        let totalNewHires = 0
+
+        for (const hire of hires) {
+          let monthlySalary: number
+          const band = bandMap.get(hire.gradeCode)
+
+          if (hire.salaryAnchor === 'CUSTOM') {
+            if (!hire.monthlySalary) {
+              return apiError(badRequest(`직급 ${hire.gradeCode}: CUSTOM 모드에서는 월급을 입력해야 합니다.`))
+            }
+            monthlySalary = hire.monthlySalary
+          } else if (!band) {
+            if (!hire.monthlySalary) {
+              return apiError(badRequest(`직급 ${hire.gradeCode}: SalaryBand가 없습니다. 월급을 직접 입력해주세요.`))
+            }
+            monthlySalary = hire.monthlySalary
+          } else {
+            const anchorMap = { Q1: band.q1, MID: band.mid, Q3: band.q3 }
+            monthlySalary = Math.round(anchorMap[hire.salaryAnchor as 'Q1' | 'MID' | 'Q3'] / 12)
+          }
+
+          const payDetail = computePayDetail(monthlySalary, 0, 0, 0, 0, 0, 0, 0, companyCode)
+
+          byGrade.push({
+            grade: hire.gradeCode,
+            headcount: hire.headcount,
+            salaryAnchor: hire.salaryAnchor,
+            monthlySalaryPerPerson: monthlySalary,
+            grossPerPerson: payDetail.grossPay,
+            deductionsPerPerson: payDetail.totalDeductions,
+            netPerPerson: payDetail.netPay,
+            totalMonthlyGross: payDetail.grossPay * hire.headcount,
+            totalMonthlyNet: payDetail.netPay * hire.headcount,
+          })
+          totalNewGross += payDetail.grossPay * hire.headcount
+          totalNewHires += hire.headcount
+        }
+
+        // 4. 현재 Baseline: DB SUM() 쿼리 (AD-1 경량화)
+        const baseline = await prisma.$queryRaw<Array<{ monthly_gross: bigint; headcount: bigint }>>`
+          SELECT
+            COALESCE(SUM(ch."newBaseSalary" / 12), 0) AS monthly_gross,
+            COUNT(DISTINCT ea."employeeId") AS headcount
+          FROM "EmployeeAssignment" ea
+          JOIN LATERAL (
+            SELECT "newBaseSalary" FROM "CompensationHistory"
+            WHERE "employeeId" = ea."employeeId"
+            ORDER BY "effectiveDate" DESC LIMIT 1
+          ) ch ON true
+          WHERE ea."companyId" = ${companyId}::uuid
+            AND ea."isPrimary" = true
+            AND ea."endDate" IS NULL
+            AND ea."status" = 'ACTIVE'
+        `
+        const currentMonthlyGross = Number(baseline[0]?.monthly_gross ?? 0)
+        const currentHeadcount = Number(baseline[0]?.headcount ?? 0)
+
+        // 5. 채용비용 (선택적)
+        let recruitmentCosts: Array<{ costType: string; avgAmount: number; totalForHires: number; currency: string }> | undefined
+        if (includeRecruitmentCosts) {
+          const costAgg = await prisma.recruitmentCost.groupBy({
+            by: ['costType'],
+            where: { companyId },
+            _avg: { amount: true },
+            _count: true,
+          })
+          if (costAgg.length > 0) {
+            recruitmentCosts = costAgg.map((c) => {
+              const avg = Math.round(Number(c._avg?.amount ?? 0))
+              return {
+                costType: c.costType,
+                avgAmount: avg,
+                totalForHires: avg * totalNewHires,
+                currency,
+              }
+            })
+          }
+        }
+
+        return apiSuccess({
+          summary: {
+            currentMonthlyGross: Math.round(currentMonthlyGross),
+            newHireMonthlyGross: totalNewGross,
+            projectedMonthlyGross: Math.round(currentMonthlyGross) + totalNewGross,
+            annualAdditionalCost: totalNewGross * 12,
+            currentHeadcount,
+            newHireCount: totalNewHires,
+            byGrade,
+            ...(recruitmentCosts ? { recruitmentCosts } : {}),
+            currency,
+          },
+        })
+
+      } else if (input.mode === 'FX') {
+        // ── FX mode ─────────────────────────────────────
+        const { parameters } = input
+        const { rateOverrides } = parameters
+
+        // 1. Baseline 환율: ExchangeRate 3개월 평균 → fallback static
+        const now = new Date()
+        const months: Array<{ year: number; month: number }> = []
+        for (let i = 0; i < 3; i++) {
+          const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+          months.push({ year: d.getFullYear(), month: d.getMonth() + 1 })
+        }
+
+        const dbRates = await prisma.exchangeRate.findMany({
+          where: {
+            toCurrency: 'KRW',
+            OR: months.map((m) => ({ year: m.year, month: m.month })),
+          },
+          select: { fromCurrency: true, rate: true },
+        })
+
+        const rateAgg: Record<string, { sum: number; count: number }> = {}
+        for (const r of dbRates) {
+          if (!rateAgg[r.fromCurrency]) rateAgg[r.fromCurrency] = { sum: 0, count: 0 }
+          rateAgg[r.fromCurrency].sum += Number(r.rate)
+          rateAgg[r.fromCurrency].count++
+        }
+
+        const baselineRates: Record<string, number> = { ...EXCHANGE_RATES_TO_KRW }
+        for (const [cur, agg] of Object.entries(rateAgg)) {
+          baselineRates[cur] = Math.round(agg.sum / agg.count * 100) / 100
+        }
+
+        // 유저 조정 환율 맵
+        const adjustedRateMap: Record<string, number> = {}
+        for (const ov of rateOverrides) {
+          adjustedRateMap[ov.currency] = ov.adjustedRate
+        }
+
+        // 2. 법인별 Baseline: DB SUM() + GROUP BY (AD-1 경량화)
+        const companyBaseline = await prisma.$queryRaw<Array<{
+          company_id: string; company_code: string; company_name: string
+          currency: string; monthly_gross: bigint; headcount: bigint
+        }>>`
+          SELECT
+            c."id" AS company_id, c."code" AS company_code,
+            c."name" AS company_name, c."currency" AS currency,
+            COALESCE(SUM(ch."newBaseSalary" / 12), 0) AS monthly_gross,
+            COUNT(DISTINCT ea."employeeId") AS headcount
+          FROM "Company" c
+          JOIN "EmployeeAssignment" ea ON ea."companyId" = c."id"
+          JOIN LATERAL (
+            SELECT "newBaseSalary" FROM "CompensationHistory"
+            WHERE "employeeId" = ea."employeeId"
+            ORDER BY "effectiveDate" DESC LIMIT 1
+          ) ch ON true
+          WHERE ea."isPrimary" = true
+            AND ea."endDate" IS NULL
+            AND ea."status" = 'ACTIVE'
+            AND c."deletedAt" IS NULL
+          GROUP BY c."id", c."code", c."name", c."currency"
+        `
+
+        let domesticMonthlyKRW = 0
+        let overseasCurrentKRW = 0
+        let overseasSimulatedKRW = 0
+        const byCompany: Array<{
+          companyName: string; companyCode: string; currency: string
+          employeeCount: number; localMonthlyGross: number
+          currentKRW: number; simulatedKRW: number; differenceKRW: number
+        }> = []
+
+        // 통화별 로컬 총액 (sensitivity용)
+        const currencyLocalGross: Record<string, number> = {}
+
+        for (const row of companyBaseline) {
+          const cur = row.currency || 'KRW'
+          const localGross = Math.round(Number(row.monthly_gross))
+          const headcount = Number(row.headcount)
+
+          if (cur === 'KRW') {
+            domesticMonthlyKRW += localGross
+            byCompany.push({
+              companyName: row.company_name,
+              companyCode: row.company_code,
+              currency: cur, employeeCount: headcount,
+              localMonthlyGross: localGross,
+              currentKRW: localGross, simulatedKRW: localGross, differenceKRW: 0,
+            })
+          } else {
+            const baseRate = baselineRates[cur] ?? 1
+            const adjRate = adjustedRateMap[cur] ?? baseRate
+            const currentKRW = Math.round(localGross * baseRate)
+            const simulatedKRW = Math.round(localGross * adjRate)
+            overseasCurrentKRW += currentKRW
+            overseasSimulatedKRW += simulatedKRW
+            currencyLocalGross[cur] = (currencyLocalGross[cur] ?? 0) + localGross
+            byCompany.push({
+              companyName: row.company_name,
+              companyCode: row.company_code,
+              currency: cur, employeeCount: headcount,
+              localMonthlyGross: localGross,
+              currentKRW, simulatedKRW, differenceKRW: simulatedKRW - currentKRW,
+            })
+          }
+        }
+
+        // 3. Sensitivity: 통화별 ±5%, ±10%
+        const sensitivityFactors = [
+          { label: '-10%', factor: 0.90 },
+          { label: '-5%', factor: 0.95 },
+          { label: '기준', factor: 1.00 },
+          { label: '+5%', factor: 1.05 },
+          { label: '+10%', factor: 1.10 },
+        ]
+        const sensitivity: Array<{
+          currency: string; baseRate: number; localMonthlyGross: number
+          scenarios: Array<{ label: string; rate: number; totalKRW: number; differenceKRW: number }>
+        }> = []
+
+        for (const [cur, localGross] of Object.entries(currencyLocalGross)) {
+          const baseRate = baselineRates[cur] ?? 1
+          const baseKRW = Math.round(localGross * baseRate)
+          sensitivity.push({
+            currency: cur,
+            baseRate,
+            localMonthlyGross: localGross,
+            scenarios: sensitivityFactors.map((s) => {
+              const rate = Math.round(baseRate * s.factor * 100) / 100
+              const totalKRW = Math.round(localGross * rate)
+              return { label: s.label, rate, totalKRW, differenceKRW: totalKRW - baseKRW }
+            }),
+          })
+        }
+
+        const totalCurrentKRW = domesticMonthlyKRW + overseasCurrentKRW
+        const totalSimulatedKRW = domesticMonthlyKRW + overseasSimulatedKRW
+
+        return apiSuccess({
+          summary: {
+            domesticMonthlyKRW,
+            overseasCurrentKRW,
+            overseasSimulatedKRW,
+            totalCurrentKRW,
+            totalSimulatedKRW,
+            differenceKRW: totalSimulatedKRW - totalCurrentKRW,
+            byCompany,
+            sensitivity,
+            baselineRates,
+          },
+        })
+
       } else {
         // ── BULK mode ─────────────────────────────────
         const { target, parameters } = input

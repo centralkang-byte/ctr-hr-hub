@@ -41,7 +41,7 @@ export interface SearchEmployee {
     currentSalary: number; currency: string
 }
 
-export type SimMode = 'SINGLE' | 'BULK' | 'DIFFERENTIAL' | 'COMPA_RATIO'
+export type SimMode = 'SINGLE' | 'BULK' | 'DIFFERENTIAL' | 'COMPA_RATIO' | 'HIRING' | 'FX'
 export type BulkTargetType = 'COMPANY' | 'DEPARTMENT' | 'SELECTED'
 
 // ─── DIFFERENTIAL 모드 ──────────────────────────────────
@@ -138,3 +138,74 @@ export interface CompaRatioResponse {
     outliers: CompaRatioOutlier[]
     summary: CompaRatioSummary
 }
+
+// ─── HIRING 채용 시뮬레이션 ─────────────────────────────
+
+export type SalaryAnchor = 'Q1' | 'MID' | 'Q3' | 'CUSTOM'
+
+export interface BandInfo {
+    min: number; mid: number; max: number   // 연봉 기준
+    q1: number; q3: number                  // Q1 = min+(mid-min)*0.5, Q3 = mid+(max-mid)*0.5
+    currency: string
+}
+
+export interface PlannedHire {
+    gradeCode: string; gradeName: string; headcount: number
+    salaryAnchor: SalaryAnchor; monthlySalary: number
+    bandInfo?: BandInfo
+}
+
+export interface HireGradeBreakdown {
+    grade: string; headcount: number; salaryAnchor: SalaryAnchor
+    monthlySalaryPerPerson: number; grossPerPerson: number
+    deductionsPerPerson: number; netPerPerson: number
+    totalMonthlyGross: number; totalMonthlyNet: number
+}
+
+export interface RecruitmentCostEstimate {
+    costType: string; avgAmount: number; totalForHires: number; currency: string
+}
+
+export interface HiringSummary {
+    currentMonthlyGross: number; newHireMonthlyGross: number
+    projectedMonthlyGross: number; annualAdditionalCost: number
+    currentHeadcount: number; newHireCount: number
+    byGrade: HireGradeBreakdown[]
+    recruitmentCosts?: RecruitmentCostEstimate[]
+    currency: string
+}
+
+export interface HiringResponse { summary: HiringSummary }
+
+// ─── FX 환율 시뮬레이션 ─────────────────────────────────
+
+export interface FxRateInput {
+    currency: string; currentRate: number; adjustedRate: number
+}
+
+export interface FxCompanyImpact {
+    companyName: string; companyCode: string; currency: string
+    employeeCount: number; localMonthlyGross: number
+    currentKRW: number; simulatedKRW: number; differenceKRW: number
+}
+
+export interface FxSensitivityScenario {
+    label: string; rate: number; totalKRW: number; differenceKRW: number
+}
+
+export interface FxSensitivityRow {
+    currency: string; baseRate: number
+    localMonthlyGross: number
+    scenarios: FxSensitivityScenario[]
+}
+
+export interface FxSummary {
+    domesticMonthlyKRW: number
+    overseasCurrentKRW: number; overseasSimulatedKRW: number
+    totalCurrentKRW: number; totalSimulatedKRW: number; differenceKRW: number
+    byCompany: FxCompanyImpact[]
+    sensitivity: FxSensitivityRow[]
+    baselineRates: Record<string, number>
+}
+
+export interface FxResponse { summary: FxSummary }

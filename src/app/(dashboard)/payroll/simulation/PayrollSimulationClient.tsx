@@ -15,6 +15,8 @@ import type {
 } from './types'
 import DifferentialTab from './DifferentialTab'
 import CompaRatioTab from './CompaRatioTab'
+import HiringTab from './HiringTab'
+import FxTab from './FxTab'
 
 // ─── Formatters ──────────────────────────────────────────
 
@@ -309,6 +311,8 @@ export default function PayrollSimulationClient({ user, companies, departments }
             { key: 'BULK' as SimMode, label: t('bulkSim') },
             { key: 'DIFFERENTIAL' as SimMode, label: '차등 인상' },
             { key: 'COMPA_RATIO' as SimMode, label: '보상 분포' },
+            { key: 'HIRING' as SimMode, label: '채용 시뮬레이션' },
+            { key: 'FX' as SimMode, label: '환율 시뮬레이션' },
           ]).map(({ key, label }) => (
             <button key={key} onClick={() => { setMode(key); setResult(null) }}
               className={`px-4 py-2 text-sm font-medium transition-colors ${mode === key ? 'bg-[#5E81F4] text-white' : 'bg-white text-[#8181A5] hover:text-[#1C1D21]'}`}>
@@ -321,6 +325,8 @@ export default function PayrollSimulationClient({ user, companies, departments }
       {/* ─── DIFFERENTIAL / COMPA_RATIO: 전용 탭 ──── */}
       {mode === 'DIFFERENTIAL' && <DifferentialTab companies={companies} />}
       {mode === 'COMPA_RATIO' && <CompaRatioTab companies={companies} />}
+      {mode === 'HIRING' && <HiringTab companies={companies} departments={departments} />}
+      {mode === 'FX' && <FxTab companies={companies} />}
 
       {/* ─── SINGLE / BULK: 기존 레이아웃 ──────────── */}
       {(mode === 'SINGLE' || mode === 'BULK') && (
