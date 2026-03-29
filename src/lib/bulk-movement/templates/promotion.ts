@@ -3,7 +3,7 @@ import type { MovementTemplate, TemplateColumn } from '../types'
 
 const columns: TemplateColumn[] = [
   { key: '사번', field: 'employeeNo', required: true, description: '직원 사번', example: 'EMP001' },
-  { key: '새직급코드', field: 'newJobGradeCode', required: true, description: '승진 후 직급 코드', example: 'G4' },
+  { key: '새직급코드', field: 'newJobGradeCode', required: true, description: '승진 후 직급 코드', example: 'L2' },
   { key: '직위코드', field: 'positionCode', required: false, description: '변경할 직위 코드', example: 'POS-MGR-01' },
   { key: '발효일', field: 'effectiveDate', required: true, description: 'YYYY-MM-DD', example: '2026-04-01' },
   { key: '사유', field: 'reason', required: false, description: '승진 사유', example: '2026년 정기승진' },

@@ -47,14 +47,15 @@ interface QAAccount {
 }
 
 const QA_ACCOUNTS: QAAccount[] = [
-  { email: 'super@ctr.co.kr',      name: '최상우',   nameEn: 'Sangwoo Choi',   employeeNo: 'CTR-QA-0001', roleCode: 'SUPER_ADMIN', companyCode: 'CTR-HOLD', deptCode: null,      gradeCode: 'G1', positionCode: null },
-  { email: 'hr@ctr.co.kr',         name: '한지영',   nameEn: 'Jiyoung Han',    employeeNo: 'CTR-KR-0001', roleCode: 'HR_ADMIN',    companyCode: 'CTR', deptCode: null,      gradeCode: 'G4', positionCode: null },
-  { email: 'hr@ctr-cn.com',        name: '陈美玲',   nameEn: 'Meiling Chen',   employeeNo: 'CTR-QA-0003', roleCode: 'HR_ADMIN',    companyCode: 'CTR-CN', deptCode: 'ADMIN',   gradeCode: 'G4', positionCode: null },
-  { email: 'manager@ctr.co.kr',    name: '박준혁',   nameEn: 'Junhyuk Park',   employeeNo: 'CTR-KR-0002', roleCode: 'MANAGER',     companyCode: 'CTR', deptCode: 'QA-TEAM-A', gradeCode: 'G3', positionCode: 'CTR-KR-QA-TEAM-A-MGR' },
-  { email: 'manager2@ctr.co.kr',   name: '김서연',   nameEn: 'Seoyeon Kim',    employeeNo: 'CTR-QA-0005', roleCode: 'MANAGER',     companyCode: 'CTR', deptCode: 'QA-TEAM-B', gradeCode: 'G3', positionCode: 'CTR-KR-QA-TEAM-B-MGR' },
-  { email: 'employee-a@ctr.co.kr', name: '이민준',   nameEn: 'Minjun Lee',     employeeNo: 'CTR-QA-0006', roleCode: 'EMPLOYEE',    companyCode: 'CTR', deptCode: 'QA-TEAM-A', gradeCode: 'G6', positionCode: 'CTR-KR-QA-TEAM-A-01' },
-  { email: 'employee-b@ctr.co.kr', name: '정다은',   nameEn: 'Daeun Jung',     employeeNo: 'CTR-QA-0007', roleCode: 'EMPLOYEE',    companyCode: 'CTR', deptCode: 'QA-TEAM-A', gradeCode: 'G6', positionCode: 'CTR-KR-QA-TEAM-A-02' },
-  { email: 'employee-c@ctr.co.kr', name: '송현우',   nameEn: 'Hyunwoo Song',   employeeNo: 'CTR-QA-0008', roleCode: 'EMPLOYEE',    companyCode: 'CTR', deptCode: 'QA-TEAM-B', gradeCode: 'G6', positionCode: 'CTR-KR-QA-TEAM-B-01' },
+  // Session 45 확정: E1(경영리더), S1(전문리더), L2(책임매니저), L1(매니저)
+  { email: 'super@ctr.co.kr',      name: '최상우',   nameEn: 'Sangwoo Choi',   employeeNo: 'CTR-QA-0001', roleCode: 'SUPER_ADMIN', companyCode: 'CTR-HOLD', deptCode: null,      gradeCode: 'E1', positionCode: null },
+  { email: 'hr@ctr.co.kr',         name: '한지영',   nameEn: 'Jiyoung Han',    employeeNo: 'CTR-KR-0001', roleCode: 'HR_ADMIN',    companyCode: 'CTR', deptCode: null,      gradeCode: 'L2', positionCode: null },
+  { email: 'hr@ctr-cn.com',        name: '陈美玲',   nameEn: 'Meiling Chen',   employeeNo: 'CTR-QA-0003', roleCode: 'HR_ADMIN',    companyCode: 'CTR-CN', deptCode: 'ADMIN',   gradeCode: 'L2', positionCode: null },
+  { email: 'manager@ctr.co.kr',    name: '박준혁',   nameEn: 'Junhyuk Park',   employeeNo: 'CTR-KR-0002', roleCode: 'MANAGER',     companyCode: 'CTR', deptCode: 'QA-TEAM-A', gradeCode: 'L2', positionCode: 'CTR-KR-QA-TEAM-A-MGR' },
+  { email: 'manager2@ctr.co.kr',   name: '김서연',   nameEn: 'Seoyeon Kim',    employeeNo: 'CTR-QA-0005', roleCode: 'MANAGER',     companyCode: 'CTR', deptCode: 'QA-TEAM-B', gradeCode: 'L2', positionCode: 'CTR-KR-QA-TEAM-B-MGR' },
+  { email: 'employee-a@ctr.co.kr', name: '이민준',   nameEn: 'Minjun Lee',     employeeNo: 'CTR-QA-0006', roleCode: 'EMPLOYEE',    companyCode: 'CTR', deptCode: 'QA-TEAM-A', gradeCode: 'L1', positionCode: 'CTR-KR-QA-TEAM-A-01' },
+  { email: 'employee-b@ctr.co.kr', name: '정다은',   nameEn: 'Daeun Jung',     employeeNo: 'CTR-QA-0007', roleCode: 'EMPLOYEE',    companyCode: 'CTR', deptCode: 'QA-TEAM-A', gradeCode: 'L1', positionCode: 'CTR-KR-QA-TEAM-A-02' },
+  { email: 'employee-c@ctr.co.kr', name: '송현우',   nameEn: 'Hyunwoo Song',   employeeNo: 'CTR-QA-0008', roleCode: 'EMPLOYEE',    companyCode: 'CTR', deptCode: 'QA-TEAM-B', gradeCode: 'L1', positionCode: 'CTR-KR-QA-TEAM-B-01' },
 ]
 
 export async function seedQAAccounts(prisma: PrismaClient) {

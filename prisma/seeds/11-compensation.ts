@@ -30,14 +30,13 @@ function sr(seed: number): number {
 }
 
 // ── KR SalaryBand data (annual KRW) ─────────────────────────
-// TODO: Move to Settings (Compensation) — salary band configuration per grade
+// Session 45 확정: E1/S1/L2/L1 4단계
+// L2 밴드: 대리~부장 범위 통합 (40M~130M)
 const KR_SALARY_BANDS = [
-    { gradeCode: 'G1', min: 120_000_000, mid: 160_000_000, max: 200_000_000 },
-    { gradeCode: 'G2', min: 80_000_000, mid: 105_000_000, max: 130_000_000 },
-    { gradeCode: 'G3', min: 65_000_000, mid: 80_000_000, max: 95_000_000 },
-    { gradeCode: 'G4', min: 50_000_000, mid: 62_500_000, max: 75_000_000 },
-    { gradeCode: 'G5', min: 40_000_000, mid: 49_000_000, max: 58_000_000 },
-    { gradeCode: 'G6', min: 32_000_000, mid: 38_500_000, max: 45_000_000 },
+    { gradeCode: 'E1', min: 120_000_000, mid: 160_000_000, max: 200_000_000 },
+    { gradeCode: 'S1', min: 80_000_000, mid: 120_000_000, max: 160_000_000 },
+    { gradeCode: 'L2', min: 40_000_000, mid: 75_000_000, max: 130_000_000 },
+    { gradeCode: 'L1', min: 32_000_000, mid: 38_500_000, max: 45_000_000 },
 ]
 
 // ── CN Job Grade → SalaryBand (annual CNY) ──────────────────
@@ -49,10 +48,15 @@ const CN_SALARY_BANDS = [
     { gradeCode: 'S4', min: 180_000, mid: 250_000, max: 320_000 }, // 사원대리급
 ]
 
-// ── KR grade monthly base (from 06-payroll pattern) ─────────
+// ── KR grade monthly base (Session 45: E1/S1/L2/L1) ────────
+// L2 범위가 넓으므로 실제 직원별 급여는 CompensationHistory에서 결정
 const KR_GRADE_MONTHLY: Record<string, number> = {
-    G1: 13_300_000, G2: 8_750_000, G3: 6_670_000,
-    G4: 5_210_000, G5: 4_080_000, G6: 3_210_000,
+    E1: 13_300_000, S1: 10_000_000, L2: 5_500_000, L1: 3_210_000,
+}
+
+// 옛 G1~G6 → 신 체계 매핑 (시드 데이터 전환용)
+const OLD_TO_NEW_GRADE: Record<string, string> = {
+    G1: 'E1', G2: 'L2', G3: 'L2', G4: 'L2', G5: 'L2', G6: 'L1',
 }
 
 // ── Exchange rates (2026-03-01, approximate market) ─────────

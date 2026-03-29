@@ -28,22 +28,21 @@ function sr(seed: number): number {
 }
 
 // ── Grade → monthly base salary (KRW) ────────────────────────
+// Session 45: E1/S1/L2/L1 + 옛 G1~G6 호환 (DB 전환 중 fallback)
 const GRADE_BASE: Record<string, number> = {
-  G1: 13_300_000,
-  G2:  8_750_000,
-  G3:  6_670_000,
-  G4:  5_210_000,
-  G5:  4_080_000,
-  G6:  3_210_000,
-  S1:  8_750_000,  // fallback for global grades
-  S2:  6_670_000,
-  S3:  5_210_000,
-  S4:  4_080_000,
+  E1: 13_300_000,
+  S1: 10_000_000,
+  L2:  5_500_000,  // 대리~부장 범위 — 직원별 CompensationHistory에서 실제값 결정
+  L1:  3_210_000,
+  // 옛 코드 fallback (DB 마이그레이션 전 호환용)
+  G1: 13_300_000, G2: 8_750_000, G3: 6_670_000,
+  G4: 5_210_000,  G5: 4_080_000, G6: 3_210_000,
 }
 const POSITION_ALLOWANCE: Record<string, number> = {
+  E1: 1_000_000, S1: 700_000, L2: 300_000, L1: 0,
+  // 옛 코드 fallback
   G1: 1_000_000, G2: 700_000, G3: 500_000,
   G4: 300_000,   G5: 150_000, G6: 0,
-  S1: 700_000,   S2: 500_000, S3: 300_000, S4: 150_000,
 }
 const MEAL_ALLOWANCE      = 200_000
 const TRANSPORT_ALLOWANCE = 100_000

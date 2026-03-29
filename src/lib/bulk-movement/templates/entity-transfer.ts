@@ -5,7 +5,7 @@ const columns: TemplateColumn[] = [
   { key: '사번', field: 'employeeNo', required: true, description: '직원 사번', example: 'EMP001' },
   { key: '전환법인코드', field: 'targetCompanyCode', required: true, description: '전환할 법인 코드', example: 'CTR-CN' },
   { key: '부서코드', field: 'departmentCode', required: true, description: '새 법인의 부서 코드', example: 'CN-DEV-01' },
-  { key: '직급코드', field: 'jobGradeCode', required: false, description: '새 법인의 직급 코드', example: 'G3' },
+  { key: '직급코드', field: 'jobGradeCode', required: false, description: '새 법인의 직급 코드', example: 'L2' },
   { key: '직위코드', field: 'positionCode', required: false, description: '새 법인의 직위 코드', example: 'POS-CN-DEV' },
   { key: '고용형태', field: 'employmentType', required: false, description: 'FULL_TIME/CONTRACT/DISPATCH/INTERN', example: 'FULL_TIME' },
   { key: '발효일', field: 'effectiveDate', required: true, description: 'YYYY-MM-DD', example: '2026-04-01' },

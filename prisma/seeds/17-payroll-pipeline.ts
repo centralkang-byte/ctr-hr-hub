@@ -27,12 +27,13 @@ function sr(seed: string): number {
     return Math.abs(x - Math.floor(x))
 }
 
-// ─── KR Grade → base salary ──────────────────────────────────
+// ─── KR Grade → base salary (Session 45: E1/S1/L2/L1) ────────
 const KR_GRADE_BASE: Record<string, number> = {
+    E1: 13_300_000, S1: 10_000_000, L2: 5_500_000, L1: 3_210_000,
+    // 옛 코드 fallback (DB 전환 중 호환)
     G1: 13_300_000, G2: 8_750_000, G3: 6_670_000,
     G4: 5_210_000, G5: 4_080_000, G6: 3_210_000,
 }
-// TODO: Move to Settings (Payroll) — 직급별 기준급 (G1~G6)
 
 // ─── KR 4대보험 + 소득세 계산 ───────────────────────────────
 function calcKR(base: number, otPay: number, bonus: number, yearMonth: string) {
