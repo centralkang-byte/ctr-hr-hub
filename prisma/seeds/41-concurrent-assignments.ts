@@ -28,12 +28,12 @@ type LeaderDef = {
 }
 
 const LEADERSHIP_EMPLOYEES: LeaderDef[] = [
-  { name: '이동옥', nameEn: 'Dongok Lee',    email: 'dongok.lee@ctr.co.kr',    companyCode: 'CTR',     positionCode: 'POS-CTR-CEO',         gradeCode: 'G-ML', roleCode: 'MANAGER',  employeeNoSuffix: 'ECTR0001' },
-  { name: '한성욱', nameEn: 'Sungwook Han',  email: 'sungwook.han@ctr.co.kr',  companyCode: 'CTR',     positionCode: 'POS-CTR-TL-FINANCE',  gradeCode: 'G-EL', roleCode: 'MANAGER',  employeeNoSuffix: 'ECTR0002' },
-  { name: '방우영', nameEn: 'Wooyoung Bang', email: 'wooyoung.bang@ctr.co.kr', companyCode: 'CTR',     positionCode: 'POS-CTR-DIR-SCM',     gradeCode: 'G-ML', roleCode: 'MANAGER',  employeeNoSuffix: 'ECTR0003' },
-  { name: '정병주', nameEn: 'Byungju Jeong', email: 'byungju.jeong@ctr.co.kr', companyCode: 'CTR',     positionCode: 'POS-CTR-TL-QM',       gradeCode: 'G-EL', roleCode: 'MANAGER',  employeeNoSuffix: 'ECTR0004' },
-  { name: '박양원', nameEn: 'Yangwon Park',  email: 'yangwon.park@ctr.co.kr',  companyCode: 'CTR',     positionCode: 'POS-CTR-DIR-AM-RND',  gradeCode: 'G-ML', roleCode: 'MANAGER',  employeeNoSuffix: 'ECTR0005' },
-  { name: '이경수', nameEn: 'Kyungsu Lee',   email: 'kyungsu.lee@ctr.co.kr',   companyCode: 'CTR-MOB', positionCode: 'POS-MOB-DIR-MGMT',    gradeCode: 'G-EL', roleCode: 'HR_ADMIN', employeeNoSuffix: 'EMOB0001' },
+  { name: '이동옥', nameEn: 'Dongok Lee',    email: 'dongok.lee@ctr.co.kr',    companyCode: 'CTR',     positionCode: 'POS-CTR-CEO',         gradeCode: 'L2', roleCode: 'MANAGER',  employeeNoSuffix: 'ECTR0001' },
+  { name: '한성욱', nameEn: 'Sungwook Han',  email: 'sungwook.han@ctr.co.kr',  companyCode: 'CTR',     positionCode: 'POS-CTR-TL-FINANCE',  gradeCode: 'L2', roleCode: 'MANAGER',  employeeNoSuffix: 'ECTR0002' },
+  { name: '방우영', nameEn: 'Wooyoung Bang', email: 'wooyoung.bang@ctr.co.kr', companyCode: 'CTR',     positionCode: 'POS-CTR-DIR-SCM',     gradeCode: 'L2', roleCode: 'MANAGER',  employeeNoSuffix: 'ECTR0003' },
+  { name: '정병주', nameEn: 'Byungju Jeong', email: 'byungju.jeong@ctr.co.kr', companyCode: 'CTR',     positionCode: 'POS-CTR-TL-QM',       gradeCode: 'L2', roleCode: 'MANAGER',  employeeNoSuffix: 'ECTR0004' },
+  { name: '박양원', nameEn: 'Yangwon Park',  email: 'yangwon.park@ctr.co.kr',  companyCode: 'CTR',     positionCode: 'POS-CTR-DIR-AM-RND',  gradeCode: 'L2', roleCode: 'MANAGER',  employeeNoSuffix: 'ECTR0005' },
+  { name: '이경수', nameEn: 'Kyungsu Lee',   email: 'kyungsu.lee@ctr.co.kr',   companyCode: 'CTR-MOB', positionCode: 'POS-MOB-DIR-MGMT',    gradeCode: 'L2', roleCode: 'HR_ADMIN', employeeNoSuffix: 'EMOB0001' },
 ]
 
 // Minimal positions required for leadership employees + their concurrent assignments
