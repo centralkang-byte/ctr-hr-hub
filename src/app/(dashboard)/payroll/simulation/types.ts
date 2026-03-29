@@ -41,5 +41,100 @@ export interface SearchEmployee {
     currentSalary: number; currency: string
 }
 
-export type SimMode = 'SINGLE' | 'BULK'
+export type SimMode = 'SINGLE' | 'BULK' | 'DIFFERENTIAL' | 'COMPA_RATIO'
 export type BulkTargetType = 'COMPANY' | 'DEPARTMENT' | 'SELECTED'
+
+// ─── DIFFERENTIAL 모드 ──────────────────────────────────
+
+export interface GradeRate {
+    gradeCode: string
+    gradeName: string
+    rate: number    // -0.5 ~ +0.5
+}
+
+export interface BandViolationEmployee {
+    name: string
+    grade: string
+    currentSalary: number
+    simulatedSalary: number
+    maxSalary: number
+    capped: boolean
+}
+
+export interface BandViolations {
+    count: number
+    employees: BandViolationEmployee[]
+}
+
+export interface GradeBreakdown {
+    grade: string
+    employeeCount: number
+    currentGross: number
+    simulatedGross: number
+    difference: number
+    rate: number
+}
+
+export interface DifferentialSummary extends Omit<SimSummary, 'mode'> {
+    mode: 'DIFFERENTIAL'
+    byGrade: GradeBreakdown[]
+    bandViolations: BandViolations
+}
+
+export interface DifferentialResponse {
+    summary: DifferentialSummary
+    employees: EmployeeSimResult[]
+}
+
+// ─── Compa-Ratio 분포 ───────────────────────────────────
+
+export interface CompaRatioDistBucket {
+    range: string     // "0.6-0.7", "0.7-0.8", ...
+    rangeMin: number
+    rangeMax: number
+    count: number
+}
+
+export interface CompaRatioByGrade {
+    grade: string
+    avgCompaRatio: number
+    employees: number
+    minRatio: number
+    maxRatio: number
+}
+
+export interface CompaRatioByDepartment {
+    department: string
+    avgCompaRatio: number
+    employees: number
+}
+
+export interface CompaRatioOutlier {
+    id: string
+    name: string
+    grade: string
+    department: string
+    compaRatio: number
+    salary: number
+    currency: string
+    bandMin: number
+    bandMid: number
+    bandMax: number
+}
+
+export interface CompaRatioSummary {
+    avg: number
+    median: number
+    belowBand: number   // compaRatio < 0.8
+    aboveBand: number   // compaRatio > 1.2
+    totalEmployees: number
+    coveredEmployees: number  // SalaryBand 있는 직원 수
+}
+
+export interface CompaRatioResponse {
+    distribution: CompaRatioDistBucket[]
+    byGrade: CompaRatioByGrade[]
+    byDepartment: CompaRatioByDepartment[]
+    outliers: CompaRatioOutlier[]
+    summary: CompaRatioSummary
+}

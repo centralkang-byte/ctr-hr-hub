@@ -9,11 +9,12 @@ import type { SessionUser } from '@/types'
 import { CARD_STYLES, TABLE_STYLES, CHART_THEME } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { toast } from '@/hooks/use-toast'
 import type {
   Company, Department, SimMode, BulkTargetType,
-  SearchEmployee, SimResponse, EmployeeSimResult, PayDetail
+  SearchEmployee, SimResponse, EmployeeSimResult
 } from './types'
+import DifferentialTab from './DifferentialTab'
+import CompaRatioTab from './CompaRatioTab'
 
 // ─── Formatters ──────────────────────────────────────────
 
@@ -300,19 +301,32 @@ export default function PayrollSimulationClient({ user, companies, departments }
         )}
       </div>
 
+      {/* ─── Mode Toggle (공통) ──────────────────────── */}
+      <div className="mb-6">
+        <div className="flex border border-[#F0F0F3] rounded-lg overflow-hidden w-fit">
+          {([
+            { key: 'SINGLE' as SimMode, label: t('singleSim') },
+            { key: 'BULK' as SimMode, label: t('bulkSim') },
+            { key: 'DIFFERENTIAL' as SimMode, label: '차등 인상' },
+            { key: 'COMPA_RATIO' as SimMode, label: '보상 분포' },
+          ]).map(({ key, label }) => (
+            <button key={key} onClick={() => { setMode(key); setResult(null) }}
+              className={`px-4 py-2 text-sm font-medium transition-colors ${mode === key ? 'bg-[#5E81F4] text-white' : 'bg-white text-[#8181A5] hover:text-[#1C1D21]'}`}>
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ─── DIFFERENTIAL / COMPA_RATIO: 전용 탭 ──── */}
+      {mode === 'DIFFERENTIAL' && <DifferentialTab companies={companies} />}
+      {mode === 'COMPA_RATIO' && <CompaRatioTab companies={companies} />}
+
+      {/* ─── SINGLE / BULK: 기존 레이아웃 ──────────── */}
+      {(mode === 'SINGLE' || mode === 'BULK') && (
       <div className="flex gap-6">
         {/* ─── Left Panel: Input ──────────────────────── */}
         <div className="w-[350px] shrink-0 space-y-4">
-          {/* Mode toggle */}
-          <div className="flex border border-[#F0F0F3] rounded-lg overflow-hidden">
-            {(['SINGLE', 'BULK'] as SimMode[]).map(m => (
-              <button key={m} onClick={() => { setMode(m); setResult(null) }}
-                className={`flex-1 px-3 py-2 text-sm font-medium transition-colors ${mode === m ? 'bg-[#5E81F4] text-white' : 'bg-white text-[#8181A5] hover:text-[#1C1D21]'}`}>
-                {m === 'SINGLE' ? t('singleSim') : t('bulkSim')}
-              </button>
-            ))}
-          </div>
-
           {/* ─ SINGLE: Employee Search ─ */}
           {mode === 'SINGLE' && (
             <div className={`${CARD_STYLES.kpi} space-y-3`}>
@@ -648,6 +662,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
           )}
         </div>
       </div>
+      )}
     </div>
   )
 }

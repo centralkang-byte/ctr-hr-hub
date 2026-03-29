@@ -49,6 +49,12 @@ const bulkParamsSchema = z.object({
   effectiveDate: z.string().optional(),
 })
 
+const differentialParamsSchema = z.object({
+  companyId: z.string().uuid(),
+  rates: z.record(z.string(), z.number().min(-MAX_ADJUST_RATE).max(MAX_ADJUST_RATE)),
+  capAtBandMax: z.boolean().optional().default(true),
+})
+
 const simulateBodySchema = z.discriminatedUnion('mode', [
   z.object({
     mode: z.literal('SINGLE'),
@@ -59,6 +65,10 @@ const simulateBodySchema = z.discriminatedUnion('mode', [
     mode: z.literal('BULK'),
     target: bulkTargetSchema,
     parameters: bulkParamsSchema,
+  }),
+  z.object({
+    mode: z.literal('DIFFERENTIAL'),
+    parameters: differentialParamsSchema,
   }),
 ])
 
@@ -150,6 +160,8 @@ interface EmployeeData {
   position: string
   companyCode: string
   companyId: string
+  gradeCode: string
+  gradeId: string
   currentBaseSalary: number
   currentOvertimePay: number
   currentNightPay: number
@@ -180,6 +192,7 @@ async function fetchEmployeeData(employeeIds: string[]): Promise<EmployeeData[]>
           department: { select: { name: true } },
           position: { select: { titleKo: true } },
           company: { select: { code: true } },
+          jobGrade: { select: { id: true, code: true } },
         },
       },
     },
@@ -244,6 +257,8 @@ async function fetchEmployeeData(employeeIds: string[]): Promise<EmployeeData[]>
       position: asgn?.position?.titleKo ?? '',
       companyCode: asgn?.company?.code ?? '',
       companyId: asgn?.companyId ?? '',
+      gradeCode: asgn?.jobGrade?.code ?? '',
+      gradeId: asgn?.jobGrade?.id ?? '',
       currentBaseSalary: monthlySalary || Number(payrollItem?.baseSalary ?? 0),
       currentOvertimePay: earnings.overtimePay ?? Number(payrollItem?.overtimePay ?? 0),
       currentNightPay: earnings.nightShiftPay ?? 0,
@@ -463,6 +478,115 @@ export const POST = withPermission(
         return apiSuccess({
           summary,
           employees: [result],
+        })
+      } else if (input.mode === 'DIFFERENTIAL') {
+        // ── DIFFERENTIAL mode ─────────────────────────
+        const { parameters } = input
+        const { companyId, rates, capAtBandMax } = parameters
+
+        // 1. 대상 직원 조회 (해당 법인의 활성 직원)
+        const assignments = await prisma.employeeAssignment.findMany({
+          where: { isPrimary: true, endDate: null, status: 'ACTIVE', companyId },
+          select: { employeeId: true },
+          take: 500,
+        })
+        const employeeIds = assignments.map((a) => a.employeeId)
+
+        if (employeeIds.length === 0) {
+          return apiError(badRequest('대상 직원이 없습니다.'))
+        }
+
+        const empDataList = await fetchEmployeeData(employeeIds)
+
+        // 2. 해당 법인 SalaryBand 조회 (Band Violation 검증용)
+        const salaryBands = await prisma.salaryBand.findMany({
+          where: { companyId, deletedAt: null, effectiveTo: null },
+          select: {
+            jobGradeId: true,
+            maxSalary: true,
+            midSalary: true,
+            minSalary: true,
+            jobGrade: { select: { code: true } },
+          },
+        })
+        const bandByGradeId = new Map(
+          salaryBands.map((b) => [b.jobGradeId, {
+            maxSalary: Number(b.maxSalary),
+            midSalary: Number(b.midSalary),
+            minSalary: Number(b.minSalary),
+            gradeCode: b.jobGrade.code,
+          }])
+        )
+
+        // 3. 직원별 차등 인상 시뮬레이션 + Band Violation 체크
+        interface BandViolationEntry {
+          name: string; grade: string; currentSalary: number
+          simulatedSalary: number; maxSalary: number; capped: boolean
+        }
+        const bandViolations: BandViolationEntry[] = []
+
+        const results = empDataList.map((emp) => {
+          const gradeRate = rates[emp.gradeCode] ?? 0
+          let simBaseSalary = Math.round(emp.currentBaseSalary * (1 + gradeRate))
+
+          // Band Violation 체크 (연봉 기준: 월급 × 12)
+          const band = bandByGradeId.get(emp.gradeId)
+          if (band) {
+            const annualSimulated = simBaseSalary * 12
+            const annualMax = band.maxSalary
+            if (annualSimulated > annualMax) {
+              const wasCapped = capAtBandMax
+              if (capAtBandMax) {
+                simBaseSalary = Math.round(annualMax / 12)
+              }
+              bandViolations.push({
+                name: emp.name,
+                grade: emp.gradeCode,
+                currentSalary: emp.currentBaseSalary * 12,
+                simulatedSalary: annualSimulated,
+                maxSalary: annualMax,
+                capped: wasCapped,
+              })
+            }
+          }
+
+          return simulateEmployee(emp, { baseSalaryOverride: simBaseSalary })
+        })
+
+        // 4. 직급별 집계
+        const gradeMap: Record<string, {
+          grade: string; employeeCount: number; currentGross: number
+          simulatedGross: number; difference: number; rate: number
+        }> = {}
+        for (let i = 0; i < empDataList.length; i++) {
+          const emp = empDataList[i]
+          const r = results[i]
+          const gc = emp.gradeCode || '(미배정)'
+          if (!gradeMap[gc]) {
+            gradeMap[gc] = {
+              grade: gc, employeeCount: 0, currentGross: 0,
+              simulatedGross: 0, difference: 0, rate: rates[gc] ?? 0,
+            }
+          }
+          gradeMap[gc].employeeCount++
+          gradeMap[gc].currentGross += r.current.grossPay
+          gradeMap[gc].simulatedGross += r.simulated.grossPay
+          gradeMap[gc].difference += r.simulated.grossPay - r.current.grossPay
+        }
+
+        const summary = buildSummary('BULK', parameters as unknown as Record<string, unknown>, results)
+
+        return apiSuccess({
+          summary: {
+            ...summary,
+            mode: 'DIFFERENTIAL' as const,
+            byGrade: Object.values(gradeMap),
+            bandViolations: {
+              count: bandViolations.length,
+              employees: bandViolations,
+            },
+          },
+          employees: results,
         })
       } else {
         // ── BULK mode ─────────────────────────────────
