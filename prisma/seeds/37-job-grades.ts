@@ -85,6 +85,24 @@ export async function seedJobGrades(prisma: PrismaClient): Promise<void> {
     console.log(`  ✅ ${companyCode}: ${KOREAN_GRADES.length} Korean grades (E1/S1/L2/L1)`)
   }
 
+  // ── 옛 G1~G6 grade soft-delete (국내 법인) ──
+  const validCodes = KOREAN_GRADES.map(g => g.code)
+  for (const companyCode of DOMESTIC_COMPANIES) {
+    const companyId = companyMap[companyCode]
+    if (!companyId) continue
+
+    const oldGrades = await prisma.jobGrade.findMany({
+      where: { companyId, code: { notIn: validCodes }, deletedAt: null },
+      select: { id: true, code: true },
+    })
+    for (const og of oldGrades) {
+      await prisma.jobGrade.update({ where: { id: og.id }, data: { deletedAt: new Date() } })
+    }
+    if (oldGrades.length > 0) {
+      console.log(`  🗑️ ${companyCode}: soft-deleted ${oldGrades.length} old grades (${oldGrades.map(g => g.code).join(', ')})`)
+    }
+  }
+
   // ── 해외 법인 grade는 미확정 — 세팅/마이그레이션 시 법인별 정의 예정 ──
   console.log('  ℹ️ Overseas grades: skipped (TBD per-entity)')
 
