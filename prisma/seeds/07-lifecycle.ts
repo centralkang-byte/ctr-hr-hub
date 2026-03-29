@@ -95,7 +95,7 @@ export async function seedLifecycle(prisma: PrismaClient): Promise<void> {
   const dep9001FgId   = deterministicUUID('assignment', 'dep:CTR-KR-9001')
   const dep9001AuthId = deterministicUUID('auth',       'dep:CTR-KR-9001')
 
-  const krGradeG5Id = (await prisma.jobGrade.findFirst({ where: { code: 'G5' } }))?.id
+  const krGradeG5Id = (await prisma.jobGrade.findFirst({ where: { code: 'L2' } }))?.id
   const krSalesDeptId = deterministicUUID('dept', 'CTR-KR:SALES')
   const krSalesPosId  = deterministicUUID('pos', 'CTR-KR-SALES-004')
   const krOfficeCatId = deterministicUUID('jobcat', 'CTR:OFFICE')

@@ -36,14 +36,12 @@ export async function seedPerformancePipeline(prisma: PrismaClient) {
     // ═══ STEP A: EmployeeLevelMapping ═══════════════════════
     console.log('📌 STEP A: EmployeeLevelMapping...')
 
-    // KR grade codes: G1 (사원) ~ G6 (임원)
+    // KR grade codes: Session 45 확정 E1/S1/L2/L1
     const krMappings = [
-        { code: 'G6', level: 'L1', mbo: null, bei: null },   // 사원 — use cycle default
-        { code: 'G5', level: 'L2', mbo: null, bei: null },   // 대리
-        { code: 'G4', level: 'L3', mbo: null, bei: null },   // 과장
-        { code: 'G3', level: 'L4', mbo: null, bei: null },   // 차장
-        { code: 'G2', level: 'L5', mbo: null, bei: null },   // 부장
-        { code: 'G1', level: 'EXEC', mbo: 70, bei: 30 },     // 임원 — result-oriented
+        { code: 'L1', level: 'L1', mbo: null, bei: null },   // 매니저 — use cycle default
+        { code: 'L2', level: 'L2', mbo: null, bei: null },   // 책임매니저
+        { code: 'S1', level: 'L5', mbo: null, bei: null },   // 전문리더
+        { code: 'E1', level: 'EXEC', mbo: 70, bei: 30 },     // 경영리더 — result-oriented
     ]
 
     let krLevelCount = 0

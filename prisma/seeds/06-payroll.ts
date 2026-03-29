@@ -197,7 +197,7 @@ export async function seedPayroll(prisma: PrismaClient): Promise<void> {
       const empNo   = asgn.employee.employeeNo
       const empId   = asgn.employeeId
       const persona = KR_PERSONA[empNo] ?? 'P1'
-      const gradeCode = asgn.jobGrade?.code ?? 'G6'
+      const gradeCode = asgn.jobGrade?.code ?? 'L1'
 
       // P7 (ON_LEAVE): no payroll
       if (persona === 'P7') continue

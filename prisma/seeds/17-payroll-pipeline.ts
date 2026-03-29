@@ -211,10 +211,10 @@ export async function seedPayrollPipeline(prisma: PrismaClient): Promise<void> {
         const no = emp.employeeNo ?? ''
         if (no.startsWith('CTR-KR-0') || no.startsWith('CTR-KR-1') || no.startsWith('CTR-KR-2')) {
             const idx = parseInt(no.split('-').pop() ?? '1')
-            krGradeMap[emp.id] = idx <= 1 ? 'G1' : idx <= 3 ? 'G2' : idx <= 6 ? 'G3' : 'G4'
+            krGradeMap[emp.id] = idx <= 1 ? 'E1' : idx <= 3 ? 'S1' : 'L2'
         } else {
             const idx = parseInt(no.split('-').pop() ?? '30')
-            krGradeMap[emp.id] = idx <= 10 ? 'G4' : idx <= 30 ? 'G5' : 'G6'
+            krGradeMap[emp.id] = idx <= 30 ? 'L2' : 'L1'
         }
     }
 
@@ -344,7 +344,7 @@ export async function seedPayrollPipeline(prisma: PrismaClient): Promise<void> {
     // KR CALC FN
     // ══════════════════════════════════════════════════════════════
     const krCalc = (e: { id: string }, ym: string) => {
-        const grade = krGradeMap[e.id] ?? 'G5'
+        const grade = krGradeMap[e.id] ?? 'L2'
         const base = KR_GRADE_BASE[grade] ?? 4_080_000
         const seed = `${e.id}-${ym}`
         const [y, m] = ym.split('-').map(Number)

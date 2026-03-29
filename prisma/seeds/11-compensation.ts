@@ -56,7 +56,7 @@ const KR_GRADE_MONTHLY: Record<string, number> = {
 
 // 옛 G1~G6 → 신 체계 매핑 (시드 데이터 전환용)
 const OLD_TO_NEW_GRADE: Record<string, string> = {
-    G1: 'E1', G2: 'L2', G3: 'L2', G4: 'L2', G5: 'L2', G6: 'L1',
+    G1: 'E1', G2: 'S1', G3: 'L2', G4: 'L2', G5: 'L2', G6: 'L1',
 }
 
 // ── Exchange rates (2026-03-01, approximate market) ─────────
@@ -194,7 +194,7 @@ export async function seedCompensation(prisma: PrismaClient): Promise<void> {
     for (let i = 0; i < krAssignments.length; i++) {
         const asgn = krAssignments[i]
         const empId = asgn.employeeId
-        const gradeCode = asgn.jobGrade?.code ?? 'G6'
+        const gradeCode = asgn.jobGrade?.code ?? 'L1'
         const hireDate = asgn.employee.hireDate
         const monthlyBase = KR_GRADE_MONTHLY[gradeCode] ?? 3_210_000
         const annualBase = monthlyBase * 12

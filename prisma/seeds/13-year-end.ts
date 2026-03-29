@@ -35,11 +35,11 @@ const DEDUCTION_TYPES = [
     { code: 'HOUSING_FUND', category: 'housing', name: '주택자금 공제', maxPct: 0.40 },
 ]
 
-// ── Grade → annual salary ─────────────────────────────────
+// ── Grade → annual salary (Session 45: E1/S1/L2/L1) ──────
 // TODO: Move to Settings (Payroll > Year-End) — annual income reference per grade
+// ⚠️ L2 = G3~G5 합산 → 중간값 사용, 추후 세분화 시 조정
 const GRADE_ANNUAL: Record<string, number> = {
-    G1: 159_600_000, G2: 105_000_000, G3: 80_040_000,
-    G4: 62_520_000, G5: 48_960_000, G6: 38_520_000,
+    E1: 159_600_000, S1: 105_000_000, L2: 62_520_000, L1: 38_520_000,
 }
 
 // Korean earned income deduction formula (2025)
@@ -95,7 +95,7 @@ export async function seedYearEnd(prisma: PrismaClient): Promise<void> {
     for (let i = 0; i < krAssignments.length; i++) {
         const asgn = krAssignments[i]
         const empId = asgn.employeeId
-        const gradeCode = asgn.jobGrade?.code ?? 'G6'
+        const gradeCode = asgn.jobGrade?.code ?? 'L1'
 
         // Determine status: COMPLETED 70%, IN_PROGRESS 20%, NOT_STARTED 10%
         const r = sr(i * 13 + 1)
