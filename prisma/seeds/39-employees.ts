@@ -244,48 +244,48 @@ const NAMED: NamedEmp[] = [
   ['조기영', 'Kiyoung Jo', 'CTR-FML', 'POS-FML-TL-SALES', 'L2', 'MANAGER'],
 
   // ──── CTR-CN (16) ────
-  ['Ming Li', 'Ming Li', 'CTR-CN', 'POS-CN-CEO', 'G-CN-DIR', 'MANAGER'],
-  ['류지훈', 'Jihun Ryu', 'CTR-CN', 'POS-CN-TL-MGMTSUP', 'G-CN-MGR', 'HR_ADMIN'],
-  ['임현묵', 'Hyunmuk Im', 'CTR-CN', 'POS-CN-TL-MGMT', 'G-CN-MGR', 'MANAGER'],
-  ['정원석', 'Wonseok Jeong', 'CTR-CN', 'POS-CN-TL-TEST', 'G-CN-MGR', 'MANAGER'],
-  ['박정철', 'Jungcheol Park', 'CTR-CN', 'POS-CN-TL-DESIGN', 'G-CN-MGR', 'MANAGER'],
-  ['Haiying Wu', 'Haiying Wu', 'CTR-CN', 'POS-CN-TL-PM', 'G-CN-MGR', 'MANAGER'],
-  ['Tian Zhao', 'Tian Zhao', 'CTR-CN', 'POS-CN-TL-SALES', 'G-CN-MGR', 'MANAGER'],
-  ['지용범', 'Yongbeom Ji', 'CTR-CN', 'POS-CN-TL-PURCHASE', 'G-CN-MGR', 'MANAGER'],
-  ['김성훈', 'Sunghun Kim', 'CTR-CN', 'POS-CN-TL-SQ', 'G-CN-MGR', 'MANAGER'],
-  ['Guilin Long', 'Guilin Long', 'CTR-CN', 'POS-CN-DIR-QUALITY', 'G-CN-DIR', 'MANAGER'],
-  ['Jianghong Zhou', 'Jianghong Zhou', 'CTR-CN', 'POS-CN-TL-QC', 'G-CN-MGR', 'MANAGER'],
-  ['김상석', 'Sangseok Kim', 'CTR-CN', 'POS-CN-PM-ZJG', 'G-CN-DIR', 'MANAGER'],
-  ['최동춘', 'Dongchun Choi', 'CTR-CN', 'POS-CN-TL-ZJG-PROD', 'G-CN-SR', 'MANAGER'],
-  ['Delong Li', 'Delong Li', 'CTR-CN', 'POS-CN-TL-ZJG-MAINT', 'G-CN-SR', 'MANAGER'],
-  ['김해웅', 'Haewoong Kim', 'CTR-CN', 'POS-CN-TL-ZJG-OE', 'G-CN-SR', 'MANAGER'],
-  ['서대원', 'Daewon Seo', 'CTR-CN', 'POS-CN-TL-ZJG-PRODTECH', 'G-CN-SR', 'MANAGER'],
+  ['Ming Li', 'Ming Li', 'CTR-CN', 'POS-CN-CEO', 'L5', 'MANAGER'],
+  ['류지훈', 'Jihun Ryu', 'CTR-CN', 'POS-CN-TL-MGMTSUP', 'L4', 'HR_ADMIN'],
+  ['임현묵', 'Hyunmuk Im', 'CTR-CN', 'POS-CN-TL-MGMT', 'L4', 'MANAGER'],
+  ['정원석', 'Wonseok Jeong', 'CTR-CN', 'POS-CN-TL-TEST', 'L4', 'MANAGER'],
+  ['박정철', 'Jungcheol Park', 'CTR-CN', 'POS-CN-TL-DESIGN', 'L4', 'MANAGER'],
+  ['Haiying Wu', 'Haiying Wu', 'CTR-CN', 'POS-CN-TL-PM', 'L4', 'MANAGER'],
+  ['Tian Zhao', 'Tian Zhao', 'CTR-CN', 'POS-CN-TL-SALES', 'L4', 'MANAGER'],
+  ['지용범', 'Yongbeom Ji', 'CTR-CN', 'POS-CN-TL-PURCHASE', 'L4', 'MANAGER'],
+  ['김성훈', 'Sunghun Kim', 'CTR-CN', 'POS-CN-TL-SQ', 'L4', 'MANAGER'],
+  ['Guilin Long', 'Guilin Long', 'CTR-CN', 'POS-CN-DIR-QUALITY', 'L5', 'MANAGER'],
+  ['Jianghong Zhou', 'Jianghong Zhou', 'CTR-CN', 'POS-CN-TL-QC', 'L4', 'MANAGER'],
+  ['김상석', 'Sangseok Kim', 'CTR-CN', 'POS-CN-PM-ZJG', 'L5', 'MANAGER'],
+  ['최동춘', 'Dongchun Choi', 'CTR-CN', 'POS-CN-TL-ZJG-PROD', 'L3', 'MANAGER'],
+  ['Delong Li', 'Delong Li', 'CTR-CN', 'POS-CN-TL-ZJG-MAINT', 'L3', 'MANAGER'],
+  ['김해웅', 'Haewoong Kim', 'CTR-CN', 'POS-CN-TL-ZJG-OE', 'L3', 'MANAGER'],
+  ['서대원', 'Daewon Seo', 'CTR-CN', 'POS-CN-TL-ZJG-PRODTECH', 'L3', 'MANAGER'],
 
   // ──── CTR-US (9, skip 허종서/신동규) ────
-  ['김주형', 'Juhyung Kim', 'CTR-US', 'POS-US-CEO', 'G-US-DIR', 'MANAGER'],
-  ['김대일', 'Daeil Kim', 'CTR-US', 'POS-US-SL-CFO', 'G-US-DIR', 'HR_ADMIN'],
-  ['최정길', 'Junggil Choi', 'CTR-US', 'POS-US-TL-CRM', 'G-US-MGR', 'MANAGER'],
-  ['Dave Cosgrove', 'Dave Cosgrove', 'CTR-US', 'POS-US-TL-SALES', 'G-US-MGR', 'MANAGER'],
-  ['황정욱', 'Jungwook Hwang', 'CTR-US', 'POS-US-PM-MTY', 'G-US-DIR', 'MANAGER'],
-  ['Juan Jose', 'Juan Jose', 'CTR-US', 'POS-US-TL-MTY-PROD', 'G-US-SR', 'MANAGER'],
-  ['손지수', 'Jisu Son', 'CTR-US', 'POS-US-TL-MTY-MAINT', 'G-US-SR', 'MANAGER'],
-  ['고락선', 'Rakseon Ko', 'CTR-US', 'POS-US-TL-MTY-OE', 'G-US-SR', 'MANAGER'],
-  ['Rolando Cortez', 'Rolando Cortez', 'CTR-US', 'POS-US-TL-MTY-QC', 'G-US-SR', 'MANAGER'],
+  ['김주형', 'Juhyung Kim', 'CTR-US', 'POS-US-CEO', 'L5', 'MANAGER'],
+  ['김대일', 'Daeil Kim', 'CTR-US', 'POS-US-SL-CFO', 'L5', 'HR_ADMIN'],
+  ['최정길', 'Junggil Choi', 'CTR-US', 'POS-US-TL-CRM', 'L4', 'MANAGER'],
+  ['Dave Cosgrove', 'Dave Cosgrove', 'CTR-US', 'POS-US-TL-SALES', 'L4', 'MANAGER'],
+  ['황정욱', 'Jungwook Hwang', 'CTR-US', 'POS-US-PM-MTY', 'L5', 'MANAGER'],
+  ['Juan Jose', 'Juan Jose', 'CTR-US', 'POS-US-TL-MTY-PROD', 'L3', 'MANAGER'],
+  ['손지수', 'Jisu Son', 'CTR-US', 'POS-US-TL-MTY-MAINT', 'L3', 'MANAGER'],
+  ['고락선', 'Rakseon Ko', 'CTR-US', 'POS-US-TL-MTY-OE', 'L3', 'MANAGER'],
+  ['Rolando Cortez', 'Rolando Cortez', 'CTR-US', 'POS-US-TL-MTY-QC', 'L3', 'MANAGER'],
 
   // ──── CTR-VN (5, skip 김길홍/마랏/스베틀라나) ────
-  ['홍영수', 'Youngsu Hong', 'CTR-VN', 'POS-VN-COO', 'G-VN-DIR', 'MANAGER'],
-  ['김영규', 'Younggyu Kim', 'CTR-VN', 'POS-VN-TL-MGMT', 'G-VN-MGR', 'HR_ADMIN'],
-  ['하상원', 'Sangwon Ha', 'CTR-VN', 'POS-VN-TL-PROCTECH', 'G-VN-MGR', 'MANAGER'],
-  ['심동민', 'Dongmin Sim', 'CTR-VN', 'POS-VN-TL-QC', 'G-VN-MGR', 'MANAGER'],
-  ['Bui Thi Nhu Hang', 'Bui Thi Nhu Hang', 'CTR-VN', 'POS-VN-TL-PURSCM', 'G-VN-MGR', 'MANAGER'],
+  ['홍영수', 'Youngsu Hong', 'CTR-VN', 'POS-VN-COO', 'L5', 'MANAGER'],
+  ['김영규', 'Younggyu Kim', 'CTR-VN', 'POS-VN-TL-MGMT', 'L4', 'HR_ADMIN'],
+  ['하상원', 'Sangwon Ha', 'CTR-VN', 'POS-VN-TL-PROCTECH', 'L4', 'MANAGER'],
+  ['심동민', 'Dongmin Sim', 'CTR-VN', 'POS-VN-TL-QC', 'L4', 'MANAGER'],
+  ['Bui Thi Nhu Hang', 'Bui Thi Nhu Hang', 'CTR-VN', 'POS-VN-TL-PURSCM', 'L4', 'MANAGER'],
 
   // ──── CTR-RU (3) ────
-  ['Roman Ivanov', 'Roman Ivanov', 'CTR-RU', 'POS-RU-HEAD', 'G-RU-DIR', 'MANAGER'],
-  ['Svetlana Petrova', 'Svetlana Petrova', 'CTR-RU', 'POS-RU-TL-MKT', 'G-RU-MGR', 'MANAGER'],
-  ['Marat Suleimanov', 'Marat Suleimanov', 'CTR-RU', 'POS-RU-TL-SALES', 'G-RU-MGR', 'MANAGER'],
+  ['Roman Ivanov', 'Roman Ivanov', 'CTR-RU', 'POS-RU-HEAD', 'L5', 'MANAGER'],
+  ['Svetlana Petrova', 'Svetlana Petrova', 'CTR-RU', 'POS-RU-TL-MKT', 'L4', 'MANAGER'],
+  ['Marat Suleimanov', 'Marat Suleimanov', 'CTR-RU', 'POS-RU-TL-SALES', 'L4', 'MANAGER'],
 
   // ──── CTR-EU (1) ────
-  ['김민준', 'Minjun Kim', 'CTR-EU', 'POS-EU-HEAD', 'G-EU-DIR', 'MANAGER'],
+  ['김민준', 'Minjun Kim', 'CTR-EU', 'POS-EU-HEAD', 'L5', 'MANAGER'],
 ]
 
 // ================================================================
@@ -552,12 +552,12 @@ export async function seedEmployees(prisma: PrismaClient): Promise<void> {
     const employeeRoleId = roleMap['EMPLOYEE']
     const short = CO_SHORT[co] ?? co.replace('CTR-', '')
 
-    // Generate workers for each type
+    // Generate workers for each type — 국내/해외 모두 통합 L 코드 체계
     const types: Array<{ count: number; empType: string; catCode: string; gradeCode: string; isPlant: boolean }> = [
-      { count: office, empType: 'FULL_TIME', catCode: 'OFFICE', gradeCode: co.startsWith('CTR-') && !['CTR-CN','CTR-US','CTR-VN','CTR-RU','CTR-EU'].includes(co) ? 'L2' : `G-${CO_SHORT[co] ?? 'US'}-STF`, isPlant: false },
-      { count: production, empType: 'FULL_TIME', catCode: 'PRODUCTION', gradeCode: co.startsWith('CTR-') && !['CTR-CN','CTR-US','CTR-VN','CTR-RU','CTR-EU'].includes(co) ? 'L1' : `G-${CO_SHORT[co] ?? 'US'}-JR`, isPlant: true },
-      { count: dispatch, empType: 'DISPATCH', catCode: 'PRODUCTION', gradeCode: co.startsWith('CTR-') && !['CTR-CN','CTR-US','CTR-VN','CTR-RU','CTR-EU'].includes(co) ? 'L1' : `G-${CO_SHORT[co] ?? 'US'}-JR`, isPlant: true },
-      { count: contract, empType: 'CONTRACT', catCode: 'OFFICE', gradeCode: co.startsWith('CTR-') && !['CTR-CN','CTR-US','CTR-VN','CTR-RU','CTR-EU'].includes(co) ? 'L2' : `G-${CO_SHORT[co] ?? 'US'}-STF`, isPlant: false },
+      { count: office, empType: 'FULL_TIME', catCode: 'OFFICE', gradeCode: 'L2', isPlant: false },
+      { count: production, empType: 'FULL_TIME', catCode: 'PRODUCTION', gradeCode: 'L1', isPlant: true },
+      { count: dispatch, empType: 'DISPATCH', catCode: 'PRODUCTION', gradeCode: 'L1', isPlant: true },
+      { count: contract, empType: 'CONTRACT', catCode: 'OFFICE', gradeCode: 'L2', isPlant: false },
     ]
 
     for (const { count, empType, catCode, gradeCode, isPlant } of types) {

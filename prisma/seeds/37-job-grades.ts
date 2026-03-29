@@ -23,6 +23,20 @@ const KOREAN_GRADES = [
 // Domestic Korean companies
 const DOMESTIC_COMPANIES = ['CTR-HOLD', 'CTR', 'CTR-MOB', 'CTR-ECO', 'CTR-ROB', 'CTR-ENR', 'CTR-FML']
 
+// Overseas companies
+const OVERSEAS_COMPANIES = ['CTR-CN', 'CTR-US', 'CTR-VN', 'CTR-RU', 'CTR-EU']
+
+// Overseas grade system — L1~L5 + S1 + E1 (7단계, title은 법인별 추후 정의)
+const OVERSEAS_GRADES = [
+  { code: 'E1', name: 'Executive', nameEn: 'Executive', rankOrder: 1, gradeType: 'EXECUTIVE', minPromotionYears: null },
+  { code: 'S1', name: 'Specialist', nameEn: 'Specialist', rankOrder: 2, gradeType: 'SPECIALIST', minPromotionYears: null },
+  { code: 'L5', name: 'Senior Manager', nameEn: 'Senior Manager', rankOrder: 3, gradeType: 'STAFF', minPromotionYears: 5 },
+  { code: 'L4', name: 'Manager', nameEn: 'Manager', rankOrder: 4, gradeType: 'STAFF', minPromotionYears: 4 },
+  { code: 'L3', name: 'Assistant Manager', nameEn: 'Assistant Manager', rankOrder: 5, gradeType: 'STAFF', minPromotionYears: 3 },
+  { code: 'L2', name: 'Senior Staff', nameEn: 'Senior Staff', rankOrder: 6, gradeType: 'STAFF', minPromotionYears: 2 },
+  { code: 'L1', name: 'Staff', nameEn: 'Staff', rankOrder: 7, gradeType: 'STAFF', minPromotionYears: null },
+]
+
 // Korean Employee Titles (호칭) — Grade와 독립, Position(직위)과도 독립
 const KOREAN_TITLES = [
   { code: 'CHAIRMAN',   name: '회장',     nameEn: 'Chairman',        rankOrder: 1, isExecutive: true },
@@ -103,8 +117,60 @@ export async function seedJobGrades(prisma: PrismaClient): Promise<void> {
     }
   }
 
-  // ── 해외 법인 grade는 미확정 — 세팅/마이그레이션 시 법인별 정의 예정 ──
-  console.log('  ℹ️ Overseas grades: skipped (TBD per-entity)')
+  // ── Overseas grades: L1~L5 + S1 + E1 (7단계) ──
+  for (const companyCode of OVERSEAS_COMPANIES) {
+    const companyId = companyMap[companyCode]
+    if (!companyId) {
+      console.warn(`  ⚠️ Company "${companyCode}" not found — skipping`)
+      continue
+    }
+
+    for (const grade of OVERSEAS_GRADES) {
+      const existing = await prisma.jobGrade.findFirst({
+        where: { companyId, code: grade.code },
+        select: { id: true },
+      })
+
+      if (existing) {
+        await prisma.jobGrade.update({
+          where: { id: existing.id },
+          data: {
+            name: grade.name, nameEn: grade.nameEn,
+            rankOrder: grade.rankOrder, gradeType: grade.gradeType,
+            minPromotionYears: grade.minPromotionYears,
+          },
+        })
+      } else {
+        await prisma.jobGrade.create({
+          data: {
+            companyId, code: grade.code, name: grade.name, nameEn: grade.nameEn,
+            rankOrder: grade.rankOrder, gradeType: grade.gradeType,
+            minPromotionYears: grade.minPromotionYears,
+          },
+        })
+      }
+      total++
+    }
+    console.log(`  ✅ ${companyCode}: ${OVERSEAS_GRADES.length} Overseas grades (L1~L5/S1/E1)`)
+  }
+
+  // ── Soft-delete old overseas G-{CO}-* grades ──
+  const overseasValidCodes = OVERSEAS_GRADES.map(g => g.code)
+  for (const companyCode of OVERSEAS_COMPANIES) {
+    const companyId = companyMap[companyCode]
+    if (!companyId) continue
+
+    const oldGrades = await prisma.jobGrade.findMany({
+      where: { companyId, code: { notIn: overseasValidCodes }, deletedAt: null },
+      select: { id: true, code: true },
+    })
+    for (const og of oldGrades) {
+      await prisma.jobGrade.update({ where: { id: og.id }, data: { deletedAt: new Date() } })
+    }
+    if (oldGrades.length > 0) {
+      console.log(`  🗑️ ${companyCode}: soft-deleted ${oldGrades.length} old grades (${oldGrades.map(g => g.code).join(', ')})`)
+    }
+  }
 
   // ── Korean Employee Titles (호칭) ──
   let titleTotal = 0
