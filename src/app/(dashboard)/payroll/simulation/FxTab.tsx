@@ -6,14 +6,14 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useCallback } from 'react'
-import { Calculator, Loader2, RotateCcw } from 'lucide-react'
+import { Calculator, Loader2, RotateCcw, Save } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { apiClient } from '@/lib/api'
 import { CARD_STYLES, TABLE_STYLES, CHART_THEME } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 import { toast } from '@/hooks/use-toast'
 import { EXCHANGE_RATES_TO_KRW } from '@/lib/analytics/currency'
-import type { Company, FxResponse, FxCompanyImpact, FxSensitivityRow } from './types'
+import type { Company, FxResponse, FxCompanyImpact, FxSensitivityRow, SaveScenarioPayload } from './types'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -25,6 +25,7 @@ interface RateRow {
 
 interface Props {
   companies: Company[]
+  onSaveScenario?: (payload: SaveScenarioPayload) => void
 }
 
 // ─── Formatters ─────────────────────────────────────────────
@@ -75,7 +76,7 @@ function initRates(): RateRow[] {
     }))
 }
 
-export default function FxTab({ companies }: Props) {
+export default function FxTab({ companies, onSaveScenario }: Props) {
   const [rates, setRates] = useState<RateRow[]>(initRates)
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState<FxResponse | null>(null)
@@ -253,6 +254,19 @@ export default function FxTab({ companies }: Props) {
       {/* ── 결과 KPI ── */}
       {summary && (
         <>
+          {onSaveScenario && (
+            <div className="flex justify-end mb-3">
+              <button onClick={() => onSaveScenario({
+                mode: 'FX',
+                companyId: null,
+                parameters: { rateOverrides: rates.filter(r => r.adjustedRate !== r.currentRate).map(r => ({ currency: r.currency, adjustedRate: r.adjustedRate })) },
+                results: result as unknown as Record<string, unknown>,
+              })}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#5E81F4] border border-[#5E81F4]/30 rounded-lg hover:bg-[#5E81F4]/5">
+                <Save className="w-3.5 h-3.5" /> 시나리오 저장
+              </button>
+            </div>
+          )}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <KPICard
               label="해외 현재 KRW (월)"

@@ -6,13 +6,13 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useCallback, useEffect } from 'react'
-import { AlertTriangle, Calculator, Loader2 } from 'lucide-react'
+import { AlertTriangle, Calculator, Loader2, Save } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { apiClient } from '@/lib/api'
 import { CARD_STYLES, TABLE_STYLES, CHART_THEME } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 import { toast } from '@/hooks/use-toast'
-import type { Company, DifferentialResponse, GradeBreakdown } from './types'
+import type { Company, DifferentialResponse, GradeBreakdown, SaveScenarioPayload } from './types'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -25,6 +25,7 @@ interface GradeInfo {
 
 interface Props {
   companies: Company[]
+  onSaveScenario?: (payload: SaveScenarioPayload) => void
 }
 
 // ─── Formatters ─────────────────────────────────────────────
@@ -52,7 +53,7 @@ function KPICard({ label, value, diff, variant }: {
 
 // ─── Component ──────────────────────────────────────────────
 
-export default function DifferentialTab({ companies }: Props) {
+export default function DifferentialTab({ companies, onSaveScenario }: Props) {
   const [selectedCompanyId, setSelectedCompanyId] = useState(companies[0]?.id ?? '')
   const [grades, setGrades] = useState<GradeInfo[]>([])
   const [rates, setRates] = useState<Record<string, number>>({})
@@ -235,6 +236,19 @@ export default function DifferentialTab({ companies }: Props) {
       {/* ── 결과 KPI ── */}
       {summary && (
         <>
+          {onSaveScenario && (
+            <div className="flex justify-end mb-3">
+              <button onClick={() => onSaveScenario({
+                mode: 'DIFFERENTIAL',
+                companyId: selectedCompanyId,
+                parameters: { companyId: selectedCompanyId, rates, capAtBandMax },
+                results: result as unknown as Record<string, unknown>,
+              })}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#5E81F4] border border-[#5E81F4]/30 rounded-lg hover:bg-[#5E81F4]/5">
+                <Save className="w-3.5 h-3.5" /> 시나리오 저장
+              </button>
+            </div>
+          )}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <KPICard
               label="대상인원"

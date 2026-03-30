@@ -209,3 +209,30 @@ export interface FxSummary {
 }
 
 export interface FxResponse { summary: FxSummary }
+
+// ─── 시나리오 저장/비교 ──────────────────────────────────────
+
+export type SaveableMode = Exclude<SimMode, 'COMPA_RATIO'>
+
+export interface ScenarioListItem {
+    id: string
+    mode: SaveableMode
+    title: string
+    description: string | null
+    companyId: string | null
+    createdAt: string
+    createdById: string
+}
+
+export interface ScenarioDetail extends ScenarioListItem {
+    parameters: Record<string, unknown>
+    results: Record<string, unknown>
+}
+
+/** 탭에서 parent로 전달하는 저장 요청 */
+export interface SaveScenarioPayload {
+    mode: SaveableMode
+    companyId: string | null
+    parameters: Record<string, unknown>
+    results: Record<string, unknown>
+}

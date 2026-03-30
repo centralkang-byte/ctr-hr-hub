@@ -946,6 +946,9 @@ model Company {
   leaveOfAbsenceTypes    LeaveOfAbsenceType[]
   leaveOfAbsences        LeaveOfAbsence[]
 
+  // B2-B2 Step 3: 시뮬레이션 시나리오
+  simulationScenarios    SimulationScenario[]
+
   @@map("companies")
 }
 
@@ -5293,6 +5296,26 @@ model PayrollSimulation {
 
   @@index([employeeId])
   @@map("payroll_simulations")
+}
+
+// ─── 7-B. 시뮬레이션 시나리오 (저장/비교) ─────────────────────
+model SimulationScenario {
+  id          String   @id @default(uuid())
+  createdById String   @map("created_by")
+  companyId   String?  @map("company_id")
+  mode        String   @map("mode")
+  title       String   @map("title")
+  description String?  @map("description")
+  parameters  Json     @map("parameters")
+  results     Json     @map("results")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  company Company? @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
+  @@index([mode])
+  @@index([createdById])
+  @@map("simulation_scenarios")
 }
 
 // ─── 8. 승인 플로우 ───────────────────────────────────────────

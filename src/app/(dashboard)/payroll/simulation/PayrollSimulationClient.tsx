@@ -2,21 +2,26 @@
 
 import { useTranslations } from 'next-intl'
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Calculator, Search, X, ChevronDown, ChevronRight, Download, Loader2 } from 'lucide-react'
+import { Calculator, Search, X, ChevronDown, ChevronRight, Download, Loader2, History, Save } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { CARD_STYLES, TABLE_STYLES, CHART_THEME } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { useToast } from '@/hooks/use-toast'
 import type {
   Company, Department, SimMode, BulkTargetType,
-  SearchEmployee, SimResponse, EmployeeSimResult
+  SearchEmployee, SimResponse, EmployeeSimResult,
+  SaveScenarioPayload, ScenarioDetail, SaveableMode,
 } from './types'
 import DifferentialTab from './DifferentialTab'
 import CompaRatioTab from './CompaRatioTab'
 import HiringTab from './HiringTab'
 import FxTab from './FxTab'
+import SaveScenarioDialog from './SaveScenarioDialog'
+import ScenarioListSheet from './ScenarioListSheet'
+import ScenarioCompareView from './ScenarioCompareView'
 
 // ─── Formatters ──────────────────────────────────────────
 
@@ -136,12 +141,20 @@ export default function PayrollSimulationClient({ user, companies, departments }
 }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('payroll')
+  const { toast } = useToast()
   const [mode, setMode] = useState<SimMode>('SINGLE')
   const [isLoading, setIsLoading] = useState(false)
   const [isExporting, setIsExporting] = useState(false)
   const [result, setResult] = useState<SimResponse | null>(null)
   const [error, setError] = useState('')
   const [expandedRow, setExpandedRow] = useState<string | null>(null)
+
+  // 시나리오 저장/비교 state
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false)
+  const [savePending, setSavePending] = useState<SaveScenarioPayload | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const [scenarioSheetOpen, setScenarioSheetOpen] = useState(false)
+  const [compareData, setCompareData] = useState<{ left: ScenarioDetail; right: ScenarioDetail } | null>(null)
 
   // Single mode state
   const [selectedEmployee, setSelectedEmployee] = useState<SearchEmployee | null>(null)
@@ -268,6 +281,55 @@ export default function PayrollSimulationClient({ user, companies, departments }
     } finally { setIsExporting(false) }
   }
 
+  // ─── 시나리오 저장 ─────────────────────────────────────
+  const handleRequestSave = (payload: SaveScenarioPayload) => {
+    setSavePending(payload)
+    setSaveDialogOpen(true)
+  }
+
+  const handleSaveScenario = async (title: string, description: string) => {
+    if (!savePending) return
+    setIsSaving(true)
+    try {
+      await apiClient.post('/api/v1/payroll/simulation/scenarios', {
+        ...savePending, title, description: description || undefined,
+      })
+      toast({ title: '시나리오가 저장되었습니다' })
+      setSaveDialogOpen(false)
+      setSavePending(null)
+    } catch {
+      toast({ title: '저장 실패', variant: 'destructive' })
+    } finally { setIsSaving(false) }
+  }
+
+  // SINGLE/BULK 저장 트리거
+  const handleSaveSingleBulk = () => {
+    if (!result) return
+    handleRequestSave({
+      mode: mode as SaveableMode,
+      companyId: mode === 'BULK' ? selectedCompanyId : null,
+      parameters: buildBody() as Record<string, unknown>,
+      results: result as unknown as Record<string, unknown>,
+    })
+  }
+
+  // ─── 시나리오 로드 ─────────────────────────────────────
+  const handleLoadScenario = (scenario: ScenarioDetail) => {
+    // 모드 전환 + 결과 복원 (parameters 복원은 각 탭에서 처리)
+    setMode(scenario.mode as SimMode)
+    setCompareData(null)
+    // SINGLE/BULK 모드는 results를 직접 설정
+    if (scenario.mode === 'SINGLE' || scenario.mode === 'BULK') {
+      setResult(scenario.results as unknown as SimResponse)
+    }
+    // DIFFERENTIAL/HIRING/FX는 각 탭의 initialData prop으로 처리
+  }
+
+  // ─── 시나리오 비교 ─────────────────────────────────────
+  const handleCompare = (left: ScenarioDetail, right: ScenarioDetail) => {
+    setCompareData({ left, right })
+  }
+
   const sm = result?.summary
   const totals = sm?.totals
 
@@ -294,13 +356,25 @@ export default function PayrollSimulationClient({ user, companies, departments }
             <p className="text-sm text-[#8181A5]">{t('simulationDesc')}</p>
           </div>
         </div>
-        {result && (
-          <button onClick={handleExcelDownload} disabled={isExporting}
-            className="flex items-center gap-2 px-4 py-2 border border-[#F0F0F3] rounded-lg text-sm text-[#1C1D21] hover:bg-[#F5F5FA] disabled:opacity-50">
-            {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-            {t('excelDownload')}
+        <div className="flex items-center gap-2">
+          <button onClick={() => setScenarioSheetOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 border border-[#F0F0F3] rounded-lg text-sm text-[#8181A5] hover:text-[#1C1D21] hover:bg-[#F5F5FA]">
+            <History className="w-4 h-4" /> 시나리오
           </button>
-        )}
+          {result && (mode === 'SINGLE' || mode === 'BULK') && (
+            <button onClick={handleSaveSingleBulk}
+              className="flex items-center gap-2 px-4 py-2 border border-[#F0F0F3] rounded-lg text-sm text-[#5E81F4] hover:bg-[#5E81F4]/5">
+              <Save className="w-4 h-4" /> 저장
+            </button>
+          )}
+          {result && (
+            <button onClick={handleExcelDownload} disabled={isExporting}
+              className="flex items-center gap-2 px-4 py-2 border border-[#F0F0F3] rounded-lg text-sm text-[#1C1D21] hover:bg-[#F5F5FA] disabled:opacity-50">
+              {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              {t('excelDownload')}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* ─── Mode Toggle (공통) ──────────────────────── */}
@@ -322,11 +396,20 @@ export default function PayrollSimulationClient({ user, companies, departments }
         </div>
       </div>
 
+      {/* ─── 비교 뷰 ───────────────────────────────── */}
+      {compareData && (
+        <ScenarioCompareView
+          left={compareData.left}
+          right={compareData.right}
+          onClose={() => setCompareData(null)}
+        />
+      )}
+
       {/* ─── DIFFERENTIAL / COMPA_RATIO: 전용 탭 ──── */}
-      {mode === 'DIFFERENTIAL' && <DifferentialTab companies={companies} />}
-      {mode === 'COMPA_RATIO' && <CompaRatioTab companies={companies} />}
-      {mode === 'HIRING' && <HiringTab companies={companies} departments={departments} />}
-      {mode === 'FX' && <FxTab companies={companies} />}
+      {!compareData && mode === 'DIFFERENTIAL' && <DifferentialTab companies={companies} onSaveScenario={handleRequestSave} />}
+      {!compareData && mode === 'COMPA_RATIO' && <CompaRatioTab companies={companies} />}
+      {!compareData && mode === 'HIRING' && <HiringTab companies={companies} departments={departments} onSaveScenario={handleRequestSave} />}
+      {!compareData && mode === 'FX' && <FxTab companies={companies} onSaveScenario={handleRequestSave} />}
 
       {/* ─── SINGLE / BULK: 기존 레이아웃 ──────────── */}
       {(mode === 'SINGLE' || mode === 'BULK') && (
@@ -669,6 +752,20 @@ export default function PayrollSimulationClient({ user, companies, departments }
         </div>
       </div>
       )}
+
+      {/* ─── 시나리오 저장/목록 오버레이 ──────────── */}
+      <SaveScenarioDialog
+        open={saveDialogOpen}
+        onOpenChange={setSaveDialogOpen}
+        onSave={handleSaveScenario}
+        isLoading={isSaving}
+      />
+      <ScenarioListSheet
+        open={scenarioSheetOpen}
+        onOpenChange={setScenarioSheetOpen}
+        onLoad={handleLoadScenario}
+        onCompare={handleCompare}
+      />
     </div>
   )
 }
