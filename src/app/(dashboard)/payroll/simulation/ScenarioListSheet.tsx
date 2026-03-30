@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { Trash2, Upload, GitCompareArrows, Loader2, X } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
@@ -25,12 +26,12 @@ interface Props {
 
 // ─── Constants ──────────────────────────────────────────────
 
-const MODE_LABELS: Record<SaveableMode, string> = {
-  SINGLE: '개별',
-  BULK: '일괄',
-  DIFFERENTIAL: '차등 인상',
-  HIRING: '채용',
-  FX: '환율',
+const MODE_LABEL_KEYS: Record<SaveableMode, string> = {
+  SINGLE: 'simModeSingle',
+  BULK: 'simModeBulk',
+  DIFFERENTIAL: 'simModeDifferential',
+  HIRING: 'simModeHiring',
+  FX: 'simModeFx',
 }
 
 const MODE_COLORS: Record<SaveableMode, string> = {
@@ -44,6 +45,8 @@ const MODE_COLORS: Record<SaveableMode, string> = {
 // ─── Component ──────────────────────────────────────────────
 
 export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompare }: Props) {
+  const t = useTranslations('payroll')
+  const tCommon = useTranslations('common')
   const { toast } = useToast()
   const [scenarios, setScenarios] = useState<ScenarioListItem[]>([])
   const [loading, setLoading] = useState(false)
@@ -65,11 +68,11 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
       const res = await apiClient.get<ScenarioListItem[]>('/api/v1/payroll/simulation/scenarios', params)
       setScenarios(res.data)
     } catch {
-      toast({ title: '시나리오 로드 실패', variant: 'destructive' })
+      toast({ title: t('simScenarioLoadFail'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
-  }, [modeFilter, toast])
+  }, [modeFilter, toast, t])
 
   useEffect(() => {
     if (open) {
@@ -85,9 +88,9 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
       const res = await apiClient.get<ScenarioDetail>(`/api/v1/payroll/simulation/scenarios/${id}`)
       onLoad(res.data)
       onOpenChange(false)
-      toast({ title: '시나리오를 불러왔습니다' })
+      toast({ title: t('simScenarioLoaded') })
     } catch {
-      toast({ title: '불러오기 실패', variant: 'destructive' })
+      toast({ title: t('simScenarioLoadError'), variant: 'destructive' })
     }
   }
 
@@ -100,9 +103,9 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
       await apiClient.delete(`/api/v1/payroll/simulation/scenarios/${deleteTarget.id}`)
       setScenarios(prev => prev.filter(s => s.id !== deleteTarget.id))
       setCompareIds(prev => prev.filter(id => id !== deleteTarget.id))
-      toast({ title: '삭제되었습니다' })
+      toast({ title: t('simScenarioDeleted') })
     } catch {
-      toast({ title: '삭제 실패', variant: 'destructive' })
+      toast({ title: t('simScenarioDeleteFail'), variant: 'destructive' })
     } finally {
       setDeleting(false)
       setDeleteTarget(null)
@@ -140,7 +143,7 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
         onOpenChange(false)
       }
     } catch {
-      toast({ title: '비교 데이터 로드 실패', variant: 'destructive' })
+      toast({ title: t('simScenarioCompareLoadFail'), variant: 'destructive' })
     } finally {
       setComparing(false)
     }
@@ -155,7 +158,7 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent side="right" className="w-[420px] sm:w-[480px] p-0 flex flex-col">
           <SheetHeader className="px-6 pt-6 pb-4 border-b border-[#F0F0F3]">
-            <SheetTitle className="text-[#1C1D21]">저장된 시나리오</SheetTitle>
+            <SheetTitle className="text-[#1C1D21]">{t('simScenarioSavedList')}</SheetTitle>
           </SheetHeader>
 
           {/* ─── 모드 필터 ───── */}
@@ -168,7 +171,7 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
                     ? 'bg-[#5E81F4] text-white'
                     : 'bg-[#F5F5FA] text-[#8181A5] hover:text-[#1C1D21]',
                 )}>
-                {m === 'ALL' ? '전체' : MODE_LABELS[m]}
+                {m === 'ALL' ? tCommon('all') : t(MODE_LABEL_KEYS[m])}
               </button>
             ))}
           </div>
@@ -177,21 +180,21 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
           {compareIds.length > 0 && (
             <div className="px-6 py-2.5 bg-[#F5F5FA] border-b border-[#F0F0F3] flex items-center justify-between">
               <span className="text-xs text-[#8181A5]">
-                비교: {compareIds.length}/2 선택
+                {t('simScenarioCompareCount', { count: compareIds.length })}
                 {compareIds.length === 2 && !canCompare && (
-                  <span className="text-red-500 ml-1">(같은 모드만 비교 가능)</span>
+                  <span className="text-red-500 ml-1">({t('simScenarioCompareSameMode')})</span>
                 )}
               </span>
               <div className="flex gap-2">
                 <button onClick={() => setCompareIds([])}
-                  className="text-xs text-[#8181A5] hover:text-[#1C1D21]">초기화</button>
+                  className="text-xs text-[#8181A5] hover:text-[#1C1D21]">{tCommon('reset')}</button>
                 <button onClick={handleCompare} disabled={!canCompare || comparing}
                   className={cn(
                     'flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-lg',
                     'bg-[#5E81F4] text-white hover:bg-[#4A6DE0] disabled:opacity-50',
                   )}>
                   {comparing ? <Loader2 className="w-3 h-3 animate-spin" /> : <GitCompareArrows className="w-3 h-3" />}
-                  비교
+                  {t('simScenarioCompareBtn')}
                 </button>
               </div>
             </div>
@@ -204,7 +207,7 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
                 <Loader2 className="w-5 h-5 animate-spin text-[#8181A5]" />
               </div>
             ) : scenarios.length === 0 ? (
-              <p className="text-center text-sm text-[#8181A5] py-12">저장된 시나리오가 없습니다</p>
+              <p className="text-center text-sm text-[#8181A5] py-12">{t('simScenarioEmpty')}</p>
             ) : (
               scenarios.map(s => {
                 const isSelected = compareIds.includes(s.id)
@@ -218,7 +221,7 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <span className={cn('text-[10px] px-1.5 py-0.5 rounded-full font-medium', MODE_COLORS[s.mode])}>
-                            {MODE_LABELS[s.mode]}
+                            {t(MODE_LABEL_KEYS[s.mode])}
                           </span>
                           <span className="text-xs text-[#8181A5]">{fmtDate(s.createdAt)}</span>
                         </div>
@@ -238,11 +241,11 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
                             : 'bg-[#F5F5FA] text-[#8181A5] hover:text-[#1C1D21]',
                         )}>
                         {isSelected ? <X className="w-3 h-3 inline" /> : <GitCompareArrows className="w-3 h-3 inline" />}
-                        {' '}비교
+                        {' '}{t('simScenarioCompareBtn')}
                       </button>
                       <button onClick={() => handleLoad(s.id)}
                         className="flex items-center gap-1 px-2 py-1 text-xs bg-[#F5F5FA] text-[#8181A5] hover:text-[#1C1D21] rounded">
-                        <Upload className="w-3 h-3" /> 불러오기
+                        <Upload className="w-3 h-3" /> {t('simScenarioLoadBtn')}
                       </button>
                       <button onClick={() => setDeleteTarget(s)}
                         className="flex items-center gap-1 px-2 py-1 text-xs bg-[#F5F5FA] text-red-400 hover:text-red-600 rounded ml-auto">
@@ -261,9 +264,9 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={() => setDeleteTarget(null)}
-        title="시나리오 삭제"
-        description={`"${deleteTarget?.title}" 시나리오를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`}
-        confirmLabel={deleting ? '삭제 중...' : '삭제'}
+        title={t('simScenarioDeleteConfirm')}
+        description={t('simScenarioDeleteConfirmDesc', { title: deleteTarget?.title ?? '' })}
+        confirmLabel={deleting ? t('simScenarioDeleting') : tCommon('delete')}
         variant="destructive"
         onConfirm={handleDelete}
       />

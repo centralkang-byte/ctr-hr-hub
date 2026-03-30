@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useCallback, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { Calculator, Loader2, Plus, Trash2, Save } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { apiClient } from '@/lib/api'
@@ -59,8 +60,8 @@ function calcQuartile(band: BandData, anchor: SalaryAnchor): number {
   return map[anchor]
 }
 
-function bandHint(band: BandData | undefined): string {
-  if (!band) return 'Band 미등록'
+function bandHint(band: BandData | undefined, notRegisteredLabel: string): string {
+  if (!band) return notRegisteredLabel
   return `₩${fmtN(band.min)}~₩${fmtN(band.max)} (Q1: ₩${fmtN(band.q1)})`
 }
 
@@ -81,6 +82,9 @@ function KPICard({ label, value, sub }: { label: string; value: string; sub?: st
 let rowKeyCounter = 0
 
 export default function HiringTab({ companies, onSaveScenario }: Props) {
+  const t = useTranslations('payroll')
+  const tCommon = useTranslations('common')
+
   const [selectedCompanyId, setSelectedCompanyId] = useState(companies[0]?.id ?? '')
   const [grades, setGrades] = useState<GradeInfo[]>([])
   const [bandMap, setBandMap] = useState<Record<string, BandData>>({})
@@ -125,11 +129,11 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
       }
       setBandMap(bands)
     } catch {
-      toast({ title: '직급/밴드 로드 실패', variant: 'destructive' })
+      toast({ title: t('simHiringLoadFail'), variant: 'destructive' })
     } finally {
       setIsLoadingGrades(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     if (selectedCompanyId) loadGrades(selectedCompanyId)
@@ -182,7 +186,7 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
   // 시뮬레이션 실행
   const runSimulation = async () => {
     if (hires.length === 0) {
-      toast({ title: '채용 계획을 추가해주세요.', variant: 'destructive' })
+      toast({ title: t('simHiringAddPlan'), variant: 'destructive' })
       return
     }
 
@@ -204,8 +208,8 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
       setResult(res.data)
     } catch (err) {
       toast({
-        title: '시뮬레이션 실패',
-        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        title: t('simFail'),
+        description: err instanceof Error ? err.message : t('simRetry'),
         variant: 'destructive',
       })
     } finally {
@@ -218,9 +222,9 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
 
   // 차트 데이터
   const chartData = byGrade.map((g: HireGradeBreakdown) => ({
-    직급: g.grade,
-    '1인당 총지급액': Math.round(g.grossPerPerson / 10000),
-    '전체 추가비용': Math.round(g.totalMonthlyGross / 10000),
+    grade: g.grade,
+    perGross: Math.round(g.grossPerPerson / 10000),
+    totalCost: Math.round(g.totalMonthlyGross / 10000),
   }))
 
   const totalHireCount = hires.reduce((s, h) => s + h.headcount, 0)
@@ -230,7 +234,7 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
       {/* ── 입력 영역 ── */}
       <div className={CARD_STYLES.padded}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-[#1C1D21]">채용 계획 입력</h3>
+          <h3 className="text-sm font-semibold text-[#1C1D21]">{t('simHiringTitle')}</h3>
           <select
             value={selectedCompanyId}
             onChange={(e) => setSelectedCompanyId(e.target.value)}
@@ -245,21 +249,21 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
         {isLoadingGrades ? (
           <div className="flex items-center justify-center py-8 text-[#8181A5]">
             <Loader2 className="w-5 h-5 animate-spin mr-2" />
-            직급/밴드 로딩 중...
+            {t('simHiringLoading')}
           </div>
         ) : grades.length === 0 ? (
-          <p className="text-sm text-[#8181A5] py-4">해당 법인에 등록된 직급이 없습니다.</p>
+          <p className="text-sm text-[#8181A5] py-4">{t('simNoGrades')}</p>
         ) : (
           <>
             <div className={TABLE_STYLES.wrapper}>
               <table className={TABLE_STYLES.table}>
                 <thead>
                   <tr className={TABLE_STYLES.header}>
-                    <th className={TABLE_STYLES.headerCell}>직급</th>
-                    <th className={cn(TABLE_STYLES.headerCell, 'text-right w-20')}>인원</th>
-                    <th className={cn(TABLE_STYLES.headerCell, 'w-28')}>기준점</th>
-                    <th className={cn(TABLE_STYLES.headerCell, 'text-right w-32')}>월급</th>
-                    <th className={cn(TABLE_STYLES.headerCell, 'text-xs text-[#8181A5]')}>Band 참고</th>
+                    <th className={TABLE_STYLES.headerCell}>{tCommon('grade')}</th>
+                    <th className={cn(TABLE_STYLES.headerCell, 'text-right w-20')}>{t('simHiringColHeadcount')}</th>
+                    <th className={cn(TABLE_STYLES.headerCell, 'w-28')}>{t('simHiringColAnchor')}</th>
+                    <th className={cn(TABLE_STYLES.headerCell, 'text-right w-32')}>{t('simHiringColSalary')}</th>
+                    <th className={cn(TABLE_STYLES.headerCell, 'text-xs text-[#8181A5]')}>{t('simHiringColBandRef')}</th>
                     <th className={cn(TABLE_STYLES.headerCell, 'w-10')} />
                   </tr>
                 </thead>
@@ -291,10 +295,10 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                           onChange={(e) => updateHire(h.key, 'salaryAnchor', e.target.value)}
                           className="text-sm border border-[#E2E8F0] rounded px-2 py-1 bg-white w-full"
                         >
-                          <option value="Q1">Q1 (하위25%)</option>
-                          <option value="MID">Mid (중간)</option>
-                          <option value="Q3">Q3 (상위25%)</option>
-                          <option value="CUSTOM">직접입력</option>
+                          <option value="Q1">{t('simHiringQ1')}</option>
+                          <option value="MID">{t('simHiringMid')}</option>
+                          <option value="Q3">{t('simHiringQ3')}</option>
+                          <option value="CUSTOM">{t('simHiringCustom')}</option>
                         </select>
                       </td>
                       <td className={cn(TABLE_STYLES.cell, 'text-right')}>
@@ -310,7 +314,7 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                         />
                       </td>
                       <td className={cn(TABLE_STYLES.cell, 'text-xs text-[#8181A5]')}>
-                        {bandHint(bandMap[h.gradeCode])}
+                        {bandHint(bandMap[h.gradeCode], t('simHiringBandNotRegistered'))}
                       </td>
                       <td className={TABLE_STYLES.cell}>
                         <button onClick={() => removeHire(h.key)} className="text-[#8181A5] hover:text-red-500">
@@ -329,7 +333,7 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                   onClick={addHire}
                   className="flex items-center gap-1 text-sm text-[#5E81F4] hover:text-[#4F46E5] font-medium"
                 >
-                  <Plus className="w-4 h-4" /> 채용 행 추가
+                  <Plus className="w-4 h-4" /> {t('simHiringAddRow')}
                 </button>
 
                 <label className="flex items-center gap-2 text-sm text-[#64748B]">
@@ -339,11 +343,11 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                     onChange={(e) => setIncludeRecruitment(e.target.checked)}
                     className="rounded border-[#E2E8F0]"
                   />
-                  채용비용 포함
+                  {t('simHiringIncludeRecruitCost')}
                 </label>
 
                 {totalHireCount > 0 && (
-                  <span className="text-xs text-[#8181A5]">총 {totalHireCount}명</span>
+                  <span className="text-xs text-[#8181A5]">{t('simHiringTotalSummary', { count: totalHireCount })}</span>
                 )}
               </div>
 
@@ -353,7 +357,7 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                 className="flex items-center gap-2 px-4 py-2 bg-[#4F46E5] text-white rounded-lg text-sm font-medium hover:bg-[#4338CA] disabled:opacity-50"
               >
                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Calculator className="w-4 h-4" />}
-                시뮬레이션 실행
+                {t('simRunButton')}
               </button>
             </div>
           </>
@@ -372,46 +376,46 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                 results: result as unknown as Record<string, unknown>,
               })}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#5E81F4] border border-[#5E81F4]/30 rounded-lg hover:bg-[#5E81F4]/5">
-                <Save className="w-3.5 h-3.5" /> 시나리오 저장
+                <Save className="w-3.5 h-3.5" /> {t('simSaveScenario')}
               </button>
             </div>
           )}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <KPICard
-              label="현재 총 인건비 (세전/월)"
+              label={t('simHiringKpiCurrentCost')}
               value={fmtKRW(summary.currentMonthlyGross)}
-              sub={`${summary.currentHeadcount}명`}
+              sub={t('simPersonUnit', { count: summary.currentHeadcount })}
             />
             <KPICard
-              label="신규 채용 비용 (월)"
+              label={t('simHiringKpiNewCost')}
               value={fmtKRW(summary.newHireMonthlyGross)}
-              sub={`${summary.newHireCount}명`}
+              sub={t('simPersonUnit', { count: summary.newHireCount })}
             />
             <KPICard
-              label="예상 총 인건비 (월)"
+              label={t('simHiringKpiTotalCost')}
               value={fmtKRW(summary.projectedMonthlyGross)}
-              sub={`${summary.currentHeadcount + summary.newHireCount}명`}
+              sub={t('simPersonUnit', { count: summary.currentHeadcount + summary.newHireCount })}
             />
             <KPICard
-              label="연간 추가 비용"
+              label={t('simHiringKpiAnnualAdd')}
               value={fmtKRW(summary.annualAdditionalCost)}
-              sub="신규 채용분 × 12"
+              sub={t('simHiringKpiAnnualAddSub')}
             />
           </div>
 
           {/* ── 직급별 비용 차트 ── */}
           {chartData.length > 0 && (
             <div className={CARD_STYLES.padded}>
-              <h3 className="text-sm font-semibold text-[#1C1D21] mb-4">직급별 채용 비용 (만원)</h3>
+              <h3 className="text-sm font-semibold text-[#1C1D21] mb-4">{t('simHiringChartTitle')}</h3>
               <ResponsiveContainer width="100%" height={320}>
                 <BarChart data={chartData} barGap={4}>
                   <CartesianGrid {...CHART_THEME.grid} />
-                  <XAxis dataKey="직급" {...CHART_THEME.axis} />
+                  <XAxis dataKey="grade" {...CHART_THEME.axis} />
                   <YAxis {...CHART_THEME.axis} />
                   <Tooltip {...CHART_THEME.tooltip} />
                   <Legend {...CHART_THEME.legend} />
-                  <Bar dataKey="1인당 총지급액" fill={CHART_THEME.colors[0]} radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="전체 추가비용" fill={CHART_THEME.colors[2]} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="perGross" name={t('simHiringChartPerGross')} fill={CHART_THEME.colors[0]} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="totalCost" name={t('simHiringChartTotalCost')} fill={CHART_THEME.colors[2]} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -419,25 +423,25 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
 
           {/* ── 직급별 상세 테이블 ── */}
           <div className={CARD_STYLES.padded}>
-            <h3 className="text-sm font-semibold text-[#1C1D21] mb-3">직급별 상세</h3>
+            <h3 className="text-sm font-semibold text-[#1C1D21] mb-3">{t('simDetailTitle')}</h3>
             <div className={TABLE_STYLES.wrapper}>
               <table className={TABLE_STYLES.table}>
                 <thead>
                   <tr className={TABLE_STYLES.header}>
-                    <th className={TABLE_STYLES.headerCell}>직급</th>
-                    <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>인원</th>
-                    <th className={cn(TABLE_STYLES.headerCell, 'text-center')}>기준점</th>
-                    <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>1인 Gross</th>
-                    <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>1인 공제</th>
-                    <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>1인 Net</th>
-                    <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>전체 Gross (월)</th>
+                    <th className={TABLE_STYLES.headerCell}>{tCommon('grade')}</th>
+                    <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>{t('simHiringColHeadcount')}</th>
+                    <th className={cn(TABLE_STYLES.headerCell, 'text-center')}>{t('simHiringColAnchor')}</th>
+                    <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>{t('simHiringColPerGross')}</th>
+                    <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>{t('simHiringColPerDeduction')}</th>
+                    <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>{t('simHiringColPerNet')}</th>
+                    <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>{t('simHiringColTotalGrossMonthly')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {byGrade.map((g: HireGradeBreakdown, i: number) => (
                     <tr key={i} className={TABLE_STYLES.row}>
                       <td className={cn(TABLE_STYLES.cell, 'font-mono font-medium')}>{g.grade}</td>
-                      <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums')}>{g.headcount}명</td>
+                      <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums')}>{t('simPersonUnit', { count: g.headcount })}</td>
                       <td className={cn(TABLE_STYLES.cell, 'text-center text-xs text-[#8181A5]')}>{g.salaryAnchor}</td>
                       <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(g.grossPerPerson)}</td>
                       <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-red-500')}>{fmtKRW(g.deductionsPerPerson)}</td>
@@ -453,14 +457,14 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
           {/* ── 채용비용 테이블 ── */}
           {summary.recruitmentCosts && summary.recruitmentCosts.length > 0 && (
             <div className={CARD_STYLES.padded}>
-              <h3 className="text-sm font-semibold text-[#1C1D21] mb-3">채용비용 추정</h3>
+              <h3 className="text-sm font-semibold text-[#1C1D21] mb-3">{t('simHiringRecruitCostTitle')}</h3>
               <div className={TABLE_STYLES.wrapper}>
                 <table className={TABLE_STYLES.table}>
                   <thead>
                     <tr className={TABLE_STYLES.header}>
-                      <th className={TABLE_STYLES.headerCell}>비용 유형</th>
-                      <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>건당 평균</th>
-                      <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>총 예상 ({summary.newHireCount}명)</th>
+                      <th className={TABLE_STYLES.headerCell}>{t('simHiringRecruitCostType')}</th>
+                      <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>{t('simHiringRecruitCostAvg')}</th>
+                      <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>{t('simHiringRecruitCostTotal', { count: summary.newHireCount })}</th>
                     </tr>
                   </thead>
                   <tbody>

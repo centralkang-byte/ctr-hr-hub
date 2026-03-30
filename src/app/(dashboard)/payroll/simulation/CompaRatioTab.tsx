@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useCallback, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { Loader2, AlertCircle, TrendingDown, TrendingUp } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine, Cell } from 'recharts'
 import { apiClient } from '@/lib/api'
@@ -39,6 +40,9 @@ const BUCKET_COLORS: Record<string, string> = {
 // ─── Component ──────────────────────────────────────────────
 
 export default function CompaRatioTab({ companies }: Props) {
+  const t = useTranslations('payroll')
+  const tCommon = useTranslations('common')
+
   const [selectedCompanyId, setSelectedCompanyId] = useState('')
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState<CompaRatioResponse | null>(null)
@@ -51,14 +55,14 @@ export default function CompaRatioTab({ companies }: Props) {
       setData(res.data)
     } catch (err) {
       toast({
-        title: '보상 분포 로드 실패',
-        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        title: t('simCompaLoadFail'),
+        description: err instanceof Error ? err.message : t('simRetry'),
         variant: 'destructive',
       })
     } finally {
       setLoading(false)
     }
-  }, [selectedCompanyId])
+  }, [selectedCompanyId, t])
 
   useEffect(() => { fetchData() }, [fetchData])
 
@@ -66,13 +70,13 @@ export default function CompaRatioTab({ companies }: Props) {
     return (
       <div className="flex items-center justify-center py-16 text-[#8181A5]">
         <Loader2 className="w-5 h-5 animate-spin mr-2" />
-        보상 분포 분석 중...
+        {t('simCompaLoading')}
       </div>
     )
   }
 
   if (!data || data.summary.coveredEmployees === 0) {
-    return <EmptyState title="Compa-Ratio 데이터 없음" description="급여 밴드가 설정된 직원이 없습니다." />
+    return <EmptyState title={t('simCompaNoData')} description={t('simCompaNoDataDesc')} />
   }
 
   const { distribution, byGrade, outliers, summary } = data
@@ -82,9 +86,9 @@ export default function CompaRatioTab({ companies }: Props) {
       {/* ── 필터 ── */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-[#1C1D21]">보상 경쟁력 분포</h3>
+          <h3 className="text-sm font-semibold text-[#1C1D21]">{t('simCompaTitle')}</h3>
           <p className="text-xs text-[#8181A5] mt-0.5">
-            Compa-Ratio = 현재 연봉 / 밴드 중앙값 (로컬 통화 기준)
+            {t('simCompaDesc')}
           </p>
         </div>
         <select
@@ -92,7 +96,7 @@ export default function CompaRatioTab({ companies }: Props) {
           onChange={(e) => setSelectedCompanyId(e.target.value)}
           className="text-sm border border-[#E2E8F0] rounded-md px-3 py-1.5 bg-white"
         >
-          <option value="">전체 법인</option>
+          <option value="">{t('simCompaAllCompanies')}</option>
           {companies.map((c) => (
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
@@ -102,42 +106,42 @@ export default function CompaRatioTab({ companies }: Props) {
       {/* ── 요약 KPI ── */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <div className={CARD_STYLES.padded}>
-          <p className="text-xs text-[#8181A5]">대상 인원</p>
-          <p className="text-xl font-bold text-[#1C1D21]">{summary.coveredEmployees}<span className="text-sm font-normal text-[#8181A5]">/{summary.totalEmployees}명</span></p>
+          <p className="text-xs text-[#8181A5]">{t('simCompaKpiTarget')}</p>
+          <p className="text-xl font-bold text-[#1C1D21]">{summary.coveredEmployees}<span className="text-sm font-normal text-[#8181A5]">/{t('simPersonUnit', { count: summary.totalEmployees })}</span></p>
         </div>
         <div className={CARD_STYLES.padded}>
-          <p className="text-xs text-[#8181A5]">평균 Compa-Ratio</p>
+          <p className="text-xs text-[#8181A5]">{t('simCompaKpiAvg')}</p>
           <p className="text-xl font-bold text-[#1C1D21]">{summary.avg.toFixed(2)}</p>
         </div>
         <div className={CARD_STYLES.padded}>
-          <p className="text-xs text-[#8181A5]">중앙값</p>
+          <p className="text-xs text-[#8181A5]">{t('simCompaKpiMedian')}</p>
           <p className="text-xl font-bold text-[#1C1D21]">{summary.median.toFixed(2)}</p>
         </div>
         <div className={CARD_STYLES.padded}>
-          <p className="text-xs text-[#8181A5]">저보상 (&lt;0.8)</p>
+          <p className="text-xs text-[#8181A5]">{t('simCompaKpiLow')}</p>
           <p className="text-xl font-bold text-red-600">
-            <TrendingDown className="w-4 h-4 inline mr-1" />{summary.belowBand}명
+            <TrendingDown className="w-4 h-4 inline mr-1" />{t('simPersonUnit', { count: summary.belowBand })}
           </p>
         </div>
         <div className={CARD_STYLES.padded}>
-          <p className="text-xs text-[#8181A5]">고보상 (&gt;1.2)</p>
+          <p className="text-xs text-[#8181A5]">{t('simCompaKpiHigh')}</p>
           <p className="text-xl font-bold text-amber-600">
-            <TrendingUp className="w-4 h-4 inline mr-1" />{summary.aboveBand}명
+            <TrendingUp className="w-4 h-4 inline mr-1" />{t('simPersonUnit', { count: summary.aboveBand })}
           </p>
         </div>
       </div>
 
       {/* ── 히스토그램 ── */}
       <div className={CARD_STYLES.padded}>
-        <h3 className="text-sm font-semibold text-[#1C1D21] mb-4">Compa-Ratio 분포</h3>
+        <h3 className="text-sm font-semibold text-[#1C1D21] mb-4">{t('simCompaChartTitle')}</h3>
         <ResponsiveContainer width="100%" height={280}>
           <BarChart data={distribution} barCategoryGap="20%">
             <CartesianGrid {...CHART_THEME.grid} />
             <XAxis dataKey="range" {...CHART_THEME.axis} />
-            <YAxis {...CHART_THEME.axis} label={{ value: '인원', angle: -90, position: 'insideLeft', ...CHART_THEME.axis.label }} />
-            <Tooltip {...CHART_THEME.tooltip} formatter={(v) => [`${v}명`, '인원']} />
-            <ReferenceLine x="0.8–0.9" stroke="#DC2626" strokeDasharray="3 3" label={{ value: '저보상', fill: '#DC2626', fontSize: 11 }} />
-            <ReferenceLine x="1.1–1.2" stroke="#DC2626" strokeDasharray="3 3" label={{ value: '고보상', fill: '#DC2626', fontSize: 11 }} />
+            <YAxis {...CHART_THEME.axis} label={{ value: t('simCompaChartCount'), angle: -90, position: 'insideLeft', ...CHART_THEME.axis.label }} />
+            <Tooltip {...CHART_THEME.tooltip} formatter={(v) => [`${v}`, t('simCompaChartCount')]} />
+            <ReferenceLine x="0.8–0.9" stroke="#DC2626" strokeDasharray="3 3" label={{ value: t('simCompaLowLabel'), fill: '#DC2626', fontSize: 11 }} />
+            <ReferenceLine x="1.1–1.2" stroke="#DC2626" strokeDasharray="3 3" label={{ value: t('simCompaHighLabel'), fill: '#DC2626', fontSize: 11 }} />
             <Bar dataKey="count" radius={[4, 4, 0, 0]}>
               {distribution.map((entry: CompaRatioDistBucket) => (
                 <Cell key={entry.range} fill={BUCKET_COLORS[entry.range] ?? CHART_THEME.colors[0]} />
@@ -146,26 +150,26 @@ export default function CompaRatioTab({ companies }: Props) {
           </BarChart>
         </ResponsiveContainer>
         <div className="flex items-center justify-center gap-4 mt-3 text-xs text-[#8181A5]">
-          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-red-500" /> 이탈 (&lt;0.8 / &gt;1.2)</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-500" /> 주의 (0.7–0.8)</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-emerald-600" /> 적정 (0.9–1.1)</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-blue-500" /> 관리 영역</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-red-500" /> {t('simCompaRiskZone')}</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-500" /> {t('simCompaCautionZone')}</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-emerald-600" /> {t('simCompaProperZone')}</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-blue-500" /> {t('simCompaManageZone')}</span>
         </div>
       </div>
 
       {/* ── 직급별 평균 ── */}
       <div className={CARD_STYLES.padded}>
-        <h3 className="text-sm font-semibold text-[#1C1D21] mb-3">직급별 평균 Compa-Ratio</h3>
+        <h3 className="text-sm font-semibold text-[#1C1D21] mb-3">{t('simCompaGradeAvgTitle')}</h3>
         <div className={TABLE_STYLES.wrapper}>
           <table className={TABLE_STYLES.table}>
             <thead>
               <tr className={TABLE_STYLES.header}>
-                <th className={TABLE_STYLES.headerCell}>직급</th>
-                <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>인원</th>
-                <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>평균</th>
-                <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>최소</th>
-                <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>최대</th>
-                <th className={TABLE_STYLES.headerCell}>분포 바</th>
+                <th className={TABLE_STYLES.headerCell}>{tCommon('grade')}</th>
+                <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>{t('simCompaChartCount')}</th>
+                <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>{t('simCompaColAvg')}</th>
+                <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>{t('simCompaColMin')}</th>
+                <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>{t('simCompaColMax')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('simCompaColDistBar')}</th>
               </tr>
             </thead>
             <tbody>
@@ -176,7 +180,7 @@ export default function CompaRatioTab({ companies }: Props) {
                 return (
                   <tr key={g.grade} className={TABLE_STYLES.row}>
                     <td className={cn(TABLE_STYLES.cell, 'font-mono font-medium')}>{g.grade}</td>
-                    <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums')}>{g.employees}명</td>
+                    <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums')}>{t('simPersonUnit', { count: g.employees })}</td>
                     <td className={cn(
                       TABLE_STYLES.cell, 'text-right tabular-nums font-mono font-medium',
                       g.avgCompaRatio < 0.8 ? 'text-red-600' : g.avgCompaRatio > 1.2 ? 'text-amber-600' : 'text-[#1C1D21]'
@@ -217,19 +221,19 @@ export default function CompaRatioTab({ companies }: Props) {
         <div className={CARD_STYLES.padded}>
           <div className="flex items-center gap-2 mb-3">
             <AlertCircle className="w-4 h-4 text-red-500" />
-            <h3 className="text-sm font-semibold text-[#1C1D21]">관심 필요 직원 ({outliers.length}명)</h3>
+            <h3 className="text-sm font-semibold text-[#1C1D21]">{t('simCompaOutlierTitle', { count: outliers.length })}</h3>
           </div>
           <div className={TABLE_STYLES.wrapper}>
             <table className={TABLE_STYLES.table}>
               <thead>
                 <tr className={TABLE_STYLES.header}>
-                  <th className={TABLE_STYLES.headerCell}>이름</th>
-                  <th className={TABLE_STYLES.headerCell}>직급</th>
-                  <th className={TABLE_STYLES.headerCell}>부서</th>
+                  <th className={TABLE_STYLES.headerCell}>{tCommon('name')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{tCommon('grade')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{tCommon('department')}</th>
                   <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>Compa-Ratio</th>
-                  <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>현재 연봉</th>
-                  <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>밴드 범위</th>
-                  <th className={TABLE_STYLES.headerCell}>상태</th>
+                  <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>{t('simCompaColCurrentSalary')}</th>
+                  <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>{t('simCompaColBandRange')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{tCommon('status')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -255,7 +259,7 @@ export default function CompaRatioTab({ companies }: Props) {
                         'text-xs px-2 py-0.5 rounded-full font-medium',
                         o.compaRatio < 0.8 ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700'
                       )}>
-                        {o.compaRatio < 0.8 ? '저보상' : '고보상'}
+                        {o.compaRatio < 0.8 ? t('simCompaLowLabel') : t('simCompaHighLabel')}
                       </span>
                     </td>
                   </tr>

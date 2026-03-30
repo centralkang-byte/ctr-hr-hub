@@ -359,12 +359,12 @@ export default function PayrollSimulationClient({ user, companies, departments }
         <div className="flex items-center gap-2">
           <button onClick={() => setScenarioSheetOpen(true)}
             className="flex items-center gap-2 px-4 py-2 border border-[#F0F0F3] rounded-lg text-sm text-[#8181A5] hover:text-[#1C1D21] hover:bg-[#F5F5FA]">
-            <History className="w-4 h-4" /> 시나리오
+            <History className="w-4 h-4" /> {t('simScenarioHistory')}
           </button>
           {result && (mode === 'SINGLE' || mode === 'BULK') && (
             <button onClick={handleSaveSingleBulk}
               className="flex items-center gap-2 px-4 py-2 border border-[#F0F0F3] rounded-lg text-sm text-[#5E81F4] hover:bg-[#5E81F4]/5">
-              <Save className="w-4 h-4" /> 저장
+              <Save className="w-4 h-4" /> {tCommon('save')}
             </button>
           )}
           {result && (
@@ -381,12 +381,12 @@ export default function PayrollSimulationClient({ user, companies, departments }
       <div className="mb-6">
         <div className="flex border border-[#F0F0F3] rounded-lg overflow-hidden w-fit">
           {([
-            { key: 'SINGLE' as SimMode, label: t('singleSim') },
-            { key: 'BULK' as SimMode, label: t('bulkSim') },
-            { key: 'DIFFERENTIAL' as SimMode, label: '차등 인상' },
-            { key: 'COMPA_RATIO' as SimMode, label: '보상 분포' },
-            { key: 'HIRING' as SimMode, label: '채용 시뮬레이션' },
-            { key: 'FX' as SimMode, label: '환율 시뮬레이션' },
+            { key: 'SINGLE' as SimMode, label: t('simModeSingle') },
+            { key: 'BULK' as SimMode, label: t('simModeBulk') },
+            { key: 'DIFFERENTIAL' as SimMode, label: t('simModeDifferential') },
+            { key: 'COMPA_RATIO' as SimMode, label: t('simModeCompa') },
+            { key: 'HIRING' as SimMode, label: t('simModeHiring') },
+            { key: 'FX' as SimMode, label: t('simModeFx') },
           ]).map(({ key, label }) => (
             <button key={key} onClick={() => { setMode(key); setResult(null) }}
               className={`px-4 py-2 text-sm font-medium transition-colors ${mode === key ? 'bg-[#5E81F4] text-white' : 'bg-white text-[#8181A5] hover:text-[#1C1D21]'}`}>
@@ -425,7 +425,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
                   <div>
                     <p className="text-sm font-medium text-[#1C1D21]">{selectedEmployee.name}</p>
                     <p className="text-xs text-[#8181A5]">
-                      {selectedEmployee.department} · {selectedEmployee.position} · 현재 ₩{fmtN(selectedEmployee.currentSalary)}
+                      {selectedEmployee.department} · {selectedEmployee.position} · {t('simCurrentLabel')} ₩{fmtN(selectedEmployee.currentSalary)}
                     </p>
                   </div>
                   <button onClick={() => setSelectedEmployee(null)} className="text-[#8181A5] hover:text-red-500"><X className="w-4 h-4" /></button>
@@ -491,7 +491,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
               </div>
               <h3 className="text-sm font-semibold text-[#1C1D21] pt-2">{t('workHoursOptional')}</h3>
               <div className="grid grid-cols-3 gap-2">
-                {([['시간외', overtimeHours, setOvertimeHours], ['야간', nightHours, setNightHours], ['휴일', holidayHours, setHolidayHours]] as [string, number, (v: number) => void][]).map(([l, v, fn]) => (
+                {([[t('simOvertimeLabel'), overtimeHours, setOvertimeHours], [t('simNightLabel'), nightHours, setNightHours], [t('simHolidayLabel'), holidayHours, setHolidayHours]] as [string, number, (v: number) => void][]).map(([l, v, fn]) => (
                   <div key={l}>
                     <label className="text-xs text-[#8181A5]">{l}</label>
                     <div className="flex items-center gap-1">

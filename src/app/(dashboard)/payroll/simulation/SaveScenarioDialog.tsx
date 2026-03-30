@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Save, Loader2 } from 'lucide-react'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
@@ -24,6 +25,9 @@ interface Props {
 // ─── Component ──────────────────────────────────────────────
 
 export default function SaveScenarioDialog({ open, onOpenChange, onSave, isLoading }: Props) {
+  const t = useTranslations('payroll')
+  const tCommon = useTranslations('common')
+
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
 
@@ -45,19 +49,19 @@ export default function SaveScenarioDialog({ open, onOpenChange, onSave, isLoadi
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-[#1C1D21]">
             <Save className="w-4 h-4 text-[#5E81F4]" />
-            시나리오 저장
+            {t('simScenarioSaveTitle')}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
           <div>
             <label className="block text-xs font-medium text-[#8181A5] mb-1">
-              시나리오 이름 <span className="text-red-500">*</span>
+              {t('simScenarioName')} <span className="text-red-500">*</span>
             </label>
             <input
               value={title}
               onChange={e => setTitle(e.target.value)}
-              placeholder="예: 2026년 하반기 인상안 A"
+              placeholder={t('simScenarioNamePlaceholder')}
               maxLength={100}
               className={cn(
                 'w-full px-3 py-2 text-sm border border-[#F0F0F3] rounded-lg',
@@ -67,11 +71,11 @@ export default function SaveScenarioDialog({ open, onOpenChange, onSave, isLoadi
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#8181A5] mb-1">설명 (선택)</label>
+            <label className="block text-xs font-medium text-[#8181A5] mb-1">{t('simScenarioDescLabel')}</label>
             <textarea
               value={description}
               onChange={e => setDescription(e.target.value)}
-              placeholder="이 시나리오에 대한 메모"
+              placeholder={t('simScenarioDescPlaceholder')}
               maxLength={500}
               rows={2}
               className={cn(
@@ -87,7 +91,7 @@ export default function SaveScenarioDialog({ open, onOpenChange, onSave, isLoadi
             onClick={() => handleOpenChange(false)}
             className="px-4 py-2 text-sm text-[#8181A5] hover:text-[#1C1D21]"
           >
-            취소
+            {tCommon('cancel')}
           </button>
           <button
             onClick={handleSave}
@@ -98,7 +102,7 @@ export default function SaveScenarioDialog({ open, onOpenChange, onSave, isLoadi
             )}
           >
             {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            저장
+            {tCommon('save')}
           </button>
         </DialogFooter>
       </DialogContent>

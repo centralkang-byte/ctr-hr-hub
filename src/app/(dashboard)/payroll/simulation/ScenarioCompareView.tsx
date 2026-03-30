@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { X, GitCompareArrows } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { CARD_STYLES, TABLE_STYLES } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 import type { ScenarioDetail, SaveableMode } from './types'
@@ -33,12 +34,12 @@ function diffColor(n: number) {
   return 'text-[#8181A5]'
 }
 
-const MODE_LABELS: Record<SaveableMode, string> = {
-  SINGLE: '개별 시뮬레이션',
-  BULK: '일괄 시뮬레이션',
-  DIFFERENTIAL: '차등 인상',
-  HIRING: '채용 시뮬레이션',
-  FX: '환율 시뮬레이션',
+const MODE_LABEL_KEYS: Record<SaveableMode, string> = {
+  SINGLE: 'simModeSingle',
+  BULK: 'simModeBulk',
+  DIFFERENTIAL: 'simModeDifferential',
+  HIRING: 'simModeHiring',
+  FX: 'simModeFx',
 }
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -51,7 +52,7 @@ interface CompareRow {
   bold?: boolean
 }
 
-function CompareTable({ rows }: { rows: CompareRow[] }) {
+function CompareTable({ rows, headers }: { rows: CompareRow[]; headers: { item: string; scenarioA: string; scenarioB: string; diff: string } }) {
   const fmt = (n: number, f?: string) => {
     if (f === 'pct') return pctStr(n)
     if (f === 'count') return n.toLocaleString('ko-KR')
@@ -63,10 +64,10 @@ function CompareTable({ rows }: { rows: CompareRow[] }) {
       <table className={TABLE_STYLES.table}>
         <thead>
           <tr className={TABLE_STYLES.header}>
-            <th className={TABLE_STYLES.headerCell}>항목</th>
-            <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>시나리오 A</th>
-            <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>시나리오 B</th>
-            <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>차이</th>
+            <th className={TABLE_STYLES.headerCell}>{headers.item}</th>
+            <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>{headers.scenarioA}</th>
+            <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>{headers.scenarioB}</th>
+            <th className={cn(TABLE_STYLES.headerCell, 'text-right')}>{headers.diff}</th>
           </tr>
         </thead>
         <tbody>
@@ -91,32 +92,34 @@ function CompareTable({ rows }: { rows: CompareRow[] }) {
 
 // ─── Mode-specific Renderers ────────────────────────────────
 
-function CompareSingleBulk({ left, right }: { left: ScenarioDetail; right: ScenarioDetail }) {
+function CompareSingleBulk({ left, right, headers }: { left: ScenarioDetail; right: ScenarioDetail; headers: { item: string; scenarioA: string; scenarioB: string; diff: string } }) {
+  const t = useTranslations('payroll')
   const lTotals = (left.results as { summary?: { totals?: Record<string, number> } })?.summary?.totals ?? {}
   const rTotals = (right.results as { summary?: { totals?: Record<string, number> } })?.summary?.totals ?? {}
 
   const rows: CompareRow[] = [
-    { label: '현재 총 지급액', leftVal: lTotals.currentGross ?? 0, rightVal: rTotals.currentGross ?? 0 },
-    { label: '시뮬레이션 총 지급액', leftVal: lTotals.simulatedGross ?? 0, rightVal: rTotals.simulatedGross ?? 0, bold: true },
-    { label: '차이 (Gross)', leftVal: lTotals.grossDifference ?? 0, rightVal: rTotals.grossDifference ?? 0 },
-    { label: '변동률', leftVal: lTotals.grossChangeRate ?? 0, rightVal: rTotals.grossChangeRate ?? 0, format: 'pct' },
-    { label: '시뮬레이션 순 지급액', leftVal: lTotals.simulatedNet ?? 0, rightVal: rTotals.simulatedNet ?? 0, bold: true },
-    { label: '차이 (Net)', leftVal: lTotals.netDifference ?? 0, rightVal: rTotals.netDifference ?? 0 },
+    { label: t('simCompareCurrentGross'), leftVal: lTotals.currentGross ?? 0, rightVal: rTotals.currentGross ?? 0 },
+    { label: t('simCompareSimGross'), leftVal: lTotals.simulatedGross ?? 0, rightVal: rTotals.simulatedGross ?? 0, bold: true },
+    { label: t('simCompareDiffGross'), leftVal: lTotals.grossDifference ?? 0, rightVal: rTotals.grossDifference ?? 0 },
+    { label: t('simCompareChangeRate'), leftVal: lTotals.grossChangeRate ?? 0, rightVal: rTotals.grossChangeRate ?? 0, format: 'pct' },
+    { label: t('simCompareSimNet'), leftVal: lTotals.simulatedNet ?? 0, rightVal: rTotals.simulatedNet ?? 0, bold: true },
+    { label: t('simCompareDiffNet'), leftVal: lTotals.netDifference ?? 0, rightVal: rTotals.netDifference ?? 0 },
   ]
 
-  return <CompareTable rows={rows} />
+  return <CompareTable rows={rows} headers={headers} />
 }
 
-function CompareDifferential({ left, right }: { left: ScenarioDetail; right: ScenarioDetail }) {
+function CompareDifferential({ left, right, headers }: { left: ScenarioDetail; right: ScenarioDetail; headers: { item: string; scenarioA: string; scenarioB: string; diff: string } }) {
+  const t = useTranslations('payroll')
   const lSummary = (left.results as { summary?: Record<string, unknown> })?.summary ?? {}
   const rSummary = (right.results as { summary?: Record<string, unknown> })?.summary ?? {}
   const lTotals = (lSummary.totals ?? {}) as Record<string, number>
   const rTotals = (rSummary.totals ?? {}) as Record<string, number>
 
   const topRows: CompareRow[] = [
-    { label: '시뮬레이션 총 지급액', leftVal: lTotals.simulatedGross ?? 0, rightVal: rTotals.simulatedGross ?? 0, bold: true },
-    { label: '차이 (Gross)', leftVal: lTotals.grossDifference ?? 0, rightVal: rTotals.grossDifference ?? 0 },
-    { label: '변동률', leftVal: lTotals.grossChangeRate ?? 0, rightVal: rTotals.grossChangeRate ?? 0, format: 'pct' },
+    { label: t('simCompareSimGross'), leftVal: lTotals.simulatedGross ?? 0, rightVal: rTotals.simulatedGross ?? 0, bold: true },
+    { label: t('simCompareDiffGross'), leftVal: lTotals.grossDifference ?? 0, rightVal: rTotals.grossDifference ?? 0 },
+    { label: t('simCompareChangeRate'), leftVal: lTotals.grossChangeRate ?? 0, rightVal: rTotals.grossChangeRate ?? 0, format: 'pct' },
   ]
 
   // 직급별 비교
@@ -127,57 +130,68 @@ function CompareDifferential({ left, right }: { left: ScenarioDetail; right: Sce
   const gradeRows: CompareRow[] = allGrades.map(grade => {
     const l = lByGrade.find(g => g.grade === grade)
     const r = rByGrade.find(g => g.grade === grade)
-    return { label: `${grade} 추가비용`, leftVal: l?.difference ?? 0, rightVal: r?.difference ?? 0 }
+    return { label: t('simCompareGradeCost', { grade }), leftVal: l?.difference ?? 0, rightVal: r?.difference ?? 0 }
   })
 
   return (
     <div className="space-y-4">
-      <CompareTable rows={topRows} />
+      <CompareTable rows={topRows} headers={headers} />
       {gradeRows.length > 0 && (
         <>
-          <h4 className="text-sm font-semibold text-[#1C1D21] mt-4">직급별 추가비용</h4>
-          <CompareTable rows={gradeRows} />
+          <h4 className="text-sm font-semibold text-[#1C1D21] mt-4">{t('simCompareGradeCostTitle')}</h4>
+          <CompareTable rows={gradeRows} headers={headers} />
         </>
       )}
     </div>
   )
 }
 
-function CompareHiring({ left, right }: { left: ScenarioDetail; right: ScenarioDetail }) {
+function CompareHiring({ left, right, headers }: { left: ScenarioDetail; right: ScenarioDetail; headers: { item: string; scenarioA: string; scenarioB: string; diff: string } }) {
+  const t = useTranslations('payroll')
   const lSummary = (left.results as { summary?: Record<string, number> })?.summary ?? {}
   const rSummary = (right.results as { summary?: Record<string, number> })?.summary ?? {}
 
   const rows: CompareRow[] = [
-    { label: '현재 월 인건비', leftVal: (lSummary as Record<string, number>).currentMonthlyGross ?? 0, rightVal: (rSummary as Record<string, number>).currentMonthlyGross ?? 0 },
-    { label: '신규 채용 월 인건비', leftVal: (lSummary as Record<string, number>).newHireMonthlyGross ?? 0, rightVal: (rSummary as Record<string, number>).newHireMonthlyGross ?? 0, bold: true },
-    { label: '합산 월 인건비', leftVal: (lSummary as Record<string, number>).projectedMonthlyGross ?? 0, rightVal: (rSummary as Record<string, number>).projectedMonthlyGross ?? 0, bold: true },
-    { label: '연간 추가 비용', leftVal: (lSummary as Record<string, number>).annualAdditionalCost ?? 0, rightVal: (rSummary as Record<string, number>).annualAdditionalCost ?? 0 },
-    { label: '신규 채용 인원', leftVal: (lSummary as Record<string, number>).newHireCount ?? 0, rightVal: (rSummary as Record<string, number>).newHireCount ?? 0, format: 'count' },
+    { label: t('simCompareCurrentMonthlyCost'), leftVal: (lSummary as Record<string, number>).currentMonthlyGross ?? 0, rightVal: (rSummary as Record<string, number>).currentMonthlyGross ?? 0 },
+    { label: t('simCompareNewHireMonthlyCost'), leftVal: (lSummary as Record<string, number>).newHireMonthlyGross ?? 0, rightVal: (rSummary as Record<string, number>).newHireMonthlyGross ?? 0, bold: true },
+    { label: t('simCompareTotalMonthlyCost'), leftVal: (lSummary as Record<string, number>).projectedMonthlyGross ?? 0, rightVal: (rSummary as Record<string, number>).projectedMonthlyGross ?? 0, bold: true },
+    { label: t('simCompareAnnualAddCost'), leftVal: (lSummary as Record<string, number>).annualAdditionalCost ?? 0, rightVal: (rSummary as Record<string, number>).annualAdditionalCost ?? 0 },
+    { label: t('simCompareNewHireCount'), leftVal: (lSummary as Record<string, number>).newHireCount ?? 0, rightVal: (rSummary as Record<string, number>).newHireCount ?? 0, format: 'count' },
   ]
 
-  return <CompareTable rows={rows} />
+  return <CompareTable rows={rows} headers={headers} />
 }
 
-function CompareFx({ left, right }: { left: ScenarioDetail; right: ScenarioDetail }) {
+function CompareFx({ left, right, headers }: { left: ScenarioDetail; right: ScenarioDetail; headers: { item: string; scenarioA: string; scenarioB: string; diff: string } }) {
+  const t = useTranslations('payroll')
   const lSummary = (left.results as { summary?: Record<string, number> })?.summary ?? {}
   const rSummary = (right.results as { summary?: Record<string, number> })?.summary ?? {}
 
   const rows: CompareRow[] = [
-    { label: '국내 월 인건비 (KRW)', leftVal: (lSummary as Record<string, number>).domesticMonthlyKRW ?? 0, rightVal: (rSummary as Record<string, number>).domesticMonthlyKRW ?? 0 },
-    { label: '해외 현재 (KRW 환산)', leftVal: (lSummary as Record<string, number>).overseasCurrentKRW ?? 0, rightVal: (rSummary as Record<string, number>).overseasCurrentKRW ?? 0 },
-    { label: '해외 시뮬레이션 (KRW)', leftVal: (lSummary as Record<string, number>).overseasSimulatedKRW ?? 0, rightVal: (rSummary as Record<string, number>).overseasSimulatedKRW ?? 0, bold: true },
-    { label: '합산 현재 (KRW)', leftVal: (lSummary as Record<string, number>).totalCurrentKRW ?? 0, rightVal: (rSummary as Record<string, number>).totalCurrentKRW ?? 0 },
-    { label: '합산 시뮬레이션 (KRW)', leftVal: (lSummary as Record<string, number>).totalSimulatedKRW ?? 0, rightVal: (rSummary as Record<string, number>).totalSimulatedKRW ?? 0, bold: true },
-    { label: '차이 (KRW)', leftVal: (lSummary as Record<string, number>).differenceKRW ?? 0, rightVal: (rSummary as Record<string, number>).differenceKRW ?? 0 },
+    { label: t('simCompareDomesticMonthly'), leftVal: (lSummary as Record<string, number>).domesticMonthlyKRW ?? 0, rightVal: (rSummary as Record<string, number>).domesticMonthlyKRW ?? 0 },
+    { label: t('simCompareOverseasCurrent'), leftVal: (lSummary as Record<string, number>).overseasCurrentKRW ?? 0, rightVal: (rSummary as Record<string, number>).overseasCurrentKRW ?? 0 },
+    { label: t('simCompareOverseasSim'), leftVal: (lSummary as Record<string, number>).overseasSimulatedKRW ?? 0, rightVal: (rSummary as Record<string, number>).overseasSimulatedKRW ?? 0, bold: true },
+    { label: t('simCompareTotalCurrent'), leftVal: (lSummary as Record<string, number>).totalCurrentKRW ?? 0, rightVal: (rSummary as Record<string, number>).totalCurrentKRW ?? 0 },
+    { label: t('simCompareTotalSim'), leftVal: (lSummary as Record<string, number>).totalSimulatedKRW ?? 0, rightVal: (rSummary as Record<string, number>).totalSimulatedKRW ?? 0, bold: true },
+    { label: t('simCompareDiffKRW'), leftVal: (lSummary as Record<string, number>).differenceKRW ?? 0, rightVal: (rSummary as Record<string, number>).differenceKRW ?? 0 },
   ]
 
-  return <CompareTable rows={rows} />
+  return <CompareTable rows={rows} headers={headers} />
 }
 
 // ─── Component ──────────────────────────────────────────────
 
 export default function ScenarioCompareView({ left, right, onClose }: Props) {
+  const t = useTranslations('payroll')
+  const tCommon = useTranslations('common')
   const mode = left.mode as SaveableMode
+
+  const headers = {
+    item: t('simCompareItem'),
+    scenarioA: t('simCompareScenarioA'),
+    scenarioB: t('simCompareScenarioB'),
+    diff: t('simCompareDiff'),
+  }
 
   return (
     <div className="space-y-6">
@@ -185,14 +199,14 @@ export default function ScenarioCompareView({ left, right, onClose }: Props) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <GitCompareArrows className="w-5 h-5 text-[#5E81F4]" />
-          <h2 className="text-lg font-bold text-[#1C1D21]">시나리오 비교</h2>
+          <h2 className="text-lg font-bold text-[#1C1D21]">{t('simCompareTitle')}</h2>
           <span className="text-xs px-2 py-0.5 bg-[#5E81F4]/10 text-[#5E81F4] rounded-full">
-            {MODE_LABELS[mode]}
+            {t(MODE_LABEL_KEYS[mode])}
           </span>
         </div>
         <button onClick={onClose}
           className="flex items-center gap-1 px-3 py-1.5 text-sm text-[#8181A5] hover:text-[#1C1D21] border border-[#F0F0F3] rounded-lg">
-          <X className="w-4 h-4" /> 닫기
+          <X className="w-4 h-4" /> {tCommon('close')}
         </button>
       </div>
 
@@ -218,10 +232,10 @@ export default function ScenarioCompareView({ left, right, onClose }: Props) {
       </div>
 
       {/* 모드별 비교 테이블 */}
-      {(mode === 'SINGLE' || mode === 'BULK') && <CompareSingleBulk left={left} right={right} />}
-      {mode === 'DIFFERENTIAL' && <CompareDifferential left={left} right={right} />}
-      {mode === 'HIRING' && <CompareHiring left={left} right={right} />}
-      {mode === 'FX' && <CompareFx left={left} right={right} />}
+      {(mode === 'SINGLE' || mode === 'BULK') && <CompareSingleBulk left={left} right={right} headers={headers} />}
+      {mode === 'DIFFERENTIAL' && <CompareDifferential left={left} right={right} headers={headers} />}
+      {mode === 'HIRING' && <CompareHiring left={left} right={right} headers={headers} />}
+      {mode === 'FX' && <CompareFx left={left} right={right} headers={headers} />}
     </div>
   )
 }

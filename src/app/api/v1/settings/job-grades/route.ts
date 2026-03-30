@@ -16,8 +16,11 @@ export const GET = withPermission(
     const { searchParams } = new URL(req.url)
     const gradeType = searchParams.get('gradeType') // STAFF | SPECIALIST | EXECUTIVE
 
+    const requestedCompanyId = searchParams.get('companyId')
     const companyFilter =
-      user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }
+      requestedCompanyId ? { companyId: requestedCompanyId }
+      : user.role === 'SUPER_ADMIN' ? {}
+      : { companyId: user.companyId }
 
     const jobGrades = await prisma.jobGrade.findMany({
       where: {
