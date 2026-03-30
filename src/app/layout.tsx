@@ -4,10 +4,17 @@
 
 import type { Metadata, Viewport } from 'next'
 import localFont from 'next/font/local'
+import { Inter } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { Providers } from '@/app/providers'
 import './globals.css'
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -33,7 +40,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#5E81F4',
+  themeColor: '#4a40e0',
 }
 
 export default async function RootLayout({
@@ -56,7 +63,7 @@ export default async function RootLayout({
       </head>
       <body
         suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased tracking-ctr`}
+        className={`${inter.variable} ${geistSans.variable} ${geistMono.variable} font-sans antialiased tracking-ctr`}
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>{children}</Providers>

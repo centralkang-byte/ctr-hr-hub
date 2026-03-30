@@ -18,60 +18,82 @@
     letter-spacing: -0.02em;
   }
 
+  /* Kinetic Atelier — Light Mode (Stitch Semantic Tokens) */
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 47.4% 11.2%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 47.4% 11.2%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 47.4% 11.2%;
-    --primary: 243.4 75.4% 63%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 72.2% 50.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 243.4 75.4% 63%;
-    --chart-1: 243.4 75.4% 58.6%;
-    --chart-2: 258.3 89.5% 66.3%;
-    --chart-3: 161.4 93.5% 30.4%;
-    --chart-4: 32.1 94.6% 43.7%;
-    --chart-5: 0 72.2% 50.6%;
-    --chart-6: 215 20.2% 65.1%;
+    --background: 0 0% 96.5%;               /* #f6f6f6 surface */
+    --foreground: 180 3.4% 18.2%;           /* #2d2f2f on-surface */
+    --card: 0 0% 100%;                       /* #ffffff surface-container-lowest */
+    --card-foreground: 180 3.4% 18.2%;      /* #2d2f2f on-surface */
+    --popover: 0 0% 100%;                    /* #ffffff */
+    --popover-foreground: 180 3.4% 18.2%;   /* #2d2f2f */
+    --primary: 244 74% 56.3%;               /* #4a40e0 primary */
+    --primary-foreground: 260 100% 97.3%;   /* #f4f1ff on-primary */
+    --secondary: 0 0% 94.5%;                /* #f0f1f1 surface-container-low */
+    --secondary-foreground: 180 3.4% 18.2%; /* #2d2f2f */
+    --muted: 0 0% 94.5%;                    /* #f0f1f1 surface-container-low */
+    --muted-foreground: 180 1.7% 35.9%;     /* #5a5c5c on-surface-variant */
+    --accent: 0 0% 94.5%;                   /* #f0f1f1 */
+    --accent-foreground: 180 3.4% 18.2%;    /* #2d2f2f */
+    --destructive: 340 80% 39.2%;           /* #b41340 error */
+    --destructive-foreground: 0 100% 93.7%; /* #ffefef on-error */
+    --border: 180 1.5% 67.8%;              /* #acadad outline-variant (사용 시 /15 opacity) */
+    --input: 180 1.5% 67.8%;               /* #acadad */
+    --ring: 244 74% 56.3%;                  /* #4a40e0 primary */
+
+    /* Kinetic Atelier 확장 토큰 */
+    --primary-dim: 247 65% 51%;              /* #3d30d4 그라디언트 끝점 */
+    --primary-container: 242 100% 79.2%;     /* #9795ff primary 밝은 변형 */
+    --tertiary: 161 100% 20.6%;              /* #006947 에메랄드 텍스트 */
+    --tertiary-container: 154 89% 68.6%;     /* #69f6b8 에메랄드 배경 */
+    --on-tertiary-container: 162 100% 17.6%; /* #005a3c */
+    --surface-container-low: 0 0% 94.5%;     /* #f0f1f1 */
+    --surface-container-high: 180 1.5% 88.6%; /* #e1e3e3 */
+    --surface-container: 0 0% 90.8%;         /* #e7e8e8 */
+
+    --chart-1: 244 74% 56.3%;               /* #4a40e0 primary */
+    --chart-2: 242 100% 79.2%;              /* #9795ff primary-container */
+    --chart-3: 161 100% 20.6%;              /* #006947 tertiary */
+    --chart-4: 261 44% 49%;                 /* #6249b2 secondary */
+    --chart-5: 340 80% 39.2%;              /* #b41340 error */
+    --chart-6: 180 1.7% 35.9%;             /* #5a5c5c on-surface-variant */
     --radius: 0.5rem;
   }
-  /* DESIGN.md Dark Mode — Slate 스케일 + semantic 400 레벨 */
+  /* Kinetic Atelier — Dark Mode (Stitch inverse-surface 기반) */
   .dark {
-    --background: 222.2 84% 4.9%;          /* slate-950 #020617 */
-    --foreground: 210 40% 98%;             /* slate-50 #F8FAFC */
-    --card: 217.2 32.6% 11.8%;            /* slate-900 #0F172A */
-    --card-foreground: 210 40% 98%;        /* slate-50 */
-    --popover: 217.2 32.6% 11.8%;         /* slate-900 */
-    --popover-foreground: 210 40% 98%;     /* slate-50 */
-    --primary: 243.4 75.4% 63%;            /* Indigo L63% */
+    --background: 180 10% 3.7%;            /* #0c0f0f inverse-surface */
+    --foreground: 0 0% 96.5%;              /* #f6f6f6 surface-bright */
+    --card: 180 3.4% 18.2%;               /* #2d2f2f on-surface → 카드 배경 */
+    --card-foreground: 0 0% 96.5%;         /* #f6f6f6 */
+    --popover: 180 3.4% 18.2%;            /* #2d2f2f */
+    --popover-foreground: 0 0% 96.5%;      /* #f6f6f6 */
+    --primary: 242 100% 75.5%;             /* #8582ff inverse-primary */
     --primary-foreground: 0 0% 100%;
-    --secondary: 217.2 32.6% 17.5%;        /* slate-800 #1E293B */
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;           /* slate-800 */
-    --muted-foreground: 215 20.2% 65.1%;   /* slate-400 #94A3B8 */
-    --accent: 217.2 32.6% 17.5%;           /* slate-800 */
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 72% 51%;              /* error-dark fg #F87171 */
+    --secondary: 180 3.4% 18.2%;           /* #2d2f2f */
+    --secondary-foreground: 0 0% 96.5%;
+    --muted: 180 3.4% 18.2%;              /* #2d2f2f */
+    --muted-foreground: 180 0.8% 61.4%;    /* #9c9d9d inverse-on-surface */
+    --accent: 180 3.4% 18.2%;
+    --accent-foreground: 0 0% 96.5%;
+    --destructive: 346 85% 52.2%;          /* #f74b6d error-container (밝게) */
     --destructive-foreground: 0 0% 98%;
-    --border: 217.2 32.6% 20%;             /* ~slate-700 #334155 */
-    --input: 217.2 32.6% 20%;
-    --ring: 243.4 75.4% 63%;
-    --chart-1: 243.4 75.4% 63%;            /* Indigo */
-    --chart-2: 258.3 89.5% 66.3%;          /* Violet */
-    --chart-3: 160 84% 39.4%;              /* Emerald #34D399 */
-    --chart-4: 43 96% 56.3%;               /* Amber #FBBF24 */
-    --chart-5: 0 91% 71%;                  /* Red #F87171 */
-    --chart-6: 215 20.2% 65.1%;            /* Slate #94A3B8 */
+    --border: 180 1.5% 67.8%;             /* #acadad */
+    --input: 180 1.5% 67.8%;
+    --ring: 242 100% 75.5%;                /* inverse-primary */
+
+    --primary-dim: 244 74% 56.3%;          /* #4a40e0 */
+    --primary-container: 242 100% 79.2%;   /* #9795ff */
+    --tertiary: 154 89% 68.6%;             /* #69f6b8 밝은 에메랄드 (다크모드용) */
+    --tertiary-container: 162 100% 17.6%;  /* #005a3c 어두운 에메랄드 배경 */
+    --on-tertiary-container: 148 100% 88.6%; /* #c8ffe0 */
+    --surface-container-low: 180 3.4% 18.2%;
+    --surface-container-high: 180 1.5% 44.7%; /* #757777 */
+    --surface-container: 180 3.4% 18.2%;
+
+    --chart-1: 242 100% 75.5%;            /* inverse-primary */
+    --chart-2: 258 100% 89%;              /* secondary-fixed #d8caff */
+    --chart-3: 154 89% 68.6%;             /* tertiary-fixed #69f6b8 */
+    --chart-4: 261 44% 49%;               /* secondary #6249b2 */
+    --chart-5: 346 85% 52.2%;             /* error-container #f74b6d */
+    --chart-6: 180 0.8% 61.4%;            /* inverse-on-surface */
   }
 }

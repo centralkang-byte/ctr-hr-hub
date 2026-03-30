@@ -1,8 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
-// PROTECTED — DO NOT MODIFY without architecture review
-// This file is a core infrastructure component. Changes here
-// can break: design system tokens — all 194 pages use these styles
-// Last verified: 2026-03-12 (Q-4 P6)
+// Kinetic Atelier Design System — DESIGN.md 기준
+// Last updated: 2026-03-30 (Stitch 컨설팅 반영)
 // ═══════════════════════════════════════════════════════════════
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
@@ -17,6 +15,7 @@ const config: Config = {
 	theme: {
 		extend: {
 			colors: {
+				// shadcn/ui semantic tokens (CSS variable 기반)
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				card: {
@@ -29,7 +28,9 @@ const config: Config = {
 				},
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					foreground: 'hsl(var(--primary-foreground))',
+					dim: 'hsl(var(--primary-dim))',
+					container: 'hsl(var(--primary-container))',
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -55,36 +56,65 @@ const config: Config = {
 					'2': 'hsl(var(--chart-2))',
 					'3': 'hsl(var(--chart-3))',
 					'4': 'hsl(var(--chart-4))',
-					'5': 'hsl(var(--chart-5))'
+					'5': 'hsl(var(--chart-5))',
+					'6': 'hsl(var(--chart-6))',
 				},
-				// CTR Design System — DESIGN.md 기준 (Slate Indigo)
-				'ctr-primary': '#6159E7',
-				'ctr-primary-dark': '#4F46E5',
-				'ctr-primary-light': '#EEF2FF',
-				'ctr-secondary': '#64748B',
+
+				// Kinetic Atelier 확장 토큰 (CSS variable 기반)
+				tertiary: {
+					DEFAULT: 'hsl(var(--tertiary))',
+					container: 'hsl(var(--tertiary-container))',
+				},
+				'on-tertiary-container': 'hsl(var(--on-tertiary-container))',
+				'surface-container-low': 'hsl(var(--surface-container-low))',
+				'surface-container-high': 'hsl(var(--surface-container-high))',
+				'surface-container': 'hsl(var(--surface-container))',
+
+				// CTR 호환 토큰 (직접 hex — 레거시 페이지 호환용)
+				'ctr-primary': '#4a40e0',
+				'ctr-primary-dark': '#3d30d4',
+				'ctr-primary-light': '#9795ff',
+				'ctr-secondary': '#6249b2',
 				// Semantic
-				'ctr-success': '#059669',
-				'ctr-warning': '#D97706',
-				'ctr-error': '#DC2626',
-				'ctr-info': '#2563EB',
-				// Semantic backgrounds (light)
-				'ctr-success-bg': '#ECFDF5',
-				'ctr-warning-bg': '#FFFBEB',
-				'ctr-error-bg': '#FEF2F2',
-				'ctr-info-bg': '#EFF6FF',
-				// Slate neutral scale
-				'ctr-slate': {
-					50: '#F8FAFC',
-					100: '#F1F5F9',
-					200: '#E2E8F0',
-					300: '#CBD5E1',
-					400: '#94A3B8',
-					500: '#64748B',
-					600: '#475569',
-					700: '#334155',
-					800: '#1E293B',
-					900: '#0F172A',
+				'ctr-success': '#006947',
+				'ctr-warning': '#B45309',
+				'ctr-error': '#b41340',
+				'ctr-info': '#4a40e0',
+				// Semantic backgrounds
+				'ctr-success-bg': '#69f6b8',
+				'ctr-warning-bg': '#FEF3C7',
+				'ctr-error-bg': '#f74b6d',
+				'ctr-info-bg': '#9795ff',
+				// Surface scale (Stitch Tonal Layering)
+				'ctr-surface': {
+					DEFAULT: '#f6f6f6',
+					low: '#f0f1f1',
+					high: '#e1e3e3',
+					container: '#e7e8e8',
+					dim: '#d2d5d5',
+					lowest: '#ffffff',
 				},
+				// Text colors
+				'ctr-on-surface': '#2d2f2f',
+				'ctr-on-surface-variant': '#5a5c5c',
+				'ctr-outline': '#757777',
+				'ctr-outline-variant': '#acadad',
+			},
+			fontFamily: {
+				sans: [
+					'Pretendard Variable', 'Pretendard',
+					'-apple-system', 'BlinkMacSystemFont', 'system-ui',
+					'Roboto', 'Helvetica Neue', 'Segoe UI',
+					'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic',
+					'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+					'sans-serif',
+				],
+				display: [
+					'var(--font-inter)', 'Inter',
+					'Pretendard Variable', 'Pretendard',
+					'-apple-system', 'BlinkMacSystemFont', 'system-ui',
+					'sans-serif',
+				],
 			},
 			fontSize: {
 				'2xs': ['0.6875rem', { lineHeight: '1.4' }],  // 11px — table headers
@@ -93,14 +123,18 @@ const config: Config = {
 				'ctr': '-0.02em',
 			},
 			borderRadius: {
-				lg: 'var(--radius)',
+				'2xl': '1rem',           // Container (카드, 모달)
+				xl: '0.75rem',
+				lg: 'var(--radius)',      // 0.5rem (8px) Element
 				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+				sm: 'calc(var(--radius) - 4px)',
 			},
 			boxShadow: {
 				'sm': '0 1px 2px rgba(15,23,42,0.06)',
 				'md': '0 4px 12px rgba(15,23,42,0.08)',
 				'lg': '0 12px 32px rgba(15,23,42,0.12)',
+				'primary-tinted': '0 20px 40px -5px rgba(74,64,224,0.06)',
+				'primary-glow': '0 8px 24px rgba(74,64,224,0.20)',
 			},
 		}
 	},

@@ -1,4 +1,7 @@
-# Design System — CTR HR Hub
+# Design System — Kinetic Atelier
+
+> **Creative North Star:** "The Editorial Orchestrator"
+> 전통적 공장형 HR 시스템에서 벗어나, 잡지(Editorial) 같은 세련된 레이아웃과 역동적 에너지를 결합한 차세대 HR 디자인 시스템.
 
 ## Product Context
 
@@ -6,119 +9,135 @@
 - **Who it's for:** HR Admin(하루 8시간 사용), Manager, Employee, Executive
 - **Space/industry:** Enterprise HR SaaS (Workday, BambooHR, Rippling 경쟁)
 - **Project type:** Data-heavy dashboard / web app
-- **Locales:** ko, en, zh, ja, vi (5개 언어, CJK 3개)
+- **Locales:** ko, en, zh, vi, es (5개 언어, CJK 3개)
 
 ## Aesthetic Direction
 
-- **Direction:** Industrial/Utilitarian — 기능 우선, 데이터 밀도 높음
-- **Decoration level:** Minimal — 타이포그래피와 스페이싱이 계층을 만듦
-- **Mood:** Stripe/Linear처럼 정밀하되, HR 도메인의 신뢰감을 위해 따뜻한 뉴트럴 사용. "하루 종일 써도 피로하지 않은 도구."
-- **Anti-patterns:** 불필요한 그라디언트, 장식적 그림자, 보라색 AI슬롭 그라디언트, 균일한 bubbly border-radius
+- **Direction:** Editorial/Magazine — 에디토리얼 레이아웃 + 역동적 에너지
+- **Decoration level:** Intentional — Tonal Layering, 미세 그라디언트, 글래스모피즘(제한적)
+- **Mood:** "Kinetic Atelier" — 정교함(Sophistication) + 역동성(Vitality) + 신뢰(Authority). 깨끗한 화이트 스페이스와 인디고/에메랄드 악센트의 긴장감.
+- **Anti-patterns:** 1px 보더 남용, 균일한 그리드 박스, 보라색 AI슬롭 그라디언트, 모든 요소에 동일한 border-radius
 
 ---
 
-## 1. Typography
+## 1. Color Palette (Stitch Semantic Tokens)
+
+### Primary & Accent
+
+| Token | Hex | HSL | 용도 |
+|-------|-----|-----|------|
+| primary | #4a40e0 | 244 74% 56% | CTA, 활성 상태, 링크, 주요 악센트 |
+| primary-dim | #3d30d4 | 247 65% 51% | Primary hover, 그라디언트 끝점 |
+| primary-container | #9795ff | 242 100% 79% | Primary 밝은 변형, 배지, 강조 배경 |
+| primary-fixed | #9795ff | 242 100% 79% | 고정 악센트 |
+| primary-fixed-dim | #8885ff | 242 100% 76% | 고정 악센트 어두운 변형 |
+| secondary | #6249b2 | 261 44% 49% | 보조 악센트 |
+| secondary-container | #d8caff | 258 100% 89% | 보조 배경 |
+
+### Tertiary (Emerald — 성장/긍정 시그널)
+
+| Token | Hex | 용도 |
+|-------|-----|------|
+| tertiary | #006947 | 에메랄드 텍스트, 성장/채용/긍정 |
+| tertiary-dim | #005c3d | 에메랄드 hover |
+| tertiary-container | #69f6b8 | 에메랄드 배경, Success 칩 |
+| on-tertiary-container | #005a3c | 에메랄드 컨테이너 위 텍스트 |
+
+### Surface Hierarchy (Tonal Layering)
+
+| Layer | Token | Hex | 용도 |
+|-------|-------|-----|------|
+| 0 (Base) | surface / background | #f6f6f6 | 페이지 배경 |
+| 1 (Canvas) | surface-container-low | #f0f1f1 | 보조 섹션 배경 |
+| 2 (Card) | surface-container-lowest | #ffffff | 카드, 주요 인터랙티브 영역 |
+| 3 (Elevated) | surface-container-high | #e1e3e3 | 호버 상태, 테이블 헤더 |
+| — | surface-container | #e7e8e8 | 일반 컨테이너 |
+| — | surface-dim | #d2d5d5 | 비활성/낮은 우선순위 |
+
+### Text Colors
+
+| Token | Hex | 용도 |
+|-------|-----|------|
+| on-surface | #2d2f2f | 기본 텍스트 (순수 검정 #000 금지) |
+| on-surface-variant | #5a5c5c | 보조 텍스트, 라벨, 메타데이터 |
+| on-background | #2d2f2f | 배경 위 텍스트 |
+
+### Semantic Colors
+
+| 의미 | Foreground | Background | Badge variant |
+|------|-----------|-----------|---------------|
+| 성공/활성/완료 | #006947 (tertiary) | #69f6b8/30 (tertiary-container) | success |
+| 경고/대기/수습 | #B45309 | #FEF3C7 | warning |
+| 오류/반려/삭제 | #b41340 (error) | #f74b6d/20 (error-container) | error |
+| 정보/진행중 | #4a40e0 (primary) | #9795ff/20 (primary-container) | info |
+| 비활성/초안 | #5a5c5c | #e7e8e8 | neutral |
+
+### Outline & Border
+
+| Token | Hex | 용도 |
+|-------|-----|------|
+| outline | #757777 | 강조 보더 (드물게) |
+| outline-variant | #acadad | Ghost Border (15% opacity로만 사용) |
+
+### Chart Palette (6색)
+
+| 순서 | Hex | Token |
+|------|-----|-------|
+| 1 | #4a40e0 | primary |
+| 2 | #9795ff | primary-container |
+| 3 | #006947 | tertiary |
+| 4 | #6249b2 | secondary |
+| 5 | #b41340 | error |
+| 6 | #5a5c5c | on-surface-variant |
+
+---
+
+## 2. Typography
 
 ### Font Stack
 
-- **Display/Body:** Pretendard Variable — CJK 최적화, 한글 렌더링 최고
-- **Data/Numbers:** Geist Mono — tabular-nums 필수 동반, 급여/사번/날짜/비율
-- **Code:** Geist Mono
+| 유틸리티 | 폰트 | 용도 | 규칙 |
+|----------|------|------|------|
+| `font-sans` | Pretendard Variable | 글로벌 본문, CJK 가독성 최우선 | 기본값, 한영 혼합 문장 포함 |
+| `font-display` | Inter | 영문 전용 Hero/KPI/대형 타이틀 | text-4xl 이상, 순수 영문/숫자만 |
+| `font-mono` | Geist Mono | 숫자, 코드, 사번, 날짜 | 반드시 `tabular-nums` 동반 |
 
-### Loading
+### 베이스라인 충돌 방지
 
-```css
-/* Pretendard — CDN */
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+Inter와 Pretendard를 같은 font-family에 섞으면 영문/한글 baseline이 어긋남.
+- `font-display`는 명시적으로만 사용 (영문 전용 대형 텍스트)
+- 한영 혼합 문장: **절대 font-display 사용 금지** → Pretendard로 통일
 
-/* Geist — Next.js local font (이미 적용됨) */
---font-geist-sans, --font-geist-mono
+### CJK 규칙
+
+- `letter-spacing: -0.02em` 전역 적용
+- `line-height: 1.6` 최소 (CJK 가독성)
+- Base size 14px
+
+### Mono 규칙
+
+```
+font-mono 사용 시 반드시:
+  className="font-mono tabular-nums"
+
+❌ 단독 font-mono 사용 금지
+✅ 항상 tabular-nums 동반
 ```
 
 ### Type Scale
 
-| Token | Size | Weight | Line-height | 용도 |
-|-------|------|--------|-------------|------|
-| 4xl | 30px | 700 | 1.2 | 페이지 제목 |
-| 3xl | 24px | 700 | 1.3 | 섹션 제목 |
-| 2xl | 20px | 600 | 1.4 | 카드 제목 |
-| xl | 18px | 600 | 1.5 | 소제목 |
-| lg | 16px | 500 | 1.6 | 강조 본문 |
-| **base** | **14px** | **400** | **1.6** | **기본 본문** |
-| sm | 13px | 400 | 1.5 | 보조 텍스트 |
-| xs | 12px | 500 | 1.5 | 캡션, 페이지네이션 |
-| 2xs | 11px | 600 | 1.4 | 테이블 헤더 (uppercase, letter-spacing 0.06em) |
-
-### CJK Rules
-
-- `letter-spacing: -0.02em` (tracking-ctr) 전역 적용
-- `line-height: 1.6` 최소 (CJK 가독성)
-- Base size 14px — CJK 가독성과 데이터 밀도의 최적 균형점
-
-### Mono Rules
-
-```
-Geist Mono 사용 시 반드시:
-  className="font-mono tabular-nums"
-
-❌ 단독 font-mono 사용 금지 — 숫자 세로 정렬이 깨짐
-✅ 항상 tabular-nums 동반 — 급여, 사번, 날짜, 비율 모든 숫자 컬럼
-```
-
----
-
-## 2. Color
-
-### Approach: Restrained — 1 Primary + Warm Neutrals + 4 Semantic
-
-### Primary & Secondary
-
-| Token | Hex | 용도 |
-|-------|-----|------|
-| primary | #6159E7 | CTA, 활성 상태, 링크 |
-| primary-dark | #4F46E5 | Primary hover |
-| primary-light | #EEF2FF | Primary 배경, 선택 상태 |
-| secondary | #64748B | 보조 액션, 비활성 요소 |
-
-### Neutral Scale (Slate)
-
-| Token | Hex | 용도 |
-|-------|-----|------|
-| slate-900 | #0F172A | 최어두 텍스트, Dark 배경 |
-| slate-800 | #1E293B | Dark surface |
-| slate-700 | #334155 | Dark muted |
-| slate-600 | #475569 | Secondary text |
-| slate-500 | #64748B | Tertiary text |
-| slate-400 | #94A3B8 | Placeholder, 아이콘 |
-| slate-300 | #CBD5E1 | Disabled border |
-| slate-200 | #E2E8F0 | Border (기본) |
-| slate-100 | #F1F5F9 | Surface muted |
-| slate-50 | #F8FAFC | Surface subtle, 페이지 배경 |
-
-### Semantic Colors
-
-| Token | Light (fg) | Light (bg) | Dark (fg) | Dark (bg) | 용도 |
-|-------|-----------|-----------|----------|----------|------|
-| success | #059669 | #ECFDF5 | #34D399 | #064E3B | 승인, 정상, 완료 |
-| warning | #D97706 | #FFFBEB | #FBBF24 | #78350F | 대기, 수습, 주의 |
-| error | #DC2626 | #FEF2F2 | #F87171 | #7F1D1D | 반려, 오류, 삭제 |
-| info | #2563EB | #EFF6FF | #60A5FA | #1E3A5F | 진행중, 참고, 온보딩 |
-
-> **Dark Mode 규칙:** Foreground(텍스트/아이콘)는 400 레벨, Background는 900 레벨 사용.
-> Light의 600 레벨을 Dark에 그대로 쓰면 명도 대비 4.5:1 미달 (WCAG AA 실패).
-
-### Chart Palette (6색 순서)
-
-| 순서 | Hex | 이름 |
-|------|-----|------|
-| 1 | #4F46E5 | Indigo |
-| 2 | #8B5CF6 | Violet |
-| 3 | #059669 | Emerald |
-| 4 | #D97706 | Amber |
-| 5 | #DC2626 | Red |
-| 6 | #64748B | Slate |
-
-> **단일 소스:** `CHART_THEME` 하나만 사용. `CHART_COLORS`, CSS `--chart-*` 중복 정의 삭제 예정.
+| Token | Size | Weight | 용도 |
+|-------|------|--------|------|
+| display-lg | 3.5rem (56px) | 900 | 대시보드 Hero metric (font-display) |
+| display-sm | 2rem (32px) | 800 | 카드 내 핵심 수치 |
+| 4xl | 30px | 700 | 페이지 제목 |
+| 3xl | 24px | 700 | 섹션 제목 |
+| headline-sm | 1.5rem (24px) | 700 | 카드 헤더 |
+| base | 14px (0.875rem) | 400 | 기본 본문 (body-md) |
+| sm | 13px | 400 | 보조 텍스트 |
+| xs | 12px | 500 | 캡션, 페이지네이션 |
+| 2xs | 11px | 600 | 테이블 헤더, 라벨 (uppercase, tracking-widest) |
+| label-sm | 0.6875rem | 700 | 메타데이터, on-surface-variant 색상 |
 
 ---
 
@@ -137,75 +156,136 @@ Geist Mono 사용 시 반드시:
 | 3xl | 48px | - |
 | 4xl | 64px | - |
 
+### Density Tokens
+
+| Density | Card | Cell | Gap | Text | 적용 대상 |
+|---------|------|------|-----|------|----------|
+| **compact** | p-4 | px-3 py-1 | gap-2 | text-xs | 급여 테이블, 근태 로그, 감사 로그 |
+| **comfortable** | p-6 | px-5 py-3 | gap-4 | text-sm | 직원 목록, 휴가, 채용 (DEFAULT) |
+| **spacious** | p-8 | px-5 py-3.5 | gap-6 | text-base | 대시보드 KPI, 프로필, 온보딩 |
+
 ---
 
 ## 4. Layout
 
-- **Approach:** Grid-disciplined
+- **Approach:** Grid-disciplined + Editorial accents (대시보드는 Bento Grid)
 - **Grid:** 12 columns
 - **Max content width:** 1280px (7xl)
-- **Page padding:** p-6 (24px)
-- **Section gap:** space-y-6 (24px)
+- **Page padding:** p-6 (24px), 대시보드 p-8
+- **Section gap:** space-y-6 (24px), 대시보드 space-y-8
 
-### Border Radius
+### Border Radius (3단계)
 
-| Token | Value | 용도 |
-|-------|-------|------|
-| sm | 4px | Badge, Tag |
-| md | 6px | Button, Input, Select |
-| lg | 8px | Card, Table wrapper |
-| xl | 12px | Modal, Sheet |
-| full | 9999px | Avatar, Pill badge |
+| 이름 | Value | Tailwind | 용도 |
+|------|-------|----------|------|
+| Pill | 9999px | rounded-full | 메인 CTA 버튼, 상태 뱃지, 검색창 |
+| Container | 1rem (16px) | rounded-2xl | 메인 카드, 모달, 패널 |
+| Element | 0.5rem (8px) | rounded-lg | 입력창, 테이블 내부 요소, sm 버튼 |
 
 ---
 
-## 5. Z-Index & Elevation
+## 5. Elevation & Depth
 
-### Z-Index 계층도
+### Tonal Layering (보더 대신)
 
-| Layer | Z-Index | 컴포넌트 | Shadow |
-|-------|---------|----------|--------|
-| Content | z-0 | 테이블, 카드, 폼 | shadow-none ~ shadow-sm |
-| Sticky | z-10 | 테이블 헤더, StickyActionBar | shadow-sm |
-| Dropdown | z-50 | DropdownMenu, Popover, Select, HoverCard | shadow-md |
-| Modal | z-50 | Dialog, AlertDialog, Sheet (overlay 분리) | shadow-lg |
-| Tooltip | z-[60] | Tooltip (모달 내부에서도 표시) | shadow-md |
-| Toast | z-[100] | Toast, Notification | shadow-lg |
-
-> **Tooltip이 z-[60]인 이유:** 모달(z-50) 안의 버튼에 마우스를 올렸을 때 툴팁이 모달 밑으로 파고들지 않도록.
+**No-Line Rule:** 1px solid 보더로 섹션 구분 금지. 배경색 차이(Tonal Layering)로 계층 표현.
+- `surface-container-low` (#f0f1f1) 위에 `surface-container-lowest` (#ffffff) 카드 배치
+- 2% 밝기 차이가 "Soft Lift" 효과
 
 ### Shadow 토큰
 
 | Token | Value | 용도 |
 |-------|-------|------|
-| shadow-none | none | Flat card (border만) |
-| shadow-sm | `0 1px 2px rgba(15,23,42,0.06)` | Card, Table wrapper |
-| shadow-md | `0 4px 12px rgba(15,23,42,0.08)` | Dropdown, Popover, Tooltip |
-| shadow-lg | `0 12px 32px rgba(15,23,42,0.12)` | Modal, Sheet, Toast |
+| shadow-none | none | Flat (Tonal Layering만) |
+| shadow-sm | `0 1px 2px rgba(15,23,42,0.06)` | Card |
+| shadow-md | `0 4px 12px rgba(15,23,42,0.08)` | Dropdown, Popover |
+| shadow-lg | `0 12px 32px rgba(15,23,42,0.12)` | Modal, Sheet |
+| primary-tinted | `0 20px 40px -5px rgba(74,64,224,0.06)` | Hero 카드, 강조 패널 |
 
-> **Dark Mode:** shadow opacity 2~3배 증가 (배경이 어두워 그림자가 안 보이므로).
+### Ghost Border (접근성 폴백)
+
+보더가 반드시 필요한 경우: `outline-variant` (#acadad) at **15% opacity only**. 100% opaque 보더 금지.
 
 ---
 
-## 6. Interactive States
+## 6. Signature Components
 
-### Focus Ring (모든 인터랙티브 요소)
+### Primary Button (CTA)
+
+- Shape: `rounded-full` (Pill) — `size="lg"`만
+- Background: `bg-gradient-to-r from-primary to-primary-dim` (Kinetic Gradient)
+- Shadow: `shadow-lg shadow-primary/20`
+- Hover: `ring-2 ring-primary-container` (inner glow)
+
+### Button Size 분기 (밀도 보호)
+
+| Size | Radius | Style | 용도 |
+|------|--------|-------|------|
+| lg | rounded-full | gradient + shadow | 메인 CTA |
+| default | rounded-xl | bg-primary | 일반 액션 |
+| sm | rounded-lg | bg-primary | 테이블 액션, 밀도 보호 |
+| icon | rounded-lg | bg-transparent | 아이콘 버튼 |
+
+### Analytics Cards (Kinetic Cards)
+
+- 보더 없음, `bg-surface-container-lowest`
+- Asymmetry: 핵심 수치 top-left, 트렌드 칩 bottom-right (대각선 흐름)
+- Hero card: gradient 배경 (`from-primary to-primary-dim`)
+
+### Status Chips
+
+- Success: `bg-tertiary-container/30 text-on-tertiary-container` (에메랄드)
+- Error: `bg-error-container/20 text-error`
+- Info: `bg-primary-container/30 text-primary`
+- Shape: `rounded-full` (Pill)
+
+### Data Lists
+
+- Divider 금지 → `spacing-4` (1rem)로 분리
+- Hover: `bg-surface-container-high` (#e1e3e3)
+
+---
+
+## 7. Glassmorphism (제한적 사용)
+
+**GPU 과부하 방지:** HR 실무자 저사양 환경 보호를 위해 2곳만 허용.
+
+| 위치 | 스타일 | 허용 여부 |
+|------|--------|----------|
+| TopBar (글로벌) | `bg-white/80 backdrop-blur-md` | ✅ |
+| Dialog/Sheet 오버레이 | `bg-white/70 backdrop-blur-[20px]` | ✅ |
+| 그 외 모든 곳 | — | ❌ 금지 |
+
+---
+
+## 8. Motion
+
+- **Approach:** Intentional — 상태 전환 + 미세 인터랙션
+- **Easing:** enter `ease-out`, exit `ease-in`, move `ease-in-out`
+- **Duration:** micro 50-100ms, short 150ms, medium 250ms, long 400-700ms
+- **Transition:** `transition-all duration-150 ease-out` (기본)
+- **Button hover:** `hover:scale-[1.02]` (lg CTA), `active:scale-95`
+- **Card hover:** `hover:-translate-y-1` (subtle lift)
+- **금지:** 장식적 애니메이션, 스크롤 트리거, 무한 반복
+
+---
+
+## 9. Interactive States
+
+### Focus Ring
 
 ```
-focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background
+focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2
 ```
-
-- 버튼, 인풋, 셀렉트, 탭, 체크박스, 링크 — 예외 없이 적용
-- Destructive 요소: `focus-visible:ring-error/50`
 
 ### Hover
 
 | 컴포넌트 | Hover 스타일 |
 |----------|-------------|
-| Primary Button | bg-primary → bg-primary-dark (#4338CA) |
-| Secondary/Ghost | bg-transparent → bg-surface-muted (#F1F5F9) |
-| Destructive | bg-error → bg-error-dark (#B91C1C) |
-| Table Row | bg-transparent → bg-surface-subtle (#F8FAFC) |
+| CTA Button | gradient → inner glow (ring-2 ring-primary-container) |
+| Ghost Button | bg-transparent → bg-surface-container-low |
+| Table Row | bg-transparent → bg-surface-container-high |
+| Card | shadow-sm → shadow-md + translateY(-1px) |
 | Link | text-primary → underline |
 
 ### Disabled
@@ -214,108 +294,63 @@ focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 f
 disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed
 ```
 
-- 모든 버튼, 인풋, 셀렉트에 동일하게 적용
-- Label: `peer-disabled:opacity-70`
+---
 
-### Active
+## 10. Iconography
 
-```
-active:scale-[0.98] (150ms ease-out)
-```
+### lucide-react — 100% 단일 사용
+
+| Token | Size | 용도 |
+|-------|------|------|
+| sm | 16px (h-4 w-4) | 버튼, 테이블 액션 |
+| md | 20px (h-5 w-5) | 섹션 헤더, 카드 |
+| lg | 24px (h-6 w-6) | 페이지 타이틀, Empty State |
+
+- Stroke width: 1.5px (변경 금지)
+- 아이콘-텍스트 간격: `mr-2`
+- 색상: 부모 텍스트 색상 상속
 
 ---
 
-## 7. Iconography
+## 11. Editorial Design Principles
 
-### 라이브러리: `lucide-react` — 100% 단일 사용
+### No-Line Rule
 
-### Size Scale
+1px solid 보더로 섹션/그룹을 구분하지 않는다. 배경색 변화(Tonal Layering)로 계층을 표현한다.
 
-| Token | Size | Tailwind | 용도 |
-|-------|------|----------|------|
-| sm | 16px | h-4 w-4 | 버튼, 테이블 액션, 인라인 |
-| md | 20px | h-5 w-5 | 섹션 헤더, 카드 아이콘 |
-| lg | 24px | h-6 w-6 | 페이지 타이틀, Empty State |
+### Display Typography
 
-### Rules
+대시보드 상단의 핵심 지표는 압도적인 크기의 폰트(display-lg, 3.5rem)와 font-black(900)을 사용하여 시각적 위계를 극명하게 나눈다.
 
-- **Stroke width:** 1.5px (lucide 기본값, 변경 금지)
-- **아이콘-텍스트 간격:** `mr-2` (8px) — 버튼/탭 내부
-- **색상:** 부모 텍스트 색상 상속. 상태 아이콘만 시맨틱 컬러 직접 지정.
-- **사이드바 아이콘:** h-[18px] w-[18px] (DO NOT TOUCH — 별도 규칙)
+### Kinetic Gradient
 
----
+주요 CTA에 `bg-gradient-to-r from-primary to-primary-dim` (135도) 적용. 입체감과 에너지.
 
-## 8. Density & Responsive
+### White Space
 
-### Density Tokens
+레이아웃이 "꽉 찬" 느낌이면 spacing 토큰을 한 단계 올린다. 여백이 위계를 만든다.
 
-| Density | Card | Cell | Gap | Text | 적용 대상 |
-|---------|------|------|-----|------|----------|
-| **compact** | p-4 | px-3 py-1 | gap-2 | text-xs | 급여 테이블, 근태 로그, 캘리브레이션, 감사 로그 |
-| **comfortable** | p-6 | px-5 py-3 | gap-4 | text-sm | 직원 목록, 휴가, 교육, 채용 (DEFAULT) |
-| **spacious** | p-8 | px-5 py-3.5 | gap-6 | text-base | 대시보드 KPI, 프로필, 온보딩 |
+### Asymmetric Energy
 
-### Implementation Rule — Tailwind 동적 클래스 파괴 방지
-
-```tsx
-// ✅ 올바른 방식: 전체 문자열 객체 매핑
-const DENSITY_STYLES = {
-  compact:     { card: 'p-4',  cell: 'px-3 py-1',   gap: 'gap-2', text: 'text-xs' },
-  comfortable: { card: 'p-6',  cell: 'px-5 py-3',   gap: 'gap-4', text: 'text-sm' },
-  spacious:    { card: 'p-8',  cell: 'px-5 py-3.5', gap: 'gap-6', text: 'text-base' },
-} as const
-
-// ✅ 또는 CVA (Class Variance Authority) 사용
-const tableVariants = cva('...', {
-  variants: {
-    density: {
-      compact: 'p-4 text-xs',
-      comfortable: 'p-6 text-sm',
-      spacious: 'p-8 text-base',
-    },
-  },
-  defaultVariants: { density: 'comfortable' },
-})
-
-// ❌ 절대 금지: 문자열 조합 (빌드 시 클래스 소실)
-className={`p-${size}`}
-className={`gap-${n}`}
-```
-
-### Responsive Table Strategy
-
-| Breakpoint | 전략 |
-|-----------|------|
-| 1200px+ | 모든 컬럼 표시, 긴 텍스트 truncate + title 툴팁 |
-| 768–1200px | 우선순위 낮은 컬럼 자동 숨김 + 컬럼 가시성 토글 |
-| < 768px | 첫 컬럼(이름/사번) sticky left + 나머지 가로 스크롤 |
-| 공통 | `overflow-x-auto`, 텍스트 셀 `max-w-[200px] truncate` |
+카드 내부에서 metric은 top-left, trend chip은 bottom-right — 대각선 흐름으로 시각적 움직임.
 
 ---
 
-## 9. Motion
+## 12. Do's and Don'ts
 
-- **Approach:** Minimal-functional — 상태 전환만
-- **Easing:** enter `ease-out`, exit `ease-in`, move `ease-in-out`
-- **Duration:** micro 50-100ms, short 150ms, medium 250ms
-- **Transition:** `transition-all duration-150 ease-out` (기본)
-- **금지:** 장식적 애니메이션, 스크롤 트리거 효과, 무한 반복
+### Do:
+- 여백을 충분히. 꽉 차면 spacing 한 단계 올리기
+- tertiary(Emerald)는 성장/채용/긍정 모멘텀에만 사용
+- Display 타이포로 데이터 위계 표현
+- Tonal Layering으로 영역 구분
 
----
-
-## 10. Status Color Mapping (통합)
-
-> **단일 소스 원칙:** 모든 상태 뱃지 색상은 이 테이블을 따름. 페이지별 개별 `STATUS_COLORS` 정의 금지.
-
-| 의미 | Light fg | Light bg | Badge variant |
-|------|----------|----------|---------------|
-| 승인 / 정상 / 완료 / 활성 | #059669 | #ECFDF5 | success |
-| 대기 / 수습 / 검토중 | #D97706 | #FFFBEB | warning |
-| 반려 / 오류 / 만료 / 결근 | #DC2626 | #FEF2F2 | error |
-| 진행중 / 온보딩 / 참고 | #2563EB | #EFF6FF | info |
-| 미시작 / 초안 / 취소 / 비활성 | #64748B | #F1F5F9 | neutral |
-| 정규직 / 카테고리 구분 | #4F46E5 | #EEF2FF | primary |
+### Don't:
+- 순수 검정(#000000) 텍스트 사용 → on-surface(#2d2f2f) 사용
+- 1px solid 보더로 섹션 구분 → Tonal Layering
+- 네비게이션 과밀 → 타이포 스케일로 조직
+- backdrop-blur를 TopBar/Dialog 외에 사용
+- font-display를 한영 혼합 문장에 사용
+- font-mono를 tabular-nums 없이 단독 사용
 
 ---
 
@@ -323,11 +358,10 @@ className={`gap-${n}`}
 
 | Date | Decision | Rationale |
 |------|----------|-----------|
-| 2026-03-22 | Initial design system created | 코드베이스 분석(30+ 하드코딩 hex, 상태 색상 7종 불일치) + HR SaaS 업계 리서치 기반 |
-| 2026-03-22 | Indigo #4F46E5 as primary | CTR 브랜드 색상과 일치. 대부분 HR SaaS의 blue(#2563EB)와 차별화 |
-| 2026-03-22 | Pretendard + Geist Mono 유지 | 이미 최적의 CJK 폰트 스택. 변경 불필요 |
-| 2026-03-22 | 3단계 Density 시스템 도입 | HR Admin(compact) vs Employee(comfortable) vs Dashboard(spacious) 역할별 밀도 |
-| 2026-03-22 | Dark mode semantic 400 레벨 | 600 레벨은 dark 배경에서 WCAG AA 명도 대비 미달 |
-| 2026-03-22 | Tooltip z-[60] 분리 | 모달(z-50) 내부 툴팁 가림 방지 |
-| 2026-03-22 | tabular-nums 강제 | 급여/사번 숫자 세로 정렬 보장 |
-| 2026-03-22 | Tailwind 동적 클래스 금지 | CVA 또는 객체 매핑만 허용. 문자열 조합 시 빌드 클래스 소실 |
+| 2026-03-22 | Initial design system (Industrial/Utilitarian) | 코드베이스 분석 기반 |
+| 2026-03-30 | Kinetic Atelier 전환 | Stitch 컨설팅 — Editorial/Magazine 방향 |
+| 2026-03-30 | Primary #4a40e0 + Emerald #69f6b8 | Stitch 팔레트, 더 깊은 인디고 + 에메랄드 tertiary |
+| 2026-03-30 | font-display 분리 (Inter) | 베이스라인 충돌 방지, 영문 전용 |
+| 2026-03-30 | Button size별 radius 분기 | Pill은 CTA만, sm/icon은 rounded-lg 유지 (밀도 보호) |
+| 2026-03-30 | Glassmorphism 2곳만 허용 | GPU 과부하 방지, HR 실무자 환경 고려 |
+| 2026-03-30 | Tonal Layering (No-Line Rule) | 보더 대신 배경색 차이로 계층 표현 |
