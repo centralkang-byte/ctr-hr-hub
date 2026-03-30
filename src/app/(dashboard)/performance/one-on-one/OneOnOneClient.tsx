@@ -361,7 +361,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
       {/* Create Modal */}
       {showCreateModal && (
         <div className={MODAL_STYLES.container}>
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-md">
+          <div className="bg-card rounded-xl shadow-lg w-full max-w-md">
             <div className="p-6 border-b border-border">
               <h3 className="text-lg font-semibold text-foreground">{t('kr_kec8388_1_1_kec9888ec')}</h3>
             </div>
@@ -398,7 +398,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                       className={`px-3 py-2 rounded-lg text-sm border ${
                         newMeeting.meetingType === key
                           ? 'bg-primary text-white border-primary'
-                          : 'bg-white text-[#555] border-border hover:bg-background'
+                          : 'bg-card text-[#555] border-border hover:bg-background'
                       }`}
                     >
                       {label}

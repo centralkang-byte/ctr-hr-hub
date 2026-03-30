@@ -67,10 +67,10 @@ const CERT_TYPE_LABELS: Record<string, string> = {
 }
 
 const CERT_STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof Clock }> = {
-  REQUESTED: { label: '신청완료', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300', icon: Clock },
+  REQUESTED: { label: '신청완료', color: 'bg-primary/10 text-primary dark:bg-blue-900/30 dark:text-blue-300', icon: Clock },
   APPROVED: { label: '승인', color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300', icon: CheckCircle2 },
-  ISSUED: { label: '발급완료', color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300', icon: CheckCircle2 },
-  REJECTED: { label: '반려', color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300', icon: XCircle },
+  ISSUED: { label: '발급완료', color: 'bg-tertiary-container/20 text-tertiary dark:bg-green-900/30 dark:text-green-300', icon: CheckCircle2 },
+  REJECTED: { label: '반려', color: 'bg-destructive/10 text-destructive dark:bg-red-900/30 dark:text-red-300', icon: XCircle },
 }
 
 const TABS = [
@@ -166,7 +166,7 @@ export function MyDocumentsClient({ user }: { user: SessionUser }) {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 border-b border-border dark:border-slate-700">
+      <div className="flex gap-1 mb-6 border-b border-border">
         {TABS.map((tab) => {
           const Icon = tab.icon
           const isActive = activeTab === tab.key
@@ -178,7 +178,7 @@ export function MyDocumentsClient({ user }: { user: SessionUser }) {
                 'flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors',
                 isActive
                   ? 'border-primary text-primary'
-                  : 'border-transparent text-[#999] hover:text-[#666] dark:text-slate-400 dark:hover:text-slate-300',
+                  : 'border-transparent text-[#999] hover:text-[#666] dark:text-muted-foreground/60 dark:hover:text-slate-300',
               )}
             >
               <Icon className="w-4 h-4" />
@@ -233,7 +233,7 @@ function DocumentsTab({
       {documents.map((doc) => (
         <div
           key={doc.id}
-          className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-lg border border-border dark:border-slate-700"
+          className="flex items-center justify-between p-4 bg-card rounded-lg border border-border"
         >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-primary/5 dark:bg-slate-700 flex items-center justify-center">
@@ -241,7 +241,7 @@ function DocumentsTab({
             </div>
             <div>
               <p className="font-medium text-[#222] dark:text-white">{doc.title}</p>
-              <div className="flex items-center gap-2 text-xs text-[#999] dark:text-slate-400">
+              <div className="flex items-center gap-2 text-xs text-[#999] dark:text-muted-foreground/60">
                 <span className="px-1.5 py-0.5 rounded bg-muted dark:bg-slate-700">
                   {DOC_TYPE_LABELS[doc.docType] ?? doc.docType}
                 </span>
@@ -302,7 +302,7 @@ function CertificatesTab({
       {/* Request Dialog */}
       {showDialog && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-md p-6">
+          <div className="bg-card rounded-xl shadow-xl w-full max-w-md p-6">
             <h2 className="text-lg font-bold text-[#222] dark:text-white mb-4">증명서 발급 신청</h2>
 
             <div className="space-y-4">
@@ -311,7 +311,7 @@ function CertificatesTab({
                 <select
                   value={requestType}
                   onChange={(e) => onTypeChange(e.target.value)}
-                  className="w-full px-3 py-2 border border-border dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#222] dark:text-white"
+                  className="w-full px-3 py-2 border border-border rounded-lg bg-card dark:bg-slate-700 text-[#222] dark:text-white"
                 >
                   {Object.entries(CERT_TYPE_LABELS).map(([key, label]) => (
                     <option key={key} value={key}>{label}</option>
@@ -326,7 +326,7 @@ function CertificatesTab({
                   onChange={(e) => onPurposeChange(e.target.value)}
                   placeholder="예: 은행 대출 신청용"
                   rows={3}
-                  className="w-full px-3 py-2 border border-border dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#222] dark:text-white resize-none"
+                  className="w-full px-3 py-2 border border-border rounded-lg bg-card dark:bg-slate-700 text-[#222] dark:text-white resize-none"
                 />
               </div>
             </div>
@@ -361,7 +361,7 @@ function CertificatesTab({
             return (
               <div
                 key={req.id}
-                className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-lg border border-border dark:border-slate-700"
+                className="flex items-center justify-between p-4 bg-card rounded-lg border border-border"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-primary/5 dark:bg-slate-700 flex items-center justify-center">
@@ -371,7 +371,7 @@ function CertificatesTab({
                     <p className="font-medium text-[#222] dark:text-white">
                       {CERT_TYPE_LABELS[req.type] ?? req.type}
                     </p>
-                    <div className="flex items-center gap-2 text-xs text-[#999] dark:text-slate-400">
+                    <div className="flex items-center gap-2 text-xs text-[#999] dark:text-muted-foreground/60">
                       <span>{new Date(req.requestedAt).toLocaleDateString('ko-KR')}</span>
                       {req.purpose && <span>· {req.purpose}</span>}
                     </div>

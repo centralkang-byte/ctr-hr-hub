@@ -117,7 +117,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
 
   return (
     <div className={MODAL_STYLES.container}>
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-card rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-border">
           <h2 className="text-lg font-semibold text-foreground">{'새 펄스 서베이'}</h2>
         </div>
@@ -299,7 +299,7 @@ export default function PulseSurveyClient({ user }: { user: SessionUser }) {
           <div className="flex gap-2">
             {[{ key: '', label: t('all') }, { key: 'PULSE_DRAFT', label: t('draft') }, { key: 'PULSE_ACTIVE', label: t('inProgress') }, { key: 'PULSE_CLOSED', label: t('ended') }].map((f) => (
               <button key={f.key} onClick={() => setStatusFilter(f.key)}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium border ${statusFilter === f.key ? 'bg-primary text-white border-primary' : 'bg-white text-[#555] border-border hover:bg-background'}`}>
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border ${statusFilter === f.key ? 'bg-primary text-white border-primary' : 'bg-card text-[#555] border-border hover:bg-background'}`}>
                 {f.label}
               </button>
             ))}
@@ -356,7 +356,7 @@ export default function PulseSurveyClient({ user }: { user: SessionUser }) {
                         )}
                         {s.status === 'PULSE_DRAFT' && (
                           <button onClick={() => handleDelete(s.id)} title="삭제"
-                            className="p-1.5 text-[#999] hover:text-red-500 hover:bg-red-100 rounded-lg">
+                            className="p-1.5 text-[#999] hover:text-red-500 hover:bg-destructive/10 rounded-lg">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         )}

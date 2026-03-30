@@ -45,7 +45,7 @@ export function YoYBadge({ current, previous, unit: _unit = '', invertColor = fa
     <span
       className={cn(
         'inline-flex items-center gap-0.5 text-xs font-medium',
-        isPositive ? 'text-emerald-600' : 'text-red-600',
+        isPositive ? 'text-emerald-600' : 'text-destructive',
         className,
       )}
     >

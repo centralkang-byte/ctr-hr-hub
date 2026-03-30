@@ -233,7 +233,7 @@ function Step1Dependents({ dependents, onChange }: Step1Props) {
 
       <div className="space-y-3">
         {dependents.map((dep, index) => (
-          <div key={dep.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div key={dep.id} className="bg-card rounded-xl shadow-sm border border-border p-6">
             <div className="flex items-start gap-3">
               <div className="flex-1 grid grid-cols-2 gap-3">
                 {/* Relationship */}
@@ -302,7 +302,7 @@ function Step1Dependents({ dependents, onChange }: Step1Props) {
               {dep.relationship !== '본인' && (
                 <button
                   onClick={() => removeDependent(index)}
-                  className="p-1.5 hover:bg-red-100 text-red-600 rounded-lg mt-4"
+                  className="p-1.5 hover:bg-destructive/10 text-destructive rounded-lg mt-4"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -407,7 +407,7 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
           </div>
 
           {uploadError && (
-            <div className="flex items-center gap-2 text-red-700 text-sm">
+            <div className="flex items-center gap-2 text-destructive text-sm">
               <AlertTriangle className="w-4 h-4" />
               {uploadError}
             </div>
@@ -423,7 +423,7 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
       {activeTab === 'manual' && (
         <div className="space-y-6">
           {/* Income deductions */}
-          <div className="bg-white rounded-xl border border-border">
+          <div className="bg-card rounded-xl border border-border">
             <div className="px-5 py-3.5 border-b border-border">
               <h3 className="text-sm font-semibold text-foreground">신용카드 등 소득공제</h3>
             </div>
@@ -448,7 +448,7 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
           </div>
 
           {/* Tax credits */}
-          <div className="bg-white rounded-xl border border-border">
+          <div className="bg-card rounded-xl border border-border">
             <div className="px-5 py-3.5 border-b border-border">
               <h3 className="text-sm font-semibold text-foreground">세액공제 항목</h3>
             </div>
@@ -492,7 +492,7 @@ function Step3Additional({ amounts, onChange }: Step3Props) {
         <p className="text-sm text-[#666] mt-0.5">홈택스 간소화자료에 포함되지 않는 공제 항목입니다.</p>
       </div>
 
-      <div className="bg-white rounded-xl border border-border">
+      <div className="bg-card rounded-xl border border-border">
         <div className="px-5 py-3.5 border-b border-border">
           <h3 className="text-sm font-semibold text-foreground">주택 관련 공제</h3>
         </div>
@@ -554,7 +554,7 @@ function Step4Result({ settlement, onCalculate, onSubmit, calculating, submittin
           <button
             onClick={onCalculate}
             disabled={calculating}
-            className="flex items-center gap-2 bg-white border border-primary text-primary hover:bg-primary/10 px-3 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
+            className="flex items-center gap-2 bg-card border border-primary text-primary hover:bg-primary/10 px-3 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
           >
             {calculating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Calculator className="w-4 h-4" />}
             {calculating ? '계산 중...' : '재계산'}
@@ -563,7 +563,7 @@ function Step4Result({ settlement, onCalculate, onSubmit, calculating, submittin
       </div>
 
       {/* 11-step breakdown table */}
-      <div className="bg-white rounded-xl border border-border overflow-hidden">
+      <div className="bg-card rounded-xl border border-border overflow-hidden">
         <div className="px-5 py-3.5 border-b border-border">
           <h3 className="text-sm font-semibold text-foreground">11단계 세액 계산 내역</h3>
         </div>
@@ -582,7 +582,7 @@ function Step4Result({ settlement, onCalculate, onSubmit, calculating, submittin
           <ResultRow label="⑩ 기납부세액 (원천징수)" value={data.prepaidTax} indent />
           <div className="px-5 py-4 flex items-center justify-between bg-muted">
             <span className="text-sm font-semibold text-foreground">⑪ 환급 예정 / 추가납부</span>
-            <span className={`text-lg font-bold ${isRefund ? 'text-emerald-600' : isAdditional ? 'text-red-600' : 'text-foreground'}`}>
+            <span className={`text-lg font-bold ${isRefund ? 'text-emerald-600' : isAdditional ? 'text-destructive' : 'text-foreground'}`}>
               {isRefund ? '환급 ' : isAdditional ? '추가납부 ' : ''}
               {formatKRW(Math.abs(finalNum))}
             </span>
@@ -629,7 +629,7 @@ function ResultRow({ label, value, indent, highlight }: {
   highlight?: boolean
 }) {
   return (
-    <div className={`px-5 py-3.5 flex items-center justify-between ${highlight ? 'bg-green-50' : ''}`}>
+    <div className={`px-5 py-3.5 flex items-center justify-between ${highlight ? 'bg-tertiary-container/10' : ''}`}>
       <span className={`text-sm ${indent ? 'pl-4 text-[#555]' : highlight ? 'font-semibold text-foreground' : 'text-[#333]'}`}>
         {indent && <span className="text-[#999] mr-1">├</span>}
         {label}
@@ -813,7 +813,7 @@ export function YearEndWizardClient({ user, year }: { user: SessionUser; year: n
   if (error && !settlement) {
     return (
       <div className="p-6">
-        <div className="flex items-center gap-2 text-red-700 bg-red-100 border border-red-200 rounded-xl px-5 py-4">
+        <div className="flex items-center gap-2 text-destructive bg-destructive/10 border border-destructive/20 rounded-xl px-5 py-4">
           <AlertTriangle className="w-5 h-5 flex-shrink-0" />
           <p className="text-sm">{error}</p>
         </div>
@@ -842,7 +842,7 @@ export function YearEndWizardClient({ user, year }: { user: SessionUser; year: n
 
       {/* Error banner */}
       {error && (
-        <div className="flex items-center gap-2 text-red-700 text-sm bg-red-100 border border-red-200 rounded-xl px-4 py-3">
+        <div className="flex items-center gap-2 text-destructive text-sm bg-destructive/10 border border-destructive/20 rounded-xl px-4 py-3">
           <AlertTriangle className="w-4 h-4 flex-shrink-0" />
           {error}
           <button onClick={() => setError(null)} className="ml-auto text-xs underline">닫기</button>
@@ -853,7 +853,7 @@ export function YearEndWizardClient({ user, year }: { user: SessionUser; year: n
       <StepIndicator current={step} />
 
       {/* Step content */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         {step === 0 && (
           <Step1Dependents
             dependents={dependents}
@@ -891,7 +891,7 @@ export function YearEndWizardClient({ user, year }: { user: SessionUser; year: n
         <button
           onClick={goPrev}
           disabled={step === 0}
-          className="flex items-center gap-2 bg-white border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-40"
+          className="flex items-center gap-2 bg-card border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-40"
         >
           <ChevronLeft className="w-4 h-4" />
           이전

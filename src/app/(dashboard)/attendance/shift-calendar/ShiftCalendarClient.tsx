@@ -116,14 +116,14 @@ const SLOT_COLORS: Record<number, string> = {
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
   SCHEDULED: { label: '예정', color: 'bg-primary/10 text-primary/90 border-primary/20' },
   WORKED: { label: '완료', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
-  ABSENT: { label: '결근', color: 'bg-red-100 text-red-700 border-red-200' },
+  ABSENT: { label: '결근', color: 'bg-destructive/10 text-destructive border-destructive/20' },
   SWAPPED: { label: '교대변경', color: 'bg-amber-100 text-amber-700 border-amber-300' },
 }
 
 const REQUEST_STATUS_MAP: Record<string, { label: string; color: string }> = {
   SCR_PENDING: { label: '대기', color: 'bg-amber-100 text-amber-700 border-amber-300' },
   SCR_APPROVED: { label: '승인', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
-  SCR_REJECTED: { label: '반려', color: 'bg-red-100 text-red-700 border-red-200' },
+  SCR_REJECTED: { label: '반려', color: 'bg-destructive/10 text-destructive border-destructive/20' },
 }
 
 const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토']
@@ -305,19 +305,19 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
 
       {/* ─── KPI Cards ─── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white border border-border rounded-xl p-6">
+        <div className="bg-card border border-border rounded-xl p-6">
           <p className="text-xs text-[#999] font-medium mb-2">배정 인원</p>
           <p className={TYPOGRAPHY.stat}><AnimatedNumber value={totalEmployees} /></p>
         </div>
-        <div className="bg-white border border-border rounded-xl p-6">
+        <div className="bg-card border border-border rounded-xl p-6">
           <p className="text-xs text-[#999] font-medium mb-2">예정 스케줄</p>
           <p className="text-3xl font-bold tabular-nums text-primary"><AnimatedNumber value={totalScheduled} /></p>
         </div>
-        <div className="bg-white border border-border rounded-xl p-6">
+        <div className="bg-card border border-border rounded-xl p-6">
           <p className="text-xs text-[#999] font-medium mb-2">완료</p>
           <p className="text-3xl font-bold tabular-nums text-emerald-600"><AnimatedNumber value={totalWorked} /></p>
         </div>
-        <div className="bg-white border border-border rounded-xl p-6">
+        <div className="bg-card border border-border rounded-xl p-6">
           <p className="text-xs text-[#999] font-medium mb-2">교대변경 요청</p>
           <p className="text-3xl font-bold tabular-nums text-amber-500"><AnimatedNumber value={pendingSwaps} /></p>
         </div>
@@ -364,7 +364,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
               className={`px-3 py-1.5 text-sm font-medium rounded-l-lg ${
                 viewMode === 'calendar'
                   ? 'bg-foreground text-white'
-                  : 'bg-white text-[#666] hover:bg-muted'
+                  : 'bg-card text-[#666] hover:bg-muted'
               }`}
               onClick={() => setViewMode('calendar')}
             >
@@ -374,7 +374,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
               className={`px-3 py-1.5 text-sm font-medium rounded-r-lg ${
                 viewMode === 'list'
                   ? 'bg-foreground text-white'
-                  : 'bg-white text-[#666] hover:bg-muted'
+                  : 'bg-card text-[#666] hover:bg-muted'
               }`}
               onClick={() => setViewMode('list')}
             >
@@ -449,7 +449,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
                       setSelectedDate(dateKey)
                       setDetailOpen(true)
                     }}
-                    className={`bg-white min-h-[100px] p-1.5 text-left hover:bg-background transition-colors ${
+                    className={`bg-card min-h-[100px] p-1.5 text-left hover:bg-background transition-colors ${
                       isToday ? 'ring-2 ring-primary ring-inset' : ''
                     }`}
                   >
@@ -545,7 +545,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
 
                     return (
                       <tr key={empId} className={TABLE_STYLES.row}>
-                        <td className={`sticky left-0 z-10 bg-white ${TABLE_STYLES.cell} whitespace-nowrap`}>
+                        <td className={`sticky left-0 z-10 bg-card ${TABLE_STYLES.cell} whitespace-nowrap`}>
                           <div className="flex flex-col">
                             <span className="text-sm font-medium text-foreground">{emp.lastName}{emp.firstName}</span>
                             <span className="text-xs text-[#999]">{emp.employeeNumber}</span>

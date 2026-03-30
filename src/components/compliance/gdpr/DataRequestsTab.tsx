@@ -24,7 +24,7 @@ function StatusBadge({ status }: { status: string }) {
     pending: 'bg-amber-100 text-amber-700 border border-amber-300',
     in_progress: 'bg-primary/10 text-primary/90 border border-primary/20',
     completed: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
-    rejected: 'bg-red-100 text-red-700 border border-red-200',
+    rejected: 'bg-destructive/10 text-destructive border border-destructive/20',
   }
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[status] ?? map.pending}`}>
@@ -117,7 +117,7 @@ export default function DataRequestsTab() {
                     </td>
                     <td className="px-4 py-3 text-sm">
                       {r.deadline ? (
-                        <span className={`flex items-center gap-1 ${isOverdue(r.deadline) && r.status !== 'completed' ? 'text-red-600 font-medium' : 'text-[#555]'}`}>
+                        <span className={`flex items-center gap-1 ${isOverdue(r.deadline) && r.status !== 'completed' ? 'text-destructive font-medium' : 'text-[#555]'}`}>
                           {isOverdue(r.deadline) && r.status !== 'completed' ? (
                             <Clock className="w-3.5 h-3.5" />
                           ) : null}

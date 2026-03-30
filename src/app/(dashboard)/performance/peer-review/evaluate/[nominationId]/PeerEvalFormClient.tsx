@@ -93,7 +93,7 @@ export default function PeerEvalFormClient({ user, nominationId }: { user: Sessi
       {/* Questions */}
       <div className="space-y-4">
         {PEER_QUESTIONS.map((q) => (
-          <div key={q.key} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div key={q.key} className="bg-card rounded-xl shadow-sm border border-border p-6">
             <h3 className="text-sm font-semibold text-foreground">{q.label}</h3>
             <p className="text-xs text-[#666] mt-1 mb-3">{q.desc}</p>
             <div className="flex gap-2">
@@ -102,7 +102,7 @@ export default function PeerEvalFormClient({ user, nominationId }: { user: Sessi
                   className={`flex-1 py-2.5 rounded-lg border text-sm font-medium transition-colors ${
                     scores[q.key] === v
                       ? 'bg-primary text-white border-primary'
-                      : 'bg-white text-[#555] border-border hover:bg-background'
+                      : 'bg-card text-[#555] border-border hover:bg-background'
                   }`}>
                   <div>{v}</div>
                   <div className="text-xs mt-0.5 opacity-80">{SCORE_LABELS[v - 1]}</div>
@@ -122,7 +122,7 @@ export default function PeerEvalFormClient({ user, nominationId }: { user: Sessi
       )}
 
       {/* Comment */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <h3 className="text-sm font-semibold text-foreground mb-2">{t('kr_keca285ed_kecbd94eb')} <span className="text-red-500">*</span></h3>
         <p className="text-xs text-[#666] mb-3">{t('kr_keb8f99eb_keab095ec_kebb09cec_')}</p>
         <textarea

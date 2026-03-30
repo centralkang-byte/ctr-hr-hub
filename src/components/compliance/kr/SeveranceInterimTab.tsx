@@ -45,7 +45,7 @@ const STATUS_MAP: Record<SipStatus, { label: string; className: string }> = {
   },
   SIP_REJECTED: {
     label: '반려',
-    className: 'bg-red-100 text-red-700 border border-red-200',
+    className: 'bg-destructive/10 text-destructive border border-destructive/20',
   },
   SIP_PAID: {
     label: '지급 완료',
@@ -352,7 +352,7 @@ export default function SeveranceInterimTab() {
                               <button
                                 onClick={() => handleReview(req.id, 'reject')}
                                 disabled={actionLoading === req.id + 'reject'}
-                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border border-red-300 text-red-600 hover:bg-red-100 disabled:opacity-50 transition-colors"
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border border-red-300 text-destructive hover:bg-destructive/10 disabled:opacity-50 transition-colors"
                               >
                                 <XCircle className="w-3 h-3" />
                                 반려
@@ -361,7 +361,7 @@ export default function SeveranceInterimTab() {
                           )}
 
                           {req.status === 'SIP_REJECTED' && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs text-red-600">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs text-destructive">
                               <AlertCircle className="w-3 h-3" />
                               반려됨
                             </span>

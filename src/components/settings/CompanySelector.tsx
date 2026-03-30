@@ -36,7 +36,7 @@ export function CompanySelector({ selectedCompanyId, onCompanyChange, className 
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center gap-2 rounded-xl border border-border bg-white px-3 py-2 text-sm hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+        className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-sm hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
       >
         <Building2 className="h-4 w-4 text-[#666]" />
         <span className="font-medium text-foreground">
@@ -48,7 +48,7 @@ export function CompanySelector({ selectedCompanyId, onCompanyChange, className 
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute left-0 top-full z-20 mt-1 w-64 rounded-lg border border-border bg-white shadow-lg">
+          <div className="absolute left-0 top-full z-20 mt-1 w-64 rounded-lg border border-border bg-card shadow-lg">
             {companies.map((company) => (
               <button
                 key={company.id}

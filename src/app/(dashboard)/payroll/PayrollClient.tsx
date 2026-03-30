@@ -102,7 +102,7 @@ function QuickAction({ icon, label, sub, onClick, accent }: {
   return (
     <button
       onClick={onClick}
-      className="flex flex-col items-center gap-2 p-4 rounded-xl border border-border bg-white hover:shadow-md hover:border-border transition-all w-full"
+      className="flex flex-col items-center gap-2 p-4 rounded-xl border border-border bg-card hover:shadow-md hover:border-border transition-all w-full"
     >
       <div className={`flex h-10 w-10 items-center justify-center rounded-full ${accent}`}>
         {icon}
@@ -184,7 +184,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
 
         <div className="flex items-center gap-3">
           {/* Month navigator */}
-          <div className="flex items-center gap-1 bg-white border border-border rounded-xl px-2 py-1">
+          <div className="flex items-center gap-1 bg-card border border-border rounded-xl px-2 py-1">
             <button onClick={prevMonth} className="p-1 rounded-lg hover:bg-muted text-[#555]">
               <ChevronLeft className="h-4 w-4" />
             </button>
@@ -196,7 +196,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
             </button>
           </div>
 
-          <button onClick={fetchDashboard} className="p-2 rounded-xl border border-border bg-white hover:bg-muted text-[#555]">
+          <button onClick={fetchDashboard} className="p-2 rounded-xl border border-border bg-card hover:bg-muted text-[#555]">
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
 
@@ -232,7 +232,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
                 data.summary.momChangePercent > 0
                   ? <TrendingUp className="h-3.5 w-3.5 text-emerald-600" />
                   : data.summary.momChangePercent < 0
-                    ? <TrendingDown className="h-3.5 w-3.5 text-red-600" />
+                    ? <TrendingDown className="h-3.5 w-3.5 text-destructive" />
                     : <DollarSign className="h-3.5 w-3.5 text-primary" />
               }
               accent="bg-indigo-100"
@@ -267,7 +267,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
           </div>
 
           {/* ── Pipeline Visualization ──────────────────────── */}
-          <div className="bg-white rounded-xl border border-border p-5">
+          <div className="bg-card rounded-xl border border-border p-5">
             <div className="flex items-center gap-2 mb-4">
               <LayoutGrid className="h-4 w-4 text-primary" />
               <h2 className="font-semibold text-foreground">{'파이프라인 현황'}</h2>
@@ -285,7 +285,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
           </div>
 
           {/* ── Payroll Calendar ────────────────────────────── */}
-          <div className="bg-white rounded-xl border border-border p-5">
+          <div className="bg-card rounded-xl border border-border p-5">
             <PayrollCalendar
               entries={calendarEntries}
               yearMonth={`${year}-${String(month).padStart(2, '0')}`}

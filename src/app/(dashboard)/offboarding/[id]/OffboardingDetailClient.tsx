@@ -131,9 +131,9 @@ interface OffboardingDetailClientProps {
 // ─── Constants ──────────────────────────────────────────────
 
 const ASSIGNEE_COLORS: Record<string, string> = {
-  EMPLOYEE: 'bg-gray-100 text-gray-700',
+  EMPLOYEE: 'bg-muted text-foreground',
   MANAGER: 'bg-primary/10 text-primary',
-  HR: 'bg-green-100 text-green-700',
+  HR: 'bg-tertiary-container/20 text-tertiary',
   IT: 'bg-purple-100 text-purple-700',
   FINANCE: 'bg-orange-100 text-orange-700',
 }
@@ -185,9 +185,9 @@ export function OffboardingDetailClient({
   const EXIT_REASONS = Object.entries(EXIT_REASON_LABELS) as [string, string][]
 
   const SENTIMENT_BADGE: Record<string, { label: string; className: string }> = {
-    POSITIVE: { label: t('sentimentPositive'), className: 'bg-green-100 text-green-800' },
-    NEUTRAL: { label: t('sentimentNeutral'), className: 'bg-gray-100 text-gray-800' },
-    NEGATIVE: { label: t('sentimentNegative'), className: 'bg-red-100 text-red-800' },
+    POSITIVE: { label: t('sentimentPositive'), className: 'bg-tertiary-container/20 text-tertiary' },
+    NEUTRAL: { label: t('sentimentNeutral'), className: 'bg-muted text-foreground' },
+    NEGATIVE: { label: t('sentimentNegative'), className: 'bg-destructive/10 text-destructive' },
   }
 
   // ─── State ───
@@ -409,7 +409,7 @@ export function OffboardingDetailClient({
               {isInProgress ? t('inProgress') : detail.status === 'COMPLETED' ? t('completed') : t('cancelled')}
             </Badge>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2.5">
+          <div className="w-full bg-muted rounded-full h-2.5">
             <div
               className="bg-ctr-primary h-2.5 rounded-full transition-all"
               style={{
@@ -473,7 +473,7 @@ export function OffboardingDetailClient({
                       </TableCell>
                       <TableCell>
                         <span
-                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ASSIGNEE_COLORS[tsk.task.assigneeType] ?? 'bg-gray-100 text-gray-700'}`}
+                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ASSIGNEE_COLORS[tsk.task.assigneeType] ?? 'bg-muted text-foreground'}`}
                         >
                           {ASSIGNEE_LABELS[tsk.task.assigneeType] ??
                             tsk.task.assigneeType}
@@ -558,8 +558,8 @@ export function OffboardingDetailClient({
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
-                  <Upload className="h-8 w-8 text-gray-400 mb-2" />
+                <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-border p-8 text-center">
+                  <Upload className="h-8 w-8 text-muted-foreground/60 mb-2" />
                   <p className="text-sm text-muted-foreground">
                     {t('fileUploadPending')}
                   </p>
@@ -671,7 +671,7 @@ export function OffboardingDetailClient({
                     <Label className="text-xs text-muted-foreground">
                       {t('feedbackText')}
                     </Label>
-                    <p className="mt-1 text-sm whitespace-pre-wrap rounded-md bg-gray-50 p-3">
+                    <p className="mt-1 text-sm whitespace-pre-wrap rounded-md bg-muted/50 p-3">
                       {interview.feedbackText}
                     </p>
                   </div>
@@ -681,7 +681,7 @@ export function OffboardingDetailClient({
                       <Label className="text-xs text-muted-foreground">
                         {t('suggestions')}
                       </Label>
-                      <p className="mt-1 text-sm whitespace-pre-wrap rounded-md bg-gray-50 p-3">
+                      <p className="mt-1 text-sm whitespace-pre-wrap rounded-md bg-muted/50 p-3">
                         {interview.suggestions}
                       </p>
                     </div>
@@ -723,7 +723,7 @@ export function OffboardingDetailClient({
                         <span
                           className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
                             SENTIMENT_BADGE[aiSummary.sentiment]?.className ??
-                            'bg-gray-100 text-gray-800'
+                            'bg-muted text-foreground'
                           }`}
                         >
                           {SENTIMENT_BADGE[aiSummary.sentiment]?.label ??
@@ -790,7 +790,7 @@ export function OffboardingDetailClient({
               </CardHeader>
               <CardContent className="space-y-5">
                 {formError && (
-                  <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
+                  <div className="rounded-md bg-destructive/5 p-3 text-sm text-destructive">
                     {formError}
                   </div>
                 )}
@@ -845,7 +845,7 @@ export function OffboardingDetailClient({
                         key={n}
                         type="button"
                         onClick={() => setFormScore(n)}
-                        className="p-0.5 rounded hover:bg-gray-100 transition-colors"
+                        className="p-0.5 rounded hover:bg-muted transition-colors"
                       >
                         <Star
                           className={`h-7 w-7 ${

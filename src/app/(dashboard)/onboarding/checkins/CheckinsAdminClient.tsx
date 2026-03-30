@@ -77,15 +77,15 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
   }
 
   const SENTIMENT_BADGE: Record<string, { label: string; className: string }> = {
-    POSITIVE: { label: '긍정적', className: 'bg-green-100 text-green-600' },
+    POSITIVE: { label: '긍정적', className: 'bg-tertiary-container/20 text-tertiary' },
     MIXED: { label: '혼합', className: 'bg-primary/10 text-primary' },
-    CONCERNING: { label: '우려', className: 'bg-red-50 text-red-500' },
+    CONCERNING: { label: '우려', className: 'bg-destructive/5 text-red-500' },
   }
 
   const TREND_BADGE: Record<string, { label: string; className: string }> = {
-    IMPROVING: { label: '개선 중', className: 'bg-green-100 text-green-600' },
+    IMPROVING: { label: '개선 중', className: 'bg-tertiary-container/20 text-tertiary' },
     STABLE: { label: '안정적', className: 'bg-muted text-muted-foreground' },
-    DECLINING: { label: '하락 중', className: 'bg-red-50 text-red-500' },
+    DECLINING: { label: '하락 중', className: 'bg-destructive/5 text-red-500' },
   }
 
   const [checkins, setCheckins] = useState<CheckinRow[]>([])
@@ -303,7 +303,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
       {/* ─── Employee Detail Section ─── */}
       {selectedEmployeeId && (
         <div className="space-y-4">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-bold text-foreground tracking-[-0.02em]">
                 {selectedEmployeeName} - {'체크인 트렌드'}
@@ -381,7 +381,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
 
           {/* ─── AI Summary ─── */}
           {aiSummary && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div className="bg-card rounded-xl shadow-sm border border-border p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="h-4 w-4 text-primary" />
                 <h3 className="text-base font-bold text-foreground tracking-[-0.02em]">
@@ -431,7 +431,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
                     <ul className="space-y-1 text-sm text-muted-foreground">
                       {aiSummary.recommended_actions.map((action, i) => (
                         <li key={i} className="flex items-start gap-2">
-                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" />
+                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-destructive/50" />
                           {action}
                         </li>
                       ))}

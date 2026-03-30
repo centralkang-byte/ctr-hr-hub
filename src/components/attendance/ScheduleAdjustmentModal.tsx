@@ -183,7 +183,7 @@ export function ScheduleAdjustmentModal({
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
-          className="relative w-full max-w-lg rounded-xl bg-white shadow-lg"
+          className="relative w-full max-w-lg rounded-xl bg-card shadow-lg"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -300,7 +300,7 @@ export function ScheduleAdjustmentModal({
                     <select
                       value={selectedDay}
                       onChange={(e) => setSelectedDay(e.target.value)}
-                      className="w-full appearance-none rounded-xl border border-border bg-white px-4 py-2.5 pr-10 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                      className="w-full appearance-none rounded-xl border border-border bg-card px-4 py-2.5 pr-10 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
                     >
                       {DAY_OPTIONS.map((day) => (
                         <option key={day} value={day}>{day}</option>

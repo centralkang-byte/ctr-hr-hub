@@ -487,7 +487,7 @@ export function InterviewListClient({
       key: 'interviewerName',
       header: '면접관',
       render: (row) => (
-        <span style={{ color: '#1A1A1A' }}>{row.interviewer.name}</span>
+        <span className="text-foreground">{row.interviewer.name}</span>
       ),
     },
     {
@@ -495,7 +495,7 @@ export function InterviewListClient({
       header: '일시',
       sortable: true,
       render: (row) => (
-        <span style={{ color: '#1A1A1A', fontSize: 14 }}>
+        <span className="text-foreground text-sm">
           {format(new Date(row.scheduledAt), 'yyyy-MM-dd HH:mm')}
         </span>
       ),
@@ -504,7 +504,7 @@ export function InterviewListClient({
       key: 'durationMinutes',
       header: '소요시간',
       render: (row) => (
-        <span style={{ color: '#666', fontSize: 14 }}>
+        <span className="text-muted-foreground text-sm">
           {t('durationMinutes', { minutes: row.durationMinutes })}
         </span>
       ),
@@ -513,7 +513,7 @@ export function InterviewListClient({
       key: 'interviewType',
       header: '유형',
       render: (row) => (
-        <span style={{ color: '#1A1A1A', fontSize: 14 }}>
+        <span className="text-foreground text-sm">
           {row.interviewType
             ? INTERVIEW_TYPE_KEYS[row.interviewType] ? t(INTERVIEW_TYPE_KEYS[row.interviewType]) : row.interviewType
             : '-'}
@@ -524,7 +524,7 @@ export function InterviewListClient({
       key: 'round',
       header: '라운드',
       render: (row) => (
-        <span style={{ color: '#1A1A1A', fontSize: 14 }}>
+        <span className="text-foreground text-sm">
           {row.round ? ROUND_KEYS[row.round] ? t(ROUND_KEYS[row.round]) : row.round : '-'}
         </span>
       ),
@@ -558,7 +558,7 @@ export function InterviewListClient({
       key: 'calendar',
       header: '캘린더',
       render: (row) => {
-        if (row.status === 'CANCELLED') return <span style={{ color: '#999', fontSize: 12 }}>&mdash;</span>
+        if (row.status === 'CANCELLED') return <span className="text-muted-foreground/60 text-xs">&mdash;</span>
         return (
           <InterviewCalendarScheduler
             interviewId={row.id}
@@ -605,7 +605,7 @@ export function InterviewListClient({
           )
         }
         return (
-          <span style={{ color: '#999', fontSize: 12 }}>&mdash;</span>
+          <span className="text-muted-foreground/60 text-xs">&mdash;</span>
         )
       },
     },
@@ -651,7 +651,7 @@ export function InterviewListClient({
           gap: 12,
         }}
       >
-        <Calendar size={16} style={{ color: '#999' }} />
+        <Calendar size={16} className="text-muted-foreground/60" />
         <Select
           value={statusFilter}
           onValueChange={(val) => {

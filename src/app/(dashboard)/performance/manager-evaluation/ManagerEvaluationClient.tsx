@@ -39,7 +39,7 @@ function Stars({ value, onChange, disabled }: { value: number; onChange: (v: num
             {[1, 2, 3, 4, 5].map((i) => (
                 <button key={i} disabled={disabled} onClick={() => onChange(i)}
                     className={`transition-transform ${disabled ? 'cursor-not-allowed' : 'hover:scale-110'}`}>
-                    <Star className={`h-5 w-5 ${i <= value ? 'fill-amber-500 text-amber-500' : 'text-gray-300'}`} />
+                    <Star className={`h-5 w-5 ${i <= value ? 'fill-amber-500 text-amber-500' : 'text-muted-foreground/40'}`} />
                 </button>
             ))}
             <span className="ml-2 text-sm text-muted-foreground">{value}/5</span>
@@ -128,13 +128,13 @@ export default function ManagerEvaluationClient({user }: {
                         </p>
                     </div>
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
-                        className="rounded-lg border border-border bg-white px-3 py-2 text-sm">
+                        className="rounded-lg border border-border bg-card px-3 py-2 text-sm">
                         {cycles.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                 </div>
 
                 {error && (
-                    <div className="mb-4 rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-800">
+                    <div className="mb-4 rounded-lg border border-destructive/15 bg-destructive/5 p-3 text-sm text-destructive">
                         {error} <button onClick={fetchTeam} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
@@ -142,14 +142,14 @@ export default function ManagerEvaluationClient({user }: {
                 {loading ? (
                     <div className="space-y-4">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="animate-pulse rounded-xl border border-border bg-white p-5">
+                            <div key={i} className="animate-pulse rounded-xl border border-border bg-card p-5">
                                 <div className="mb-2 h-4 w-1/3 rounded bg-border" />
                                 <div className="h-3 w-1/2 rounded bg-border" />
                             </div>
                         ))}
                     </div>
                 ) : teamMembers.length === 0 ? (
-                    <div className="rounded-xl border border-border bg-white p-16 text-center">
+                    <div className="rounded-xl border border-border bg-card p-16 text-center">
                         <Users className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                         <EmptyState />
                     </div>
@@ -160,14 +160,14 @@ export default function ManagerEvaluationClient({user }: {
                             const hasOverdue = member.overdueFlags.length > 0
                             return (
                                 <div key={member.employeeId}
-                                    className={`rounded-xl border bg-white p-5 transition-colors ${hasOverdue ? 'border-amber-200' : 'border-border hover:border-primary/30'}`}>
+                                    className={`rounded-xl border bg-card p-5 transition-colors ${hasOverdue ? 'border-amber-200' : 'border-border hover:border-primary/30'}`}>
                                     <div className="flex items-start justify-between">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3">
                                                 <h3 className="text-sm font-semibold text-foreground">{member.name}</h3>
                                                 <span className="text-xs text-muted-foreground">{member.jobGrade}</span>
                                                 {hasOverdue && (
-                                                    <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-800">
+                                                    <span className="inline-flex items-center gap-1 rounded-full bg-destructive/5 px-2 py-0.5 text-xs font-medium text-destructive">
                                                         <AlertTriangle className="h-3 w-3" /> Overdue
                                                     </span>
                                                 )}
@@ -286,8 +286,8 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
 
     return (
         <div className="fixed inset-0 z-50 flex items-start justify-end bg-black/30" onClick={onClose}>
-            <div className="h-full w-full max-w-2xl overflow-y-auto bg-white shadow-lg" onClick={(e) => e.stopPropagation()}>
-                <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-white px-6 py-4">
+            <div className="h-full w-full max-w-2xl overflow-y-auto bg-card shadow-lg" onClick={(e) => e.stopPropagation()}>
+                <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-card px-6 py-4">
                     <h2 className="text-lg font-bold text-foreground">{member.name} 평가</h2>
                     <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
                 </div>
@@ -450,7 +450,7 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={onClose}>
-            <div className="max-h-[80vh] w-full max-w-lg overflow-y-auto rounded-xl bg-white p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="max-h-[80vh] w-full max-w-lg overflow-y-auto rounded-xl bg-card p-6" onClick={(e) => e.stopPropagation()}>
                 <div className="mb-5 flex items-center justify-between">
                     <h3 className="text-lg font-bold text-foreground">{member.name} 동료평가자 지명</h3>
                     <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>

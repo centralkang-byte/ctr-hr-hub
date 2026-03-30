@@ -7,7 +7,7 @@ export const BUTTON_SIZES = {
 
 export const BUTTON_VARIANTS = {
   primary: 'bg-primary text-white hover:bg-primary/90 active:scale-[0.98] transition-all duration-150',
-  secondary: 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 active:scale-[0.98] transition-all duration-150',
-  danger: 'bg-white border border-red-200 text-red-600 hover:bg-red-50 active:scale-[0.98] transition-all duration-150',
-  ghost: 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors duration-150',
+  secondary: 'bg-card border border-border text-foreground hover:bg-muted/50 active:scale-[0.98] transition-all duration-150',
+  danger: 'bg-card border border-destructive/20 text-destructive hover:bg-destructive/5 active:scale-[0.98] transition-all duration-150',
+  ghost: 'text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-150',
 } as const

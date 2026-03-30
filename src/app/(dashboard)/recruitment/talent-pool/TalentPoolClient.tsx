@@ -132,9 +132,9 @@ export default function TalentPoolClient({user }: {
           { label: t('all_kec9db8ec'), value: stats.total, icon: <Users size={18} />, color: 'text-primary/90' },
           { label: t('active'), value: stats.active, icon: <CheckCircle2 size={18} />, color: 'text-emerald-700' },
           { label: t('kr_keca091ec_keca491'), value: stats.contacted, icon: <Mail size={18} />, color: 'text-amber-700' },
-          { label: t('kr_30kec9dbc_keb82b4_keba78ceb'), value: stats.expiringSoon, icon: <Clock size={18} />, color: 'text-red-700' },
+          { label: t('kr_30kec9dbc_keb82b4_keba78ceb'), value: stats.expiringSoon, icon: <Clock size={18} />, color: 'text-destructive' },
         ].map((kpi) => (
-          <div key={kpi.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div key={kpi.label} className="bg-card rounded-xl shadow-sm border border-border p-6">
             <div className={`${kpi.color} mb-1`}>{kpi.icon}</div>
             <p className="text-2xl font-bold text-foreground">{kpi.value}</p>
             <p className="text-xs text-[#666] mt-0.5">{kpi.label}</p>
@@ -183,7 +183,7 @@ export default function TalentPoolClient({user }: {
             const isExpiringSoon = entry.status === 'active' && daysLeft <= 30
 
             return (
-              <div key={entry.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              <div key={entry.id} className="bg-card rounded-xl shadow-sm border border-border p-6">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     {/* 배지 행 */}
@@ -195,7 +195,7 @@ export default function TalentPoolClient({user }: {
                         {reasonInfo.label}
                       </span>
                       {!entry.consentGiven && (
-                        <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-700">
+                        <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-destructive/10 text-destructive">
                           <AlertTriangle size={10} />
                           {t('kr_keb8f99ec_kec9786ec')}
                         </span>

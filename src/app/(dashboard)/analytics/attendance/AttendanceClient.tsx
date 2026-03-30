@@ -45,7 +45,7 @@ export default function AttendanceClient({ user }: { user: SessionUser }) {
   useEffect(() => { fetchData() }, [fetchData])
 
   if (loading || !data) {
-    return <div className="space-y-6 animate-pulse">{[...Array(4)].map((_, i) => <div key={i} className="h-48 bg-gray-100 rounded-xl" />)}</div>
+    return <div className="space-y-6 animate-pulse">{[...Array(4)].map((_, i) => <div key={i} className="h-48 bg-muted rounded-xl" />)}</div>
   }
 
   const { kpis, charts } = data
@@ -104,12 +104,12 @@ export default function AttendanceClient({ user }: { user: SessionUser }) {
             <div className="min-w-[600px]">
               <div className="flex items-center gap-1 mb-2 pl-12">
                 {heatmapHours.map((h) => (
-                  <span key={h} className="text-[10px] text-gray-400 w-8 text-center">{h}시</span>
+                  <span key={h} className="text-[10px] text-muted-foreground/60 w-8 text-center">{h}시</span>
                 ))}
               </div>
               {heatmapDays.map((day) => (
                 <div key={day} className="flex items-center gap-1 mb-1">
-                  <span className="text-xs text-gray-500 w-10 text-right pr-2">{day}</span>
+                  <span className="text-xs text-muted-foreground w-10 text-right pr-2">{day}</span>
                   {heatmapHours.map((hour) => {
                     const cell = charts.weekdayPattern.find((p) => p.day === day && p.hour === hour)
                     const count = cell?.count || 0

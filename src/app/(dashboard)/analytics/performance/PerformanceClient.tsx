@@ -46,7 +46,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
   useEffect(() => { fetchData() }, [fetchData])
 
   if (loading) {
-    return <div className="space-y-6 animate-pulse">{[...Array(4)].map((_, i) => <div key={i} className="h-48 bg-gray-100 rounded-xl" />)}</div>
+    return <div className="space-y-6 animate-pulse">{[...Array(4)].map((_, i) => <div key={i} className="h-48 bg-muted rounded-xl" />)}</div>
   }
 
   if (error || !data) {
@@ -122,10 +122,10 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
                 return (
                   <div key={stage.stage}>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="font-medium text-gray-700">{stage.stage}</span>
-                      <span className="text-gray-500">{stage.completed}/{stage.total} ({pct}%)</span>
+                      <span className="font-medium text-foreground">{stage.stage}</span>
+                      <span className="text-muted-foreground">{stage.completed}/{stage.total} ({pct}%)</span>
                     </div>
-                    <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-3 bg-muted rounded-full overflow-hidden">
                       <div className="h-full rounded-full bg-gradient-to-r from-[#5E81F4] to-[#8B5CF6] transition-all duration-500" style={{ width: `${pct}%` }} />
                     </div>
                   </div>

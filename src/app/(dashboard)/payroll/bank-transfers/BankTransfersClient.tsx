@@ -100,13 +100,13 @@ const STATUS_MAP: Record<string, { label: string; color: string; icon: typeof Cl
   SUBMITTED: { label: '제출됨', color: 'bg-amber-100 text-amber-700 border-amber-300', icon: Upload },
   PARTIALLY_COMPLETED: { label: '부분완료', color: 'bg-orange-50 text-orange-700 border-orange-200', icon: AlertTriangle },
   COMPLETED: { label: '완료', color: 'bg-emerald-100 text-emerald-700 border-emerald-200', icon: CheckCircle2 },
-  FAILED: { label: '실패', color: 'bg-red-100 text-red-700 border-red-200', icon: XCircle },
+  FAILED: { label: '실패', color: 'bg-destructive/10 text-destructive border-destructive/20', icon: XCircle },
 }
 
 const ITEM_STATUS_MAP: Record<string, { label: string; color: string }> = {
   PENDING: { label: '🟡 대기', color: 'bg-background text-[#555] border-border' },
   SUCCESS: { label: '성공', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
-  FAILED: { label: '실패', color: 'bg-red-100 text-red-700 border-red-200' },
+  FAILED: { label: '실패', color: 'bg-destructive/10 text-destructive border-destructive/20' },
   CANCELLED: { label: '취소', color: 'bg-background text-[#666] border-border' },
 }
 
@@ -424,7 +424,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                         )}
                         {batch.failCount > 0 && (
                           <div
-                            className="bg-red-500 transition-all"
+                            className="bg-destructive/50 transition-all"
                             style={{ width: `${(batch.failCount / batch.totalCount) * 100}%` }}
                           />
                         )}
@@ -541,9 +541,9 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                     <p className="text-xs text-emerald-600">{'성공'}</p>
                     <p className="text-lg font-bold text-emerald-700">{selectedBatch.successCount}</p>
                   </div>
-                  <div className="bg-red-100 rounded-lg p-3 text-center">
+                  <div className="bg-destructive/10 rounded-lg p-3 text-center">
                     <p className="text-xs text-red-500">{'실패'}</p>
-                    <p className="text-lg font-bold text-red-600">{selectedBatch.failCount}</p>
+                    <p className="text-lg font-bold text-destructive">{selectedBatch.failCount}</p>
                   </div>
                   <div className="bg-primary/10 rounded-lg p-3 text-center">
                     <p className="text-xs text-primary">{'총지급액'}</p>

@@ -156,14 +156,14 @@ export function AnalyticsFilterBar({ companies = [], showDepartment = true }: An
     }
   }
 
-  const selectClass = 'text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none appearance-none cursor-pointer min-w-[120px]'
+  const selectClass = 'text-sm border border-border rounded-lg px-3 py-1.5 bg-card focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none appearance-none cursor-pointer min-w-[120px]'
 
   return (
     <div className="mb-6 space-y-3">
-      <div className="flex flex-wrap items-center gap-3 p-3 bg-white rounded-xl border border-gray-100">
+      <div className="flex flex-wrap items-center gap-3 p-3 bg-card rounded-xl border border-border">
         {/* Company selector */}
         <div className="flex items-center gap-2">
-          <Building2 className="h-4 w-4 text-gray-400" />
+          <Building2 className="h-4 w-4 text-muted-foreground/60" />
           <select
             value={companyId}
             onChange={(e) => handleCompanyChange(e.target.value)}
@@ -179,7 +179,7 @@ export function AnalyticsFilterBar({ companies = [], showDepartment = true }: An
         {/* Division (본부) selector */}
         {showDepartment && (
           <div className="flex items-center gap-2">
-            <Network className="h-4 w-4 text-gray-400" />
+            <Network className="h-4 w-4 text-muted-foreground/60" />
             <select
               value={divisionId}
               onChange={(e) => handleDivisionChange(e.target.value)}
@@ -197,7 +197,7 @@ export function AnalyticsFilterBar({ companies = [], showDepartment = true }: An
         {/* Team (팀) selector */}
         {showDepartment && (
           <div className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-gray-400" />
+            <Users className="h-4 w-4 text-muted-foreground/60" />
             <select
               value={teamId}
               onChange={(e) => handleTeamChange(e.target.value)}
@@ -214,7 +214,7 @@ export function AnalyticsFilterBar({ companies = [], showDepartment = true }: An
 
         {/* Period selector */}
         <div className="flex items-center gap-2 ml-auto">
-          <Calendar className="h-4 w-4 text-gray-400" />
+          <Calendar className="h-4 w-4 text-muted-foreground/60" />
           <select
             value={period}
             onChange={(e) => handlePeriodChange(e.target.value)}
@@ -229,20 +229,20 @@ export function AnalyticsFilterBar({ companies = [], showDepartment = true }: An
 
       {/* Custom Date Range */}
       {period === 'custom' && (
-        <div className="flex flex-wrap items-center gap-3 p-3 bg-white rounded-xl border border-gray-100">
-          <span className="text-xs font-medium text-gray-500">시작일</span>
+        <div className="flex flex-wrap items-center gap-3 p-3 bg-card rounded-xl border border-border">
+          <span className="text-xs font-medium text-muted-foreground">시작일</span>
           <input
             type="date"
             value={customStart}
             onChange={(e) => setCustomStart(e.target.value)}
-            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+            className="text-sm border border-border rounded-lg px-3 py-1.5 bg-card focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
           />
-          <span className="text-xs font-medium text-gray-500">종료일</span>
+          <span className="text-xs font-medium text-muted-foreground">종료일</span>
           <input
             type="date"
             value={customEnd}
             onChange={(e) => setCustomEnd(e.target.value)}
-            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+            className="text-sm border border-border rounded-lg px-3 py-1.5 bg-card focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
           />
           <button
             onClick={handleApplyCustom}

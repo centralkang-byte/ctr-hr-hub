@@ -58,7 +58,7 @@ interface BenefitClaim {
 const STATUS_LABELS: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   pending: { label: '승인대기', color: 'bg-amber-100 text-amber-700 border-amber-300', icon: <Clock className="w-3 h-3" /> },
   approved: { label: '승인', color: 'bg-emerald-100 text-emerald-700 border-emerald-200', icon: <CheckCircle2 className="w-3 h-3" /> },
-  rejected: { label: '반려', color: 'bg-red-100 text-red-700 border-red-200', icon: <XCircle className="w-3 h-3" /> },
+  rejected: { label: '반려', color: 'bg-destructive/10 text-destructive border-destructive/20', icon: <XCircle className="w-3 h-3" /> },
   paid: { label: '지급완료', color: 'bg-primary/10 text-primary/90 border-primary/20', icon: <CheckCircle2 className="w-3 h-3" /> },
   cancelled: { label: '취소', color: 'bg-background text-[#555] border-border', icon: null },
 }
@@ -142,7 +142,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
 
         <form onSubmit={guardedSubmit} className="p-5 space-y-4">
           {error && (
-            <div className="flex items-center gap-2 p-3 bg-red-100 rounded-lg text-sm text-red-700">
+            <div className="flex items-center gap-2 p-3 bg-destructive/10 rounded-lg text-sm text-destructive">
               <AlertTriangle className="w-4 h-4 shrink-0" />
               {error}
             </div>
@@ -245,7 +245,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-white border border-border hover:bg-background text-[#333] rounded-lg text-sm font-medium"
+            className="px-4 py-2 bg-card border border-border hover:bg-background text-[#333] rounded-lg text-sm font-medium"
           >
             {'취소'}
           </button>
@@ -327,14 +327,14 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 p-4 bg-red-100 rounded-xl text-sm text-red-700">
+        <div className="flex items-center gap-2 p-4 bg-destructive/10 rounded-xl text-sm text-destructive">
           <AlertTriangle className="w-4 h-4" />
           {error}
         </div>
       )}
 
       {summary.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <h2 className="text-base font-semibold text-foreground mb-4">📊 {year}{tCommon('unit.year')} {'사용 현황'}</h2>
           <div className="space-y-4">
             {summary.map((item) => {
@@ -370,7 +370,7 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-border">
+      <div className="bg-card rounded-xl border border-border">
         <div className="p-5 border-b border-border">
           <h2 className="text-base font-semibold text-foreground">{'신청 내역'}</h2>
         </div>

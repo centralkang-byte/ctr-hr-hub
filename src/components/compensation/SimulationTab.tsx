@@ -248,23 +248,23 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
     <div className="space-y-4">
       {/* ─── 예산 요약 카드 ─── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1">대상 인원</p>
           <p className="text-3xl font-bold text-foreground">{budget.headcount}명</p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1">현재 총 연봉</p>
           <p className="text-xl font-bold text-foreground">
             {formatCurrency(budget.totalCurrentSalary)}
           </p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1">총 인상액</p>
           <p className="text-xl font-bold text-emerald-600">
             +{formatCurrency(budget.totalIncrease)}
           </p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1">평균 인상률</p>
           <p className="text-3xl font-bold text-primary">{budget.avgIncreasePct}%</p>
         </div>
@@ -319,7 +319,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
       )}
 
       {/* ─── DataTable ─── */}
-      <div className="bg-white rounded-xl border border-border">
+      <div className="bg-card rounded-xl border border-border">
         <DataTable<SimulationRow>
           columns={columns}
           data={rows}

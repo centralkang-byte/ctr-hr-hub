@@ -43,7 +43,7 @@ export function GlobalChangeConfirmModal({
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-lg animate-in fade-in-0 zoom-in-95 duration-200">
+      <div className="relative w-full max-w-md rounded-xl bg-card p-6 shadow-lg animate-in fade-in-0 zoom-in-95 duration-200">
         {/* Close */}
         <button
           type="button"
@@ -90,7 +90,7 @@ export function GlobalChangeConfirmModal({
             </p>
             <div className="flex flex-wrap gap-1.5">
               {unaffected.map((c) => (
-                <span key={c.id} className="rounded-md bg-gray-50 px-2.5 py-1 text-xs text-muted-foreground">
+                <span key={c.id} className="rounded-md bg-muted/50 px-2.5 py-1 text-xs text-muted-foreground">
                   {c.code}
                 </span>
               ))}

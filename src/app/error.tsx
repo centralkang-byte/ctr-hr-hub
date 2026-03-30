@@ -21,22 +21,22 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
   }, [error])
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-ctr-gray-50 px-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-muted/50 px-4">
       <div className="text-center">
-        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
+        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-destructive/10">
           <AlertCircle className="h-10 w-10 text-ctr-accent" />
         </div>
-        <h1 className="text-4xl font-bold text-ctr-gray-900">오류 발생</h1>
-        <h2 className="mt-2 text-xl font-semibold text-ctr-gray-700">
+        <h1 className="text-4xl font-bold text-foreground">오류 발생</h1>
+        <h2 className="mt-2 text-xl font-semibold text-foreground">
           문제가 발생했습니다
         </h2>
-        <p className="mt-2 text-sm text-ctr-gray-500">
+        <p className="mt-2 text-sm text-muted-foreground">
           죄송합니다. 예기치 않은 오류가 발생했습니다.
           <br />
           다시 시도하거나 홈으로 돌아가세요.
         </p>
         {error.digest && (
-          <p className="mt-2 text-xs text-ctr-gray-400">
+          <p className="mt-2 text-xs text-muted-foreground/60">
             오류 코드: {error.digest}
           </p>
         )}

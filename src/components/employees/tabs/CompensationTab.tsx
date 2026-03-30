@@ -92,7 +92,7 @@ function SalaryBandBar({
         <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#D1FAE5] via-[#5E81F4] to-[#D1FAE5]" />
         {/* mid marker */}
         <div
-          className="absolute top-0 h-full w-0.5 bg-white/80"
+          className="absolute top-0 h-full w-0.5 bg-card/80"
           style={{ left: `${range > 0 ? ((mid - min) / range) * 100 : 50}%` }}
         />
         {/* current position dot */}
@@ -137,7 +137,7 @@ export function CompensationTab({ employeeId }: CompensationTabProps) {
   }
 
   if (error) {
-    return <p className="text-sm text-red-700 py-4 text-center">{error}</p>
+    return <p className="text-sm text-destructive py-4 text-center">{error}</p>
   }
 
   if (!data?.latestComp) {

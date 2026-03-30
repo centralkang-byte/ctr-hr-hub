@@ -30,7 +30,7 @@ const fmtDate = (d: string) => new Date(d).toLocaleDateString('ko-KR', {
 
 function diffColor(n: number) {
   if (n > 0) return 'text-primary'
-  if (n < 0) return 'text-red-600'
+  if (n < 0) return 'text-destructive'
   return 'text-muted-foreground'
 }
 

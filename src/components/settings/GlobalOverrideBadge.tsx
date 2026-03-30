@@ -67,12 +67,12 @@ export function GlobalOverrideBadge({ isOverride, companyId, endpoint, onChanged
 
       {showConfirm ? (
         <div className="flex items-center gap-2">
-          <span className="text-xs text-red-700">글로벌로 복귀하면 이 법인의 설정이 삭제됩니다.</span>
+          <span className="text-xs text-destructive">글로벌로 복귀하면 이 법인의 설정이 삭제됩니다.</span>
           <button
             type="button"
             onClick={handleRevertToGlobal}
             disabled={loading}
-            className="rounded-lg border border-red-300 px-2.5 py-1 text-xs text-red-600 hover:bg-red-100 disabled:opacity-50"
+            className="rounded-lg border border-red-300 px-2.5 py-1 text-xs text-destructive hover:bg-destructive/10 disabled:opacity-50"
           >
             {loading ? '처리중...' : '확인'}
           </button>

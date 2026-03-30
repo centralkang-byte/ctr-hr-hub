@@ -89,7 +89,7 @@ function DeptFlowNode({ data }: NodeProps) {
   return (
     <div
       className={`
-        w-[200px] min-h-[76px] rounded-xl border bg-white cursor-pointer
+        w-[200px] min-h-[76px] rounded-xl border bg-card cursor-pointer
         flex flex-col items-center justify-center px-3 py-3 shadow-none
         transition-colors hover:border-ctr-primary
         ${!dept.deletedAt ? 'border-border' : 'border-border opacity-60'}
@@ -301,7 +301,7 @@ function GridView({ depts, onSelect, selectedId }: GridViewProps) {
             className={`text-left rounded-xl border p-4 transition-all hover:border-ctr-primary hover:shadow-sm ${
               selectedId === dept.id
                 ? 'border-ctr-primary bg-primary/10 shadow-sm'
-                : 'border-border bg-white'
+                : 'border-border bg-card'
             } ${!!dept.deletedAt ? 'opacity-60' : ''}`}
           >
             <div className="flex items-start justify-between mb-2">
@@ -358,7 +358,7 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
   if (!dept) return null
 
   return (
-    <div className="absolute top-0 right-0 h-full w-80 bg-white border-l border-border shadow-lg z-10 flex flex-col overflow-hidden">
+    <div className="absolute top-0 right-0 h-full w-80 bg-card border-l border-border shadow-lg z-10 flex flex-col overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-ctr-primary text-white shrink-0">
         <h3 className="font-semibold text-sm truncate">{dept.name}</h3>
@@ -490,7 +490,7 @@ function ViewModeButton({ mode, current, icon, label, onClick }: ViewModeButtonP
       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
         active
           ? 'bg-primary text-white'
-          : 'bg-white border border-border text-[#555] hover:bg-background'
+          : 'bg-card border border-border text-[#555] hover:bg-background'
       }`}
     >
       {icon}
@@ -601,7 +601,7 @@ export function OrgClient({ user, companies }: OrgClientProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-3 px-6 py-3 border-b border-border bg-white shrink-0">
+      <div className="flex flex-wrap items-center gap-3 px-6 py-3 border-b border-border bg-card shrink-0">
         <h1 className="text-lg font-bold text-foreground tracking-ctr mr-2">{t('orgChart')}</h1>
 
         {/* View mode toggle */}
@@ -637,7 +637,7 @@ export function OrgClient({ user, companies }: OrgClientProps) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('searchDepts')}
-            className="w-full pl-8 pr-3 py-1.5 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
+            className="w-full pl-8 pr-3 py-1.5 text-sm border border-border rounded-lg bg-card focus:outline-none focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
           />
         </div>
 
@@ -665,7 +665,7 @@ export function OrgClient({ user, companies }: OrgClientProps) {
             <select
               value={selectedCompanyId}
               onChange={(e) => setSelectedCompanyId(e.target.value)}
-              className="text-sm border border-border rounded-lg px-3 py-1.5 text-foreground bg-white focus:outline-none focus:ring-2 focus:ring-primary/10"
+              className="text-sm border border-border rounded-lg px-3 py-1.5 text-foreground bg-card focus:outline-none focus:ring-2 focus:ring-primary/10"
             >
               <option value={SENTINEL_ALL}>{t('allCompanies')}</option>
               {companies.map((c) => (
@@ -699,7 +699,7 @@ export function OrgClient({ user, companies }: OrgClientProps) {
 
       {/* Search result count */}
       {search.trim() && (
-        <div className="px-6 py-1.5 bg-green-50 border-b border-green-200 text-green-700 text-xs">
+        <div className="px-6 py-1.5 bg-tertiary-container/10 border-b border-tertiary/20 text-tertiary text-xs">
           {t('searchResult', { count: filteredDepts.length })}
         </div>
       )}
@@ -707,7 +707,7 @@ export function OrgClient({ user, companies }: OrgClientProps) {
       {/* Main content area */}
       <div className="relative flex-1 overflow-hidden">
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white/70 z-20">
+          <div className="absolute inset-0 flex items-center justify-center bg-background/70 z-20">
             <p className="text-sm text-[#999]">{t('loadingData')}</p>
           </div>
         )}

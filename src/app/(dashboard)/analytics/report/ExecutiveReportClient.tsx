@@ -61,7 +61,7 @@ export default function ExecutiveReportClient({ user }: { user: SessionUser }) {
       }
     >
       {report ? (
-        <div className="rounded-xl border border-border bg-white">
+        <div className="rounded-xl border border-border bg-card">
           {/* Report header */}
           <div className="flex items-center justify-between border-b border-border px-6 py-4">
             <div className="flex items-center gap-2">

@@ -42,7 +42,7 @@ function KPICard({ label, value, diff, variant }: {
   variant?: 'neutral' | 'cost'
 }) {
   const badgeColor = !diff ? '' :
-    variant === 'cost' ? 'bg-red-50 text-red-600' : 'bg-primary/5 text-primary'
+    variant === 'cost' ? 'bg-destructive/5 text-destructive' : 'bg-primary/5 text-primary'
   return (
     <div className={CARD_STYLES.padded}>
       <p className="text-xs text-muted-foreground mb-1">{label}</p>
@@ -141,7 +141,7 @@ export default function DifferentialTab({ companies, onSaveScenario }: Props) {
           <select
             value={selectedCompanyId}
             onChange={(e) => setSelectedCompanyId(e.target.value)}
-            className="text-sm border border-slate-200 rounded-md px-3 py-1.5 bg-white"
+            className="text-sm border border-border rounded-md px-3 py-1.5 bg-card"
           >
             {companies.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
@@ -180,7 +180,7 @@ export default function DifferentialTab({ companies, onSaveScenario }: Props) {
                           step={0.5}
                           value={rates[g.code] ?? 3}
                           onChange={(e) => updateRate(g.code, Number(e.target.value))}
-                          className="w-20 text-right border border-slate-200 rounded px-2 py-1 text-sm font-mono"
+                          className="w-20 text-right border border-border rounded px-2 py-1 text-sm font-mono"
                         />
                       </td>
                     </tr>
@@ -190,12 +190,12 @@ export default function DifferentialTab({ companies, onSaveScenario }: Props) {
             </div>
 
             <div className="flex items-center justify-between mt-4">
-              <label className="flex items-center gap-2 text-sm text-slate-500">
+              <label className="flex items-center gap-2 text-sm text-muted-foreground">
                 <input
                   type="checkbox"
                   checked={capAtBandMax}
                   onChange={(e) => setCapAtBandMax(e.target.checked)}
-                  className="rounded border-slate-200"
+                  className="rounded border-border"
                 />
                 {t('simDiffCapAtBandMax')}
               </label>
@@ -214,17 +214,17 @@ export default function DifferentialTab({ companies, onSaveScenario }: Props) {
 
       {/* ── Band Violation 경고 ── */}
       {violations && violations.count > 0 && (
-        <div className="flex items-start gap-3 px-4 py-3 bg-red-50 border border-red-200 rounded-lg">
-          <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 shrink-0" />
+        <div className="flex items-start gap-3 px-4 py-3 bg-destructive/5 border border-destructive/20 rounded-lg">
+          <AlertTriangle className="w-5 h-5 text-destructive mt-0.5 shrink-0" />
           <div>
-            <p className="text-sm font-semibold text-red-800">
+            <p className="text-sm font-semibold text-destructive">
               {capAtBandMax
                 ? t('simDiffBandViolationCapped', { count: violations.count })
                 : t('simDiffBandViolation', { count: violations.count })}
             </p>
             <div className="mt-2 space-y-1">
               {violations.employees.slice(0, 5).map((v, i) => (
-                <p key={i} className="text-xs text-red-700">
+                <p key={i} className="text-xs text-destructive">
                   {t('simDiffViolationDetail', { name: v.name, grade: v.grade, simulated: fmtKRW(v.simulatedSalary), max: fmtKRW(v.maxSalary) })}
                   {v.capped && ` ${t('simDiffViolationCapped')}`}
                 </p>
@@ -319,7 +319,7 @@ export default function DifferentialTab({ companies, onSaveScenario }: Props) {
                       <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(g.simulatedGross)}</td>
                       <td className={cn(
                         TABLE_STYLES.cell, 'text-right tabular-nums font-mono',
-                        g.difference > 0 ? 'text-primary' : g.difference < 0 ? 'text-red-600' : 'text-muted-foreground'
+                        g.difference > 0 ? 'text-primary' : g.difference < 0 ? 'text-destructive' : 'text-muted-foreground'
                       )}>
                         {signedKRW(g.difference)}
                       </td>

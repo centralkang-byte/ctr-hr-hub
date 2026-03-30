@@ -119,7 +119,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
             <div className="min-h-screen bg-muted p-6">
                 <div className="mx-auto max-w-5xl space-y-4">
                     {[1, 2, 3].map((i) => (
-                        <div key={i} className="animate-pulse rounded-xl border border-border bg-white p-6">
+                        <div key={i} className="animate-pulse rounded-xl border border-border bg-card p-6">
                             <div className="mb-3 h-5 w-1/3 rounded bg-border" />
                             <div className="h-4 w-2/3 rounded bg-border" />
                         </div>
@@ -161,13 +161,13 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                 </div>
 
                 {error && (
-                    <div className="mb-4 rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-800">
+                    <div className="mb-4 rounded-lg border border-destructive/15 bg-destructive/5 p-3 text-sm text-destructive">
                         {error} <button onClick={fetchData} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
 
                 {/* Pipeline Visualization */}
-                <div className="mb-6 rounded-xl border border-border bg-white p-6">
+                <div className="mb-6 rounded-xl border border-border bg-card p-6">
                     <h2 className="mb-4 text-base font-semibold text-foreground">{t('pipeline_keca784ed_status')}</h2>
                     <div className="flex items-center gap-1 overflow-x-auto pb-2">
                         {PIPELINE_STATES.map((state, idx) => {
@@ -177,7 +177,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                                 <div key={state.key} className="flex items-center">
                                     <div className="flex flex-col items-center">
                                         <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-colors ${isCurrent ? 'bg-primary text-white ring-4 ring-primary/20' :
-                                                isPast ? 'bg-green-500 text-white' : 'bg-border text-muted-foreground'
+                                                isPast ? 'bg-tertiary-container/100 text-white' : 'bg-border text-muted-foreground'
                                             }`}>
                                             {isPast ? '✓' : idx + 1}
                                         </div>
@@ -186,7 +186,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                                         </span>
                                     </div>
                                     {idx < PIPELINE_STATES.length - 1 && (
-                                        <div className={`mx-1 h-0.5 w-6 ${idx < currentIdx ? 'bg-green-500' : 'bg-border'}`} />
+                                        <div className={`mx-1 h-0.5 w-6 ${idx < currentIdx ? 'bg-tertiary-container/100' : 'bg-border'}`} />
                                     )}
                                 </div>
                             )
@@ -237,7 +237,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                 </div>
 
                 {tab === 'pipeline' ? (
-                    <div className="rounded-xl border border-border bg-white p-5 space-y-3">
+                    <div className="rounded-xl border border-border bg-card p-5 space-y-3">
                         <div className="grid grid-cols-2 gap-4 text-sm">
                             <div><span className="text-muted-foreground">{t('kr_kecb2b4ed_kebaaa8eb')}</span> <span className="font-medium text-foreground">{cycle.checkInMode === 'MANDATORY' ? '필수' : '권장'}</span></div>
                             <div><span className="text-muted-foreground">{t('kr_keb8f99eb')}</span> <span className="font-medium text-foreground">{cycle.peerReviewEnabled ? `활성 (${cycle.peerReviewMinCount}~${cycle.peerReviewMaxCount}명)` : '비활성'}</span></div>
@@ -289,7 +289,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                                                 <td className={cn(TABLE_STYLES.cell, "text-center text-muted-foreground")}>{p.peerReviewProgress ?? '-'}</td>
                                                 <td className={cn(TABLE_STYLES.cell, "text-center")}>
                                                     {hasOverdue ? (
-                                                        <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-800">
+                                                        <span className="inline-flex items-center gap-1 rounded-full bg-destructive/5 px-2 py-0.5 text-xs font-medium text-destructive">
                                                             <AlertTriangle className="h-3 w-3" /> {t('kr_keca780ec')}
                                                         </span>
                                                     ) : (

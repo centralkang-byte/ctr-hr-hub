@@ -22,7 +22,7 @@ export function SettingsCategoryCard({ config }: SettingsCategoryCardProps) {
     <button
       type="button"
       onClick={() => router.push(`/settings/${config.key}`)}
-      className="group w-full rounded-xl border border-border bg-white p-6 text-left shadow-sm transition-all duration-200 hover:shadow-md hover:border-primary/30"
+      className="group w-full rounded-xl border border-border bg-card p-6 text-left shadow-sm transition-all duration-200 hover:shadow-md hover:border-primary/30"
     >
       {/* Icon + Header */}
       <div className="mb-4 flex items-start justify-between">

@@ -139,7 +139,7 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="h-9 rounded-lg border border-border px-3 text-sm bg-white"
+            className="h-9 rounded-lg border border-border px-3 text-sm bg-card"
           >
             {[selectedYear - 1, selectedYear, selectedYear + 1].map((y) => (
               <option key={y} value={y}>{y}년</option>
@@ -186,9 +186,9 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
                       </div>
                       <button
                         onClick={() => handleDelete(d.id)}
-                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-100 rounded transition-opacity"
+                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-destructive/10 rounded transition-opacity"
                       >
-                        <Trash2 className="h-3.5 w-3.5 text-red-600" />
+                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
                       </button>
                     </div>
                   ))}

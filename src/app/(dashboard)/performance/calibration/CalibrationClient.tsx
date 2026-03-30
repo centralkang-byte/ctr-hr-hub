@@ -67,7 +67,7 @@ interface AdjItem {
 // ─── EMS 9-Block Labels ──────────────────────────────────
 
 const BLOCK_LABELS: Record<number, { label: string; color: string }> = {
-  1: { label: '1A', color: 'bg-red-100 text-red-700' },
+  1: { label: '1A', color: 'bg-destructive/10 text-destructive' },
   2: { label: '2A', color: 'bg-amber-100 text-amber-700' },
   3: { label: '3A', color: 'bg-emerald-100 text-emerald-700' },
   4: { label: '1B', color: 'bg-amber-100 text-amber-700' },
@@ -286,7 +286,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
             return (
               <div
                 key={blockNum}
-                className={`rounded-lg border border-border p-2 min-h-[80px] ${items.length > 0 ? 'bg-white' : 'bg-background'}`}
+                className={`rounded-lg border border-border p-2 min-h-[80px] ${items.length > 0 ? 'bg-card' : 'bg-background'}`}
               >
                 <div className="flex items-center justify-between mb-1">
                   <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${blockInfo?.color ?? ''}`}>
@@ -298,7 +298,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                   {items.slice(0, 3).map((ev) => (
                     <div
                       key={ev.employeeId}
-                      className="flex items-center gap-1 text-xs bg-white border border-border rounded-md px-1.5 py-0.5 cursor-pointer hover:border-primary hover:bg-primary/10 transition-colors"
+                      className="flex items-center gap-1 text-xs bg-card border border-border rounded-md px-1.5 py-0.5 cursor-pointer hover:border-primary hover:bg-primary/10 transition-colors"
                       onClick={() => handleEmployeeChipClick(ev)}
                     >
                       <span
@@ -367,7 +367,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
 
       {/* Create session form */}
       {showCreateForm && (
-        <div className="rounded-xl border border-border bg-white p-5">
+        <div className="rounded-xl border border-border bg-card p-5">
           <div className="flex items-center gap-3">
             <input
               type="text"
@@ -394,7 +394,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Sessions list */}
-        <div className="rounded-xl border border-border bg-white">
+        <div className="rounded-xl border border-border bg-card">
           <div className="px-5 py-4 border-b border-border">
             <h2 className="text-base font-semibold text-foreground">{t('calibration_kec84b8ec')}</h2>
           </div>
@@ -430,11 +430,11 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
         {/* Session detail + 9-block */}
         <div className="lg:col-span-2 space-y-4">
           {detailLoading ? (
-            <div className="rounded-xl border border-border bg-white flex items-center justify-center h-64">
+            <div className="rounded-xl border border-border bg-card flex items-center justify-center h-64">
               <p className="text-sm text-[#666]">{tc('loading')}...</p>
             </div>
           ) : !selectedSession ? (
-            <div className="rounded-xl border border-border bg-white flex items-center justify-center h-64">
+            <div className="rounded-xl border border-border bg-card flex items-center justify-center h-64">
               <p className="text-sm text-[#999]">{t('kr_kec84b8ec_kec84a0ed')}</p>
             </div>
           ) : (
@@ -448,7 +448,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
               )}
 
               {/* 9-Block Grid */}
-              <div className="rounded-xl border border-border bg-white p-5">
+              <div className="rounded-xl border border-border bg-card p-5">
                 {buildBlockGrid()}
               </div>
 
@@ -466,7 +466,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
 
               {/* Adjustment form */}
               {adjEmployee && (
-                <div className="rounded-xl border border-border bg-white p-5 space-y-4">
+                <div className="rounded-xl border border-border bg-card p-5 space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-base font-semibold text-foreground">
                       <AlertTriangle className="w-4 h-4 inline mr-1 text-amber-700" />
@@ -518,7 +518,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
 
               {/* Adjustment history */}
               {selectedSession.adjustments.length > 0 && (
-                <div className="rounded-xl border border-border bg-white">
+                <div className="rounded-xl border border-border bg-card">
                   <div className="px-5 py-4 border-b border-border">
                     <h3 className="text-base font-semibold text-foreground">{t('kr_keca1b0ec_kec9db4eb')}</h3>
                   </div>

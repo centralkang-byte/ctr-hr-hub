@@ -94,15 +94,15 @@ export default function TeamResultsClient({
 
       {/* KPI */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Users className="w-3.5 h-3.5" /> {t('kr_ked8c80ec_kec8898')}</p>
           <p className="text-3xl font-bold text-foreground">{results.length}</p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Target className="w-3.5 h-3.5" /> {t('average_kec84b1ea')}</p>
           <p className="text-3xl font-bold text-foreground">{avgPerfScore.toFixed(1)}</p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5" /> {t('evaluation_kec9984eb')}</p>
           <p className="text-3xl font-bold text-primary">
             {results.length > 0 ? Math.round(results.filter((r) => r.managerEval?.status === 'SUBMITTED').length / results.length * 100) : 0}%

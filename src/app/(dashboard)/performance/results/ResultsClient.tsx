@@ -103,21 +103,21 @@ export default function ResultsClient({
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Target className="w-3.5 h-3.5" /> {t('kr_kec84b1ea_score')}</p>
           <p className="text-3xl font-bold text-foreground">
             {final?.performanceScore?.toFixed(1) ?? '-'}
           </p>
           <p className="text-xs text-[#999] mt-1">/5.0</p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5" /> {t('kr_kec97adeb_score')}</p>
           <p className="text-3xl font-bold text-foreground">
             {final?.competencyScore?.toFixed(1) ?? '-'}
           </p>
           <p className="text-xs text-[#999] mt-1">/5.0</p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Award className="w-3.5 h-3.5" /> {t('kr_ems_kebb894eb')}</p>
           <p className="text-3xl font-bold text-primary">
             {final?.emsBlock ?? '-'}
@@ -132,7 +132,7 @@ export default function ResultsClient({
 
       {/* Self vs Manager comparison */}
       {(result?.selfEvaluation || result?.managerEvaluation) && (
-        <div className="rounded-xl border border-border bg-white">
+        <div className="rounded-xl border border-border bg-card">
           <div className="px-5 py-4 border-b border-border">
             <h2 className="text-lg font-semibold text-foreground">{t('evaluation_kebb984ea')}</h2>
           </div>
@@ -178,7 +178,7 @@ export default function ResultsClient({
 
       {/* Goals */}
       {result?.goals && result.goals.length > 0 && (
-        <div className="rounded-xl border border-border bg-white">
+        <div className="rounded-xl border border-border bg-card">
           <div className="px-5 py-4 border-b border-border">
             <h2 className="text-lg font-semibold text-foreground">{t('goals_keb8bacec')}</h2>
           </div>

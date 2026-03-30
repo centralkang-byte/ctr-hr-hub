@@ -53,7 +53,7 @@ function MoMDelta({ current, previous, sameLabel }: { current: number; previous:
     </span>
   )
   return (
-    <span className="text-xs text-red-600 flex items-center gap-0.5">
+    <span className="text-xs text-destructive flex items-center gap-0.5">
       <TrendingDown className="h-3 w-3" /> {pct}% ({formatCurrency(diff)})
     </span>
   )
@@ -116,7 +116,7 @@ export default function PayrollMeClient({
                 key={item.id}
                 type="button"
                 onClick={() => router.push(`/payroll/me/${item.run.id}`)}
-                className={`bg-white rounded-xl border p-5 text-left hover:shadow-md transition-shadow relative overflow-hidden ${isNew ? 'border-primary ring-1 ring-primary/30' : 'border-border'
+                className={`bg-card rounded-xl border p-5 text-left hover:shadow-md transition-shadow relative overflow-hidden ${isNew ? 'border-primary ring-1 ring-primary/30' : 'border-border'
                   }`}
               >
                 {/* NEW badge */}
@@ -144,7 +144,7 @@ export default function PayrollMeClient({
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-[#666]">{t('deductions')}</span>
-                    <span className="text-red-600">-{formatCurrency(Number(item.deductions))}</span>
+                    <span className="text-destructive">-{formatCurrency(Number(item.deductions))}</span>
                   </div>
                   <div className="flex justify-between text-sm font-bold pt-1.5 border-t border-border">
                     <span className="text-primary/90">{t('netPay')}</span>

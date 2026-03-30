@@ -46,7 +46,7 @@ export default function PayrollClient({ user }: { user: SessionUser }) {
   useEffect(() => { fetchData() }, [fetchData])
 
   if (loading) {
-    return <div className="space-y-6 animate-pulse">{[...Array(4)].map((_, i) => <div key={i} className="h-48 bg-gray-100 rounded-xl" />)}</div>
+    return <div className="space-y-6 animate-pulse">{[...Array(4)].map((_, i) => <div key={i} className="h-48 bg-muted rounded-xl" />)}</div>
   }
 
   if (error || !data) {

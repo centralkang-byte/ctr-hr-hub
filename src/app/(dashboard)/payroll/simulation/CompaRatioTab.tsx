@@ -94,7 +94,7 @@ export default function CompaRatioTab({ companies }: Props) {
         <select
           value={selectedCompanyId}
           onChange={(e) => setSelectedCompanyId(e.target.value)}
-          className="text-sm border border-slate-200 rounded-md px-3 py-1.5 bg-white"
+          className="text-sm border border-border rounded-md px-3 py-1.5 bg-card"
         >
           <option value="">{t('simCompaAllCompanies')}</option>
           {companies.map((c) => (
@@ -119,7 +119,7 @@ export default function CompaRatioTab({ companies }: Props) {
         </div>
         <div className={CARD_STYLES.padded}>
           <p className="text-xs text-muted-foreground">{t('simCompaKpiLow')}</p>
-          <p className="text-xl font-bold text-red-600">
+          <p className="text-xl font-bold text-destructive">
             <TrendingDown className="w-4 h-4 inline mr-1" />{t('simPersonUnit', { count: summary.belowBand })}
           </p>
         </div>
@@ -150,10 +150,10 @@ export default function CompaRatioTab({ companies }: Props) {
           </BarChart>
         </ResponsiveContainer>
         <div className="flex items-center justify-center gap-4 mt-3 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-red-500" /> {t('simCompaRiskZone')}</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-destructive/50" /> {t('simCompaRiskZone')}</span>
           <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-500" /> {t('simCompaCautionZone')}</span>
           <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-emerald-600" /> {t('simCompaProperZone')}</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-blue-500" /> {t('simCompaManageZone')}</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-primary/50" /> {t('simCompaManageZone')}</span>
         </div>
       </div>
 
@@ -183,14 +183,14 @@ export default function CompaRatioTab({ companies }: Props) {
                     <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums')}>{t('simPersonUnit', { count: g.employees })}</td>
                     <td className={cn(
                       TABLE_STYLES.cell, 'text-right tabular-nums font-mono font-medium',
-                      g.avgCompaRatio < 0.8 ? 'text-red-600' : g.avgCompaRatio > 1.2 ? 'text-amber-600' : 'text-foreground'
+                      g.avgCompaRatio < 0.8 ? 'text-destructive' : g.avgCompaRatio > 1.2 ? 'text-amber-600' : 'text-foreground'
                     )}>
                       {g.avgCompaRatio.toFixed(3)}
                     </td>
                     <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-muted-foreground')}>{g.minRatio.toFixed(2)}</td>
                     <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-muted-foreground')}>{g.maxRatio.toFixed(2)}</td>
                     <td className={cn(TABLE_STYLES.cell, 'min-w-[120px]')}>
-                      <div className="relative h-4 bg-slate-100 rounded-full overflow-hidden">
+                      <div className="relative h-4 bg-muted rounded-full overflow-hidden">
                         {/* Range bar */}
                         <div
                           className="absolute h-full bg-indigo-600/20 rounded-full"
@@ -244,7 +244,7 @@ export default function CompaRatioTab({ companies }: Props) {
                     <td className={TABLE_STYLES.cell}>{o.department}</td>
                     <td className={cn(
                       TABLE_STYLES.cell, 'text-right tabular-nums font-mono font-bold',
-                      o.compaRatio < 0.8 ? 'text-red-600' : 'text-amber-600'
+                      o.compaRatio < 0.8 ? 'text-destructive' : 'text-amber-600'
                     )}>
                       {o.compaRatio.toFixed(3)}
                     </td>
@@ -257,7 +257,7 @@ export default function CompaRatioTab({ companies }: Props) {
                     <td className={TABLE_STYLES.cell}>
                       <span className={cn(
                         'text-xs px-2 py-0.5 rounded-full font-medium',
-                        o.compaRatio < 0.8 ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700'
+                        o.compaRatio < 0.8 ? 'bg-destructive/5 text-destructive' : 'bg-amber-50 text-amber-700'
                       )}>
                         {o.compaRatio < 0.8 ? t('simCompaLowLabel') : t('simCompaHighLabel')}
                       </span>

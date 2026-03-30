@@ -117,7 +117,7 @@ export function ManagerHome({ user }: ManagerHomeProps) {
                   <CalendarDays className="h-3.5 w-3.5" />
                   휴가 신청
                 </div>
-                <Badge className="bg-red-500 text-[10px] text-white">
+                <Badge className="bg-destructive/50 text-[10px] text-white">
                   {summary?.pendingLeaves ?? 0}건
                 </Badge>
               </div>

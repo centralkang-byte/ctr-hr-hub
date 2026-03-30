@@ -418,7 +418,7 @@ export function InterviewFormClient({
                           }}
                         >
                           <span style={{ fontWeight: 500 }}>{emp.name}</span>
-                          <span style={{ color: '#999', marginLeft: 8, fontSize: 12 }}>
+                          <span className="text-muted-foreground/60 ml-2 text-xs">
                             {emp.employeeNo}
                             {emp.departmentName ? ` · ${emp.departmentName}` : ''}
                           </span>

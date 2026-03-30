@@ -111,7 +111,7 @@ export default function RecruitmentListClient({ user }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center">
             <Briefcase className="w-5 h-5 text-blue-500" />
           </div>
           <div>
@@ -131,7 +131,7 @@ export default function RecruitmentListClient({ user }: Props) {
       </div>
 
       {/* Filters */}
-      <div className="bg-white border border-border rounded-xl p-4 mb-6">
+      <div className="bg-card border border-border rounded-xl p-4 mb-6">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[240px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
@@ -148,7 +148,7 @@ export default function RecruitmentListClient({ user }: Props) {
             <select
               value={statusFilter}
               onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
-              className="px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 bg-white"
+              className="px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 bg-card"
             >
               <option value="">{t('statusAll')}</option>
               <option value="DRAFT">{t('statusDRAFT')}</option>

@@ -123,13 +123,13 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
   const getGapColor = (gap: number) => {
     if (Math.abs(gap) <= 5) return 'text-emerald-600'
     if (Math.abs(gap) <= 15) return 'text-amber-600'
-    return 'text-red-600'
+    return 'text-destructive'
   }
 
   const getGapBadge = (gap: number) => {
     if (Math.abs(gap) <= 5) return 'bg-emerald-100 text-emerald-700 border-emerald-200'
     if (Math.abs(gap) <= 15) return 'bg-amber-100 text-amber-700 border-amber-300'
-    return 'bg-red-100 text-red-700 border-red-200'
+    return 'bg-destructive/10 text-destructive border-destructive/20'
   }
 
   // ─── Render ────────────────────────────────────────────
@@ -342,7 +342,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
                               <td className={TABLE_STYLES.cell}>
                                 {diff !== '-' && (
                                   <div className="flex justify-center">
-                                    <span className={Number(diff) > 0 ? 'text-red-600' : 'text-emerald-600'}>
+                                    <span className={Number(diff) > 0 ? 'text-destructive' : 'text-emerald-600'}>
                                       {Number(diff) > 0 ? '+' : ''}{diff}%p
                                     </span>
                                   </div>

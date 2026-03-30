@@ -122,7 +122,7 @@ export function ShiftPatternsTab({
                     <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
                       !pattern.deletedAt
                         ? 'bg-emerald-50 text-emerald-700'
-                        : 'bg-gray-100 text-gray-500'
+                        : 'bg-muted text-muted-foreground'
                     }`}>
                       {!pattern.deletedAt ? '활성' : '비활성'}
                     </span>

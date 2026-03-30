@@ -29,8 +29,8 @@ import type { SessionUser } from '@/types'
 const STATUS_STYLES: Record<string, string> = {
   DRAFT: 'bg-muted text-[#666]',
   PENDING_APPROVAL: 'bg-amber-50 text-amber-700',
-  APPROVED: 'bg-primary/10 text-green-700',
-  REJECTED: 'bg-red-50 text-red-800',
+  APPROVED: 'bg-primary/10 text-tertiary',
+  REJECTED: 'bg-destructive/5 text-destructive',
 }
 
 // ─── Types ────────────────────────────────────────────────
@@ -105,9 +105,9 @@ export default function TeamGoalsClient({
   }
 
   function getMemberStatusStyle(label: string): string {
-    if (label === t('allApproved')) return 'text-green-700'
+    if (label === t('allApproved')) return 'text-tertiary'
     if (label === t('hasPendingApproval')) return 'text-amber-700'
-    if (label === t('hasRejected')) return 'text-red-800'
+    if (label === t('hasRejected')) return 'text-destructive'
     return 'text-[#999]'
   }
 
@@ -263,7 +263,7 @@ export default function TeamGoalsClient({
           return (
             <div
               key={member.employee.id}
-              className="overflow-hidden rounded-xl border border-border bg-white"
+              className="overflow-hidden rounded-xl border border-border bg-card"
             >
               {/* Summary row */}
               <button
@@ -307,7 +307,7 @@ export default function TeamGoalsClient({
                     <div
                       className={`font-medium ${
                         member.totalWeight === 100
-                          ? 'text-green-600'
+                          ? 'text-tertiary'
                           : 'text-orange-500'
                       }`}
                     >
@@ -354,7 +354,7 @@ export default function TeamGoalsClient({
                         return (
                           <div
                             key={goal.id}
-                            className="rounded-xl border border-border bg-white p-4"
+                            className="rounded-xl border border-border bg-card p-4"
                           >
                             <div className="flex items-start justify-between gap-4">
                               {/* Goal info */}

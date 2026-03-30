@@ -92,7 +92,7 @@ export function ProfileSidebar({
   const subtitle = [title, position].filter(Boolean).join(' · ')
 
   return (
-    <aside className="w-72 shrink-0 border-r border-border bg-white p-6 hidden lg:block">
+    <aside className="w-72 shrink-0 border-r border-border bg-card p-6 hidden lg:block">
       {/* Avatar + Name */}
       <div className="text-center mb-6">
         <div

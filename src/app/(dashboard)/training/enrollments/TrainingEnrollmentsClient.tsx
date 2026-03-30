@@ -99,7 +99,7 @@ export default function TrainingEnrollmentsClient({ user }: { user: SessionUser 
         <div className="flex items-center gap-2">
           <span>{row.course.title}</span>
           {row.course.isMandatory && (
-            <Badge className="bg-red-100 text-red-700 border-red-200 text-[10px]">{t('mandatoryBadge')}</Badge>
+            <Badge className="bg-destructive/10 text-destructive border-destructive/20 text-[10px]">{t('mandatoryBadge')}</Badge>
           )}
         </div>
       ),

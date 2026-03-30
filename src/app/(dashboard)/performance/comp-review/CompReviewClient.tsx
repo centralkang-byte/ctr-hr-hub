@@ -62,7 +62,7 @@ const MeritRowComponent = memo(function MeritRowComponent({
                     <input type="number" step={0.5} min={0} max={30} value={localPct}
                         onChange={(e) => setLocalPct(Number(e.target.value))}
                         onBlur={() => onUpdate(row.employeeId, localPct, localReason)}
-                        className={`w-16 rounded-lg border px-2 py-1 text-sm text-center focus:outline-none ${isOutOfRange ? 'border-red-500 bg-red-50' : 'border-border focus:border-primary'}`} />
+                        className={`w-16 rounded-lg border px-2 py-1 text-sm text-center focus:outline-none ${isOutOfRange ? 'border-red-500 bg-destructive/5' : 'border-border focus:border-primary'}`} />
                     <span className="text-xs text-muted-foreground">%</span>
                     {isOutOfRange && <AlertTriangle className="h-3.5 w-3.5 text-red-500" />}
                 </div>
@@ -222,7 +222,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                         <p className="mt-1 text-sm text-muted-foreground">{t('kr_kec84b1ea_keb93b1ea_keab8b0eb_')}</p>
                     </div>
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
-                        className="rounded-lg border border-border bg-white px-3 py-2 text-sm">
+                        className="rounded-lg border border-border bg-card px-3 py-2 text-sm">
                         {!cycles?.length && <EmptyState />}
               {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
@@ -239,7 +239,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                 </div>
 
                 {error && (
-                    <div className="mb-4 rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-800">
+                    <div className="mb-4 rounded-lg border border-destructive/15 bg-destructive/5 p-3 text-sm text-destructive">
                         {error} <button onClick={fetchData} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
@@ -247,7 +247,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                 {loading ? (
                     <div className="space-y-4">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="animate-pulse rounded-xl border border-border bg-white p-6">
+                            <div key={i} className="animate-pulse rounded-xl border border-border bg-card p-6">
                                 <div className="mb-3 h-6 w-1/4 rounded bg-border" />
                                 <div className="h-4 w-1/3 rounded bg-border" />
                             </div>
@@ -260,19 +260,19 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                             <div className="space-y-6">
                                 {/* KPI Cards */}
                                 <div className="grid grid-cols-4 gap-4">
-                                    <div className="rounded-xl border border-border bg-white p-5">
+                                    <div className="rounded-xl border border-border bg-card p-5">
                                         <div className="flex items-center gap-2 text-xs text-muted-foreground"><Users className="h-3.5 w-3.5" /> {t('kr_keb8c80ec_kec9db8ec')}</div>
                                         <p className="mt-2 text-2xl font-bold text-foreground">{stats.totalEmployees}명</p>
                                     </div>
-                                    <div className="rounded-xl border border-border bg-white p-5">
+                                    <div className="rounded-xl border border-border bg-card p-5">
                                         <div className="flex items-center gap-2 text-xs text-muted-foreground"><TrendingUp className="h-3.5 w-3.5" /> {t('average_kec9db8ec')}</div>
                                         <p className="mt-2 text-2xl font-bold text-foreground">{fmtPct(stats.avgMeritPct)}</p>
                                     </div>
-                                    <div className="rounded-xl border border-border bg-white p-5">
+                                    <div className="rounded-xl border border-border bg-card p-5">
                                         <div className="flex items-center gap-2 text-xs text-muted-foreground"><DollarSign className="h-3.5 w-3.5" /> {t('kr_kecb49d_kec9888ec')}</div>
                                         <p className="mt-2 text-2xl font-bold text-foreground">{fmtKRW(stats.totalBudget)}</p>
                                     </div>
-                                    <div className="rounded-xl border border-border bg-white p-5">
+                                    <div className="rounded-xl border border-border bg-card p-5">
                                         <div className="flex items-center gap-2 text-xs text-muted-foreground"><AlertTriangle className="h-3.5 w-3.5" /> {t('kr_kec9888ec_keab1b4ec')}</div>
                                         <p className={`mt-2 text-2xl font-bold ${stats.exceptionCount > 0 ? 'text-red-500' : 'text-foreground'}`}>
                                             {stats.exceptionCount}건
@@ -281,7 +281,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                                 </div>
 
                                 {/* Grade breakdown */}
-                                <div className="rounded-xl border border-border bg-white p-5">
+                                <div className="rounded-xl border border-border bg-card p-5">
                                     <h3 className="mb-4 text-base font-semibold text-foreground">{t('kr_keb93b1ea_average_kec9db8ec')}</h3>
                                     <div className="grid grid-cols-4 gap-4">
                                         {Object.entries(stats.gradeDistribution).map(([grade, data]) => (

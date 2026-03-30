@@ -48,7 +48,7 @@ export function OffboardingChecklistTab({
               <td className={TABLE_STYLES.cell}>{c.name}</td>
               <td className={TABLE_STYLES.cellMuted}>{typeLabels[c.targetType] ?? c.targetType}</td>
               <td className="px-4 py-3 text-center text-sm text-muted-foreground">{c._count?.offboardingTasks ?? 0}</td>
-              <td className="px-4 py-3 text-center"><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!c.deletedAt ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'}`}>{!c.deletedAt ? '활성' : '비활성'}</span></td>
+              <td className="px-4 py-3 text-center"><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!c.deletedAt ? 'bg-tertiary-container/10 text-tertiary' : 'bg-muted/50 text-muted-foreground/60'}`}>{!c.deletedAt ? '활성' : '비활성'}</span></td>
             </tr>
           ))}</tbody></table>
         </div>

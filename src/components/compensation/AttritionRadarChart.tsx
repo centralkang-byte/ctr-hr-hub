@@ -57,10 +57,10 @@ export default function AttritionRadarChart({ factors }: AttritionRadarChartProp
               if (!active || !payload?.length) return null
               const d = payload[0].payload
               return (
-                <div className="rounded-md border bg-white p-3 shadow-lg">
+                <div className="rounded-md border bg-card p-3 shadow-lg">
                   <p className="font-medium text-sm">{d.subject}</p>
-                  <p className="text-xs text-slate-500">점수: {d.score}/100</p>
-                  <p className="text-xs text-slate-400">가중치: {d.weight}%</p>
+                  <p className="text-xs text-muted-foreground">점수: {d.score}/100</p>
+                  <p className="text-xs text-muted-foreground/60">가중치: {d.weight}%</p>
                 </div>
               )
             }}

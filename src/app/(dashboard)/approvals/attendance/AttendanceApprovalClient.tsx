@@ -54,7 +54,7 @@ const REQUEST_TYPE_LABELS: Record<string, { label: string; icon: React.ReactNode
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   pending: { label: '대기중', color: 'bg-amber-100 text-amber-700 border-amber-300' },
   approved: { label: '승인', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
-  rejected: { label: '반려', color: 'bg-red-100 text-red-700 border-red-200' },
+  rejected: { label: '반려', color: 'bg-destructive/10 text-destructive border-destructive/20' },
   cancelled: { label: '취소', color: 'bg-background text-[#555] border-border' },
 }
 
@@ -247,7 +247,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
       {/* 컨텐츠 */}
       <div className="flex gap-6 flex-1 min-h-0">
         {/* 목록 */}
-        <div className="flex-1 bg-white rounded-xl border border-border overflow-hidden flex flex-col">
+        <div className="flex-1 bg-card rounded-xl border border-border overflow-hidden flex flex-col">
           {/* Select All 헤더 (pending-approval 뷰 + checkable 항목 있을 때만) */}
           {view === 'pending-approval' && checkableRequests.length > 0 && !loading && (
             <div className="flex items-center gap-3 px-5 py-2.5 border-b border-border bg-background">
@@ -350,7 +350,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
 
         {/* 상세 패널 */}
         {selected && (
-          <div className="w-96 flex-shrink-0 bg-white rounded-xl border border-border flex flex-col overflow-hidden">
+          <div className="w-96 flex-shrink-0 bg-card rounded-xl border border-border flex flex-col overflow-hidden">
             <div className="px-5 py-4 border-b border-border">
               <h3 className="text-sm font-semibold text-foreground">요청 상세</h3>
             </div>
@@ -455,7 +455,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
                     <button
                       onClick={() => handleAction('reject')}
                       disabled={approving}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 border border-red-400 text-red-400 hover:bg-red-50 rounded-lg text-sm font-medium disabled:opacity-60 transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 border border-red-400 text-red-400 hover:bg-destructive/5 rounded-lg text-sm font-medium disabled:opacity-60 transition-colors"
                     >
                       {approving ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
                       반려
@@ -478,7 +478,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
 
       {/* ── Floating Bulk Action Bar ────────────────────────── */}
       {showBulkBar && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 px-5 py-3 bg-white rounded-xl shadow-lg border border-border">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 px-5 py-3 bg-card rounded-xl shadow-lg border border-border">
           <span className="text-sm font-semibold text-foreground">
             {selectedIds.size}건 선택됨
           </span>
@@ -486,7 +486,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
           <button
             onClick={() => handleBulkAction('REJECT')}
             disabled={bulkProcessing}
-            className="flex items-center gap-1.5 px-4 py-2 border border-red-400 text-red-400 hover:bg-red-50 rounded-lg text-sm font-semibold disabled:opacity-60 transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 border border-red-400 text-red-400 hover:bg-destructive/5 rounded-lg text-sm font-semibold disabled:opacity-60 transition-colors"
           >
             {bulkProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
             일괄 반려

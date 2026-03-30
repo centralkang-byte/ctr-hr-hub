@@ -54,7 +54,7 @@ interface InsightData {
 const READINESS_BADGE: Record<string, { label: string; color: string; icon: string }> = {
   READY_NOW: { label: 'Ready Now', color: 'bg-emerald-100 text-emerald-700', icon: '🟢' },
   READY_1_2_YEARS: { label: '1-2년 후', color: 'bg-amber-100 text-amber-700', icon: '🟡' },
-  READY_3_PLUS_YEARS: { label: '개발 필요', color: 'bg-red-100 text-red-700', icon: '🔴' },
+  READY_3_PLUS_YEARS: { label: '개발 필요', color: 'bg-destructive/10 text-destructive', icon: '🔴' },
 }
 
 const SENTIMENT_ICON: Record<string, string> = {
@@ -112,9 +112,9 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
         onClick={onClose}
       />
       {/* 사이드패널 */}
-      <div className="fixed right-0 top-0 h-full w-96 bg-white border-l border-border shadow-lg z-50 overflow-y-auto">
+      <div className="fixed right-0 top-0 h-full w-96 bg-card border-l border-border shadow-lg z-50 overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border sticky top-0 bg-white">
+        <div className="flex items-center justify-between p-4 border-b border-border sticky top-0 bg-card">
           <div>
             <h2 className="text-base font-semibold text-foreground">
               {data?.employee.name ?? employeeName ?? '직원 정보'}
@@ -266,7 +266,7 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
             <div className="pt-2">
               <a
                 href={`/employees/${employeeId}`}
-                className="flex items-center justify-between w-full px-3 py-2 bg-white border border-border rounded-lg hover:bg-background text-sm text-[#333] transition-colors"
+                className="flex items-center justify-between w-full px-3 py-2 bg-card border border-border rounded-lg hover:bg-background text-sm text-[#333] transition-colors"
               >
                 <span>직원 프로필 보기</span>
                 <ChevronRight className="w-4 h-4 text-[#999]" />

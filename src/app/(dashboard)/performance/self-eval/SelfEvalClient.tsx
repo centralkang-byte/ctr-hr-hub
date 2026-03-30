@@ -256,7 +256,7 @@ export default function SelfEvalClient({
 
       {/* Goal Scoring */}
       {goals.length > 0 && (
-        <div className="rounded-xl border border-border bg-white">
+        <div className="rounded-xl border border-border bg-card">
           <div className="px-5 py-4 border-b border-border">
             <h2 className="text-lg font-semibold text-foreground">{t('goals_evaluation')}</h2>
           </div>
@@ -308,7 +308,7 @@ export default function SelfEvalClient({
 
       {/* Competency Scoring */}
       {competencies.length > 0 && (
-        <div className="rounded-xl border border-border bg-white">
+        <div className="rounded-xl border border-border bg-card">
           <div className="px-5 py-4 border-b border-border">
             <h2 className="text-lg font-semibold text-foreground">{t('kr_kec97adeb_evaluation')}</h2>
           </div>
@@ -348,7 +348,7 @@ export default function SelfEvalClient({
       )}
 
       {/* Overall Comment */}
-      <div className="rounded-xl border border-border bg-white p-5 space-y-3">
+      <div className="rounded-xl border border-border bg-card p-5 space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground">{t('kr_keca285ed_kec9d98ea')}</h2>
           {!isSubmitted && (

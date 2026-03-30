@@ -103,7 +103,7 @@ type TabKey = (typeof TABS)[number]['key']
 const RISK_CONFIG: Record<RiskLevel, { label: string; bg: string; text: string; border: string }> = {
   low:      { label: '낮음', bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-200' },
   medium:   { label: '보통', bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-300' },
-  high:     { label: '높음', bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-200' },
+  high:     { label: '높음', bg: 'bg-destructive/10', text: 'text-destructive', border: 'border-destructive/20' },
   critical: { label: '위험', bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' },
 }
 
@@ -210,7 +210,7 @@ function SummaryCards({
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       {cards.map((c) => (
-        <div key={c.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div key={c.label} className="bg-card rounded-xl shadow-sm border border-border p-6">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: c.bg }}>
               <c.icon className="w-5 h-5" style={{ color: c.color }} />
@@ -241,7 +241,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 분포 차트 */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <h3 className="text-base font-semibold text-foreground mb-4">{'risk_keb8f84_kebb684ed'}</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: -20 }}>
@@ -259,7 +259,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
         </div>
 
         {/* 고위험 Top 5 */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <h3 className="text-base font-semibold text-foreground mb-4">{'kr_keab3a0ec_kec8381ec_5persons'}</h3>
           <div className="space-y-3">
             {data.slice(0, 5).map((row) => (
@@ -289,7 +289,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
       </div>
 
       {/* 전체 목록 */}
-      <div className="bg-white rounded-xl border border-border">
+      <div className="bg-card rounded-xl border border-border">
         <div className="px-5 py-4 border-b border-border">
           <h3 className="text-base font-semibold text-foreground">{'kr_kec9db4ec_risk_all_kebaaa9eb'}</h3>
         </div>
@@ -367,7 +367,7 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <h3 className="text-base font-semibold text-foreground mb-4">{'kr_kebb288ec_risk_kebb684ed'}</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: -20 }}>
@@ -384,7 +384,7 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <h3 className="text-base font-semibold text-foreground mb-4">{'kr_kebb288ec_keab3a0ec_kec8381ec_'}</h3>
           <div className="space-y-3">
             {data.slice(0, 5).map((row) => (
@@ -403,7 +403,7 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-border">
+      <div className="bg-card rounded-xl border border-border">
         <div className="px-5 py-4 border-b border-border">
           <h3 className="text-base font-semibold text-foreground">{'kr_kebb288ec_all_kebaaa9eb'}</h3>
         </div>
@@ -465,7 +465,7 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <h3 className="text-base font-semibold text-foreground mb-4">{'kr_ked8c80eb_keab1b4ea'}</h3>
           <ResponsiveContainer width="100%" height={220}>
             <RadarChart data={radarData}>
@@ -477,7 +477,7 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <h3 className="text-base font-semibold text-foreground mb-4">{'kr_ked8c80_keab1b4ea_risk_status'}</h3>
           <div className="space-y-3">
             {data
@@ -499,7 +499,7 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-border">
+      <div className="bg-card rounded-xl border border-border">
         <div className="px-5 py-4 border-b border-border">
           <h3 className="text-base font-semibold text-foreground">{'kr_ked8c80_keab1b4ea_all_status'}</h3>
         </div>
@@ -588,7 +588,7 @@ function WorkforceTab({
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <h3 className="text-base font-semibold text-foreground mb-4">{'department_kebb384_risk_kec9db8ec_status'}</h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 20, left: -20 }}>
@@ -602,7 +602,7 @@ function WorkforceTab({
         </ResponsiveContainer>
       </div>
 
-      <div className="bg-white rounded-xl border border-border">
+      <div className="bg-card rounded-xl border border-border">
         <div className="px-5 py-4 border-b border-border">
           <h3 className="text-base font-semibold text-foreground">{'department_kebb384_integrations_status'}</h3>
         </div>
@@ -624,7 +624,7 @@ function WorkforceTab({
                   <tr key={dept} className={TABLE_STYLES.row}>
                     <td className={cn(TABLE_STYLES.cell, 'font-medium text-foreground')}>{dept}</td>
                     <td className={cn(TABLE_STYLES.cell, 'text-[#555]')}>{stats.total}</td>
-                    <td className={cn(TABLE_STYLES.cell, 'text-red-700')}>{stats.turnoverHigh}</td>
+                    <td className={cn(TABLE_STYLES.cell, 'text-destructive')}>{stats.turnoverHigh}</td>
                     <td className={cn(TABLE_STYLES.cell, 'text-amber-700')}>{stats.burnoutHigh}</td>
                     <td className={TABLE_STYLES.cell}>
                       <div className="flex items-center gap-2">

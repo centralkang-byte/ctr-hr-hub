@@ -106,7 +106,7 @@ function getDdayColor(dueDate?: string): string {
   const diff = Math.ceil(
     (new Date(dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
   )
-  if (diff < 0) return 'bg-red-100 text-red-700 border-red-200'
+  if (diff < 0) return 'bg-destructive/10 text-destructive border-destructive/20'
   if (diff === 0) return 'bg-amber-100 text-amber-700 border-amber-300'
   if (diff <= 3) return 'bg-amber-100 text-amber-700 border-amber-300'
   return 'bg-primary/10 text-primary border-indigo-200'
@@ -153,12 +153,12 @@ function TaskCard({ task, user, onAction, processing }: TaskCardProps) {
 
   // Urgency border highlight
   let borderStyle = 'border border-border'
-  if (task.priority === UnifiedTaskPriority.URGENT) borderStyle = 'border border-red-200 border-l-4 border-l-[#EF4444]'
+  if (task.priority === UnifiedTaskPriority.URGENT) borderStyle = 'border border-destructive/20 border-l-4 border-l-[#EF4444]'
   else if (task.priority === UnifiedTaskPriority.HIGH) borderStyle = 'border border-amber-300 border-l-4 border-l-[#F59E0B]'
 
   return (
     <div
-      className={`group rounded-xl bg-white p-3.5 transition-shadow hover:shadow-sm ${borderStyle}`}
+      className={`group rounded-xl bg-card p-3.5 transition-shadow hover:shadow-sm ${borderStyle}`}
     >
       <div className="flex items-start gap-3">
         {/* Icon */}
@@ -209,7 +209,7 @@ function TaskCard({ task, user, onAction, processing }: TaskCardProps) {
               <Button
                 size="sm"
                 variant="ghost"
-                className="h-7 gap-1 px-2 text-[11px] text-red-500 hover:bg-red-100 hover:text-red-500"
+                className="h-7 gap-1 px-2 text-[11px] text-red-500 hover:bg-destructive/10 hover:text-red-500"
                 disabled={isBusy}
                 onClick={() => onAction(task.id, 'reject', task.sourceId)}
                 title="반려"
@@ -454,7 +454,7 @@ export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
               user={user}
               onAction={handleAction}
               processing={processing}
-              accentColor="bg-red-500"
+              accentColor="bg-destructive/50"
             />
             <GroupSection
               label="📌 이번 주"

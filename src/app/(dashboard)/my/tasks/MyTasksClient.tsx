@@ -66,7 +66,7 @@ function getDdayStyle(dueDate?: string): string {
     const diff = Math.ceil(
         (new Date(dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
     )
-    if (diff < 0) return 'bg-red-100 text-red-700 border-red-200'
+    if (diff < 0) return 'bg-destructive/10 text-destructive border-destructive/20'
     if (diff <= 3) return 'bg-amber-100 text-amber-700 border-amber-300'
     return 'bg-primary/10 text-primary border-indigo-200'
 }
@@ -101,12 +101,12 @@ function UnifiedTaskCard({
     const isBlocked = !!(task.metadata as Record<string, unknown>)?.isBlocked
 
     let borderStyle = 'border border-border'
-    if (task.priority === UnifiedTaskPriority.URGENT) borderStyle = 'border border-red-200 border-l-4 border-l-[#EF4444]'
+    if (task.priority === UnifiedTaskPriority.URGENT) borderStyle = 'border border-destructive/20 border-l-4 border-l-[#EF4444]'
     else if (task.priority === UnifiedTaskPriority.HIGH) borderStyle = 'border border-amber-300 border-l-4 border-l-[#F59E0B]'
 
     return (
         <div
-            className={`group rounded-xl bg-white p-4 transition-all duration-150 hover:shadow-md ${borderStyle}`}
+            className={`group rounded-xl bg-card p-4 transition-all duration-150 hover:shadow-md ${borderStyle}`}
         >
             <div className="flex items-start gap-3">
                 {/* Priority dot */}
@@ -195,7 +195,7 @@ function UnifiedTaskCard({
                                 <Button
                                     size="sm"
                                     variant="ghost"
-                                    className="h-7 gap-1 px-2 text-[11px] text-red-500 hover:bg-red-100"
+                                    className="h-7 gap-1 px-2 text-[11px] text-red-500 hover:bg-destructive/10"
                                     disabled={isBusy}
                                     onClick={(e) => { e.stopPropagation(); onAction(task.id, 'reject', task.sourceId) }}
                                 >
@@ -364,7 +364,7 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                     type="button"
                     onClick={() => updateParams({ tab: null, page: null, type: null })}
                     className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${statusTab === 'PENDING'
-                        ? 'bg-white text-foreground shadow-sm'
+                        ? 'bg-card text-foreground shadow-sm'
                         : 'text-muted-foreground hover:text-foreground'
                         }`}
                 >
@@ -379,7 +379,7 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                     type="button"
                     onClick={() => updateParams({ tab: 'COMPLETED', page: null, type: null })}
                     className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${statusTab === 'COMPLETED'
-                        ? 'bg-white text-foreground shadow-sm'
+                        ? 'bg-card text-foreground shadow-sm'
                         : 'text-muted-foreground hover:text-foreground'
                         }`}
                 >

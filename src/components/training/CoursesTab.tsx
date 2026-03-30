@@ -175,7 +175,7 @@ export default function CoursesTab() {
       header: '필수',
       render: (row) =>
         row.isMandatory ? (
-          <Badge className="bg-red-100 text-red-700 border-red-200">필수</Badge>
+          <Badge className="bg-destructive/10 text-destructive border-destructive/20">필수</Badge>
         ) : (
           <span className="text-[#999] text-xs">선택</span>
         ),

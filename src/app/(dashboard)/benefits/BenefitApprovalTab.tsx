@@ -28,7 +28,7 @@ interface BenefitClaim {
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   pending: { label: '승인대기', color: 'bg-amber-100 text-amber-700 border-amber-300' },
   approved: { label: '승인', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
-  rejected: { label: '반려', color: 'bg-red-100 text-red-700 border-red-200' },
+  rejected: { label: '반려', color: 'bg-destructive/10 text-destructive border-destructive/20' },
   paid: { label: '지급완료', color: 'bg-primary/10 text-primary/90 border-primary/20' },
   cancelled: { label: '취소', color: 'bg-background text-[#555] border-border' },
 }
@@ -96,7 +96,7 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
   return (
     <div className="flex gap-4" style={{ height: 'calc(100vh - 280px)' }}>
       {/* 좌측 목록 */}
-      <div className="w-80 shrink-0 bg-white rounded-xl border border-border overflow-hidden flex flex-col">
+      <div className="w-80 shrink-0 bg-card rounded-xl border border-border overflow-hidden flex flex-col">
         <div className="p-4 border-b border-border flex items-center justify-between">
           <span className="text-sm font-medium text-[#333]">
             {view === 'pending' ? '승인 대기' : '전체 내역'} ({total})
@@ -105,7 +105,7 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
         </div>
         <div className="flex-1 overflow-y-auto divide-y divide-border">
           {error && (
-            <div className="p-4 text-sm text-red-700 flex items-center gap-2">
+            <div className="p-4 text-sm text-destructive flex items-center gap-2">
               <AlertTriangle className="w-4 h-4" />
               {error}
             </div>
@@ -147,7 +147,7 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
       </div>
 
       {/* 우측 상세 */}
-      <div className="flex-1 bg-white rounded-xl border border-border overflow-hidden flex flex-col">
+      <div className="flex-1 bg-card rounded-xl border border-border overflow-hidden flex flex-col">
         {!selected ? (
           <div className="flex-1 flex flex-col items-center justify-center text-[#999]">
             <ChevronRight className="w-10 h-10 mb-3" />
@@ -210,9 +210,9 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
               )}
 
               {selected.rejectedReason && (
-                <div className="p-3 bg-red-100 rounded-lg">
+                <div className="p-3 bg-destructive/10 rounded-lg">
                   <p className="text-xs text-[#999] mb-1">반려 사유</p>
-                  <p className="text-sm text-red-700">{selected.rejectedReason}</p>
+                  <p className="text-sm text-destructive">{selected.rejectedReason}</p>
                 </div>
               )}
             </div>
@@ -238,7 +238,7 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
                       void handleAction('reject')
                     }}
                     disabled={processing}
-                    className="flex-1 py-2 border border-red-300 text-red-600 hover:bg-red-100 rounded-lg text-sm font-medium disabled:opacity-50"
+                    className="flex-1 py-2 border border-red-300 text-destructive hover:bg-destructive/10 rounded-lg text-sm font-medium disabled:opacity-50"
                   >
                     {showRejectForm ? '반려 확인' : '반려'}
                   </button>

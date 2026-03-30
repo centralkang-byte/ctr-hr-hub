@@ -281,8 +281,8 @@ export function LocationsTab({ companyId }: Props) {
                       onClick={() => handleDeactivate(loc)}
                       className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
                         !loc.deletedAt
-                          ? 'bg-green-50 text-green-700'
-                          : 'bg-gray-100 text-gray-500'
+                          ? 'bg-tertiary-container/10 text-tertiary'
+                          : 'bg-muted text-muted-foreground'
                       }`}
                     >
                       {!loc.deletedAt ? t('active') : t('inactive')}
@@ -313,7 +313,7 @@ export function LocationsTab({ companyId }: Props) {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
+          <div className="w-full max-w-lg rounded-xl bg-card p-6 shadow-lg">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-semibold text-foreground">
                 {editingId ? '근무지 수정' : '근무지 추가'}

@@ -626,7 +626,7 @@ export function EmployeeNewClient({
       </div>
 
       {/* ─── Step content ─── */}
-      <div className="rounded-xl border border-border bg-white p-6">
+      <div className="rounded-xl border border-border bg-card p-6">
         <h2 className="mb-5 text-base font-bold text-foreground tracking-ctr">
           {step + 1}단계: {STEPS[step]!.label}
         </h2>

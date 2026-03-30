@@ -233,9 +233,9 @@ export default function MandatoryTrainingForm({
 
           {/* Error */}
           {error && (
-            <div className="flex items-center gap-2 px-3 py-2.5 bg-red-100 border border-red-200 rounded-lg">
+            <div className="flex items-center gap-2 px-3 py-2.5 bg-destructive/10 border border-destructive/20 rounded-lg">
               <X className="w-4 h-4 text-red-500 flex-shrink-0" />
-              <p className="text-sm text-red-700">{error}</p>
+              <p className="text-sm text-destructive">{error}</p>
             </div>
           )}
 
@@ -244,7 +244,7 @@ export default function MandatoryTrainingForm({
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="px-4 py-2 text-sm font-medium text-[#333] bg-white border border-border rounded-lg hover:bg-background disabled:opacity-50 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-[#333] bg-card border border-border rounded-lg hover:bg-background disabled:opacity-50 transition-colors"
             >
               취소
             </button>

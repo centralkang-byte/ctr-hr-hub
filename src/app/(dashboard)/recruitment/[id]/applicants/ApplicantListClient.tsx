@@ -39,13 +39,13 @@ const STAGE_KEYS: Record<string, string> = {
 
 const STAGE_BADGE_STYLES: Record<string, string> = {
   APPLIED: 'bg-muted text-[#999]',
-  SCREENING: 'bg-blue-50 text-blue-800',
-  INTERVIEW_1: 'bg-blue-50 text-blue-800',
-  INTERVIEW_2: 'bg-blue-50 text-blue-800',
+  SCREENING: 'bg-primary/5 text-blue-800',
+  INTERVIEW_1: 'bg-primary/5 text-blue-800',
+  INTERVIEW_2: 'bg-primary/5 text-blue-800',
   FINAL: 'bg-orange-50 text-orange-800',
-  OFFER: 'bg-primary/10 text-green-700',
+  OFFER: 'bg-primary/10 text-tertiary',
   HIRED: 'bg-primary/10 text-green-900 font-bold',
-  REJECTED: 'bg-red-50 text-red-800',
+  REJECTED: 'bg-destructive/5 text-destructive',
 }
 
 const SOURCE_KEYS: Record<string, string> = {
@@ -58,8 +58,8 @@ const SOURCE_KEYS: Record<string, string> = {
 
 const SOURCE_BADGE_STYLES: Record<string, string> = {
   DIRECT: 'bg-muted text-[#666]',
-  REFERRAL: 'bg-primary/10 text-green-700',
-  AGENCY: 'bg-blue-50 text-blue-800',
+  REFERRAL: 'bg-primary/10 text-tertiary',
+  AGENCY: 'bg-primary/5 text-blue-800',
   JOB_BOARD: 'bg-orange-50 text-orange-800',
   INTERNAL: 'bg-purple-50 text-purple-800',
 }
@@ -179,12 +179,12 @@ export default function ApplicantListClient({
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push(`/recruitment/${postingId}`)}
-            className="p-2 rounded-lg border border-border hover:bg-white transition-colors duration-150"
+            className="p-2 rounded-lg border border-border hover:bg-card transition-colors duration-150"
           >
             <ChevronLeft className="w-4 h-4 text-[#666]" />
           </button>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center">
               <Users className="w-5 h-5 text-blue-500" />
             </div>
             <div>
@@ -210,7 +210,7 @@ export default function ApplicantListClient({
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white border border-border rounded-xl p-4 mb-6">
+      <div className="bg-card border border-border rounded-xl p-4 mb-6">
         <div className="flex items-center gap-3">
           {/* Search */}
           <div className="flex-1 relative">
@@ -233,7 +233,7 @@ export default function ApplicantListClient({
                 setStageFilter(e.target.value)
                 setPage(1)
               }}
-              className="px-3 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
+              className="px-3 py-2 text-sm border border-border rounded-lg bg-card focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
             >
               <option value="">{t('allStages')}</option>
               {STAGES_ALL.map((s) => (

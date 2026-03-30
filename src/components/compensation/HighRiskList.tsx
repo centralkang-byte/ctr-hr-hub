@@ -42,7 +42,7 @@ interface HighRiskListProps {
 }
 
 const RISK_BADGE_CLASSES: Record<string, string> = {
-  CRITICAL: 'bg-red-100 text-red-700 border-red-200',
+  CRITICAL: 'bg-destructive/10 text-destructive border-destructive/20',
   HIGH: 'bg-orange-50 text-orange-700 border-orange-200',
   MEDIUM: 'bg-amber-100 text-amber-700 border-amber-300',
   LOW: 'bg-emerald-100 text-emerald-700 border-emerald-200',
@@ -86,7 +86,7 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-border">
+    <div className="bg-card rounded-xl border border-border">
       <div className="p-4 border-b border-border">
         <h3 className="text-lg font-semibold text-foreground">고위험 직원 목록</h3>
       </div>

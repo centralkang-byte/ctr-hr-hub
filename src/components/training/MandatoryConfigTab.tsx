@@ -242,13 +242,13 @@ export default function MandatoryConfigTab() {
             ))}
           </div>
         ) : statuses.length === 0 ? (
-          <div className="bg-white rounded-xl border border-border p-8 text-center text-sm text-[#999]">
+          <div className="bg-card rounded-xl border border-border p-8 text-center text-sm text-[#999]">
             {statusYear}년 의무교육 현황이 없습니다.
           </div>
         ) : (
           <div className="space-y-3">
             {statuses.map((s) => (
-              <div key={s.courseId} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              <div key={s.courseId} className="bg-card rounded-xl shadow-sm border border-border p-6">
                 <div className="flex items-center justify-between mb-2">
                   <div>
                     <span className="font-semibold text-foreground text-sm">{s.title}</span>
@@ -299,7 +299,7 @@ export default function MandatoryConfigTab() {
             {[1, 2].map((i) => <div key={i} className="h-16 bg-muted rounded-xl animate-pulse" />)}
           </div>
         ) : configs.length === 0 ? (
-          <div className="bg-white rounded-xl border border-border p-8 text-center text-sm text-[#999]">
+          <div className="bg-card rounded-xl border border-border p-8 text-center text-sm text-[#999]">
             등록된 의무교육 설정이 없습니다.
           </div>
         ) : (

@@ -52,14 +52,14 @@ const EVENT_ICONS: Record<string, React.ReactNode> = {
 const EVENT_COLORS: Record<string, string> = {
   APPLIED: 'bg-muted border-border text-[#555]',
   SCREENING: 'bg-indigo-100 border-indigo-200 text-primary/90',
-  INTERVIEW_1: 'bg-blue-100 border-blue-200 text-blue-700',
-  INTERVIEW_2: 'bg-blue-100 border-blue-200 text-blue-700',
+  INTERVIEW_1: 'bg-primary/10 border-primary/20 text-primary',
+  INTERVIEW_2: 'bg-primary/10 border-primary/20 text-primary',
   FINAL: 'bg-amber-100 border-amber-300 text-amber-700',
   OFFER: 'bg-primary/10 border-emerald-200 text-emerald-700',
   HIRED: 'bg-emerald-100 border-emerald-300 text-emerald-800',
-  REJECTED: 'bg-red-100 border-red-200 text-red-700',
+  REJECTED: 'bg-destructive/10 border-destructive/20 text-destructive',
   pool_entry: 'bg-indigo-100 border-indigo-200 text-primary/90',
-  default: 'bg-white border-border text-[#555]',
+  default: 'bg-card border-border text-[#555]',
 }
 
 export default function CandidateTimeline({ applicantId }: Props) {
@@ -116,7 +116,7 @@ export default function CandidateTimeline({ applicantId }: Props) {
                 </div>
 
                 {/* 이벤트 카드 */}
-                <div className="bg-white rounded-lg border border-border p-3">
+                <div className="bg-card rounded-lg border border-border p-3">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-foreground">

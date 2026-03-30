@@ -156,7 +156,7 @@ export function OrgStudioClient({ user }: OrgStudioClientProps) {
   return (
     <div className="flex h-[calc(100vh-64px)] flex-col bg-muted">
       {/* Page Header */}
-      <div className="flex items-center justify-between border-b border-border bg-white px-6 py-4">
+      <div className="flex items-center justify-between border-b border-border bg-card px-6 py-4">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
             <GitBranch size={18} className="text-primary" />
@@ -186,9 +186,9 @@ export function OrgStudioClient({ user }: OrgStudioClientProps) {
             </div>
           )}
           {saveState === 'error' && saveError && (
-            <div className="flex items-center gap-1.5 rounded-lg bg-red-100 px-3 py-1.5">
-              <AlertCircle size={13} className="text-red-700" />
-              <span className="text-xs font-medium text-red-700">{saveError}</span>
+            <div className="flex items-center gap-1.5 rounded-lg bg-destructive/10 px-3 py-1.5">
+              <AlertCircle size={13} className="text-destructive" />
+              <span className="text-xs font-medium text-destructive">{saveError}</span>
             </div>
           )}
 
@@ -240,7 +240,7 @@ export function OrgStudioClient({ user }: OrgStudioClientProps) {
         </div>
 
         {/* Right: Impact Analysis Panel (30%) */}
-        <div className="flex-[3] overflow-y-auto border-l border-border bg-white">
+        <div className="flex-[3] overflow-y-auto border-l border-border bg-card">
           <ImpactAnalysisPanel diff={diff} selectedNode={selectedNode} baseline={baseline} />
         </div>
       </div>

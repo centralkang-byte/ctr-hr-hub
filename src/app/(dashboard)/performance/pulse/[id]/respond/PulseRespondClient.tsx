@@ -121,7 +121,7 @@ export default function PulseRespondClient({ user, id }: { user: SessionUser; id
       {/* Questions */}
       <div className="space-y-6">
         {survey.questions.map((q, i) => (
-          <div key={q.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div key={q.id} className="bg-card rounded-xl shadow-sm border border-border p-6">
             <div className="flex items-start gap-2 mb-3">
               <span className="text-xs font-medium text-[#999]">Q{i + 1}</span>
               <div>
@@ -139,7 +139,7 @@ export default function PulseRespondClient({ user, id }: { user: SessionUser; id
                     className={`flex-1 py-3 rounded-lg border text-sm font-medium transition-colors ${
                       answers[q.id] === String(v)
                         ? 'bg-primary text-white border-primary'
-                        : 'bg-white text-[#555] border-border hover:bg-background'
+                        : 'bg-card text-[#555] border-border hover:bg-background'
                     }`}>
                     <div className="text-lg">{v}</div>
                     <div className="text-xs mt-1 opacity-80">{LIKERT_LABELS[v - 1]}</div>
@@ -165,7 +165,7 @@ export default function PulseRespondClient({ user, id }: { user: SessionUser; id
                     className={`w-full text-left px-4 py-2.5 rounded-lg border text-sm transition-colors ${
                       answers[q.id] === opt
                         ? 'bg-primary/10 text-primary/90 border-primary'
-                        : 'bg-white text-[#555] border-border hover:bg-background'
+                        : 'bg-card text-[#555] border-border hover:bg-background'
                     }`}>
                     {opt}
                   </button>

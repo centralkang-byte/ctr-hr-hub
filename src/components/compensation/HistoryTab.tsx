@@ -127,7 +127,7 @@ export default function HistoryTab() {
       header: '인상률',
       render: (row) => {
         const pct = Number(row.changePct)
-        const color = pct > 0 ? 'text-emerald-600' : pct < 0 ? 'text-red-600' : 'text-[#666]'
+        const color = pct > 0 ? 'text-emerald-600' : pct < 0 ? 'text-destructive' : 'text-[#666]'
         return (
           <span className={`text-sm font-medium ${color}`}>
             {pct > 0 ? '+' : ''}
@@ -160,7 +160,7 @@ export default function HistoryTab() {
     <div className="space-y-6">
       {/* ─── Compa-Ratio 분포 차트 ─── */}
       {chartData.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <h3 className="text-lg font-semibold text-foreground mb-4">Compa-Ratio 분포</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData}>
@@ -172,7 +172,7 @@ export default function HistoryTab() {
                   if (!active || !payload?.length) return null
                   const d = payload[0].payload as (typeof chartData)[0]
                   return (
-                    <div className="rounded-md border bg-white p-3 shadow-lg">
+                    <div className="rounded-md border bg-card p-3 shadow-lg">
                       <p className="font-medium text-sm">{d.label}</p>
                       <p className="text-xs text-[#666]">
                         {d.count}명 ({d.percentage.toFixed(1)}%)
@@ -192,7 +192,7 @@ export default function HistoryTab() {
       )}
 
       {/* ─── 이력 테이블 ─── */}
-      <div className="bg-white rounded-xl border border-border">
+      <div className="bg-card rounded-xl border border-border">
         <div className="p-4 border-b border-border">
           <h3 className="text-lg font-semibold text-foreground">연봉 변경 이력</h3>
         </div>

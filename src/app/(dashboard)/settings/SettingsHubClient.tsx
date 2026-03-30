@@ -41,7 +41,7 @@ export function SettingsHubClient() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={tCommon('placeholderSettingsSearch')}
-          className="w-full rounded-xl border border-border bg-white py-3 pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground shadow-sm transition-colors focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10"
+          className="w-full rounded-xl border border-border bg-card py-3 pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground shadow-sm transition-colors focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10"
         />
       </div>
 

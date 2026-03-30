@@ -51,10 +51,10 @@ const LEVEL_LABELS: Record<number, string> = {
 
 function getGapBadge(gap: number | null) {
   if (gap === null) return null
-  if (gap >= 2) return <span className="px-1.5 py-0.5 rounded-full text-xs bg-red-100 text-red-700">미달 -{gap}</span>
+  if (gap >= 2) return <span className="px-1.5 py-0.5 rounded-full text-xs bg-destructive/10 text-destructive">미달 -{gap}</span>
   if (gap === 1) return <span className="px-1.5 py-0.5 rounded-full text-xs bg-amber-100 text-amber-700">부족 -1</span>
   if (gap === 0) return <span className="px-1.5 py-0.5 rounded-full text-xs bg-emerald-100 text-emerald-700">충족</span>
-  return <span className="px-1.5 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700">초과 +{Math.abs(gap)}</span>
+  return <span className="px-1.5 py-0.5 rounded-full text-xs bg-primary/10 text-primary">초과 +{Math.abs(gap)}</span>
 }
 
 export default function TeamSkillsClient({user: _user }: {
@@ -144,7 +144,7 @@ export default function TeamSkillsClient({user: _user }: {
   if (!teamData?.teamMembers.length) {
     return (
       <div className="p-6">
-        <div className="bg-white rounded-xl border border-border p-12 text-center">
+        <div className="bg-card rounded-xl border border-border p-12 text-center">
           <Users className="w-12 h-12 text-border mx-auto mb-3" />
           <EmptyState />
         </div>
@@ -172,7 +172,7 @@ export default function TeamSkillsClient({user: _user }: {
       </div>
 
       {/* 팀원 목록 탭 */}
-      <div className="bg-white rounded-xl border border-border overflow-hidden">
+      <div className="bg-card rounded-xl border border-border overflow-hidden">
         <div className="border-b border-border p-4 flex items-center gap-3 overflow-x-auto">
           {teamData.teamMembers.map((m, idx) => (
             <button

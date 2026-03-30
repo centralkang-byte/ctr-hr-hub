@@ -127,7 +127,7 @@ export default function MyCheckinsClient({user }: {
                         <p className="mt-1 text-sm text-muted-foreground">{t('kr_keca491ea_keca090ea_ked86b5ed_')}</p>
                     </div>
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
-                        className="rounded-lg border border-border bg-white px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
+                        className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
                         {!cycles?.length && <EmptyState />}
               {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
@@ -135,7 +135,7 @@ export default function MyCheckinsClient({user }: {
 
                 {/* Status banner */}
                 {checkinStatus && (
-                    <div className={`mb-6 rounded-xl border p-4 ${allComplete ? 'border-emerald-200 bg-emerald-100' : isMandatory ? 'border-amber-200 bg-amber-100' : 'border-border bg-white'}`}>
+                    <div className={`mb-6 rounded-xl border p-4 ${allComplete ? 'border-emerald-200 bg-emerald-100' : isMandatory ? 'border-amber-200 bg-amber-100' : 'border-border bg-card'}`}>
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 {allComplete ? (
@@ -153,7 +153,7 @@ export default function MyCheckinsClient({user }: {
 
                 {/* Error */}
                 {error && (
-                    <div className="mb-4 rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-800">
+                    <div className="mb-4 rounded-lg border border-destructive/15 bg-destructive/5 p-3 text-sm text-destructive">
                         {error} <button onClick={fetchData} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
@@ -161,7 +161,7 @@ export default function MyCheckinsClient({user }: {
                 {loading ? (
                     <div className="space-y-4">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="animate-pulse rounded-xl border border-border bg-white p-5">
+                            <div key={i} className="animate-pulse rounded-xl border border-border bg-card p-5">
                                 <div className="mb-3 h-4 w-1/2 rounded bg-border" />
                                 <div className="h-3 w-1/3 rounded bg-border" />
                             </div>
@@ -171,7 +171,7 @@ export default function MyCheckinsClient({user }: {
                     <>
                         {/* Check-in conditions */}
                         {conditions.length > 0 && (
-                            <div className="mb-6 rounded-xl border border-border bg-white">
+                            <div className="mb-6 rounded-xl border border-border bg-card">
                                 <div className="border-b border-border px-5 py-4">
                                     <h2 className="text-base font-semibold text-foreground">{t('kr_kecb2b4ed_keca1b0ea')}</h2>
                                 </div>
@@ -194,7 +194,7 @@ export default function MyCheckinsClient({user }: {
                         )}
 
                         {/* Goals progress update */}
-                        <div className="rounded-xl border border-border bg-white">
+                        <div className="rounded-xl border border-border bg-card">
                             <div className="border-b border-border px-5 py-4">
                                 <h2 className="text-base font-semibold text-foreground">{t('goals_keca784ed_kec9785eb')}</h2>
                             </div>

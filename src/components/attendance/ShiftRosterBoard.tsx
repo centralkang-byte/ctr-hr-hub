@@ -359,7 +359,7 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
         </div>
         <button
           onClick={() => void fetchData()}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-3 py-2 text-sm text-foreground transition-colors hover:bg-muted"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground transition-colors hover:bg-muted"
         >
           <RefreshCw className="h-4 w-4" />
           새로고침
@@ -370,23 +370,23 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
       <div className="flex items-center gap-3">
         <button
           onClick={prevWeek}
-          className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-white transition-colors hover:bg-muted"
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card transition-colors hover:bg-muted"
         >
           <ChevronLeft className="h-4 w-4 text-foreground" />
         </button>
-        <div className="flex items-center gap-2 rounded-lg border border-border bg-white px-4 py-1.5">
+        <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-1.5">
           <Calendar className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm font-semibold text-foreground">{weekLabel}</span>
         </div>
         <button
           onClick={nextWeek}
-          className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-white transition-colors hover:bg-muted"
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card transition-colors hover:bg-muted"
         >
           <ChevronRight className="h-4 w-4 text-foreground" />
         </button>
         <button
           onClick={goToday}
-          className="rounded-lg border border-border bg-white px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+          className="rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
         >
           오늘
         </button>
@@ -448,9 +448,9 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
         </div>
 
         {/* ── Right: Roster grid ──────────────────────────────── */}
-        <div className="relative flex-1 overflow-hidden rounded-xl border border-border bg-white">
+        <div className="relative flex-1 overflow-hidden rounded-xl border border-border bg-card">
           {loading && (
-            <div className="absolute inset-0 z-30 flex items-center justify-center bg-white/70">
+            <div className="absolute inset-0 z-30 flex items-center justify-center bg-background/70">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
           )}
@@ -481,7 +481,7 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
                 <thead>
                   <tr>
                     {/* Employee column header */}
-                    <th className="sticky left-0 top-0 z-20 min-w-[180px] border-b border-r border-border bg-white px-4 py-3 text-left">
+                    <th className="sticky left-0 top-0 z-20 min-w-[180px] border-b border-r border-border bg-card px-4 py-3 text-left">
                       <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                         직원
                       </span>
@@ -495,7 +495,7 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
                       return (
                         <th
                           key={dateStr}
-                          className={`sticky top-0 z-10 min-w-[90px] border-b border-r border-border bg-white px-2 py-3 text-center ${
+                          className={`sticky top-0 z-10 min-w-[90px] border-b border-r border-border bg-card px-2 py-3 text-center ${
                             isTdy ? 'bg-primary/5' : ''
                           }`}
                         >
@@ -531,13 +531,13 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
                     <tr
                       key={emp.id}
                       className={`border-b border-border ${
-                        rowIdx % 2 === 0 ? 'bg-white' : 'bg-background'
+                        rowIdx % 2 === 0 ? 'bg-card' : 'bg-background'
                       }`}
                     >
                       {/* Sticky employee column */}
                       <td
                         className={`sticky left-0 z-10 border-r border-border px-4 py-2.5 ${
-                          rowIdx % 2 === 0 ? 'bg-white' : 'bg-background'
+                          rowIdx % 2 === 0 ? 'bg-card' : 'bg-background'
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
@@ -619,7 +619,7 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
 
       {/* ── DnD ghost indicator ──────────────────────────────── */}
       {draggedType && (
-        <div className="pointer-events-none fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full border border-border bg-white px-4 py-2 shadow-lg">
+        <div className="pointer-events-none fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 shadow-lg">
           <div
             className={`h-2 w-2 rounded-full ${
               draggedType === 'morning'

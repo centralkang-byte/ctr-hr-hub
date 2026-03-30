@@ -52,7 +52,7 @@ export default function PayrollKpiCards({
       {cards.map((card) => (
         <div
           key={card.label}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+          className="bg-card rounded-xl shadow-sm border border-border p-6"
         >
           <div className="flex items-center gap-2 mb-2">
             <div className={`p-1.5 rounded-lg ${card.bg}`}>

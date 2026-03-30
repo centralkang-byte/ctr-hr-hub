@@ -51,7 +51,7 @@ const FITNESS_COLORS: Record<string, string> = {
   FIT_B: 'bg-primary/10 text-primary/90 border-primary/20',
   FIT_C: 'bg-amber-100 text-amber-700 border-amber-300',
   FIT_D: 'bg-orange-50 text-orange-700 border-orange-200',
-  UNFIT: 'bg-red-100 text-red-700 border-red-200',
+  UNFIT: 'bg-destructive/10 text-destructive border-destructive/20',
 }
 
 export default function MilitaryRegistrationTab() {
@@ -121,7 +121,7 @@ export default function MilitaryRegistrationTab() {
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
           <div className="flex gap-2 flex-1">
             {/* Search */}
@@ -159,7 +159,7 @@ export default function MilitaryRegistrationTab() {
             <button
               onClick={handleExportT2}
               disabled={exporting}
-              className="flex items-center gap-2 bg-white border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
+              className="flex items-center gap-2 bg-card border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
             >
               <Download className="w-4 h-4" />
               T-2 내보내기

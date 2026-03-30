@@ -71,10 +71,10 @@ function getGapColor(gap: number | null) {
 
 function getGapBg(gap: number | null) {
   if (gap === null) return 'bg-background'
-  if (gap >= 2) return 'bg-red-100'
+  if (gap >= 2) return 'bg-destructive/10'
   if (gap === 1) return 'bg-amber-100'
   if (gap === 0) return 'bg-emerald-100'
-  return 'bg-blue-100'
+  return 'bg-primary/10'
 }
 
 // ── 레벨 선택 버튼 ────────────────────────────────────────
@@ -237,14 +237,14 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
 
       {/* 진행률 KPI */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1">평가 완료</p>
           <p className="text-3xl font-bold text-foreground">{completedCount}<span className="text-lg font-normal text-[#999]">/{totalCount}</span></p>
           <div className="mt-2 bg-muted rounded-full h-2">
             <div className="bg-primary h-2 rounded-full" style={{ width: `${completionRate}%` }} />
           </div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1">미달 역량</p>
           <p className="text-3xl font-bold text-red-500">
             {competencies.filter((c) => {
@@ -255,7 +255,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
           </p>
           <p className="text-xs text-red-500 mt-1">기대 수준 미달</p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1">강점 역량</p>
           <p className="text-3xl font-bold text-emerald-600">
             {competencies.filter((c) => {
@@ -270,7 +270,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
 
       {/* 레이더 차트 */}
       {showRadar && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <h2 className="text-base font-semibold text-foreground mb-4">역량 레이더 차트</h2>
           <ResponsiveContainer width="100%" height={320}>
             <RadarChart data={radarData}>
@@ -310,7 +310,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
             const catKey = category.id
             const expanded = expandedCategories.has(catKey) || expandedCategories.has('all')
             return (
-              <div key={catKey} className="bg-white rounded-xl border border-border">
+              <div key={catKey} className="bg-card rounded-xl border border-border">
                 {/* 카테고리 헤더 */}
                 <button
                   onClick={() => {

@@ -32,7 +32,7 @@ const MATCH_TYPE_LABELS: Record<string, string> = {
 }
 
 const MATCH_TYPE_COLORS: Record<string, string> = {
-  email: 'bg-red-100 text-red-700',
+  email: 'bg-destructive/10 text-destructive',
   phone: 'bg-amber-100 text-amber-700',
   name_dob: 'bg-indigo-100 text-primary/90',
 }

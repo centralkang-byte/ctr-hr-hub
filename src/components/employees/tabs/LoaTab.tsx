@@ -51,12 +51,12 @@ const STATUS_ICONS: Record<string, typeof Clock> = {
 
 const STATUS_COLORS: Record<string, string> = {
   REQUESTED: 'bg-yellow-100 text-yellow-700',
-  APPROVED: 'bg-blue-100 text-blue-700',
+  APPROVED: 'bg-primary/10 text-primary',
   ACTIVE: 'bg-orange-100 text-orange-700',
   RETURN_REQUESTED: 'bg-purple-100 text-purple-700',
-  COMPLETED: 'bg-green-100 text-green-700',
-  REJECTED: 'bg-red-100 text-red-700',
-  CANCELLED: 'bg-gray-100 text-gray-500',
+  COMPLETED: 'bg-tertiary-container/20 text-tertiary',
+  REJECTED: 'bg-destructive/10 text-destructive',
+  CANCELLED: 'bg-muted text-muted-foreground',
 }
 
 function formatDate(d: string | null) {
@@ -90,7 +90,7 @@ export function LoaTab({ employeeId }: Props) {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-border bg-white p-6">
+      <div className="rounded-xl border border-border bg-card p-6">
         <div className="flex items-center justify-center py-12">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         </div>
@@ -100,7 +100,7 @@ export function LoaTab({ employeeId }: Props) {
 
   if (records.length === 0) {
     return (
-      <div className="rounded-xl border border-border bg-white p-6">
+      <div className="rounded-xl border border-border bg-card p-6">
         <div className="flex flex-col items-center py-12 text-[#999]">
           <Shield className="h-10 w-10 mb-3 text-border" />
           <p className="text-sm font-medium text-[#666]">휴직 이력이 없습니다</p>
@@ -114,7 +114,7 @@ export function LoaTab({ employeeId }: Props) {
   const past = records.filter(r => ['COMPLETED', 'REJECTED', 'CANCELLED'].includes(r.status))
 
   return (
-    <div className="rounded-xl border border-border bg-white p-6 space-y-6">
+    <div className="rounded-xl border border-border bg-card p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-base font-semibold text-foreground">휴직 이력</h3>
         <span className="text-sm text-muted-foreground">{records.length}건</span>
@@ -151,7 +151,7 @@ function LoaCard({ record: r }: { record: LoaRecord }) {
             <span className="font-medium text-foreground">{r.type.name}</span>
             <span className={cn(
               'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
-              r.type.category === 'STATUTORY' ? 'bg-blue-50 text-blue-600' : 'bg-gray-50 text-gray-500',
+              r.type.category === 'STATUTORY' ? 'bg-primary/5 text-primary' : 'bg-muted/50 text-muted-foreground',
             )}>
               {r.type.category === 'STATUTORY' ? '법정' : '약정'}
             </span>

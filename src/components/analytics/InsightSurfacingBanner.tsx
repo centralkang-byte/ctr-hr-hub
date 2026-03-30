@@ -23,9 +23,9 @@ interface Props {
 const MAX_VISIBLE = 3
 
 const SEVERITY_STYLES = {
-  CRITICAL: { bg: 'bg-red-50 dark:bg-red-950/30', border: 'border-red-200 dark:border-red-800', icon: ShieldAlert, iconColor: 'text-red-600 dark:text-red-400' },
+  CRITICAL: { bg: 'bg-destructive/5 dark:bg-red-950/30', border: 'border-destructive/20 dark:border-red-800', icon: ShieldAlert, iconColor: 'text-destructive dark:text-red-400' },
   HIGH: { bg: 'bg-amber-50 dark:bg-amber-950/30', border: 'border-amber-200 dark:border-amber-800', icon: AlertTriangle, iconColor: 'text-amber-600 dark:text-amber-400' },
-  MEDIUM: { bg: 'bg-blue-50 dark:bg-blue-950/30', border: 'border-blue-200 dark:border-blue-800', icon: Info, iconColor: 'text-blue-600 dark:text-blue-400' },
+  MEDIUM: { bg: 'bg-primary/5 dark:bg-blue-950/30', border: 'border-primary/20 dark:border-blue-800', icon: Info, iconColor: 'text-primary dark:text-blue-400' },
 } as const
 
 // ─── Component ──────────────────────────────────────────────

@@ -97,8 +97,8 @@ interface LeavePolicyLocal {
 
 const statusBadgeClass: Record<string, string> = {
   PENDING: 'bg-orange-50 text-orange-500',
-  APPROVED: 'bg-primary/10 text-green-700',
-  REJECTED: 'bg-red-50 text-red-500',
+  APPROVED: 'bg-primary/10 text-tertiary',
+  REJECTED: 'bg-destructive/5 text-red-500',
   CANCELLED: 'bg-muted text-[#666]',
 }
 
@@ -515,7 +515,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                     return (
                       <div
                         key={b.id}
-                        className="min-w-[200px] flex-shrink-0 bg-white border border-border rounded-xl p-5"
+                        className="min-w-[200px] flex-shrink-0 bg-card border border-border rounded-xl p-5"
                       >
                         <p className="text-xs text-[#999] font-medium mb-2">
                           {b.leaveTypeDef?.name ?? b.policy?.name ?? '-'}
@@ -560,7 +560,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
             className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
               statusFilter === f.value
                 ? 'bg-foreground text-white border-foreground'
-                : 'bg-white text-[#666] border-border hover:bg-muted'
+                : 'bg-card text-[#666] border-border hover:bg-muted'
             }`}
           >
             {f.label}
@@ -663,7 +663,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                       className={`px-3 py-2 text-sm font-medium rounded-md border transition-colors ${
                         presetType === preset.id
                           ? 'bg-foreground text-white border-foreground'
-                          : 'bg-white text-[#666] border-border hover:bg-muted'
+                          : 'bg-card text-[#666] border-border hover:bg-muted'
                       }`}
                     >
                       {preset.label}
@@ -686,7 +686,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                         id="leave-start"
                         variant={"outline"}
                         className={cn(
-                          "w-full justify-start text-left font-normal border-input bg-white",
+                          "w-full justify-start text-left font-normal border-input bg-card",
                           !field.value && "text-muted-foreground"
                         )}
                       >
@@ -735,7 +735,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                           id="leave-end"
                           variant={"outline"}
                           className={cn(
-                            "w-full justify-start text-left font-normal border-input bg-white",
+                            "w-full justify-start text-left font-normal border-input bg-card",
                             !field.value && "text-muted-foreground"
                           )}
                         >

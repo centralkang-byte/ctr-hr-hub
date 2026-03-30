@@ -19,19 +19,19 @@ import type { SessionUser } from '@/types'
 // ─── Badge Styles ────────────────────────────────────────
 
 const REWARD_TYPE_BADGE_STYLES: Record<string, string> = {
-  COMMENDATION: 'bg-primary/10 text-green-700',
-  BONUS_AWARD: 'bg-blue-50 text-blue-800',
+  COMMENDATION: 'bg-primary/10 text-tertiary',
+  BONUS_AWARD: 'bg-primary/5 text-blue-800',
   CTR_VALUE_AWARD: 'bg-purple-50 text-purple-800',
   LONG_SERVICE: 'bg-orange-50 text-orange-800',
   INNOVATION: 'bg-primary/10 text-primary',
-  SAFETY_AWARD: 'bg-blue-50 text-blue-500',
-  PROMOTION_RECOMMENDATION: 'bg-primary/10 text-green-700',
+  SAFETY_AWARD: 'bg-primary/5 text-blue-500',
+  PROMOTION_RECOMMENDATION: 'bg-primary/10 text-tertiary',
   OTHER: 'bg-muted text-[#999]',
 }
 
 const CTR_VALUE_BADGE_STYLES: Record<string, string> = {
-  CHALLENGE: 'bg-red-50 text-red-800',
-  TRUST: 'bg-blue-50 text-blue-800',
+  CHALLENGE: 'bg-destructive/5 text-destructive',
+  TRUST: 'bg-primary/5 text-blue-800',
   RESPONSIBILITY: 'bg-orange-50 text-orange-800',
   RESPECT: 'bg-purple-50 text-purple-800',
 }
@@ -149,7 +149,7 @@ export default function RewardDetailClient({ user, id }: Props) {
         {/* Left Panel */}
         <div className="space-y-6">
           {/* Reward Info */}
-          <div className="bg-white border border-border rounded-xl p-6">
+          <div className="bg-card border border-border rounded-xl p-6">
             <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
               {t('rewardInfo')}
             </h2>
@@ -192,7 +192,7 @@ export default function RewardDetailClient({ user, id }: Props) {
 
           {/* Description */}
           {data.description && (
-            <div className="bg-white border border-border rounded-xl p-6">
+            <div className="bg-card border border-border rounded-xl p-6">
               <h2 className="text-base font-bold text-foreground mb-3 tracking-[-0.02em]">
                 {t('reason')}
               </h2>
@@ -206,9 +206,9 @@ export default function RewardDetailClient({ user, id }: Props) {
         {/* Right Panel */}
         <div className="space-y-6">
           {/* Employee Summary */}
-          <div className="bg-white border border-border rounded-xl p-6">
+          <div className="bg-card border border-border rounded-xl p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-primary/5 rounded-full flex items-center justify-center">
                 <User className="w-5 h-5 text-blue-800" />
               </div>
               <div>
@@ -229,7 +229,7 @@ export default function RewardDetailClient({ user, id }: Props) {
           </div>
 
           {/* Date Info */}
-          <div className="bg-white border border-border rounded-xl p-6">
+          <div className="bg-card border border-border rounded-xl p-6">
             <h3 className="text-base font-bold text-foreground mb-4 flex items-center gap-2 tracking-[-0.02em]">
               <Calendar className="w-4 h-4 text-[#666]" />
               {t('dateInfo')}

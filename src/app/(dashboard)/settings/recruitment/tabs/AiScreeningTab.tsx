@@ -85,7 +85,7 @@ export function AiScreeningTab({
               <span className="text-sm font-medium text-foreground">{f.label}</span>
               <button
                 onClick={() => toggleFeature(i)}
-                className={`rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${f.enabled ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
+                className={`rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${f.enabled ? 'bg-tertiary-container/10 text-tertiary hover:bg-tertiary-container/20' : 'bg-muted/50 text-muted-foreground/60 hover:bg-muted'}`}
               >
                 {f.enabled ? '활성' : '비활성'}
               </button>

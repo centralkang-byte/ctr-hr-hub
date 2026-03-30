@@ -177,7 +177,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                     <select
                         value={month}
                         onChange={(e) => setMonth(Number(e.target.value))}
-                        className="px-3 py-2 border border-border rounded-lg text-sm bg-white focus:border-primary focus:ring-2 focus:ring-primary/10"
+                        className="px-3 py-2 border border-border rounded-lg text-sm bg-card focus:border-primary focus:ring-2 focus:ring-primary/10"
                     >
                         {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
                             <option key={m} value={m}>{m}월</option>
@@ -186,7 +186,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                     <select
                         value={year}
                         onChange={(e) => setYear(Number(e.target.value))}
-                        className="px-3 py-2 border border-border rounded-lg text-sm bg-white focus:border-primary focus:ring-2 focus:ring-primary/10"
+                        className="px-3 py-2 border border-border rounded-lg text-sm bg-card focus:border-primary focus:ring-2 focus:ring-primary/10"
                     >
                         {[2024, 2025, 2026].map((y) => (
                             <option key={y} value={y}>{y}년</option>
@@ -216,7 +216,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                     const confirmedPct = status ? Math.round((status.confirmedCount / Math.max(status.totalEmployees, 1)) * 100) : 0
 
                     return (
-                        <div key={companyId} className="bg-white rounded-xl border border-border overflow-hidden">
+                        <div key={companyId} className="bg-card rounded-xl border border-border overflow-hidden">
                             {/* Card Header */}
                             <div className="flex items-center justify-between p-5 border-b border-border">
                                 <div className="flex items-center gap-3">
@@ -325,7 +325,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                             {expandedEmp[companyId] && (
                                                 <div className="divide-y divide-amber-200">
                                                     {status.unconfirmedEmployees.map((emp) => (
-                                                        <div key={emp.id} className="flex items-center gap-3 px-4 py-2.5 bg-white">
+                                                        <div key={emp.id} className="flex items-center gap-3 px-4 py-2.5 bg-card">
                                                             <div className="w-7 h-7 rounded-full bg-border flex items-center justify-center flex-shrink-0">
                                                                 <Users size={12} className="text-[#999]" />
                                                             </div>

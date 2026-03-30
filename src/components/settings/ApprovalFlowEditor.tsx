@@ -53,7 +53,7 @@ export function ApprovalFlowEditor({ flow, onChange, disabled = false }: Approva
       {flow.steps.map((step, index) => (
         <div
           key={step.id}
-          className="flex items-center gap-3 rounded-xl border border-border bg-white px-4 py-3"
+          className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3"
         >
           {/* 순서 */}
           <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
@@ -68,7 +68,7 @@ export function ApprovalFlowEditor({ flow, onChange, disabled = false }: Approva
               value={step.approverRole ?? ''}
               onChange={(e) => updateStep(index, { approverRole: e.target.value as ApproverRole })}
               disabled={disabled}
-              className="w-full appearance-none rounded-lg border border-border bg-white px-3 py-2 text-sm text-[#333] focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:bg-background disabled:text-[#999]"
+              className="w-full appearance-none rounded-lg border border-border bg-card px-3 py-2 text-sm text-[#333] focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:bg-background disabled:text-[#999]"
             >
               {APPROVER_ROLES.map((r) => (
                 <option key={r.value} value={r.value}>{r.label}</option>
@@ -98,7 +98,7 @@ export function ApprovalFlowEditor({ flow, onChange, disabled = false }: Approva
             <button
               type="button"
               onClick={() => removeStep(index)}
-              className="flex-shrink-0 rounded-lg p-1.5 text-[#999] hover:bg-red-100 hover:text-red-600"
+              className="flex-shrink-0 rounded-lg p-1.5 text-[#999] hover:bg-destructive/10 hover:text-destructive"
             >
               <Trash2 className="h-4 w-4" />
             </button>

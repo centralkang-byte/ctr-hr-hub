@@ -143,7 +143,7 @@ export default function SocialInsuranceReportTab() {
   const months = Array.from({ length: 12 }, (_, i) => i + 1)
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-card rounded-xl shadow-sm border border-border p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
@@ -194,7 +194,7 @@ export default function SocialInsuranceReportTab() {
           <button
             onClick={handleExport}
             disabled={exporting}
-            className="flex items-center gap-2 bg-white border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 bg-card border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50"
           >
             <Download className="w-4 h-4" />
             {exporting ? '내보내는 중...' : '보고서 내보내기'}
@@ -209,7 +209,7 @@ export default function SocialInsuranceReportTab() {
         </div>
       )}
       {error && (
-        <div className="mb-4 bg-red-100 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
+        <div className="mb-4 bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-lg px-4 py-3">
           {error}
         </div>
       )}

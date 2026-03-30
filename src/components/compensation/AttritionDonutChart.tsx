@@ -38,7 +38,7 @@ export default function AttritionDonutChart({
   }))
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-card rounded-xl shadow-sm border border-border p-6">
       <h3 className="text-lg font-semibold text-foreground mb-4">위험 분포</h3>
       <div className="flex items-center gap-6">
         <div className="relative w-48 h-48">
@@ -62,7 +62,7 @@ export default function AttritionDonutChart({
                   if (!active || !payload?.length) return null
                   const d = payload[0].payload as (typeof data)[0]
                   return (
-                    <div className="rounded-md border bg-white p-3 shadow-lg">
+                    <div className="rounded-md border bg-card p-3 shadow-lg">
                       <p className="font-medium text-sm">{d.label}</p>
                       <p className="text-xs text-[#666]">
                         {d.count}명 ({d.percentage.toFixed(1)}%)

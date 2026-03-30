@@ -45,7 +45,7 @@ interface Requisition {
 }
 
 const URGENCY_LABELS: Record<string, { label: string; color: string }> = {
-  urgent: { label: '긴급도', color: 'bg-red-100 text-red-700' },
+  urgent: { label: '긴급도', color: 'bg-destructive/10 text-destructive' },
   normal: { label: '평균', color: 'bg-amber-100 text-amber-700' },
   low: { label: '낮음', color: 'bg-sky-50 text-sky-700' },
 }
@@ -54,7 +54,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string; icon: React.
   draft: { label: '임시저장', color: 'bg-background text-[#555]', icon: <FileText size={12} /> },
   pending: { label: '결재중', color: 'bg-amber-100 text-amber-700', icon: <Clock size={12} /> },
   approved: { label: '승인', color: 'bg-emerald-100 text-emerald-700', icon: <CheckCircle2 size={12} /> },
-  rejected: { label: '반려', color: 'bg-red-100 text-red-700', icon: <XCircle size={12} /> },
+  rejected: { label: '반려', color: 'bg-destructive/10 text-destructive', icon: <XCircle size={12} /> },
   cancelled: { label: '취소', color: 'bg-background text-[#999]', icon: <XCircle size={12} /> },
   filled: { label: '충원완료', color: 'bg-primary/10 text-primary/90', icon: <CheckCircle2 size={12} /> },
 }
@@ -220,7 +220,7 @@ export default function RequisitionListClient({user }: {
                           return (
                             <div key={record.id} className="flex items-center gap-1">
                               <div className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${
-                                isRejected ? 'bg-red-100 text-red-700' :
+                                isRejected ? 'bg-destructive/10 text-destructive' :
                                 isDone ? 'bg-emerald-100 text-emerald-700' :
                                 isActive ? 'bg-amber-100 text-amber-700' :
                                 'bg-muted text-[#999]'

@@ -41,7 +41,7 @@ export function ApprovalFlowSelect({
         type="button"
         disabled={disabled}
         onClick={() => setOpen((p) => !p)}
-        className="flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-white px-3 py-2 text-sm text-[#333] hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-background disabled:text-[#999]"
+        className="flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm text-[#333] hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-background disabled:text-[#999]"
       >
         <span>{selected ? selected.name : placeholder}</span>
         <ChevronDown className={`h-4 w-4 text-[#999] transition-transform ${open ? 'rotate-180' : ''}`} />
@@ -50,7 +50,7 @@ export function ApprovalFlowSelect({
       {open && !disabled && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute left-0 top-full z-20 mt-1 w-full rounded-lg border border-border bg-white shadow-lg">
+          <div className="absolute left-0 top-full z-20 mt-1 w-full rounded-lg border border-border bg-card shadow-lg">
             <button
               type="button"
               onClick={() => { onChange(null); setOpen(false) }}

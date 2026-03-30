@@ -31,7 +31,7 @@ interface AnomalyData {
 }
 
 const SEVERITY_COLORS: Record<string, string> = {
-  high: 'bg-red-100 text-red-700 border-red-200',
+  high: 'bg-destructive/10 text-destructive border-destructive/20',
   medium: 'bg-amber-100 text-amber-700 border-amber-300',
   low: 'bg-indigo-100 text-primary/90 border-indigo-200',
 }
@@ -91,7 +91,7 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-border">
             {details.slice(0, 8).map((row, i) => {
               const r = row as Record<string, unknown>
               return (
@@ -118,8 +118,8 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-red-100 rounded-lg flex items-center justify-center">
-            <AlertTriangle className="w-5 h-5 text-red-600" />
+          <div className="w-9 h-9 bg-destructive/10 rounded-lg flex items-center justify-center">
+            <AlertTriangle className="w-5 h-5 text-destructive" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-foreground">{'급여 이상 탐지'}</h1>
@@ -156,13 +156,13 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
           <div className="grid grid-cols-4 gap-4 mb-6">
             <div className={CARD_STYLES.padded}>
               <p className="text-xs text-[#666] mb-1">{tPayroll('totalAnomalies')}</p>
-              <p className={`text-3xl font-bold ${data.totalAnomalies > 0 ? 'text-red-600' : 'text-emerald-600'}`}>
+              <p className={`text-3xl font-bold ${data.totalAnomalies > 0 ? 'text-destructive' : 'text-emerald-600'}`}>
                 {data.totalAnomalies}
               </p>
             </div>
             <div className={CARD_STYLES.padded}>
               <p className="text-xs text-[#666] mb-1">{tPayroll('highOrAbove')}</p>
-              <p className="text-3xl font-bold text-red-600">
+              <p className="text-3xl font-bold text-destructive">
                 {data.anomalies.filter(a => a.severity === 'high').reduce((s, a) => s + a.affectedCount, 0)}
               </p>
             </div>
@@ -191,8 +191,8 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
             {data.anomalies.map(anomaly => (
               <div
                 key={anomaly.rule}
-                className={`bg-white rounded-xl border overflow-hidden ${
-                  anomaly.severity === 'high' ? 'border-red-200' : anomaly.severity === 'medium' ? 'border-amber-300' : 'border-indigo-200'
+                className={`bg-card rounded-xl border overflow-hidden ${
+                  anomaly.severity === 'high' ? 'border-destructive/20' : anomaly.severity === 'medium' ? 'border-amber-300' : 'border-indigo-200'
                 }`}
               >
                 <div
@@ -207,7 +207,7 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${SEVERITY_COLORS[anomaly.severity]}`}>
                           위험도 {SEVERITY_LABEL[anomaly.severity]}
                         </span>
-                        <span className="text-sm font-bold text-red-600">{anomaly.affectedCount}건</span>
+                        <span className="text-sm font-bold text-destructive">{anomaly.affectedCount}건</span>
                       </div>
                       <p className="text-sm text-[#666] mt-0.5">{anomaly.description}</p>
                     </div>

@@ -110,12 +110,12 @@ export default function AiReportClient({ user }: { user: SessionUser }) {
     const lines = content.split('\n')
     return lines.map((line, i) => {
       // Headers
-      if (line.startsWith('# ')) return <h1 key={i} className="text-2xl font-bold text-gray-900 mb-4 mt-6">{line.slice(2)}</h1>
-      if (line.startsWith('## ')) return <h2 key={i} className="text-lg font-bold text-gray-800 mb-3 mt-5 pb-2 border-b border-gray-100">{line.slice(3)}</h2>
-      if (line.startsWith('### ')) return <h3 key={i} className="text-base font-semibold text-gray-700 mb-2 mt-4">{line.slice(4)}</h3>
+      if (line.startsWith('# ')) return <h1 key={i} className="text-2xl font-bold text-foreground mb-4 mt-6">{line.slice(2)}</h1>
+      if (line.startsWith('## ')) return <h2 key={i} className="text-lg font-bold text-foreground mb-3 mt-5 pb-2 border-b border-border">{line.slice(3)}</h2>
+      if (line.startsWith('### ')) return <h3 key={i} className="text-base font-semibold text-foreground mb-2 mt-4">{line.slice(4)}</h3>
 
       // Horizontal rule
-      if (line.startsWith('---')) return <hr key={i} className="my-4 border-gray-200" />
+      if (line.startsWith('---')) return <hr key={i} className="my-4 border-border" />
 
       // Table headers
       if (line.startsWith('|') && line.includes('|')) {
@@ -147,22 +147,22 @@ export default function AiReportClient({ user }: { user: SessionUser }) {
         const text = line.replace(/^[-*]\s/, '').replace(/^\d+\.\s/, '')
         return (
           <div key={i} className="flex gap-2 py-1.5 pl-2">
-            <span className="text-gray-400 flex-shrink-0">•</span>
-            <span className="text-sm text-gray-700 leading-relaxed">{renderInlineMarkdown(text)}</span>
+            <span className="text-muted-foreground/60 flex-shrink-0">•</span>
+            <span className="text-sm text-foreground leading-relaxed">{renderInlineMarkdown(text)}</span>
           </div>
         )
       }
 
       // Italic (footnote)
       if (line.startsWith('*') && line.endsWith('*')) {
-        return <p key={i} className="text-xs text-gray-400 italic mt-4">{line.replace(/^\*|\*$/g, '')}</p>
+        return <p key={i} className="text-xs text-muted-foreground/60 italic mt-4">{line.replace(/^\*|\*$/g, '')}</p>
       }
 
       // Empty line
       if (line.trim() === '') return <div key={i} className="h-2" />
 
       // Normal paragraph
-      return <p key={i} className="text-sm text-gray-700 leading-relaxed py-0.5">{renderInlineMarkdown(line)}</p>
+      return <p key={i} className="text-sm text-foreground leading-relaxed py-0.5">{renderInlineMarkdown(line)}</p>
     })
   }
 
@@ -205,7 +205,7 @@ export default function AiReportClient({ user }: { user: SessionUser }) {
   const renderBold = (text: string): React.ReactNode => {
     const parts = text.split(/\*\*([^*]+)\*\*/)
     return parts.map((part, i) =>
-      i % 2 === 1 ? <strong key={i} className="font-semibold text-gray-900">{part}</strong> : part
+      i % 2 === 1 ? <strong key={i} className="font-semibold text-foreground">{part}</strong> : part
     )
   }
 
@@ -213,7 +213,7 @@ export default function AiReportClient({ user }: { user: SessionUser }) {
     return (
       <div className="space-y-4 animate-pulse">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="h-32 bg-gray-100 rounded-xl" />
+          <div key={i} className="h-32 bg-muted rounded-xl" />
         ))}
       </div>
     )
@@ -222,40 +222,40 @@ export default function AiReportClient({ user }: { user: SessionUser }) {
   return (
     <div className="space-y-6">
       {/* Generation Controls */}
-      <div className="bg-white rounded-xl border border-gray-100 p-6">
+      <div className="bg-card rounded-xl border border-border p-6">
         <div className="flex flex-wrap items-end gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('period')}</label>
+            <label className="block text-xs font-medium text-muted-foreground mb-1.5">{t('period')}</label>
             <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
               <select
                 value={selectedPeriod}
                 onChange={(e) => setSelectedPeriod(e.target.value)}
-                className="pl-9 pr-8 py-2.5 text-sm border border-gray-200 rounded-xl bg-white appearance-none cursor-pointer hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all min-w-[140px]"
+                className="pl-9 pr-8 py-2.5 text-sm border border-border rounded-xl bg-card appearance-none cursor-pointer hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all min-w-[140px]"
               >
                 {periodOptions.map((p) => (
                   <option key={p} value={p}>{p}</option>
                 ))}
               </select>
-              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60 pointer-events-none" />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('company')}</label>
+            <label className="block text-xs font-medium text-muted-foreground mb-1.5">{t('company')}</label>
             <div className="relative">
-              <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
               <select
                 value={selectedCompany}
                 onChange={(e) => setSelectedCompany(e.target.value)}
-                className="pl-9 pr-8 py-2.5 text-sm border border-gray-200 rounded-xl bg-white appearance-none cursor-pointer hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all min-w-[140px]"
+                className="pl-9 pr-8 py-2.5 text-sm border border-border rounded-xl bg-card appearance-none cursor-pointer hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all min-w-[140px]"
               >
                 <option value="">{t('kr_keca084ec')}</option>
                 {companies.map((c) => (
                   <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
-              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60 pointer-events-none" />
             </div>
           </div>
 
@@ -288,14 +288,14 @@ export default function AiReportClient({ user }: { user: SessionUser }) {
 
       {/* Generating animation */}
       {generating && (
-        <div className="bg-white rounded-xl border border-gray-100 p-12 text-center">
+        <div className="bg-card rounded-xl border border-border p-12 text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-primary/10 mb-4">
             <Sparkles className="h-8 w-8 text-primary animate-pulse" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('kr_aikeab080_keba6aced_kec839dec_')}</h3>
-          <p className="text-sm text-gray-500">{t('kr_kec95bd_5_15kecb488_kec868cec_')}</p>
+          <h3 className="text-lg font-semibold text-foreground mb-2">{t('kr_aikeab080_keba6aced_kec839dec_')}</h3>
+          <p className="text-sm text-muted-foreground">{t('kr_kec95bd_5_15kecb488_kec868cec_')}</p>
           <div className="mt-6 w-48 mx-auto">
-            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-muted rounded-full overflow-hidden">
               <div className="h-full bg-gradient-to-r from-[#5E81F4] to-[#6B73E8] rounded-full animate-[progressBar_2s_ease-in-out_infinite]" style={{ width: '60%' }} />
             </div>
           </div>
@@ -304,20 +304,20 @@ export default function AiReportClient({ user }: { user: SessionUser }) {
 
       {/* Current Report */}
       {currentReport && !generating && (
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+        <div className="bg-card rounded-xl border border-border overflow-hidden">
           {/* Report Header */}
-          <div className="relative bg-gradient-to-br from-[#5E81F4]/5 to-[#6B73E8]/5 px-6 py-4 border-b border-gray-100">
+          <div className="relative bg-gradient-to-br from-[#5E81F4]/5 to-[#6B73E8]/5 px-6 py-4 border-b border-border">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-xl bg-primary/10">
                   <FileText className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-base font-semibold text-gray-900">
+                  <h3 className="text-base font-semibold text-foreground">
                     {currentReport.companyName} — {currentReport.period} 리포트
                   </h3>
                   <div className="flex items-center gap-3 mt-0.5">
-                    <span className="text-xs text-gray-500 flex items-center gap-1">
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       {new Date(currentReport.createdAt).toLocaleDateString('ko-KR', {
                         year: 'numeric', month: 'long', day: 'numeric',
@@ -338,7 +338,7 @@ export default function AiReportClient({ user }: { user: SessionUser }) {
                   setSelectedCompany(currentReport.companyId || '')
                   handleGenerate()
                 }}
-                className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                className="p-2 rounded-lg hover:bg-muted text-muted-foreground/60 hover:text-muted-foreground transition-colors"
                 title="리포트 재생성"
               >
                 <RefreshCw className="h-4 w-4" />
@@ -355,12 +355,12 @@ export default function AiReportClient({ user }: { user: SessionUser }) {
 
       {/* Empty state */}
       {!currentReport && !generating && reports.length === 0 && (
-        <div className="bg-white rounded-xl border border-gray-100 p-12 text-center">
+        <div className="bg-card rounded-xl border border-border p-12 text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-br from-[#5E81F4]/10 to-[#6B73E8]/10 mb-4">
             <Sparkles className="h-8 w-8 text-primary" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('kr_kec9584ec_kec839dec_keba6aced_')}</h3>
-          <p className="text-sm text-gray-500 mb-6">
+          <h3 className="text-lg font-semibold text-foreground mb-2">{t('kr_kec9584ec_kec839dec_keba6aced_')}</h3>
+          <p className="text-sm text-muted-foreground mb-6">
             {t('kr_kec8381eb_quot_keba6aced_kec83')}
           </p>
         </div>
@@ -368,25 +368,25 @@ export default function AiReportClient({ user }: { user: SessionUser }) {
 
       {/* Report History */}
       {reports.length > 1 && (
-        <div className="bg-white rounded-xl border border-gray-100">
-          <div className="px-6 py-4 border-b border-gray-100">
-            <h3 className="text-sm font-semibold text-gray-700">{t('prev_keba6aced')}</h3>
+        <div className="bg-card rounded-xl border border-border">
+          <div className="px-6 py-4 border-b border-border">
+            <h3 className="text-sm font-semibold text-foreground">{t('prev_keba6aced')}</h3>
           </div>
           <div className="divide-y divide-gray-50">
             {reports.filter((r) => r.id !== currentReport?.id).map((report) => (
               <button
                 key={report.id}
                 onClick={() => setCurrentReport(report)}
-                className="w-full px-6 py-3.5 flex items-center justify-between hover:bg-gray-50 transition-colors text-left"
+                className="w-full px-6 py-3.5 flex items-center justify-between hover:bg-muted/50 transition-colors text-left"
               >
                 <div className="flex items-center gap-3">
-                  <FileText className="h-4 w-4 text-gray-400" />
+                  <FileText className="h-4 w-4 text-muted-foreground/60" />
                   <div>
-                    <span className="text-sm font-medium text-gray-900">{report.period}</span>
-                    <span className="text-xs text-gray-500 ml-2">{report.companyName}</span>
+                    <span className="text-sm font-medium text-foreground">{report.period}</span>
+                    <span className="text-xs text-muted-foreground ml-2">{report.companyName}</span>
                   </div>
                 </div>
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-muted-foreground/60">
                   {new Date(report.createdAt).toLocaleDateString('ko-KR')}
                 </span>
               </button>

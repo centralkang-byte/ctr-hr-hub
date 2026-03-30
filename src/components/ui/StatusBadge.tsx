@@ -8,9 +8,9 @@ const BADGE_STYLES: Record<BadgeVariant, string> = {
   success: 'bg-emerald-50 text-emerald-700',
   warning: 'bg-amber-50 text-amber-700',
   danger: 'bg-rose-50 text-rose-700',
-  info: 'bg-blue-50 text-blue-700',
-  neutral: 'bg-gray-100 text-gray-700',
-  muted: 'bg-gray-50 text-gray-500',
+  info: 'bg-primary/5 text-primary',
+  neutral: 'bg-muted text-foreground',
+  muted: 'bg-muted/50 text-muted-foreground',
 }
 
 interface StatusBadgeProps {

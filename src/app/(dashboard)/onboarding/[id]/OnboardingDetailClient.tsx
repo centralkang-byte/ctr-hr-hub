@@ -215,7 +215,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                     <ArrowLeft className="h-5 w-5" />
                 </button>
                 <PageHeader title={`${data.employee.name} 온보딩`} description={`${data.employee.department ?? ''} · ${data.employee.position ?? ''}`} />
-                <span className={`ml-auto rounded-full px-3 py-1 text-xs font-semibold ${data.status === 'COMPLETED' ? 'bg-green-100 text-green-600' : data.status === 'IN_PROGRESS' ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                <span className={`ml-auto rounded-full px-3 py-1 text-xs font-semibold ${data.status === 'COMPLETED' ? 'bg-tertiary-container/20 text-tertiary' : data.status === 'IN_PROGRESS' ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
                     {data.status === 'COMPLETED' ? t('statusCompleted') : data.status === 'IN_PROGRESS' ? t('statusInProgress') : data.status}
                 </span>
             </div>
@@ -225,7 +225,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                 {/* LEFT: Info Panel (30%) */}
                 <div className="w-80 flex-shrink-0 space-y-4">
                     {/* Progress Ring Card */}
-                    <div className="rounded-xl border border-border bg-white p-5">
+                    <div className="rounded-xl border border-border bg-card p-5">
                         <div className="mb-4 flex items-center justify-center">
                             <div className="relative h-28 w-28">
                                 <svg className="h-28 w-28 -rotate-90" viewBox="0 0 100 100">
@@ -244,7 +244,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                                 <div className="text-sm font-bold text-primary">{data.progress.inProgress}</div>
                                 <div className="text-[10px] text-muted-foreground">진행 중</div>
                             </div>
-                            <div className="rounded-lg bg-red-50 px-2 py-1.5">
+                            <div className="rounded-lg bg-destructive/5 px-2 py-1.5">
                                 <div className="text-sm font-bold text-red-500">{data.progress.blocked}</div>
                                 <div className="text-[10px] text-muted-foreground">차단</div>
                             </div>
@@ -256,7 +256,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                     </div>
 
                     {/* Employee Info Card */}
-                    <div className="rounded-xl border border-border bg-white p-5 space-y-3">
+                    <div className="rounded-xl border border-border bg-card p-5 space-y-3">
                         <h3 className="text-sm font-semibold text-foreground">직원 정보</h3>
                         <InfoRow label="입사일" value={data.employee.hireDate ? new Date(data.employee.hireDate).toLocaleDateString('ko-KR') : '-'} />
                         <InfoRow label="부서" value={data.employee.department ?? '-'} />
@@ -269,11 +269,11 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
 
                     {/* Sign-off Section */}
                     {data.status !== 'COMPLETED' && (
-                        <div className={`rounded-xl border p-5 ${data.signOffEligibility.eligible ? 'border-primary bg-primary/10' : 'border-border bg-white'}`}>
+                        <div className={`rounded-xl border p-5 ${data.signOffEligibility.eligible ? 'border-primary bg-primary/10' : 'border-border bg-card'}`}>
                             <h3 className="mb-2 text-sm font-semibold text-foreground">🖊️ Sign-off</h3>
                             {data.signOffEligibility.eligible ? (
                                 <>
-                                    <p className="mb-3 text-xs text-green-600">✅ 모든 필수 태스크 완료</p>
+                                    <p className="mb-3 text-xs text-tertiary">✅ 모든 필수 태스크 완료</p>
                                     {canSignOff && (
                                         <button onClick={() => setSignOffDialog(true)} disabled={actionLoading === 'sign-off'}
                                             className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50">
@@ -302,8 +302,8 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                     )}
 
                     {data.status === 'COMPLETED' && data.signOff.signedOffBy && (
-                        <div className="rounded-xl border border-green-100 bg-green-50 p-5">
-                            <h3 className="mb-2 text-sm font-semibold text-green-600">✅ 온보딩 완료</h3>
+                        <div className="rounded-xl border border-green-100 bg-tertiary-container/10 p-5">
+                            <h3 className="mb-2 text-sm font-semibold text-tertiary">✅ 온보딩 완료</h3>
                             <InfoRow label="승인자" value={data.signOff.signedOffBy.name} />
                             <InfoRow label="승인일" value={data.signOff.signedOffAt ? new Date(data.signOff.signedOffAt).toLocaleDateString('ko-KR') : '-'} />
                             {data.signOff.note && <InfoRow label="코멘트" value={data.signOff.note} />}
@@ -319,7 +319,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                             const tabLabel = tabKey === 'tasks' ? t('tabTasks') : tabKey === 'checkins' ? t('tabCheckins') : t('tabTimeline')
                             return (
                                 <button key={tabKey} onClick={() => setTab(tabKey)}
-                                    className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${tab === tabKey ? 'bg-white text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>
+                                    className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${tab === tabKey ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>
                                     {tabLabel}
                                 </button>
                             )
@@ -335,7 +335,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                                 const done = tasks.filter((t) => t.status === 'DONE').length
 
                                 return (
-                                    <div key={milestone} className="rounded-xl border border-border bg-white">
+                                    <div key={milestone} className="rounded-xl border border-border bg-card">
                                         <div className="flex items-center justify-between border-b border-border px-5 py-3">
                                             <h3 className="text-sm font-semibold text-foreground">{milestoneLabels[milestone]}</h3>
                                             <div className="flex items-center gap-2">
@@ -367,7 +367,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                             ) : (
                                 <>
                                     {/* Mini Trend */}
-                                    <div className="rounded-xl border border-border bg-white p-5">
+                                    <div className="rounded-xl border border-border bg-card p-5">
                                         <h3 className="mb-3 text-sm font-semibold text-foreground">감정 추이</h3>
                                         <div className="flex items-end justify-around gap-4 h-28">
                                             {data.checkins.map((c, i) => (
@@ -384,7 +384,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                                     </div>
                                     {/* Checkin Cards */}
                                     {data.checkins.map((c) => (
-                                        <div key={c.id} className="rounded-xl border border-border bg-white p-5">
+                                        <div key={c.id} className="rounded-xl border border-border bg-card p-5">
                                             <div className="mb-2 flex items-center justify-between">
                                                 <span className="text-sm font-semibold text-foreground">
                                                     {c.milestone ? milestoneLabels[c.milestone] ?? c.milestone : `Week ${c.checkinWeek}`}
@@ -411,14 +411,14 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
 
                     {/* Timeline Tab */}
                     {tab === 'timeline' && (
-                        <div className="rounded-xl border border-border bg-white p-5">
+                        <div className="rounded-xl border border-border bg-card p-5">
                             <h3 className="mb-4 text-sm font-semibold text-foreground">차단 이력</h3>
                             {data.blockedHistory.length === 0 ? (
                                 <p className="text-sm text-muted-foreground">{t('emptyBlockedHistory')}</p>
                             ) : (
                                 <div className="space-y-3">
                                     {data.blockedHistory.map((b, i) => (
-                                        <div key={i} className="flex items-start gap-3 rounded-lg border border-red-100 bg-red-50 p-3">
+                                        <div key={i} className="flex items-start gap-3 rounded-lg border border-destructive/15 bg-destructive/5 p-3">
                                             <Lock className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500" />
                                             <div>
                                                 <p className="text-sm font-medium text-foreground">{b.taskTitle}</p>
@@ -450,7 +450,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                         {tCommon('cancel')}
                         </button>
                         <button onClick={blockTask} disabled={!blockReason.trim() || !!actionLoading}
-                            className="rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600 disabled:opacity-50">
+                            className="rounded-lg bg-destructive/50 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600 disabled:opacity-50">
                             차단하기
                         </button>
                     </DialogFooter>
@@ -510,13 +510,13 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
     const isLoading = actionLoading === task.id
 
     return (
-        <div className={`flex items-start gap-3 px-5 py-3 ${task.status === 'BLOCKED' ? 'border-l-4 border-l-[#EF4444] bg-red-50' : ''}`}>
+        <div className={`flex items-start gap-3 px-5 py-3 ${task.status === 'BLOCKED' ? 'border-l-4 border-l-[#EF4444] bg-destructive/5' : ''}`}>
             <div className="mt-0.5 flex-shrink-0">
                 {task.status === 'DONE' ? <CheckCircle2 className="h-5 w-5 text-green-500" /> :
                     task.status === 'IN_PROGRESS' ? <Play className="h-5 w-5 text-primary" /> :
                         task.status === 'BLOCKED' ? <Lock className="h-5 w-5 text-red-500" /> :
                             task.status === 'SKIPPED' ? <SkipForward className="h-5 w-5 text-muted-foreground" /> :
-                                <Circle className="h-5 w-5 text-gray-300" />}
+                                <Circle className="h-5 w-5 text-muted-foreground/40" />}
             </div>
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
@@ -539,7 +539,7 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
                     )}
                 </div>
                 {task.status === 'BLOCKED' && task.blockedReason && (
-                    <div className="mt-1.5 rounded bg-red-100 px-2 py-1 text-xs text-red-600">
+                    <div className="mt-1.5 rounded bg-destructive/10 px-2 py-1 text-xs text-destructive">
                         🚫 {task.blockedReason}
                     </div>
                 )}
@@ -555,13 +555,13 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
                     )}
                     {(task.status === 'PENDING' || task.status === 'IN_PROGRESS') && (
                         <button onClick={() => onStatusChange(task.id, 'DONE')} disabled={isLoading}
-                            className="rounded-lg bg-green-500 px-2 py-1 text-xs text-white hover:bg-green-600 disabled:opacity-50">
+                            className="rounded-lg bg-tertiary-container/100 px-2 py-1 text-xs text-white hover:bg-green-600 disabled:opacity-50">
                             완료
                         </button>
                     )}
                     {(task.status === 'PENDING' || task.status === 'IN_PROGRESS') && (
                         <button onClick={() => onBlock(task.id, task.task.title)} disabled={isLoading}
-                            className="rounded-lg border border-red-500 px-2 py-1 text-xs text-red-500 hover:bg-red-50 disabled:opacity-50">
+                            className="rounded-lg border border-red-500 px-2 py-1 text-xs text-red-500 hover:bg-destructive/5 disabled:opacity-50">
                             차단
                         </button>
                     )}

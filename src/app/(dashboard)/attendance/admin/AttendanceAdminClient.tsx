@@ -271,41 +271,41 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-border rounded-xl p-4">
+        <div className="bg-card border border-border rounded-xl p-4">
           <p className="text-xs text-[#999] font-medium mb-2">{t('totalEmployees')}</p>
           <p className={TYPOGRAPHY.stat}><AnimatedNumber value={kpi?.totalEmployees ?? 0} /></p>
         </div>
 
-        <div className="bg-white border border-border rounded-xl p-4">
+        <div className="bg-card border border-border rounded-xl p-4">
           <p className="text-xs text-[#999] font-medium mb-2">{t('clockIn')}</p>
           <p className={TYPOGRAPHY.stat}><AnimatedNumber value={kpi?.presentCount ?? 0} /></p>
           <span className="text-xs font-semibold text-primary">{presentPct}%</span>
         </div>
 
-        <div className="bg-white border border-border rounded-xl p-4">
+        <div className="bg-card border border-border rounded-xl p-4">
           <p className="text-xs text-[#999] font-medium mb-2">{t('late')}</p>
           <p className={`text-3xl font-bold tabular-nums ${(kpi?.lateCount ?? 0) > 0 ? 'text-red-500' : 'text-foreground'}`}><AnimatedNumber value={kpi?.lateCount ?? 0} /></p>
         </div>
 
-        <div className="bg-white border border-border rounded-xl p-4">
+        <div className="bg-card border border-border rounded-xl p-4">
           <p className="text-xs text-[#999] font-medium mb-2">{t('absent')}</p>
           <p className={`text-3xl font-bold tabular-nums ${(kpi?.absentCount ?? 0) > 0 ? 'text-red-500' : 'text-foreground'}`}><AnimatedNumber value={kpi?.absentCount ?? 0} /></p>
         </div>
       </div>
 
       {/* Average work hours */}
-      <div className="bg-white border border-border rounded-xl p-4">
+      <div className="bg-card border border-border rounded-xl p-4">
         <p className="text-xs text-[#999] font-medium mb-2">{t('averageWorkHours')}</p>
         <p className={TYPOGRAPHY.stat}>{kpi ? formatMinutes(kpi.avgTotalMinutes) : '—'}</p>
       </div>
 
       {/* 52시간 모니터링 위젯 */}
       {alerts.length > 0 && (
-        <div className="rounded-xl border border-red-200 bg-white overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-3 bg-red-50 border-b border-red-200">
+        <div className="rounded-xl border border-destructive/20 bg-card overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-3 bg-destructive/5 border-b border-destructive/20">
             <div className="flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-red-500" />
-              <span className="text-sm font-semibold text-red-700">
+              <span className="text-sm font-semibold text-destructive">
                 52시간 초과 경고 ({alerts.length}명)
               </span>
             </div>
@@ -319,7 +319,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
                 경고: {alerts.filter((a) => a.alertLevel === 'warning').length}
               </span>
               <span className="flex items-center gap-1">
-                <span className="h-2 w-2 rounded-full bg-red-500 inline-block" />
+                <span className="h-2 w-2 rounded-full bg-destructive/50 inline-block" />
                 차단: {alerts.filter((a) => a.alertLevel === 'blocked').length}
               </span>
             </div>
@@ -332,7 +332,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
                   <span
                     className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                       alert.alertLevel === 'blocked'
-                        ? 'bg-red-100 text-red-700'
+                        ? 'bg-destructive/10 text-destructive'
                         : alert.alertLevel === 'warning'
                           ? 'bg-orange-50 text-orange-700'
                           : 'bg-amber-50 text-amber-700'

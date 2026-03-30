@@ -65,7 +65,7 @@ export default function SaveScenarioDialog({ open, onOpenChange, onSave, isLoadi
               maxLength={100}
               className={cn(
                 'w-full px-3 py-2 text-sm border border-border rounded-lg',
-                'focus:outline-none focus:ring-1 focus:ring-primary bg-white text-foreground',
+                'focus:outline-none focus:ring-1 focus:ring-primary bg-card text-foreground',
               )}
             />
           </div>
@@ -80,7 +80,7 @@ export default function SaveScenarioDialog({ open, onOpenChange, onSave, isLoadi
               rows={2}
               className={cn(
                 'w-full px-3 py-2 text-sm border border-border rounded-lg resize-none',
-                'focus:outline-none focus:ring-1 focus:ring-primary bg-white text-foreground',
+                'focus:outline-none focus:ring-1 focus:ring-primary bg-card text-foreground',
               )}
             />
           </div>

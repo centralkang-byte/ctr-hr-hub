@@ -238,7 +238,7 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
           <select
             value={selectedCompanyId}
             onChange={(e) => setSelectedCompanyId(e.target.value)}
-            className="text-sm border border-slate-200 rounded-md px-3 py-1.5 bg-white"
+            className="text-sm border border-border rounded-md px-3 py-1.5 bg-card"
           >
             {companies.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
@@ -274,7 +274,7 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                         <select
                           value={h.gradeCode}
                           onChange={(e) => updateHire(h.key, 'gradeCode', e.target.value)}
-                          className="text-sm border border-slate-200 rounded px-2 py-1 bg-white w-full"
+                          className="text-sm border border-border rounded px-2 py-1 bg-card w-full"
                         >
                           {grades.map((g) => (
                             <option key={g.id} value={g.code}>{g.code} — {g.name}</option>
@@ -286,14 +286,14 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                           type="number" min={1} max={100}
                           value={h.headcount}
                           onChange={(e) => updateHire(h.key, 'headcount', Math.max(1, Number(e.target.value)))}
-                          className="w-16 text-right border border-slate-200 rounded px-2 py-1 text-sm font-mono"
+                          className="w-16 text-right border border-border rounded px-2 py-1 text-sm font-mono"
                         />
                       </td>
                       <td className={TABLE_STYLES.cell}>
                         <select
                           value={h.salaryAnchor}
                           onChange={(e) => updateHire(h.key, 'salaryAnchor', e.target.value)}
-                          className="text-sm border border-slate-200 rounded px-2 py-1 bg-white w-full"
+                          className="text-sm border border-border rounded px-2 py-1 bg-card w-full"
                         >
                           <option value="Q1">{t('simHiringQ1')}</option>
                           <option value="MID">{t('simHiringMid')}</option>
@@ -308,7 +308,7 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                           disabled={h.salaryAnchor !== 'CUSTOM'}
                           onChange={(e) => updateHire(h.key, 'monthlySalary', Number(e.target.value))}
                           className={cn(
-                            'w-28 text-right border border-slate-200 rounded px-2 py-1 text-sm font-mono',
+                            'w-28 text-right border border-border rounded px-2 py-1 text-sm font-mono',
                             h.salaryAnchor !== 'CUSTOM' && 'bg-muted text-muted-foreground'
                           )}
                         />
@@ -336,12 +336,12 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                   <Plus className="w-4 h-4" /> {t('simHiringAddRow')}
                 </button>
 
-                <label className="flex items-center gap-2 text-sm text-slate-500">
+                <label className="flex items-center gap-2 text-sm text-muted-foreground">
                   <input
                     type="checkbox"
                     checked={includeRecruitment}
                     onChange={(e) => setIncludeRecruitment(e.target.checked)}
-                    className="rounded border-slate-200"
+                    className="rounded border-border"
                   />
                   {t('simHiringIncludeRecruitCost')}
                 </label>

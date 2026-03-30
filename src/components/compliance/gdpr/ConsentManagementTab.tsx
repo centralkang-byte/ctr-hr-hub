@@ -22,7 +22,7 @@ interface Consent {
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
     active: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
-    revoked: 'bg-red-100 text-red-700 border border-red-200',
+    revoked: 'bg-destructive/10 text-destructive border border-destructive/20',
     expired: 'bg-background text-[#555] border border-border',
     pending: 'bg-amber-100 text-amber-700 border border-amber-300',
   }
@@ -122,7 +122,7 @@ export default function ConsentManagementTab() {
                       {c.status === 'active' && (
                         <button
                           onClick={() => handleRevoke(c.id)}
-                          className="inline-flex items-center gap-1 text-red-600 hover:text-red-700 text-sm font-medium"
+                          className="inline-flex items-center gap-1 text-destructive hover:text-destructive text-sm font-medium"
                         >
                           <XCircle className="w-4 h-4" />
                           {t('gdpr.revokeConsent')}

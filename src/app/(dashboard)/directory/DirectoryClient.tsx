@@ -116,13 +116,13 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
         <div className="flex items-center gap-1.5 p-1 bg-muted rounded-lg">
           <button
             onClick={() => setViewMode('list')}
-            className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-white text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+            className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
           >
             <List size={18} />
           </button>
           <button
             onClick={() => setViewMode('grid')}
-            className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+            className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
           >
             <LayoutGrid size={18} />
           </button>
@@ -246,7 +246,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
                   <td className={TABLE_STYLES.cell + " font-medium"}>{emp.department?.name ?? '-'}</td>
                   <td className={TABLE_STYLES.cellMuted}>{emp.jobGrade?.name ?? '-'}</td>
                   <td className={TABLE_STYLES.cell}>
-                    <Badge variant="outline" className="h-6 rounded-md bg-white border-border text-xs font-medium text-[#555]">
+                    <Badge variant="outline" className="h-6 rounded-md bg-card border-border text-xs font-medium text-[#555]">
                       {emp.company?.code ?? '-'}
                     </Badge>
                   </td>
@@ -256,7 +256,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
                         <Mail size={14} />
                       </a>
                       {emp.phone && (
-                        <a href={`tel:${emp.phone}`} onClick={e => e.stopPropagation()} className="p-1.5 rounded-full text-muted-foreground hover:bg-green-50 hover:text-emerald-500 transition-colors">
+                        <a href={`tel:${emp.phone}`} onClick={e => e.stopPropagation()} className="p-1.5 rounded-full text-muted-foreground hover:bg-tertiary-container/10 hover:text-emerald-500 transition-colors">
                           <Phone size={14} />
                         </a>
                       )}
@@ -265,7 +265,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
                   <td className={TABLE_STYLES.cell}>
                     <div className="flex gap-1.5 flex-wrap">
                       {emp.skills.slice(0, 3).map((s) => (
-                        <span key={s} className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground group-hover:bg-white border border-transparent group-hover:border-border">{s}</span>
+                        <span key={s} className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground group-hover:bg-card border border-transparent group-hover:border-border">{s}</span>
                       ))}
                       {emp.skills.length > 3 && (
                         <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-[#999]">+{emp.skills.length - 3}</span>

@@ -134,14 +134,14 @@ export function HrDocumentManager({ user: _user }: HrDocumentManagerProps) {
       {/* Upload Dialog */}
       {showUpload && (
         <div className={MODAL_STYLES.container}>
-          <div className="mx-4 w-full max-w-2xl rounded-xl bg-white p-6 shadow-lg">
-            <h3 className="mb-4 text-lg font-semibold text-ctr-gray-900">
+          <div className="mx-4 w-full max-w-2xl rounded-xl bg-card p-6 shadow-lg">
+            <h3 className="mb-4 text-lg font-semibold text-foreground">
               <Upload className="mr-2 inline h-5 w-5" />
               문서 추가
             </h3>
             <div className="space-y-4">
               <div>
-                <label className="mb-1 block text-sm font-medium text-ctr-gray-700">
+                <label className="mb-1 block text-sm font-medium text-foreground">
                   제목
                 </label>
                 <input
@@ -154,7 +154,7 @@ export function HrDocumentManager({ user: _user }: HrDocumentManagerProps) {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-ctr-gray-700">
+                  <label className="mb-1 block text-sm font-medium text-foreground">
                     문서 유형
                   </label>
                   <select
@@ -170,7 +170,7 @@ export function HrDocumentManager({ user: _user }: HrDocumentManagerProps) {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-ctr-gray-700">
+                  <label className="mb-1 block text-sm font-medium text-foreground">
                     버전
                   </label>
                   <input
@@ -182,7 +182,7 @@ export function HrDocumentManager({ user: _user }: HrDocumentManagerProps) {
                 </div>
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-ctr-gray-700">
+                <label className="mb-1 block text-sm font-medium text-foreground">
                   내용
                 </label>
                 <textarea
@@ -222,11 +222,11 @@ export function HrDocumentManager({ user: _user }: HrDocumentManagerProps) {
       {/* Delete Confirmation */}
       {deleteId && (
         <div className={MODAL_STYLES.container}>
-          <div className="mx-4 w-full max-w-sm rounded-xl bg-white p-6 shadow-lg">
-            <h3 className="mb-2 text-lg font-semibold text-ctr-gray-900">
+          <div className="mx-4 w-full max-w-sm rounded-xl bg-card p-6 shadow-lg">
+            <h3 className="mb-2 text-lg font-semibold text-foreground">
               문서 삭제
             </h3>
-            <p className="mb-4 text-sm text-ctr-gray-500">
+            <p className="mb-4 text-sm text-muted-foreground">
               이 문서와 관련된 모든 임베딩 데이터가 삭제됩니다. 계속하시겠습니까?
             </p>
             <div className="flex justify-end gap-2">
@@ -253,10 +253,10 @@ export function HrDocumentManager({ user: _user }: HrDocumentManagerProps) {
         <Card>
           <CardContent className="flex flex-col items-center py-12">
             <FileText className="mb-3 h-12 w-12 text-ctr-gray-300" />
-            <p className="text-sm text-ctr-gray-500">
+            <p className="text-sm text-muted-foreground">
               등록된 문서가 없습니다.
             </p>
-            <p className="text-xs text-ctr-gray-400">
+            <p className="text-xs text-muted-foreground/60">
               문서를 추가하여 챗봇이 답변할 수 있도록 하세요.
             </p>
           </CardContent>
@@ -295,22 +295,22 @@ export function HrDocumentManager({ user: _user }: HrDocumentManagerProps) {
                 >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-ctr-gray-400" />
-                      <span className="text-sm font-medium text-ctr-gray-700">
+                      <FileText className="h-4 w-4 text-muted-foreground/60" />
+                      <span className="text-sm font-medium text-foreground">
                         {doc.title}
                       </span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-ctr-gray-500">
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
                     {DOC_TYPE_LABELS[doc.docType] ?? doc.docType}
                   </td>
-                  <td className="px-4 py-3 text-sm text-ctr-gray-500">
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
                     v{doc.version}
                   </td>
-                  <td className="px-4 py-3 text-sm text-ctr-gray-500">
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
                     {doc._count.chunks}
                   </td>
-                  <td className="px-4 py-3 text-sm text-ctr-gray-500">
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
                     {doc.uploader.name}
                   </td>
                   <td className="px-4 py-3">
@@ -329,7 +329,7 @@ export function HrDocumentManager({ user: _user }: HrDocumentManagerProps) {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0 text-red-500 hover:bg-red-100"
+                      className="h-8 w-8 p-0 text-red-500 hover:bg-destructive/10"
                       onClick={() => setDeleteId(doc.id)}
                     >
                       <Trash2 className="h-4 w-4" />

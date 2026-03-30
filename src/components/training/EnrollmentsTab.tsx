@@ -89,7 +89,7 @@ export default function EnrollmentsTab() {
         <div className="flex items-center gap-2">
           <span>{row.course.title}</span>
           {row.course.isMandatory && (
-            <Badge className="bg-red-100 text-red-700 border-red-200 text-[10px]">필수</Badge>
+            <Badge className="bg-destructive/10 text-destructive border-destructive/20 text-[10px]">필수</Badge>
           )}
         </div>
       ),

@@ -117,7 +117,7 @@ export default function SocialInsuranceConfigForm({
 
         <form onSubmit={handleSubmit} className="space-y-4 py-2">
           {error && (
-            <div className="bg-red-100 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
+            <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-lg px-4 py-3">
               {error}
             </div>
           )}
@@ -267,7 +267,7 @@ export default function SocialInsuranceConfigForm({
             <button
               type="button"
               onClick={() => onClose()}
-              className="bg-white border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm transition-colors"
+              className="bg-card border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm transition-colors"
             >
               취소
             </button>

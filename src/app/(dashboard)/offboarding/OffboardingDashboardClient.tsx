@@ -116,7 +116,7 @@ const RESIGN_TYPE_VARIANTS: Record<string, BadgeVariant> = {
 const ASSIGNEE_COLORS: Record<string, string> = {
   EMPLOYEE: 'bg-muted text-foreground',
   MANAGER: 'bg-primary/10 text-primary/90',
-  HR: 'bg-green-100 text-green-700',
+  HR: 'bg-tertiary-container/20 text-tertiary',
   IT: 'bg-purple-50 text-purple-700',
   FINANCE: 'bg-orange-100 text-orange-700',
 }
@@ -268,9 +268,9 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
           <div className="flex items-center gap-1.5">
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-destructive/50" />
             </span>
-            <span className="text-sm font-semibold text-red-600">D-{Math.max(daysUntil, 0)}</span>
+            <span className="text-sm font-semibold text-destructive">D-{Math.max(daysUntil, 0)}</span>
           </div>
         )
       }
@@ -408,7 +408,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                     <TableRow
                       className={
                         row.isD3
-                          ? 'bg-red-100'
+                          ? 'bg-destructive/10'
                           : row.isD7
                             ? 'bg-yellow-50'
                             : ''
@@ -487,7 +487,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                         ) : (
                           <Badge
                             variant="outline"
-                            className="border-green-500 text-green-700"
+                            className="border-green-500 text-tertiary"
                           >
                             {t('normalStatus')}
                           </Badge>
@@ -498,7 +498,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                           <Button
                             size="sm"
                             variant="outline"
-                            className="text-xs text-red-600 border-red-300 hover:bg-red-100"
+                            className="text-xs text-destructive border-red-300 hover:bg-destructive/10"
                             onClick={() => setCancelTarget(row)}
                           >
                             {t('cancelOffboarding')}

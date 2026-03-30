@@ -51,7 +51,7 @@ const SOURCE_LABELS: Record<string, string> = {
 const STATUS_MAP: Record<string, { label: string; cls: string }> = {
   PROPOSED: { label: '검토 대기', cls: 'bg-amber-100 text-amber-700 border-amber-300' },
   NOMINATION_APPROVED: { label: '승인', cls: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
-  NOMINATION_REJECTED: { label: '거부', cls: 'bg-red-100 text-red-700 border-red-200' },
+  NOMINATION_REJECTED: { label: '거부', cls: 'bg-destructive/10 text-destructive border-destructive/20' },
   NOMINATION_COMPLETED: { label: '평가 완료', cls: 'bg-primary/10 text-primary/90 border-primary/20' },
 }
 
@@ -161,7 +161,7 @@ export default function PeerNominationSetupClient({ user, cycleId }: { user: Ses
       <div className="grid grid-cols-2 gap-6">
         {/* Left: Employee Search + AI Recommendations */}
         <div className="space-y-4">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-6">
             <h2 className="text-base font-semibold text-foreground mb-3">{t('kr_keb8c80ec_keca781ec_kec84a0ed')}</h2>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
@@ -193,7 +193,7 @@ export default function PeerNominationSetupClient({ user, cycleId }: { user: Ses
               </div>
               <div className="space-y-2">
                 {candidates.map((c) => (
-                  <div key={c.employeeId} className="bg-white rounded-lg p-3 flex items-center justify-between">
+                  <div key={c.employeeId} className="bg-card rounded-lg p-3 flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-foreground">{c.name}</p>
                       <p className="text-xs text-[#666]">{c.department} · 협업 점수: {c.totalScore}</p>
@@ -210,7 +210,7 @@ export default function PeerNominationSetupClient({ user, cycleId }: { user: Ses
         </div>
 
         {/* Right: Nominations List */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <h2 className="text-base font-semibold text-foreground mb-3">
             현재 지명 목록 ({nominations.length}건)
           </h2>
@@ -245,7 +245,7 @@ export default function PeerNominationSetupClient({ user, cycleId }: { user: Ses
                             <CheckCircle2 className="w-4 h-4" />
                           </button>
                           <button onClick={() => handleApproveReject(n.id, 'NOMINATION_REJECTED')}
-                            className="p-1 text-red-500 hover:bg-red-100 rounded">
+                            className="p-1 text-red-500 hover:bg-destructive/10 rounded">
                             <XCircle className="w-4 h-4" />
                           </button>
                         </div>

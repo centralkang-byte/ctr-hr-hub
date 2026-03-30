@@ -64,12 +64,12 @@ const STATUS_LABELS: Record<string, string> = {
 
 const STATUS_COLORS: Record<string, string> = {
   REQUESTED: 'bg-yellow-100 text-yellow-700',
-  APPROVED: 'bg-blue-100 text-blue-700',
+  APPROVED: 'bg-primary/10 text-primary',
   ACTIVE: 'bg-orange-100 text-orange-700',
   RETURN_REQUESTED: 'bg-purple-100 text-purple-700',
-  COMPLETED: 'bg-green-100 text-green-700',
-  REJECTED: 'bg-red-100 text-red-700',
-  CANCELLED: 'bg-gray-100 text-gray-500',
+  COMPLETED: 'bg-tertiary-container/20 text-tertiary',
+  REJECTED: 'bg-destructive/10 text-destructive',
+  CANCELLED: 'bg-muted text-muted-foreground',
 }
 
 function formatDate(d: string | null) {
@@ -395,7 +395,7 @@ export function LoaClient({ user }: Props) {
                       <span className="font-medium">{r.type.name}</span>
                       <span className={cn(
                         'inline-flex rounded-full px-1.5 py-0.5 text-[10px] font-medium',
-                        r.type.category === 'STATUTORY' ? 'bg-blue-50 text-blue-600' : 'bg-gray-50 text-gray-500',
+                        r.type.category === 'STATUTORY' ? 'bg-primary/5 text-primary' : 'bg-muted/50 text-muted-foreground',
                       )}>
                         {r.type.category === 'STATUTORY' ? '법정' : '약정'}
                       </span>
@@ -419,11 +419,11 @@ export function LoaClient({ user }: Props) {
                       {/* HR: 승인/거부 (REQUESTED 상태) */}
                       {isHrAdmin && r.status === 'REQUESTED' && (
                         <>
-                          <Button size="sm" variant="outline" className="h-7 text-xs text-green-600 border-green-200 hover:bg-green-50"
+                          <Button size="sm" variant="outline" className="h-7 text-xs text-tertiary border-tertiary/20 hover:bg-tertiary-container/10"
                             onClick={() => { setActionTarget(r); setActionType('approve'); setActionOpen(true) }}>
                             승인
                           </Button>
-                          <Button size="sm" variant="outline" className="h-7 text-xs text-red-600 border-red-200 hover:bg-red-50"
+                          <Button size="sm" variant="outline" className="h-7 text-xs text-destructive border-destructive/20 hover:bg-destructive/5"
                             onClick={() => { setActionTarget(r); setActionType('reject'); setActionOpen(true) }}>
                             거부
                           </Button>
@@ -438,7 +438,7 @@ export function LoaClient({ user }: Props) {
                       )}
                       {/* HR: 복직 완료 (RETURN_REQUESTED 상태) */}
                       {isHrAdmin && r.status === 'RETURN_REQUESTED' && (
-                        <Button size="sm" variant="outline" className="h-7 text-xs text-green-600 border-green-200 hover:bg-green-50"
+                        <Button size="sm" variant="outline" className="h-7 text-xs text-tertiary border-tertiary/20 hover:bg-tertiary-container/10"
                           onClick={() => {
                             setCompleteTarget(r)
                             setCompleteForm({
@@ -708,7 +708,7 @@ function KpiCard({ icon: Icon, label, value, color }: {
 }) {
   const c = COLOR_MAP[color] ?? COLOR_MAP.yellow
   return (
-    <div className={cn('rounded-lg border border-border border-l-4 bg-white p-4', c.border)}>
+    <div className={cn('rounded-lg border border-border border-l-4 bg-card p-4', c.border)}>
       <div className="flex items-center gap-2 mb-1">
         <Icon className={cn('h-4 w-4', c.icon)} />
         <p className="text-xs text-muted-foreground font-medium">{label}</p>

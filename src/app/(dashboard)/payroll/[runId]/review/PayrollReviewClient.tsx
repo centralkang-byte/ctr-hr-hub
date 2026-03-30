@@ -121,8 +121,8 @@ const fmtPct = (n: number) => {
 const SEVERITY_CONFIG = {
   CRITICAL: {
     border: 'border-l-4 border-red-500',
-    bg: 'bg-red-50',
-    badge: 'bg-red-100 text-red-700 border-red-200',
+    bg: 'bg-destructive/5',
+    badge: 'bg-destructive/10 text-destructive border-destructive/20',
     icon: <AlertTriangle className="h-4 w-4 text-red-500" />,
     label: '위험',
   },
@@ -135,8 +135,8 @@ const SEVERITY_CONFIG = {
   },
   INFO: {
     border: 'border-l-4 border-blue-400',
-    bg: 'bg-blue-50',
-    badge: 'bg-blue-100 text-blue-700 border-blue-200',
+    bg: 'bg-primary/5',
+    badge: 'bg-primary/10 text-primary border-primary/20',
     icon: <AlertCircle className="h-4 w-4 text-blue-400" />,
     label: '정보',
   },
@@ -177,7 +177,7 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
 
   return (
     <>
-      <div className={`bg-white rounded-xl border border-border ${cfg.border} p-5 space-y-3`}>
+      <div className={`bg-card rounded-xl border border-border ${cfg.border} p-5 space-y-3`}>
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
             {cfg.icon}
@@ -237,7 +237,7 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
 
       {showWhitelistModal && (
         <div className={MODAL_STYLES.container}>
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-md">
+          <div className="bg-card rounded-xl shadow-lg w-full max-w-md">
             <div className="p-5 border-b border-border flex items-center justify-between">
               <h3 className="font-semibold text-foreground">{'예외 등록'}</h3>
               <button onClick={() => setShowWhitelistModal(false)} className="text-[#999] hover:text-[#333]">
@@ -306,8 +306,8 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
   return (
     <div className="fixed inset-0 z-40 flex">
       <div className="flex-1 bg-black/20" onClick={onClose} />
-      <div className="w-80 bg-white shadow-lg flex flex-col h-full overflow-y-auto">
-        <div className="sticky top-0 bg-white p-4 border-b border-border flex items-center justify-between">
+      <div className="w-80 bg-card shadow-lg flex flex-col h-full overflow-y-auto">
+        <div className="sticky top-0 bg-card p-4 border-b border-border flex items-center justify-between">
           <div>
             <p className="font-bold text-foreground">{row.employeeName}</p>
             <p className="text-xs text-[#999]">{row.department}</p>
@@ -347,13 +347,13 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
             <div>
               <p className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-2">{'공제합계'}</p>
               <div className="border-t border-border pt-1.5 flex justify-between text-sm font-semibold">
-                <span className="text-red-600">공제합계</span>
-                <span className="text-red-600">-{detail.deductions.toLocaleString()}</span>
+                <span className="text-destructive">공제합계</span>
+                <span className="text-destructive">-{detail.deductions.toLocaleString()}</span>
               </div>
             </div>
 
             {/* 실수령액 */}
-            <div className="bg-green-50 rounded-xl p-4">
+            <div className="bg-tertiary-container/10 rounded-xl p-4">
               <div className="flex justify-between items-center">
                 <span className="font-semibold text-foreground">{'실수령액'}</span>
                 <span className="text-xl font-bold text-emerald-600">{detail.netPay.toLocaleString()}원</span>
@@ -377,7 +377,7 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
                   </div>
                   <div className="flex justify-between font-semibold">
                     <span className="text-[#666]">{'변동률'}</span>
-                    <span className={row.diffNet > 0 ? 'text-emerald-600' : row.diffNet < 0 ? 'text-red-600' : 'text-[#999]'}>
+                    <span className={row.diffNet > 0 ? 'text-emerald-600' : row.diffNet < 0 ? 'text-destructive' : 'text-[#999]'}>
                       {row.diffNet > 0 ? '+' : ''}{row.diffNet.toLocaleString()}원
                       &nbsp;({fmtPct(row.diffPercent)})
                     </span>
@@ -404,7 +404,7 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
               {row.diffNet !== 0 && (
                 <div className="flex justify-between text-sm font-semibold">
                   <span className="text-[#666]">{'변동률'}</span>
-                  <span className={row.diffNet > 0 ? 'text-emerald-600' : 'text-red-600'}>
+                  <span className={row.diffNet > 0 ? 'text-emerald-600' : 'text-destructive'}>
                     {row.diffNet > 0 ? '+' : ''}{row.diffNet.toLocaleString()}원 ({fmtPct(row.diffPercent)})
                   </span>
                 </div>
@@ -643,7 +643,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
           { label: t('kr_kec9db4ec_ked95adeb'), value: `${anomalySummary?.open ?? 0}건`, icon: <AlertTriangle className="h-4 w-4 text-amber-500" />, highlight: (anomalySummary?.open ?? 0) > 0 },
           { label: t('adjustments'), value: `${run.adjustmentCount ?? 0}건`, icon: <Clock className="h-4 w-4 text-[#999]" /> },
         ].map((kpi) => (
-          <div key={kpi.label} className={`bg-white rounded-xl border p-5 ${kpi.highlight ? 'border-amber-500' : 'border-border'}`}>
+          <div key={kpi.label} className={`bg-card rounded-xl border p-5 ${kpi.highlight ? 'border-amber-500' : 'border-border'}`}>
             <div className="flex items-center justify-between mb-1">
               <p className="text-xs text-[#666]">{kpi.label}</p>
               {kpi.icon}
@@ -662,7 +662,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
           <p className="text-sm text-amber-700 font-medium">
             이상 항목 {anomalySummary.open}건 — 모두 처리해야 승인 요청이 가능합니다.
             {anomalySummary.bySeverity.CRITICAL > 0 && (
-              <span className="ml-2 text-red-700">위험 {anomalySummary.bySeverity.CRITICAL}건 포함</span>
+              <span className="ml-2 text-destructive">위험 {anomalySummary.bySeverity.CRITICAL}건 포함</span>
             )}
           </p>
         </div>
@@ -699,7 +699,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3 text-xs">
                 {anomalySummary.bySeverity.CRITICAL > 0 && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-100 text-red-700 border border-red-200">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-destructive/10 text-destructive border border-destructive/20">
                     <AlertTriangle className="h-3 w-3" /> 위험 {anomalySummary.bySeverity.CRITICAL}
                   </span>
                 )}
@@ -709,7 +709,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                   </span>
                 )}
                 {anomalySummary.bySeverity.INFO > 0 && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 border border-blue-200">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
                     <AlertCircle className="h-3 w-3" /> 정보 {anomalySummary.bySeverity.INFO}
                   </span>
                 )}
@@ -727,7 +727,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
           )}
 
           {openAnomalies.length === 0 ? (
-            <div className="bg-white rounded-xl border border-border p-12 text-center">
+            <div className="bg-card rounded-xl border border-border p-12 text-center">
               <CheckCircle2 className="h-12 w-12 text-emerald-600 mx-auto mb-3" />
               <EmptyState />
             </div>
@@ -757,7 +757,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
             <div className="grid grid-cols-3 gap-3">
               {[
                 { label: t('kr_keca69dea'), value: comparisonSummary.employeesIncreased, color: 'text-emerald-600', icon: <TrendingUp className="h-4 w-4 text-emerald-600" /> },
-                { label: t('kr_keab090ec'), value: comparisonSummary.employeesDecreased, color: 'text-red-600', icon: <TrendingDown className="h-4 w-4 text-red-600" /> },
+                { label: t('kr_keab090ec'), value: comparisonSummary.employeesDecreased, color: 'text-destructive', icon: <TrendingDown className="h-4 w-4 text-destructive" /> },
                 { label: t('kr_keb8f99ec'), value: comparisonSummary.employeesUnchanged, color: 'text-[#999]', icon: <Minus className="h-4 w-4 text-[#999]" /> },
               ].map((item) => (
                 <div key={item.label} className={`${CARD_STYLES.kpi} flex items-center gap-3`}>
@@ -785,7 +785,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
             <select
               value={deptFilter}
               onChange={(e) => setDeptFilter(e.target.value)}
-              className="px-3 py-2 border border-border rounded-lg text-sm text-[#555] bg-white"
+              className="px-3 py-2 border border-border rounded-lg text-sm text-[#555] bg-card"
             >
               <option value="">{t('all_department')}</option>
               {depts.map((d) => <option key={d} value={d}>{d}</option>)}
@@ -811,7 +811,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                 <ChevronDown className="h-3.5 w-3.5" />
               </button>
               {showDownloadMenu && (
-                <div className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg border border-border py-1 w-44 z-10">
+                <div className="absolute right-0 top-full mt-1 bg-card rounded-xl shadow-lg border border-border py-1 w-44 z-10">
                   {[
                     { label: t('kr_keca084ec_keb8c80eb_kebb984ea'), href: `/api/v1/payroll/${runId}/export/comparison` },
                     { label: t('kr_keab889ec'), href: `/api/v1/payroll/${runId}/export/ledger` },
@@ -873,7 +873,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                     <tr
                       key={row.employeeId}
                       onClick={() => setSelectedRow(row)}
-                      className={cn(TABLE_STYLES.rowClickable, row.hasAnomaly ? 'bg-red-50 hover:bg-red-50' : '')}
+                      className={cn(TABLE_STYLES.rowClickable, row.hasAnomaly ? 'bg-destructive/5 hover:bg-destructive/5' : '')}
                     >
                       <td className={TABLE_STYLES.cell}>
                         <div className="flex items-center gap-2">
@@ -891,7 +891,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                       </td>
                       <td className={TABLE_STYLES.cellRight}>
                         {row.previousNet != null ? (
-                          <span className={cn("font-medium", row.diffNet > 0 ? 'text-emerald-600' : row.diffNet < 0 ? 'text-red-600' : 'text-muted-foreground')}>
+                          <span className={cn("font-medium", row.diffNet > 0 ? 'text-emerald-600' : row.diffNet < 0 ? 'text-destructive' : 'text-muted-foreground')}>
                             {row.diffNet > 0 && '+'}
                             {row.diffNet.toLocaleString()} ({fmtPct(row.diffPercent)})
                           </span>
@@ -944,7 +944,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                     <td className={cn(TABLE_STYLES.cellRight, "w-20")}>
                       <button
                         onClick={() => handleRemoveWhitelist(entry.id)}
-                        className="text-xs text-red-600 hover:underline"
+                        className="text-xs text-destructive hover:underline"
                       >
                         {t('kr_ked95b4ec')}
                       </button>

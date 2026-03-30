@@ -20,7 +20,7 @@ const ACCESS_TYPE_BADGE: Record<string, string> = {
   VIEW: 'bg-primary/10 text-primary/90 border border-primary/20',
   EXPORT: 'bg-amber-100 text-amber-700 border border-amber-300',
   EDIT: 'bg-orange-50 text-orange-700 border border-orange-200',
-  DELETE: 'bg-red-100 text-red-700 border border-red-200',
+  DELETE: 'bg-destructive/10 text-destructive border border-destructive/20',
 }
 
 export default function PiiAccessLogTable() {
@@ -81,7 +81,7 @@ export default function PiiAccessLogTable() {
   return (
     <div className="space-y-4">
       {/* Filter Bar */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <div className="flex items-center gap-2 mb-3">
           <SlidersHorizontal className="w-4 h-4 text-[#666]" />
           <span className="text-sm font-medium text-[#333]">{tc('filter')}</span>
@@ -136,7 +136,7 @@ export default function PiiAccessLogTable() {
           </button>
           <button
             onClick={handleReset}
-            className="inline-flex items-center gap-1.5 bg-white border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
+            className="inline-flex items-center gap-1.5 bg-card border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             {tc('reset')}

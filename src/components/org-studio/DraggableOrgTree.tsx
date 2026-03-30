@@ -320,7 +320,7 @@ function OrgNodeCard({
         onDrop={(e) => onDrop(e, node)}
         onDragEnd={onDragEnd}
         className={[
-          'mb-2 cursor-pointer rounded-lg border bg-white transition-all duration-150',
+          'mb-2 cursor-pointer rounded-lg border bg-card transition-all duration-150',
           accentClass,
           isDragging
             ? 'opacity-40 scale-95'
@@ -542,7 +542,7 @@ export function DraggableOrgTree({
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 rounded-lg border border-border bg-white px-4 py-2.5">
+      <div className="flex items-center gap-4 rounded-lg border border-border bg-card px-4 py-2.5">
         <span className="text-xs font-medium text-muted-foreground">범례</span>
         <div className="flex items-center gap-1.5">
           <div className="h-3 w-1 rounded-full bg-primary" />

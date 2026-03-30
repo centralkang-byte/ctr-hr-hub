@@ -63,7 +63,7 @@ interface ApprovalStatus {
 
 const STEP_STATUS_CONFIG = {
     APPROVED: { icon: <CheckCircle2 className="h-5 w-5 text-emerald-600" />, bg: 'bg-emerald-100', label: '승인' },
-    REJECTED: { icon: <XCircle className="h-5 w-5 text-red-600" />, bg: 'bg-red-100', label: '반려' },
+    REJECTED: { icon: <XCircle className="h-5 w-5 text-destructive" />, bg: 'bg-destructive/10', label: '반려' },
     PENDING: { icon: <Clock className="h-5 w-5 text-amber-500" />, bg: 'bg-amber-100', label: '🟡 대기' },
 }
 
@@ -223,7 +223,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                         </span>
                     )}
                     {isRejected && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-red-100 text-red-700 text-sm font-semibold">
+                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-destructive/10 text-destructive text-sm font-semibold">
                             <XCircle className="h-4 w-4" /> {t('reject_keb90a8')}
                         </span>
                     )}
@@ -275,13 +275,13 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                                     {step.status === 'APPROVED' ? (
                                         <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
                                     ) : (
-                                        <XCircle className="h-3.5 w-3.5 text-red-600" />
+                                        <XCircle className="h-3.5 w-3.5 text-destructive" />
                                     )}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
                                         <p className="text-sm font-medium text-foreground">{step.approverName ?? step.roleRequired}</p>
-                                        <span className={`text-xs px-1.5 py-0.5 rounded-full ${step.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                                        <span className={`text-xs px-1.5 py-0.5 rounded-full ${step.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-700' : 'bg-destructive/10 text-destructive'}`}>
                                             {STEP_STATUS_CONFIG[step.status].label}
                                         </span>
                                         <span className="text-xs text-[#999]">{fmtDate(step.decidedAt)}</span>
@@ -318,7 +318,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                         </button>
                         <button
                             onClick={() => setShowReject(true)}
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-red-600 text-red-600 font-semibold text-sm hover:bg-red-50"
+                            className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-red-600 text-destructive font-semibold text-sm hover:bg-destructive/5"
                         >
                             <XCircle className="h-4 w-4" />
                             {t('reject')}
@@ -340,7 +340,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             {/* Reject Modal */}
             {showReject && (
                 <div className={MODAL_STYLES.container}>
-                    <div className="bg-white rounded-xl shadow-lg w-full max-w-md">
+                    <div className="bg-card rounded-xl shadow-lg w-full max-w-md">
                         <div className="p-5 border-b border-border flex items-center justify-between">
                             <h3 className="font-bold text-lg text-foreground">{t('reject_kec82acec_kec9e85eb')}</h3>
                             <button onClick={() => setShowReject(false)} className="text-[#999] hover:text-[#333]">

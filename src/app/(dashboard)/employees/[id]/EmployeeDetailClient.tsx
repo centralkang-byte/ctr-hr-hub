@@ -573,7 +573,7 @@ export function EmployeeDetailClient({
 
             {/* Tab 1: 프로필 */}
             <TabsContent value="profile" className="mt-0">
-              <div className="rounded-xl border border-border bg-white p-6">
+              <div className="rounded-xl border border-border bg-card p-6">
                 {isHrAdmin && !editing && (
                   <div className="mb-4 flex justify-end">
                     <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
@@ -605,7 +605,7 @@ export function EmployeeDetailClient({
             {/* Tab 3: 급여정보 (HR Admin only) */}
             {isHrAdmin && (
               <TabsContent value="compensation-info" className="mt-0">
-                <div className="rounded-xl border border-border bg-white p-6">
+                <div className="rounded-xl border border-border bg-card p-6">
                   <CompensationTab employeeId={employee.id} />
                 </div>
               </TabsContent>
@@ -623,7 +623,7 @@ export function EmployeeDetailClient({
 
             {/* Tab 6: 평가결과 (comingSoon - B3) */}
             <TabsContent value="performance" className="mt-0">
-              <div className="rounded-xl border border-border bg-white p-6">
+              <div className="rounded-xl border border-border bg-card p-6">
                 <div className="flex flex-col items-center py-12 text-[#999]">
                   <TrendingUp className="h-10 w-10 mb-3 text-border" />
                   <p className="text-sm font-medium text-[#666]">평가결과</p>

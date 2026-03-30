@@ -70,7 +70,7 @@ export function SettingsSubPageLayout({ config, activeTab, children }: SettingsS
         </div>
 
         {/* Main Area: Side Tabs + Content */}
-        <div className="flex gap-0 rounded-xl border border-border bg-white shadow-sm">
+        <div className="flex gap-0 rounded-xl border border-border bg-card shadow-sm">
           {/* Side Tabs — Desktop */}
           <nav className="hidden w-[220px] shrink-0 border-r border-border lg:block">
             <div className="p-2">

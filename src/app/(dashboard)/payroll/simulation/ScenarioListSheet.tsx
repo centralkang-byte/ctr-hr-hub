@@ -35,11 +35,11 @@ const MODE_LABEL_KEYS: Record<SaveableMode, string> = {
 }
 
 const MODE_COLORS: Record<SaveableMode, string> = {
-  SINGLE: 'bg-blue-50 text-blue-600',
+  SINGLE: 'bg-primary/5 text-primary',
   BULK: 'bg-purple-50 text-purple-600',
   DIFFERENTIAL: 'bg-amber-50 text-amber-600',
-  HIRING: 'bg-green-50 text-green-600',
-  FX: 'bg-red-50 text-red-600',
+  HIRING: 'bg-tertiary-container/10 text-tertiary',
+  FX: 'bg-destructive/5 text-destructive',
 }
 
 // ─── Component ──────────────────────────────────────────────
@@ -248,7 +248,7 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
                         <Upload className="w-3 h-3" /> {t('simScenarioLoadBtn')}
                       </button>
                       <button onClick={() => setDeleteTarget(s)}
-                        className="flex items-center gap-1 px-2 py-1 text-xs bg-muted text-red-400 hover:text-red-600 rounded ml-auto">
+                        className="flex items-center gap-1 px-2 py-1 text-xs bg-muted text-red-400 hover:text-destructive rounded ml-auto">
                         <Trash2 className="w-3 h-3" />
                       </button>
                     </div>

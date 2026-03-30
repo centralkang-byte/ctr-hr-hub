@@ -48,8 +48,8 @@ export function DeductionsTab({
                 <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{item.code}</td>
                 <td className={TABLE_STYLES.cell}>{item.name}</td>
                 <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>{item.category}</td>
-                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${item.isStatutory ? 'bg-primary/5 text-primary' : 'bg-gray-50 text-gray-500'}`}>{item.isStatutory ? '법정' : '비법정'}</span></td>
-                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!item.deletedAt ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'}`}>{!item.deletedAt ? '활성' : '비활성'}</span></td>
+                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${item.isStatutory ? 'bg-primary/5 text-primary' : 'bg-muted/50 text-muted-foreground'}`}>{item.isStatutory ? '법정' : '비법정'}</span></td>
+                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!item.deletedAt ? 'bg-tertiary-container/10 text-tertiary' : 'bg-muted/50 text-muted-foreground/60'}`}>{!item.deletedAt ? '활성' : '비활성'}</span></td>
               </tr>
             ))}</tbody>
           </table>

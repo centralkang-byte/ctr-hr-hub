@@ -55,7 +55,7 @@ function KPICard({ label, value, diff, variant }: {
   variant?: 'neutral' | 'cost'
 }) {
   const badgeColor = !diff ? '' :
-    variant === 'cost' ? 'bg-red-50 text-red-600' : 'bg-primary/5 text-primary'
+    variant === 'cost' ? 'bg-destructive/5 text-destructive' : 'bg-primary/5 text-primary'
   return (
     <div className={CARD_STYLES.padded}>
       <p className="text-xs text-muted-foreground mb-1">{label}</p>
@@ -178,8 +178,8 @@ export default function FxTab({ companies, onSaveScenario }: Props) {
                 className={cn(
                   'px-2.5 py-1 text-xs font-medium rounded border',
                   pct < 0
-                    ? 'border-green-200 text-green-700 hover:bg-green-50'
-                    : 'border-red-200 text-red-700 hover:bg-red-50',
+                    ? 'border-tertiary/20 text-tertiary hover:bg-tertiary-container/10'
+                    : 'border-destructive/20 text-destructive hover:bg-destructive/5',
                 )}
               >
                 {pct > 0 ? '+' : ''}{pct}%
@@ -187,7 +187,7 @@ export default function FxTab({ companies, onSaveScenario }: Props) {
             ))}
             <button
               onClick={resetRates}
-              className="flex items-center gap-1 px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground border border-slate-200 rounded"
+              className="flex items-center gap-1 px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground border border-border rounded"
             >
               <RotateCcw className="w-3 h-3" /> {tCommon('reset')}
             </button>
@@ -223,15 +223,15 @@ export default function FxTab({ companies, onSaveScenario }: Props) {
                         value={r.adjustedRate}
                         onChange={(e) => updateRate(r.currency, Number(e.target.value))}
                         className={cn(
-                          'w-28 text-right border border-slate-200 rounded px-2 py-1 text-sm font-mono',
+                          'w-28 text-right border border-border rounded px-2 py-1 text-sm font-mono',
                           changed && 'border-primary bg-muted'
                         )}
                       />
                     </td>
                     <td className={cn(
                       TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-sm',
-                      r.adjustedRate > r.currentRate ? 'text-red-600' :
-                        r.adjustedRate < r.currentRate ? 'text-green-600' : 'text-muted-foreground'
+                      r.adjustedRate > r.currentRate ? 'text-destructive' :
+                        r.adjustedRate < r.currentRate ? 'text-tertiary' : 'text-muted-foreground'
                     )}>
                       {pctChange(r.currentRate, r.adjustedRate)}
                     </td>
@@ -342,7 +342,7 @@ export default function FxTab({ companies, onSaveScenario }: Props) {
                       <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(c.simulatedKRW)}</td>
                       <td className={cn(
                         TABLE_STYLES.cell, 'text-right tabular-nums font-mono',
-                        c.differenceKRW > 0 ? 'text-red-600' : c.differenceKRW < 0 ? 'text-green-600' : 'text-muted-foreground'
+                        c.differenceKRW > 0 ? 'text-destructive' : c.differenceKRW < 0 ? 'text-tertiary' : 'text-muted-foreground'
                       )}>
                         {signedKRW(c.differenceKRW)}
                       </td>
@@ -381,8 +381,8 @@ export default function FxTab({ companies, onSaveScenario }: Props) {
                         {row.scenarios.map((s, i) => (
                           <td key={i} className={cn(
                             TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-xs',
-                            s.differenceKRW > 0 ? 'text-red-600' :
-                              s.differenceKRW < 0 ? 'text-green-600' : 'text-muted-foreground'
+                            s.differenceKRW > 0 ? 'text-destructive' :
+                              s.differenceKRW < 0 ? 'text-tertiary' : 'text-muted-foreground'
                           )}>
                             <div>{fmtMan(s.totalKRW)}</div>
                             {s.differenceKRW !== 0 && (

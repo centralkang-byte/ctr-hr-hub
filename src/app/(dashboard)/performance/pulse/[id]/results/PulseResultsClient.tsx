@@ -118,7 +118,7 @@ export default function PulseResultsClient({ user, id }: { user: SessionUser; id
               ))}</ul>
             </div>
             <div>
-              <h4 className="text-xs font-medium text-red-700 mb-2">{t('kr_keca3bcec_kec9881ec')}</h4>
+              <h4 className="text-xs font-medium text-destructive mb-2">{t('kr_keca3bcec_kec9881ec')}</h4>
               <ul className="space-y-1">{aiAnalysis.risk_areas.map((r, i) => (
                 <li key={i} className="text-xs text-[#333]">• {r}</li>
               ))}</ul>
@@ -139,7 +139,7 @@ export default function PulseResultsClient({ user, id }: { user: SessionUser; id
       {/* Question Results */}
       <div className="space-y-6">
         {results.questionResults.map((q, i) => (
-          <div key={q.questionId} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div key={q.questionId} className="bg-card rounded-xl shadow-sm border border-border p-6">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <span className="text-xs text-[#999] font-medium">Q{i + 1}</span>

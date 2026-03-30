@@ -112,7 +112,7 @@ export default function NewGoalClient({
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onSubmit={handleSubmit(onSubmit as any)}
-          className="space-y-5 rounded-lg bg-white p-6"
+          className="space-y-5 rounded-lg bg-card p-6"
         >
           {/* 사이클 */}
           <div>

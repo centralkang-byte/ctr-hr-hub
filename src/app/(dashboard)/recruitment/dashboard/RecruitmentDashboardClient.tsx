@@ -253,7 +253,7 @@ export function RecruitmentDashboardClient(_props: {
       >
         <Loader2
           size={32}
-          style={{ color: '#999', animation: 'spin 1s linear infinite' }}
+          className="animate-spin text-muted-foreground/60"
         />
       </div>
     )
@@ -409,7 +409,7 @@ export function RecruitmentDashboardClient(_props: {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-            <Briefcase size={18} style={{ color: '#5E81F4' }} />
+            <Briefcase size={18} className="text-primary" />
             <h2 style={{ fontSize: 16, fontWeight: 700, color: '#1A1A1A', letterSpacing: '-0.02em' }}>
               {'공석 현황 (Position Vacancies)'}
             </h2>

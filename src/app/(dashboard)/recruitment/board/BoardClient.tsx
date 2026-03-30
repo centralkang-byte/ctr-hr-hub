@@ -170,7 +170,7 @@ export default function BoardClient({ user }: Props) {
 
   const getAiScoreBadge = (score: number | null) => {
     if (score === null) return null
-    let style = 'bg-red-100 text-red-700'
+    let style = 'bg-destructive/10 text-destructive'
     if (score >= 80) style = 'bg-emerald-100 text-emerald-800'
     else if (score >= 50) style = 'bg-amber-100 text-amber-700'
     return (
@@ -391,7 +391,7 @@ export default function BoardClient({ user }: Props) {
         </div>
         <button
           onClick={() => router.push('/recruitment')}
-          className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-white border border-border text-foreground rounded-lg hover:bg-muted transition-colors duration-150"
+          className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-card border border-border text-foreground rounded-lg hover:bg-muted transition-colors duration-150"
         >
           {t('listView')}
           <ChevronRight className="w-4 h-4" />
@@ -428,13 +428,13 @@ export default function BoardClient({ user }: Props) {
           return (
             <div
               key={posting.id}
-              className="rounded-xl border border-border bg-white overflow-hidden"
+              className="rounded-xl border border-border bg-card overflow-hidden"
             >
               {/* Swimlane Header */}
               <div
                 className={`flex items-center gap-3 px-4 py-3 ${
                   idx > 0 ? 'border-t border-border' : ''
-                } bg-white`}
+                } bg-card`}
               >
                 <button
                   onClick={() => router.push(`/recruitment/${posting.id}/pipeline`)}
@@ -478,7 +478,7 @@ export default function BoardClient({ user }: Props) {
                       className={`flex-1 min-w-[160px] flex flex-col rounded-lg border transition-all duration-150 ${
                         isOver && canReceive
                           ? 'border-primary ring-2 ring-primary/20 bg-primary/10'
-                          : 'border-border bg-white'
+                          : 'border-border bg-card'
                       }`}
                       style={{ minHeight: 80 }}
                     >
@@ -507,7 +507,7 @@ export default function BoardClient({ user }: Props) {
                               handleDragStart(e, app.id, posting.id)
                             }
                             onDragEnd={handleDragEnd}
-                            className={`group bg-white border border-border rounded-xl p-2.5 cursor-grab active:cursor-grabbing transition-all duration-150 hover:border-border hover:shadow-sm ${
+                            className={`group bg-card border border-border rounded-xl p-2.5 cursor-grab active:cursor-grabbing transition-all duration-150 hover:border-border hover:shadow-sm ${
                               draggingApplicationId === app.id
                                 ? 'opacity-40 scale-95'
                                 : 'opacity-100'
@@ -563,7 +563,7 @@ export default function BoardClient({ user }: Props) {
               })
             }
           />
-          <div className="relative bg-white border border-border rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
+          <div className="relative bg-card border border-border rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-bold text-foreground" style={{ letterSpacing: '-0.02em' }}>
                 {t('offerModal')}
@@ -597,7 +597,7 @@ export default function BoardClient({ user }: Props) {
                     }))
                   }
                   placeholder="예: 60000000"
-                  className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground transition-colors"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-card focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground transition-colors"
                 />
               </div>
               <div>
@@ -613,7 +613,7 @@ export default function BoardClient({ user }: Props) {
                       form: { ...prev.form, offeredDate: e.target.value },
                     }))
                   }
-                  className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-card focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors"
                 />
               </div>
               <div>
@@ -629,7 +629,7 @@ export default function BoardClient({ user }: Props) {
                       form: { ...prev.form, expectedStartDate: e.target.value },
                     }))
                   }
-                  className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-card focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors"
                 />
               </div>
             </div>
@@ -674,7 +674,7 @@ export default function BoardClient({ user }: Props) {
               setRejectionModal({ open: false, applicationId: '', postingId: '', reason: '' })
             }
           />
-          <div className="relative bg-white border border-border rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
+          <div className="relative bg-card border border-border rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-bold text-foreground" style={{ letterSpacing: '-0.02em' }}>
                 {t('rejectionModal')}

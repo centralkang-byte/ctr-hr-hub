@@ -62,9 +62,9 @@ const CATEGORY_ICONS: Record<string, string> = {
 }
 
 const ASSIGNEE_BADGE_STYLES: Record<string, string> = {
-  EMPLOYEE: 'bg-green-100 text-green-600',
-  MANAGER: 'bg-blue-50 text-blue-500',
-  HR: 'bg-red-50 text-red-500',
+  EMPLOYEE: 'bg-tertiary-container/20 text-tertiary',
+  MANAGER: 'bg-primary/5 text-blue-500',
+  HR: 'bg-destructive/5 text-red-500',
   BUDDY: 'bg-purple-50 text-purple-700',
 }
 
@@ -177,7 +177,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
           title={t('myOnboarding')}
           description={t('myOnboardingNoActive')}
         />
-        <div className="bg-white rounded-xl border border-border p-8">
+        <div className="bg-card rounded-xl border border-border p-8">
           <EmptyState
             title={t('noOnboardingData')}
             description={t('noOnboardingAssigned')}
@@ -202,11 +202,11 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
       {/* ─── Buddy + Progress Row ─── */}
       <div className="grid gap-4 md:grid-cols-2">
         {/* Buddy Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <h3 className="text-base font-bold text-foreground tracking-[-0.02em] mb-4">{t('onboardingBuddy')}</h3>
           {data.buddy ? (
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-primary">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-tertiary-container/20 text-primary">
                 <User className="h-6 w-6" />
               </div>
               <div>
@@ -222,7 +222,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
         </div>
 
         {/* Progress Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <h3 className="text-base font-bold text-foreground tracking-[-0.02em] mb-4">{t('overallProgress')}</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between text-sm">
@@ -238,7 +238,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
               />
             </div>
             {data.status === 'COMPLETED' && (
-              <div className="flex items-center gap-1 text-sm text-green-600">
+              <div className="flex items-center gap-1 text-sm text-tertiary">
                 <CheckCircle2 className="h-4 w-4" />
                 {t('onboardingCompleted')}
               </div>
@@ -252,7 +252,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
         {categoryOrder
           .filter((cat) => grouped[cat] && grouped[cat].length > 0)
           .map((cat) => (
-            <div key={cat} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div key={cat} className="bg-card rounded-xl shadow-sm border border-border p-6">
               <div className="flex items-center gap-2 mb-4">
                 <span>{CATEGORY_ICONS[cat]}</span>
                 <h3 className="text-base font-bold text-foreground tracking-[-0.02em]">
@@ -321,7 +321,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
 
                       {/* Status */}
                       {isDone && (
-                        <CheckCircle2 className="h-4 w-4 shrink-0 text-green-600" />
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-tertiary" />
                       )}
                       {isCompleting && (
                         <span className="text-xs text-muted-foreground shrink-0">{t('processing')}</span>

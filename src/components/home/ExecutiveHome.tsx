@@ -186,7 +186,7 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
                       className={`text-xs font-bold ${
                         parseFloat(company.rate) > 3.5
                           ? 'text-destructive'
-                          : 'text-green-600'
+                          : 'text-tertiary'
                       }`}
                     >
                       {company.rate}
@@ -211,19 +211,19 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
             <CardContent>
               <div className="space-y-3">
                 <div className="rounded-xl bg-destructive/5 p-3">
-                  <p className="text-sm font-medium text-red-800">
+                  <p className="text-sm font-medium text-destructive">
                     핵심 인재 유출 위험
                   </p>
-                  <p className="mt-1 text-xs text-red-700">
+                  <p className="mt-1 text-xs text-destructive">
                     SW개발 직군의 이직 위험도가 업계 평균 대비 높은 수준입니다.
                     경쟁력 있는 보상 패키지 검토를 권장합니다.
                   </p>
                 </div>
                 <div className="rounded-xl bg-tertiary-container/10 p-3">
-                  <p className="text-sm font-medium text-green-800">
+                  <p className="text-sm font-medium text-tertiary">
                     조직 효율성 개선
                   </p>
-                  <p className="mt-1 text-xs text-green-700">
+                  <p className="mt-1 text-xs text-tertiary">
                     1인당 생산성이 전년 동기 대비 8% 향상되었습니다.
                     디지털 전환 투자 효과가 나타나고 있습니다.
                   </p>

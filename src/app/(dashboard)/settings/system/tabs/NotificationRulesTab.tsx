@@ -49,7 +49,7 @@ export function NotificationRulesTab({
                 <td className={TABLE_STYLES.cell}><div className="flex gap-1">{(trig.channels ?? []).map((ch) => (
                   <span key={ch} className="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground">{ch}</span>
                 ))}</div></td>
-                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!trig.deletedAt ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'}`}>{!trig.deletedAt ? '활성' : '비활성'}</span></td>
+                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!trig.deletedAt ? 'bg-tertiary-container/10 text-tertiary' : 'bg-muted/50 text-muted-foreground/60'}`}>{!trig.deletedAt ? '활성' : '비활성'}</span></td>
               </tr>
             ))}</tbody>
           </table>

@@ -41,7 +41,7 @@ function StarRating({ value, onChange, disabled }: { value: number; onChange: (v
             {[1, 2, 3, 4, 5].map((i) => (
                 <button key={i} disabled={disabled} onClick={() => onChange(i)}
                     className={`transition-colors ${disabled ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-110'}`}>
-                    <Star className={`h-6 w-6 ${i <= value ? 'fill-amber-500 text-amber-500' : 'text-gray-300'}`} />
+                    <Star className={`h-6 w-6 ${i <= value ? 'fill-amber-500 text-amber-500' : 'text-muted-foreground/40'}`} />
                 </button>
             ))}
             <span className="ml-2 text-sm font-medium text-muted-foreground">{value}/5</span>
@@ -255,13 +255,13 @@ export default function MyEvaluationClient({user }: {
                             <span className="flex items-center gap-1.5 text-xs text-emerald-600"><CheckCircle2 className="h-3.5 w-3.5" /> {t('save_keb90a8')}</span>
                         )}
                         {saveStatus === 'error' && (
-                            <span className="flex items-center gap-1.5 text-xs text-red-800">
+                            <span className="flex items-center gap-1.5 text-xs text-destructive">
                                 <XCircle className="h-3.5 w-3.5" /> {t('saveFailed')}
                                 <button onClick={() => handleSave('DRAFT')} className="font-medium underline">{tCommon('retry')}</button>
                             </span>
                         )}
                         <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
-                            className="rounded-lg border border-border bg-white px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
+                            className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
                             {!cycles?.length && <EmptyState />}
               {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
@@ -278,12 +278,12 @@ export default function MyEvaluationClient({user }: {
 
                 {/* Score summary */}
                 <div className="mb-6 grid grid-cols-3 gap-4">
-                    <div className="rounded-xl border border-border bg-white p-4 text-center">
+                    <div className="rounded-xl border border-border bg-card p-4 text-center">
                         <p className="text-xs text-muted-foreground">MBO ({mboWeight}%)</p>
                         <p className="mt-1 text-2xl font-bold text-foreground">{mboAvg.toFixed(1)}</p>
                         <p className="text-xs text-muted-foreground">/ 5.0</p>
                     </div>
-                    <div className="rounded-xl border border-border bg-white p-4 text-center">
+                    <div className="rounded-xl border border-border bg-card p-4 text-center">
                         <p className="text-xs text-muted-foreground">BEI ({beiWeight}%)</p>
                         <p className="mt-1 text-2xl font-bold text-foreground">{beiAvg.toFixed(1)}</p>
                         <p className="text-xs text-muted-foreground">/ 5.0</p>
@@ -296,7 +296,7 @@ export default function MyEvaluationClient({user }: {
                 </div>
 
                 {error && (
-                    <div className="mb-4 rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-800">
+                    <div className="mb-4 rounded-lg border border-destructive/15 bg-destructive/5 p-3 text-sm text-destructive">
                         {error} <button onClick={fetchEvalData} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
@@ -304,7 +304,7 @@ export default function MyEvaluationClient({user }: {
                 {loading ? (
                     <div className="space-y-4">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="animate-pulse rounded-xl border border-border bg-white p-5">
+                            <div key={i} className="animate-pulse rounded-xl border border-border bg-card p-5">
                                 <div className="mb-3 h-4 w-2/3 rounded bg-border" />
                                 <div className="h-6 w-32 rounded bg-border" />
                             </div>
@@ -326,7 +326,7 @@ export default function MyEvaluationClient({user }: {
 
                         {/* MBO Tab */}
                         {activeTab === 'mbo' && (
-                            <div className="rounded-xl border border-border bg-white">
+                            <div className="rounded-xl border border-border bg-card">
                                 <div className="border-b border-border px-5 py-4">
                                     <h2 className="text-base font-semibold text-foreground">MBO 자기평가 (가중치 합계: {goals.reduce((s, g) => s + Number(g.weight), 0)}%)</h2>
                                 </div>
@@ -358,7 +358,7 @@ export default function MyEvaluationClient({user }: {
 
                         {/* BEI Tab */}
                         {activeTab === 'bei' && (
-                            <div className="rounded-xl border border-border bg-white">
+                            <div className="rounded-xl border border-border bg-card">
                                 <div className="border-b border-border px-5 py-4">
                                     <h2 className="text-base font-semibold text-foreground">{t('kr_bei_kec97adeb_ctr_ked95b5ec')}</h2>
                                 </div>

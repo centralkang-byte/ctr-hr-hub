@@ -276,7 +276,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
         </div>
 
         {error && (
-          <div className="flex items-center gap-2 p-3 bg-red-100 rounded-lg text-red-700 text-sm">
+          <div className="flex items-center gap-2 p-3 bg-destructive/10 rounded-lg text-destructive text-sm">
             <AlertTriangle size={15} />
             {error}
           </div>

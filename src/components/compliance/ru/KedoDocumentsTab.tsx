@@ -109,7 +109,7 @@ export default function KedoDocumentsTab() {
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
           <div className="flex gap-2 flex-1">
             {/* Status Filter */}
@@ -243,7 +243,7 @@ export default function KedoDocumentsTab() {
                       {doc.status !== 'SIGNED' && doc.status !== 'REJECTED' && (
                         <button
                           onClick={() => setSignDoc(doc)}
-                          className="p-1.5 hover:bg-red-100 rounded text-red-400 hover:text-red-600"
+                          className="p-1.5 hover:bg-destructive/10 rounded text-red-400 hover:text-destructive"
                           title="반려"
                         >
                           <XCircle className="w-4 h-4" />

@@ -218,12 +218,12 @@ export default function PostingFormClient({
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => router.back()}
-          className="p-2 rounded-lg border border-border hover:bg-white transition-colors"
+          className="p-2 rounded-lg border border-border hover:bg-card transition-colors"
         >
           <ChevronLeft className="w-4 h-4 text-[#666]" />
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center">
             <Briefcase className="w-5 h-5 text-blue-500" />
           </div>
           <h1 className="text-xl font-bold text-foreground tracking-[-0.02em]">
@@ -235,7 +235,7 @@ export default function PostingFormClient({
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <form onSubmit={handleSubmit(onSubmit as any)}>
         {/* 기본정보 */}
-        <div className="bg-white border border-border rounded-xl p-6 mb-6">
+        <div className="bg-card border border-border rounded-xl p-6 mb-6">
           <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
             {t('basicInfo')}
           </h2>
@@ -308,7 +308,7 @@ export default function PostingFormClient({
         </div>
 
         {/* 공고내용 */}
-        <div className="bg-white border border-border rounded-xl p-6 mb-6">
+        <div className="bg-card border border-border rounded-xl p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-bold text-foreground tracking-[-0.02em]">
               {t('postingContent')}
@@ -363,7 +363,7 @@ export default function PostingFormClient({
         </div>
 
         {/* 급여 */}
-        <div className="bg-white border border-border rounded-xl p-6 mb-6">
+        <div className="bg-card border border-border rounded-xl p-6 mb-6">
           <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
             {t('salarySection')}
           </h2>
@@ -386,7 +386,7 @@ export default function PostingFormClient({
         </div>
 
         {/* 채용정보 */}
-        <div className="bg-white border border-border rounded-xl p-6 mb-6">
+        <div className="bg-card border border-border rounded-xl p-6 mb-6">
           <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
             {t('recruitmentInfo')}
           </h2>

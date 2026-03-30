@@ -34,7 +34,7 @@ export function IntegrationsTab({
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-foreground">{int.label}</span>
-              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${int.status === 'available' ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'}`}>
+              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${int.status === 'available' ? 'bg-tertiary-container/10 text-tertiary' : 'bg-muted/50 text-muted-foreground/60'}`}>
                 {int.status === 'available' ? '사용 가능' : '예정'}
               </span>
             </div>

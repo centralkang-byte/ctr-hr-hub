@@ -201,7 +201,7 @@ function BoolBadge({
 }) {
   return (
     <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-      value ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'
+      value ? 'bg-emerald-50 text-emerald-700' : 'bg-muted text-muted-foreground'
     }`}>
       {value ? trueLabel : falseLabel}
     </span>
@@ -220,7 +220,7 @@ function LeaveTypeDetailPanel({
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       <div className="absolute inset-0 bg-black/30" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-white p-6 shadow-lg animate-in slide-in-from-right duration-200">
+      <div className="relative w-full max-w-md bg-card p-6 shadow-lg animate-in slide-in-from-right duration-200">
         <div className="mb-6 flex items-center justify-between">
           <h3 className="text-lg font-semibold text-foreground">{'휴가 유형 상세'}</h3>
           <button type="button" onClick={onClose} className="text-muted-foreground hover:text-foreground">

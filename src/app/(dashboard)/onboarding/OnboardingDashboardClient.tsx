@@ -78,10 +78,10 @@ const STATUS_BADGE_STYLES: Record<string, string> = {
 
 const MOOD_CONFIG: Record<string, { icon: typeof Smile; color: string; label: string }> = {
   GREAT: { icon: Smile, color: 'text-green-500', label: '매우 좋음' },
-  GOOD: { icon: Smile, color: 'text-green-600', label: '좋음' },
+  GOOD: { icon: Smile, color: 'text-tertiary', label: '좋음' },
   NEUTRAL: { icon: Meh, color: 'text-amber-500', label: '보통' },
   STRUGGLING: { icon: Frown, color: 'text-red-500', label: '힘듦' },
-  BAD: { icon: Frown, color: 'text-red-600', label: '나쁨' },
+  BAD: { icon: Frown, color: 'text-destructive', label: '나쁨' },
 }
 
 const PLAN_TYPE_TABS = [
@@ -258,7 +258,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
               }}
               className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${filter === opt.value
                   ? 'bg-primary text-white border-primary'
-                  : 'bg-white text-muted-foreground border-border hover:border-primary'
+                  : 'bg-card text-muted-foreground border-border hover:border-primary'
                 }`}
             >
               {opt.label}
@@ -328,7 +328,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
           </table>
         </div>
       ) : data.length === 0 ? (
-        <div className="bg-white rounded-xl border border-border p-8">
+        <div className="bg-card rounded-xl border border-border p-8">
           <EmptyState
             title={t('noOnboardingData')}
             description={t('noOnboardingDataDesc')}
@@ -355,7 +355,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                 {data.map((row) => (
                   <tr
                     key={row.id}
-                    className={`${TABLE_STYLES.rowClickable} ${row.isDelayed ? 'bg-red-50/30' : ''}`}
+                    className={`${TABLE_STYLES.rowClickable} ${row.isDelayed ? 'bg-destructive/5/30' : ''}`}
                     onClick={() => router.push(`/onboarding/${row.id}`)}
                   >
                     <td className={TABLE_STYLES.cell}>
@@ -391,12 +391,12 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                     </td>
                     <td className={TABLE_STYLES.cell}>
                       {row.isDelayed ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-red-50 text-red-500">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-destructive/5 text-red-500">
                           <AlertTriangle className="mr-1 h-3 w-3" />
                           {t('delayed')}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-green-100 text-green-600">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-tertiary-container/20 text-tertiary">
                           {t('normal')}
                         </span>
                       )}
@@ -515,7 +515,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
             <button
               onClick={handleForceComplete}
               disabled={!forceReason.trim() || forceLoading}
-              className="px-4 py-2 text-sm font-semibold rounded-lg bg-red-500 hover:bg-red-600 text-white disabled:opacity-50 transition-colors"
+              className="px-4 py-2 text-sm font-semibold rounded-lg bg-destructive/50 hover:bg-red-600 text-white disabled:opacity-50 transition-colors"
             >
               {forceLoading ? t('processing') : t('forceCompleteConfirm')}
             </button>

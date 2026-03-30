@@ -159,7 +159,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
             {deductionItems.map((item) => (
               <div key={item.label} className="flex justify-between text-sm">
                 <span className="text-[#555]">{item.label}</span>
-                <span className="font-medium text-red-600">
+                <span className="font-medium text-destructive">
                   -{formatCurrency(item.value)}
                 </span>
               </div>
@@ -179,7 +179,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
                         ({item.category === 'STATUTORY' ? '법정' : '선택'})
                       </span>
                     </span>
-                    <span className="font-medium text-red-600">
+                    <span className="font-medium text-destructive">
                       -{formatCurrency(item.amount)}
                     </span>
                   </div>
@@ -189,7 +189,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
 
             <div className="flex justify-between text-sm font-semibold pt-2 border-t border-border">
               <span className="text-[#333]">총 공제액</span>
-              <span className="text-red-600">
+              <span className="text-destructive">
                 -{formatCurrency(totalDeductions)}
                 <ChangeIndicator current={totalDeductions} previous={previousMonth?.totalDeductions} />
               </span>

@@ -251,7 +251,7 @@ export default function AdjustmentsClient({user }: Props) {
             <div className="flex gap-5">
                 {/* Left: Run Selector */}
                 <div className="w-72 flex-shrink-0">
-                    <div className="bg-white rounded-xl border border-border overflow-hidden">
+                    <div className="bg-card rounded-xl border border-border overflow-hidden">
                         <div className="px-4 py-3 border-b border-border">
                             <p className="text-xs font-semibold text-[#666] uppercase tracking-wider">{t('kr_keca1b0ec_keb8c80ea_keab889ec')}</p>
                         </div>
@@ -266,7 +266,7 @@ export default function AdjustmentsClient({user }: Props) {
                                     <button
                                         key={run.id}
                                         onClick={() => setSelectedRun(run)}
-                                        className={`w-full text-left px-4 py-3 transition-colors hover:bg-muted ${selectedRun?.id === run.id ? 'bg-green-50 border-l-2 border-primary' : ''
+                                        className={`w-full text-left px-4 py-3 transition-colors hover:bg-muted ${selectedRun?.id === run.id ? 'bg-tertiary-container/10 border-l-2 border-primary' : ''
                                             }`}
                                     >
                                         <p className="text-sm font-semibold text-foreground">{run.yearMonth}</p>
@@ -281,7 +281,7 @@ export default function AdjustmentsClient({user }: Props) {
                 {/* Right: Main content */}
                 <div className="flex-1 min-w-0">
                     {!selectedRun ? (
-                        <div className="bg-white rounded-xl border border-border flex items-center justify-center h-64">
+                        <div className="bg-card rounded-xl border border-border flex items-center justify-center h-64">
                             <div className="text-center">
                                 <FileText size={32} className="text-border mx-auto mb-3" />
                                 <p className="text-[#999]">{t('kr_keab889ec_kec8ba4ed_kec84a0ed')}</p>
@@ -292,19 +292,19 @@ export default function AdjustmentsClient({user }: Props) {
                             {/* Summary cards */}
                             {summary && (
                                 <div className="grid grid-cols-3 gap-4 mb-4">
-                                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                                    <div className="bg-card rounded-xl shadow-sm border border-border p-6">
                                         <p className="text-xs text-[#666] mb-1">{t('add_ked95a9ea')}</p>
                                         <p className="text-xl font-bold text-emerald-600">
                                             +{summary.totalAdd.toLocaleString()}원
                                         </p>
                                     </div>
-                                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                                    <div className="bg-card rounded-xl shadow-sm border border-border p-6">
                                         <p className="text-xs text-[#666] mb-1">{t('kr_keab3b5ec_ked95a9ea')}</p>
                                         <p className="text-xl font-bold text-red-500">
                                             −{summary.totalDeduct.toLocaleString()}원
                                         </p>
                                     </div>
-                                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                                    <div className="bg-card rounded-xl shadow-sm border border-border p-6">
                                         <p className="text-xs text-[#666] mb-1">{t('kr_kec889c_keca1b0ec')}</p>
                                         <p className={`text-xl font-bold ${summary.netAdjustment >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                                             {formatKRW(summary.netAdjustment)}
@@ -324,7 +324,7 @@ export default function AdjustmentsClient({user }: Props) {
                                             value={search}
                                             onChange={(e) => setSearch(e.target.value)}
                                             placeholder={tCommon('searchPlaceholder')}
-                                            className="pl-8 pr-3 py-2 border border-border rounded-lg text-sm bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 w-48"
+                                            className="pl-8 pr-3 py-2 border border-border rounded-lg text-sm bg-card focus:border-primary focus:ring-2 focus:ring-primary/10 w-48"
                                         />
                                     </div>
                                     {/* Type filter */}
@@ -333,7 +333,7 @@ export default function AdjustmentsClient({user }: Props) {
                                         <select
                                             value={filterType}
                                             onChange={(e) => setFilterType(e.target.value)}
-                                            className="pl-8 pr-6 py-2 border border-border rounded-lg text-sm bg-white appearance-none focus:border-primary"
+                                            className="pl-8 pr-6 py-2 border border-border rounded-lg text-sm bg-card appearance-none focus:border-primary"
                                         >
                                             <option value="ALL">{t('all_kec9ca0ed')}</option>
                                             {Object.entries(ADJUSTMENT_TYPE_LABELS).map(([k, v]) => (
@@ -363,7 +363,7 @@ export default function AdjustmentsClient({user }: Props) {
                             </div>
 
                             {/* Adjustments table */}
-                            <div className="bg-white rounded-xl border border-border overflow-hidden">
+                            <div className="bg-card rounded-xl border border-border overflow-hidden">
                                 {loading ? (
                                     <div className="flex items-center justify-center h-40 text-[#999]">{tCommon('loading')}</div>
                                 ) : filteredAdj.length === 0 ? (
@@ -412,7 +412,7 @@ export default function AdjustmentsClient({user }: Props) {
                                                                     href={adj.evidenceUrl}
                                                                     target="_blank"
                                                                     rel="noreferrer"
-                                                                    className="inline-flex items-center gap-1 text-xs text-blue-700 hover:underline"
+                                                                    className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
                                                                 >
                                                                     <Upload size={11} />
                                                                     {t('kr_ked8c8cec')}
@@ -424,7 +424,7 @@ export default function AdjustmentsClient({user }: Props) {
                                                         <td className={cn(TABLE_STYLES.cell, "text-right")}>
                                                             <button
                                                                 onClick={() => handleDelete(adj.id)}
-                                                                className="p-1.5 hover:bg-red-100 hover:text-red-600 text-border rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                                                                className="p-1.5 hover:bg-destructive/10 hover:text-destructive text-border rounded-lg transition-colors opacity-0 group-hover:opacity-100"
                                                             >
                                                                 <Trash2 size={14} />
                                                             </button>
@@ -444,7 +444,7 @@ export default function AdjustmentsClient({user }: Props) {
             {/* Add Adjustment Modal */}
             {showForm && (
                 <div className={MODAL_STYLES.container}>
-                    <div className="bg-white rounded-xl shadow-lg max-w-lg w-full mx-4 overflow-hidden">
+                    <div className="bg-card rounded-xl shadow-lg max-w-lg w-full mx-4 overflow-hidden">
                         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
                             <h2 className="text-lg font-bold text-foreground">{t('kr_keca1b0ec_add')}</h2>
                             <button onClick={() => setShowForm(false)} className="p-1 hover:bg-muted rounded-lg">
@@ -460,7 +460,7 @@ export default function AdjustmentsClient({user }: Props) {
                                         value={form.employeeId}
                                         onChange={(e) => setForm((f) => ({ ...f, employeeId: e.target.value }))}
                                         required
-                                        className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 appearance-none"
+                                        className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card focus:border-primary focus:ring-2 focus:ring-primary/10 appearance-none"
                                     >
                                         <option value="">{t('kr_keca781ec_kec84a0ed')}</option>
                                         {employees.map((e) => (
@@ -479,7 +479,7 @@ export default function AdjustmentsClient({user }: Props) {
                                         <select
                                             value={form.type}
                                             onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as Adjustment['type'] }))}
-                                            className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-white focus:border-primary appearance-none"
+                                            className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card focus:border-primary appearance-none"
                                         >
                                             {Object.entries(ADJUSTMENT_TYPE_LABELS).map(([k, v]) => (
                                                 <option key={k} value={k}>{v.label}</option>
@@ -494,7 +494,7 @@ export default function AdjustmentsClient({user }: Props) {
                                         <select
                                             value={form.category}
                                             onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-                                            className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-white focus:border-primary appearance-none"
+                                            className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card focus:border-primary appearance-none"
                                         >
                                             {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                                         </select>

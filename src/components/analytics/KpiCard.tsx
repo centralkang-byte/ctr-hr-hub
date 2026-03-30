@@ -47,7 +47,7 @@ export function KpiCard({
     : severity === 'positive'
       ? 'text-emerald-600'
       : severity === 'negative'
-        ? 'text-red-600'
+        ? 'text-destructive'
         : 'text-muted-foreground'
 
   const ChangeIcon = change !== undefined && change > 0 ? TrendingUp : change !== undefined && change < 0 ? TrendingDown : Minus

@@ -48,8 +48,8 @@ export function EarningsTab({
                 <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{item.code}</td>
                 <td className={TABLE_STYLES.cell}>{item.name}</td>
                 <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>{item.category}</td>
-                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${item.isTaxable ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}>{item.isTaxable ? '과세' : '비과세'}</span></td>
-                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!item.deletedAt ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'}`}>{!item.deletedAt ? '활성' : '비활성'}</span></td>
+                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${item.isTaxable ? 'bg-destructive/5 text-destructive' : 'bg-tertiary-container/10 text-tertiary'}`}>{item.isTaxable ? '과세' : '비과세'}</span></td>
+                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!item.deletedAt ? 'bg-tertiary-container/10 text-tertiary' : 'bg-muted/50 text-muted-foreground/60'}`}>{!item.deletedAt ? '활성' : '비활성'}</span></td>
               </tr>
             ))}</tbody>
           </table>

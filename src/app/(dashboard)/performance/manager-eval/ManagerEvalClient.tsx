@@ -278,7 +278,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Team member list */}
-        <div className="rounded-xl border border-border bg-white">
+        <div className="rounded-xl border border-border bg-card">
           <div className="px-5 py-4 border-b border-border">
             <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
               <Users className="w-4 h-4 text-[#666]" />
@@ -324,18 +324,18 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
         {/* Eval form */}
         <div className="lg:col-span-2 space-y-4">
           {!selectedEmployee ? (
-            <div className="rounded-xl border border-border bg-white flex items-center justify-center h-64">
+            <div className="rounded-xl border border-border bg-card flex items-center justify-center h-64">
               <p className="text-sm text-[#999]">{t('kr_ked8c80ec_kec84a0ed')}</p>
             </div>
           ) : formLoading ? (
-            <div className="rounded-xl border border-border bg-white flex items-center justify-center h-64">
+            <div className="rounded-xl border border-border bg-card flex items-center justify-center h-64">
               <p className="text-sm text-[#666]">{tc('loading')}...</p>
             </div>
           ) : (
             <>
               {/* Goal Scoring */}
               {goals.length > 0 && (
-                <div className="rounded-xl border border-border bg-white">
+                <div className="rounded-xl border border-border bg-card">
                   <div className="px-5 py-4 border-b border-border">
                     <h3 className="text-base font-semibold text-foreground">{t('goals_evaluation')}</h3>
                   </div>
@@ -375,7 +375,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
 
               {/* 업적 등급 선택 */}
               {evalSettings && evalSettings.mboGrades.length > 0 && (
-                <div className="rounded-xl border border-border bg-white p-5">
+                <div className="rounded-xl border border-border bg-card p-5">
                   <h3 className="text-base font-semibold text-foreground mb-3">{t('kr_kec9785ec_keb93b1ea')}</h3>
                   <div className="flex items-center gap-2 flex-wrap">
                     {evalSettings.mboGrades.map((g) => (
@@ -385,7 +385,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
                           performanceGrade === g.code
                             ? 'bg-primary text-white border-primary'
-                            : 'bg-white text-[#333] border-border hover:bg-background'
+                            : 'bg-card text-[#333] border-border hover:bg-background'
                         }`}
                       >
                         {g.label} ({g.code})
@@ -397,7 +397,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
 
               {/* BEI 역량 평가 — methodology = MBO_BEI일 때만 */}
               {evalSettings?.methodology === 'MBO_BEI' && beiIndicators.length > 0 && (
-                <div className="rounded-xl border border-border bg-white">
+                <div className="rounded-xl border border-border bg-card">
                   <div className="px-5 py-4 border-b border-border">
                     <h3 className="text-base font-semibold text-foreground">{t('kr_kec97adeb_evaluation_bei')}</h3>
                     <p className="text-xs text-[#666] mt-0.5">
@@ -441,7 +441,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
                               competencyGrade === g.code
                                 ? 'bg-primary/90 text-white border-primary/90'
-                                : 'bg-white text-[#333] border-border hover:bg-background'
+                                : 'bg-card text-[#333] border-border hover:bg-background'
                             }`}
                           >
                             {g.label} ({g.code})
@@ -455,7 +455,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
 
               {/* 종합 등급 표시 — overallGradeEnabled=true일 때 */}
               {evalSettings?.overallGradeEnabled && performanceGrade && (
-                <div className="rounded-xl border border-primary/20 bg-green-50 p-4">
+                <div className="rounded-xl border border-primary/20 bg-tertiary-container/10 p-4">
                   <p className="text-sm font-semibold text-primary/90">{t('kr_keca285ed_keb93b1ea_kec9e90eb_')}</p>
                   <p className="text-xs text-emerald-700 mt-1">
                     업적 {evalSettings.mboWeight}% ({performanceGrade})
@@ -470,7 +470,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
               )}
 
               {/* Overall Comment */}
-              <div className="rounded-xl border border-border bg-white p-5 space-y-3">
+              <div className="rounded-xl border border-border bg-card p-5 space-y-3">
                 <div className="flex items-center justify-between">
                   <h3 className="text-base font-semibold text-foreground">{t('kr_keca285ed_kec9d98ea')}</h3>
                   <button

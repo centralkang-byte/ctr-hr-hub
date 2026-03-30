@@ -114,7 +114,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
     return (
       <div className="space-y-6 p-8">
         <PageHeader title={t('weeklyCheckin')} description={t('weeklyCheckinCompleted')} />
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <div className="flex flex-col items-center gap-4 py-12">
             <div className="text-5xl">{'\u{2705}'}</div>
             <h2 className="text-xl font-semibold text-primary">{t('checkinComplete')}</h2>
@@ -147,7 +147,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
         description={t('checkinDescription', { name: user.name })}
       />
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <h3 className="text-base font-bold text-foreground tracking-[-0.02em] mb-6">
           {t('weekCheckin', { week: checkinWeek })}
         </h3>
@@ -186,7 +186,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
                   onClick={() => setMood(m.value)}
                   className={`flex flex-col items-center gap-1 rounded-xl border-2 px-4 py-3 transition-all ${
                     mood === m.value
-                      ? 'border-primary bg-green-100'
+                      ? 'border-primary bg-tertiary-container/20'
                       : 'border-transparent hover:border-border hover:bg-background'
                   }`}
                 >

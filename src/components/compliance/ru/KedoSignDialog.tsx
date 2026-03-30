@@ -115,7 +115,7 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium border transition-colors ${
                 mode === 'sign'
                   ? 'bg-emerald-600 text-white border-emerald-600'
-                  : 'bg-white text-[#555] border-border hover:bg-background'
+                  : 'bg-card text-[#555] border-border hover:bg-background'
               }`}
             >
               <CheckCircle2 className="w-4 h-4" />
@@ -126,7 +126,7 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium border transition-colors ${
                 mode === 'reject'
                   ? 'bg-red-600 text-white border-red-600'
-                  : 'border-red-300 text-red-600 hover:bg-red-100'
+                  : 'border-red-300 text-destructive hover:bg-destructive/10'
               }`}
             >
               <XCircle className="w-4 h-4" />
@@ -178,7 +178,7 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
 
           {/* Error */}
           {error && (
-            <div className="p-3 bg-red-100 border border-red-200 rounded-lg text-sm text-red-700">
+            <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
               {error}
             </div>
           )}
@@ -189,7 +189,7 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
             type="button"
             onClick={onClose}
             disabled={processing}
-            className="bg-white border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
+            className="bg-card border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
           >
             취소
           </button>

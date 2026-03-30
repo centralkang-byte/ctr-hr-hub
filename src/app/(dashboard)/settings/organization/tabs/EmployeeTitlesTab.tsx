@@ -154,7 +154,7 @@ export function EmployeeTitlesTab({ companyId }: Props) {
                   ) : t.nameEn ?? '—'}
                 </td>
                 <td className={TABLE_STYLES.cell}>
-                  <span className={cn('inline-block rounded px-2 py-0.5 text-xs font-medium', t.isExecutive ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600')}>
+                  <span className={cn('inline-block rounded px-2 py-0.5 text-xs font-medium', t.isExecutive ? 'bg-amber-100 text-amber-700' : 'bg-muted text-muted-foreground')}>
                     {t.isExecutive ? '임원급' : '일반'}
                   </span>
                 </td>

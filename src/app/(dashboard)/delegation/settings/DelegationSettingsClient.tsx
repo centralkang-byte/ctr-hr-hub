@@ -285,7 +285,7 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
                               {daysLeft > 0 && (
                                 <Badge
                                   variant="outline"
-                                  className={`text-[9px] px-1 ${daysLeft <= 3 ? 'border-red-200 text-red-500' : 'border-indigo-200 text-primary'}`}
+                                  className={`text-[9px] px-1 ${daysLeft <= 3 ? 'border-destructive/20 text-red-500' : 'border-indigo-200 text-primary'}`}
                                 >
                                   D-{daysLeft}
                                 </Badge>
@@ -299,7 +299,7 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="gap-1 text-[11px] text-red-500 border-red-200 hover:bg-red-100"
+                          className="gap-1 text-[11px] text-red-500 border-destructive/20 hover:bg-destructive/10"
                           disabled={processing}
                           onClick={() => handleRevoke(d.id)}
                         >
@@ -333,7 +333,7 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
                   {activeReceived.map((d) => (
                     <div
                       key={d.id}
-                      className="flex items-center gap-4 rounded-xl border border-emerald-100 bg-green-50 p-4"
+                      className="flex items-center gap-4 rounded-xl border border-emerald-100 bg-tertiary-container/10 p-4"
                     >
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10">
                         <User className="h-5 w-5 text-emerald-500" />
@@ -398,7 +398,7 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
                       </div>
                       <Badge
                         variant="outline"
-                        className={`text-[10px] ${d.status === 'EXPIRED' ? 'border-amber-300 text-amber-700' : 'border-red-200 text-red-500'}`}
+                        className={`text-[10px] ${d.status === 'EXPIRED' ? 'border-amber-300 text-amber-700' : 'border-destructive/20 text-red-500'}`}
                       >
                         {d.status === 'EXPIRED' ? '만료' : '해제'}
                       </Badge>
@@ -430,7 +430,7 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
           <CardContent className="space-y-5">
             {/* Error */}
             {error && (
-              <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-500">
+              <div className="flex items-start gap-2 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-xs text-red-500">
                 <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
                 {error}
               </div>

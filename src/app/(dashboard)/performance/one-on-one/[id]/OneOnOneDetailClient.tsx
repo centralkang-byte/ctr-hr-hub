@@ -181,7 +181,7 @@ export default function OneOnOneDetailClient({ user, id }: { user: SessionUser; 
 
       {/* Previous Action Items */}
       {prevActions.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <h2 className="text-base font-semibold text-foreground mb-3">{t('prev_kec95a1ec_kec9584ec_kecb694ec')}</h2>
           <div className="space-y-2">
             {prevActions.map((a, i) => (
@@ -216,7 +216,7 @@ export default function OneOnOneDetailClient({ user, id }: { user: SessionUser; 
       )}
 
       {/* Notes */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <h2 className="text-base font-semibold text-foreground mb-3">{t('kr_keb85bcec_keb82b4ec_summary')}</h2>
         <textarea
           value={notes}
@@ -228,7 +228,7 @@ export default function OneOnOneDetailClient({ user, id }: { user: SessionUser; 
       </div>
 
       {/* 미팅 분위기 */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <h2 className="text-base font-semibold text-foreground mb-3">{t('kr_kebafb8ed_kebb684ec')}</h2>
         <div className="flex gap-2">
           {[
@@ -255,7 +255,7 @@ export default function OneOnOneDetailClient({ user, id }: { user: SessionUser; 
       </div>
 
       {/* New Action Items */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-base font-semibold text-foreground">{t('kr_kec8388_kec95a1ec_kec9584ec')}</h2>
           <button
@@ -291,7 +291,7 @@ export default function OneOnOneDetailClient({ user, id }: { user: SessionUser; 
               />
               <button
                 onClick={() => removeActionItem(i)}
-                className="p-2 text-[#999] hover:text-red-500 rounded-lg hover:bg-red-100"
+                className="p-2 text-[#999] hover:text-red-500 rounded-lg hover:bg-destructive/10"
               >
                 <Trash2 className="w-4 h-4" />
               </button>

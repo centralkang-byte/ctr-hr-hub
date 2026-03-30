@@ -83,7 +83,7 @@ interface EmployeeRiskData {
 const RISK_CONFIG: Record<string, { label: string; bg: string; text: string; border: string; color: string }> = {
   low:      { label: '낮음',     bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-200', color: '#059669' },
   medium:   { label: '보통',     bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-300', color: '#F59E0B' },
-  high:     { label: '높음',     bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-200', color: '#EF4444' },
+  high:     { label: '높음',     bg: 'bg-destructive/10', text: 'text-destructive', border: 'border-destructive/20', color: '#EF4444' },
   critical: { label: '위험',     bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200', color: '#C2410C' },
   insufficient_data: { label: '데이터 부족', bg: 'bg-background', text: 'text-[#555]', border: 'border-border', color: '#999' },
 }
@@ -168,7 +168,7 @@ function RecommendedActions({ turnover, burnout }: {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-card rounded-xl shadow-sm border border-border p-6">
       <h3 className="text-base font-semibold text-foreground mb-4">{'kr_keab68cea_kec95a1ec'}</h3>
       <div className="space-y-3">
         {actions.map((action, i) => (
@@ -278,7 +278,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
       {/* 상단 스코어 카드 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 이직 위험 */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <div className="flex items-center gap-2 mb-4">
             <TrendingDown className="w-5 h-5 text-red-500" />
             <h3 className="text-base font-semibold text-foreground">{t('kr_kec9db4ec_kec9c84ed')}</h3>
@@ -310,7 +310,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
         </div>
 
         {/* 번아웃 */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <div className="flex items-center gap-2 mb-4">
             <Activity className="w-5 h-5 text-amber-500" />
             <h3 className="text-base font-semibold text-foreground">{t('kr_kebb288ec_kec9c84ed')}</h3>
@@ -356,7 +356,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
       {/* 레이더 차트 + 권고 액션 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {radarData.length > 0 && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-6">
             <h3 className="text-base font-semibold text-foreground mb-4">{t('kr_kec9db4ec_risk_kec8ba0ed_keba0')}</h3>
             <ResponsiveContainer width="100%" height={250}>
               <RadarChart data={radarData}>
@@ -380,7 +380,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
 
       {/* 신호 상세 테이블 */}
       {data.turnover && (
-        <div className="bg-white rounded-xl border border-border">
+        <div className="bg-card rounded-xl border border-border">
           <div className="px-5 py-4 border-b border-border">
             <h3 className="text-base font-semibold text-foreground">{t('kr_kec9db4ec_risk_kec8ba0ed_kec83')}</h3>
           </div>

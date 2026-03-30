@@ -268,7 +268,7 @@ export function PositionsTab({ companyId }: Props) {
                     </Select>
                   ) : (
                     p.jobGradeName
-                      ? <span className="inline-block rounded px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700">{p.jobGradeName}</span>
+                      ? <span className="inline-block rounded px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary">{p.jobGradeName}</span>
                       : <span className="text-muted-foreground">—</span>
                   )}
                 </td>

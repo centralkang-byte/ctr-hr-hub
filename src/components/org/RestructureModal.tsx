@@ -90,10 +90,10 @@ const CHANGE_TYPE_LABELS: Record<ChangeType, string> = {
 
 const CHANGE_TYPE_COLORS: Record<ChangeType, string> = {
   create: 'bg-emerald-100 text-emerald-700',
-  move: 'bg-blue-100 text-blue-700',
+  move: 'bg-primary/10 text-primary',
   merge: 'bg-indigo-100 text-primary/90',
   rename: 'bg-amber-100 text-amber-700',
-  close: 'bg-red-100 text-red-700',
+  close: 'bg-destructive/10 text-destructive',
   transfer_employee: 'bg-purple-50 text-violet-600',
 }
 
@@ -122,14 +122,14 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
   ))
 
   return (
-    <div className="border border-border rounded-xl p-4 space-y-3 bg-white">
+    <div className="border border-border rounded-xl p-4 space-y-3 bg-card">
       {/* Header */}
       <div className="flex items-center gap-2">
         <span className="text-xs font-semibold text-[#999] w-5">{idx + 1}.</span>
         <select
           value={change.type}
           onChange={(e) => update({ type: e.target.value as ChangeType })}
-          className="text-sm border border-border rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-primary/10"
+          className="text-sm border border-border rounded-lg px-2 py-1 bg-card focus:outline-none focus:ring-2 focus:ring-primary/10"
         >
           {(Object.keys(CHANGE_TYPE_LABELS) as ChangeType[]).map((t) => (
             <option key={t} value={t}>{CHANGE_TYPE_LABELS[t]}</option>
@@ -475,7 +475,7 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
 
   return (
     <div className={MODAL_STYLES.container}>
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-3xl max-h-[90vh] flex flex-col">
+      <div className="bg-card rounded-xl shadow-lg w-full max-w-3xl max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
           <div className="flex items-center gap-2">
@@ -585,8 +585,8 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
 
           {step === 'confirm' && (
             <div className="p-6 space-y-4">
-              <div className="bg-green-50 border border-green-200 rounded-xl p-4 space-y-2">
-                <p className="text-sm font-semibold text-green-700">계획 요약</p>
+              <div className="bg-tertiary-container/10 border border-tertiary/20 rounded-xl p-4 space-y-2">
+                <p className="text-sm font-semibold text-tertiary">계획 요약</p>
                 <p className="text-sm text-foreground">{plan.title}</p>
                 <p className="text-xs text-[#555]">
                   발효일: {plan.effectiveDate.toLocaleDateString('ko-KR')} &nbsp;·&nbsp; 변경 {plan.changes.length}건
@@ -603,7 +603,7 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
               </div>
 
               {error && (
-                <p className="text-sm text-red-500 bg-red-100 border border-red-200 rounded-lg px-3 py-2">
+                <p className="text-sm text-red-500 bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">
                   {error}
                 </p>
               )}
@@ -615,7 +615,7 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
         <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-background shrink-0">
           <button
             onClick={step === 'edit' ? onClose : () => setStep(step === 'diff' ? 'edit' : 'diff')}
-            className="px-4 py-2 text-sm border border-border rounded-lg bg-white hover:bg-muted text-[#333] transition-colors"
+            className="px-4 py-2 text-sm border border-border rounded-lg bg-card hover:bg-muted text-[#333] transition-colors"
           >
             {step === 'edit' ? '취소' : '이전'}
           </button>
@@ -625,7 +625,7 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
               <button
                 onClick={handleSaveDraft}
                 disabled={saving}
-                className="px-4 py-2 text-sm border border-border rounded-lg bg-white hover:bg-muted text-[#333] transition-colors disabled:opacity-50"
+                className="px-4 py-2 text-sm border border-border rounded-lg bg-card hover:bg-muted text-[#333] transition-colors disabled:opacity-50"
               >
                 초안 저장
               </button>

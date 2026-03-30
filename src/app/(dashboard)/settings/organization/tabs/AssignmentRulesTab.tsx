@@ -75,7 +75,7 @@ export function AssignmentRulesTab({
                 <td className={`${TABLE_STYLES.cell} text-center`}>
                   <button
                     onClick={() => toggleApproval(i)}
-                    className={`rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${t.requiresApproval ? 'bg-primary/5 text-primary hover:bg-primary/10' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
+                    className={`rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${t.requiresApproval ? 'bg-primary/5 text-primary hover:bg-primary/10' : 'bg-muted/50 text-muted-foreground hover:bg-muted'}`}
                   >
                     {t.requiresApproval ? '필수' : '불필요'}
                   </button>

@@ -121,7 +121,7 @@ export function AssignmentTimeline({
                   !onEventClick && 'cursor-default',
                   event.highlighted
                     ? 'border-primary bg-primary/10 ring-1 ring-primary/20'
-                    : 'border-border bg-white',
+                    : 'border-border bg-card',
                 )}
               >
                 <div className="flex items-center gap-2">

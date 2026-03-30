@@ -29,7 +29,7 @@ const GRADE_TYPE_LABELS: Record<string, string> = {
 }
 
 const GRADE_TYPE_COLORS: Record<string, string> = {
-  STAFF: 'bg-blue-100 text-blue-700',
+  STAFF: 'bg-primary/10 text-primary',
   SPECIALIST: 'bg-purple-100 text-purple-700',
   EXECUTIVE: 'bg-amber-100 text-amber-700',
 }
@@ -196,7 +196,7 @@ export function JobGradesTab({ companyId }: Props) {
                   ) : g.nameEn ?? '—'}
                 </td>
                 <td className={TABLE_STYLES.cell}>
-                  <span className={cn('inline-block rounded px-2 py-0.5 text-xs font-medium', GRADE_TYPE_COLORS[g.gradeType] ?? 'bg-gray-100 text-gray-600')}>
+                  <span className={cn('inline-block rounded px-2 py-0.5 text-xs font-medium', GRADE_TYPE_COLORS[g.gradeType] ?? 'bg-muted text-muted-foreground')}>
                     {GRADE_TYPE_LABELS[g.gradeType] ?? g.gradeType}
                   </span>
                 </td>

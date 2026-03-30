@@ -179,7 +179,7 @@ export default function DisciplineFormClient({ user }: Props) {
           <ChevronLeft className="w-4 h-4 text-[#666]" />
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-destructive/5 rounded-lg flex items-center justify-center">
             <Gavel className="w-5 h-5 text-red-500" />
           </div>
           <h1 className="text-xl font-bold text-foreground tracking-[-0.02em]">
@@ -193,7 +193,7 @@ export default function DisciplineFormClient({ user }: Props) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6 max-w-3xl">
         {/* Basic Info */}
-        <div className="bg-white border border-border rounded-xl p-6">
+        <div className="bg-card border border-border rounded-xl p-6">
           <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
             {t('basicInfo')}
           </h2>
@@ -203,7 +203,7 @@ export default function DisciplineFormClient({ user }: Props) {
               <label className="block text-sm font-medium text-foreground mb-1">{t('targetEmployee')} *</label>
               <select
                 {...register('employeeId')}
-                className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 bg-white"
+                className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 bg-card"
               >
                 <option value="">{t('selectEmployee')}</option>
                 {!employees?.length && <EmptyState />}
@@ -223,7 +223,7 @@ export default function DisciplineFormClient({ user }: Props) {
               <label className="block text-sm font-medium text-foreground mb-1">{tPage('disciplineType')} *</label>
               <select
                 {...register('actionType')}
-                className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 bg-white"
+                className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 bg-card"
               >
                 <option value="">{t('selectType')}</option>
                 {TYPE_KEYS.map((key) => (
@@ -240,7 +240,7 @@ export default function DisciplineFormClient({ user }: Props) {
               <label className="block text-sm font-medium text-foreground mb-1">{tCommon('category')} *</label>
               <select
                 {...register('category')}
-                className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 bg-white"
+                className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 bg-card"
               >
                 <option value="">{t('selectCategory')}</option>
                 {CATEGORY_KEYS.map((key) => (
@@ -306,7 +306,7 @@ export default function DisciplineFormClient({ user }: Props) {
 
         {/* Conditional: SUSPENSION */}
         {actionType === 'SUSPENSION' && (
-          <div className="bg-white border border-border rounded-xl p-6">
+          <div className="bg-card border border-border rounded-xl p-6">
             <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
               {t('suspensionPeriod')}
             </h2>
@@ -333,7 +333,7 @@ export default function DisciplineFormClient({ user }: Props) {
 
         {/* Conditional: PAY_CUT */}
         {actionType === 'PAY_CUT' && (
-          <div className="bg-white border border-border rounded-xl p-6">
+          <div className="bg-card border border-border rounded-xl p-6">
             <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
               {t('payCutConditions')}
             </h2>
@@ -365,7 +365,7 @@ export default function DisciplineFormClient({ user }: Props) {
 
         {/* Conditional: DEMOTION */}
         {actionType === 'DEMOTION' && (
-          <div className="bg-white border border-border rounded-xl p-6">
+          <div className="bg-card border border-border rounded-xl p-6">
             <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
               {t('demotionInfo')}
             </h2>
@@ -373,7 +373,7 @@ export default function DisciplineFormClient({ user }: Props) {
               <label className="block text-sm font-medium text-foreground mb-1">{t('demotionGrade')}</label>
               <select
                 {...register('demotionGradeId')}
-                className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 bg-white"
+                className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 bg-card"
               >
                 <option value="">{t('selectGrade')}</option>
                 {grades.map((g) => (
@@ -385,7 +385,7 @@ export default function DisciplineFormClient({ user }: Props) {
         )}
 
         {/* Committee (collapsible) */}
-        <div className="bg-white border border-border rounded-xl overflow-hidden">
+        <div className="bg-card border border-border rounded-xl overflow-hidden">
           <button
             type="button"
             onClick={() => setCommitteeOpen((prev) => !prev)}

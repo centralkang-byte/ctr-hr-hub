@@ -139,7 +139,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
       </div>
 
       {/* Block distribution */}
-      <div className="rounded-xl border border-border bg-white p-5">
+      <div className="rounded-xl border border-border bg-card p-5">
         <h2 className="text-base font-semibold text-foreground flex items-center gap-2 mb-3">
           <BarChart3 className="w-4 h-4 text-[#666]" />
           {t('kr_kebb894eb_kebb684ed')}

@@ -263,7 +263,7 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
 
           {/* Error */}
           {error && (
-            <div className="p-3 bg-red-100 border border-red-200 rounded-lg text-sm text-red-700">
+            <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
               {error}
             </div>
           )}
@@ -272,7 +272,7 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
             <button
               type="button"
               onClick={onClose}
-              className="bg-white border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
+              className="bg-card border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
             >
               취소
             </button>

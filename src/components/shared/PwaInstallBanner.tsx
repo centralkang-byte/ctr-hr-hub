@@ -54,7 +54,7 @@ export function PwaInstallBanner() {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 md:hidden">
-      <div className="bg-white rounded-xl shadow-lg border border-border p-4 flex items-center gap-3">
+      <div className="bg-card rounded-xl shadow-lg border border-border p-4 flex items-center gap-3">
         <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
           <Download size={20} className="text-primary" />
         </div>

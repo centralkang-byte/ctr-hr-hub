@@ -208,7 +208,7 @@ export function InterviewCalendarScheduler({
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                    <Clock size={16} style={{ color: '#5E81F4' }} />
+                    <Clock size={16} className="text-primary" />
                     <span style={{ fontSize: 14, fontWeight: 600, color: '#1B5E20' }}>
                       {scheduledAt
                         ? format(new Date(scheduledAt), 'yyyy-MM-dd HH:mm')

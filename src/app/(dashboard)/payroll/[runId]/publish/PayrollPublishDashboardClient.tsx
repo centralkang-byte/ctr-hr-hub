@@ -306,16 +306,16 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                     <div className="space-y-3">
                         {approvalHistory.map((step) => (
                             <div key={step.stepNumber} className="flex items-start gap-3">
-                                <div className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full ${step.status === 'APPROVED' ? 'bg-emerald-100' : 'bg-red-100'}`}>
+                                <div className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full ${step.status === 'APPROVED' ? 'bg-emerald-100' : 'bg-destructive/10'}`}>
                                     {step.status === 'APPROVED'
                                         ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-                                        : <XCircle className="h-3.5 w-3.5 text-red-600" />
+                                        : <XCircle className="h-3.5 w-3.5 text-destructive" />
                                     }
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2 flex-wrap">
                                         <p className="text-sm font-medium text-foreground">{step.approverName ?? step.roleRequired}</p>
-                                        <span className={`text-xs px-1.5 py-0.5 rounded-full ${step.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                                        <span className={`text-xs px-1.5 py-0.5 rounded-full ${step.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-700' : 'bg-destructive/10 text-destructive'}`}>
                                             {step.status === 'APPROVED' ? '승인' : '반려'}
                                         </span>
                                         <span className="text-xs text-[#999] flex items-center gap-1">

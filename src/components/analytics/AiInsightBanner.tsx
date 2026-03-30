@@ -60,25 +60,25 @@ export function AiInsightBanner() {
           <div className="flex-1 min-w-0">
             {insight && period ? (
               <>
-                <p className="text-sm font-medium text-gray-700 truncate">
+                <p className="text-sm font-medium text-foreground truncate">
                   🤖 {period} AI 인사이트: {insight}
                 </p>
-                <p className="text-xs text-gray-500 mt-0.5">
+                <p className="text-xs text-muted-foreground mt-0.5">
                   AI 월간 리포트에서 전체 분석 보기
                 </p>
               </>
             ) : (
               <>
-                <p className="text-sm font-medium text-gray-700">
+                <p className="text-sm font-medium text-foreground">
                   ✨ AI 인사이트를 활용하세요
                 </p>
-                <p className="text-xs text-gray-500 mt-0.5">
+                <p className="text-xs text-muted-foreground mt-0.5">
                   리포트를 생성하면 핵심 변동 + 위험 신호를 AI가 요약합니다.
                 </p>
               </>
             )}
           </div>
-          <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+          <ArrowRight className="h-4 w-4 text-muted-foreground/60 group-hover:text-primary group-hover:translate-x-0.5 transition-all flex-shrink-0" />
         </div>
         <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-gradient-to-br from-blue-100/50 to-indigo-100/50" />
       </div>

@@ -83,7 +83,7 @@ export function ExecutionConfirm({
   // 실행 성공 화면
   if (execResult?.success) {
     return (
-      <Card className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/30">
+      <Card className="border-tertiary/20 bg-tertiary-container/10 dark:border-green-800 dark:bg-green-950/30">
         <CardContent className="flex flex-col items-center gap-4 p-8">
           <CheckCircle2 className="h-12 w-12 text-green-500" />
           <div className="text-center">

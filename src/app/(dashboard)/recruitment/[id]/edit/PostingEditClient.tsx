@@ -247,11 +247,11 @@ export default function PostingEditClient({
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => router.back()} className="p-2 rounded-lg border border-border hover:bg-white transition-colors">
+        <button onClick={() => router.back()} className="p-2 rounded-lg border border-border hover:bg-card transition-colors">
           <ChevronLeft className="w-4 h-4 text-[#666]" />
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center">
             <Briefcase className="w-5 h-5 text-blue-500" />
           </div>
           <h1 className="text-xl font-bold text-foreground tracking-[-0.02em]">{t('editPostingTitle')}</h1>
@@ -261,7 +261,7 @@ export default function PostingEditClient({
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       <form onSubmit={handleSubmit(onSubmit as any)}>
-        <div className="bg-white border border-border rounded-xl p-6 mb-6">
+        <div className="bg-card border border-border rounded-xl p-6 mb-6">
           <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">{t('basicInfo')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
@@ -315,7 +315,7 @@ export default function PostingEditClient({
           </div>
         </div>
 
-        <div className="bg-white border border-border rounded-xl p-6 mb-6">
+        <div className="bg-card border border-border rounded-xl p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-bold text-foreground tracking-[-0.02em]">{t('postingContent')}</h2>
             <button type="button" onClick={handleAiGenerate} disabled={aiLoading || !watch('title')} className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-violet-600 hover:bg-violet-700 text-white rounded-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
@@ -340,7 +340,7 @@ export default function PostingEditClient({
           </div>
         </div>
 
-        <div className="bg-white border border-border rounded-xl p-6 mb-6">
+        <div className="bg-card border border-border rounded-xl p-6 mb-6">
           <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">{t('salarySection')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div><label className={labelClass}>{t('salaryMinLabel')}</label><input {...register('salaryRangeMin')} type="number" className={inputClass} placeholder="0" /></div>
@@ -354,7 +354,7 @@ export default function PostingEditClient({
           </div>
         </div>
 
-        <div className="bg-white border border-border rounded-xl p-6 mb-6">
+        <div className="bg-card border border-border rounded-xl p-6 mb-6">
           <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">{t('recruitmentInfo')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div><label className={labelClass}>{t('deadlineDateLabel')}</label><input {...register('deadlineDate')} type="date" className={inputClass} /></div>

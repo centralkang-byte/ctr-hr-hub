@@ -45,7 +45,7 @@ function Stars({ value, onChange, disabled }: { value: number; onChange: (v: num
             {[1, 2, 3, 4, 5].map((i) => (
                 <button key={i} disabled={disabled} onClick={() => onChange(i)}
                     className={`transition-transform ${disabled ? 'cursor-not-allowed' : 'hover:scale-110'}`}>
-                    <Star className={`h-5 w-5 ${i <= value ? 'fill-amber-500 text-amber-500' : 'text-gray-300'}`} />
+                    <Star className={`h-5 w-5 ${i <= value ? 'fill-amber-500 text-amber-500' : 'text-muted-foreground/40'}`} />
                 </button>
             ))}
             <span className="ml-2 text-sm font-medium text-muted-foreground">{value}/5</span>
@@ -189,14 +189,14 @@ export default function MyPeerReviewClient({user }: {
                         </p>
                     </div>
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
-                        className="rounded-lg border border-border bg-white px-3 py-2 text-sm">
+                        className="rounded-lg border border-border bg-card px-3 py-2 text-sm">
                         {cycles.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                 </div>
 
                 {/* Progress */}
                 {total > 0 && (
-                    <div className="mb-6 rounded-xl border border-border bg-white p-4">
+                    <div className="mb-6 rounded-xl border border-border bg-card p-4">
                         <div className="mb-2 flex items-center justify-between text-sm">
                             <span className="text-muted-foreground">{t('kr_keca784ed')}</span>
                             <span className="font-medium text-foreground">{completed}/{total} 완료</span>
@@ -208,7 +208,7 @@ export default function MyPeerReviewClient({user }: {
                 )}
 
                 {error && (
-                    <div className="mb-4 rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-800">
+                    <div className="mb-4 rounded-lg border border-destructive/15 bg-destructive/5 p-3 text-sm text-destructive">
                         {error} <button onClick={fetchAssignments} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
@@ -216,14 +216,14 @@ export default function MyPeerReviewClient({user }: {
                 {loading ? (
                     <div className="space-y-4">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="animate-pulse rounded-xl border border-border bg-white p-5">
+                            <div key={i} className="animate-pulse rounded-xl border border-border bg-card p-5">
                                 <div className="mb-2 h-4 w-1/3 rounded bg-border" />
                                 <div className="h-3 w-1/4 rounded bg-border" />
                             </div>
                         ))}
                     </div>
                 ) : assignments.length === 0 ? (
-                    <div className="rounded-xl border border-border bg-white p-16 text-center">
+                    <div className="rounded-xl border border-border bg-card p-16 text-center">
                         <Users className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                         <EmptyState />
                     </div>
@@ -235,7 +235,7 @@ export default function MyPeerReviewClient({user }: {
                             const isCompleted = item.status === 'SUBMITTED'
 
                             return (
-                                <div key={item.nominationId} className="flex items-center justify-between rounded-xl border border-border bg-white p-5 transition-colors hover:border-primary/30">
+                                <div key={item.nominationId} className="flex items-center justify-between rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/30">
                                     <div>
                                         <h3 className="text-sm font-semibold text-foreground">{item.employeeName}</h3>
                                         <p className="mt-0.5 text-xs text-muted-foreground">{item.department}</p>
@@ -263,15 +263,15 @@ export default function MyPeerReviewClient({user }: {
             {/* Review Form Slide-over */}
             {activeReview && (
                 <div className="fixed inset-0 z-50 flex items-start justify-end bg-black/30" onClick={() => setActiveReview(null)}>
-                    <div className="h-full w-full max-w-xl overflow-y-auto bg-white shadow-lg" onClick={(e) => e.stopPropagation()}>
-                        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-white px-6 py-4">
+                    <div className="h-full w-full max-w-xl overflow-y-auto bg-card shadow-lg" onClick={(e) => e.stopPropagation()}>
+                        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-card px-6 py-4">
                             <h2 className="text-lg font-bold text-foreground">{activeReview.employeeName} 님에 대한 동료평가</h2>
                             <button onClick={() => setActiveReview(null)} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
                         </div>
 
                         <div className="p-6 space-y-6">
                             {/* Anonymity notice */}
-                            <div className="flex items-start gap-2 rounded-lg border border-blue-100 bg-blue-50 p-3">
+                            <div className="flex items-start gap-2 rounded-lg border border-blue-100 bg-primary/5 p-3">
                                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
                                 <p className="text-xs text-blue-800">
                                     {t('evaluation_keb8a94_kec9db5eb_kecb298eb_keba7a4eb_ked8f89ea_ked9995ec_kec8898_kec9e88ec')}

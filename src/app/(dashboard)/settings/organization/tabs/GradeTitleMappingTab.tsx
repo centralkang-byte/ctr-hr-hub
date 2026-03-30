@@ -39,7 +39,7 @@ const GRADE_TYPE_LABELS: Record<string, string> = {
 }
 
 const GRADE_TYPE_COLORS: Record<string, string> = {
-  STAFF: 'bg-blue-100 text-blue-700',
+  STAFF: 'bg-primary/10 text-primary',
   SPECIALIST: 'bg-purple-100 text-purple-700',
   EXECUTIVE: 'bg-amber-100 text-amber-700',
 }
@@ -229,7 +229,7 @@ export function GradeTitleMappingTab({ companyId }: Props) {
             ) : mappings.map((m) => (
               <tr key={m.id} className={TABLE_STYLES.row}>
                 <td className={TABLE_STYLES.cell}>
-                  <span className={cn('inline-block rounded px-2 py-0.5 text-xs font-medium', GRADE_TYPE_COLORS[m.jobGrade.gradeType] ?? 'bg-gray-100 text-gray-600')}>
+                  <span className={cn('inline-block rounded px-2 py-0.5 text-xs font-medium', GRADE_TYPE_COLORS[m.jobGrade.gradeType] ?? 'bg-muted text-muted-foreground')}>
                     {GRADE_TYPE_LABELS[m.jobGrade.gradeType] ?? m.jobGrade.gradeType}
                   </span>
                 </td>

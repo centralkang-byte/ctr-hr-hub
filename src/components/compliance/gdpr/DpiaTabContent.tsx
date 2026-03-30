@@ -23,7 +23,7 @@ function RiskBadge({ level }: { level: string }) {
     low: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
     medium: 'bg-amber-100 text-amber-700 border border-amber-300',
     high: 'bg-orange-50 text-orange-700 border border-orange-200',
-    critical: 'bg-red-100 text-red-700 border border-red-200',
+    critical: 'bg-destructive/10 text-destructive border border-destructive/20',
   }
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[level] ?? map.medium}`}>
@@ -37,7 +37,7 @@ function StatusBadge({ status }: { status: string }) {
     draft: 'bg-background text-[#555] border border-border',
     in_review: 'bg-amber-100 text-amber-700 border border-amber-300',
     approved: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
-    rejected: 'bg-red-100 text-red-700 border border-red-200',
+    rejected: 'bg-destructive/10 text-destructive border border-destructive/20',
   }
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[status] ?? map.draft}`}>

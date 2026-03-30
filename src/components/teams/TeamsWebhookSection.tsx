@@ -145,7 +145,7 @@ export function TeamsWebhookSection() {
       )}
 
       {webhooks.map((wh) => (
-        <div key={wh.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div key={wh.id} className="bg-card rounded-xl shadow-sm border border-border p-6">
           <div className="flex items-start justify-between mb-3">
             <div>
               <p className="text-sm font-semibold text-foreground">{wh.channelName}</p>
@@ -178,7 +178,7 @@ export function TeamsWebhookSection() {
               </button>
               <button
                 onClick={() => handleDelete(wh.id)}
-                className="p-1.5 text-[#999] hover:text-red-500 hover:bg-red-100 rounded-lg transition-colors"
+                className="p-1.5 text-[#999] hover:text-red-500 hover:bg-destructive/10 rounded-lg transition-colors"
                 aria-label="Webhook 삭제"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -209,7 +209,7 @@ export function TeamsWebhookSection() {
 
       {/* Add new webhook form */}
       {adding && (
-        <div className="bg-white rounded-xl border border-primary/30 p-4 space-y-3">
+        <div className="bg-card rounded-xl border border-primary/30 p-4 space-y-3">
           <input
             type="text"
             placeholder={'채널명 (예: HR-알림)'}
@@ -234,7 +234,7 @@ export function TeamsWebhookSection() {
                   className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
                     newEvents.includes(ev.key)
                       ? 'bg-primary text-white border-primary'
-                      : 'bg-white text-[#666] border-border hover:border-primary'
+                      : 'bg-card text-[#666] border-border hover:border-primary'
                   }`}
                 >
                   {ev.label}
@@ -257,7 +257,7 @@ export function TeamsWebhookSection() {
                 setNewUrl('')
                 setNewEvents([])
               }}
-              className="bg-white border border-border hover:bg-muted text-[#333] px-4 py-2 rounded-lg text-sm transition-colors"
+              className="bg-card border border-border hover:bg-muted text-[#333] px-4 py-2 rounded-lg text-sm transition-colors"
             >
               취소
             </button>

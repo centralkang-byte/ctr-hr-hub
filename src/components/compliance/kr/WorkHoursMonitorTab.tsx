@@ -87,7 +87,7 @@ export default function WorkHoursMonitorTab() {
           value: summary.compliantCount.toLocaleString(),
           icon: Users,
           iconColor: 'text-blue-500',
-          bgColor: 'bg-blue-50',
+          bgColor: 'bg-primary/5',
           textColor: 'text-foreground',
         },
         {
@@ -103,7 +103,7 @@ export default function WorkHoursMonitorTab() {
           value: summary.violationCount.toLocaleString(),
           icon: AlertTriangle,
           iconColor: 'text-red-500',
-          bgColor: 'bg-red-50',
+          bgColor: 'bg-destructive/5',
           textColor: 'text-red-500',
         },
       ]
@@ -115,7 +115,7 @@ export default function WorkHoursMonitorTab() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {loading
           ? Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              <div key={i} className="bg-card rounded-xl shadow-sm border border-border p-6">
                 <div className="h-4 w-20 bg-muted rounded animate-pulse mb-3" />
                 <div className="h-8 w-16 bg-muted rounded animate-pulse" />
               </div>
@@ -125,7 +125,7 @@ export default function WorkHoursMonitorTab() {
               return (
                 <div
                   key={card.label}
-                  className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+                  className="bg-card rounded-xl shadow-sm border border-border p-6"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-xs text-[#999] font-medium">{card.label}</p>
@@ -140,7 +140,7 @@ export default function WorkHoursMonitorTab() {
       </div>
 
       {/* Week Selector */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-base font-bold text-foreground tracking-[-0.02em]">주간 근무시간 현황</h2>
           <div className="flex items-center gap-2">

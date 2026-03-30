@@ -51,9 +51,9 @@ function getStepState(entry: PipelineEntry, col: number): StepState {
 
 const STATE_CONFIG: Record<StepState, { bg: string; text: string; border: string }> = {
     done: { bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-200' },
-    active: { bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-200' },
-    pending: { bg: 'bg-gray-100', text: 'text-gray-400', border: 'border-gray-200' },
-    not_started: { bg: 'bg-gray-50', text: 'text-gray-300', border: 'border-gray-100' },
+    active: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
+    pending: { bg: 'bg-muted', text: 'text-muted-foreground/60', border: 'border-border' },
+    not_started: { bg: 'bg-muted/50', text: 'text-muted-foreground/40', border: 'border-border' },
 }
 
 function StepStateIcon({ state }: { state: StepState }) {
@@ -123,7 +123,7 @@ export default function PayrollPipeline({ pipelines }: Props) {
                         <div key={entry.companyId} className="grid grid-cols-7 gap-2 items-center">
                             {/* Company label */}
                             <div>
-                                <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${entry.alertLevel === 'red' ? 'bg-red-100 text-red-700' :
+                                <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${entry.alertLevel === 'red' ? 'bg-destructive/10 text-destructive' :
                                     entry.alertLevel === 'amber' ? 'bg-amber-100 text-amber-700' :
                                         'text-[#333]'
                                     }`}>

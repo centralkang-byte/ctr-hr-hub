@@ -180,7 +180,7 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
                 {['변경유형', '사유'].map((col) => (
                   <span
                     key={col}
-                    className="rounded-full bg-gray-100 text-[#666] text-xs px-2.5 py-0.5"
+                    className="rounded-full bg-muted text-[#666] text-xs px-2.5 py-0.5"
                   >
                     {col} (선택)
                   </span>
@@ -249,7 +249,7 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
               <p className="text-sm text-[#555]">
                 총 <strong>{preview.length}건</strong> 확인됨
                 {errors.length > 0 && (
-                  <span className="ml-2 text-red-700">오류 {errors.length}건</span>
+                  <span className="ml-2 text-destructive">오류 {errors.length}건</span>
                 )}
               </p>
             </div>
@@ -273,7 +273,7 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
                       key={row.rowNum}
                       className={
                         errorRows.has(row.rowNum ?? 0)
-                          ? 'bg-red-100'
+                          ? 'bg-destructive/10'
                           : 'hover:bg-background'
                       }
                     >
@@ -288,7 +288,7 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
                       </td>
                       <td className="px-3 py-2">
                         {errorRows.has(row.rowNum ?? 0) ? (
-                          <span className="text-red-700 flex items-center gap-1">
+                          <span className="text-destructive flex items-center gap-1">
                             <AlertTriangle className="h-3 w-3" />
                             오류
                           </span>
@@ -304,14 +304,14 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
 
             {/* Error list */}
             {errors.length > 0 && (
-              <div className="rounded-lg border border-red-200 bg-red-100 p-3 space-y-1">
+              <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-3 space-y-1">
                 {errors.slice(0, 5).map((e) => (
-                  <p key={e.row} className="text-xs text-red-700">
+                  <p key={e.row} className="text-xs text-destructive">
                     행 {e.row}: {e.message}
                   </p>
                 ))}
                 {errors.length > 5 && (
-                  <p className="text-xs text-red-700">외 {errors.length - 5}건 오류</p>
+                  <p className="text-xs text-destructive">외 {errors.length - 5}건 오류</p>
                 )}
               </div>
             )}

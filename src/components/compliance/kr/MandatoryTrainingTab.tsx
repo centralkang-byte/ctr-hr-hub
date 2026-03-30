@@ -130,7 +130,7 @@ export default function MandatoryTrainingTab() {
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(Number(e.target.value))}
-              className="appearance-none pl-3 pr-8 py-2 text-sm font-medium border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10 bg-white"
+              className="appearance-none pl-3 pr-8 py-2 text-sm font-medium border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10 bg-card"
             >
               {YEAR_OPTIONS.map((y) => (
                 <option key={y} value={y}>
@@ -166,7 +166,7 @@ export default function MandatoryTrainingTab() {
           ))}
         </div>
       ) : trainings.length === 0 ? (
-        <div className="bg-white rounded-xl border border-border p-12 text-center">
+        <div className="bg-card rounded-xl border border-border p-12 text-center">
           <BookOpen className="w-10 h-10 text-border mx-auto mb-3" />
           <p className="text-sm text-[#666]">{selectedYear}년 교육 데이터가 없습니다.</p>
           <button
@@ -187,7 +187,7 @@ export default function MandatoryTrainingTab() {
                 : training.completionRate >= 50
                 ? 'bg-primary'
                 : overdue
-                ? 'bg-red-500'
+                ? 'bg-destructive/50'
                 : 'bg-amber-500'
 
             return (
@@ -202,7 +202,7 @@ export default function MandatoryTrainingTab() {
                       {training.trainingType}
                     </span>
                     {overdue && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-destructive/10 text-destructive border border-destructive/20">
                         <AlertCircle className="w-3 h-3" />
                         기한 초과
                       </span>
@@ -238,7 +238,7 @@ export default function MandatoryTrainingTab() {
                         training.completionRate >= 80
                           ? 'text-emerald-700'
                           : overdue
-                          ? 'text-red-700'
+                          ? 'text-destructive'
                           : 'text-[#333]'
                       }`}
                     >

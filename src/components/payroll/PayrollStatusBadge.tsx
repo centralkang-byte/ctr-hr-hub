@@ -5,13 +5,13 @@ const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; b
   DRAFT: { label: '초안', bg: 'bg-background', text: 'text-[#555]', border: 'border-border' },
   ATTENDANCE_CLOSED: { label: '근태 마감', bg: 'bg-primary/10', text: 'text-emerald-700', border: 'border-emerald-200' },
   CALCULATING: { label: '계산 중', bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-300' },
-  ADJUSTMENT: { label: '수동 조정', bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-200' },
+  ADJUSTMENT: { label: '수동 조정', bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
   REVIEW: { label: '이상 검토', bg: 'bg-violet-100', text: 'text-violet-600', border: 'border-violet-200' },
   PENDING_APPROVAL: { label: '결재 대기', bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-300' },
   APPROVED: { label: '승인 완료', bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-200' },
   PAID: { label: '지급 완료', bg: 'bg-indigo-100', text: 'text-primary/90', border: 'border-indigo-200' },
   PUBLISHED: { label: '확정', bg: 'bg-indigo-100', text: 'text-primary/90', border: 'border-indigo-200' },
-  CANCELLED: { label: '취소', bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-200' },
+  CANCELLED: { label: '취소', bg: 'bg-destructive/10', text: 'text-destructive', border: 'border-destructive/20' },
 }
 
 interface PayrollStatusBadgeProps {

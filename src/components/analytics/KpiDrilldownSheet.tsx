@@ -118,7 +118,7 @@ export function KpiDrilldownSheet({ open, onOpenChange, kpiType, filterParams }:
                 {data.unit && <span className="text-sm text-muted-foreground">{data.unit}</span>}
               </div>
               {data.change !== undefined && (
-                <p className={cn('text-sm mt-1', data.change > 0 ? 'text-red-600' : 'text-emerald-600')}>
+                <p className={cn('text-sm mt-1', data.change > 0 ? 'text-destructive' : 'text-emerald-600')}>
                   {data.change > 0 ? '+' : ''}{data.change}{data.unit === '%' ? 'p' : data.unit || ''} 전월 대비
                 </p>
               )}

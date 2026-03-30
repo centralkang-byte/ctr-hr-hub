@@ -66,7 +66,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   NORMAL: { label: '정상', color: 'bg-emerald-100 text-emerald-700' },
   LATE: { label: '지각', color: 'bg-amber-100 text-amber-700' },
   EARLY_OUT: { label: '조퇴', color: 'bg-orange-50 text-orange-700' },
-  ABSENT: { label: '결근', color: 'bg-red-100 text-red-700' },
+  ABSENT: { label: '결근', color: 'bg-destructive/10 text-destructive' },
   HOLIDAY: { label: '휴가', color: 'bg-indigo-100 text-primary/90' },
 }
 
@@ -74,9 +74,9 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
 
 function MiniKpi({ label, value, sub, warn }: { label: string; value: string; sub?: string; warn?: boolean }) {
   return (
-    <div className={`rounded-lg border p-4 ${warn ? 'border-red-200 bg-red-50' : 'border-border bg-white'}`}>
+    <div className={`rounded-lg border p-4 ${warn ? 'border-destructive/20 bg-destructive/5' : 'border-border bg-card'}`}>
       <p className="text-xs text-[#888] mb-1">{label}</p>
-      <p className={`text-2xl font-bold ${warn ? 'text-red-700' : 'text-foreground'}`}>{value}</p>
+      <p className={`text-2xl font-bold ${warn ? 'text-destructive' : 'text-foreground'}`}>{value}</p>
       {sub && <p className="text-xs text-[#999] mt-0.5">{sub}</p>}
     </div>
   )
@@ -142,7 +142,7 @@ export function AttendanceTab({ employeeId }: Props) {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-border bg-white p-6">
+      <div className="rounded-xl border border-border bg-card p-6">
         <div className="flex items-center justify-center py-12">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         </div>
@@ -152,7 +152,7 @@ export function AttendanceTab({ employeeId }: Props) {
 
   if (!data) {
     return (
-      <div className="rounded-xl border border-border bg-white p-6">
+      <div className="rounded-xl border border-border bg-card p-6">
         <div className="flex flex-col items-center py-12 text-[#999]">
           <Clock className="h-10 w-10 mb-3 text-border" />
           <p className="text-sm text-[#666]">근태 데이터를 불러올 수 없습니다.</p>
@@ -236,7 +236,7 @@ export function AttendanceTab({ employeeId }: Props) {
       />
 
       {/* 최근 근태 기록 테이블 */}
-      <div className="rounded-xl border border-border bg-white overflow-hidden">
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
         <div className="px-5 py-3 border-b border-border">
           <h3 className="text-sm font-semibold text-foreground">최근 근태 기록</h3>
         </div>

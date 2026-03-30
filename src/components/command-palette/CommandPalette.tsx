@@ -224,7 +224,7 @@ export function CommandPalette() {
 
       {/* Modal */}
       <div
-        className="relative mx-4 w-full max-w-[560px] overflow-hidden rounded-xl border border-border bg-white shadow-lg"
+        className="relative mx-4 w-full max-w-[560px] overflow-hidden rounded-xl border border-border bg-card shadow-lg"
         onMouseDown={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
       >
@@ -354,15 +354,15 @@ export function CommandPalette() {
         <div className="flex items-center justify-between border-t border-border bg-background px-4 py-2">
           <div className="flex items-center gap-3 text-[11px] text-muted-foreground/70">
             <span className="flex items-center gap-1">
-              <kbd className="rounded border border-border bg-white px-1 py-0.5 font-mono">↑↓</kbd>
+              <kbd className="rounded border border-border bg-card px-1 py-0.5 font-mono">↑↓</kbd>
               탐색
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="rounded border border-border bg-white px-1 py-0.5 font-mono">↵</kbd>
+              <kbd className="rounded border border-border bg-card px-1 py-0.5 font-mono">↵</kbd>
               이동
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="rounded border border-border bg-white px-1 py-0.5 font-mono">ESC</kbd>
+              <kbd className="rounded border border-border bg-card px-1 py-0.5 font-mono">ESC</kbd>
               닫기
             </span>
           </div>

@@ -2,7 +2,7 @@
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — DetailPanel (P01 Master-Detail Slide-over)
-// CRAFTUI: bg-white / border-l #F0F0F3 / text-foreground
+// CRAFTUI: bg-card / border-l #F0F0F3 / text-foreground
 // ═══════════════════════════════════════════════════════════
 
 import { useEffect } from 'react'
@@ -49,7 +49,7 @@ export function DetailPanel({
       {/* Panel */}
       <div
         className={`fixed inset-y-0 right-0 z-50 flex flex-col ${width}
-          bg-white border-l border-border shadow-lg
+          bg-card border-l border-border shadow-lg
           transition-transform duration-250 ease-in-out
           ${open ? 'translate-x-0' : 'translate-x-full'}`}
         role="dialog"

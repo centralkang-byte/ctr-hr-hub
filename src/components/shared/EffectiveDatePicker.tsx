@@ -112,8 +112,8 @@ export function EffectiveDatePicker({
 
       {/* 미래 시점 불허 경고 */}
       {!allowFuture && isFuture && (
-        <div className="mt-2 flex items-center gap-1.5 rounded-md bg-red-100 px-3 py-1.5">
-          <span className="text-xs text-red-700 font-medium">
+        <div className="mt-2 flex items-center gap-1.5 rounded-md bg-destructive/10 px-3 py-1.5">
+          <span className="text-xs text-destructive font-medium">
             ❌ 미래 날짜는 선택할 수 없습니다.
           </span>
         </div>

@@ -81,7 +81,7 @@ export default function RuReportsTab() {
   return (
     <div className="space-y-6">
       {/* Year/Quarter Selector */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <h3 className="text-base font-semibold text-foreground mb-4">보고서 기간 설정</h3>
         <div className="flex flex-wrap gap-4 items-end">
           <div>
@@ -116,13 +116,13 @@ export default function RuReportsTab() {
 
       {/* Error */}
       {error && (
-        <div className="p-4 bg-red-100 border border-red-200 rounded-xl text-sm text-red-700">
+        <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-xl text-sm text-destructive">
           {error}
         </div>
       )}
 
       {/* P-4 Report */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
@@ -148,7 +148,7 @@ export default function RuReportsTab() {
                 onClick={() =>
                   downloadReport(p4Data, `P4_${year}_Q${quarter}.json`)
                 }
-                className="flex items-center gap-2 bg-white border border-border hover:bg-background text-[#333] px-3 py-2 rounded-lg font-medium text-sm"
+                className="flex items-center gap-2 bg-card border border-border hover:bg-background text-[#333] px-3 py-2 rounded-lg font-medium text-sm"
               >
                 <Download className="w-4 h-4" />
                 다운로드
@@ -212,7 +212,7 @@ export default function RuReportsTab() {
       </div>
 
       {/* 57-T Report */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-indigo-100 rounded-lg">
@@ -238,7 +238,7 @@ export default function RuReportsTab() {
                 onClick={() =>
                   downloadReport(report57tData, `57T_${year}.json`)
                 }
-                className="flex items-center gap-2 bg-white border border-border hover:bg-background text-[#333] px-3 py-2 rounded-lg font-medium text-sm"
+                className="flex items-center gap-2 bg-card border border-border hover:bg-background text-[#333] px-3 py-2 rounded-lg font-medium text-sm"
               >
                 <Download className="w-4 h-4" />
                 다운로드

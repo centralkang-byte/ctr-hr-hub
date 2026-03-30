@@ -101,7 +101,7 @@ export function TeamsConnectionStatus({
             className={`rounded-lg border p-3 text-sm ${
               testResult.success
                 ? 'border-emerald-200 bg-emerald-100 text-emerald-700'
-                : 'border-red-200 bg-red-100 text-red-700'
+                : 'border-destructive/20 bg-destructive/10 text-destructive'
             }`}
           >
             {testResult.success
@@ -121,7 +121,7 @@ export function TeamsConnectionStatus({
           </Button>
 
           {connected && (
-            <Button variant="outline" onClick={onDisconnect} className="text-red-600 hover:bg-red-100">
+            <Button variant="outline" onClick={onDisconnect} className="text-destructive hover:bg-destructive/10">
               <Unplug className="mr-2 h-4 w-4" />
               연결 해제
             </Button>

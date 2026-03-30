@@ -113,8 +113,8 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
       label: '이직 위험',
       value: summary?.attritionRisk ?? 0,
       icon: AlertTriangle,
-      color: 'text-red-600',
-      bgColor: 'bg-red-100',
+      color: 'text-destructive',
+      bgColor: 'bg-destructive/10',
       suffix: '명',
     },
     {
@@ -146,13 +146,13 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium text-ctr-gray-500">
+                  <p className="text-xs font-medium text-muted-foreground">
                     {kpi.label}
                   </p>
-                  <p className="text-2xl font-bold text-ctr-gray-900">
+                  <p className="text-2xl font-bold text-foreground">
                     {kpi.value}
                     {kpi.suffix && (
-                      <span className="ml-0.5 text-sm font-normal text-ctr-gray-500">
+                      <span className="ml-0.5 text-sm font-normal text-muted-foreground">
                         {kpi.suffix}
                       </span>
                     )}
@@ -174,7 +174,7 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
         {/* Team Health Radar */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-ctr-gray-700">
+            <CardTitle className="text-sm font-medium text-foreground">
               팀 건강 지표
             </CardTitle>
           </CardHeader>
@@ -207,14 +207,14 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
         {/* Alerts */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-ctr-gray-700">
+            <CardTitle className="text-sm font-medium text-foreground">
               <AlertTriangle className="mr-2 inline-block h-4 w-4" />
               팀 알림
             </CardTitle>
           </CardHeader>
           <CardContent>
             {alerts.length === 0 ? (
-              <p className="py-4 text-center text-sm text-ctr-gray-500">
+              <p className="py-4 text-center text-sm text-muted-foreground">
                 현재 알림이 없습니다.
               </p>
             ) : (
@@ -224,7 +224,7 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
                     key={alert.id}
                     className={`rounded-lg border p-3 ${
                       alert.severity === 'HIGH'
-                        ? 'border-red-200 bg-red-100'
+                        ? 'border-destructive/20 bg-destructive/10'
                         : alert.severity === 'MEDIUM'
                           ? 'border-amber-300 bg-amber-100'
                           : 'border-border bg-background'
@@ -234,7 +234,7 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
                       <p
                         className={`text-sm font-medium ${
                           alert.severity === 'HIGH'
-                            ? 'text-red-800'
+                            ? 'text-destructive'
                             : alert.severity === 'MEDIUM'
                               ? 'text-amber-800'
                               : 'text-[#333]'
@@ -260,7 +260,7 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
                     <p
                       className={`mt-1 text-xs ${
                         alert.severity === 'HIGH'
-                          ? 'text-red-700'
+                          ? 'text-destructive'
                           : alert.severity === 'MEDIUM'
                             ? 'text-amber-700'
                             : 'text-[#666]'
@@ -281,10 +281,10 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
         {/* Grade Distribution */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-ctr-gray-700">
+            <CardTitle className="text-sm font-medium text-foreground">
               성과 등급 분포
               {performance?.cycleName && (
-                <span className="ml-2 text-xs font-normal text-ctr-gray-500">
+                <span className="ml-2 text-xs font-normal text-muted-foreground">
                   {performance.cycleName}
                 </span>
               )}
@@ -308,13 +308,13 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <p className="py-8 text-center text-sm text-ctr-gray-500">
+              <p className="py-8 text-center text-sm text-muted-foreground">
                 평가 데이터가 없습니다.
               </p>
             )}
             {performance?.mboAchievement && (
               <div className="mt-3 flex items-center justify-between border-t pt-3">
-                <span className="text-sm text-ctr-gray-500">
+                <span className="text-sm text-muted-foreground">
                   MBO 평균 달성률
                 </span>
                 <span className="text-lg font-bold text-ctr-primary">
@@ -328,7 +328,7 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
         {/* AI Recommendation */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-ctr-gray-700">
+            <CardTitle className="text-sm font-medium text-foreground">
               AI 추천
             </CardTitle>
             <AiGeneratedBadge />
@@ -358,11 +358,11 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
                 </div>
               )}
               {(summary?.attritionRisk ?? 0) > 0 && (
-                <div className="rounded-lg border border-red-200 bg-red-100 p-3">
-                  <p className="text-sm font-medium text-red-800">
+                <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-3">
+                  <p className="text-sm font-medium text-destructive">
                     이직 위험 팀원 관리
                   </p>
-                  <p className="mt-1 text-xs text-red-700">
+                  <p className="mt-1 text-xs text-destructive">
                     {summary?.attritionRisk}명의 팀원이 이직 위험으로
                     분류되었습니다. 개별 면담을 권장합니다.
                   </p>
@@ -371,11 +371,11 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
               {(summary?.incompleteOneOnOnes ?? 0) === 0 &&
                 (summary?.avgOvertimeHours ?? 0) <= 5 &&
                 (summary?.attritionRisk ?? 0) === 0 && (
-                  <div className="rounded-lg border border-green-200 bg-green-50 p-3">
-                    <p className="text-sm font-medium text-green-800">
+                  <div className="rounded-lg border border-tertiary/20 bg-tertiary-container/10 p-3">
+                    <p className="text-sm font-medium text-tertiary">
                       우수한 팀 관리
                     </p>
-                    <p className="mt-1 text-xs text-green-700">
+                    <p className="mt-1 text-xs text-tertiary">
                       팀 건강 지표가 양호합니다. 현재의 관리 수준을 유지하세요.
                     </p>
                   </div>

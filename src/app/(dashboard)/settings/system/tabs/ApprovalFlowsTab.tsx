@@ -178,7 +178,7 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                 return (
                   <div
                     key={flow.id}
-                    className="rounded-xl border border-border bg-white transition-shadow hover:shadow-sm"
+                    className="rounded-xl border border-border bg-card transition-shadow hover:shadow-sm"
                   >
                     {/* 카드 헤더 */}
                     <button
@@ -200,7 +200,7 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                           <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
                             !flow.deletedAt
                               ? 'bg-emerald-50 text-emerald-600'
-                              : 'bg-gray-100 text-gray-400'
+                              : 'bg-muted text-muted-foreground/60'
                           }`}>
                             {!flow.deletedAt ? '활성' : '비활성'}
                           </span>
@@ -263,7 +263,7 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                               </button>
                               <button
                                 onClick={() => handleDelete(flow.id)}
-                                className="rounded-lg border border-border px-4 py-2 text-xs font-medium text-red-600 hover:bg-red-100"
+                                className="rounded-lg border border-border px-4 py-2 text-xs font-medium text-destructive hover:bg-destructive/10"
                               >
                                 삭제
                               </button>
@@ -329,7 +329,7 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                         }}
                         className="flex w-full items-center gap-3 px-4 py-3"
                       >
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
                           <Plus className="h-4 w-4 text-[#999]" />
                         </div>
                         <div className="text-left">

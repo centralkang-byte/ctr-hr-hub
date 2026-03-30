@@ -46,10 +46,10 @@ interface Employee {
 // ─── Constants ───────────────────────────────────────────
 
 const VALUE_CONFIG: Record<string, { label: string; emoji: string; bgDefault: string; borderDefault: string; textDefault: string; bgActive: string; textActive: string }> = {
-  CHALLENGE: { label: '도전', emoji: '🔴', bgDefault: 'bg-red-50', borderDefault: 'border-red-200', textDefault: 'text-red-500', bgActive: 'bg-red-500', textActive: 'text-white' },
+  CHALLENGE: { label: '도전', emoji: '🔴', bgDefault: 'bg-destructive/5', borderDefault: 'border-destructive/20', textDefault: 'text-red-500', bgActive: 'bg-destructive/50', textActive: 'text-white' },
   TRUST: { label: '신뢰', emoji: '🟢', bgDefault: 'bg-primary/10', borderDefault: 'border-green-300', textDefault: 'text-primary', bgActive: 'bg-primary', textActive: 'text-white' },
   RESPONSIBILITY: { label: '책임', emoji: '🟠', bgDefault: 'bg-amber-50', borderDefault: 'border-amber-200', textDefault: 'text-amber-500', bgActive: 'bg-amber-500', textActive: 'text-white' },
-  RESPECT: { label: '존중', emoji: '🔵', bgDefault: 'bg-blue-50', borderDefault: 'border-blue-200', textDefault: 'text-blue-500', bgActive: 'bg-blue-500', textActive: 'text-white' },
+  RESPECT: { label: '존중', emoji: '🔵', bgDefault: 'bg-primary/5', borderDefault: 'border-primary/20', textDefault: 'text-blue-500', bgActive: 'bg-primary/50', textActive: 'text-white' },
 }
 
 const VALUE_LABELS: Record<string, string> = { CHALLENGE: 'Challenge', TRUST: 'Trust', RESPONSIBILITY: 'Responsibility', RESPECT: 'Respect' }
@@ -226,7 +226,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
               {feed.map((item) => {
                 const config = VALUE_CONFIG[item.coreValue]
                 return (
-                  <div key={item.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                  <div key={item.id} className="bg-card rounded-xl shadow-sm border border-border p-6">
                     <div className="flex items-center gap-2 mb-3">
                       <EmployeeCell size="sm" employee={item.sender as any} />
                       <span className="text-[#999]">→</span>
@@ -279,7 +279,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Value Distribution */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div className="bg-card rounded-xl shadow-sm border border-border p-6">
               <h3 className="text-base font-semibold text-foreground mb-4">{t('kr_ked95b5ec_kebb684ed')}</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -305,7 +305,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
             </div>
 
             {/* Department Activity */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div className="bg-card rounded-xl shadow-sm border border-border p-6">
               <h3 className="text-base font-semibold text-foreground mb-4">{t('department_kebb384_ked999cec')}</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -324,7 +324,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
           </div>
 
           {/* Monthly Trend */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-6">
             <h3 className="text-base font-semibold text-foreground mb-4">{t('month_kebb384_kecb694ec')}</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -341,7 +341,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
 
           {/* Rankings */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div className="bg-card rounded-xl shadow-sm border border-border p-6">
               <h3 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-amber-500" /> Top Recognizers
               </h3>
@@ -358,7 +358,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div className="bg-card rounded-xl shadow-sm border border-border p-6">
               <h3 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Heart className="w-4 h-4 text-red-500" /> Top Recognized
               </h3>
@@ -381,7 +381,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
       {/* Create Modal */}
       {showCreateModal && (
         <div className={MODAL_STYLES.container}>
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-md">
+          <div className="bg-card rounded-xl shadow-lg w-full max-w-md">
             <div className="p-6 border-b border-border">
               <h3 className="text-lg font-semibold text-foreground">{t('kr_kecb9adec_kebb3b4eb')}</h3>
             </div>
@@ -407,7 +407,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                       className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
                     />
                     {searchResults.length > 0 && (
-                      <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
+                      <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
                         {searchResults.map((emp) => (
                           <button
                             key={emp.id}

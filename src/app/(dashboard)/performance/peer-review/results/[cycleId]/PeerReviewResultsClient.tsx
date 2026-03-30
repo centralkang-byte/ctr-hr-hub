@@ -121,7 +121,7 @@ export default function PeerReviewResultsClient({ user, cycleId }: { user: Sessi
 
       {/* KPI + Radar */}
       <div className="grid grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1">{t('kr_keca285ed_score')}</p>
           <p className="text-4xl font-bold text-primary">{results.summary.averageScore} <span className="text-lg text-[#666]">/ 5.0</span></p>
           <div className="mt-4 space-y-2">
@@ -140,7 +140,7 @@ export default function PeerReviewResultsClient({ user, cycleId }: { user: Sessi
         </div>
 
         {radarData.length > 0 && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-6">
             <h3 className="text-base font-semibold text-foreground mb-2">{t('kr_kec97adeb_keba088ec')}</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -186,7 +186,7 @@ export default function PeerReviewResultsClient({ user, cycleId }: { user: Sessi
       )}
 
       {/* Individual Comments */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <h3 className="text-base font-semibold text-foreground mb-3">{t('kr_keab09ceb_kecbd94eb')}</h3>
         <div className="space-y-3">
           {results.evaluations.filter((e) => e.comment).map((e, i) => (

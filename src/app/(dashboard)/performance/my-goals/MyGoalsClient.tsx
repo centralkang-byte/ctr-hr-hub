@@ -40,7 +40,7 @@ function GoalModal({ initial, onSave, onClose, saving }: {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={onClose}>
-            <div className="w-full max-w-lg rounded-xl bg-white p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="w-full max-w-lg rounded-xl bg-card p-6" onClick={(e) => e.stopPropagation()}>
                 <div className="mb-5 flex items-center justify-between">
                     <h3 className="text-lg font-bold text-foreground">{initial ? '목표 수정' : '목표 추가'}</h3>
                     <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
@@ -205,16 +205,16 @@ export default function MyGoalsClient({user }: {
                         <p className="mt-1 text-sm text-muted-foreground">{t('kr_mbo_kebaaa9ed_kec84a4ec_keab48')}</p>
                     </div>
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
-                        className="rounded-lg border border-border bg-white px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
+                        className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
                         {cycles.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                 </div>
 
                 {/* Weight summary bar */}
-                <div className="mb-6 flex items-center justify-between rounded-xl border border-border bg-white p-4">
+                <div className="mb-6 flex items-center justify-between rounded-xl border border-border bg-card p-4">
                     <div className="flex items-center gap-3">
                         <span className="text-sm text-muted-foreground">{t('kr_keab080ec_ked95a9ea')}</span>
-                        <span className={`text-lg font-bold ${totalWeight === 100 ? 'text-green-700' : 'text-red-800'}`}>
+                        <span className={`text-lg font-bold ${totalWeight === 100 ? 'text-tertiary' : 'text-destructive'}`}>
                             {totalWeight}/100%
                         </span>
                         {totalWeight !== 100 && (
@@ -235,7 +235,7 @@ export default function MyGoalsClient({user }: {
 
                 {/* Error */}
                 {error && (
-                    <div className="mb-4 rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-800">
+                    <div className="mb-4 rounded-lg border border-destructive/15 bg-destructive/5 p-3 text-sm text-destructive">
                         {error} <button onClick={fetchGoals} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
@@ -244,7 +244,7 @@ export default function MyGoalsClient({user }: {
                 {loading ? (
                     <div className="space-y-4">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="animate-pulse rounded-xl border border-border bg-white p-5">
+                            <div key={i} className="animate-pulse rounded-xl border border-border bg-card p-5">
                                 <div className="mb-3 h-4 w-2/3 rounded bg-border" />
                                 <div className="mb-2 h-3 w-1/2 rounded bg-border" />
                                 <div className="h-2 w-full rounded-full bg-border" />
@@ -252,7 +252,7 @@ export default function MyGoalsClient({user }: {
                         ))}
                     </div>
                 ) : goals.length === 0 ? (
-                    <div className="rounded-xl border border-border bg-white p-16 text-center">
+                    <div className="rounded-xl border border-border bg-card p-16 text-center">
                         <Target className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                         <p className="mb-2 text-muted-foreground">{t('kr_kec9584ec_keb93b1eb_kebaaa9ed_')}</p>
                         {!isViewOnly && (
@@ -276,7 +276,7 @@ export default function MyGoalsClient({user }: {
                             const badge = STATUS_BADGE[goal.status] ?? { label: goal.status, cls: STATUS_VARIANT.neutral }
 
                             return (
-                                <div key={goal.id} className="rounded-xl border border-border bg-white p-5 transition-colors hover:border-primary/30">
+                                <div key={goal.id} className="rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/30">
                                     <div className="mb-3 flex items-start justify-between gap-3">
                                         <div className="flex-1">
                                             <div className="mb-1 flex items-center gap-2">
@@ -322,7 +322,7 @@ export default function MyGoalsClient({user }: {
                                                 </button>
                                                 {goal.status === 'DRAFT' && (
                                                     <button onClick={() => handleDelete(goal.id)}
-                                                        className="inline-flex items-center gap-1 rounded-md border border-red-200 px-2.5 py-1 text-red-800 hover:bg-red-50 transition-colors">
+                                                        className="inline-flex items-center gap-1 rounded-md border border-destructive/20 px-2.5 py-1 text-destructive hover:bg-destructive/5 transition-colors">
                                                         <Trash2 className="h-3 w-3" /> {t('delete')}
                                                     </button>
                                                 )}
@@ -337,7 +337,7 @@ export default function MyGoalsClient({user }: {
 
                 {/* Submit bar */}
                 {goals.length > 0 && !isViewOnly && (
-                    <div className="mt-6 flex items-center justify-end rounded-xl border border-border bg-white p-4">
+                    <div className="mt-6 flex items-center justify-end rounded-xl border border-border bg-card p-4">
                         <button onClick={handleSubmitAll} disabled={!canSubmit || saving}
                             className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white disabled:opacity-40 hover:bg-primary/90 transition-colors">
                             {saving ? '제출 중...' : '전체 제출'}

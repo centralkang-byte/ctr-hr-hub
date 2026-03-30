@@ -29,9 +29,9 @@ export default function WorkHoursChart({
       count: compliantCount,
       pct: compliantPct,
       barColor: 'bg-primary',
-      textColor: 'text-green-700',
+      textColor: 'text-tertiary',
       bgColor: 'bg-primary/10',
-      borderColor: 'border-green-200',
+      borderColor: 'border-tertiary/20',
       dotColor: 'bg-primary',
     },
     {
@@ -48,11 +48,11 @@ export default function WorkHoursChart({
       label: '위반 (52시간 초과)',
       count: violationCount,
       pct: violationPct,
-      barColor: 'bg-red-500',
+      barColor: 'bg-destructive/50',
       textColor: 'text-red-500',
-      bgColor: 'bg-red-50',
-      borderColor: 'border-red-200',
-      dotColor: 'bg-red-500',
+      bgColor: 'bg-destructive/5',
+      borderColor: 'border-destructive/20',
+      dotColor: 'bg-destructive/50',
     },
   ]
 

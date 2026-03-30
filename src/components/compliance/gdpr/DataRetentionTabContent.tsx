@@ -132,7 +132,7 @@ export default function DataRetentionTabContent() {
                         </button>
                         <button
                           onClick={() => handleDelete(p.id)}
-                          className="text-[#666] hover:text-red-600"
+                          className="text-[#666] hover:text-destructive"
                           title={tc('delete')}
                         >
                           <Trash2 className="w-4 h-4" />

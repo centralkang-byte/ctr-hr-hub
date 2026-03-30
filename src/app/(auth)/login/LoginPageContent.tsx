@@ -31,23 +31,23 @@ const QA_ACCOUNT_GROUPS: QAGroup[] = [
   {
     group: '인사팀',
     accounts: [
-      { email: 'hr@ctr.co.kr', name: '한지영 (인사팀·KR)', roleBadge: 'HR', color: 'bg-blue-100 text-blue-700' },
-      { email: 'hr@ctr-cn.com', name: '陈美玲 (人事部·CN)', roleBadge: 'HR', color: 'bg-blue-100 text-blue-700' },
+      { email: 'hr@ctr.co.kr', name: '한지영 (인사팀·KR)', roleBadge: 'HR', color: 'bg-primary/10 text-primary' },
+      { email: 'hr@ctr-cn.com', name: '陈美玲 (人事部·CN)', roleBadge: 'HR', color: 'bg-primary/10 text-primary' },
     ],
   },
   {
     group: '생산기술팀 (KR)',
     accounts: [
-      { email: 'manager@ctr.co.kr', name: '박준혁 (생산기술팀장)', roleBadge: 'MGR', color: 'bg-green-100 text-green-700' },
-      { email: 'employee-a@ctr.co.kr', name: '이민준 (생산기술팀)', roleBadge: 'EMP', color: 'bg-gray-100 text-gray-700' },
-      { email: 'employee-b@ctr.co.kr', name: '정다은 (생산기술팀)', roleBadge: 'EMP', color: 'bg-gray-100 text-gray-700' },
+      { email: 'manager@ctr.co.kr', name: '박준혁 (생산기술팀장)', roleBadge: 'MGR', color: 'bg-tertiary-container/20 text-tertiary' },
+      { email: 'employee-a@ctr.co.kr', name: '이민준 (생산기술팀)', roleBadge: 'EMP', color: 'bg-muted text-foreground' },
+      { email: 'employee-b@ctr.co.kr', name: '정다은 (생산기술팀)', roleBadge: 'EMP', color: 'bg-muted text-foreground' },
     ],
   },
   {
     group: '품질관리팀 (KR)',
     accounts: [
-      { email: 'manager2@ctr.co.kr', name: '김서연 (품질관리팀장)', roleBadge: 'MGR', color: 'bg-green-100 text-green-700' },
-      { email: 'employee-c@ctr.co.kr', name: '송현우 (품질관리팀)', roleBadge: 'EMP', color: 'bg-gray-100 text-gray-700' },
+      { email: 'manager2@ctr.co.kr', name: '김서연 (품질관리팀장)', roleBadge: 'MGR', color: 'bg-tertiary-container/20 text-tertiary' },
+      { email: 'employee-c@ctr.co.kr', name: '송현우 (품질관리팀)', roleBadge: 'EMP', color: 'bg-muted text-foreground' },
     ],
   },
 ]
@@ -96,7 +96,7 @@ export default function LoginPageContent() {
       </div>
 
       {/* ─── Right: Login Form ─── */}
-      <div className="flex flex-1 flex-col items-center justify-center overflow-y-auto bg-white p-8">
+      <div className="flex flex-1 flex-col items-center justify-center overflow-y-auto bg-card p-8">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="mb-8 text-center lg:hidden">
@@ -113,7 +113,7 @@ export default function LoginPageContent() {
             <CardContent className="space-y-4">
               {/* ── Error Message ── */}
               {errorMessage && (
-                <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-100 px-3 py-2.5 text-sm text-red-700">
+                <div className="flex items-start gap-2 rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
                   <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                   <span>{errorMessage}</span>
                 </div>
@@ -123,7 +123,7 @@ export default function LoginPageContent() {
               <Button
                 onClick={handleM365Login}
                 disabled={loadingId !== null}
-                className="w-full bg-white text-[#333] border border-border hover:bg-muted shadow-sm"
+                className="w-full bg-card text-[#333] border border-border hover:bg-muted shadow-sm"
                 size="lg"
               >
                 {loadingId === 'm365' ? (
@@ -149,7 +149,7 @@ export default function LoginPageContent() {
                 <>
                   <div className="relative py-1">
                     <Separator />
-                    <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-xs text-muted-foreground whitespace-nowrap">
+                    <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-xs text-muted-foreground whitespace-nowrap">
                       QA Test Accounts (Dev Only)
                     </span>
                   </div>
@@ -168,7 +168,7 @@ export default function LoginPageContent() {
                                 key={account.email}
                                 onClick={() => handleDevLogin(account.email)}
                                 disabled={loadingId !== null}
-                                className="group rounded-xl border border-border bg-white p-2.5 text-left transition-colors hover:border-primary hover:bg-background disabled:cursor-not-allowed disabled:opacity-60"
+                                className="group rounded-xl border border-border bg-card p-2.5 text-left transition-colors hover:border-primary hover:bg-background disabled:cursor-not-allowed disabled:opacity-60"
                               >
                                 <div className="flex items-center gap-1.5">
                                   <span className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${account.color}`}>

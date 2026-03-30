@@ -287,7 +287,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
 
       {/* ═══ Empty state — only show when no data at all ═══ */}
       {!hasData && (
-        <Card className="bg-white">
+        <Card className="bg-card">
           <CardContent className="py-16 text-center">
             <Users className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
             <p className="text-sm font-medium text-foreground">데이터 없음</p>
@@ -299,7 +299,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
       {/* ═══ KPI Cards ═══ */}
       {hasData && <><div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {/* Usage Rate */}
-        <Card className="border-l-4 border-l-[#5E81F4] bg-white">
+        <Card className="border-l-4 border-l-[#5E81F4] bg-card">
           <CardContent className="pt-5 pb-4 px-5">
             <div className="flex items-center gap-2 mb-2">
               <TrendingUp className="h-4 w-4 text-primary" />
@@ -313,7 +313,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
         </Card>
 
         {/* Avg Remaining */}
-        <Card className="border-l-4 border-l-[#10B981] bg-white">
+        <Card className="border-l-4 border-l-[#10B981] bg-card">
           <CardContent className="pt-5 pb-4 px-5">
             <div className="flex items-center gap-2 mb-2">
               <CalendarDays className="h-4 w-4 text-emerald-500" />
@@ -327,7 +327,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
         </Card>
 
         {/* Negative Balance */}
-        <Card className={`border-l-4 bg-white ${kpi.negativeCount > 0 ? 'border-l-[#EF4444]' : 'border-l-[#E8E8E8]'}`}>
+        <Card className={`border-l-4 bg-card ${kpi.negativeCount > 0 ? 'border-l-[#EF4444]' : 'border-l-[#E8E8E8]'}`}>
           <CardContent className="pt-5 pb-4 px-5">
             <div className="flex items-center gap-2 mb-2">
               <AlertTriangle className={`h-4 w-4 ${kpi.negativeCount > 0 ? 'text-red-500' : 'text-muted-foreground'}`} />
@@ -345,7 +345,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
         </Card>
 
         {/* Pending */}
-        <Card className={`border-l-4 bg-white ${kpi.pendingCount > 0 ? 'border-l-[#F59E0B]' : 'border-l-[#E8E8E8]'}`}>
+        <Card className={`border-l-4 bg-card ${kpi.pendingCount > 0 ? 'border-l-[#F59E0B]' : 'border-l-[#E8E8E8]'}`}>
           <CardContent className="pt-5 pb-4 px-5">
             <div className="flex items-center gap-2 mb-2">
               <Clock className={`h-4 w-4 ${kpi.pendingCount > 0 ? 'text-amber-500' : 'text-muted-foreground'}`} />
@@ -364,7 +364,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
       {/* ═══ Charts Row 1: Department + Distribution ═══ */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Department Usage Bar Chart */}
-        <Card className="bg-white">
+        <Card className="bg-card">
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4 text-primary" />
@@ -396,7 +396,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
         </Card>
 
         {/* Remaining Days Distribution */}
-        <Card className="bg-white">
+        <Card className="bg-card">
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-violet-500" />
@@ -425,7 +425,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
       </div>
 
       {/* ═══ Charts Row 2: Burn-down Forecast ═══ */}
-      <Card className="bg-white">
+      <Card className="bg-card">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -437,8 +437,8 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
                 variant="outline"
                 className={`text-xs ${
                   yearEndProjection.unusedRate > 30
-                    ? 'border-red-500 text-red-500 bg-red-50'
-                    : 'border-emerald-500 text-emerald-500 bg-green-50'
+                    ? 'border-red-500 text-red-500 bg-destructive/5'
+                    : 'border-emerald-500 text-emerald-500 bg-tertiary-container/10'
                 }`}
               >
                 연말 미소진 예상: {yearEndProjection.unusedRate.toFixed(1)}%
@@ -490,7 +490,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
 
       {/* ═══ Negative Balance Table ═══ */}
       {negativeEmps.length > 0 && (
-        <Card className="bg-white border-red-200">
+        <Card className="bg-card border-destructive/20">
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-red-500" />
@@ -529,7 +529,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
                             variant="outline"
                             className={`text-[10px] ${
                               atLimit
-                                ? 'border-red-500 text-red-500 bg-red-50'
+                                ? 'border-red-500 text-red-500 bg-destructive/5'
                                 : 'border-amber-500 text-amber-500 bg-amber-50'
                             }`}
                           >

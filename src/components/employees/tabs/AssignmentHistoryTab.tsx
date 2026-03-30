@@ -115,7 +115,7 @@ function AssignmentSidePanel({
   ]
 
   return (
-    <div className="w-72 flex-shrink-0 rounded-xl border border-border bg-white overflow-hidden">
+    <div className="w-72 flex-shrink-0 rounded-xl border border-border bg-card overflow-hidden">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <h3 className="text-sm font-bold text-foreground">발령 상세</h3>
         <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={onClose}>
@@ -164,7 +164,7 @@ function ConcurrentStatusSection({
   )
 
   return (
-    <div className="rounded-xl border border-border bg-white p-4 space-y-3">
+    <div className="rounded-xl border border-border bg-card p-4 space-y-3">
       <h3 className="text-sm font-bold text-foreground">현재 겸직 현황</h3>
 
       {activeConcurrents.length === 0 ? (
@@ -313,7 +313,7 @@ export function AssignmentHistoryTab({
 
       {/* 타임라인 + 사이드패널 */}
       <div className="flex gap-4">
-        <div className="flex-1 min-w-0 rounded-xl border border-border bg-white p-6">
+        <div className="flex-1 min-w-0 rounded-xl border border-border bg-card p-6">
           <AssignmentTimeline
             events={events}
             onEventClick={setSelectedEvent}

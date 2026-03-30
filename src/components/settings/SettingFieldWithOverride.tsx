@@ -29,7 +29,7 @@ export function SettingFieldWithOverride({
   companySelected = false,
 }: SettingFieldWithOverrideProps) {
   return (
-    <div className="rounded-lg border border-border bg-white p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       {/* Label row */}
       <div className="mb-3 flex items-start justify-between gap-4">
         <div>
@@ -70,7 +70,7 @@ export function SettingFieldWithOverride({
               </div>
             )}
             {status === 'locked' && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-400">
+              <span className="inline-flex items-center gap-1 rounded-full bg-muted/50 px-2.5 py-1 text-xs font-medium text-muted-foreground/60">
                 <Lock className="h-3 w-3" />
                 글로벌 고정
               </span>

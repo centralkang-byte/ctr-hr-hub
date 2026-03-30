@@ -91,7 +91,7 @@ export function BenefitBudgetTab({ user }: { user: SessionUser }) {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 p-3 bg-red-100 rounded-lg text-sm text-red-700">
+        <div className="flex items-center gap-2 p-3 bg-destructive/10 rounded-lg text-sm text-destructive">
           <AlertTriangle className="w-4 h-4" />
           {error}
         </div>
@@ -102,7 +102,7 @@ export function BenefitBudgetTab({ user }: { user: SessionUser }) {
           <Loader2 className="w-6 h-6 animate-spin text-primary" />
         </div>
       ) : budgets.length === 0 ? (
-        <div className="bg-white rounded-xl border border-border p-8 text-center text-[#999] text-sm">
+        <div className="bg-card rounded-xl border border-border p-8 text-center text-[#999] text-sm">
           예산 데이터가 없습니다.
         </div>
       ) : (
@@ -117,7 +117,7 @@ export function BenefitBudgetTab({ user }: { user: SessionUser }) {
             const isKRW = budget.totalBudget > 100000
 
             return (
-              <div key={budget.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              <div key={budget.id} className="bg-card rounded-xl shadow-sm border border-border p-6">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <span className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />

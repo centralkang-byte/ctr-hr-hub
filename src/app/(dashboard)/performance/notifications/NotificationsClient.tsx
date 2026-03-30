@@ -160,7 +160,7 @@ export default function NotificationsClient({user }: {
                             </button>
                         )}
                         <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
-                            className="rounded-lg border border-border bg-white px-3 py-2 text-sm">
+                            className="rounded-lg border border-border bg-card px-3 py-2 text-sm">
                             {!cycles?.length && <EmptyState />}
               {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
@@ -171,14 +171,14 @@ export default function NotificationsClient({user }: {
                 <div className="mb-4 flex gap-2">
                     {([['all', '전체'], ['pending', '미통보'], ['waiting', '대기 중'], ['done', '확인 완료']] as const).map(([key, label]) => (
                         <button key={key} onClick={() => setFilter(key)}
-                            className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${filter === key ? 'bg-primary text-white' : 'bg-white border border-border text-muted-foreground hover:bg-muted'}`}>
+                            className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${filter === key ? 'bg-primary text-white' : 'bg-card border border-border text-muted-foreground hover:bg-muted'}`}>
                             {label}
                         </button>
                     ))}
                 </div>
 
                 {error && (
-                    <div className="mb-4 rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-800">
+                    <div className="mb-4 rounded-lg border border-destructive/15 bg-destructive/5 p-3 text-sm text-destructive">
                         {error} <button onClick={fetchItems} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}

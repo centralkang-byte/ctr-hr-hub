@@ -25,7 +25,7 @@ interface AttritionTrendChartProps {
 
 export default function AttritionTrendChart({ data }: AttritionTrendChartProps) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-card rounded-xl shadow-sm border border-border p-6">
       <h3 className="text-lg font-semibold text-foreground mb-4">이탈 위험 추이</h3>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data}>
@@ -36,7 +36,7 @@ export default function AttritionTrendChart({ data }: AttritionTrendChartProps) 
             content={({ active, payload, label }) => {
               if (!active || !payload?.length) return null
               return (
-                <div className="rounded-md border bg-white p-3 shadow-lg">
+                <div className="rounded-md border bg-card p-3 shadow-lg">
                   <p className="font-medium text-sm mb-1">{label}</p>
                   {payload.map((p) => (
                     <p key={p.name} className="text-xs" style={{ color: p.color }}>

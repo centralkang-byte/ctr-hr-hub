@@ -300,7 +300,7 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                       <span className="font-semibold text-foreground text-sm">{course.title}</span>
-                      <Badge className="text-[10px] px-1.5 py-0 bg-red-100 text-red-700 border-red-200">필수</Badge>
+                      <Badge className="text-[10px] px-1.5 py-0 bg-destructive/10 text-destructive border-destructive/20">필수</Badge>
                     </div>
                     <div className="flex items-center gap-3 text-xs text-[#666] flex-wrap">
                       <span>{CATEGORY_LABELS[course.category] ?? course.category}</span>
@@ -369,7 +369,7 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
           <span className="text-sm font-normal text-[#999]">(최근 20건)</span>
         </h2>
         {history.length === 0 ? (
-          <div className="bg-white rounded-xl border border-border p-8 text-center text-sm text-[#999]">
+          <div className="bg-card rounded-xl border border-border p-8 text-center text-sm text-[#999]">
             이수 이력이 없습니다.
           </div>
         ) : (
@@ -391,7 +391,7 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-foreground">{item.course.title}</span>
                         {item.course.isMandatory && (
-                          <Badge className="text-[10px] px-1.5 py-0 bg-red-100 text-red-700 border-red-200">필수</Badge>
+                          <Badge className="text-[10px] px-1.5 py-0 bg-destructive/10 text-destructive border-destructive/20">필수</Badge>
                         )}
                       </div>
                     </td>
@@ -413,7 +413,7 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
 
       {/* ─── 빈 상태 ─── */}
       {requiredPending.length === 0 && jobRequired.length === 0 && recommended.length === 0 && history.length === 0 && (
-        <div className="bg-white rounded-xl border border-border p-12 text-center">
+        <div className="bg-card rounded-xl border border-border p-12 text-center">
           <Clock className="h-10 w-10 text-border mx-auto mb-3" />
           <EmptyState />
         </div>

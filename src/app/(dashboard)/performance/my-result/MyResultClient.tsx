@@ -50,11 +50,11 @@ interface PeerResult {
 
 const GRADE_STYLE: Record<string, { bg: string; text: string; label: string }> = {
     EXCEEDS_PLUS: { bg: 'bg-primary/10', text: 'text-primary/90', label: '탁월 (E+)' },
-    EXCEEDS: { bg: 'bg-blue-100', text: 'text-blue-700', label: '우수 (E)' },
+    EXCEEDS: { bg: 'bg-primary/10', text: 'text-primary', label: '우수 (E)' },
     MEETS_PLUS: { bg: 'bg-emerald-100', text: 'text-emerald-700', label: '기대 이상 (M+)' },
-    MEETS: { bg: 'bg-primary/10', text: 'text-green-700', label: '기대 충족 (M)' },
+    MEETS: { bg: 'bg-primary/10', text: 'text-tertiary', label: '기대 충족 (M)' },
     BELOW: { bg: 'bg-amber-100', text: 'text-amber-800', label: '개선 필요 (B)' },
-    BELOW_MINUS: { bg: 'bg-red-50', text: 'text-red-800', label: '미흡 (B-)' },
+    BELOW_MINUS: { bg: 'bg-destructive/5', text: 'text-destructive', label: '미흡 (B-)' },
 }
 
 // ─── Component ────────────────────────────────────────────
@@ -168,13 +168,13 @@ export default function MyResultClient({user }: {
                         <p className="mt-1 text-sm text-muted-foreground">{t('kr_kec84b1ea_evaluation_keab2b0ea')}</p>
                     </div>
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
-                        className="rounded-lg border border-border bg-white px-3 py-2 text-sm">
+                        className="rounded-lg border border-border bg-card px-3 py-2 text-sm">
                         {cycles.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                 </div>
 
                 {error && (
-                    <div className="mb-4 rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-800">
+                    <div className="mb-4 rounded-lg border border-destructive/15 bg-destructive/5 p-3 text-sm text-destructive">
                         {error} <button onClick={fetchResult} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
@@ -182,21 +182,21 @@ export default function MyResultClient({user }: {
                 {loading ? (
                     <div className="space-y-4">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="animate-pulse rounded-xl border border-border bg-white p-6">
+                            <div key={i} className="animate-pulse rounded-xl border border-border bg-card p-6">
                                 <div className="mb-3 h-6 w-1/3 rounded bg-border" />
                                 <div className="h-4 w-1/2 rounded bg-border" />
                             </div>
                         ))}
                     </div>
                 ) : !result ? (
-                    <div className="rounded-xl border border-border bg-white p-16 text-center">
+                    <div className="rounded-xl border border-border bg-card p-16 text-center">
                         <Award className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                         <EmptyState />
                     </div>
                 ) : (
                     <>
                         {/* Grade card */}
-                        <div className="mb-6 rounded-xl border border-border bg-white p-8 text-center">
+                        <div className="mb-6 rounded-xl border border-border bg-card p-8 text-center">
                             <p className="mb-3 text-sm text-muted-foreground">{t('kr_kecb59cec_keb93b1ea')}</p>
                             {grade ? (
                                 <div className={`mx-auto inline-flex rounded-xl px-8 py-4 ${grade.bg}`}>
@@ -224,7 +224,7 @@ export default function MyResultClient({user }: {
 
                         {/* MBO Results */}
                         {result.goals.length > 0 && (
-                            <div className="mb-6 rounded-xl border border-border bg-white">
+                            <div className="mb-6 rounded-xl border border-border bg-card">
                                 <div className="border-b border-border px-5 py-4">
                                     <h2 className="text-base font-semibold text-foreground">{t('kr_mbo_kebaaa9ed_keab2b0ea')}</h2>
                                 </div>
@@ -252,7 +252,7 @@ export default function MyResultClient({user }: {
 
                         {/* Peer Review Results (masked) */}
                         {peerResult && peerResult.summary.completedReviewers > 0 && (
-                            <div className="mb-6 rounded-xl border border-border bg-white">
+                            <div className="mb-6 rounded-xl border border-border bg-card">
                                 <div className="border-b border-border px-5 py-4">
                                     <h2 className="text-base font-semibold text-foreground">
                                         동료평가 결과 ({peerResult.summary.completedReviewers}명 평가 완료)
@@ -298,7 +298,7 @@ export default function MyResultClient({user }: {
                         )}
 
                         {/* Acknowledge section */}
-                        <div className="rounded-xl border border-border bg-white p-5">
+                        <div className="rounded-xl border border-border bg-card p-5">
                             <h2 className="mb-3 text-base font-semibold text-foreground">{t('kr_keab2b0ea_confirm')}</h2>
                             {isAcknowledged ? (
                                 <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-100 p-4">

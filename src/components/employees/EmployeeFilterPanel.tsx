@@ -191,7 +191,7 @@ export function EmployeeFilterPanel({
   )
 
   return (
-    <div className="rounded-xl border border-border bg-white p-4 space-y-3">
+    <div className="rounded-xl border border-border bg-card p-4 space-y-3">
       <div className="flex items-center justify-between">
         {/* 데스크톱: 인라인 토글 */}
         <button

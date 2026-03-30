@@ -143,7 +143,7 @@ export default function RewardFormClient({ user }: Props) {
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6 max-w-3xl">
-        <div className="bg-white border border-border rounded-xl p-6">
+        <div className="bg-card border border-border rounded-xl p-6">
           <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
             {t('rewardInfo')}
           </h2>
@@ -153,7 +153,7 @@ export default function RewardFormClient({ user }: Props) {
               <label className="block text-sm font-medium text-foreground mb-1">{t('targetEmployee')} *</label>
               <select
                 {...register('employeeId')}
-                className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 bg-white"
+                className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 bg-card"
               >
                 <option value="">{t('selectEmployee')}</option>
                 {!employees?.length && <EmptyState />}
@@ -173,7 +173,7 @@ export default function RewardFormClient({ user }: Props) {
               <label className="block text-sm font-medium text-foreground mb-1">{tRewards('rewardType')} *</label>
               <select
                 {...register('rewardType')}
-                className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 bg-white"
+                className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 bg-card"
               >
                 <option value="">{t('selectType')}</option>
                 {REWARD_TYPE_KEYS.map((key) => (
@@ -239,7 +239,7 @@ export default function RewardFormClient({ user }: Props) {
 
         {/* Conditional: CTR_VALUE_AWARD */}
         {rewardType === 'CTR_VALUE_AWARD' && (
-          <div className="bg-white border border-border rounded-xl p-6">
+          <div className="bg-card border border-border rounded-xl p-6">
             <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
               {t('ctrValueSelection')}
             </h2>
@@ -264,7 +264,7 @@ export default function RewardFormClient({ user }: Props) {
 
         {/* Conditional: LONG_SERVICE */}
         {rewardType === 'LONG_SERVICE' && (
-          <div className="bg-white border border-border rounded-xl p-6">
+          <div className="bg-card border border-border rounded-xl p-6">
             <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
               {t('longServiceInfo')}
             </h2>

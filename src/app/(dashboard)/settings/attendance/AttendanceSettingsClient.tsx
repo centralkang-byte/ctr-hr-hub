@@ -78,7 +78,7 @@ function Toggle({
   description?: string
 }) {
   return (
-    <div className="flex items-center justify-between rounded-xl border border-border bg-white p-4">
+    <div className="flex items-center justify-between rounded-xl border border-border bg-card p-4">
       <div>
         <p className="text-sm font-medium text-foreground">{label}</p>
         {description && <p className="text-xs text-[#666] mt-0.5">{description}</p>}
@@ -93,7 +93,7 @@ function Toggle({
         }`}
       >
         <span
-          className={`inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${
+          className={`inline-block h-5 w-5 rounded-full bg-card shadow-sm transition-transform ${
             checked ? 'translate-x-5' : 'translate-x-0'
           }`}
         />
@@ -248,7 +248,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
   const renderWorkTypeTab = () => (
     <div className="space-y-6">
       {/* 기본 근무시간 */}
-      <div className="rounded-xl border border-border bg-white p-5">
+      <div className="rounded-xl border border-border bg-card p-5">
         <SectionHeader
           title="기본 근무시간"
           description="법인 기준 표준 근무시간을 설정합니다."
@@ -283,7 +283,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
       </div>
 
       {/* 유연근무제 */}
-      <div className="rounded-xl border border-border bg-white p-5">
+      <div className="rounded-xl border border-border bg-card p-5">
         <SectionHeader
           title="유연근무제 (Flex Time)"
           description="코어 타임과 최소 일일 근무시간을 설정합니다."
@@ -330,7 +330,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
       </div>
 
       {/* 타임존 */}
-      <div className="rounded-xl border border-border bg-white p-5">
+      <div className="rounded-xl border border-border bg-card p-5">
         <SectionHeader title="타임존" description="근태 기록 기준 타임존입니다." />
         <div className="max-w-xs">
           <Label className="text-sm font-medium text-[#333]">{'타입'}</Label>
@@ -356,7 +356,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
   const render52hTab = () => (
     <div className="space-y-6">
       {/* 3단계 알림 임계값 */}
-      <div className="rounded-xl border border-border bg-white p-5">
+      <div className="rounded-xl border border-border bg-card p-5">
         <SectionHeader
           title="3단계 알림 임계값"
           description="주간 누적 근무시간이 임계값에 도달하면 알림이 발송됩니다."
@@ -381,10 +381,10 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
             </div>
             <div className="flex-1 h-2 bg-orange-200" />
             <div className="flex-1 text-center">
-              <div className="text-2xl font-bold text-red-700">{settings.alertThresholds.blocked}</div>
-              <div className="text-xs text-red-700">{'차단'}</div>
+              <div className="text-2xl font-bold text-destructive">{settings.alertThresholds.blocked}</div>
+              <div className="text-xs text-destructive">{'차단'}</div>
             </div>
-            <div className="flex-1 h-2 rounded-r-full bg-red-100" />
+            <div className="flex-1 h-2 rounded-r-full bg-destructive/10" />
           </div>
           <div className="mt-1 text-center text-xs text-[#999]">{'단위: 시간/주'}</div>
         </div>
@@ -420,10 +420,10 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
               hint="매니저 + HR 알림"
             />
           </div>
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+          <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4">
             <div className="flex items-center gap-1.5 mb-3">
-              <div className="h-3 w-3 rounded-full bg-red-500" />
-              <span className="text-sm font-semibold text-red-700">{'차단 (Blocked)'}</span>
+              <div className="h-3 w-3 rounded-full bg-destructive/50" />
+              <span className="text-sm font-semibold text-destructive">{'차단 (Blocked)'}</span>
             </div>
             <NumberInput
               label="임계값"
@@ -439,9 +439,9 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
 
         {settings.alertThresholds.caution >= settings.alertThresholds.warning ||
         settings.alertThresholds.warning >= settings.alertThresholds.blocked ? (
-          <div className="mt-3 flex items-center gap-2 rounded-lg bg-red-50 border border-red-200 px-3 py-2">
+          <div className="mt-3 flex items-center gap-2 rounded-lg bg-destructive/5 border border-destructive/20 px-3 py-2">
             <AlertTriangle className="h-4 w-4 text-red-500 shrink-0" />
-            <span className="text-xs text-red-700">
+            <span className="text-xs text-destructive">
               임계값 순서: 주의 {'<'} 경고 {'<'} 차단 이어야 합니다.
             </span>
           </div>
@@ -449,7 +449,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
       </div>
 
       {/* 차단 옵션 */}
-      <div className="rounded-xl border border-border bg-white p-5">
+      <div className="rounded-xl border border-border bg-card p-5">
         <SectionHeader
           title="초과근무 차단"
           description="차단 임계값 도달 시 클락인을 차단합니다."
@@ -479,7 +479,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
   const renderShiftTab = () => (
     <div className="space-y-6">
       {/* 교대근무 활성화 */}
-      <div className="rounded-xl border border-border bg-white p-5">
+      <div className="rounded-xl border border-border bg-card p-5">
         <SectionHeader
           title="교대근무 활성화"
           description="법인에서 교대근무(2교대/3교대)를 운영합니다."
@@ -494,7 +494,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
 
       {/* 교대근무 패턴 관리 링크 */}
       {settings.shiftEnabled && (
-        <div className="rounded-xl border border-border bg-white p-5">
+        <div className="rounded-xl border border-border bg-card p-5">
           <SectionHeader title="교대근무 상세 설정" />
           <div className="space-y-3">
             <Link
@@ -576,9 +576,9 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
 
           {/* Messages */}
           {error && (
-            <div className="flex items-center gap-2 rounded-lg bg-red-50 border border-red-200 px-4 py-3">
+            <div className="flex items-center gap-2 rounded-lg bg-destructive/5 border border-destructive/20 px-4 py-3">
               <AlertTriangle className="h-4 w-4 text-red-500 shrink-0" />
-              <span className="text-sm text-red-700">{error}</span>
+              <span className="text-sm text-destructive">{error}</span>
             </div>
           )}
           {successMsg && (

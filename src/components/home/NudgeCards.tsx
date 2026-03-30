@@ -54,8 +54,8 @@ function getNudgeStyle(triggerType: string): {
     return {
       Icon: Clock,
       borderColor: 'border-red-500',
-      bgColor:     'bg-red-50',
-      dotColor:    'bg-red-500',
+      bgColor:     'bg-destructive/5',
+      dotColor:    'bg-destructive/50',
     }
   }
   if (triggerType.includes('payroll')) {
@@ -78,7 +78,7 @@ function getNudgeStyle(triggerType: string): {
     return {
       Icon: ClipboardCheck,
       borderColor: 'border-primary',
-      bgColor:     'bg-green-50',
+      bgColor:     'bg-tertiary-container/10',
       dotColor:    'bg-primary',
     }
   }
@@ -151,7 +151,7 @@ export function NudgeCards({ user }: NudgeCardsProps) {
   const overflow = nudges.length - VISIBLE_COUNT
 
   return (
-    <div className="rounded-xl border border-border bg-white p-4">
+    <div className="rounded-xl border border-border bg-card p-4">
       {/* Header */}
       <div className="mb-3 flex items-center gap-2">
         <AlertTriangle className="h-4 w-4 text-amber-500" />
@@ -210,7 +210,7 @@ export function NudgeCards({ user }: NudgeCardsProps) {
           <button
             type="button"
             onClick={() => setExpanded(true)}
-            className="flex min-w-[80px] flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 px-3 py-4 text-xs text-muted-foreground hover:border-primary hover:text-primary"
+            className="flex min-w-[80px] flex-col items-center justify-center rounded-xl border border-dashed border-border px-3 py-4 text-xs text-muted-foreground hover:border-primary hover:text-primary"
           >
             <span className="text-base font-bold">+{overflow}</span>
             <span>더 보기</span>

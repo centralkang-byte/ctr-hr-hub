@@ -10,14 +10,14 @@ interface Cycle { id: string; name: string; type: string; status: string; startD
 interface Props { companyId: string | null }
 
 const STATUS_MAP: Record<string, { label: string; cls: string }> = {
-  DRAFT: { label: '임시저장', cls: 'bg-gray-50 text-gray-500' },
+  DRAFT: { label: '임시저장', cls: 'bg-muted/50 text-muted-foreground' },
   GOAL_SETTING: { label: '목표 설정', cls: 'bg-primary/5 text-primary' },
-  IN_PROGRESS: { label: '진행 중', cls: 'bg-green-50 text-green-600' },
+  IN_PROGRESS: { label: '진행 중', cls: 'bg-tertiary-container/10 text-tertiary' },
   SELF_REVIEW: { label: '자기평가', cls: 'bg-yellow-50 text-yellow-600' },
   MANAGER_REVIEW: { label: '상세', cls: 'bg-orange-50 text-orange-600' },
   CALIBRATION: { label: '캘리브레이션', cls: 'bg-purple-50 text-purple-600' },
-  COMPLETED: { label: '완료', cls: 'bg-gray-50 text-gray-500' },
-  CLOSED: { label: '마감', cls: 'bg-gray-100 text-gray-400' },
+  COMPLETED: { label: '완료', cls: 'bg-muted/50 text-muted-foreground' },
+  CLOSED: { label: '마감', cls: 'bg-muted text-muted-foreground/60' },
 }
 
 export function EvalCycleTab({
@@ -51,7 +51,7 @@ export function EvalCycleTab({
             <th className={TABLE_STYLES.headerCell}>{'상태'}</th>
             <th className={TABLE_STYLES.headerCell}>{'기간'}</th>
           </tr></thead><tbody className="divide-y divide-border">{cycles.map((c) => {
-            const s = STATUS_MAP[c.status] ?? { label: c.status, cls: 'bg-gray-50 text-gray-500' }
+            const s = STATUS_MAP[c.status] ?? { label: c.status, cls: 'bg-muted/50 text-muted-foreground' }
             return (
               <tr key={c.id} className={TABLE_STYLES.row}>
                 <td className={TABLE_STYLES.cell}>{c.name}</td>

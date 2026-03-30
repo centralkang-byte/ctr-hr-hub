@@ -301,7 +301,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
             title="이번 달 팀 휴가 신청이 없습니다"
             description="팀원의 휴가 신청이 있으면 여기에 표시됩니다."
           />
-          <div className="bg-white border border-border rounded-xl divide-y divide-border">
+          <div className="bg-card border border-border rounded-xl divide-y divide-border">
             {members.map((member) => (
               <div key={member.employeeId} className="flex items-center justify-between px-4 py-3">
                 <span className="text-sm font-medium text-foreground">{member.name}</span>
@@ -312,7 +312,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
         </div>
       ) : (
         members.map((member) => (
-          <div key={member.employeeId} className="bg-white border border-border rounded-xl p-6">
+          <div key={member.employeeId} className="bg-card border border-border rounded-xl p-6">
             <h3 className="text-base font-bold text-foreground tracking-[-0.02em] mb-4">{member.name}</h3>
                 <div className="space-y-3">
                   {member.requests.map((req) => {
@@ -330,7 +330,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                     const rowBorderBg = optimisticStatus === 'APPROVED'
                       ? 'border-emerald-200 bg-emerald-100/30'
                       : optimisticStatus === 'REJECTED'
-                      ? 'border-red-200 bg-red-100/30'
+                      ? 'border-destructive/20 bg-destructive/10/30'
                       : isPending
                       ? 'border-orange-200 bg-orange-50/30'
                       : 'border-border'
@@ -380,7 +380,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                               {'승인'}
                             </button>
                             <button
-                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-red-500 text-red-500 hover:bg-red-50 flex items-center"
+                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-red-500 text-red-500 hover:bg-destructive/5 flex items-center"
                               onClick={() => openRejectDialog(req.id)}
                             >
                               <X className="mr-1 h-4 w-4" />

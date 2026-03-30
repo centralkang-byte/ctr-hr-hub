@@ -29,7 +29,7 @@ const STATUS_MAP: Record<WorkHoursStatus, { label: string; className: string }> 
   COMPLIANT: {
     label: '준수',
     className:
-      'bg-primary/10 text-green-700',
+      'bg-primary/10 text-tertiary',
   },
   WARNING: {
     label: '주의',
@@ -39,7 +39,7 @@ const STATUS_MAP: Record<WorkHoursStatus, { label: string; className: string }> 
   VIOLATION: {
     label: '위반',
     className:
-      'bg-red-50 text-red-500',
+      'bg-destructive/5 text-red-500',
   },
 }
 
@@ -94,7 +94,7 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
   })
 
   return (
-    <div className="bg-white rounded-xl border border-border">
+    <div className="bg-card rounded-xl border border-border">
       {/* List Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-6 border-b border-border">
         <div className="flex items-center gap-2">

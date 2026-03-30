@@ -43,7 +43,7 @@ export default function SeveranceCalculator({
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-card rounded-xl shadow-sm border border-border p-6">
       <div className="flex items-center gap-2 mb-4">
         <Calculator className="h-5 w-5 text-primary" />
         <h3 className="text-sm font-semibold text-foreground">
@@ -83,7 +83,7 @@ export default function SeveranceCalculator({
             </div>
             <div>
               <p className="text-[#666]">퇴직금 대상</p>
-              <p className={`font-medium ${result.isEligible ? 'text-emerald-600' : 'text-red-600'}`}>
+              <p className={`font-medium ${result.isEligible ? 'text-emerald-600' : 'text-destructive'}`}>
                 {result.isEligible ? '해당' : '비해당 (1년 미만)'}
               </p>
             </div>
@@ -133,11 +133,11 @@ export default function SeveranceCalculator({
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-[#555]">퇴직소득세</span>
-                <span className="text-red-600">-{formatCurrency(result.incomeTax)}</span>
+                <span className="text-destructive">-{formatCurrency(result.incomeTax)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-[#555]">지방소득세</span>
-                <span className="text-red-600">-{formatCurrency(result.localIncomeTax)}</span>
+                <span className="text-destructive">-{formatCurrency(result.localIncomeTax)}</span>
               </div>
               <div className="flex justify-between text-sm font-bold pt-2 border-t border-primary/20">
                 <span className="text-primary/90">실지급액</span>

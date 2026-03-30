@@ -139,7 +139,7 @@ function SettlementDetailModal({
 
   return (
     <div className={MODAL_STYLES.container}>
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl mx-4 max-h-[90vh] flex flex-col">
+      <div className="bg-card rounded-xl shadow-lg w-full max-w-2xl mx-4 max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <div>
@@ -247,7 +247,7 @@ function SettlementDetailModal({
                 type="button"
                 onClick={() => onIssueReceipt(settlement.id)}
                 disabled={issuingReceipt}
-                className="flex items-center gap-2 px-4 py-2 text-sm bg-white border border-border hover:bg-background text-[#333] rounded-lg disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 text-sm bg-card border border-border hover:bg-background text-[#333] rounded-lg disabled:opacity-50"
               >
                 <Download className="h-4 w-4" />
                 {issuingReceipt ? '발행 중...' : '영수증 발행'}
@@ -502,7 +502,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
 
       {/* Error banner */}
       {error && (
-        <div className="flex items-center gap-2 p-3 bg-red-100 border border-red-200 rounded-lg text-sm text-red-700">
+        <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
           <AlertCircle className="h-4 w-4 flex-shrink-0" />
           <span>{error}</span>
           <button
@@ -524,7 +524,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
           { key: 'hr_review', label: t('hrReviewing'), icon: Eye, color: 'text-orange-700' },
           { key: 'confirmed', label: t('confirmed'), icon: CheckCircle2, color: 'text-emerald-600' },
         ].map(({ key, label, icon: Icon, color }) => (
-          <div key={key} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div key={key} className="bg-card rounded-xl shadow-sm border border-border p-6">
             <div className={`flex items-center gap-1.5 text-xs ${color} mb-1`}>
               <Icon className="h-3.5 w-3.5" />
               <span>{label}</span>
@@ -536,7 +536,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
         ))}
 
         {/* Progress bar card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1">{t('all_kec9984eb')}</p>
           <p className="text-2xl font-bold text-primary">{completionPct}%</p>
           <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
@@ -712,7 +712,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
 
       {/* Bulk action bar */}
       {selectedIds.size > 0 && (
-        <div className="mt-4 px-4 py-3 border border-border rounded-lg bg-slate-50 flex items-center justify-between">
+        <div className="mt-4 px-4 py-3 border border-border rounded-lg bg-muted/50 flex items-center justify-between">
           <span className="text-sm text-[#555]">
             {selectedIds.size}건 선택됨
           </span>

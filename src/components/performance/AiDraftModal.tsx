@@ -59,7 +59,7 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
 
   return (
     <div className={MODAL_STYLES.container}>
-      <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-card rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-border">
           <div className="flex items-center gap-2">
@@ -191,7 +191,7 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
               <div className="flex justify-between pt-2">
                 <button
                   onClick={onClose}
-                  className="flex items-center gap-1.5 px-4 py-2 border border-red-300 text-red-600 rounded-lg text-sm hover:bg-red-100"
+                  className="flex items-center gap-1.5 px-4 py-2 border border-red-300 text-destructive rounded-lg text-sm hover:bg-destructive/10"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   폐기

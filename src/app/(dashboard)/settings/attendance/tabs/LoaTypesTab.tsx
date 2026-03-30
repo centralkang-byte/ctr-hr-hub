@@ -42,8 +42,8 @@ const CATEGORY_LABELS: Record<string, string> = {
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
-  STATUTORY: 'bg-blue-100 text-blue-700',
-  CONTRACTUAL: 'bg-gray-100 text-gray-600',
+  STATUTORY: 'bg-primary/10 text-primary',
+  CONTRACTUAL: 'bg-muted text-muted-foreground',
 }
 
 const PAY_TYPE_LABELS: Record<string, string> = {
@@ -323,7 +323,7 @@ export function LoaTypesTab({ companyId }: Props) {
                     )}
                   </td>
                   <td className={TABLE_STYLES.cell}>
-                    <span className={cn('inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium', CATEGORY_COLORS[t.category] ?? 'bg-gray-100')}>
+                    <span className={cn('inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium', CATEGORY_COLORS[t.category] ?? 'bg-muted')}>
                       {t.category === 'STATUTORY' && <Shield className="h-3 w-3 mr-1" />}
                       {CATEGORY_LABELS[t.category] ?? t.category}
                     </span>
@@ -382,7 +382,7 @@ export function LoaTypesTab({ companyId }: Props) {
                         <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => startEdit(t)}>
                           <Pencil className="h-3.5 w-3.5" />
                         </Button>
-                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-red-500 hover:text-red-700" onClick={() => handleDelete(t.id)}>
+                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-red-500 hover:text-destructive" onClick={() => handleDelete(t.id)}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </div>

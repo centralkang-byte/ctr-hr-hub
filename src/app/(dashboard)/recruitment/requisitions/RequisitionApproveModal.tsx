@@ -64,7 +64,7 @@ export default function RequisitionApproveModal({ requisition, onClose, onSucces
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono tabular-nums text-[#999]">{requisition.reqNumber}</span>
               <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                requisition.urgency === 'urgent' ? 'bg-red-100 text-red-700' :
+                requisition.urgency === 'urgent' ? 'bg-destructive/10 text-destructive' :
                 requisition.urgency === 'normal' ? 'bg-amber-100 text-amber-700' :
                 'bg-sky-50 text-sky-700'
               }`}>
@@ -89,7 +89,7 @@ export default function RequisitionApproveModal({ requisition, onClose, onSucces
           </div>
 
           {error && (
-            <div className="flex items-center gap-2 p-3 bg-red-100 rounded-lg text-red-700 text-sm">
+            <div className="flex items-center gap-2 p-3 bg-destructive/10 rounded-lg text-destructive text-sm">
               <AlertTriangle size={15} />
               {error}
             </div>
@@ -108,7 +108,7 @@ export default function RequisitionApproveModal({ requisition, onClose, onSucces
           <button
             onClick={() => handleDecision('reject')}
             disabled={loading}
-            className="flex items-center gap-1.5 px-4 py-2 border border-red-300 text-red-600 rounded-lg text-sm hover:bg-red-100 disabled:opacity-50"
+            className="flex items-center gap-1.5 px-4 py-2 border border-red-300 text-destructive rounded-lg text-sm hover:bg-destructive/10 disabled:opacity-50"
           >
             <XCircle size={15} />
             {'반려'}

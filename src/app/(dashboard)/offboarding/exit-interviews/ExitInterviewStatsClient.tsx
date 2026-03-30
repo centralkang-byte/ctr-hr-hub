@@ -172,7 +172,7 @@ export function ExitInterviewStatsClient({ user }: { user: SessionUser }) {
                         <Card className="border border-border">
                             <CardContent className="p-6">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <div className="p-2 rounded-lg bg-green-500/10">
+                                    <div className="p-2 rounded-lg bg-tertiary-container/100/10">
                                         <ThumbsUp className="w-5 h-5 text-green-500" />
                                     </div>
                                     <span className="text-sm text-muted-foreground">추천 의향</span>

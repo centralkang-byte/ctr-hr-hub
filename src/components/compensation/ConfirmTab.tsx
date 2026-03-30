@@ -65,7 +65,7 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
 
   if (adjustments.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-border p-12 text-center">
+      <div className="bg-card rounded-xl border border-border p-12 text-center">
         <CheckCircle2 className="mx-auto h-12 w-12 text-border mb-4" />
         <p className="text-[#666] text-sm">
           시뮬레이션 탭에서 연봉 조정을 진행한 후 확정해주세요.
@@ -78,21 +78,21 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
     <div className="space-y-6">
       {/* ─── 요약 ─── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1">확정 인원</p>
           <p className="text-3xl font-bold text-foreground">{budget.headcount}명</p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1">총 인상액</p>
           <p className="text-xl font-bold text-emerald-600">
             +{formatCurrency(budget.totalIncrease)}
           </p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1">평균 인상률</p>
           <p className="text-3xl font-bold text-primary">{budget.avgIncreasePct}%</p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1">적용일</p>
           <input
             type="date"

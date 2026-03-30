@@ -95,7 +95,7 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
   const STATUS_LABELS: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
     PENDING: { label: t('status.pending'), color: 'bg-amber-100 text-amber-700 border-amber-300', icon: <Clock className="w-3 h-3" /> },
     APPROVED: { label: t('status.approved'), color: 'bg-emerald-100 text-emerald-700 border-emerald-200', icon: <CheckCircle2 className="w-3 h-3" /> },
-    REJECTED: { label: t('status.rejected'), color: 'bg-red-100 text-red-700 border-red-200', icon: <XCircle className="w-3 h-3" /> },
+    REJECTED: { label: t('status.rejected'), color: 'bg-destructive/10 text-destructive border-destructive/20', icon: <XCircle className="w-3 h-3" /> },
     CANCELLED: { label: t('status.cancelled'), color: 'bg-background text-[#555] border-border', icon: null },
   }
 
@@ -180,7 +180,7 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 text-red-700 text-sm">
+        <div className="flex items-center gap-2 text-destructive text-sm">
           <AlertTriangle className="w-4 h-4" />
           {error}
         </div>
@@ -195,7 +195,7 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
           { label: '지정연차', value: designatedCount, unit: tCommon('unit.day'), color: 'text-violet-600' },
           { label: tCommon('remaining'), value: totalRemaining, unit: tCommon('unit.day'), color: 'text-primary' },
         ].map((kpi) => (
-          <div key={kpi.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div key={kpi.label} className="bg-card rounded-xl shadow-sm border border-border p-6">
             <p className="text-xs text-[#666] mb-1">{kpi.label}</p>
             <p className={`text-3xl font-bold ${kpi.color}`}>
               {kpi.value}
@@ -206,7 +206,7 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
       </div>
 
       {/* 유형별 잔여 현황 */}
-      <div className="bg-white rounded-xl border border-border">
+      <div className="bg-card rounded-xl border border-border">
         <div className="px-5 py-4 border-b border-border flex items-center justify-between">
           <h2 className="text-base font-semibold text-foreground">{t('leaveByType')}</h2>
           {loadingBalances && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
@@ -283,7 +283,7 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
                             </span>
                           )}
                           {b.expiresAt && (
-                            <span className="text-red-600">
+                            <span className="text-destructive">
                               {t('expiresOn', { date: format(new Date(b.expiresAt), 'M/d', { locale: ko }) })}
                             </span>
                           )}
@@ -299,7 +299,7 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
       </div>
 
       {/* 사용 내역 */}
-      <div className="bg-white rounded-xl border border-border">
+      <div className="bg-card rounded-xl border border-border">
         <div className="px-5 py-4 border-b border-border flex items-center justify-between">
           <h2 className="text-base font-semibold text-foreground">{t('leaveHistory')}</h2>
           {loadingRequests && <Loader2 className="w-4 h-4 animate-spin text-primary" />}

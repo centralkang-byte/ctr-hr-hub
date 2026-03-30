@@ -91,9 +91,9 @@ const COST_TYPE_LABELS: Record<string, string> = {
 }
 
 const COST_TYPE_BADGE_STYLES: Record<string, string> = {
-  AD_FEE: 'bg-blue-50 text-blue-800',
+  AD_FEE: 'bg-primary/5 text-blue-800',
   AGENCY_FEE: 'bg-purple-50 text-purple-800',
-  REFERRAL_BONUS: 'bg-primary/10 text-green-700',
+  REFERRAL_BONUS: 'bg-primary/10 text-tertiary',
   ASSESSMENT_TOOL: 'bg-orange-50 text-orange-800',
   TRAVEL: 'bg-cyan-50 text-cyan-700',
   RELOCATION: 'bg-orange-50 text-orange-800',
@@ -215,7 +215,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
           <select
             value={String(year)}
             onChange={(e) => setYear(Number(e.target.value))}
-            className="px-3 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
+            className="px-3 py-2 text-sm border border-border rounded-lg bg-card focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
           >
             {[2024, 2025, 2026].map((y) => (
               <option key={y} value={String(y)}>{y}년</option>
@@ -253,25 +253,25 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
         <div className="space-y-6">
           {/* KPI Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-white border border-border rounded-xl p-5">
+            <div className="bg-card border border-border rounded-xl p-5">
               <p className="text-xs text-[#999] mb-1">{'총 채용 비용'}</p>
               <p className="text-3xl font-bold text-foreground">{formatCurrency(analysis.totalCost)}</p>
             </div>
-            <div className="bg-white border border-border rounded-xl p-5">
+            <div className="bg-card border border-border rounded-xl p-5">
               <div className="flex items-center gap-2 mb-1">
                 <Users className="w-4 h-4 text-[#999]" />
                 <p className="text-xs text-[#999]">{'총 채용 인원'}</p>
               </div>
               <p className="text-3xl font-bold text-foreground">{analysis.totalHires}명</p>
             </div>
-            <div className="bg-white border border-border rounded-xl p-5">
+            <div className="bg-card border border-border rounded-xl p-5">
               <div className="flex items-center gap-2 mb-1">
                 <DollarSign className="w-4 h-4 text-[#999]" />
                 <p className="text-xs text-[#999]">{'인당 채용 단가'}</p>
               </div>
               <p className="text-3xl font-bold text-primary">{formatCurrency(analysis.costPerHire)}</p>
             </div>
-            <div className="bg-white border border-border rounded-xl p-5">
+            <div className="bg-card border border-border rounded-xl p-5">
               <div className="flex items-center gap-2 mb-1">
                 <TrendingUp className="w-4 h-4 text-[#999]" />
                 <p className="text-xs text-[#999]">{'비용 유형 수'}</p>
@@ -281,7 +281,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
           </div>
 
           {/* Source Analysis */}
-          <div className="bg-white border border-border rounded-xl">
+          <div className="bg-card border border-border rounded-xl">
             <div className="p-6 pb-0">
               <h2 className="text-base font-bold text-foreground tracking-[-0.02em] flex items-center gap-2">
                 <BarChart3 className="w-5 h-5 text-primary" />
@@ -338,7 +338,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
           </div>
 
           {/* Cost Type Breakdown */}
-          <div className="bg-white border border-border rounded-xl">
+          <div className="bg-card border border-border rounded-xl">
             <div className="p-6 pb-0">
               <h2 className="text-base font-bold text-foreground tracking-[-0.02em]">{'비용 유형별 분석'}</h2>
             </div>
@@ -365,7 +365,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
 
           {/* Top Postings */}
           {analysis.byPosting.length > 0 && (
-            <div className="bg-white border border-border rounded-xl">
+            <div className="bg-card border border-border rounded-xl">
               <div className="p-6 pb-0">
                 <h2 className="text-base font-bold text-foreground tracking-[-0.02em]">{'공고별 채용 비용 (Top 20)'}</h2>
               </div>
@@ -411,7 +411,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
             <select
               value={costFilter}
               onChange={(e) => setCostFilter(e.target.value)}
-              className="px-3 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
+              className="px-3 py-2 text-sm border border-border rounded-lg bg-card focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
             >
               <option value="ALL">{'전체'}</option>
               {Object.entries(COST_TYPE_LABELS).map(([k, v]) => (
@@ -421,7 +421,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
           </div>
 
           {/* Cost List */}
-          <div className="bg-white border border-border rounded-xl overflow-hidden">
+          <div className="bg-card border border-border rounded-xl overflow-hidden">
             {costs.length === 0 ? (
               <EmptyState />
             ) : (
@@ -469,7 +469,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                             </button>
                             <button
                               onClick={() => handleDelete(c.id)}
-                              className="p-1.5 rounded-lg hover:bg-red-50 text-red-500 transition-colors duration-150"
+                              className="p-1.5 rounded-lg hover:bg-destructive/5 text-red-500 transition-colors duration-150"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -488,7 +488,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
       {/* Create Modal */}
       {showCreate && (
         <div className={MODAL_STYLES.container}>
-          <div className="bg-white rounded-xl w-full max-w-lg mx-4">
+          <div className="bg-card rounded-xl w-full max-w-lg mx-4">
             <div className="flex items-center justify-between p-6 pb-0">
               <h2 className="text-lg font-bold text-foreground tracking-[-0.02em]">{'채용 비용 등록'}</h2>
               <button onClick={() => setShowCreate(false)} className="p-1 rounded-lg hover:bg-background text-[#999] transition-colors duration-150">
@@ -501,7 +501,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                 <select
                   value={form.applicantSource}
                   onChange={(e) => setForm({ ...form, applicantSource: e.target.value })}
-                  className="w-full px-4 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-border rounded-lg bg-card focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
                 >
                   {Object.entries(SOURCE_LABELS).map(([k, v]) => (
                     <option key={k} value={k}>{v}</option>
@@ -513,7 +513,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                 <select
                   value={form.costType}
                   onChange={(e) => setForm({ ...form, costType: e.target.value })}
-                  className="w-full px-4 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-border rounded-lg bg-card focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
                 >
                   {Object.entries(COST_TYPE_LABELS).map(([k, v]) => (
                     <option key={k} value={k}>{v}</option>
@@ -536,7 +536,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                   <select
                     value={form.currency}
                     onChange={(e) => setForm({ ...form, currency: e.target.value })}
-                    className="w-full px-4 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
+                    className="w-full px-4 py-2 text-sm border border-border rounded-lg bg-card focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
                   >
                     {['KRW', 'USD', 'CNY', 'RUB', 'VND', 'MXN', 'PLN'].map((c) => (
                       <option key={c} value={c}>{c}</option>
@@ -595,7 +595,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
       {/* Detail Modal */}
       {detailCost && (
         <div className={MODAL_STYLES.container}>
-          <div className="bg-white rounded-xl w-full max-w-md mx-4">
+          <div className="bg-card rounded-xl w-full max-w-md mx-4">
             <div className="flex items-center justify-between p-6 pb-0">
               <h2 className="text-lg font-bold text-foreground tracking-[-0.02em]">{'비용 상세'}</h2>
               <button onClick={() => setDetailCost(null)} className="p-1 rounded-lg hover:bg-background text-[#999] transition-colors duration-150">

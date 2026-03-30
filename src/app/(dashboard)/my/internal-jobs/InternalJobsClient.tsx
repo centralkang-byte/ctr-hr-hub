@@ -56,7 +56,7 @@ const WORK_MODE_LABELS: Record<string, string> = {
 }
 
 const URGENCY_COLORS: Record<string, string> = {
-  urgent: 'bg-red-100 text-red-700',
+  urgent: 'bg-destructive/10 text-destructive',
   normal: 'bg-amber-100 text-amber-700',
   low: 'bg-sky-50 text-sky-700',
 }
@@ -166,7 +166,7 @@ export default function InternalJobsClient({ user }: { user: SessionUser }) {
             return (
               <div
                 key={job.id}
-                className="bg-white rounded-xl border border-border overflow-hidden hover:border-primary/40 transition-colors"
+                className="bg-card rounded-xl border border-border overflow-hidden hover:border-primary/40 transition-colors"
               >
                 {/* 카드 상단 */}
                 <div className="p-5">

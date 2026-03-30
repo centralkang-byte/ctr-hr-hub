@@ -50,7 +50,7 @@ export default function TurnoverClient({ user }: { user: SessionUser }) {
   useEffect(() => { fetchData() }, [fetchData])
 
   if (loading) {
-    return <div className="space-y-6 animate-pulse">{[...Array(5)].map((_, i) => <div key={i} className="h-48 bg-gray-100 rounded-xl" />)}</div>
+    return <div className="space-y-6 animate-pulse">{[...Array(5)].map((_, i) => <div key={i} className="h-48 bg-muted rounded-xl" />)}</div>
   }
 
   if (error || !data) {
@@ -147,10 +147,10 @@ export default function TurnoverClient({ user }: { user: SessionUser }) {
         <ChartCard title="🔮 이직 예측 고위험 Top 20">
           {/* Summary row */}
           <div className="flex gap-4 mb-4 text-xs">
-            <span className="px-2.5 py-1 rounded-full bg-gray-50 text-gray-600">
+            <span className="px-2.5 py-1 rounded-full bg-muted/50 text-muted-foreground">
               {t('analytics_keb8c80ec')} <strong>{predictions.summary?.totalAnalyzed || 0}명</strong>
             </span>
-            <span className="px-2.5 py-1 rounded-full bg-red-50 text-red-700">
+            <span className="px-2.5 py-1 rounded-full bg-destructive/5 text-destructive">
               {t('kr_keab3a0ec')} <strong>{predictions.summary?.highRisk || 0}명</strong>
             </span>
             <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700">
@@ -182,19 +182,19 @@ export default function TurnoverClient({ user }: { user: SessionUser }) {
                       <td className={TABLE_STYLES.cellMuted}>{emp.position}</td>
                       <td className={TABLE_STYLES.cellRight}>
                         <div className="flex items-center justify-end gap-2">
-                          <div className="w-16 h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
                             <div
-                              className={`h-full rounded-full ${emp.level === 'HIGH' ? 'bg-red-500' : emp.level === 'MEDIUM' ? 'bg-amber-500' : 'bg-emerald-500'}`}
+                              className={`h-full rounded-full ${emp.level === 'HIGH' ? 'bg-destructive/50' : emp.level === 'MEDIUM' ? 'bg-amber-500' : 'bg-emerald-500'}`}
                               style={{ width: `${emp.score}%` }}
                             />
                           </div>
-                          <span className="text-xs font-mono tabular-nums text-gray-700 w-6 text-right">{emp.score}</span>
+                          <span className="text-xs font-mono tabular-nums text-foreground w-6 text-right">{emp.score}</span>
                         </div>
                       </td>
                       <td className={TABLE_STYLES.cell}>
                         <div className="flex justify-center">
                           <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-medium ${
-                            emp.level === 'HIGH' ? 'bg-red-50 text-red-600' :
+                            emp.level === 'HIGH' ? 'bg-destructive/5 text-destructive' :
                             emp.level === 'MEDIUM' ? 'bg-amber-50 text-amber-600' :
                             'bg-emerald-50 text-emerald-700'
                           }`}>
@@ -219,7 +219,7 @@ export default function TurnoverClient({ user }: { user: SessionUser }) {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {emp.factors.map((f: { factor: string; contribution: number; detail: string }, i: number) => (
                               <div key={i} className="flex items-start gap-2 text-xs">
-                                <span className="px-1.5 py-0.5 rounded bg-white border border-border text-foreground font-medium flex-shrink-0">
+                                <span className="px-1.5 py-0.5 rounded bg-card border border-border text-foreground font-medium flex-shrink-0">
                                   +{f.contribution}
                                 </span>
                                 <div>
@@ -244,12 +244,12 @@ export default function TurnoverClient({ user }: { user: SessionUser }) {
       <ChartCard title="🔒 퇴직 면담 익명 통계">
         {!exitInterviewStats.canDisplay ? (
           <div className="flex flex-col items-center justify-center h-48 gap-3">
-            <Shield className="h-8 w-8 text-gray-300" />
+            <Shield className="h-8 w-8 text-muted-foreground/40" />
             <div className="text-center">
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-sm font-medium text-muted-foreground">
                 {t('kr_keab09cec_kebb3b4ed_kec9c84ed_')}
               </p>
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-muted-foreground/60 mt-1">
                 현재: {exitInterviewStats.totalCount}건
               </p>
             </div>
@@ -257,21 +257,21 @@ export default function TurnoverClient({ user }: { user: SessionUser }) {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <p className="text-xs text-gray-500 mb-2">{t('kr_ked87b4ec_kec82acec_kebb984ec')}</p>
+              <p className="text-xs text-muted-foreground mb-2">{t('kr_ked87b4ec_kec82acec_kebb984ec')}</p>
               {exitInterviewStats.reasonBreakdown?.map((r) => (
                 <div key={r.reason} className="flex items-center justify-between py-1">
-                  <span className="text-sm text-gray-700">{r.reason}</span>
+                  <span className="text-sm text-foreground">{r.reason}</span>
                   <div className="flex items-center gap-2">
-                    <div className="w-20 h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="w-20 h-2 bg-muted rounded-full overflow-hidden">
                       <div className="h-full bg-primary rounded-full" style={{ width: `${r.percentage}%` }} />
                     </div>
-                    <span className="text-xs text-gray-500">{r.percentage}%</span>
+                    <span className="text-xs text-muted-foreground">{r.percentage}%</span>
                   </div>
                 </div>
               ))}
             </div>
             <div className="flex flex-col items-center justify-center">
-              <p className="text-xs text-gray-500 mb-2">{t('kr_kec9eacec_kec9d98ed')}</p>
+              <p className="text-xs text-muted-foreground mb-2">{t('kr_kec9eacec_kec9d98ed')}</p>
               <div className="relative w-24 h-24">
                 <svg viewBox="0 0 36 36" className="w-24 h-24">
                   <path d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#E5E7EB" strokeWidth="3" />
@@ -279,19 +279,19 @@ export default function TurnoverClient({ user }: { user: SessionUser }) {
                     strokeDasharray={`${exitInterviewStats.wouldRejoinRate || 0} ${100 - (exitInterviewStats.wouldRejoinRate || 0)}`} />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-lg font-bold text-gray-900">{exitInterviewStats.wouldRejoinRate}%</span>
+                  <span className="text-lg font-bold text-foreground">{exitInterviewStats.wouldRejoinRate}%</span>
                 </div>
               </div>
             </div>
             <div>
-              <p className="text-xs text-gray-500 mb-2">{t('kr_keba78cec_kecb694ec')}</p>
+              <p className="text-xs text-muted-foreground mb-2">{t('kr_keba78cec_kecb694ec')}</p>
               {exitInterviewStats.satisfactionTrend?.map((s) => (
                 <div key={s.period} className="flex items-center gap-2 py-1">
-                  <span className="text-sm text-gray-700">{s.period}</span>
-                  <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
+                  <span className="text-sm text-foreground">{s.period}</span>
+                  <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
                     <div className="h-full bg-gradient-to-r from-red-400 via-amber-400 to-emerald-400 rounded-full" style={{ width: `${(s.score / 5) * 100}%` }} />
                   </div>
-                  <span className="text-xs text-gray-500">{s.score}/5</span>
+                  <span className="text-xs text-muted-foreground">{s.score}/5</span>
                 </div>
               ))}
             </div>

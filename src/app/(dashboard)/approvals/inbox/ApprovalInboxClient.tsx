@@ -107,7 +107,7 @@ function RejectionModal({ item, onClose, onConfirm }: RejectionModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
+      <div className="w-full max-w-md rounded-xl bg-card p-6 shadow-lg">
         {/* Header */}
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-semibold text-foreground">반려 사유 입력</h2>
@@ -147,7 +147,7 @@ function RejectionModal({ item, onClose, onConfirm }: RejectionModalProps) {
           </Button>
           <Button
             size="sm"
-            className="bg-red-500 text-white hover:bg-red-600"
+            className="bg-destructive/50 text-white hover:bg-red-600"
             onClick={handleSubmit}
             disabled={submitting}
           >
@@ -181,7 +181,7 @@ function ApproveConfirmModal({ item, onClose, onConfirm }: ApproveConfirmModalPr
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-lg">
+      <div className="w-full max-w-sm rounded-xl bg-card p-6 shadow-lg">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-semibold text-foreground">승인 확인</h2>
           <button type="button" onClick={onClose} className="rounded p-1 text-muted-foreground hover:bg-muted">
@@ -234,7 +234,7 @@ function BulkConfirmModal({ count, onClose, onConfirm }: BulkConfirmModalProps) 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-lg">
+      <div className="w-full max-w-sm rounded-xl bg-card p-6 shadow-lg">
         <h2 className="mb-3 text-base font-semibold text-foreground">일괄 승인 확인</h2>
         <p className="text-sm text-muted-foreground">
           선택한 <span className="font-semibold text-foreground">{count}건</span>을 모두 승인하시겠습니까?
@@ -289,7 +289,7 @@ function ApprovalRow({ item, isSelected, onToggle, onApprove, onReject, processi
 
   return (
     <div
-      className={`rounded-xl bg-white p-4 transition-shadow hover:shadow-sm ${border} border border-border`}
+      className={`rounded-xl bg-card p-4 transition-shadow hover:shadow-sm ${border} border border-border`}
     >
       <div className="flex items-start gap-3">
         {/* Checkbox (pending only) */}
@@ -333,7 +333,7 @@ function ApprovalRow({ item, isSelected, onToggle, onApprove, onReject, processi
                 variant="outline"
                 className={`h-5 px-1.5 text-[10px] ${
                   isDue
-                    ? 'border-red-200 bg-red-50 text-red-500'
+                    ? 'border-destructive/20 bg-destructive/5 text-red-500'
                     : 'border-border text-muted-foreground'
                 }`}
               >
@@ -362,7 +362,7 @@ function ApprovalRow({ item, isSelected, onToggle, onApprove, onReject, processi
             <Button
               size="sm"
               variant="ghost"
-              className="h-7 gap-1 px-2 text-[11px] text-red-500 hover:bg-red-50"
+              className="h-7 gap-1 px-2 text-[11px] text-red-500 hover:bg-destructive/5"
               disabled={isBusy}
               onClick={() => onReject(item)}
             >
@@ -534,7 +534,7 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
 
       {/* ── Bulk progress bar ── */}
       {bulkProgress && (
-        <div className="rounded-lg border border-border bg-white p-3 space-y-2">
+        <div className="rounded-lg border border-border bg-card p-3 space-y-2">
           <div className="flex items-center justify-between text-sm">
             <span className="text-foreground font-medium">
               일괄 승인 진행 중... ({bulkProgress.done}/{bulkProgress.total})

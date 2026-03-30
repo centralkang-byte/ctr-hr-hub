@@ -29,7 +29,7 @@ function RiskBadge({ level }: { level: string }) {
     low: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
     medium: 'bg-amber-100 text-amber-700 border border-amber-300',
     high: 'bg-orange-50 text-orange-700 border border-orange-200',
-    critical: 'bg-red-100 text-red-700 border border-red-200',
+    critical: 'bg-destructive/10 text-destructive border border-destructive/20',
   }
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[level] ?? map.medium}`}>
@@ -43,7 +43,7 @@ function StatusBadge({ status }: { status: string }) {
     draft: 'bg-background text-[#555] border border-border',
     in_review: 'bg-amber-100 text-amber-700 border border-amber-300',
     approved: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
-    rejected: 'bg-red-100 text-red-700 border border-red-200',
+    rejected: 'bg-destructive/10 text-destructive border border-destructive/20',
   }
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[status] ?? map.draft}`}>
@@ -108,19 +108,19 @@ export default function DpiaClient({ user }: { user: SessionUser }) {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1">Total DPIAs</p>
           <p className="text-3xl font-bold text-foreground">{dpias.length}</p>
         </div>
-        <div className="bg-white rounded-xl border border-red-100 p-5">
+        <div className="bg-card rounded-xl border border-destructive/15 p-5">
           <p className="text-xs text-red-500 mb-1">Critical Risk</p>
-          <p className="text-3xl font-bold text-red-600">{riskCounts.critical}</p>
+          <p className="text-3xl font-bold text-destructive">{riskCounts.critical}</p>
         </div>
-        <div className="bg-white rounded-xl border border-orange-100 p-5">
+        <div className="bg-card rounded-xl border border-orange-100 p-5">
           <p className="text-xs text-orange-500 mb-1">High Risk</p>
           <p className="text-3xl font-bold text-orange-600">{riskCounts.high}</p>
         </div>
-        <div className="bg-white rounded-xl border border-amber-100 p-5">
+        <div className="bg-card rounded-xl border border-amber-100 p-5">
           <p className="text-xs text-amber-500 mb-1">Medium Risk</p>
           <p className="text-3xl font-bold text-amber-600">{riskCounts.medium}</p>
         </div>
@@ -142,7 +142,7 @@ export default function DpiaClient({ user }: { user: SessionUser }) {
       )}
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-border">
+      <div className="bg-card rounded-xl border border-border">
         {loading ? (
           <div className="p-8 text-center text-[#666]">{tc('loading')}</div>
         ) : dpias.length === 0 ? (

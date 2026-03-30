@@ -123,7 +123,7 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
                   <AnimatedNumber value={summary?.terminations ?? 0} />
                 </p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-50">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/5">
                 <TrendingDown className="h-5 w-5 text-red-400" />
               </div>
             </div>
@@ -163,22 +163,22 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
           {/* 승인 대기 현황 */}
           <Card className="bg-primary/5">
             <CardHeader className="pb-2 pt-4">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <CheckSquare className="h-4 w-4 text-primary" />
                 승인 대기 현황
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 pb-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">휴가 신청</span>
+                <span className="text-sm text-muted-foreground">휴가 신청</span>
                 <StatusBadge variant="info">{summary?.pendingLeaves ?? 0}건</StatusBadge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">프로필 변경</span>
+                <span className="text-sm text-muted-foreground">프로필 변경</span>
                 <StatusBadge variant="info">5건</StatusBadge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">급여 조정</span>
+                <span className="text-sm text-muted-foreground">급여 조정</span>
                 <StatusBadge variant="info">3건</StatusBadge>
               </div>
               <Link
@@ -193,22 +193,22 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
           {/* 퇴직 진행 현황 */}
           <Card>
             <CardHeader className="pb-2 pt-4">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <UserMinus className="h-4 w-4 text-amber-500" />
                 퇴직 진행 현황
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 pb-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">퇴직 예정</span>
+                <span className="text-sm text-muted-foreground">퇴직 예정</span>
                 <StatusBadge variant="warning">{summary?.terminations ?? 0}명</StatusBadge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">인수인계 진행 중</span>
+                <span className="text-sm text-muted-foreground">인수인계 진행 중</span>
                 <StatusBadge variant="warning">1명</StatusBadge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">이번 달 퇴직</span>
+                <span className="text-sm text-muted-foreground">이번 달 퇴직</span>
                 <StatusBadge variant="danger">{summary?.terminations ?? 0}명</StatusBadge>
               </div>
               <Link

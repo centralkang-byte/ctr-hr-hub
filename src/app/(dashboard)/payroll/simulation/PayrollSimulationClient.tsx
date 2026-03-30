@@ -32,7 +32,7 @@ const pctStr = (r: number) => `${r >= 0 ? '+' : ''}${(r * 100).toFixed(1)}%`
 
 function diffColor(n: number) {
   if (n > 0) return 'text-primary'
-  if (n < 0) return 'text-red-600'
+  if (n < 0) return 'text-destructive'
   return 'text-muted-foreground'
 }
 
@@ -49,8 +49,8 @@ function KPICard({ label, value, diff, rate, variant }: {
   variant?: 'neutral' | 'cost' | 'auto'
 }) {
   const badgeColor = !rate ? '' :
-    variant === 'cost' ? 'bg-red-50 text-red-600' :
-      rate.startsWith('-') ? 'bg-green-50 text-green-600' : 'bg-primary/5 text-primary'
+    variant === 'cost' ? 'bg-destructive/5 text-destructive' :
+      rate.startsWith('-') ? 'bg-tertiary-container/10 text-tertiary' : 'bg-primary/5 text-primary'
 
   return (
     <div className={CARD_STYLES.padded}>
@@ -119,10 +119,10 @@ function EmployeeExpandedDetail({ emp }: { emp: EmployeeSimResult }) {
                   <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(s.totalDeductions)}</td>
                   <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(s.totalDeductions - c.totalDeductions))}>{signedKRW(s.totalDeductions - c.totalDeductions)}</td>
                 </tr>
-                <tr className={cn(TABLE_STYLES.row, "bg-blue-50 font-bold")}>
+                <tr className={cn(TABLE_STYLES.row, "bg-primary/5 font-bold")}>
                   <td className={TABLE_STYLES.cell}>{'실수령액'}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums text-blue-700")}>{fmtKRW(c.netPay)}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums text-blue-700")}>{fmtKRW(s.netPay)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums text-primary")}>{fmtKRW(c.netPay)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums text-primary")}>{fmtKRW(s.netPay)}</td>
                   <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(s.netPay - c.netPay))}>{signedKRW(s.netPay - c.netPay)}</td>
                 </tr>
               </tbody>
@@ -389,7 +389,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
             { key: 'FX' as SimMode, label: t('simModeFx') },
           ]).map(({ key, label }) => (
             <button key={key} onClick={() => { setMode(key); setResult(null) }}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${mode === key ? 'bg-primary text-white' : 'bg-white text-muted-foreground hover:text-foreground'}`}>
+              className={`px-4 py-2 text-sm font-medium transition-colors ${mode === key ? 'bg-primary text-white' : 'bg-card text-muted-foreground hover:text-foreground'}`}>
               {label}
             </button>
           ))}
@@ -439,7 +439,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
                       className="flex-1 px-2 py-2 text-sm outline-none bg-transparent" />
                   </div>
                   {showDropdown && searchResults.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-lg shadow-lg z-20 max-h-60 overflow-y-auto">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-20 max-h-60 overflow-y-auto">
                       {!searchResults?.length && <EmptyState />}
               {searchResults?.map(emp => (
                         <button key={emp.id} onClick={() => selectEmployee(emp)}
@@ -452,7 +452,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
                     </div>
                   )}
                   {showDropdown && searchResults.length === 0 && searchQuery.length >= 1 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-lg shadow-lg z-20 p-4 text-center text-sm text-muted-foreground">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-20 p-4 text-center text-sm text-muted-foreground">
                       {tCommon('noResults')}
                     </div>
                   )}
@@ -549,7 +549,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
                             placeholder={tCommon('searchEmployee')} className="flex-1 px-2 py-1.5 text-sm outline-none bg-transparent" />
                         </div>
                         {showDropdown && searchResults.length > 0 && (
-                          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded shadow-lg z-20 max-h-40 overflow-y-auto">
+                          <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded shadow-lg z-20 max-h-40 overflow-y-auto">
                             {!searchResults?.length && <EmptyState />}
               {searchResults?.map(emp => (
                               <button key={emp.id} onClick={() => selectEmployee(emp)}
@@ -602,7 +602,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
             </div>
           )}
 
-          {error && <div className="text-sm text-red-600 bg-red-100 px-4 py-3 rounded-lg">{error}</div>}
+          {error && <div className="text-sm text-destructive bg-destructive/10 px-4 py-3 rounded-lg">{error}</div>}
 
           <button onClick={handleCalculate} disabled={!isValid || isLoading}
             className="w-full px-4 py-3 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">

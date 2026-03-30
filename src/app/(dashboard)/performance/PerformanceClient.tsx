@@ -59,8 +59,8 @@ interface TeamMemberGoals {
 
 const CYCLE_STATUS_STYLES: Record<string, string> = {
   PLANNING: 'bg-muted text-[#666]',
-  GOAL_SETTING: 'bg-blue-50 text-blue-800',
-  IN_PROGRESS: 'bg-primary/10 text-green-700',
+  GOAL_SETTING: 'bg-primary/5 text-blue-800',
+  IN_PROGRESS: 'bg-primary/10 text-tertiary',
   EVALUATION: 'bg-amber-50 text-amber-700',
   CALIBRATION: 'bg-purple-50 text-purple-800',
   COMPLETED: 'bg-border text-[#666]',
@@ -225,7 +225,7 @@ export default function PerformanceClient({
         {/* Quick Stats */}
         <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {/* Card 1: 현재 사이클 상태 */}
-          <div className="rounded-xl border border-border bg-white p-5">
+          <div className="rounded-xl border border-border bg-card p-5">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                 <Calendar className="h-5 w-5 text-primary" />
@@ -242,7 +242,7 @@ export default function PerformanceClient({
           </div>
 
           {/* Card 2: 목표 수 */}
-          <div className="rounded-xl border border-border bg-white p-5">
+          <div className="rounded-xl border border-border bg-card p-5">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                 <Target className="h-5 w-5 text-primary" />
@@ -259,7 +259,7 @@ export default function PerformanceClient({
           </div>
 
           {/* Card 3: 평균 달성률 */}
-          <div className="rounded-xl border border-border bg-white p-5">
+          <div className="rounded-xl border border-border bg-card p-5">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-50">
                 <TrendingUp className="h-5 w-5 text-purple-800" />
@@ -274,7 +274,7 @@ export default function PerformanceClient({
           </div>
 
           {/* Card 4: 다음 마감일 */}
-          <div className="rounded-xl border border-border bg-white p-5">
+          <div className="rounded-xl border border-border bg-card p-5">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-50">
                 <ClipboardList className="h-5 w-5 text-orange-800" />
@@ -308,7 +308,7 @@ export default function PerformanceClient({
                   </Link>
                 </div>
                 {goals.length === 0 ? (
-                  <div className="rounded-xl border border-border bg-white p-8 text-center text-[#999]">
+                  <div className="rounded-xl border border-border bg-card p-8 text-center text-[#999]">
                     {t('noGoals')}
                   </div>
                 ) : (
@@ -318,7 +318,7 @@ export default function PerformanceClient({
                       return (
                         <div
                           key={goal.id}
-                          className="rounded-xl border border-border bg-white p-4"
+                          className="rounded-xl border border-border bg-card p-4"
                         >
                           <div className="mb-2 flex items-center justify-between">
                             <div className="flex items-center gap-2">
@@ -328,11 +328,11 @@ export default function PerformanceClient({
                               <span
                                 className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
                                   goal.status === 'APPROVED'
-                                    ? 'bg-primary/10 text-green-700'
+                                    ? 'bg-primary/10 text-tertiary'
                                     : goal.status === 'PENDING_APPROVAL'
                                       ? 'bg-amber-50 text-amber-700'
                                       : goal.status === 'REJECTED'
-                                        ? 'bg-red-50 text-red-800'
+                                        ? 'bg-destructive/5 text-destructive'
                                         : 'bg-muted text-[#666]'
                                 }`}
                               >
@@ -378,7 +378,7 @@ export default function PerformanceClient({
                   </Link>
                 </div>
                 {teamData.length === 0 ? (
-                  <div className="rounded-xl border border-border bg-white p-8 text-center text-[#999]">
+                  <div className="rounded-xl border border-border bg-card p-8 text-center text-[#999]">
                     {t('noTeamMembers')}
                   </div>
                 ) : (
@@ -386,7 +386,7 @@ export default function PerformanceClient({
                     {teamData.map((member) => (
                       <div
                         key={member.employee.id}
-                        className="rounded-xl border border-border bg-white p-5"
+                        className="rounded-xl border border-border bg-card p-5"
                       >
                         <EmployeeCell
                           size="sm"
@@ -435,7 +435,7 @@ export default function PerformanceClient({
                         return (
                           <div
                             key={goal.id}
-                            className="rounded-xl border border-border bg-white p-4"
+                            className="rounded-xl border border-border bg-card p-4"
                           >
                             <div className="mb-2 flex items-center justify-between">
                               <span className="font-medium text-foreground">
@@ -483,7 +483,7 @@ export default function PerformanceClient({
                     {t('activeCycles')}
                   </h3>
                   {cycles.length === 0 ? (
-                    <div className="rounded-xl border border-border bg-white p-6 text-center text-[#999]">
+                    <div className="rounded-xl border border-border bg-card p-6 text-center text-[#999]">
                       {t('noCycles')}
                     </div>
                   ) : (
@@ -492,7 +492,7 @@ export default function PerformanceClient({
               {cycles?.map((cycle) => (
                         <div
                           key={cycle.id}
-                          className="rounded-xl border border-border bg-white p-4"
+                          className="rounded-xl border border-border bg-card p-4"
                         >
                           <div className="mb-2 flex items-center justify-between">
                             <span className="font-medium text-foreground">
@@ -516,7 +516,7 @@ export default function PerformanceClient({
                 </div>
 
                 {/* Submission rate */}
-                <div className="rounded-xl border border-border bg-white p-5">
+                <div className="rounded-xl border border-border bg-card p-5">
                   <h3 className="mb-3 text-sm font-semibold text-[#666]">
                     {t('overallSubmissionRate')}
                   </h3>
@@ -556,7 +556,7 @@ export default function PerformanceClient({
                         return (
                           <div
                             key={goal.id}
-                            className="rounded-xl border border-border bg-white p-4"
+                            className="rounded-xl border border-border bg-card p-4"
                           >
                             <div className="mb-2 flex items-center justify-between">
                               <span className="font-medium text-foreground">

@@ -71,7 +71,7 @@
     --secondary: 180 3.4% 18.2%;           /* #2d2f2f */
     --secondary-foreground: 0 0% 96.5%;
     --muted: 180 3.4% 18.2%;              /* #2d2f2f */
-    --muted-foreground: 180 0.8% 61.4%;    /* #9c9d9d inverse-on-surface */
+    --muted-foreground: 210 6% 72%;         /* #b5b8bc — 다크모드 4.5:1+ contrast on --card */
     --accent: 180 3.4% 18.2%;
     --accent-foreground: 0 0% 96.5%;
     --destructive: 346 85% 52.2%;          /* #f74b6d error-container (밝게) */
@@ -94,6 +94,16 @@
     --chart-3: 154 89% 68.6%;             /* tertiary-fixed #69f6b8 */
     --chart-4: 261 44% 49%;               /* secondary #6249b2 */
     --chart-5: 346 85% 52.2%;             /* error-container #f74b6d */
-    --chart-6: 180 0.8% 61.4%;            /* inverse-on-surface */
+    --chart-6: 210 6% 72%;                /* muted foreground (다크모드 보정) */
   }
+}
+
+/* ── 브라우저 Autofill 다크모드 방어 ─────────────────────────── */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px hsl(var(--card)) inset !important;
+  -webkit-text-fill-color: hsl(var(--foreground)) !important;
+  caret-color: hsl(var(--foreground));
 }

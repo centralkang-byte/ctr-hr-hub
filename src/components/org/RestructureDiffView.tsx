@@ -163,10 +163,10 @@ function buildDiffLines(
 
 function DiffRow({ line }: { line: DiffLine }) {
   const typeConfig = {
-    add: { bg: 'bg-green-50', border: 'border-l-[#5E81F4]', icon: <CheckCircle2 size={14} className="text-primary" />, badge: 'bg-emerald-100 text-emerald-700', badgeText: '추가' },
-    remove: { bg: 'bg-red-50', border: 'border-l-[#EF4444]', icon: <AlertTriangle size={14} className="text-red-500" />, badge: 'bg-red-100 text-red-700', badgeText: '제거' },
+    add: { bg: 'bg-tertiary-container/10', border: 'border-l-[#5E81F4]', icon: <CheckCircle2 size={14} className="text-primary" />, badge: 'bg-emerald-100 text-emerald-700', badgeText: '추가' },
+    remove: { bg: 'bg-destructive/5', border: 'border-l-[#EF4444]', icon: <AlertTriangle size={14} className="text-red-500" />, badge: 'bg-destructive/10 text-destructive', badgeText: '제거' },
     modify: { bg: 'bg-amber-50', border: 'border-l-[#F59E0B]', icon: <Building2 size={14} className="text-amber-500" />, badge: 'bg-amber-100 text-amber-700', badgeText: '변경' },
-    move: { bg: 'bg-blue-50', border: 'border-l-[#3B82F6]', icon: <ArrowRight size={14} className="text-blue-500" />, badge: 'bg-blue-100 text-blue-700', badgeText: '이동' },
+    move: { bg: 'bg-primary/5', border: 'border-l-[#3B82F6]', icon: <ArrowRight size={14} className="text-blue-500" />, badge: 'bg-primary/10 text-primary', badgeText: '이동' },
   }[line.type]
 
   return (
@@ -217,11 +217,11 @@ export function RestructureDiffView({ plan, depts, employees }: RestructureDiffV
     <div className="p-6 space-y-5">
       {/* Summary cards */}
       <div className="grid grid-cols-4 gap-3">
-        <div className="bg-green-50 border border-green-200 rounded-xl p-3 text-center">
+        <div className="bg-tertiary-container/10 border border-tertiary/20 rounded-xl p-3 text-center">
           <p className="text-2xl font-bold text-primary">{addCount}</p>
           <p className="text-xs text-[#555] mt-0.5">신설</p>
         </div>
-        <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-center">
+        <div className="bg-destructive/5 border border-destructive/20 rounded-xl p-3 text-center">
           <p className="text-2xl font-bold text-red-500">{removeCount}</p>
           <p className="text-xs text-[#555] mt-0.5">제거</p>
         </div>
@@ -229,7 +229,7 @@ export function RestructureDiffView({ plan, depts, employees }: RestructureDiffV
           <p className="text-2xl font-bold text-amber-500">{modifyCount}</p>
           <p className="text-xs text-[#555] mt-0.5">변경</p>
         </div>
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-center">
+        <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 text-center">
           <p className="text-2xl font-bold text-blue-500">{moveCount}</p>
           <p className="text-xs text-[#555] mt-0.5">이동</p>
         </div>

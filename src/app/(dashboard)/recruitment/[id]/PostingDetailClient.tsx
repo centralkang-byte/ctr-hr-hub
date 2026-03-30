@@ -171,12 +171,12 @@ export default function PostingDetailClient({
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push('/recruitment')}
-            className="p-2 rounded-lg border border-border hover:bg-white transition-colors"
+            className="p-2 rounded-lg border border-border hover:bg-card transition-colors"
           >
             <ChevronLeft className="w-4 h-4 text-[#666]" />
           </button>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center">
               <Briefcase className="w-5 h-5 text-blue-500" />
             </div>
             <div>
@@ -229,7 +229,7 @@ export default function PostingDetailClient({
         {/* Left (65%) */}
         <div className="flex-[65] space-y-6">
           {/* Description */}
-          <div className="bg-white border border-border rounded-xl p-6">
+          <div className="bg-card border border-border rounded-xl p-6">
             <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
               {t('descriptionSection')}
             </h2>
@@ -240,7 +240,7 @@ export default function PostingDetailClient({
 
           {/* Requirements */}
           {data.requirements && (
-            <div className="bg-white border border-border rounded-xl p-6">
+            <div className="bg-card border border-border rounded-xl p-6">
               <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
                 {t('requirementsSection')}
               </h2>
@@ -252,7 +252,7 @@ export default function PostingDetailClient({
 
           {/* Preferred */}
           {data.preferred && (
-            <div className="bg-white border border-border rounded-xl p-6">
+            <div className="bg-card border border-border rounded-xl p-6">
               <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
                 {t('preferredSection')}
               </h2>
@@ -263,12 +263,12 @@ export default function PostingDetailClient({
           )}
 
           {/* Application Summary */}
-          <div className="bg-white border border-border rounded-xl p-6">
+          <div className="bg-card border border-border rounded-xl p-6">
             <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
               {t('applicationStatus')}
             </h2>
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 px-4 py-3 bg-blue-50 rounded-lg">
+              <div className="flex items-center gap-2 px-4 py-3 bg-primary/5 rounded-lg">
                 <Users className="w-5 h-5 text-blue-500" />
                 <div>
                   <p className="text-2xl font-bold text-blue-500">{data._count.applications}</p>
@@ -282,7 +282,7 @@ export default function PostingDetailClient({
         {/* Right (35%) */}
         <div className="flex-[35] space-y-6">
           {/* Status Card */}
-          <div className="bg-white border border-border rounded-xl p-6">
+          <div className="bg-card border border-border rounded-xl p-6">
             <h3 className="text-sm font-bold text-foreground mb-4 tracking-[-0.02em]">
               {t('postingInfo')}
             </h3>
@@ -359,7 +359,7 @@ export default function PostingDetailClient({
 
           {/* Competencies */}
           {data.requiredCompetencies && Array.isArray(data.requiredCompetencies) && data.requiredCompetencies.length > 0 && (
-            <div className="bg-white border border-border rounded-xl p-6">
+            <div className="bg-card border border-border rounded-xl p-6">
               <h3 className="text-sm font-bold text-foreground mb-3 tracking-[-0.02em]">
                 {t('requiredCompetencies')}
               </h3>
@@ -367,7 +367,7 @@ export default function PostingDetailClient({
                 {data.requiredCompetencies.map((comp, idx) => (
                   <span
                     key={idx}
-                    className="px-3 py-1 text-xs font-medium bg-blue-50 text-blue-800 rounded"
+                    className="px-3 py-1 text-xs font-medium bg-primary/5 text-blue-800 rounded"
                   >
                     {comp}
                   </span>
@@ -377,7 +377,7 @@ export default function PostingDetailClient({
           )}
 
           {/* Timeline */}
-          <div className="bg-white border border-border rounded-xl p-6">
+          <div className="bg-card border border-border rounded-xl p-6">
             <h3 className="text-sm font-bold text-foreground mb-3 tracking-[-0.02em]">
               {t('timelineSection')}
             </h3>

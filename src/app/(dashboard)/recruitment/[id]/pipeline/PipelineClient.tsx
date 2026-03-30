@@ -60,13 +60,13 @@ const STAGE_BORDER_COLORS: Record<string, string> = {
 
 const STAGE_HEADER_BG: Record<string, string> = {
   APPLIED: 'bg-muted',
-  SCREENING: 'bg-blue-50',
-  INTERVIEW_1: 'bg-blue-50',
-  INTERVIEW_2: 'bg-blue-50',
+  SCREENING: 'bg-primary/5',
+  INTERVIEW_1: 'bg-primary/5',
+  INTERVIEW_2: 'bg-primary/5',
   FINAL: 'bg-orange-50',
   OFFER: 'bg-primary/10',
   HIRED: 'bg-primary/10',
-  REJECTED: 'bg-red-50',
+  REJECTED: 'bg-destructive/5',
 }
 
 // ─── Types ──────────────────────────────────────────────
@@ -323,7 +323,7 @@ export default function PipelineClient({ user, postingId }: Props) {
         </span>
       )
     }
-    let bgClass = 'bg-red-50 text-red-800'
+    let bgClass = 'bg-destructive/5 text-destructive'
     if (score >= 80) bgClass = 'bg-primary/10 text-green-900'
     else if (score >= 50) bgClass = 'bg-orange-50 text-orange-800'
     return (
@@ -352,12 +352,12 @@ export default function PipelineClient({ user, postingId }: Props) {
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => router.push(`/recruitment/${postingId}`)}
-          className="p-2 rounded-lg border border-border hover:bg-white transition-colors duration-150"
+          className="p-2 rounded-lg border border-border hover:bg-card transition-colors duration-150"
         >
           <ChevronLeft className="w-4 h-4 text-[#666]" />
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center">
             <GitBranch className="w-5 h-5 text-blue-500" />
           </div>
           <div>
@@ -389,7 +389,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                 onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, stage)}
                 className={`flex-1 min-w-[200px] bg-background border border-border rounded-xl flex flex-col transition-all duration-150 ${
-                  isOver ? 'ring-2 ring-blue-500 bg-blue-50' : ''
+                  isOver ? 'ring-2 ring-blue-500 bg-primary/5' : ''
                 }`}
                 style={{ borderTopWidth: 3, borderTopColor: borderColor }}
               >
@@ -399,7 +399,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                     <span className="text-xs font-bold text-[#333]">
                       {STAGE_KEYS[stage] ? t(STAGE_KEYS[stage]) : stage}
                     </span>
-                    <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold bg-white text-[#666] rounded-full">
+                    <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold bg-card text-[#666] rounded-full">
                       {items.length}
                     </span>
                   </div>
@@ -413,7 +413,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                       draggable
                       onDragStart={(e) => handleDragStart(e, app.id)}
                       onDragEnd={handleDragEnd}
-                      className={`bg-white border border-border rounded-lg p-3 cursor-grab active:cursor-grabbing transition-opacity duration-150 ${
+                      className={`bg-card border border-border rounded-lg p-3 cursor-grab active:cursor-grabbing transition-opacity duration-150 ${
                         draggingId === app.id ? 'opacity-50' : 'opacity-100'
                       } hover:border-[#CCC]`}
                     >
@@ -444,7 +444,7 @@ export default function PipelineClient({ user, postingId }: Props) {
               setRejectionModal({ open: false, applicationId: '', reason: '' })
             }
           />
-          <div className="relative bg-white border border-border rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
+          <div className="relative bg-card border border-border rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <h2
                 className="text-lg font-bold text-[#333]"
@@ -482,7 +482,7 @@ export default function PipelineClient({ user, postingId }: Props) {
               <button
                 onClick={guardedRejectionSubmit}
                 disabled={!rejectionModal.reason.trim() || modalSubmitting}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-red-500 hover:bg-red-700 text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-destructive/50 hover:bg-red-700 text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
               >
                 {modalSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                 {t('confirmButton')}
@@ -505,7 +505,7 @@ export default function PipelineClient({ user, postingId }: Props) {
               })
             }
           />
-          <div className="relative bg-white border border-border rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
+          <div className="relative bg-card border border-border rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <h2
                 className="text-lg font-bold text-[#333]"

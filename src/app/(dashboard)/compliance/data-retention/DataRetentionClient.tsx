@@ -86,22 +86,22 @@ export default function DataRetentionClient({ user }: { user: SessionUser }) {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1">Total Policies</p>
           <p className="text-3xl font-bold text-foreground">{policies.length}</p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1">{t('gdpr.autoDelete')} Enabled</p>
           <p className="text-3xl font-bold text-foreground">{policies.filter((p) => p.auto_delete).length}</p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-[#666] mb-1">{t('gdpr.anonymize')} Enabled</p>
           <p className="text-3xl font-bold text-foreground">{policies.filter((p) => p.anonymize).length}</p>
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-border">
+      <div className="bg-card rounded-xl border border-border">
         {loading ? (
           <div className="p-8 text-center text-[#666]">{tc('loading')}</div>
         ) : policies.length === 0 ? (
@@ -175,7 +175,7 @@ export default function DataRetentionClient({ user }: { user: SessionUser }) {
                         </button>
                         <button
                           onClick={() => handleDelete(p.id)}
-                          className="p-1.5 text-[#666] hover:text-red-600 hover:bg-red-100 rounded"
+                          className="p-1.5 text-[#666] hover:text-destructive hover:bg-destructive/10 rounded"
                           title={tc('delete')}
                         >
                           <Trash2 className="w-4 h-4" />

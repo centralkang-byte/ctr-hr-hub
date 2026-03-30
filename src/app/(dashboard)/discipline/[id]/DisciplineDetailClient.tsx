@@ -150,7 +150,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
           <ChevronLeft className="w-4 h-4 text-[#666]" />
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-destructive/5 rounded-lg flex items-center justify-center">
             <Gavel className="w-5 h-5 text-red-500" />
           </div>
           <div>
@@ -174,7 +174,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
         {/* Left Panel: Detail */}
         <div className="space-y-6">
           {/* Info Card */}
-          <div className="bg-white border border-border rounded-xl p-6">
+          <div className="bg-card border border-border rounded-xl p-6">
             <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
               {t('disciplineInfo')}
             </h2>
@@ -192,7 +192,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
           </div>
 
           {/* Description */}
-          <div className="bg-white border border-border rounded-xl p-6">
+          <div className="bg-card border border-border rounded-xl p-6">
             <h2 className="text-base font-bold text-foreground mb-3 flex items-center gap-2 tracking-[-0.02em]">
               <FileText className="w-4 h-4 text-[#666]" />
               {t('reason')}
@@ -204,7 +204,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
 
           {/* Evidence */}
           {data.evidenceKeys && data.evidenceKeys.length > 0 && (
-            <div className="bg-white border border-border rounded-xl p-6">
+            <div className="bg-card border border-border rounded-xl p-6">
               <h2 className="text-base font-bold text-foreground mb-3 tracking-[-0.02em]">
                 {t('evidence')}
               </h2>
@@ -221,7 +221,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
 
           {/* Committee */}
           {(data.committeeDate || (data.committeeMembers && data.committeeMembers.length > 0)) && (
-            <div className="bg-white border border-border rounded-xl p-6">
+            <div className="bg-card border border-border rounded-xl p-6">
               <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
                 {t('committee')}
               </h2>
@@ -250,7 +250,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
 
           {/* Conditional: Suspension */}
           {data.suspensionStart && (
-            <div className="bg-white border border-border rounded-xl p-6">
+            <div className="bg-card border border-border rounded-xl p-6">
               <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
                 {t('suspensionPeriod')}
               </h2>
@@ -265,7 +265,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
 
           {/* Conditional: Salary Reduction */}
           {data.salaryReductionRate !== null && data.salaryReductionRate !== undefined && (
-            <div className="bg-white border border-border rounded-xl p-6">
+            <div className="bg-card border border-border rounded-xl p-6">
               <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
                 {t('salaryReductionInfo')}
               </h2>
@@ -280,7 +280,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
 
           {/* Conditional: Demotion */}
           {data.demotionGrade && (
-            <div className="bg-white border border-border rounded-xl p-6">
+            <div className="bg-card border border-border rounded-xl p-6">
               <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
                 {t('demotionInfo')}
               </h2>
@@ -292,9 +292,9 @@ export default function DisciplineDetailClient({ user, id }: Props) {
         {/* Right Panel */}
         <div className="space-y-6">
           {/* Employee Summary */}
-          <div className="bg-white border border-border rounded-xl p-6">
+          <div className="bg-card border border-border rounded-xl p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-primary/5 rounded-full flex items-center justify-center">
                 <User className="w-5 h-5 text-blue-800" />
               </div>
               <div>
@@ -315,7 +315,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
           </div>
 
           {/* Appeal Section */}
-          <div className="bg-white border border-border rounded-xl p-6">
+          <div className="bg-card border border-border rounded-xl p-6">
             <h3 className="text-base font-bold text-foreground mb-4 flex items-center gap-2 tracking-[-0.02em]">
               <AlertTriangle className="w-4 h-4 text-orange-500" />
               {t('appealSection')}

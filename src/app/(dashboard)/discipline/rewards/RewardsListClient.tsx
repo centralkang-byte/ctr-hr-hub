@@ -20,19 +20,19 @@ import { BUTTON_SIZES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 // ─── Badge Styles ────────────────────────────────────────
 
 const REWARD_TYPE_BADGE_STYLES: Record<string, string> = {
-  COMMENDATION: 'bg-primary/10 text-green-700',
-  BONUS_AWARD: 'bg-blue-50 text-blue-800',
+  COMMENDATION: 'bg-primary/10 text-tertiary',
+  BONUS_AWARD: 'bg-primary/5 text-blue-800',
   CTR_VALUE_AWARD: 'bg-purple-50 text-purple-800',
   LONG_SERVICE: 'bg-orange-50 text-orange-800',
   INNOVATION: 'bg-primary/10 text-primary',
-  SAFETY_AWARD: 'bg-blue-50 text-blue-500',
-  PROMOTION_RECOMMENDATION: 'bg-primary/10 text-green-700',
+  SAFETY_AWARD: 'bg-primary/5 text-blue-500',
+  PROMOTION_RECOMMENDATION: 'bg-primary/10 text-tertiary',
   OTHER: 'bg-muted text-[#999]',
 }
 
 const CTR_VALUE_BADGE_STYLES: Record<string, string> = {
-  CHALLENGE: 'bg-red-50 text-red-800',
-  TRUST: 'bg-blue-50 text-blue-800',
+  CHALLENGE: 'bg-destructive/5 text-destructive',
+  TRUST: 'bg-primary/5 text-blue-800',
   RESPONSIBILITY: 'bg-orange-50 text-orange-800',
   RESPECT: 'bg-purple-50 text-purple-800',
 }
@@ -144,7 +144,7 @@ export default function RewardsListClient({ user }: Props) {
       </div>
 
       {/* Filters */}
-      <div className="bg-white border border-border rounded-xl p-4 mb-6">
+      <div className="bg-card border border-border rounded-xl p-4 mb-6">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[240px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
@@ -161,7 +161,7 @@ export default function RewardsListClient({ user }: Props) {
             <select
               value={typeFilter}
               onChange={(e) => { setTypeFilter(e.target.value); setPage(1) }}
-              className="px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 bg-white"
+              className="px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 bg-card"
             >
               <option value="">{t('typeAll')}</option>
               {REWARD_TYPE_KEYS.map((key) => (

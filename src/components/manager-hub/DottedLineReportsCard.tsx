@@ -47,7 +47,7 @@ export function DottedLineReportsCard() {
     <Card>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-medium text-ctr-gray-700">
+          <CardTitle className="text-sm font-medium text-foreground">
             <GitBranch className="mr-2 inline-block h-4 w-4" />
             점선 보고 직원 (Matrix Reports)
           </CardTitle>
@@ -60,7 +60,7 @@ export function DottedLineReportsCard() {
       </CardHeader>
       <CardContent>
         {loading ? (
-          <p className="py-4 text-center text-sm text-ctr-gray-500">
+          <p className="py-4 text-center text-sm text-muted-foreground">
             불러오는 중...
           </p>
         ) : (
@@ -79,7 +79,7 @@ export function DottedLineReportsCard() {
                       </div>
                       <div>
                         <div className="flex items-center gap-1.5">
-                          <p className="text-sm font-medium text-ctr-gray-900">
+                          <p className="text-sm font-medium text-foreground">
                             {emp.name}
                           </p>
                           {isCrossCompany && (
@@ -91,7 +91,7 @@ export function DottedLineReportsCard() {
                             </Badge>
                           )}
                         </div>
-                        <p className="text-xs text-ctr-gray-500">
+                        <p className="text-xs text-muted-foreground">
                           {emp.companyName} · {emp.positionTitle}
                         </p>
                       </div>
@@ -109,9 +109,9 @@ export function DottedLineReportsCard() {
               })}
             </div>
             {hasCrossCompany && (
-              <div className="mt-3 flex items-start gap-1.5 rounded-md bg-slate-50 p-2">
-                <Info className="mt-0.5 h-3 w-3 shrink-0 text-ctr-gray-400" />
-                <p className="text-xs text-ctr-gray-500">
+              <div className="mt-3 flex items-start gap-1.5 rounded-md bg-muted/50 p-2">
+                <Info className="mt-0.5 h-3 w-3 shrink-0 text-muted-foreground/60" />
+                <p className="text-xs text-muted-foreground">
                   타 법인 점선 보고 직원은 조회만 가능합니다.
                 </p>
               </div>

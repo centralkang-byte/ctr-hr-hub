@@ -18,8 +18,8 @@ import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 const STATUS_STYLES: Record<string, string> = {
   DRAFT: 'bg-muted text-[#666]',
   PENDING_APPROVAL: 'bg-amber-50 text-amber-700',
-  APPROVED: 'bg-primary/10 text-green-700',
-  REJECTED: 'bg-red-50 text-red-800',
+  APPROVED: 'bg-primary/10 text-tertiary',
+  REJECTED: 'bg-destructive/5 text-destructive',
 }
 
 // ─── Types ────────────────────────────────────────────────
@@ -192,7 +192,7 @@ export default function GoalsClient({
         {loading ? (
           <div className="py-20 text-center text-[#999]">{t('loadingText')}</div>
         ) : goals.length === 0 ? (
-          <div className="rounded-lg bg-white p-12 text-center">
+          <div className="rounded-lg bg-card p-12 text-center">
             <p className="text-[#999]">{t('noGoalsRegistered')}</p>
             <button
               onClick={() => router.push('/performance/goals/new')}
@@ -215,7 +215,7 @@ export default function GoalsClient({
               return (
                 <div
                   key={goal.id}
-                  className="rounded-lg bg-white p-5"
+                  className="rounded-lg bg-card p-5"
                 >
                   {/* Card header */}
                   <div className="mb-3 flex items-start justify-between gap-3">
@@ -271,7 +271,7 @@ export default function GoalsClient({
                     {goal.status === 'DRAFT' && (
                       <button
                         onClick={() => handleDelete(goal.id)}
-                        className="inline-flex items-center gap-1 rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-100 transition-colors"
+                        className="inline-flex items-center gap-1 rounded-md border border-destructive/20 px-3 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors"
                       >
                         <Trash2 className="h-3 w-3" />
                         {t('deleteButton')}
@@ -360,11 +360,11 @@ export default function GoalsClient({
 
         {/* Summary bar */}
         {goals.length > 0 && (
-          <div className="mt-6 flex items-center justify-between rounded-lg bg-white p-4">
+          <div className="mt-6 flex items-center justify-between rounded-lg bg-card p-4">
             <div className="text-sm">
               <span className="text-[#666]">{t('weightSum')}</span>
               <span
-                className={`font-bold ${totalWeight === 100 ? 'text-green-600' : 'text-red-600'}`}
+                className={`font-bold ${totalWeight === 100 ? 'text-tertiary' : 'text-destructive'}`}
               >
                 {totalWeight}%
               </span>
@@ -377,7 +377,7 @@ export default function GoalsClient({
             <button
               onClick={handleSubmitAll}
               disabled={!canSubmit || submitting}
-              className="rounded-lg bg-red-500 px-5 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-40 transition-opacity"
+              className="rounded-lg bg-destructive/50 px-5 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-40 transition-opacity"
             >
               {submitting ? t('submittingAll') : t('submitAll')}
             </button>

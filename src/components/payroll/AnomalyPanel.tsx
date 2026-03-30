@@ -8,7 +8,7 @@ import { apiClient } from '@/lib/api'
 import type { PayrollAnomalyResult, AnomalySeverity } from '@/lib/payroll/types'
 
 const SEVERITY_CONFIG: Record<AnomalySeverity, { icon: typeof AlertTriangle; color: string; bg: string }> = {
-  ERROR: { icon: AlertCircle, color: 'text-red-600', bg: 'bg-red-100' },
+  ERROR: { icon: AlertCircle, color: 'text-destructive', bg: 'bg-destructive/10' },
   WARNING: { icon: AlertTriangle, color: 'text-amber-600', bg: 'bg-amber-100' },
   INFO: { icon: Info, color: 'text-primary', bg: 'bg-primary/10' },
 }
@@ -16,7 +16,7 @@ const SEVERITY_CONFIG: Record<AnomalySeverity, { icon: typeof AlertTriangle; col
 const RISK_COLORS: Record<string, string> = {
   LOW: 'bg-emerald-100 text-emerald-700 border-emerald-200',
   MEDIUM: 'bg-amber-100 text-amber-700 border-amber-300',
-  HIGH: 'bg-red-100 text-red-700 border-red-200',
+  HIGH: 'bg-destructive/10 text-destructive border-destructive/20',
 }
 
 interface AnomalyPanelProps {
@@ -43,7 +43,7 @@ export default function AnomalyPanel({ runId }: AnomalyPanelProps) {
 
   if (!result) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-violet-500" />
@@ -80,7 +80,7 @@ export default function AnomalyPanel({ runId }: AnomalyPanelProps) {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-card rounded-xl shadow-sm border border-border p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-violet-500" />

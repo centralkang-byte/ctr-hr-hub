@@ -39,11 +39,11 @@ export function ErrorPage({ type = '500', title, description, showHomeButton = t
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
       <Icon className={`w-16 h-16 ${config.color} mb-6`} />
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">{title || config.title}</h1>
-      <p className="text-sm text-gray-500 text-center max-w-md mb-8">{description || config.description}</p>
+      <h1 className="text-2xl font-bold text-foreground mb-2">{title || config.title}</h1>
+      <p className="text-sm text-muted-foreground text-center max-w-md mb-8">{description || config.description}</p>
       <div className="flex items-center gap-3">
         {showBackButton && (
-          <button onClick={() => window.history.back()} className="inline-flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">
+          <button onClick={() => window.history.back()} className="inline-flex items-center gap-2 px-4 py-2 text-sm text-foreground bg-card border border-border rounded-lg hover:bg-muted/50">
             <ArrowLeft className="w-4 h-4" /> 뒤로 가기
           </button>
         )}

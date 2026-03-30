@@ -23,7 +23,7 @@ export default function DepartmentHeatmap({ departments }: DepartmentHeatmapProp
   const sorted = [...departments].sort((a, b) => b.avgScore - a.avgScore)
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-card rounded-xl shadow-sm border border-border p-6">
       <h3 className="text-lg font-semibold text-foreground mb-4">부서별 이탈 위험</h3>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {sorted.map((dept) => (

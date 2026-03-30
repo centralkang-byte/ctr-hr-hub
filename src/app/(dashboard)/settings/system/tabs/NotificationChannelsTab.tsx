@@ -60,7 +60,7 @@ export function NotificationChannelsTab({
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10"><Icon className="h-5 w-5 text-primary" /></div>
             <div className="flex-1"><span className="text-sm font-medium text-foreground">{ch.label}</span></div>
             <button onClick={() => toggle(i)} className={`relative h-6 w-11 rounded-full transition-colors ${ch.enabled ? 'bg-primary' : 'bg-border'}`}>
-              <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${ch.enabled ? 'left-[22px]' : 'left-0.5'}`} />
+              <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-card shadow transition-transform ${ch.enabled ? 'left-[22px]' : 'left-0.5'}`} />
             </button>
           </div>
         )

@@ -54,7 +54,7 @@ export default function ConvertToEmployeeButton({ applicationId, applicantName }
 
       {open && (
         <div className={MODAL_STYLES.container}>
-          <div className="bg-white rounded-xl w-full max-w-md mx-4">
+          <div className="bg-card rounded-xl w-full max-w-md mx-4">
             <div className="flex items-center justify-between p-6 pb-0">
               <h2 className="text-lg font-bold text-foreground tracking-[-0.02em]">
                 {applicantName} — 직원 전환

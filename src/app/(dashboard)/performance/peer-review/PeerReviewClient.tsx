@@ -141,7 +141,7 @@ export default function PeerReviewClient({ user }: { user: SessionUser }) {
       {loading ? (
         <TableSkeleton rows={5} cols={5} />
       ) : error ? (
-        <div className="text-center text-sm text-red-600 py-8">{error} <button onClick={fetchData} className="underline ml-2">{tCommon('retry')}</button></div>
+        <div className="text-center text-sm text-destructive py-8">{error} <button onClick={fetchData} className="underline ml-2">{tCommon('retry')}</button></div>
       ) : tab === 'my-reviews' ? (
         /* My Reviews Tab */
         <div className="space-y-4">

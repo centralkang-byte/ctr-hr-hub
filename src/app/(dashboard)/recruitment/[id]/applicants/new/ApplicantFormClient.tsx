@@ -213,7 +213,7 @@ export default function ApplicantFormClient({
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => router.push(`/recruitment/${postingId}/applicants`)}
-          className="p-2 rounded-lg border border-border hover:bg-white transition-colors duration-150"
+          className="p-2 rounded-lg border border-border hover:bg-card transition-colors duration-150"
         >
           <ChevronLeft className="w-4 h-4 text-[#666]" />
         </button>
@@ -236,10 +236,10 @@ export default function ApplicantFormClient({
 
       {/* Form Card */}
       <form onSubmit={handleSubmit}>
-        <div className="bg-white border border-border rounded-xl p-6 max-w-2xl">
+        <div className="bg-card border border-border rounded-xl p-6 max-w-2xl">
           {error && (
-            <div className="mb-6 px-4 py-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-800">{error}</p>
+            <div className="mb-6 px-4 py-3 bg-destructive/5 border border-destructive/20 rounded-lg">
+              <p className="text-sm text-destructive">{error}</p>
             </div>
           )}
 
@@ -312,7 +312,7 @@ export default function ApplicantFormClient({
                 name="source"
                 value={form.source}
                 onChange={handleChange}
-                className="w-full px-4 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-border rounded-lg bg-card focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
               >
                 {SOURCE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>

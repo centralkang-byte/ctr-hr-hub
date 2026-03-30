@@ -170,7 +170,7 @@ export default function RetentionPolicyForm({ open, policy, onClose, onSaved }: 
                 onClick={() => handleChange('auto_delete', !form.auto_delete)}
                 className={`relative w-10 h-5 rounded-full transition-colors ${form.auto_delete ? 'bg-primary' : 'bg-border'}`}
               >
-                <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.auto_delete ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                <span className={`absolute top-0.5 w-4 h-4 bg-card rounded-full shadow transition-transform ${form.auto_delete ? 'translate-x-5' : 'translate-x-0.5'}`} />
               </button>
             </div>
 
@@ -184,18 +184,18 @@ export default function RetentionPolicyForm({ open, policy, onClose, onSaved }: 
                 onClick={() => handleChange('anonymize', !form.anonymize)}
                 className={`relative w-10 h-5 rounded-full transition-colors ${form.anonymize ? 'bg-primary' : 'bg-border'}`}
               >
-                <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.anonymize ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                <span className={`absolute top-0.5 w-4 h-4 bg-card rounded-full shadow transition-transform ${form.anonymize ? 'translate-x-5' : 'translate-x-0.5'}`} />
               </button>
             </div>
           </div>
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-destructive">{error}</p>}
         </div>
 
         <DialogFooter className="gap-2">
           <button
             onClick={onClose}
-            className="bg-white border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
+            className="bg-card border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
           >
             {tc('cancel')}
           </button>

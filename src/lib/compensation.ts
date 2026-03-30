@@ -36,8 +36,8 @@ export const COMPA_RATIO_CONFIG: Record<
   VERY_LOW: {
     label: '저보상',
     color: '#EF4444',
-    bgClass: 'bg-red-50',
-    textClass: 'text-red-700',
+    bgClass: 'bg-destructive/5',
+    textClass: 'text-destructive',
   },
   LOW: {
     label: '시장 대비 낮음',
@@ -54,8 +54,8 @@ export const COMPA_RATIO_CONFIG: Record<
   HIGH: {
     label: '높음',
     color: '#3B82F6',
-    bgClass: 'bg-blue-50',
-    textClass: 'text-blue-700',
+    bgClass: 'bg-primary/5',
+    textClass: 'text-primary',
   },
   VERY_HIGH: {
     label: '과보상',

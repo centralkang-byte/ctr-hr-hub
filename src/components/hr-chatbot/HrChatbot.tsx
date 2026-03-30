@@ -315,7 +315,7 @@ export function HrChatbot() {
                   <ChevronDown className="h-3 w-3" />
                 </button>
                 {showSessions && (
-                  <div className="absolute left-0 top-full z-10 mt-1 w-56 rounded-lg border bg-white shadow-lg">
+                  <div className="absolute left-0 top-full z-10 mt-1 w-56 rounded-lg border bg-card shadow-lg">
                     <div className="max-h-48 overflow-y-auto p-1">
                       {sessions.map((s) => (
                         <button
@@ -427,7 +427,7 @@ export function HrChatbot() {
                     )}
 
                     {msg.escalated && (
-                      <div className="rounded bg-green-50 px-2 py-1 text-xs text-green-700">
+                      <div className="rounded bg-tertiary-container/10 px-2 py-1 text-xs text-tertiary">
                         {t('chatbotEscalated')}
                       </div>
                     )}
@@ -440,7 +440,7 @@ export function HrChatbot() {
                           onClick={() => handleFeedback(msg.id, 'POSITIVE')}
                           className={cn(
                             'rounded p-0.5 hover:bg-border',
-                            msg.feedback === 'POSITIVE' && 'text-green-600',
+                            msg.feedback === 'POSITIVE' && 'text-tertiary',
                           )}
                           aria-label={t('feedbackPositive')}
                         >
@@ -451,7 +451,7 @@ export function HrChatbot() {
                           onClick={() => handleFeedback(msg.id, 'NEGATIVE')}
                           className={cn(
                             'rounded p-0.5 hover:bg-border',
-                            msg.feedback === 'NEGATIVE' && 'text-red-600',
+                            msg.feedback === 'NEGATIVE' && 'text-destructive',
                           )}
                           aria-label={t('feedbackNegative')}
                         >

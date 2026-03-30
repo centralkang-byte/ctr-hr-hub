@@ -178,7 +178,7 @@ export default function PayrollImportClient({ user, companies }: {
       uploaded: 'bg-amber-100 text-amber-700',
       processing: 'bg-indigo-100 text-primary/90',
       confirmed: 'bg-emerald-100 text-emerald-700',
-      failed: 'bg-red-100 text-red-700',
+      failed: 'bg-destructive/10 text-destructive',
     }
     const label: Record<string, string> = { uploaded: '업로드됨', processing: '처리중', confirmed: t('confirmed'), failed: t('failed') }
     return (
@@ -213,7 +213,7 @@ export default function PayrollImportClient({ user, companies }: {
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 selectedCompany?.id === co.id
                   ? 'bg-primary text-white'
-                  : 'bg-white border border-border text-[#555] hover:bg-background'
+                  : 'bg-card border border-border text-[#555] hover:bg-background'
               }`}
             >
               {co.code} ({co.currency})
@@ -246,7 +246,7 @@ export default function PayrollImportClient({ user, companies }: {
       {tab === 'upload' && (
         <div className="max-w-2xl space-y-6">
           {/* Mapping selector */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-6">
             <h3 className="text-sm font-semibold text-foreground mb-3">{t('kr_kecbbaceb_keba7a4ed_kec84a0ed')}</h3>
             {loadingMappings ? (
               <div className="text-sm text-[#999]">{tCommon('loading')}</div>
@@ -278,7 +278,7 @@ export default function PayrollImportClient({ user, companies }: {
           </div>
 
           {/* Period */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-6">
             <h3 className="text-sm font-semibold text-foreground mb-3">{t('kr_keab889ec_keca780ea_month')}</h3>
             <div className="flex gap-3">
               <select
@@ -302,7 +302,7 @@ export default function PayrollImportClient({ user, companies }: {
 
           {/* File Drop */}
           <div
-            className="bg-white rounded-xl border-2 border-dashed border-border p-10 text-center cursor-pointer hover:border-primary hover:bg-primary/10/20 transition-colors"
+            className="bg-card rounded-xl border-2 border-dashed border-border p-10 text-center cursor-pointer hover:border-primary hover:bg-primary/10/20 transition-colors"
             onClick={() => fileRef.current?.click()}
           >
             <FileSpreadsheet className="w-12 h-12 text-[#CCC] mx-auto mb-3" />
@@ -392,7 +392,7 @@ export default function PayrollImportClient({ user, companies }: {
 
           {/* New Mapping Editor */}
           {editingMapping && (
-            <div className="bg-white rounded-xl border border-primary p-5 space-y-4">
+            <div className="bg-card rounded-xl border border-primary p-5 space-y-4">
               <h4 className="text-sm font-semibold text-foreground">{t('kr_kec8388_keba7a4ed_settings')}</h4>
               <div className="grid grid-cols-3 gap-4">
                 <div>
@@ -434,7 +434,7 @@ export default function PayrollImportClient({ user, companies }: {
                     <div key={field.key} className="flex items-center gap-2">
                       <span className="text-xs text-[#555] w-28 shrink-0">
                         {field.label}
-                        {field.required && <span className="text-red-600 ml-0.5">*</span>}
+                        {field.required && <span className="text-destructive ml-0.5">*</span>}
                       </span>
                       <ChevronRight className="w-3 h-3 text-[#CCC] shrink-0" />
                       <input

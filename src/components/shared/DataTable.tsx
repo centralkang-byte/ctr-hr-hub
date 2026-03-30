@@ -318,7 +318,7 @@ export function DataTable<T extends Record<string, unknown>>({
           >
             <Table>
               {/* Sticky header inside scroll container */}
-              <thead className="sticky top-0 z-10 bg-white">
+              <thead className="sticky top-0 z-10 bg-card">
                 {visibleColumns.map((col) => (
                   <th
                     key={col.key}

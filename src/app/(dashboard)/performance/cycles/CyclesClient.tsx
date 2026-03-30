@@ -102,7 +102,7 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
                 </div>
 
                 {error && (
-                    <div className="mb-4 rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-800">
+                    <div className="mb-4 rounded-lg border border-destructive/15 bg-destructive/5 p-3 text-sm text-destructive">
                         {error} <button onClick={fetchCycles} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
@@ -110,14 +110,14 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
                 {loading ? (
                     <div className="space-y-4">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="animate-pulse rounded-xl border border-border bg-white p-6">
+                            <div key={i} className="animate-pulse rounded-xl border border-border bg-card p-6">
                                 <div className="mb-3 h-5 w-1/3 rounded bg-border" />
                                 <div className="h-4 w-2/3 rounded bg-border" />
                             </div>
                         ))}
                     </div>
                 ) : cycles.length === 0 ? (
-                    <div className="rounded-xl border border-border bg-white p-16 text-center">
+                    <div className="rounded-xl border border-border bg-card p-16 text-center">
                         <Settings2 className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                         <EmptyState />
                         <button onClick={() => setShowCreateForm(true)}
@@ -130,7 +130,7 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
                             const badgeLabel = STATUS_LABEL_KEYS[cycle.status] ? t(STATUS_LABEL_KEYS[cycle.status]) : cycle.status
                             return (
                                 <button key={cycle.id} onClick={() => router.push(`/performance/cycles/${cycle.id}`)}
-                                    className="group w-full rounded-xl border border-border bg-white p-5 text-left transition-colors hover:border-primary/30">
+                                    className="group w-full rounded-xl border border-border bg-card p-5 text-left transition-colors hover:border-primary/30">
                                     <div className="flex items-start justify-between">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3">
@@ -188,7 +188,7 @@ function CreateCycleModal({ onClose, onCreated }: { onClose: () => void; onCreat
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={onClose}>
-            <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-white p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-card p-6" onClick={(e) => e.stopPropagation()}>
                 <h3 className="mb-5 text-lg font-bold text-foreground">{t('kr_kec8388_cycle_kec839dec')}</h3>
                 <div className="space-y-4">
                     <div>

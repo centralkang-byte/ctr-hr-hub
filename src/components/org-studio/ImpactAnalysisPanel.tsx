@@ -119,7 +119,7 @@ export function ImpactAnalysisPanel({ diff, selectedNode, baseline = DEFAULT_BAS
               {diff.moves.map((move, idx) => (
                 <div
                   key={`${move.nodeId}-${idx}`}
-                  className="rounded-xl border border-border bg-white p-3"
+                  className="rounded-xl border border-border bg-card p-3"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <p className="text-sm font-semibold text-foreground leading-tight">
@@ -145,7 +145,7 @@ export function ImpactAnalysisPanel({ diff, selectedNode, baseline = DEFAULT_BAS
               ))}
             </div>
           ) : (
-            <div className="rounded-xl border border-border bg-white divide-y divide-border">
+            <div className="rounded-xl border border-border bg-card divide-y divide-border">
               <div className="flex items-center justify-between px-4 py-3">
                 <div className="flex items-center gap-2">
                   <Users size={14} className="text-muted-foreground" />
@@ -190,11 +190,11 @@ export function ImpactAnalysisPanel({ diff, selectedNode, baseline = DEFAULT_BAS
               <p className="text-sm font-bold text-foreground">{selectedNode.name}</p>
               <p className="mt-0.5 text-xs text-muted-foreground">{selectedNode.manager}</p>
               <div className="mt-3 grid grid-cols-2 gap-2">
-                <div className="rounded-lg border border-border bg-white px-3 py-2">
+                <div className="rounded-lg border border-border bg-card px-3 py-2">
                   <p className="text-[10px] text-muted-foreground">인원</p>
                   <p className="text-sm font-bold text-foreground">{selectedNode.headcount}명</p>
                 </div>
-                <div className="rounded-lg border border-border bg-white px-3 py-2">
+                <div className="rounded-lg border border-border bg-card px-3 py-2">
                   <p className="text-[10px] text-muted-foreground">월 인건비</p>
                   <p className="text-sm font-bold text-foreground">
                     {formatKRW(selectedNode.estSalaryCost)}

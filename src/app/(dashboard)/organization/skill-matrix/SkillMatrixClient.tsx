@@ -90,10 +90,10 @@ type RadarData = {
 
 function getCellStyle(status: MatrixScore['status']) {
   switch (status) {
-    case 'critical':  return 'bg-red-100 text-red-700'
+    case 'critical':  return 'bg-destructive/10 text-destructive'
     case 'below':     return 'bg-amber-100 text-amber-700'
     case 'meets':     return 'bg-emerald-100 text-emerald-700'
-    case 'exceeds':   return 'bg-blue-100 text-blue-700'
+    case 'exceeds':   return 'bg-primary/10 text-primary'
     case 'expert':    return 'bg-violet-100 text-violet-800'
     default:          return 'bg-muted text-[#999]'
   }
@@ -110,7 +110,7 @@ function getCellLabel(status: MatrixScore['status'], gap: number | null) {
 
 function getDeptCellStyle(avgGap: number | null) {
   if (avgGap === null) return 'bg-muted text-[#999]'
-  if (avgGap >= 2)  return 'bg-red-100 text-red-700'
+  if (avgGap >= 2)  return 'bg-destructive/10 text-destructive'
   if (avgGap >= 1)  return 'bg-amber-100 text-amber-700'
   if (avgGap <= -1) return 'bg-violet-100 text-violet-800'
   return 'bg-emerald-100 text-emerald-700'
@@ -118,10 +118,10 @@ function getDeptCellStyle(avgGap: number | null) {
 
 function GapLegend() {
   const items = [
-    { color: 'bg-red-100 border border-red-200', label: '미달 (≥2)', text: 'text-red-700' },
+    { color: 'bg-destructive/10 border border-destructive/20', label: '미달 (≥2)', text: 'text-destructive' },
     { color: 'bg-amber-100 border border-amber-300', label: '부족 (1)', text: 'text-amber-700' },
     { color: 'bg-emerald-100 border border-emerald-200', label: '충족 (0)', text: 'text-emerald-700' },
-    { color: 'bg-blue-100 border border-blue-200', label: '초과', text: 'text-blue-700' },
+    { color: 'bg-primary/10 border border-primary/20', label: '초과', text: 'text-primary' },
     { color: 'bg-violet-100 border border-violet-200', label: '전문가 (5)', text: 'text-violet-800' },
     { color: 'bg-muted border border-border', label: '미평가', text: 'text-[#999]' },
   ]
@@ -161,7 +161,7 @@ function RadarModal({
 
   return (
     <div className={MODAL_STYLES.container}>
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-xl">
+      <div className="bg-card rounded-xl shadow-lg w-full max-w-xl">
         <div className="flex items-center justify-between p-5 border-b border-border">
           <div>
             <h2 className="text-lg font-semibold text-foreground">
@@ -191,7 +191,7 @@ function RadarModal({
               {/* KPI 요약 */}
               <div className="grid grid-cols-3 gap-3 mb-4">
                 {[
-                  { label: '미달 역량', value: data.summary.criticalGaps, color: 'text-red-700' },
+                  { label: '미달 역량', value: data.summary.criticalGaps, color: 'text-destructive' },
                   { label: '강점 역량', value: data.summary.strengths, color: 'text-emerald-700' },
                   { label: '달성률', value: `${data.summary.overallProgress}%`, color: 'text-primary' },
                 ].map((k) => (
@@ -328,10 +328,10 @@ export default function SkillMatrixClient({user,
           {[
             { label: '전체 직원', value: gapReport.totalEmployees, icon: Users, color: 'text-foreground' },
             { label: '평가 완료율', value: `${gapReport.completionRate}%`, icon: BarChart2, color: 'text-primary' },
-            { label: '주요 갭 역량', value: gapReport.topGaps.length, icon: TrendingDown, color: 'text-red-700' },
+            { label: '주요 갭 역량', value: gapReport.topGaps.length, icon: TrendingDown, color: 'text-destructive' },
             { label: '강점 역량', value: gapReport.topStrengths.length, icon: TrendingUp, color: 'text-emerald-700' },
           ].map((k) => (
-            <div key={k.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div key={k.label} className="bg-card rounded-xl shadow-sm border border-border p-6">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs text-[#666]">{k.label}</p>
                 <k.icon className="w-4 h-4 text-border" />
@@ -343,7 +343,7 @@ export default function SkillMatrixClient({user,
       )}
 
       {/* 탭 */}
-      <div className="bg-white rounded-xl border border-border overflow-hidden">
+      <div className="bg-card rounded-xl border border-border overflow-hidden">
         <div className="border-b border-border flex">
           {([
             { key: 'matrix', label: '직원별 매트릭스' },
@@ -533,7 +533,7 @@ export default function SkillMatrixClient({user,
                             <p className="text-xs text-[#666]">{g.category.name} · 평가율 {g.assessmentRate}%</p>
                           </div>
                           <div className="text-right">
-                            <span className="px-2 py-0.5 rounded-full text-xs bg-red-100 text-red-700 font-medium">
+                            <span className="px-2 py-0.5 rounded-full text-xs bg-destructive/10 text-destructive font-medium">
                               갭 +{g.avgGap?.toFixed(1)}
                             </span>
                           </div>
