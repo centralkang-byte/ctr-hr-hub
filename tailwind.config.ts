@@ -118,6 +118,8 @@ const config: Config = {
 			},
 			fontSize: {
 				'2xs': ['0.6875rem', { lineHeight: '1.4' }],  // 11px — table headers
+				'display-lg': ['3.5rem', { lineHeight: '1.1', fontWeight: '900' }],  // 56px — Hero KPI
+				'display-sm': ['2rem', { lineHeight: '1.2', fontWeight: '800' }],    // 32px — Card KPI
 			},
 			letterSpacing: {
 				'ctr': '-0.02em',

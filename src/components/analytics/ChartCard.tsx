@@ -22,7 +22,7 @@ interface ChartCardProps {
 
 export function ChartCard({
   title, children, loading, error, onRetry,
-  className = '', badge, badgeColor = 'bg-red-50 text-red-700 border-red-200',
+  className = '', badge, badgeColor = 'bg-destructive/10 text-destructive',
   expandable = true,
 }: ChartCardProps) {
   const [expanded, setExpanded] = useState(false)
@@ -30,15 +30,15 @@ export function ChartCard({
   const content = (
     <>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+        <h3 className="text-base font-semibold text-foreground">{title}</h3>
         <div className="flex items-center gap-2">
           {badge && (
-            <span className={cn('text-xs px-2 py-0.5 rounded-full border', badgeColor)}>{badge}</span>
+            <span className={cn('text-xs px-2.5 py-0.5 rounded-full font-medium', badgeColor)}>{badge}</span>
           )}
           {expandable && !loading && !error && (
             <button
               onClick={() => setExpanded(!expanded)}
-              className="p-1 rounded-md text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted transition-colors"
+              className="p-1 rounded-lg text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted transition-colors"
               title={expanded ? '축소' : '확대'}
             >
               {expanded ? <X className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
@@ -70,12 +70,12 @@ export function ChartCard({
     return (
       <>
         {/* 원래 위치 placeholder */}
-        <div className={cn('bg-card rounded-xl border border-border p-5', className)}>
+        <div className={cn('bg-card rounded-2xl shadow-sm p-6', className)}>
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+            <h3 className="text-base font-semibold text-foreground">{title}</h3>
             <button
               onClick={() => setExpanded(false)}
-              className="p-1 rounded-md text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted transition-colors"
+              className="p-1 rounded-lg text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted transition-colors"
             >
               <Maximize2 className="h-4 w-4" />
             </button>
@@ -86,7 +86,7 @@ export function ChartCard({
         </div>
         {/* 오버레이 */}
         <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm" onClick={() => setExpanded(false)} />
-        <div className="fixed inset-4 z-50 bg-card rounded-2xl border border-border shadow-2xl p-8 overflow-auto">
+        <div className="fixed inset-4 z-50 bg-card rounded-2xl shadow-2xl p-8 overflow-auto">
           {content}
         </div>
       </>
@@ -94,7 +94,10 @@ export function ChartCard({
   }
 
   return (
-    <div className={cn('bg-card rounded-xl border border-border p-5', className)}>
+    <div className={cn(
+      'bg-card rounded-2xl shadow-sm p-6 transition-all hover:shadow-md hover:-translate-y-0.5',
+      className,
+    )}>
       {content}
     </div>
   )

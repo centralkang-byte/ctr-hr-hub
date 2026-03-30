@@ -51,13 +51,13 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
   }, [])
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Greeting */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">
+        <h1 className="text-3xl font-bold text-foreground">
           안녕하세요, {user.name}님 👋
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-base text-muted-foreground">
           그룹 전체 인사 현황 요약입니다.
         </p>
       </div>
@@ -68,79 +68,79 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
       {/* 나의 할 일 */}
       <UnifiedTaskHub user={user} />
 
-      {/* 핵심 KPI Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {/* 핵심 KPI Cards — No-Line Rule, Display Typography */}
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {/* 전체 인원 */}
-        <Card className="border-t-4 border-t-ctr-primary">
-          <CardContent className="p-4">
+        <Card>
+          <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-ctr-gray-500">전체 인원</p>
-                <p className="text-3xl font-bold text-ctr-gray-900">
+                <p className="text-xs font-medium text-muted-foreground">전체 인원</p>
+                <p className="text-display-sm font-extrabold text-foreground">
                   {summary?.totalEmployees?.toLocaleString() ?? '-'}
                 </p>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                <Users className="h-6 w-6 text-ctr-primary" />
+                <Users className="h-6 w-6 text-primary" />
               </div>
             </div>
-            <p className="mt-2 text-xs text-green-600">
+            <p className="mt-2 text-xs text-emerald-600">
               전월 대비 +12명 (1.0%)
             </p>
           </CardContent>
         </Card>
 
         {/* 이직률 */}
-        <Card className="border-t-4 border-t-ctr-accent">
-          <CardContent className="p-4">
+        <Card>
+          <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-ctr-gray-500">이직률</p>
-                <p className="text-3xl font-bold text-ctr-gray-900">
+                <p className="text-xs font-medium text-muted-foreground">이직률</p>
+                <p className="text-display-sm font-extrabold text-foreground">
                   {summary?.turnoverRate ?? '-'}%
                 </p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
-                <TrendingDown className="h-6 w-6 text-ctr-accent" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+                <TrendingDown className="h-6 w-6 text-destructive" />
               </div>
             </div>
-            <p className="mt-2 text-xs text-green-600">
+            <p className="mt-2 text-xs text-emerald-600">
               전월 대비 -0.3%p
             </p>
           </CardContent>
         </Card>
 
         {/* 성과 분포 */}
-        <Card className="border-t-4 border-t-green-500">
-          <CardContent className="p-4">
+        <Card>
+          <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-ctr-gray-500">성과 분포</p>
-                <p className="text-3xl font-bold text-ctr-gray-900">B+</p>
+                <p className="text-xs font-medium text-muted-foreground">성과 분포</p>
+                <p className="text-display-sm font-extrabold text-foreground">B+</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-50">
-                <BarChart3 className="h-6 w-6 text-green-600" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-tertiary-container/20">
+                <BarChart3 className="h-6 w-6 text-tertiary" />
               </div>
             </div>
-            <p className="mt-2 text-xs text-ctr-gray-500">
+            <p className="mt-2 text-xs text-muted-foreground">
               전사 평균 등급
             </p>
           </CardContent>
         </Card>
 
         {/* 인건비 비율 */}
-        <Card className="border-t-4 border-t-[#F59E0B]">
-          <CardContent className="p-4">
+        <Card>
+          <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-ctr-gray-500">인건비 비율</p>
-                <p className="text-3xl font-bold text-ctr-gray-900">32.1%</p>
+                <p className="text-xs font-medium text-muted-foreground">인건비 비율</p>
+                <p className="text-display-sm font-extrabold text-foreground">32.1%</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-50">
-                <DollarSign className="h-6 w-6 text-yellow-600" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-50">
+                <DollarSign className="h-6 w-6 text-amber-600" />
               </div>
             </div>
-            <p className="mt-2 text-xs text-ctr-gray-500">
+            <p className="mt-2 text-xs text-muted-foreground">
               매출 대비 인건비
             </p>
           </CardContent>
@@ -148,11 +148,11 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
       </div>
 
       {/* Detail Grid */}
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2">
         {/* 회사별 현황 */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-ctr-gray-700">
+            <CardTitle className="text-sm font-medium text-foreground">
               <Building2 className="mr-2 inline-block h-4 w-4" />
               회사별 현황
             </CardTitle>
@@ -168,24 +168,24 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
               ].map((company) => (
                 <div
                   key={company.name}
-                  className="flex items-center justify-between rounded-lg bg-ctr-gray-50 p-3"
+                  className="flex items-center justify-between rounded-lg bg-muted/50 p-3"
                 >
                   <div>
-                    <p className="text-sm font-medium text-ctr-gray-700">
+                    <p className="text-sm font-medium text-foreground">
                       {company.name}
                     </p>
-                    <p className="text-xs text-ctr-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       {company.count}명
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-ctr-gray-700">
+                    <p className="text-sm font-medium text-foreground">
                       이직률
                     </p>
                     <p
                       className={`text-xs font-bold ${
                         parseFloat(company.rate) > 3.5
-                          ? 'text-ctr-accent'
+                          ? 'text-destructive'
                           : 'text-green-600'
                       }`}
                     >
@@ -203,14 +203,14 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
           {/* AI 전략 인사이트 */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-ctr-gray-700">
+              <CardTitle className="text-sm font-medium text-foreground">
                 AI 전략 인사이트
               </CardTitle>
               <AiGeneratedBadge />
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="rounded-lg border border-red-200 bg-red-100 p-3">
+                <div className="rounded-xl bg-destructive/5 p-3">
                   <p className="text-sm font-medium text-red-800">
                     핵심 인재 유출 위험
                   </p>
@@ -219,7 +219,7 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
                     경쟁력 있는 보상 패키지 검토를 권장합니다.
                   </p>
                 </div>
-                <div className="rounded-lg border border-green-200 bg-green-50 p-3">
+                <div className="rounded-xl bg-tertiary-container/10 p-3">
                   <p className="text-sm font-medium text-green-800">
                     조직 효율성 개선
                   </p>
@@ -235,7 +235,7 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
           {/* 최근 보고서 */}
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-ctr-gray-700">
+              <CardTitle className="text-sm font-medium text-foreground">
                 <FileText className="mr-2 inline-block h-4 w-4" />
                 최근 보고서
               </CardTitle>
@@ -251,7 +251,7 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
                     key={report.title}
                     className="flex items-center justify-between"
                   >
-                    <span className="text-sm text-ctr-gray-700">
+                    <span className="text-sm text-foreground">
                       {report.title}
                     </span>
                     <Badge variant="outline" className="text-xs">

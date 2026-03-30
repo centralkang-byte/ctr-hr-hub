@@ -2,7 +2,7 @@
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Executive Dashboard Client
-// 탭 제거 리팩터: ExecutiveSummaryClient 로직 흡수, 단일 대시보드
+// Kinetic Atelier Phase 4: Bento Grid + Display Typography
 // ═══════════════════════════════════════════════════════════
 
 import { useEffect, useState, useCallback } from 'react'
@@ -81,17 +81,23 @@ export function DashboardClient({ user }: Props) {
 
   if (loading) {
     return (
-      <div className="p-6 max-w-[1400px] mx-auto space-y-6 animate-pulse">
-        <div className="h-12 bg-muted rounded-xl" />
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-28 bg-muted rounded-xl" />
-          ))}
+      <div className="p-8 max-w-7xl mx-auto space-y-8 animate-pulse">
+        <div className="h-14 bg-muted rounded-2xl w-80" />
+        {/* KPI Bento skeleton */}
+        <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-12 gap-6">
+          <div className="col-span-2 md:col-span-4 xl:col-span-6 h-36 bg-muted rounded-2xl" />
+          <div className="xl:col-span-3 h-28 bg-muted rounded-2xl" />
+          <div className="xl:col-span-3 h-28 bg-muted rounded-2xl" />
+          <div className="xl:col-span-4 h-28 bg-muted rounded-2xl" />
+          <div className="xl:col-span-4 h-28 bg-muted rounded-2xl" />
+          <div className="xl:col-span-4 h-28 bg-muted rounded-2xl" />
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-72 bg-muted rounded-xl" />
-          ))}
+        {/* Chart Bento skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
+          <div className="lg:col-span-4 h-72 bg-muted rounded-2xl" />
+          <div className="lg:col-span-2 h-72 bg-muted rounded-2xl" />
+          <div className="lg:col-span-2 h-72 bg-muted rounded-2xl" />
+          <div className="lg:col-span-4 h-72 bg-muted rounded-2xl" />
         </div>
       </div>
     )
@@ -101,7 +107,7 @@ export function DashboardClient({ user }: Props) {
 
   if (error || !data) {
     return (
-      <div className="p-6 max-w-[1400px] mx-auto">
+      <div className="p-8 max-w-7xl mx-auto">
         <EmptyState
           title={te('loadFailed')}
           description={te('loadFailedDesc')}
@@ -117,11 +123,11 @@ export function DashboardClient({ user }: Props) {
   // ─── Render ─────────────────────────────────────────────
 
   return (
-    <div className="p-6 max-w-[1400px] mx-auto space-y-6">
-      {/* 헤더 */}
+    <div className="p-8 max-w-7xl mx-auto space-y-8">
+      {/* 헤더 — Display Typography */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Executive Dashboard</h1>
-        <p className="text-sm text-muted-foreground mt-1">
+        <h1 className="text-4xl font-bold text-foreground">Executive Dashboard</h1>
+        <p className="text-base text-muted-foreground mt-1">
           전사 인사 현황을 한눈에 파악하고 효율적으로 관리합니다.
         </p>
       </div>
@@ -136,20 +142,56 @@ export function DashboardClient({ user }: Props) {
         <AiInsightBanner />
       )}
 
-      {/* KPI 6개 — 클릭 시 드릴다운 Sheet */}
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-        <KpiCard {...kpis.totalEmployees} tooltip={te('tooltipTotalEmp')} onClick={() => setDrilldownType('headcount')} />
-        <KpiCard {...kpis.monthlyTurnoverRate} tooltip={te('tooltipTurnover')} onClick={() => setDrilldownType('turnover')} />
-        <KpiCard {...kpis.avgTenureYears} tooltip={te('tooltipTenure')} onClick={() => setDrilldownType('tenure')} />
-        <KpiCard {...kpis.monthlyLaborCost} tooltip={te('tooltipLaborCost')} onClick={() => setDrilldownType('laborCost')} />
-        <KpiCard {...kpis.recruitmentPipeline} tooltip={te('tooltipRecruitment')} onClick={() => setDrilldownType('recruitment')} />
-        <KpiCard {...kpis.onboardingCompletionRate} tooltip={te('tooltipOnboarding')} onClick={() => setDrilldownType('onboarding')} />
+      {/* ── KPI Bento Grid (12-column) ── */}
+      {/* Row 1: Hero(6) + Turnover(3) + Tenure(3) = 12 */}
+      {/* Row 2: LaborCost(4) + Recruit(4) + Onboarding(4) = 12 */}
+      <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-12 gap-6">
+        <KpiCard
+          {...kpis.totalEmployees}
+          tooltip={te('tooltipTotalEmp')}
+          onClick={() => setDrilldownType('headcount')}
+          variant="hero"
+          className="col-span-2 md:col-span-4 xl:col-span-6"
+        />
+        <KpiCard
+          {...kpis.monthlyTurnoverRate}
+          tooltip={te('tooltipTurnover')}
+          onClick={() => setDrilldownType('turnover')}
+          className="xl:col-span-3"
+        />
+        <KpiCard
+          {...kpis.avgTenureYears}
+          tooltip={te('tooltipTenure')}
+          onClick={() => setDrilldownType('tenure')}
+          className="xl:col-span-3"
+        />
+        <KpiCard
+          {...kpis.monthlyLaborCost}
+          tooltip={te('tooltipLaborCost')}
+          onClick={() => setDrilldownType('laborCost')}
+          className="xl:col-span-4"
+        />
+        <KpiCard
+          {...kpis.recruitmentPipeline}
+          tooltip={te('tooltipRecruitment')}
+          onClick={() => setDrilldownType('recruitment')}
+          className="xl:col-span-4"
+        />
+        <KpiCard
+          {...kpis.onboardingCompletionRate}
+          tooltip={te('tooltipOnboarding')}
+          onClick={() => setDrilldownType('onboarding')}
+          className="xl:col-span-4"
+        />
       </div>
 
-      {/* 차트 2×2 그리드 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* 인원 추이 */}
-        <ChartCard title={te('headcountTrend')}>
+      {/* ── Chart Bento Grid (6-column) ── */}
+      {/* Row 1: Headcount(4) + Turnover(2) */}
+      {/* Row 2: Treemap(2) + Heatmap(4) */}
+      {/* Row 3: Funnel(4) + Risk(2) */}
+      <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
+        {/* 인원 추이 — Hero chart (4col) */}
+        <ChartCard title={te('headcountTrend')} className="lg:col-span-4">
           {charts.headcountTrend.length === 0 ? (
             <EmptyChart />
           ) : (
@@ -160,7 +202,7 @@ export function DashboardClient({ user }: Props) {
                 <YAxis fontSize={11} />
                 <Tooltip
                   labelFormatter={(v) => `${String(v).split('-')[1]}월`}
-                  contentStyle={{ borderRadius: 8, fontSize: 12 }}
+                  contentStyle={{ borderRadius: 12, fontSize: 12 }}
                 />
                 <Legend iconType="circle" iconSize={8} />
                 <Area type="monotone" dataKey="hires" name={te('hires')} stackId="1" fill={CHART_COLORS.success} stroke={CHART_COLORS.success} fillOpacity={0.6} />
@@ -171,8 +213,8 @@ export function DashboardClient({ user }: Props) {
           )}
         </ChartCard>
 
-        {/* 이직률 추이 */}
-        <ChartCard title={te('turnoverTrend')}>
+        {/* 이직률 추이 (2col) */}
+        <ChartCard title={te('turnoverTrend')} className="lg:col-span-2">
           {charts.turnoverTrend.length === 0 ? (
             <EmptyChart />
           ) : (
@@ -181,7 +223,7 @@ export function DashboardClient({ user }: Props) {
                 <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                 <XAxis dataKey="month" fontSize={11} tickFormatter={(v) => v.split('-')[1] + '월'} />
                 <YAxis fontSize={11} unit="%" />
-                <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
+                <Tooltip contentStyle={{ borderRadius: 12, fontSize: 12 }} />
                 <ReferenceLine y={TURNOVER_BENCHMARKS.manufacturing.value} label={TURNOVER_BENCHMARKS.manufacturing.label} stroke={CHART_COLORS.danger} strokeDasharray="5 5" />
                 <Line type="monotone" dataKey="rate" name={te('turnoverRateLabel')} stroke={CHART_COLORS.primary} strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
@@ -189,13 +231,13 @@ export function DashboardClient({ user }: Props) {
           )}
         </ChartCard>
 
-        {/* 법인별 인력 분포 — Treemap */}
-        <ChartCard title={te('companyDistribution')}>
+        {/* 법인별 인력 분포 — Treemap (2col) */}
+        <ChartCard title={te('companyDistribution')} className="lg:col-span-2">
           <OrgTreemap data={charts.companyDistribution} />
         </ChartCard>
 
-        {/* 부서×월 이직률 Heatmap */}
-        <ChartCard title="부서별 이직률 히트맵">
+        {/* 부서×월 이직률 Heatmap (4col) */}
+        <ChartCard title="부서별 이직률 히트맵" className="lg:col-span-4">
           {data.departmentTurnoverHeatmap && data.departmentTurnoverHeatmap.length > 0 ? (
             <TurnoverHeatmap data={data.departmentTurnoverHeatmap} />
           ) : (
@@ -203,8 +245,8 @@ export function DashboardClient({ user }: Props) {
           )}
         </ChartCard>
 
-        {/* 채용 파이프라인 Funnel */}
-        <ChartCard title="채용 파이프라인">
+        {/* 채용 파이프라인 Funnel (4col) */}
+        <ChartCard title="채용 파이프라인" className="lg:col-span-4">
           {data.recruitmentFunnel && data.recruitmentFunnel.length > 0 ? (
             <RecruitmentFunnel data={data.recruitmentFunnel} />
           ) : (
@@ -212,8 +254,8 @@ export function DashboardClient({ user }: Props) {
           )}
         </ChartCard>
 
-        {/* 위험 신호 */}
-        <ChartCard title={te('riskAlerts')}>
+        {/* 위험 신호 (2col) */}
+        <ChartCard title={te('riskAlerts')} className="lg:col-span-2">
           {riskAlerts.length === 0 ? (
             <div className="flex items-center justify-center h-48 text-sm text-muted-foreground">
               감지된 위험 신호가 없습니다.
@@ -225,14 +267,14 @@ export function DashboardClient({ user }: Props) {
                   key={i}
                   href={alert.link}
                   className={cn(
-                    'flex items-center gap-3 p-3 rounded-lg border-l-4 hover:bg-muted/50 transition-colors',
-                    alert.severity === 'HIGH' && 'border-l-red-500 bg-red-50/30 dark:bg-red-950/20',
-                    alert.severity === 'MEDIUM' && 'border-l-amber-500 bg-amber-50/30 dark:bg-amber-950/20',
-                    alert.severity !== 'HIGH' && alert.severity !== 'MEDIUM' && 'border-l-primary bg-primary/5',
+                    'flex items-center gap-3 p-3 rounded-xl transition-colors',
+                    alert.severity === 'HIGH' && 'bg-destructive/5 hover:bg-destructive/10',
+                    alert.severity === 'MEDIUM' && 'bg-amber-50/50 hover:bg-amber-50/80 dark:bg-amber-950/20 dark:hover:bg-amber-950/30',
+                    alert.severity !== 'HIGH' && alert.severity !== 'MEDIUM' && 'bg-primary/5 hover:bg-primary/10',
                   )}
                 >
                   <AlertTriangle
-                    className={cn('h-4 w-4', alert.severity === 'HIGH' ? 'text-red-500' : 'text-amber-500')}
+                    className={cn('h-4 w-4', alert.severity === 'HIGH' ? 'text-destructive' : 'text-amber-500')}
                   />
                   <div>
                     <p className="text-sm font-medium text-foreground">{alert.type}</p>
@@ -278,7 +320,7 @@ export function DashboardClient({ user }: Props) {
                   <tr key={c.companyId} className={TABLE_STYLES.row}>
                     <td className={TABLE_STYLES.cell}>{c.companyName}</td>
                     <td className={TABLE_STYLES.cellRight}>{c.headcount}명</td>
-                    <td className={cn(TABLE_STYLES.cellRight, c.turnoverRate > 5 && 'text-red-600')}>
+                    <td className={cn(TABLE_STYLES.cellRight, c.turnoverRate > 5 && 'text-destructive')}>
                       {c.turnoverRate}%
                     </td>
                     <td className={TABLE_STYLES.cellRight}>{c.avgTenure}년</td>

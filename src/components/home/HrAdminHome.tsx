@@ -58,7 +58,7 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
   }, [])
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* ── Greeting ── */}
       <div>
         <h1 className={TYPOGRAPHY.pageTitle}>
@@ -72,13 +72,13 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
 
       {/* ── KPI Row ── */}
       {loading ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {[...Array(4)].map((_, i) => (
             <WidgetSkeleton key={i} height="h-28" lines={2} />
           ))}
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {/* 전사 인원 */}
           <div className={CARD_STYLES.kpi}>
             <div className="flex items-center justify-between">
@@ -154,14 +154,14 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
       )}
 
       {/* ── Main layout: TaskHub left, Compact sidebar right ── */}
-      <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
+      <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
         {/* UnifiedTaskHub */}
         <UnifiedTaskHub user={user} />
 
         {/* Right sidebar — compact above-fold cards only */}
         <div className="space-y-4">
           {/* 승인 대기 현황 */}
-          <Card className="border-l-4 border-border border-l-primary shadow-none">
+          <Card className="bg-primary/5">
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-gray-800">
                 <CheckSquare className="h-4 w-4 text-primary" />
@@ -191,7 +191,7 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
           </Card>
 
           {/* 퇴직 진행 현황 */}
-          <Card className="border-border shadow-none">
+          <Card>
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-gray-800">
                 <UserMinus className="h-4 w-4 text-amber-500" />

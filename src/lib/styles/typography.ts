@@ -26,6 +26,12 @@ export const TYPOGRAPHY = {
   /** 12px / 500 — 라벨 */
   label: 'text-xs font-medium text-ctr-slate-500',
 
+  // === Display (Dashboard Hero / Card KPI) ===
+  /** 56px / 900 / Inter — 대시보드 Hero metric */
+  displayLg: 'text-4xl md:text-5xl xl:text-display-lg font-black font-display',
+  /** 32px / 800 — 카드 내 핵심 수치 */
+  displaySm: 'text-display-sm font-extrabold',
+
   // === Numbers (Geist Mono + tabular-nums) ===
   /** 30px 숫자 — KPI 대형 stat */
   stat: 'text-[30px] font-bold font-mono tabular-nums text-ctr-slate-900',
